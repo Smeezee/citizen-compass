@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Static offline snapshot: all 232 ships baked in, no server/API/DB required. -->
-<title>Citizen Compass (Preview) v0.3.1</title>
+<title>Citizen Compass (Preview) v0.3.2</title>
 <style>
   :root {
     --mg-bg-dark: #0A1628;
@@ -121,6 +121,12 @@
     -webkit-overflow-scrolling: touch;
     margin-bottom: 1rem;
   }
+  /* Click-and-drag panning is wired up in JS for desktop (min-width: 768px)
+     only; mobile keeps native touch panning via overflow-x above. */
+  @media (min-width: 768px) {
+    .table-wrap.pannable { cursor: grab; }
+    .table-wrap.pannable.dragging { cursor: grabbing; user-select: none; }
+  }
   table { border-collapse: collapse; width: 100%; min-width: 920px; }
   thead th {
     background: var(--mg-bg-dark);
@@ -230,7 +236,7 @@
 </div>
 
 <header>
-  <h1>Citizen Compass <span class="version">v0.3.1</span></h1>
+  <h1>Citizen Compass <span class="version">v0.3.2</span></h1>
   <p class="tagline">Know where to buy, before you fly.</p>
   <p>Star Citizen In-Game Ship Purchase Matrix (aUEC + Pledge USD)</p>
   <p class="patch-info">Patch: Alpha 4.9.0 &quot;Frontier Tensions&quot; (LIVE July 15-16, 2026) &nbsp;|&nbsp; Compiled/updated: 2026-07-24</p>
@@ -253,7 +259,7 @@
       <span id="searchCount">232 ships total</span>
     </div>
     <p class="category-hint">Categories you can search: Bomber, Capital/Multi-crew, Cargo, Data, Exploration, Fighter, Ground Vehicle, Interdiction, Medical, Mining, Multi-role, Racing, Refuel, Salvage, Search &amp; Rescue, Support/Repair, Touring/Luxury.</p>
-    <div class="table-wrap">
+    <div class="table-wrap" id="matrix-wrap">
       <table>
         <thead>
           <tr>
@@ -321,7 +327,7 @@
       <li>A ship name with a &#128279; next to it is a clickable link straight to that ship's official RSI Pledge Store page - verified real, never guessed. Most ships don't have one yet since RSI's store URLs aren't predictable enough to generate safely; more get added as they're verified.</li>
       <li>Known conflicts flagged rather than silently resolved: Aegis Idris-P shows $1,900 (current UEX figure) vs $1,500 in an older community snapshot - both noted in that ship's row, not picked for you.</li>
       <li>Sources: starcitizen.tools 'Purchasing ships' (updated 2026-07-17, post-4.9.0); CStone Universal Item Finder (finder.cstone.space - community live terminal tracker, used to verify every dealer location against what's actually for sale in-game); UEX Corp vehicle database (uexcorp.space - mirrors RSI pledge store pricing); scfocus.org and CIG Monthly/Roadmap Reports (Development Progress tab); RSI Pledge Store directly (buy-links and pledge prices verified against the official store).</li>
-      <li>Patch context: Alpha 4.9.0 'Frontier Tensions' - LIVE build 4.9.0-LIVE.12232306, went live July 15-16, 2026. No wipe on this patch; persistence carried over from 4.8. Document version: v0.3.1 (compiled 2026-07-24).</li>
+      <li>Patch context: Alpha 4.9.0 'Frontier Tensions' - LIVE build 4.9.0-LIVE.12232306, went live July 15-16, 2026. No wipe on this patch; persistence carried over from 4.8. Document version: v0.3.2 (compiled 2026-07-24).</li>
     </ul>
   </section>
 </main>
@@ -461,6 +467,71 @@ document.getElementById("shipSearch").addEventListener("input", filterShips);
 
 buildMatrix();
 filterShips();
+
+// Click-and-drag panning for the ship matrix table, desktop only (min-width:
+// 768px). Mobile keeps native touch panning via the wrapper's overflow-x.
+// A mousedown that starts on a link (ship buy-link) never starts a drag, so
+// clicking a ship name always navigates normally; a mousedown anywhere else
+// only becomes a "drag" once the pointer has moved past a small threshold —
+// that same threshold is what lets a plain click on a blank cell/row pass
+// through untouched. The scrollbar stays as a fallback; this only adds an
+// extra way to pan, it doesn't remove the native one.
+(function setUpDragPan() {
+  const wrap = document.getElementById("matrix-wrap");
+  if (!wrap) return;
+
+  const DESKTOP_QUERY = window.matchMedia("(min-width: 768px)");
+  const DRAG_THRESHOLD = 5;
+
+  let isDown = false;
+  let dragged = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+
+  function syncPannableClass() {
+    wrap.classList.toggle("pannable", DESKTOP_QUERY.matches);
+  }
+  syncPannableClass();
+  DESKTOP_QUERY.addEventListener("change", syncPannableClass);
+
+  wrap.addEventListener("mousedown", (e) => {
+    if (!DESKTOP_QUERY.matches) return;
+    if (e.target.closest("a")) return; // let ship links behave normally
+    isDown = true;
+    dragged = false;
+    startX = e.pageX;
+    startScrollLeft = wrap.scrollLeft;
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    const dx = e.pageX - startX;
+    if (!dragged && Math.abs(dx) > DRAG_THRESHOLD) {
+      dragged = true;
+      wrap.classList.add("dragging");
+    }
+    if (dragged) {
+      e.preventDefault();
+      wrap.scrollLeft = startScrollLeft - dx;
+    }
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (!isDown) return;
+    isDown = false;
+    wrap.classList.remove("dragging");
+  });
+
+  // Suppress the click that would otherwise fire on mouseup after a real
+  // drag, so dragging across a row never triggers an accidental navigation.
+  wrap.addEventListener("click", (e) => {
+    if (dragged) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    dragged = false;
+  }, true);
+})();
 </script>
 </body>
 </html>
