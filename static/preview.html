@@ -4,29 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Static offline snapshot: all 232 ships baked in, no server/API/DB required. -->
-<title>Citizen Compass (Preview) v0.3.0</title>
+<title>Citizen Compass (Preview) v0.3.1</title>
 <style>
   :root {
-    --mg-bg-dark: #0b0e14;
-    --mg-panel-bg: rgba(18, 24, 36, 0.95);
-    --mg-cyan: #00f0ff;
-    --mg-cyan-glow: rgba(0, 240, 255, 0.25);
-    --mg-amber: #ffb000;
-    --mg-border: 1px solid rgba(0, 240, 255, 0.3);
+    --mg-bg-dark: #0A1628;
+    --mg-panel-bg: #0F2041;
+    --mg-cyan: #00C9A7;
+    --mg-cyan-glow: rgba(0, 201, 167, 0.25);
+    --mg-amber: #FF6B00;
+    --rec-purple: #7B5EA7;
+    --text-main: #C8D6E5;
+    --text-muted: #6B8A99;
+    --border-color: rgba(0, 201, 167, 0.2);
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--mg-bg-dark);
-    color: #e6faff;
+    color: var(--text-main);
   }
   a { color: var(--mg-cyan); }
   a:hover { color: var(--mg-amber); }
 
   .fan-notice {
     background: var(--mg-panel-bg);
-    border-bottom: var(--mg-border);
+    border-bottom: 1px solid var(--border-color);
     color: var(--mg-amber);
     text-align: center;
     font-size: .78rem;
@@ -39,7 +42,7 @@
     background: var(--mg-panel-bg);
     padding: 1.25rem 1rem;
     text-align: center;
-    border-bottom: var(--mg-border);
+    border-bottom: 1px solid var(--border-color);
     box-shadow: 0 1px 24px var(--mg-cyan-glow);
   }
   header h1 {
@@ -48,8 +51,8 @@
     letter-spacing: .05em;
     text-shadow: 0 0 10px var(--mg-cyan-glow);
   }
-  header h1 .version { font-weight: normal; font-size: .6em; color: #9fb3c8; }
-  header p { margin: .15rem 0 0; color: #6f89a3; font-size: .85rem; }
+  header h1 .version { font-weight: normal; font-size: .6em; color: var(--text-muted); }
+  header p { margin: .15rem 0 0; color: var(--text-muted); font-size: .85rem; }
   header .tagline { color: var(--mg-cyan); font-size: .95rem; font-style: italic; }
   header .patch-info { font-size: .78rem; }
 
@@ -59,7 +62,7 @@
     flex-wrap: wrap;
     gap: .25rem;
     background: var(--mg-bg-dark);
-    border-bottom: var(--mg-border);
+    border-bottom: 1px solid var(--border-color);
     padding: .5rem 1rem;
   }
   nav a {
@@ -77,7 +80,7 @@
   }
 
   main { max-width: 1300px; margin: 0 auto; padding: 0 1rem; }
-  section { padding: 1.5rem 0; border-bottom: var(--mg-border); }
+  section { padding: 1.5rem 0; border-bottom: 1px solid var(--border-color); }
   section:last-of-type { border-bottom: none; }
   section h2 {
     margin: 0 0 .4rem;
@@ -85,8 +88,8 @@
     color: var(--mg-cyan);
     letter-spacing: .03em;
   }
-  .subtitle { margin: 0 0 .75rem; color: #6f89a3; font-size: .82rem; line-height: 1.5; }
-  .category-hint { margin: .5rem 0 .9rem; color: #6f89a3; font-size: .78rem; line-height: 1.5; }
+  .subtitle { margin: 0 0 .75rem; color: var(--text-muted); font-size: .82rem; line-height: 1.5; }
+  .category-hint { margin: .5rem 0 .9rem; color: var(--text-muted); font-size: .78rem; line-height: 1.5; }
 
   .search-bar {
     display: flex;
@@ -100,9 +103,9 @@
     min-width: 220px;
     padding: .6rem .85rem;
     border-radius: 6px;
-    border: var(--mg-border);
+    border: 1px solid var(--border-color);
     background: var(--mg-panel-bg);
-    color: #e6faff;
+    color: var(--text-main);
     font-size: .95rem;
   }
   .search-bar input:focus {
@@ -110,8 +113,8 @@
     border-color: var(--mg-cyan);
     box-shadow: 0 0 0 3px var(--mg-cyan-glow);
   }
-  .search-bar input::placeholder { color: #6f89a3; }
-  #searchCount { color: #6f89a3; font-size: .8rem; white-space: nowrap; }
+  .search-bar input::placeholder { color: var(--text-muted); }
+  #searchCount { color: var(--text-muted); font-size: .8rem; white-space: nowrap; }
 
   .table-wrap {
     overflow-x: auto;
@@ -120,8 +123,8 @@
   }
   table { border-collapse: collapse; width: 100%; min-width: 920px; }
   thead th {
-    background: var(--mg-panel-bg);
-    color: var(--mg-cyan);
+    background: var(--mg-bg-dark);
+    color: var(--text-main);
     text-align: left;
     padding: .6rem .65rem;
     position: sticky;
@@ -130,83 +133,91 @@
     text-transform: uppercase;
     letter-spacing: .03em;
     white-space: nowrap;
-    border-bottom: var(--mg-border);
+    border-bottom: 1px solid var(--border-color);
   }
   tbody td {
     padding: .5rem .65rem;
-    border-bottom: 1px solid rgba(0, 240, 255, 0.12);
+    border-bottom: 1px solid rgba(0, 201, 167, 0.12);
     font-size: .85rem;
     vertical-align: top;
   }
-  tbody tr.row-green { background: rgba(0, 255, 100, 0.08); }
-  tbody tr.row-orange { background: rgba(255, 176, 0, 0.08); }
+  tbody tr.row-green { background: rgba(0, 201, 167, 0.08); }
+  tbody tr.row-orange { background: rgba(255, 107, 0, 0.08); }
   tbody tr:hover:not(.manu-row) { filter: brightness(1.25); }
 
   tbody tr.manu-row {
     background: var(--mg-panel-bg);
-    border-top: var(--mg-border);
-    border-bottom: var(--mg-border);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
   }
   tbody tr.manu-row td:first-child {
     color: var(--mg-cyan);
     font-weight: 700;
     letter-spacing: .04em;
     font-size: .82rem;
+    border-left: 3px solid var(--mg-cyan);
+  }
+  tbody tr.row-green td:first-child,
+  tbody tr.row-orange td:first-child {
+    color: var(--mg-cyan);
   }
   .loc-tag {
-    color: #6f89a3;
+    color: var(--text-muted);
     font-size: .68rem;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: .02em;
   }
 
-  td.role { color: #cdd6e8; }
-  td.num { text-align: right; white-space: nowrap; }
-  td.price-blank { text-align: right; white-space: nowrap; color: #9fb3c8; font-size: .82rem; }
+  td.role { color: var(--text-main); }
+  td.num, td.usd { text-align: right; white-space: nowrap; }
+  td.num { color: var(--mg-cyan); }
+  td.usd { color: var(--mg-amber); }
+  td.price-blank { text-align: right; white-space: nowrap; color: var(--text-muted); font-size: .82rem; }
   td.price-blank b { color: var(--mg-amber); }
   td.center { text-align: center; }
-  td.check { color: rgb(0, 255, 100); font-weight: 700; }
+  td.check { color: var(--mg-cyan); font-weight: 700; }
   td.dim { color: #445566; }
-  td.note { color: #8ea3b8; font-size: .78rem; max-width: 260px; }
+  td.note { color: var(--text-muted); font-size: .78rem; max-width: 260px; }
 
   .buy-link { white-space: nowrap; }
 
   .callout {
     background: var(--mg-panel-bg);
-    border: var(--mg-border);
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: .75rem 1rem;
     font-size: .8rem;
     line-height: 1.6;
-    color: #9fb3c8;
+    color: var(--text-muted);
   }
   .callout strong { color: var(--mg-cyan); }
 
   .legend-list { padding-left: 1.2rem; margin: 0; }
-  .legend-list li { margin-bottom: .8rem; font-size: .84rem; line-height: 1.6; color: #b8c8d8; }
+  .legend-list li { margin-bottom: .8rem; font-size: .84rem; line-height: 1.6; color: var(--text-main); }
 
   footer {
     background: var(--mg-panel-bg);
-    border-top: var(--mg-border);
-    color: #6f89a3;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
     text-align: center;
     font-size: .78rem;
     padding: 1rem;
     line-height: 1.6;
   }
 
-  .empty { text-align: center; padding: 2rem; color: #6f89a3; }
+  .empty { text-align: center; padding: 2rem; color: var(--text-muted); }
 
   /* Desktop only, and only where the browser actually supports backdrop-filter.
+     Applies to panel surfaces only (header, search bar) — not the table header,
+     which now uses the flat --mg-bg-dark per the RSI-dashboard color spec.
      Mobile (and unsupported browsers) keep the solid --mg-panel-bg above, no blur. */
   @media (min-width: 768px) {
     @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
       header,
-      thead th,
       .search-bar input {
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
       }
     }
   }
@@ -219,7 +230,7 @@
 </div>
 
 <header>
-  <h1>Citizen Compass <span class="version">v0.3.0</span></h1>
+  <h1>Citizen Compass <span class="version">v0.3.1</span></h1>
   <p class="tagline">Know where to buy, before you fly.</p>
   <p>Star Citizen In-Game Ship Purchase Matrix (aUEC + Pledge USD)</p>
   <p class="patch-info">Patch: Alpha 4.9.0 &quot;Frontier Tensions&quot; (LIVE July 15-16, 2026) &nbsp;|&nbsp; Compiled/updated: 2026-07-24</p>
@@ -310,7 +321,7 @@
       <li>A ship name with a &#128279; next to it is a clickable link straight to that ship's official RSI Pledge Store page - verified real, never guessed. Most ships don't have one yet since RSI's store URLs aren't predictable enough to generate safely; more get added as they're verified.</li>
       <li>Known conflicts flagged rather than silently resolved: Aegis Idris-P shows $1,900 (current UEX figure) vs $1,500 in an older community snapshot - both noted in that ship's row, not picked for you.</li>
       <li>Sources: starcitizen.tools 'Purchasing ships' (updated 2026-07-17, post-4.9.0); CStone Universal Item Finder (finder.cstone.space - community live terminal tracker, used to verify every dealer location against what's actually for sale in-game); UEX Corp vehicle database (uexcorp.space - mirrors RSI pledge store pricing); scfocus.org and CIG Monthly/Roadmap Reports (Development Progress tab); RSI Pledge Store directly (buy-links and pledge prices verified against the official store).</li>
-      <li>Patch context: Alpha 4.9.0 'Frontier Tensions' - LIVE build 4.9.0-LIVE.12232306, went live July 15-16, 2026. No wipe on this patch; persistence carried over from 4.8. Document version: v0.3.0 (compiled 2026-07-24).</li>
+      <li>Patch context: Alpha 4.9.0 'Frontier Tensions' - LIVE build 4.9.0-LIVE.12232306, went live July 15-16, 2026. No wipe on this patch; persistence carried over from 4.8. Document version: v0.3.1 (compiled 2026-07-24).</li>
     </ul>
   </section>
 </main>
@@ -360,7 +371,7 @@ function dealerCellsHtml(ship) {
 function pledgeCellHtml(ship) {
   const usd = fmtUsd(ship.pledge_price_usd);
   return usd
-    ? `<td class="num">${usd}</td>`
+    ? `<td class="usd">${usd}</td>`
     : `<td class="center dim">—</td>`;
 }
 
