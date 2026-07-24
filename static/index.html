@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citizen Compass</title>
+<style>
+  :root {
+    --mg-bg-dark: #0b0e14;
+    --mg-panel-bg: rgba(18, 24, 36, 0.95);
+    --mg-cyan: #00f0ff;
+    --mg-cyan-glow: rgba(0, 240, 255, 0.25);
+    --mg-amber: #ffb000;
+    --mg-border: 1px solid rgba(0, 240, 255, 0.3);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--mg-bg-dark);
+    color: #e6faff;
+  }
+  header {
+    background: var(--mg-panel-bg);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    border-bottom: var(--mg-border);
+    box-shadow: 0 1px 24px var(--mg-cyan-glow);
+  }
+  header h1 {
+    margin: 0 0 .25rem;
+    font-size: 1.5rem;
+    letter-spacing: .05em;
+    text-shadow: 0 0 10px var(--mg-cyan-glow);
+  }
+  header p { margin: 0; color: #6f89a3; font-size: .85rem; }
+
+  .legend {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: .8rem;
+    color: #6f89a3;
+    padding: 0 1rem;
+    max-width: 1100px;
+    margin: .9rem auto .5rem;
+  }
+  .legend span { display: flex; align-items: center; gap: .35rem; }
+  .swatch { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; }
+  .swatch.green { background: rgb(0, 255, 100); }
+  .swatch.orange { background: var(--mg-amber); }
+
+  .controls {
+    max-width: 1100px;
+    margin: 0 auto .75rem;
+    padding: 0 1rem;
+  }
+  .controls input {
+    width: 100%;
+    padding: .65rem .9rem;
+    border-radius: 6px;
+    border: var(--mg-border);
+    background: var(--mg-panel-bg);
+    color: #e6faff;
+    font-size: 1rem;
+  }
+  .controls input:focus {
+    outline: none;
+    border-color: var(--mg-cyan);
+    box-shadow: 0 0 0 3px var(--mg-cyan-glow);
+  }
+  .controls input::placeholder { color: #6f89a3; }
+
+  .table-wrap {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    padding: 0 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; }
+  thead th {
+    background: var(--mg-panel-bg);
+    color: var(--mg-cyan);
+    text-align: left;
+    padding: .7rem .8rem;
+    position: sticky;
+    top: 0;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    border-bottom: var(--mg-border);
+  }
+  tbody td {
+    padding: .6rem .8rem;
+    border-bottom: var(--mg-border);
+    font-size: .9rem;
+    vertical-align: top;
+  }
+  tbody tr.purchasable { background: rgba(0, 255, 100, 0.08); }
+  tbody tr.pledge_only { background: rgba(255, 176, 0, 0.08); }
+  tbody tr:hover { filter: brightness(1.25); }
+  .status-badge {
+    display: inline-block;
+    padding: .15rem .55rem;
+    border-radius: 999px;
+    font-size: .7rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .purchasable .status-badge { background: rgb(0, 255, 100); color: var(--mg-bg-dark); }
+  .pledge_only .status-badge { background: var(--mg-amber); color: var(--mg-bg-dark); }
+  .empty, .loading { text-align: center; padding: 2rem; color: #6f89a3; }
+  .count { text-align: right; color: #6f89a3; font-size: .75rem; padding: .3rem 0 0; }
+  a { color: var(--mg-cyan); }
+  a:hover { color: var(--mg-amber); }
+
+  /* Desktop only, and only where the browser actually supports backdrop-filter.
+     Mobile (and unsupported browsers) keep the solid --mg-panel-bg above, no blur. */
+  @media (min-width: 768px) {
+    @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+      header,
+      thead th,
+      .controls input {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Citizen Compass</h1>
+  <p>Star Citizen ship purchase reference</p>
+</header>
+
+<div class="legend">
+  <span><span class="swatch green"></span> Confirmed in-game purchasable</span>
+  <span><span class="swatch orange"></span> Pledge-only</span>
+</div>
+
+<div class="controls">
+  <input id="search" type="search" placeholder="Search by ship name or role/category…" autocomplete="off">
+</div>
+
+<div class="table-wrap">
+  <table id="ship-table">
+    <thead>
+      <tr>
+        <th>Ship</th>
+        <th>Manufacturer</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>aUEC Price</th>
+        <th>Dealers</th>
+        <th>Pledge (USD)</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="ship-body">
+      <tr><td colspan="8" class="loading">Loading ships…</td></tr>
+    </tbody>
+  </table>
+  <p class="count" id="count"></p>
+</div>
+
+<script>
+let ships = [];
+
+function escapeHtml(s) {
+  const div = document.createElement("div");
+  div.textContent = s ?? "";
+  return div.innerHTML;
+}
+
+function fmtAuec(n) {
+  return n == null ? "—" : n.toLocaleString() + " aUEC";
+}
+
+function fmtUsd(n) {
+  return n == null ? "—" : "$" + Number(n).toFixed(2);
+}
+
+function render(list) {
+  const body = document.getElementById("ship-body");
+  const count = document.getElementById("count");
+
+  if (!list.length) {
+    body.innerHTML = '<tr><td colspan="8" class="empty">No ships match your search.</td></tr>';
+    count.textContent = "";
+    return;
+  }
+
+  body.innerHTML = list.map(s => `
+    <tr class="${s.status}">
+      <td>${s.pledge_url ? `<a href="${escapeHtml(s.pledge_url)}" target="_blank" rel="noopener">${escapeHtml(s.name)}</a>` : escapeHtml(s.name)}</td>
+      <td>${escapeHtml(s.manufacturer)}</td>
+      <td>${escapeHtml(s.role) || "—"}</td>
+      <td><span class="status-badge">${s.status === "purchasable" ? "In-game" : "Pledge-only"}</span></td>
+      <td>${fmtAuec(s.auec_price)}</td>
+      <td>${s.dealers.length ? escapeHtml(s.dealers.join(", ")) : "—"}</td>
+      <td>${fmtUsd(s.pledge_price_usd)}</td>
+      <td>${escapeHtml(s.notes)}</td>
+    </tr>
+  `).join("");
+
+  count.textContent = `${list.length} ship${list.length === 1 ? "" : "s"}`;
+}
+
+function applyFilter() {
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  if (!q) { render(ships); return; }
+  render(ships.filter(s =>
+    s.name.toLowerCase().includes(q) || (s.role ?? "").toLowerCase().includes(q)
+  ));
+}
+
+document.getElementById("search").addEventListener("input", applyFilter);
+
+fetch("/api/v1/ships")
+  .then(r => r.json())
+  .then(data => {
+    ships = data;
+    render(ships);
+  })
+  .catch(() => {
+    document.getElementById("ship-body").innerHTML =
+      '<tr><td colspan="8" class="empty">Could not load ship data. Is the API running?</td></tr>';
+  });
+</script>
+</body>
+</html>
