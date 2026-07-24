@@ -80,6 +80,9 @@
   }
 
   main { max-width: 1300px; margin: 0 auto; padding: 0 1rem; }
+  @media (min-width: 768px) {
+    main { max-width: 2560px; padding: 0 2rem; }
+  }
   section { padding: 1.5rem 0; border-bottom: 1px solid var(--border-color); }
   section:last-of-type { border-bottom: none; }
   section h2 {
@@ -117,6 +120,14 @@
   #searchCount { color: var(--text-muted); font-size: .8rem; white-space: nowrap; }
 
   .table-wrap {
+    /* overflow-x: auto is intentionally left unconditional (not gated to a
+       min-width breakpoint): the browser only renders a scrollbar when the
+       table's content actually overflows the wrapper. On wide viewports
+       (>= ~1400px in practice, since the table's natural width comfortably
+       fits under that) the scrollbar disappears on its own; on narrow ones
+       it reappears automatically. A hard-coded "overflow: visible" override
+       at a fixed breakpoint would risk clipping content with no scroll UI
+       on any narrower desktop window, so it's avoided here. */
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     margin-bottom: 1rem;
