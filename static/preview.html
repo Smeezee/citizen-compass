@@ -178,6 +178,7 @@
     white-space: nowrap;
     border-bottom: 1px solid var(--border-color);
   }
+  #matrix-table thead th.align-right { text-align: right; }
   /* Sticky first column ("Ship") on every row, so it stays visible while
      panning/scrolling horizontally. The header's first cell is sticky in
      both axes (top + left) so it needs to sit above everything else. */
@@ -217,16 +218,13 @@
     letter-spacing: .04em;
     font-size: .82rem;
     background: #0a1628;
-  }
-  .manu-header-inner {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    vertical-align: middle;
   }
   .manu-logo {
-    height: 20px;
-    width: auto;
-    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+    height: 18px;
+    margin-right: 6px;
     opacity: 1;
   }
   tbody tr.row-green td:first-child {
@@ -425,7 +423,7 @@
       <table id="matrix-table">
         <thead>
           <tr>
-            <th width="180px">Ship</th><th width="100px">Role</th><th width="120px">Price (aUEC)</th><th width="90px">Astro Armada (Area18)</th><th width="90px">Crusader Showroom (Orison)</th><th width="90px">New Deal (Lorville)</th><th width="90px">Teach's (Levski)</th><th width="90px">Buy &amp; Fly (Ruin Station)</th><th width="100px" id="pledgeHeader">Pledge Price (USD)</th><th>Confidence / Notes</th>
+            <th width="180px">Ship</th><th width="100px">Role</th><th width="120px" class="align-right">Price (aUEC)</th><th width="90px">Astro Armada (Area18)</th><th width="90px">Crusader Showroom (Orison)</th><th width="90px">New Deal (Lorville)</th><th width="90px">Teach's (Levski)</th><th width="90px">Buy &amp; Fly (Ruin Station)</th><th width="100px" id="pledgeHeader" class="align-right">Pledge Price (USD)</th><th>Confidence / Notes</th>
           </tr>
         </thead>
         <tbody id="matrix-body">
@@ -676,8 +674,7 @@ function manuHeaderHtml(name) {
   const logoImg = logo
     ? `<img class="manu-logo" src="${logo}" alt="" aria-hidden="true">`
     : "";
-  const inner = `<span class="manu-header-inner">${logoImg}<span>${escapeHtml(name.toUpperCase())}</span></span>`;
-  return `<tr class="manu-row"><td colspan="3">${inner}</td>${locTags}<td colspan="2"></td></tr>`;
+  return `<tr class="manu-row"><td colspan="3">${logoImg}${escapeHtml(name.toUpperCase())}</td>${locTags}<td colspan="2"></td></tr>`;
 }
 
 function buildMatrix() {
