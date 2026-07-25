@@ -627,8 +627,8 @@ function priceCellHtml(ship) {
   }
   const flyable = (ship.notes || "").startsWith("Flight-ready, no dealer.");
   const text = flyable
-    ? 'N/A — <b>flyable</b>, no in-game dealer'
-    : 'N/A — <b>not</b> yet flyable';
+    ? '<b>Flyable</b> — no in-game dealer yet'
+    : '<b>Not yet flyable</b> — pledge only';
   return `<td class="price-blank">${text}</td>`;
 }
 
