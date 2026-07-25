@@ -4,8 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Static offline snapshot: all 232 ships baked in, no server/API/DB required. -->
-<title>Citizen Compass v0.3.3</title>
+<title>Citizen Compass v0.3.4</title>
+<meta property="og:title" content="Citizen Compass - Star Citizen Ship Reference">
+<meta property="og:description" content="Know where to buy, before you fly. 232 ships, in-game aUEC prices, dealer locations, and RSI pledge store links.">
+<meta property="og:url" content="https://citizencompass.netlify.app">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+
+  h1, h2, nav a,
+  thead th,
+  tbody tr.manu-row td:first-child,
+  tbody tr.row-green td:first-child,
+  tbody tr.row-orange td:first-child,
+  td.role,
+  #backToTop {
+    font-family: 'Rajdhani', sans-serif;
+  }
+  td.num, td.usd, header .version, #searchCount {
+    font-family: 'Share Tech Mono', monospace;
+  }
+
   :root {
     --mg-bg-dark: #0A1628;
     --mg-panel-bg: #0F2041;
@@ -26,17 +46,6 @@
   }
   a { color: var(--mg-cyan); }
   a:hover { color: var(--mg-amber); }
-
-  .fan-notice {
-    background: var(--mg-panel-bg);
-    border-bottom: 1px solid var(--border-color);
-    color: var(--mg-amber);
-    text-align: center;
-    font-size: .78rem;
-    padding: .5rem 1rem;
-    line-height: 1.5;
-  }
-  .fan-notice a { color: var(--mg-amber); text-decoration: underline; }
 
   header {
     background: var(--mg-panel-bg);
@@ -146,17 +155,31 @@
     padding: .6rem .65rem;
     position: sticky;
     top: 0;
+    z-index: 3;
     font-size: .72rem;
     text-transform: uppercase;
     letter-spacing: .03em;
     white-space: nowrap;
     border-bottom: 1px solid var(--border-color);
   }
+  /* Sticky first column ("Ship") on every row, so it stays visible while
+     panning/scrolling horizontally. The header's first cell is sticky in
+     both axes (top + left) so it needs to sit above everything else. */
+  thead th:first-child {
+    left: 0;
+    z-index: 4;
+  }
   tbody td {
     padding: .5rem .65rem;
     border-bottom: 1px solid rgba(0, 201, 167, 0.12);
     font-size: .85rem;
     vertical-align: top;
+  }
+  tbody td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: inherit;
   }
   tbody tr.row-green { background: rgba(0, 201, 167, 0.08); }
   tbody tr.row-orange { background: rgba(255, 107, 0, 0.08); }
@@ -175,7 +198,7 @@
     border-left: 3px solid var(--mg-cyan);
   }
   .manu-logo {
-    height: 24px;
+    height: 20px;
     width: auto;
     vertical-align: middle;
     margin-right: .5rem;
@@ -217,8 +240,25 @@
   }
   .callout strong { color: var(--mg-cyan); }
 
-  .legend-list { padding-left: 1.2rem; margin: 0; }
-  .legend-list li { margin-bottom: .8rem; font-size: .84rem; line-height: 1.6; color: var(--text-main); }
+  .legend-condensed p {
+    margin: 0 0 .6rem;
+    font-size: .85rem;
+    line-height: 1.6;
+    color: var(--text-main);
+  }
+  .chip {
+    display: inline-block;
+    padding: .15rem .6rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    margin-right: .4rem;
+  }
+  .chip-green { background: var(--mg-cyan); color: var(--mg-bg-dark); }
+  .chip-orange { background: var(--mg-amber); color: var(--mg-bg-dark); }
+  .source-list { list-style: none; padding: 0; margin: 0 0 .6rem; }
+  .source-list li { margin-bottom: .3rem; font-size: .85rem; color: var(--text-main); }
+  .conflict-note { color: var(--text-muted); font-size: .8rem; font-style: italic; margin: 0; }
 
   footer {
     background: var(--mg-panel-bg);
@@ -286,12 +326,8 @@
 </head>
 <body>
 
-<div class="fan-notice">
-  Citizen Compass is an unofficial fan site not affiliated with Cloud Imperium Games or Roberts Space Industries. Star Citizen&reg; content and materials are trademarks of Cloud Imperium Games. Fan-made reference tool, free of charge. Official site: <a href="https://robertsspaceindustries.com" target="_blank" rel="noopener">robertsspaceindustries.com</a>
-</div>
-
 <header>
-  <h1>Citizen Compass <span class="version">v0.3.3</span></h1>
+  <h1>Citizen Compass <span class="version">v0.3.4</span></h1>
   <p class="tagline">Know where to buy, before you fly.</p>
   <p>Star Citizen In-Game Ship Purchase Matrix (aUEC + Pledge USD)</p>
   <p class="patch-info">Patch: Alpha 4.9.0 &quot;Frontier Tensions&quot; (LIVE July 15-16, 2026) &nbsp;|&nbsp; Compiled/updated: 2026-07-24</p>
@@ -373,17 +409,19 @@
 
   <section id="legend">
     <h2>Legend &amp; Sources</h2>
-    <ul class="legend-list">
-      <li>Layout: manufacturer name appears ONCE as a section header. Rows underneath list only the ship name.</li>
-      <li>Dealer columns: a checkmark means confirmed purchasable at that location as of patch 4.9.0 (July 2026).</li>
-      <li>Row shading: GREEN = confirmed, currently-in-game ship - dealer location verified against a live terminal source and cross-checked for price.</li>
-      <li>ORANGE = not currently buyable in-game with aUEC - but this covers TWO different situations, and each note tells you which: (1) 'Concept.' ships that aren't flyable at all yet, still in development - their aUEC cell reads 'N/A - not yet flyable' - and (2) 'Flight-ready, no dealer.' ships that ARE real and flyable right now - some owned and flown by the person who compiled this sheet - they just don't have any in-game aUEC dealer selling them yet, so pledge/real-money is the only current purchase path - their aUEC cell reads 'N/A - flyable, no in-game dealer' instead, so the two are never confused. Their dealer columns show a dash either way. Their Pledge Price (USD) column IS populated where a reliable figure was found. If you're planning a real-money purchase rather than an in-game shopping trip, these are the ones to look at; if you're planning where to fly to buy something with aUEC today, skip them - they aren't purchasable that way yet.</li>
-      <li>Pledge Price (USD): standard/base real-money price from the RSI Pledge Store or UEX Corp's vehicle database. A dash means this wasn't sourced yet, not that the ship is unavailable for pledge.</li>
-      <li>A ship name with a &#128279; next to it is a clickable link straight to that ship's official RSI Pledge Store page - verified real, never guessed. Most ships don't have one yet since RSI's store URLs aren't predictable enough to generate safely; more get added as they're verified.</li>
-      <li>Known conflicts flagged rather than silently resolved: Aegis Idris-P shows $1,900 (current UEX figure) vs $1,500 in an older community snapshot - both noted in that ship's row, not picked for you.</li>
-      <li>Sources: starcitizen.tools 'Purchasing ships' (updated 2026-07-17, post-4.9.0); CStone Universal Item Finder (finder.cstone.space - community live terminal tracker, used to verify every dealer location against what's actually for sale in-game); UEX Corp vehicle database (uexcorp.space - mirrors RSI pledge store pricing); scfocus.org and CIG Monthly/Roadmap Reports (Development Progress tab); RSI Pledge Store directly (buy-links and pledge prices verified against the official store).</li>
-      <li>Patch context: Alpha 4.9.0 'Frontier Tensions' - LIVE build 4.9.0-LIVE.12232306, went live July 15-16, 2026. No wipe on this patch; persistence carried over from 4.8. Document version: v0.3.3 (compiled 2026-07-24).</li>
-    </ul>
+    <div class="legend-condensed">
+      <p><span class="chip chip-green">In-Game Purchasable</span> Buyable now with aUEC at a listed dealer.</p>
+      <p><span class="chip chip-orange">Pledge Only</span> Real-money only, not yet buyable with aUEC.</p>
+      <p><strong>&quot;Flyable, no in-game dealer&quot;</strong> &mdash; real and flyable now, just no aUEC dealer sells it yet.</p>
+      <p><strong>&quot;Not yet flyable&quot;</strong> &mdash; still in development, concept/pledge-only for now.</p>
+      <ul class="source-list">
+        <li><a href="https://starcitizen.tools" target="_blank" rel="noopener">starcitizen.tools</a> &mdash; ship and purchasing data.</li>
+        <li><a href="https://finder.cstone.space" target="_blank" rel="noopener">CStone</a> &mdash; live in-game dealer verification.</li>
+        <li><a href="https://uexcorp.space" target="_blank" rel="noopener">UEX Corp</a> &mdash; pledge price cross-check.</li>
+        <li><a href="https://robertsspaceindustries.com/pledge" target="_blank" rel="noopener">RSI Pledge Store</a> &mdash; official buy-links and prices.</li>
+      </ul>
+      <p class="conflict-note">Known conflict: Aegis Idris-P shows $1,900 currently vs $1,500 in an older snapshot &mdash; both noted, not resolved for you.</p>
+    </div>
   </section>
 </main>
 
