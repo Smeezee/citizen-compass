@@ -635,7 +635,7 @@ function priceCellHtml(ship) {
 function dealerCellsHtml(ship) {
   if (ship.status === "purchasable") {
     return DEALER_ORDER.map(d =>
-      `<td class="center check">${ship.dealers.includes(d) ? "✔" : ""}</td>`
+      `<td class="center check">${ship.dealers.includes(d) ? "✔" : "—"}</td>`
     ).join("");
   }
   return DEALER_ORDER.map(() => `<td class="center dim">—</td>`).join("");
