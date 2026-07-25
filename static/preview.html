@@ -209,14 +209,16 @@
     background: var(--mg-panel-bg);
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
+    border-left: 3px solid var(--mg-cyan);
   }
   tbody tr.manu-row td:first-child {
     color: var(--mg-cyan);
     font-weight: 700;
     letter-spacing: .04em;
     font-size: .82rem;
-    border-left: 3px solid var(--mg-cyan);
     background: #0a1628;
+  }
+  .manu-header-inner {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -674,7 +676,8 @@ function manuHeaderHtml(name) {
   const logoImg = logo
     ? `<img class="manu-logo" src="${logo}" alt="" aria-hidden="true">`
     : "";
-  return `<tr class="manu-row"><td colspan="3">${logoImg}${escapeHtml(name.toUpperCase())}</td>${locTags}<td colspan="2"></td></tr>`;
+  const inner = `<span class="manu-header-inner">${logoImg}<span>${escapeHtml(name.toUpperCase())}</span></span>`;
+  return `<tr class="manu-row"><td colspan="3">${inner}</td>${locTags}<td colspan="2"></td></tr>`;
 }
 
 function buildMatrix() {
