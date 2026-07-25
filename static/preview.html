@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Static offline snapshot: all 232 ships baked in, no server/API/DB required. -->
-<title>Citizen Compass v0.3.5</title>
+<title>Citizen Compass v0.3.6</title>
 <meta property="og:title" content="Citizen Compass - Star Citizen Ship Reference">
 <meta property="og:description" content="Know where to buy, before you fly. 232 ships, in-game aUEC prices, dealer locations, and RSI pledge store links.">
 <meta property="og:url" content="https://citizencompass.netlify.app">
@@ -87,6 +87,20 @@
     background: var(--mg-panel-bg);
     border-color: var(--mg-cyan-glow);
     color: var(--mg-cyan);
+  }
+  #currencySelect {
+    margin-left: .5rem;
+    padding: .4rem .6rem;
+    border-radius: 6px;
+    border: 1px solid var(--mg-cyan);
+    background: var(--mg-panel-bg);
+    color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .9rem;
+  }
+  #currencySelect:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--mg-cyan-glow);
   }
 
   main { max-width: 1300px; margin: 0 auto; padding: 0 1rem; }
@@ -350,7 +364,7 @@
 <body>
 
 <header>
-  <h1>Citizen Compass <span class="version">v0.3.5</span></h1>
+  <h1>Citizen Compass <span class="version">v0.3.6</span></h1>
   <p class="tagline">Know where to buy, before you fly.</p>
   <p>Star Citizen In-Game Ship Purchase Matrix (aUEC + Pledge USD)</p>
   <p class="patch-info">Patch: Alpha 4.9.0 &quot;Frontier Tensions&quot; (LIVE July 15-16, 2026) &nbsp;|&nbsp; Compiled/updated: 2026-07-24</p>
@@ -361,6 +375,14 @@
   <a href="#dev">Development Progress</a>
   <a href="#calendar">Sale Calendar</a>
   <a href="#legend">Legend &amp; Sources</a>
+  <select id="currencySelect" aria-label="Pledge price currency">
+    <option value="USD">USD ($)</option>
+    <option value="EUR">EUR (&euro;)</option>
+    <option value="GBP">GBP (&pound;)</option>
+    <option value="CAD">CAD (C$)</option>
+    <option value="AUD">AUD (A$)</option>
+    <option value="JPY">JPY (&yen;)</option>
+  </select>
 </nav>
 
 <main>
@@ -377,7 +399,7 @@
       <table id="matrix-table">
         <thead>
           <tr>
-            <th width="180px">Ship</th><th width="100px">Role</th><th width="120px">Price (aUEC)</th><th width="90px">Astro Armada (Area18)</th><th width="90px">Crusader Showroom (Orison)</th><th width="90px">New Deal (Lorville)</th><th width="90px">Teach's (Levski)</th><th width="90px">Buy &amp; Fly (Ruin Station)</th><th width="100px">Pledge Price (USD)</th><th>Confidence / Notes</th>
+            <th width="180px">Ship</th><th width="100px">Role</th><th width="120px">Price (aUEC)</th><th width="90px">Astro Armada (Area18)</th><th width="90px">Crusader Showroom (Orison)</th><th width="90px">New Deal (Lorville)</th><th width="90px">Teach's (Levski)</th><th width="90px">Buy &amp; Fly (Ruin Station)</th><th width="100px" id="pledgeHeader">Pledge Price (USD)</th><th>Confidence / Notes</th>
           </tr>
         </thead>
         <tbody id="matrix-body">
@@ -478,6 +500,92 @@ function fmtUsd(n) {
   return n == null ? null : "$" + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// --- Currency conversion (Pledge Price column only; aUEC is never touched) ---
+
+const CURRENCY_OPTIONS = {
+  USD: { locale: "en-US" },
+  EUR: { locale: "de-DE" },
+  GBP: { locale: "en-GB" },
+  CAD: { locale: "en-CA" },
+  AUD: { locale: "en-AU" },
+  JPY: { locale: "ja-JP" },
+};
+
+const LOCALE_CURRENCY_MAP = {
+  "en-GB": "GBP", "en-AU": "AUD", "en-CA": "CAD", "ja-JP": "JPY", "ja": "JPY",
+  "de-DE": "EUR", "de": "EUR", "fr-FR": "EUR", "fr": "EUR",
+  "es-ES": "EUR", "es": "EUR", "it-IT": "EUR", "it": "EUR", "en-US": "USD",
+};
+
+function detectCurrency() {
+  const lang = navigator.language || "en-US";
+  if (LOCALE_CURRENCY_MAP[lang]) return LOCALE_CURRENCY_MAP[lang];
+  const base = lang.split("-")[0];
+  return LOCALE_CURRENCY_MAP[base] || "USD";
+}
+
+let currentCurrency = localStorage.getItem("cc_currency") || detectCurrency();
+if (!CURRENCY_OPTIONS[currentCurrency]) currentCurrency = "USD";
+
+let fxRates = null;
+let fxAvailable = false;
+let needsRefetch = true;
+
+(function loadCachedRates() {
+  const raw = localStorage.getItem("cc_fx_rates");
+  if (!raw) return;
+  try {
+    const cache = JSON.parse(raw);
+    if (cache && cache.rates) {
+      fxRates = cache.rates;
+      fxAvailable = true;
+      if (cache.timestamp && Date.now() - cache.timestamp < 12 * 60 * 60 * 1000) {
+        needsRefetch = false;
+      }
+    }
+  } catch (e) { /* ignore malformed cache */ }
+})();
+
+async function refreshFxRates() {
+  try {
+    const resp = await fetch("https://open.er-api.com/v6/latest/USD");
+    if (!resp.ok) throw new Error("bad response");
+    const data = await resp.json();
+    if (!data || !data.rates) throw new Error("malformed response");
+    fxRates = data.rates;
+    fxAvailable = true;
+    localStorage.setItem("cc_fx_rates", JSON.stringify({ timestamp: Date.now(), rates: fxRates }));
+  } catch (e) {
+    fxAvailable = false; // offline or fetch failed: silently fall back to USD
+  }
+  updatePledgeHeader();
+  buildMatrix();
+  filterShips();
+}
+
+function effectiveCurrency() {
+  return fxAvailable ? currentCurrency : "USD";
+}
+
+function convertPledgeUsd(usdAmount) {
+  const code = effectiveCurrency();
+  let amount = usdAmount;
+  if (code !== "USD" && fxRates && fxRates[code]) {
+    amount = usdAmount * fxRates[code];
+  }
+  const locale = (CURRENCY_OPTIONS[code] || CURRENCY_OPTIONS.USD).locale;
+  try {
+    return new Intl.NumberFormat(locale, { style: "currency", currency: code }).format(amount);
+  } catch (e) {
+    return "$" + amount.toFixed(2);
+  }
+}
+
+function updatePledgeHeader() {
+  const header = document.getElementById("pledgeHeader");
+  if (header) header.textContent = `Pledge Price (${effectiveCurrency()})`;
+}
+
 function priceCellHtml(ship) {
   if (ship.status === "purchasable") {
     return `<td class="num">${fmtAuec(ship.auec_price)}</td>`;
@@ -499,10 +607,10 @@ function dealerCellsHtml(ship) {
 }
 
 function pledgeCellHtml(ship) {
-  const usd = fmtUsd(ship.pledge_price_usd);
-  return usd
-    ? `<td class="usd">${usd}</td>`
-    : `<td class="center dim">—</td>`;
+  if (ship.pledge_price_usd == null) {
+    return `<td class="center dim">—</td>`;
+  }
+  return `<td class="usd">${convertPledgeUsd(ship.pledge_price_usd)}</td>`;
 }
 
 function noteCellHtml(ship) {
@@ -593,8 +701,25 @@ function filterShips() {
 
 document.getElementById("shipSearch").addEventListener("input", filterShips);
 
+const currencySelectEl = document.getElementById("currencySelect");
+if (currencySelectEl) {
+  currencySelectEl.value = currentCurrency;
+  currencySelectEl.addEventListener("change", (e) => {
+    currentCurrency = e.target.value;
+    localStorage.setItem("cc_currency", currentCurrency);
+    updatePledgeHeader();
+    buildMatrix();
+    filterShips();
+  });
+}
+
+updatePledgeHeader();
 buildMatrix();
 filterShips();
+
+if (needsRefetch) {
+  refreshFxRates();
+}
 
 // Click-and-drag panning for the ship matrix table, desktop only (min-width:
 // 768px). Mobile keeps native touch panning via the wrapper's overflow-x.
