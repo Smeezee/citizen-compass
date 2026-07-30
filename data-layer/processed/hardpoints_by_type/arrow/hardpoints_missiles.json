@@ -1,0 +1,46 @@
+{
+  "ship_name": "Arrow",
+  "ship_slug": "arrow",
+  "hardpoints": [
+    {
+      "name": "hardpoint_missile_rack_s2 LS",
+      "type": "missile_rack",
+      "label": "S2",
+      "position": {
+        "x": -3.7651,
+        "y": -1.7362,
+        "z": -0.4364
+      }
+    },
+    {
+      "name": "hardpoint_missile_rack_s2 RS",
+      "type": "missile_rack",
+      "label": "S2",
+      "position": {
+        "x": 3.8128,
+        "y": -1.696,
+        "z": -0.4188
+      }
+    },
+    {
+      "name": "hardpoint_missile_rack_s3 LS",
+      "type": "missile_rack",
+      "label": "S3",
+      "position": {
+        "x": -4.3422,
+        "y": -2.7579,
+        "z": -0.6397
+      }
+    },
+    {
+      "name": "hardpoint_missile_rack_s3 RS",
+      "type": "missile_rack",
+      "label": "S3",
+      "position": {
+        "x": 4.3352,
+        "y": -2.5975,
+        "z": -0.6213
+      }
+    }
+  ]
+}

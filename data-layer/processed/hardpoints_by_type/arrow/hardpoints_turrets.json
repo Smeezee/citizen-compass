@@ -1,0 +1,16 @@
+{
+  "ship_name": "Arrow",
+  "ship_slug": "arrow",
+  "hardpoints": [
+    {
+      "name": "hardpoint_weapon_turret_gimbal_mount S1",
+      "type": "weapon_turret",
+      "label": "gimbal_mount",
+      "position": {
+        "x": 0.0096,
+        "y": 0.7353,
+        "z": 1.6619
+      }
+    }
+  ]
+}
