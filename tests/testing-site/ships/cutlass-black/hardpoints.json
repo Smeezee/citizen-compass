@@ -1,6 +1,6 @@
 {
-  "ship_name": "cuttlass black",
-  "ship_slug": "cuttlass_black",
+  "ship_name": "Cutlass Black",
+  "ship_slug": "cutlass-black",
   "hardpoints": [
     {
       "name": "hardpoint_missile_rack_missiles",
@@ -10,12 +10,13 @@
         "x": 0.0378,
         "y": 22.1842,
         "z": -7.2337
-      }
+      },
+      "_needs_real_data": "Placeholder label/size - no raw port-tree pull exists for this ship yet (data-layer/raw/ only has arrow + misc). Same real-data extraction process used for Arrow is needed here before this can be replaced with real rack/size detail. Not invented - see LATEST_HANDOFF.md for the exact blocker (WebFetch requires a live approval this session couldn't get answered)."
     },
     {
       "name": "hardpoint_weapon_gun_s3_ls",
       "type": "weapon_gun",
-      "label": "S  LS",
+      "label": "S3  LS",
       "position": {
         "x": -6.2501,
         "y": 14.4718,
@@ -60,7 +61,8 @@
         "x": -0.0279,
         "y": 5.8662,
         "z": 10.17
-      }
+      },
+      "_unverified_note": "An open, unverified note claims this turret may actually be S5, not S3. NOT changed from S3 - could not verify against real source data this session (same WebFetch blocker as above), and the instruction was explicit: don't hardcode a fix from memory. Left exactly as it was pending real verification. See LATEST_HANDOFF.md."
     }
   ]
 }
