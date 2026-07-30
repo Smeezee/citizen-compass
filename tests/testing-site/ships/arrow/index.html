@@ -5,7 +5,8 @@
 <title>Citizen Compass - Arrow Hardpoint Viewer</title>
 <style>
   html, body { margin: 0; height: 100%; background: #0b0d12; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; }
-  #canvas-wrap { position: absolute; inset: 0; }
+  #canvas-wrap { position: absolute; inset: 0; cursor: default; }
+  #canvas-wrap.hovering { cursor: pointer; }
   #hud {
     position: absolute; top: 16px; left: 16px; color: #cfd6e4;
     font-size: 13px; line-height: 1.5; background: rgba(10,12,18,0.6);
@@ -13,6 +14,7 @@
     max-width: 320px;
   }
   #hud b { color: #7fd0ff; }
+  #hud .missile-total { color: #6fd8a0; font-weight: 600; }
   #back-link {
     position: absolute; top: 16px; right: 16px; color: #9aa4bb;
     font-size: 13px; background: rgba(10,12,18,0.6); padding: 8px 14px;
@@ -23,7 +25,7 @@
     position: absolute; display: none; min-width: 280px; max-width: 340px;
     background: #12151d; border: 1px solid #3a4258; border-radius: 10px;
     padding: 14px 16px; color: #e6e9f0; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    pointer-events: none; z-index: 10; max-height: 70vh; overflow-y: auto;
+    z-index: 10; max-height: 70vh; overflow-y: auto;
   }
   #popup h3 { margin: 0 0 4px 0; font-size: 15px; color: #7fd0ff; }
   #popup .type-tag {
@@ -49,6 +51,22 @@
   #popup .note {
     margin-top: 10px; font-size: 11px; color: #6b7488; font-style: italic;
   }
+  /* Rack configuration selector (missile hardpoints only) */
+  #popup .rack-option {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 10px; margin-top: 6px; border-radius: 6px;
+    border: 1px solid #262c3a; cursor: pointer; font-size: 12.5px;
+  }
+  #popup .rack-option:hover { border-color: #3a4258; background: #171b26; }
+  #popup .rack-option.selected {
+    border-color: #6fd8a0; background: rgba(111,216,160,0.08); color: #e6e9f0;
+  }
+  #popup .rack-option .count { color: #7fd0ff; font-weight: 600; }
+  #popup .close-btn {
+    position: absolute; top: 8px; right: 10px; cursor: pointer;
+    color: #6b7488; font-size: 16px; line-height: 1; pointer-events: auto;
+  }
+  #popup .close-btn:hover { color: #e6e9f0; }
 </style>
 </head>
 <body>
@@ -57,7 +75,8 @@
   <b>Citizen Compass — Arrow Hardpoint Viewer</b><br>
   Proof of concept, 7 of 17 hardpoints placed.<br>
   Drag to orbit, scroll to zoom.<br>
-  Click a glowing marker to inspect it.
+  Hover a glowing marker, click to inspect.<br>
+  Total missiles equipped: <span class="missile-total" id="missile-total">-</span>
 </div>
 <a id="back-link" href="../../index.html">&larr; Back to test index</a>
 <div id="popup"></div>
@@ -77,11 +96,24 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 /* ---------------------------------------------------------------
    COMPATIBILITY DATA
-   Hardcoded for this proof of concept, sourced from star-citizen.wiki's
-   live Arrow page (equipped items) and its Guns (Size 1) / Guns (Size 3)
-   category listings (variant options). Variant lists are NOT confirmed
-   against in-game fit/grade compatibility yet - they're same-size gun
-   options as a starting point, to be verified before this goes live.
+   Gun/turret data: hardcoded for this proof of concept, sourced from
+   star-citizen.wiki's live Arrow page (equipped items) and its Guns
+   (Size 1) / Guns (Size 3) category listings (variant options). Variant
+   lists are NOT confirmed against in-game fit/grade compatibility yet -
+   they're same-size gun options as a starting point, to be verified
+   before this goes live.
+
+   Missile rack data: pulled from the Arrow's real port tree
+   (data-layer/raw/arrow/arrow_api_raw.json -> data.ports). This is
+   authoritative, not guessed - the game data itself confirms each wing
+   root mount is a genuine S3 hardpoint that ships with a dual-S2 rack
+   (MRCK_S03_BEHR_Dual_S02) as an alternative to a single S3 missile,
+   and each wingtip mount is a fixed S2 hardpoint (MRCK_S02_BEHR_Single_S02).
+   This is real evidence that rack swapping (fewer big missiles vs. more
+   small ones) is a genuine in-game mechanic, at least at this one size
+   step - it is NOT evidence of a general "always halves per size step
+   down" rule, so no S1/quad-rack option is shown until a similar port
+   entry confirms one exists for this ship.
 ------------------------------------------------------------------ */
 const HARDPOINT_INFO = {
   "weapon_turret": {
@@ -106,32 +138,26 @@ const HARDPOINT_INFO = {
       "NN-15 Cannon", "Omnisky IX Cannon", "Dominance-3 Scattergun",
     ],
   },
-  "missile_rack_s2": {
-    title: "Missile Rack - Outer (S2)",
-    equipped: [
-      { name: "MSD-212 Missile Rack", meta: "Holds 1x S2 missile" },
-      { name: "Ignite II Missile", meta: "1.4k dmg, Infrared, 10km" },
-    ],
-    variants: [
-      "Dominator II Missile (Electromagnetic)", "Other S2 missiles by manufacturer (not yet catalogued)",
-    ],
-  },
-  "missile_rack_s3": {
-    title: "Missile Rack - Inner (S3)",
-    equipped: [
-      { name: "MSD-322 Missile Rack", meta: "Holds 2x S2 missiles" },
-      { name: "Ignite II / Dominator II Missile", meta: "Mixed loadout shown on live ships" },
-    ],
-    variants: [
-      "Same S2 missile pool as the outer rack, x2 capacity",
-    ],
-  },
 };
 
-function infoFor(hp) {
-  if (hp.type === "missile_rack") {
-    return HARDPOINT_INFO[hp.label === "S3" ? "missile_rack_s3" : "missile_rack_s2"];
-  }
+/* Missile rack configuration options, keyed by the physical hardpoint
+   size (what the game data confirms for THIS ship's ports - not a
+   generalized rule). Each option's "count" is missiles delivered by
+   this one hardpoint under that configuration. */
+const RACK_CONFIGS = {
+  S2: [
+    { id: "single_s2", label: "Single S2 rack (fixed)", count: 1, size: "S2",
+      note: "This hardpoint is a fixed S2 mount - no larger or multi-missile rack fits here." },
+  ],
+  S3: [
+    { id: "dual_s2", label: "Dual S2 rack (BEHR MRCK_S03_BEHR_Dual_S02)", count: 2, size: "S2",
+      note: "Currently equipped configuration on this ship." },
+    { id: "single_s3", label: "Single S3 missile (direct mount)", count: 1, size: "S3",
+      note: "Trades 2x S2 missiles for 1x higher-damage S3 missile." },
+  ],
+};
+
+function infoForGunOrTurret(hp) {
   return HARDPOINT_INFO[hp.type];
 }
 
@@ -193,22 +219,34 @@ loader.load('model.glb', (gltf) => {
 ------------------------------------------------------------------ */
 const markers = [];
 const markerGeo = new THREE.SphereGeometry(0.12, 16, 16);
+const baseScale = 1;
+const hoverScale = 1.6;
+
+// Per-hardpoint selected rack config, keyed by hardpoint name. Defaults
+// to whatever's actually equipped on this ship (index 0 of each list).
+const selectedRack = {};
 
 function loadHardpoints() {
   fetch('hardpoints.json')
     .then(r => r.json())
     .then(data => {
       data.hardpoints.forEach((hp) => {
-        const info = infoFor(hp);
-        const color = info ? 0x7fd0ff : 0xff5566;
+        const isMissile = hp.type === "missile_rack";
+        const info = isMissile ? null : infoForGunOrTurret(hp);
+        const color = (isMissile || info) ? 0x7fd0ff : 0xff5566;
         const mat = new THREE.MeshBasicMaterial({ color });
         const marker = new THREE.Mesh(markerGeo, mat);
 
         marker.position.set(hp.position.x, hp.position.z, -hp.position.y);
         marker.userData.hardpoint = hp;
         marker.userData.info = info;
+        marker.userData.baseColor = color;
         scene.add(marker);
         markers.push(marker);
+
+        if (isMissile) {
+          selectedRack[hp.name] = RACK_CONFIGS[hp.label][0].id;
+        }
 
         const ringGeo = new THREE.RingGeometry(0.16, 0.22, 24);
         const ringMat = new THREE.MeshBasicMaterial({
@@ -220,53 +258,124 @@ function loadHardpoints() {
         scene.add(ring);
         markers.push(ring);
       });
+      updateMissileTotal();
     })
     .catch(err => console.error('Failed to load hardpoints.json', err));
 }
 
+function updateMissileTotal() {
+  let total = 0;
+  Object.entries(selectedRack).forEach(([hpName, configId]) => {
+    const hp = markers.find(m => m.userData.hardpoint && m.userData.hardpoint.name === hpName);
+    if (!hp) return;
+    const config = RACK_CONFIGS[hp.userData.hardpoint.label].find(c => c.id === configId);
+    if (config) total += config.count;
+  });
+  document.getElementById('missile-total').textContent = total;
+}
+
 /* ---------------------------------------------------------------
-   CLICK / HOVER INTERACTION
+   HOVER + CLICK INTERACTION
+   Hover highlights the marker (brighter + larger) so it's clear it's
+   interactive before clicking; click opens the compatibility popup.
 ------------------------------------------------------------------ */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const popup = document.getElementById('popup');
+let hovered = null;
+let pinnedHardpointName = null;
+
+function pickables() {
+  return markers.filter(m => !m.userData.isRing);
+}
 
 function onPointerMove(e) {
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(pickables(), false);
+  const hit = hits.length ? hits[0].object : null;
+
+  if (hit !== hovered) {
+    if (hovered) hovered.scale.setScalar(baseScale);
+    hovered = hit;
+    if (hovered) hovered.scale.setScalar(hoverScale);
+    wrap.classList.toggle('hovering', !!hovered);
+  }
+}
+
+function renderPopup(hp) {
+  const isMissile = hp.type === "missile_rack";
+
+  if (isMissile) {
+    const configs = RACK_CONFIGS[hp.label];
+    const currentId = selectedRack[hp.name];
+    let html = `<span class="close-btn" id="popup-close">&times;</span>`;
+    html += `<h3>${hp.name.replace(/hardpoint_/,'').replace(/_/g,' ')}</h3>`;
+    html += `<span class="type-tag">missile hardpoint - native size ${hp.label}</span>`;
+    html += `<div class="section-label">Rack Configuration</div>`;
+    configs.forEach(cfg => {
+      const sel = cfg.id === currentId ? ' selected' : '';
+      html += `<div class="rack-option${sel}" data-hp="${hp.name}" data-cfg="${cfg.id}">`
+            +   `<span>${cfg.label}</span><span class="count">${cfg.count}x ${cfg.size}</span>`
+            + `</div>`;
+    });
+    const activeCfg = configs.find(c => c.id === currentId);
+    html += `<div class="note">${activeCfg ? activeCfg.note : ''}</div>`;
+    html += `<div class="note">Rack options sourced from this ship's real port data (arrow_api_raw.json), not assumed - only configurations the game data actually confirms are shown.</div>`;
+    popup.innerHTML = html;
+
+    popup.querySelectorAll('.rack-option').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        selectedRack[el.dataset.hp] = el.dataset.cfg;
+        updateMissileTotal();
+        renderPopup(hp);
+      });
+    });
+  } else {
+    const info = infoForGunOrTurret(hp);
+    let html = `<span class="close-btn" id="popup-close">&times;</span>`;
+    if (!info) {
+      html += `<h3>${hp.name}</h3><div class="note">No compatibility data wired up for this hardpoint yet.</div>`;
+    } else {
+      html += `<h3>${info.title}</h3><span class="type-tag">${hp.type.replace(/_/g,' ')}</span>`;
+      html += `<div class="section-label">Currently Equipped</div>`;
+      info.equipped.forEach(item => {
+        html += `<div class="item-row equipped"><div class="item-name equipped-tag">${item.name}</div><div class="item-meta">${item.meta}</div></div>`;
+      });
+      if (info.variants && info.variants.length) {
+        html += `<div class="section-label">Other Same-Size Options</div>`;
+        info.variants.forEach(v => {
+          html += `<div class="variant-row">${v}</div>`;
+        });
+      }
+      html += `<div class="note">Variant list is unverified against in-game grade/fit compatibility - reference only until confirmed. Buy-location data not wired up yet.</div>`;
+    }
+    popup.innerHTML = html;
+  }
+
+  document.getElementById('popup-close').addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    popup.style.display = 'none';
+    pinnedHardpointName = null;
+  });
 }
 
 function onClick(e) {
   raycaster.setFromCamera(mouse, camera);
-  const hits = raycaster.intersectObjects(
-    markers.filter(m => !m.userData.isRing), false
-  );
+  const hits = raycaster.intersectObjects(pickables(), false);
 
   if (hits.length === 0) {
     popup.style.display = 'none';
+    pinnedHardpointName = null;
     return;
   }
 
   const hp = hits[0].object.userData.hardpoint;
-  const info = hits[0].object.userData.info;
-
-  if (!info) {
-    popup.innerHTML = `<h3>${hp.name}</h3><div class="note">No compatibility data wired up for this hardpoint yet.</div>`;
-  } else {
-    let html = `<h3>${info.title}</h3><span class="type-tag">${hp.type.replace(/_/g,' ')}</span>`;
-    html += `<div class="section-label">Currently Equipped</div>`;
-    info.equipped.forEach(item => {
-      html += `<div class="item-row equipped"><div class="item-name equipped-tag">${item.name}</div><div class="item-meta">${item.meta}</div></div>`;
-    });
-    if (info.variants && info.variants.length) {
-      html += `<div class="section-label">Other Same-Size Options</div>`;
-      info.variants.forEach(v => {
-        html += `<div class="variant-row">${v}</div>`;
-      });
-    }
-    html += `<div class="note">Variant list is unverified against in-game grade/fit compatibility - reference only until confirmed. Buy-location data not wired up yet.</div>`;
-    popup.innerHTML = html;
-  }
+  pinnedHardpointName = hp.name;
+  renderPopup(hp);
 
   popup.style.display = 'block';
   const popupWidth = 340;
