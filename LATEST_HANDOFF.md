@@ -1,7 +1,3 @@
-# LATEST_HANDOFF.md — Update #11 — 2026-07-30 2:32 AM
-
----
-
 # CITIZEN COMPASS — LATEST HANDOFF
 
 Copy/paste this whole file into a new AI conversation for instant context. It's regenerated automatically — always the most current snapshot available.
@@ -10,14 +6,14 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-07-30 02:32:17 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-07-30 11:22:47 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
-**Project health score:** 35.0/100
-- Data completeness: 0.0%
-- Viewer progress: 50.0%
-- Documentation: 100.0%
+**Project health score:** 35/100
+- Data completeness: 0%
+- Viewer progress: 50%
+- Documentation: 100%
 
-**Ships:** 2 complete viewers / 4 total (50.0%)
+**Ships:** 2 complete viewers / 4 total (50%)
 - Complete: arrow, cutlass-black
 - In progress / not started: constellation-aquila, gladius
 
@@ -616,3 +612,5 @@ Left exactly as flagged, per explicit instruction. Not touched, not decided.
   update file will just sit in `inbox/` until it's restarted; check `logs/inbox_watcher.log`
   for the last "Watcher started" line when you're back.
 
+
+*(raw text of the most recently adopted handoff doc — local AI compression unavailable right now, showing it unmodified)*
