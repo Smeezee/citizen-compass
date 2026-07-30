@@ -16,6 +16,8 @@ logs/
 pipeline_log.txt
 # Built binaries (build from source instead)
 *.exe
+# Database backup dumps - not source, can be large
+*.dump
 # Local Claude Code settings - machine-specific paths, not portable
 .claude/
 # Working/transient drop folder - contents get archived into docs/handoff_archive/ instead
