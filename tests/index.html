@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Citizen Compass - Test Index</title>
+<style>
+  html, body { margin: 0; min-height: 100%; background: #0b0d12; font-family: 'Segoe UI', Arial, sans-serif; color: #e6e9f0; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 40px 20px; }
+  h1 { color: #7fd0ff; font-size: 22px; margin-bottom: 4px; }
+  .sub { color: #9aa4bb; font-size: 13px; margin-bottom: 28px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #232837; font-size: 14px; }
+  th { color: #9aa4bb; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .ship-link {
+    color: #7fd0ff; text-decoration: none; font-weight: 600; cursor: pointer;
+  }
+  .ship-link:hover { text-decoration: underline; }
+  .status-tag { font-size: 11px; color: #5a6274; font-style: italic; margin-left: 8px; }
+  .note {
+    margin-top: 24px; font-size: 12px; color: #6b7488; border-top: 1px solid #232837;
+    padding-top: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Citizen Compass — Test Index</h1>
+  <div class="sub">Internal testing page. Every ship name links to its page — built ships open the 3D viewer, unbuilt ships show a placeholder.</div>
+  <table>
+    <tr><th>Manufacturer</th><th>Ship</th><th>Role</th></tr>
+    <tr>
+      <td>Anvil Aerospace</td>
+      <td><a class="ship-link" href="ships/arrow/index.html" target="_blank" rel="noopener">Arrow</a></td>
+      <td>Light Fighter</td>
+    </tr>
+    <tr>
+      <td>Drake Interplanetary</td>
+      <td><a class="ship-link" href="ships/cutlass-black/index.html" target="_blank" rel="noopener">Cutlass Black</a></td>
+      <td>Multi-Role</td>
+    </tr>
+    <tr>
+      <td>Aegis Dynamics</td>
+      <td><a class="ship-link" href="ships/gladius/index.html" target="_blank" rel="noopener">Gladius</a></td>
+      <td>Light Fighter</td>
+    </tr>
+    <tr>
+      <td>RSI</td>
+      <td><a class="ship-link" href="ships/constellation-aquila/index.html" target="_blank" rel="noopener">Constellation Aquila</a></td>
+      <td>Multi-Role</td>
+    </tr>
+  </table>
+  <div class="note">
+    Every ship name opens its page in a new tab. Arrow and Cutlass Black
+    both have working 3D hardpoint viewers. Gladius and Constellation
+    Aquila currently show an "under construction" placeholder.
+  </div>
+</div>
+</body>
+</html>

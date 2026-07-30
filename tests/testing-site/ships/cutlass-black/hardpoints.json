@@ -1,0 +1,66 @@
+{
+  "ship_name": "cuttlass black",
+  "ship_slug": "cuttlass_black",
+  "hardpoints": [
+    {
+      "name": "hardpoint_missile_rack_missiles",
+      "type": "missile_rack",
+      "label": "Missiles",
+      "position": {
+        "x": 0.0378,
+        "y": 22.1842,
+        "z": -7.2337
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_s3_ls",
+      "type": "weapon_gun",
+      "label": "S  LS",
+      "position": {
+        "x": -6.2501,
+        "y": 14.4718,
+        "z": 1.5971
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_s3_lsb",
+      "type": "weapon_gun",
+      "label": "S3  LSB",
+      "position": {
+        "x": -8.9397,
+        "y": 22.9537,
+        "z": -4.2935
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_s3_rs",
+      "type": "weapon_gun",
+      "label": "S3  RS",
+      "position": {
+        "x": 6.2575,
+        "y": 14.7789,
+        "z": 1.5971
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_s3_rsb",
+      "type": "weapon_gun",
+      "label": "S3  RSB",
+      "position": {
+        "x": 8.9287,
+        "y": 23.1154,
+        "z": -4.3078
+      }
+    },
+    {
+      "name": "hardpoint_weapon_turret_s3_turret",
+      "type": "weapon_turret",
+      "label": "S3 turret",
+      "position": {
+        "x": -0.0279,
+        "y": 5.8662,
+        "z": 10.17
+      }
+    }
+  ]
+}

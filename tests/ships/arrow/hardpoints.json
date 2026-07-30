@@ -1,0 +1,76 @@
+{
+  "ship_name": "Arrow",
+  "ship_slug": "arrow",
+  "hardpoints": [
+    {
+      "name": "hardpoint_missile_rack_s2 LS",
+      "type": "missile_rack",
+      "label": "S2",
+      "position": {
+        "x": -3.7651,
+        "y": -1.7362,
+        "z": -0.4364
+      }
+    },
+    {
+      "name": "hardpoint_missile_rack_s2 RS",
+      "type": "missile_rack",
+      "label": "S2",
+      "position": {
+        "x": 3.8128,
+        "y": -1.696,
+        "z": -0.4188
+      }
+    },
+    {
+      "name": "hardpoint_missile_rack_s3 LS",
+      "type": "missile_rack",
+      "label": "S3",
+      "position": {
+        "x": -4.3422,
+        "y": -2.7579,
+        "z": -0.6397
+      }
+    },
+    {
+      "name": "hardpoint_missile_rack_s3 RS",
+      "type": "missile_rack",
+      "label": "S3",
+      "position": {
+        "x": 4.3352,
+        "y": -2.5975,
+        "z": -0.6213
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_gimbal_mount S1 LS",
+      "type": "weapon_gun",
+      "label": "gimbal_mount",
+      "position": {
+        "x": -2.6874,
+        "y": 0.0125,
+        "z": -0.8704
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_gimbal_mount S1 RS",
+      "type": "weapon_gun",
+      "label": "gimbal_mount",
+      "position": {
+        "x": 2.5485,
+        "y": -0.0862,
+        "z": -0.8889
+      }
+    },
+    {
+      "name": "hardpoint_weapon_turret_gimbal_mount S1",
+      "type": "weapon_turret",
+      "label": "gimbal_mount",
+      "position": {
+        "x": 0.0096,
+        "y": 0.7353,
+        "z": 1.6619
+      }
+    }
+  ]
+}

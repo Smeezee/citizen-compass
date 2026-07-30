@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citizen Compass — Testing Ground</title>
+<style>
+  :root {
+    --mg-bg-dark: #0b0e14;
+    --mg-panel-bg: rgba(18, 24, 36, 0.95);
+    --mg-cyan: #00f0ff;
+    --mg-cyan-glow: rgba(0, 240, 255, 0.25);
+    --mg-amber: #ffb000;
+    --mg-border: 1px solid rgba(0, 240, 255, 0.3);
+    --mg-dim: #5a6274;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--mg-bg-dark);
+    color: #e6faff;
+  }
+  header {
+    background: var(--mg-panel-bg);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    border-bottom: var(--mg-border);
+    box-shadow: 0 1px 24px var(--mg-cyan-glow);
+  }
+  header h1 { margin: 0 0 .25rem; font-size: 1.5rem; letter-spacing: .05em; }
+  header p { margin: 0; color: #6f89a3; font-size: .85rem; }
+  .badge {
+    display: inline-block; margin-top: .5rem; padding: .2rem .7rem;
+    border-radius: 999px; font-size: .7rem; letter-spacing: .04em;
+    background: rgba(255, 176, 0, 0.15); color: var(--mg-amber);
+    border: 1px solid rgba(255, 176, 0, 0.4);
+  }
+
+  .legend {
+    display: flex; gap: 1rem; flex-wrap: wrap; font-size: .8rem;
+    color: #6f89a3; padding: 0 1rem; max-width: 1100px; margin: .9rem auto .5rem;
+  }
+  .legend span { display: flex; align-items: center; gap: .35rem; }
+  .swatch { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; }
+  .swatch.cyan { background: var(--mg-cyan); }
+  .swatch.dim { background: var(--mg-dim); }
+
+  .controls { max-width: 1100px; margin: 0 auto .75rem; padding: 0 1rem; }
+  .controls input {
+    width: 100%; padding: .65rem .9rem; border-radius: 6px; border: var(--mg-border);
+    background: var(--mg-panel-bg); color: #e6faff; font-size: 1rem;
+  }
+  .controls input:focus { outline: none; border-color: var(--mg-cyan); box-shadow: 0 0 0 3px var(--mg-cyan-glow); }
+  .controls input::placeholder { color: #6f89a3; }
+
+  .table-wrap { max-width: 1100px; margin: 0 auto 2rem; padding: 0 1rem; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; }
+  thead th {
+    background: var(--mg-panel-bg); color: var(--mg-cyan); text-align: left;
+    padding: .7rem .8rem; position: sticky; top: 0; font-size: .75rem;
+    text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
+    border-bottom: var(--mg-border);
+  }
+  tbody td { padding: .6rem .8rem; border-bottom: 1px solid rgba(0,240,255,0.12); font-size: .9rem; }
+  tbody tr.has-viewer { background: rgba(0, 240, 255, 0.06); }
+  tbody tr:hover { filter: brightness(1.2); }
+  .ship-link { color: var(--mg-cyan); text-decoration: none; font-weight: 600; }
+  .ship-link:hover { color: var(--mg-amber); text-decoration: underline; }
+  .no-viewer { color: var(--mg-dim); }
+  .progress-tag { font-size: .7rem; color: #6f89a3; margin-left: .4rem; }
+  .empty, .loading { text-align: center; padding: 2rem; color: #6f89a3; }
+  .count { text-align: right; color: #6f89a3; font-size: .75rem; padding: .3rem 0 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Citizen Compass — Testing Ground</h1>
+  <p>Internal staging. Ships link to local 3D hardpoint viewers as they're finished.</p>
+  <span class="badge">STAGING · NOT LIVE</span>
+</header>
+
+<div class="legend">
+  <span><span class="swatch cyan"></span> Has a 3D viewer — click to open</span>
+  <span><span class="swatch dim"></span> No viewer yet</span>
+</div>
+
+<div class="controls">
+  <input id="search" type="search" placeholder="Search by ship name, manufacturer, or role…" autocomplete="off">
+</div>
+
+<div class="table-wrap">
+  <table id="ship-table">
+    <thead>
+      <tr>
+        <th>Ship</th>
+        <th>Manufacturer</th>
+        <th>Role</th>
+        <th>Viewer</th>
+      </tr>
+    </thead>
+    <tbody id="ship-body">
+      <tr><td colspan="4" class="loading">Loading ships…</td></tr>
+    </tbody>
+  </table>
+  <p class="count" id="count"></p>
+</div>
+
+<script>
+let ships = [];
+let manifest = {};
+
+function escapeHtml(s) {
+  const div = document.createElement("div");
+  div.textContent = s ?? "";
+  return div.innerHTML;
+}
+
+function render(list) {
+  const body = document.getElementById("ship-body");
+  const count = document.getElementById("count");
+
+  if (!list.length) {
+    body.innerHTML = '<tr><td colspan="4" class="empty">No ships match your search.</td></tr>';
+    count.textContent = "";
+    return;
+  }
+
+  body.innerHTML = list.map(s => {
+    const v = manifest[s.slug];
+    const hasViewer = !!v;
+    const nameCell = hasViewer
+      ? `<a class="ship-link" href="${escapeHtml(v.path)}">${escapeHtml(s.name)}</a>`
+      : `<span>${escapeHtml(s.name)}</span>`;
+    const viewerCell = hasViewer
+      ? `<span class="ship-link">Open</span><span class="progress-tag">${v.hardpoints_done ?? "?"}/${v.hardpoints_total ?? "?"} hardpoints</span>`
+      : `<span class="no-viewer">— not built —</span>`;
+    return `
+      <tr class="${hasViewer ? "has-viewer" : ""}">
+        <td>${nameCell}</td>
+        <td>${escapeHtml(s.manufacturer)}</td>
+        <td>${escapeHtml(s.role) || "—"}</td>
+        <td>${viewerCell}</td>
+      </tr>
+    `;
+  }).join("");
+
+  count.textContent = `${list.length} ship${list.length === 1 ? "" : "s"} — ${Object.keys(manifest).length} with viewers`;
+}
+
+function applyFilter() {
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  if (!q) { render(ships); return; }
+  render(ships.filter(s =>
+    s.name.toLowerCase().includes(q) ||
+    s.manufacturer.toLowerCase().includes(q) ||
+    (s.role ?? "").toLowerCase().includes(q)
+  ));
+}
+
+document.getElementById("search").addEventListener("input", applyFilter);
+
+Promise.all([
+  fetch("data/ships-master.json").then(r => r.json()),
+  fetch("data/viewers-manifest.json").then(r => r.json())
+]).then(([shipsData, manifestData]) => {
+  ships = shipsData;
+  manifest = manifestData;
+  render(ships);
+}).catch(() => {
+  document.getElementById("ship-body").innerHTML =
+    '<tr><td colspan="4" class="empty">Could not load ship data. Are data/ships-master.json and data/viewers-manifest.json present?</td></tr>';
+});
+</script>
+</body>
+</html>

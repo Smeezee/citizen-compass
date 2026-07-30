@@ -1,0 +1,1858 @@
+[
+  {
+    "id": 129,
+    "name": "100i",
+    "slug": "100i",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 130,
+    "name": "125a",
+    "slug": "125a",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 131,
+    "name": "135c",
+    "slug": "135c",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 132,
+    "name": "300i",
+    "slug": "300i",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Multi-role",
+    "status": "purchasable"
+  },
+  {
+    "id": 133,
+    "name": "315p",
+    "slug": "315p",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 134,
+    "name": "325a",
+    "slug": "325a",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 135,
+    "name": "350r",
+    "slug": "350r",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 136,
+    "name": "400i",
+    "slug": "400i",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 137,
+    "name": "600i Explorer",
+    "slug": "600i-explorer",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 138,
+    "name": "600i Touring",
+    "slug": "600i-touring",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Touring/Luxury",
+    "status": "purchasable"
+  },
+  {
+    "id": 139,
+    "name": "85X",
+    "slug": "85x",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Touring/Luxury",
+    "status": "purchasable"
+  },
+  {
+    "id": 140,
+    "name": "890 Jump",
+    "slug": "890-jump",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Touring/Luxury",
+    "status": "purchasable"
+  },
+  {
+    "id": 61,
+    "name": "A1 Spirit",
+    "slug": "a1-spirit",
+    "manufacturer": "Crusader Industries",
+    "role": "Bomber",
+    "status": "purchasable"
+  },
+  {
+    "id": 62,
+    "name": "A2 Hercules Starlifter",
+    "slug": "a2-hercules-starlifter",
+    "manufacturer": "Crusader Industries",
+    "role": "Bomber",
+    "status": "purchasable"
+  },
+  {
+    "id": 44,
+    "name": "ATLS",
+    "slug": "atls",
+    "manufacturer": "Argo Astronautics",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 45,
+    "name": "ATLS GEO",
+    "slug": "atls-geo",
+    "manufacturer": "Argo Astronautics",
+    "role": "Mining",
+    "status": "purchasable"
+  },
+  {
+    "id": 145,
+    "name": "Apollo Medivac",
+    "slug": "apollo-medivac",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Medical",
+    "status": "purchasable"
+  },
+  {
+    "id": 146,
+    "name": "Apollo Triage",
+    "slug": "apollo-triage",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Medical",
+    "status": "purchasable"
+  },
+  {
+    "id": 63,
+    "name": "Ares Inferno",
+    "slug": "ares-inferno",
+    "manufacturer": "Crusader Industries",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 64,
+    "name": "Ares Ion",
+    "slug": "ares-ion",
+    "manufacturer": "Crusader Industries",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 203,
+    "name": "Arrastra",
+    "slug": "arrastra",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Mining",
+    "status": "pledge_only"
+  },
+  {
+    "id": 20,
+    "name": "Arrow",
+    "slug": "arrow",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 21,
+    "name": "Asgard",
+    "slug": "asgard",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 147,
+    "name": "Aurora CL",
+    "slug": "aurora-cl",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 148,
+    "name": "Aurora ES",
+    "slug": "aurora-es",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 149,
+    "name": "Aurora LN",
+    "slug": "aurora-ln",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 150,
+    "name": "Aurora LX",
+    "slug": "aurora-lx",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 151,
+    "name": "Aurora MR",
+    "slug": "aurora-mr",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 223,
+    "name": "Aurora Mk II",
+    "slug": "aurora-mk-ii",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Multi-role",
+    "status": "pledge_only"
+  },
+  {
+    "id": 210,
+    "name": "Aurora SE",
+    "slug": "aurora-se",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 1,
+    "name": "Avenger Stalker",
+    "slug": "avenger-stalker",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 2,
+    "name": "Avenger Titan",
+    "slug": "avenger-titan",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 3,
+    "name": "Avenger Titan Renegade",
+    "slug": "avenger-titan-renegade",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 4,
+    "name": "Avenger Warlock",
+    "slug": "avenger-warlock",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Interdiction",
+    "status": "purchasable"
+  },
+  {
+    "id": 22,
+    "name": "Ballista",
+    "slug": "ballista",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 180,
+    "name": "Basher",
+    "slug": "basher",
+    "manufacturer": "Grey's Market",
+    "role": "Fighter",
+    "status": "pledge_only"
+  },
+  {
+    "id": 86,
+    "name": "Blade",
+    "slug": "blade",
+    "manufacturer": "Esperia",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 70,
+    "name": "Buccaneer",
+    "slug": "buccaneer",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 65,
+    "name": "C1 Spirit",
+    "slug": "c1-spirit",
+    "manufacturer": "Crusader Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 66,
+    "name": "C2 Hercules Starlifter",
+    "slug": "c2-hercules-starlifter",
+    "manufacturer": "Crusader Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 23,
+    "name": "C8 Pisces",
+    "slug": "c8-pisces",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 24,
+    "name": "C8R Pisces Rescue",
+    "slug": "c8r-pisces-rescue",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Medical",
+    "status": "purchasable"
+  },
+  {
+    "id": 25,
+    "name": "C8X Pisces Expedition",
+    "slug": "c8x-pisces-expedition",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 185,
+    "name": "CSV-FM",
+    "slug": "csv-fm",
+    "manufacturer": "Argo Astronautics",
+    "role": "Multi-role",
+    "status": "pledge_only"
+  },
+  {
+    "id": 46,
+    "name": "CSV-SM",
+    "slug": "csv-sm",
+    "manufacturer": "Argo Astronautics",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 26,
+    "name": "Carrack",
+    "slug": "carrack",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 71,
+    "name": "Caterpillar",
+    "slug": "caterpillar",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 27,
+    "name": "Centurion",
+    "slug": "centurion",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 72,
+    "name": "Clipper",
+    "slug": "clipper",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Multi-role",
+    "status": "purchasable"
+  },
+  {
+    "id": 152,
+    "name": "Constellation Andromeda",
+    "slug": "constellation-andromeda",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 153,
+    "name": "Constellation Aquila",
+    "slug": "constellation-aquila",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 154,
+    "name": "Constellation Phoenix",
+    "slug": "constellation-phoenix",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Touring/Luxury",
+    "status": "purchasable"
+  },
+  {
+    "id": 155,
+    "name": "Constellation Taurus",
+    "slug": "constellation-taurus",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 73,
+    "name": "Corsair",
+    "slug": "corsair",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 191,
+    "name": "Crucible",
+    "slug": "crucible",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Support/Repair",
+    "status": "pledge_only"
+  },
+  {
+    "id": 74,
+    "name": "Cutlass Black",
+    "slug": "cutlass-black",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 75,
+    "name": "Cutlass Blue",
+    "slug": "cutlass-blue",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Interdiction",
+    "status": "purchasable"
+  },
+  {
+    "id": 76,
+    "name": "Cutlass Red",
+    "slug": "cutlass-red",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Medical",
+    "status": "purchasable"
+  },
+  {
+    "id": 77,
+    "name": "Cutlass Steel",
+    "slug": "cutlass-steel",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 78,
+    "name": "Cutter",
+    "slug": "cutter",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 79,
+    "name": "Cutter Rambler",
+    "slug": "cutter-rambler",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 80,
+    "name": "Cutter Scout",
+    "slug": "cutter-scout",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 168,
+    "name": "Cyclone",
+    "slug": "cyclone",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 173,
+    "name": "Cyclone AA",
+    "slug": "cyclone-aa",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 174,
+    "name": "Cyclone MT",
+    "slug": "cyclone-mt",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 175,
+    "name": "Cyclone RC",
+    "slug": "cyclone-rc",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 176,
+    "name": "Cyclone RN",
+    "slug": "cyclone-rn",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 177,
+    "name": "Cyclone TR",
+    "slug": "cyclone-tr",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 54,
+    "name": "Defender",
+    "slug": "defender",
+    "manufacturer": "Banu (Souli)",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 81,
+    "name": "Dragonfly",
+    "slug": "dragonfly",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 204,
+    "name": "E1 Spirit",
+    "slug": "e1-spirit",
+    "manufacturer": "Crusader Industries",
+    "role": "Multi-role",
+    "status": "pledge_only"
+  },
+  {
+    "id": 5,
+    "name": "Eclipse",
+    "slug": "eclipse",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Bomber",
+    "status": "purchasable"
+  },
+  {
+    "id": 196,
+    "name": "Endeavor",
+    "slug": "endeavor",
+    "manufacturer": "MISC",
+    "role": "Data",
+    "status": "pledge_only"
+  },
+  {
+    "id": 198,
+    "name": "Expanse",
+    "slug": "expanse",
+    "manufacturer": "MISC",
+    "role": "Mining",
+    "status": "pledge_only"
+  },
+  {
+    "id": 28,
+    "name": "F7C Hornet Mk I",
+    "slug": "f7c-hornet-mk-i",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 29,
+    "name": "F7C Hornet Mk II",
+    "slug": "f7c-hornet-mk-ii",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 30,
+    "name": "F7C Hornet Wildfire Mk I",
+    "slug": "f7c-hornet-wildfire-mk-i",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 31,
+    "name": "F7C-M Super Hornet Mk I",
+    "slug": "f7c-m-super-hornet-mk-i",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 32,
+    "name": "F7C-R Hornet Tracker Mk I",
+    "slug": "f7c-r-hornet-tracker-mk-i",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 33,
+    "name": "F7C-R Hornet Tracker Mk II",
+    "slug": "f7c-r-hornet-tracker-mk-ii",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 34,
+    "name": "F7C-S Hornet Ghost Mk I",
+    "slug": "f7c-s-hornet-ghost-mk-i",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 35,
+    "name": "F7C-S Hornet Ghost Mk II",
+    "slug": "f7c-s-hornet-ghost-mk-ii",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 214,
+    "name": "F8C Lightning",
+    "slug": "f8c-lightning",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "pledge_only"
+  },
+  {
+    "id": 103,
+    "name": "Fortune",
+    "slug": "fortune",
+    "manufacturer": "MISC",
+    "role": "Salvage",
+    "status": "purchasable"
+  },
+  {
+    "id": 104,
+    "name": "Freelancer",
+    "slug": "freelancer",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 105,
+    "name": "Freelancer DUR",
+    "slug": "freelancer-dur",
+    "manufacturer": "MISC",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 106,
+    "name": "Freelancer MAX",
+    "slug": "freelancer-max",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 107,
+    "name": "Freelancer MIS",
+    "slug": "freelancer-mis",
+    "manufacturer": "MISC",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 119,
+    "name": "Fury",
+    "slug": "fury",
+    "manufacturer": "Mirai",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 120,
+    "name": "Fury LX",
+    "slug": "fury-lx",
+    "manufacturer": "Mirai",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 121,
+    "name": "Fury MX",
+    "slug": "fury-mx",
+    "manufacturer": "Mirai",
+    "role": "Bomber",
+    "status": "purchasable"
+  },
+  {
+    "id": 211,
+    "name": "G12",
+    "slug": "g12",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Touring/Luxury",
+    "status": "pledge_only"
+  },
+  {
+    "id": 212,
+    "name": "G12a",
+    "slug": "g12a",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Ground Vehicle",
+    "status": "pledge_only"
+  },
+  {
+    "id": 213,
+    "name": "G12r",
+    "slug": "g12r",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Racing",
+    "status": "pledge_only"
+  },
+  {
+    "id": 182,
+    "name": "Galaxy",
+    "slug": "galaxy",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Multi-role",
+    "status": "pledge_only"
+  },
+  {
+    "id": 197,
+    "name": "Genesis Starliner",
+    "slug": "genesis-starliner",
+    "manufacturer": "Crusader Industries",
+    "role": "Multi-role",
+    "status": "pledge_only"
+  },
+  {
+    "id": 36,
+    "name": "Gladiator",
+    "slug": "gladiator",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Bomber",
+    "status": "purchasable"
+  },
+  {
+    "id": 6,
+    "name": "Gladius",
+    "slug": "gladius",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 7,
+    "name": "Gladius Valiant",
+    "slug": "gladius-valiant",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 230,
+    "name": "Glaive",
+    "slug": "glaive",
+    "manufacturer": "Esperia",
+    "role": "Fighter",
+    "status": "pledge_only"
+  },
+  {
+    "id": 82,
+    "name": "Golem",
+    "slug": "golem",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Mining",
+    "status": "purchasable"
+  },
+  {
+    "id": 224,
+    "name": "Golem OX",
+    "slug": "golem-ox",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 122,
+    "name": "Guardian",
+    "slug": "guardian",
+    "manufacturer": "Mirai",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 123,
+    "name": "Guardian MX",
+    "slug": "guardian-mx",
+    "manufacturer": "Mirai",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 232,
+    "name": "Guardian QI",
+    "slug": "guardian-qi",
+    "manufacturer": "Mirai",
+    "role": "Fighter",
+    "status": "pledge_only"
+  },
+  {
+    "id": 8,
+    "name": "Hammerhead",
+    "slug": "hammerhead",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Capital/Multi-crew",
+    "status": "purchasable"
+  },
+  {
+    "id": 37,
+    "name": "Hawk",
+    "slug": "hawk",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 83,
+    "name": "Herald",
+    "slug": "herald",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Data",
+    "status": "purchasable"
+  },
+  {
+    "id": 156,
+    "name": "Hermes",
+    "slug": "hermes",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 55,
+    "name": "HoverQuad",
+    "slug": "hoverquad",
+    "manufacturer": "Consolidated Outland",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 108,
+    "name": "Hull A",
+    "slug": "hull-a",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 222,
+    "name": "Hull B",
+    "slug": "hull-b",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 109,
+    "name": "Hull C",
+    "slug": "hull-c",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 199,
+    "name": "Hull D",
+    "slug": "hull-d",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 200,
+    "name": "Hull E",
+    "slug": "hull-e",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 38,
+    "name": "Hurricane",
+    "slug": "hurricane",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 188,
+    "name": "Idris-M",
+    "slug": "idris-m",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 189,
+    "name": "Idris-P",
+    "slug": "idris-p",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 67,
+    "name": "Intrepid",
+    "slug": "intrepid",
+    "manufacturer": "Crusader Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 218,
+    "name": "Ironclad",
+    "slug": "ironclad",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 219,
+    "name": "Ironclad Assault",
+    "slug": "ironclad-assault",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 187,
+    "name": "Javelin",
+    "slug": "javelin",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 165,
+    "name": "Khartu-al",
+    "slug": "khartu-al",
+    "manufacturer": "Aopoa",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 181,
+    "name": "Kraken",
+    "slug": "kraken",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 202,
+    "name": "Kraken Privateer",
+    "slug": "kraken-privateer",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 100,
+    "name": "L-21 Wolf",
+    "slug": "l-21-wolf",
+    "manufacturer": "Kruger Intergalactic",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 229,
+    "name": "L-22 Alpha Wolf",
+    "slug": "l-22-alpha-wolf",
+    "manufacturer": "Kruger Intergalactic",
+    "role": "Fighter",
+    "status": "pledge_only"
+  },
+  {
+    "id": 195,
+    "name": "Legionnaire",
+    "slug": "legionnaire",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Multi-role",
+    "status": "pledge_only"
+  },
+  {
+    "id": 183,
+    "name": "Liberator",
+    "slug": "liberator",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 170,
+    "name": "Lynx",
+    "slug": "lynx",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Touring/Luxury",
+    "status": "purchasable"
+  },
+  {
+    "id": 68,
+    "name": "M2 Hercules Starlifter",
+    "slug": "m2-hercules-starlifter",
+    "manufacturer": "Crusader Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 141,
+    "name": "M50",
+    "slug": "m50",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 225,
+    "name": "M80",
+    "slug": "m80",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Fighter",
+    "status": "pledge_only"
+  },
+  {
+    "id": 94,
+    "name": "MDC",
+    "slug": "mdc",
+    "manufacturer": "Greycat Industrial",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 47,
+    "name": "MOLE",
+    "slug": "mole",
+    "manufacturer": "Argo Astronautics",
+    "role": "Mining",
+    "status": "purchasable"
+  },
+  {
+    "id": 48,
+    "name": "MOTH",
+    "slug": "moth",
+    "manufacturer": "Argo Astronautics",
+    "role": "Salvage",
+    "status": "purchasable"
+  },
+  {
+    "id": 49,
+    "name": "MPUV Cargo",
+    "slug": "mpuv-cargo",
+    "manufacturer": "Argo Astronautics",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 50,
+    "name": "MPUV Personnel",
+    "slug": "mpuv-personnel",
+    "manufacturer": "Argo Astronautics",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 51,
+    "name": "MPUV Tractor",
+    "slug": "mpuv-tractor",
+    "manufacturer": "Argo Astronautics",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 95,
+    "name": "MTC",
+    "slug": "mtc",
+    "manufacturer": "Greycat Industrial",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 157,
+    "name": "Mantis",
+    "slug": "mantis",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Interdiction",
+    "status": "purchasable"
+  },
+  {
+    "id": 186,
+    "name": "Merchantman",
+    "slug": "merchantman",
+    "manufacturer": "Banu (Souli)",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 69,
+    "name": "Mercury Star Runner",
+    "slug": "mercury-star-runner",
+    "manufacturer": "Crusader Industries",
+    "role": "Data",
+    "status": "purchasable"
+  },
+  {
+    "id": 158,
+    "name": "Meteor",
+    "slug": "meteor",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 84,
+    "name": "Mule",
+    "slug": "mule",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 56,
+    "name": "Mustang Alpha",
+    "slug": "mustang-alpha",
+    "manufacturer": "Consolidated Outland",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 57,
+    "name": "Mustang Beta",
+    "slug": "mustang-beta",
+    "manufacturer": "Consolidated Outland",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 58,
+    "name": "Mustang Delta",
+    "slug": "mustang-delta",
+    "manufacturer": "Consolidated Outland",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 59,
+    "name": "Mustang Gamma",
+    "slug": "mustang-gamma",
+    "manufacturer": "Consolidated Outland",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 190,
+    "name": "Nautilus",
+    "slug": "nautilus",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Minelayer",
+    "status": "pledge_only"
+  },
+  {
+    "id": 60,
+    "name": "Nomad",
+    "slug": "nomad",
+    "manufacturer": "Consolidated Outland",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 169,
+    "name": "Nova Tank",
+    "slug": "nova-tank",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 166,
+    "name": "Nox",
+    "slug": "nox",
+    "manufacturer": "Aopoa",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 192,
+    "name": "Odin",
+    "slug": "odin",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 201,
+    "name": "Odyssey",
+    "slug": "odyssey",
+    "manufacturer": "MISC",
+    "role": "Exploration",
+    "status": "pledge_only"
+  },
+  {
+    "id": 193,
+    "name": "Orion",
+    "slug": "orion",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Mining",
+    "status": "pledge_only"
+  },
+  {
+    "id": 101,
+    "name": "P-52 Merlin",
+    "slug": "p-52-merlin",
+    "manufacturer": "Kruger Intergalactic",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 102,
+    "name": "P-72 Archimedes",
+    "slug": "p-72-archimedes",
+    "manufacturer": "Kruger Intergalactic",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 96,
+    "name": "PTV",
+    "slug": "ptv",
+    "manufacturer": "Greycat Industrial",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 39,
+    "name": "Paladin",
+    "slug": "paladin",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 159,
+    "name": "Perseus",
+    "slug": "perseus",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Capital/Multi-crew",
+    "status": "purchasable"
+  },
+  {
+    "id": 184,
+    "name": "Pioneer",
+    "slug": "pioneer",
+    "manufacturer": "Consolidated Outland",
+    "role": "Multi-role",
+    "status": "pledge_only"
+  },
+  {
+    "id": 217,
+    "name": "Pitbull",
+    "slug": "pitbull",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Fighter",
+    "status": "pledge_only"
+  },
+  {
+    "id": 221,
+    "name": "Polaris",
+    "slug": "polaris",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 110,
+    "name": "Prospector",
+    "slug": "prospector",
+    "manufacturer": "MISC",
+    "role": "Mining",
+    "status": "purchasable"
+  },
+  {
+    "id": 87,
+    "name": "Prowler",
+    "slug": "prowler",
+    "manufacturer": "Esperia",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 88,
+    "name": "Prowler Utility",
+    "slug": "prowler-utility",
+    "manufacturer": "Esperia",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 124,
+    "name": "Pulse",
+    "slug": "pulse",
+    "manufacturer": "Mirai",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 125,
+    "name": "Pulse LX",
+    "slug": "pulse-lx",
+    "manufacturer": "Mirai",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 52,
+    "name": "RAFT",
+    "slug": "raft",
+    "manufacturer": "Argo Astronautics",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 215,
+    "name": "RAPTOR",
+    "slug": "raptor",
+    "manufacturer": "MISC",
+    "role": "Ground Vehicle",
+    "status": "pledge_only"
+  },
+  {
+    "id": 97,
+    "name": "ROC",
+    "slug": "roc",
+    "manufacturer": "Greycat Industrial",
+    "role": "Mining",
+    "status": "purchasable"
+  },
+  {
+    "id": 98,
+    "name": "ROC-DS",
+    "slug": "roc-ds",
+    "manufacturer": "Greycat Industrial",
+    "role": "Mining",
+    "status": "purchasable"
+  },
+  {
+    "id": 228,
+    "name": "Railen",
+    "slug": "railen",
+    "manufacturer": "Gatac Manufacture",
+    "role": "Cargo",
+    "status": "pledge_only"
+  },
+  {
+    "id": 206,
+    "name": "Ranger CV",
+    "slug": "ranger-cv",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "pledge_only"
+  },
+  {
+    "id": 207,
+    "name": "Ranger RC",
+    "slug": "ranger-rc",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Racing",
+    "status": "pledge_only"
+  },
+  {
+    "id": 208,
+    "name": "Ranger TR",
+    "slug": "ranger-tr",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "pledge_only"
+  },
+  {
+    "id": 126,
+    "name": "Razor",
+    "slug": "razor",
+    "manufacturer": "Mirai",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 127,
+    "name": "Razor EX",
+    "slug": "razor-ex",
+    "manufacturer": "Mirai",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 128,
+    "name": "Razor LX",
+    "slug": "razor-lx",
+    "manufacturer": "Mirai",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 9,
+    "name": "Reclaimer",
+    "slug": "reclaimer",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Salvage",
+    "status": "purchasable"
+  },
+  {
+    "id": 10,
+    "name": "Redeemer",
+    "slug": "redeemer",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 111,
+    "name": "Reliant Kore",
+    "slug": "reliant-kore",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 112,
+    "name": "Reliant Mako",
+    "slug": "reliant-mako",
+    "manufacturer": "MISC",
+    "role": "Data",
+    "status": "purchasable"
+  },
+  {
+    "id": 113,
+    "name": "Reliant Sen",
+    "slug": "reliant-sen",
+    "manufacturer": "MISC",
+    "role": "Data",
+    "status": "purchasable"
+  },
+  {
+    "id": 114,
+    "name": "Reliant Tana",
+    "slug": "reliant-tana",
+    "manufacturer": "MISC",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 11,
+    "name": "Retaliator",
+    "slug": "retaliator",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Multi-role",
+    "status": "purchasable"
+  },
+  {
+    "id": 53,
+    "name": "SRV",
+    "slug": "srv",
+    "manufacturer": "Argo Astronautics",
+    "role": "Search & Rescue",
+    "status": "purchasable"
+  },
+  {
+    "id": 99,
+    "name": "STV",
+    "slug": "stv",
+    "manufacturer": "Greycat Industrial",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 12,
+    "name": "Sabre",
+    "slug": "sabre",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 13,
+    "name": "Sabre Comet",
+    "slug": "sabre-comet",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 14,
+    "name": "Sabre Firebird",
+    "slug": "sabre-firebird",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 15,
+    "name": "Sabre Peregrine",
+    "slug": "sabre-peregrine",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 160,
+    "name": "Salvation",
+    "slug": "salvation",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Salvage",
+    "status": "purchasable"
+  },
+  {
+    "id": 167,
+    "name": "San'tok.yai",
+    "slug": "san-tok-yai",
+    "manufacturer": "Aopoa",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 161,
+    "name": "Scorpius",
+    "slug": "scorpius",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 171,
+    "name": "Scorpius Antares",
+    "slug": "scorpius-antares",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Interdiction",
+    "status": "purchasable"
+  },
+  {
+    "id": 231,
+    "name": "Scythe",
+    "slug": "scythe",
+    "manufacturer": "Esperia",
+    "role": "Fighter",
+    "status": "pledge_only"
+  },
+  {
+    "id": 93,
+    "name": "Shiv",
+    "slug": "shiv",
+    "manufacturer": "Grey's Market",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 40,
+    "name": "Spartan",
+    "slug": "spartan",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 115,
+    "name": "Starfarer",
+    "slug": "starfarer",
+    "manufacturer": "MISC",
+    "role": "Refuel",
+    "status": "purchasable"
+  },
+  {
+    "id": 116,
+    "name": "Starfarer Gemini",
+    "slug": "starfarer-gemini",
+    "manufacturer": "MISC",
+    "role": "Refuel",
+    "status": "purchasable"
+  },
+  {
+    "id": 209,
+    "name": "Starlancer BLD",
+    "slug": "starlancer-bld",
+    "manufacturer": "MISC",
+    "role": "Multi-role",
+    "status": "pledge_only"
+  },
+  {
+    "id": 117,
+    "name": "Starlancer MAX",
+    "slug": "starlancer-max",
+    "manufacturer": "MISC",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 118,
+    "name": "Starlancer TAC",
+    "slug": "starlancer-tac",
+    "manufacturer": "MISC",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 226,
+    "name": "Starlite",
+    "slug": "starlite",
+    "manufacturer": "MISC",
+    "role": "Refuel",
+    "status": "pledge_only"
+  },
+  {
+    "id": 89,
+    "name": "Stinger",
+    "slug": "stinger",
+    "manufacturer": "Esperia",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 178,
+    "name": "Storm",
+    "slug": "storm",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 179,
+    "name": "Storm AA",
+    "slug": "storm-aa",
+    "manufacturer": "Tumbril Land Systems",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 92,
+    "name": "Syulen",
+    "slug": "syulen",
+    "manufacturer": "Gatac Manufacture",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 90,
+    "name": "Talon",
+    "slug": "talon",
+    "manufacturer": "Esperia",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 91,
+    "name": "Talon Shrike",
+    "slug": "talon-shrike",
+    "manufacturer": "Esperia",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 41,
+    "name": "Terrapin",
+    "slug": "terrapin",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 42,
+    "name": "Terrapin Medic",
+    "slug": "terrapin-medic",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Medical",
+    "status": "purchasable"
+  },
+  {
+    "id": 220,
+    "name": "Tiburon",
+    "slug": "tiburon",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 227,
+    "name": "Tyilui",
+    "slug": "tyilui",
+    "manufacturer": "Gatac Manufacture",
+    "role": "Capital/Multi-crew",
+    "status": "pledge_only"
+  },
+  {
+    "id": 216,
+    "name": "UTV",
+    "slug": "utv",
+    "manufacturer": "Greycat Industrial",
+    "role": "Ground Vehicle",
+    "status": "pledge_only"
+  },
+  {
+    "id": 162,
+    "name": "Ursa",
+    "slug": "ursa",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 163,
+    "name": "Ursa Medivac",
+    "slug": "ursa-medivac",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Medical",
+    "status": "purchasable"
+  },
+  {
+    "id": 43,
+    "name": "Valkyrie",
+    "slug": "valkyrie",
+    "manufacturer": "Anvil Aerospace",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 16,
+    "name": "Vanguard Harbinger",
+    "slug": "vanguard-harbinger",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Bomber",
+    "status": "purchasable"
+  },
+  {
+    "id": 17,
+    "name": "Vanguard Hoplite",
+    "slug": "vanguard-hoplite",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 18,
+    "name": "Vanguard Sentinel",
+    "slug": "vanguard-sentinel",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 19,
+    "name": "Vanguard Warden",
+    "slug": "vanguard-warden",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Fighter",
+    "status": "purchasable"
+  },
+  {
+    "id": 194,
+    "name": "Vulcan",
+    "slug": "vulcan",
+    "manufacturer": "Aegis Dynamics",
+    "role": "Support/Repair",
+    "status": "pledge_only"
+  },
+  {
+    "id": 85,
+    "name": "Vulture",
+    "slug": "vulture",
+    "manufacturer": "Drake Interplanetary",
+    "role": "Salvage",
+    "status": "purchasable"
+  },
+  {
+    "id": 142,
+    "name": "X1",
+    "slug": "x1",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 143,
+    "name": "X1 Force",
+    "slug": "x1-force",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Ground Vehicle",
+    "status": "purchasable"
+  },
+  {
+    "id": 144,
+    "name": "X1 Velocity",
+    "slug": "x1-velocity",
+    "manufacturer": "Origin Jumpworks",
+    "role": "Racing",
+    "status": "purchasable"
+  },
+  {
+    "id": 164,
+    "name": "Zeus Mk II CL",
+    "slug": "zeus-mk-ii-cl",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Cargo",
+    "status": "purchasable"
+  },
+  {
+    "id": 172,
+    "name": "Zeus Mk II ES",
+    "slug": "zeus-mk-ii-es",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Exploration",
+    "status": "purchasable"
+  },
+  {
+    "id": 205,
+    "name": "Zeus Mk II MR",
+    "slug": "zeus-mk-ii-mr",
+    "manufacturer": "Roberts Space Industries",
+    "role": "Interdiction",
+    "status": "pledge_only"
+  }
+]

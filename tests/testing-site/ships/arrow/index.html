@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Citizen Compass - Arrow Hardpoint Viewer</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0d12; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; }
+  #canvas-wrap { position: absolute; inset: 0; }
+  #hud {
+    position: absolute; top: 16px; left: 16px; color: #cfd6e4;
+    font-size: 13px; line-height: 1.5; background: rgba(10,12,18,0.6);
+    padding: 10px 14px; border-radius: 8px; border: 1px solid #2a3040;
+    max-width: 320px;
+  }
+  #hud b { color: #7fd0ff; }
+  #back-link {
+    position: absolute; top: 16px; right: 16px; color: #9aa4bb;
+    font-size: 13px; background: rgba(10,12,18,0.6); padding: 8px 14px;
+    border-radius: 8px; border: 1px solid #2a3040; text-decoration: none;
+  }
+  #back-link:hover { color: #7fd0ff; }
+  #popup {
+    position: absolute; display: none; min-width: 280px; max-width: 340px;
+    background: #12151d; border: 1px solid #3a4258; border-radius: 10px;
+    padding: 14px 16px; color: #e6e9f0; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    pointer-events: none; z-index: 10; max-height: 70vh; overflow-y: auto;
+  }
+  #popup h3 { margin: 0 0 4px 0; font-size: 15px; color: #7fd0ff; }
+  #popup .type-tag {
+    display: inline-block; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.05em; color: #9aa4bb; margin-bottom: 8px;
+  }
+  #popup .section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: #6b7488; margin-top: 12px; margin-bottom: 4px;
+  }
+  #popup .item-row {
+    border-top: 1px solid #262c3a; padding: 8px 0; font-size: 13px;
+  }
+  #popup .item-row.equipped { border-top: 1px solid #2c4a5e; }
+  #popup .item-name { font-weight: 600; color: #e6e9f0; }
+  #popup .item-name.equipped-tag::after {
+    content: " (equipped)"; color: #6fd8a0; font-weight: 400; font-size: 11px;
+  }
+  #popup .item-meta { color: #9aa4bb; font-size: 12px; margin-top: 2px; }
+  #popup .variant-row {
+    padding: 5px 0; font-size: 12.5px; color: #c3c9d6; border-top: 1px solid #1c202b;
+  }
+  #popup .note {
+    margin-top: 10px; font-size: 11px; color: #6b7488; font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div id="canvas-wrap"></div>
+<div id="hud">
+  <b>Citizen Compass — Arrow Hardpoint Viewer</b><br>
+  Proof of concept, 7 of 17 hardpoints placed.<br>
+  Drag to orbit, scroll to zoom.<br>
+  Click a glowing marker to inspect it.
+</div>
+<a id="back-link" href="../../index.html">&larr; Back to test index</a>
+<div id="popup"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+/* ---------------------------------------------------------------
+   COMPATIBILITY DATA
+   Hardcoded for this proof of concept, sourced from star-citizen.wiki's
+   live Arrow page (equipped items) and its Guns (Size 1) / Guns (Size 3)
+   category listings (variant options). Variant lists are NOT confirmed
+   against in-game fit/grade compatibility yet - they're same-size gun
+   options as a starting point, to be verified before this goes live.
+------------------------------------------------------------------ */
+const HARDPOINT_INFO = {
+  "weapon_turret": {
+    title: "Top Turret Mount (S3)",
+    equipped: [
+      { name: "Anvil Arrow Turret", meta: "Turret housing, holds 2x S1 weapons" },
+      { name: "YellowJacket GT-210 Gatling (x2)", meta: "Ballistic, 202 DPS each, 4k rounds" },
+    ],
+    variants: [
+      "CF-117 Bulldog Repeater", "Deadbolt I Cannon", "Havoc Scattergun",
+      "M3A Cannon", "Omnisky III Cannon", "NN-13 Cannon",
+    ],
+  },
+  "weapon_gun": {
+    title: "Wing Gun Mount (S3)",
+    equipped: [
+      { name: "VariPuck S3 Gimbal Mount", meta: "Gimballed weapon mount" },
+      { name: "CF-337 Panther Repeater", meta: "Laser Repeater, 546 DPS, 43.7 alpha" },
+    ],
+    variants: [
+      "'WARLORD' Cannon", "Deadbolt III Cannon", "Mantis GT-220 Gatling",
+      "NN-15 Cannon", "Omnisky IX Cannon", "Dominance-3 Scattergun",
+    ],
+  },
+  "missile_rack_s2": {
+    title: "Missile Rack - Outer (S2)",
+    equipped: [
+      { name: "MSD-212 Missile Rack", meta: "Holds 1x S2 missile" },
+      { name: "Ignite II Missile", meta: "1.4k dmg, Infrared, 10km" },
+    ],
+    variants: [
+      "Dominator II Missile (Electromagnetic)", "Other S2 missiles by manufacturer (not yet catalogued)",
+    ],
+  },
+  "missile_rack_s3": {
+    title: "Missile Rack - Inner (S3)",
+    equipped: [
+      { name: "MSD-322 Missile Rack", meta: "Holds 2x S2 missiles" },
+      { name: "Ignite II / Dominator II Missile", meta: "Mixed loadout shown on live ships" },
+    ],
+    variants: [
+      "Same S2 missile pool as the outer rack, x2 capacity",
+    ],
+  },
+};
+
+function infoFor(hp) {
+  if (hp.type === "missile_rack") {
+    return HARDPOINT_INFO[hp.label === "S3" ? "missile_rack_s3" : "missile_rack_s2"];
+  }
+  return HARDPOINT_INFO[hp.type];
+}
+
+/* ---------------------------------------------------------------
+   SCENE SETUP
+------------------------------------------------------------------ */
+const wrap = document.getElementById('canvas-wrap');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0d12);
+
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(15, 10, 15);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+wrap.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0);
+controls.enableDamping = true;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x223344, 1.2));
+const key = new THREE.DirectionalLight(0xffffff, 1.4);
+key.position.set(10, 15, 8);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x88aaff, 0.6);
+rim.position.set(-10, -5, -10);
+scene.add(rim);
+
+/* ---------------------------------------------------------------
+   LOAD MODEL
+------------------------------------------------------------------ */
+const loader = new GLTFLoader();
+
+loader.load('model.glb', (gltf) => {
+  const shipMesh = gltf.scene;
+  shipMesh.scale.set(0.01, 0.01, 0.01);
+  shipMesh.traverse((child) => {
+    if (child.isMesh) {
+      child.material = new THREE.MeshStandardMaterial({
+        color: 0xb8bfcc, metalness: 0.4, roughness: 0.55,
+      });
+    }
+  });
+  scene.add(shipMesh);
+  loadHardpoints();
+}, undefined, (err) => {
+  console.error('Failed to load model.glb', err);
+  document.getElementById('hud').innerHTML =
+    '<b style="color:#ff7f7f">Could not load model.glb</b><br>' +
+    'Serve this folder with a local server, not by double-clicking the file.';
+});
+
+/* ---------------------------------------------------------------
+   LOAD HARDPOINTS + PLACE MARKERS
+   Axis conversion confirmed correct in testing:
+   three.x = blender.x, three.y = blender.z, three.z = -blender.y
+------------------------------------------------------------------ */
+const markers = [];
+const markerGeo = new THREE.SphereGeometry(0.12, 16, 16);
+
+function loadHardpoints() {
+  fetch('hardpoints.json')
+    .then(r => r.json())
+    .then(data => {
+      data.hardpoints.forEach((hp) => {
+        const info = infoFor(hp);
+        const color = info ? 0x7fd0ff : 0xff5566;
+        const mat = new THREE.MeshBasicMaterial({ color });
+        const marker = new THREE.Mesh(markerGeo, mat);
+
+        marker.position.set(hp.position.x, hp.position.z, -hp.position.y);
+        marker.userData.hardpoint = hp;
+        marker.userData.info = info;
+        scene.add(marker);
+        markers.push(marker);
+
+        const ringGeo = new THREE.RingGeometry(0.16, 0.22, 24);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color, transparent: true, opacity: 0.5, side: THREE.DoubleSide,
+        });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.position.copy(marker.position);
+        ring.userData.isRing = true;
+        scene.add(ring);
+        markers.push(ring);
+      });
+    })
+    .catch(err => console.error('Failed to load hardpoints.json', err));
+}
+
+/* ---------------------------------------------------------------
+   CLICK / HOVER INTERACTION
+------------------------------------------------------------------ */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const popup = document.getElementById('popup');
+
+function onPointerMove(e) {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+}
+
+function onClick(e) {
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(
+    markers.filter(m => !m.userData.isRing), false
+  );
+
+  if (hits.length === 0) {
+    popup.style.display = 'none';
+    return;
+  }
+
+  const hp = hits[0].object.userData.hardpoint;
+  const info = hits[0].object.userData.info;
+
+  if (!info) {
+    popup.innerHTML = `<h3>${hp.name}</h3><div class="note">No compatibility data wired up for this hardpoint yet.</div>`;
+  } else {
+    let html = `<h3>${info.title}</h3><span class="type-tag">${hp.type.replace(/_/g,' ')}</span>`;
+    html += `<div class="section-label">Currently Equipped</div>`;
+    info.equipped.forEach(item => {
+      html += `<div class="item-row equipped"><div class="item-name equipped-tag">${item.name}</div><div class="item-meta">${item.meta}</div></div>`;
+    });
+    if (info.variants && info.variants.length) {
+      html += `<div class="section-label">Other Same-Size Options</div>`;
+      info.variants.forEach(v => {
+        html += `<div class="variant-row">${v}</div>`;
+      });
+    }
+    html += `<div class="note">Variant list is unverified against in-game grade/fit compatibility - reference only until confirmed. Buy-location data not wired up yet.</div>`;
+    popup.innerHTML = html;
+  }
+
+  popup.style.display = 'block';
+  const popupWidth = 340;
+  const popupEstHeight = 380;
+  popup.style.left = Math.min(e.clientX + 16, window.innerWidth - popupWidth - 8) + 'px';
+  popup.style.top = Math.min(e.clientY + 16, window.innerHeight - popupEstHeight - 8) + 'px';
+}
+
+window.addEventListener('pointermove', onPointerMove);
+window.addEventListener('click', onClick);
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+/* ---------------------------------------------------------------
+   RENDER LOOP
+------------------------------------------------------------------ */
+let t = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  t += 0.02;
+  const pulse = 0.5 + Math.sin(t * 3) * 0.15;
+  markers.forEach(m => {
+    if (m.userData.isRing) m.material.opacity = pulse;
+  });
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
