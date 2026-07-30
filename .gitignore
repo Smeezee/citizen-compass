@@ -2,3 +2,31 @@ venv/
 __pycache__/
 *.pyc
 .env
+.aider*
+
+# Never commit personal/medical/identity context — belongs in Cowork
+# Global Instructions or a private location, not this repo.
+USER_PROFILE.md
+docs/USER_PROFILE.md
+PERSONA*.md
+
+# --- Added 2026-07-30, git hygiene pass ---
+# Runtime logs, not source
+logs/
+pipeline_log.txt
+# Built binaries (build from source instead)
+*.exe
+# Local Claude Code settings - machine-specific paths, not portable
+.claude/
+# Working/transient drop folder - contents get archived into docs/handoff_archive/ instead
+inbox/
+# Unvetted scratch material awaiting review - not ready for public repo
+_needs_review/
+_zip_archive/
+# Old flat-naming duplicate data dump (177MB single file, exceeds GitHub's 100MB/file limit
+# anyway) - superseded by the reconciled data-layer/ structure
+data-layerrawhardpoints/
+# Third-party community 3D asset dataset (non-commercial-fan-use licensed, ~4GB) - holding off
+# committing/redistributing this via the public repo until explicitly confirmed; see chat log
+# 2026-07-30 for the license text and reasoning
+sc-ships/
