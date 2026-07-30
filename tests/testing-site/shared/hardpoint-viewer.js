@@ -5,16 +5,17 @@
    pattern can be reused on other ships without copy/pasting the whole
    three.js scene each time.
 
-   STATUS (2026-07-30): scaffolding only. This file has NOT been wired
-   into arrow/index.html yet, and has NOT been visually verified in a
-   browser — this session has no way to render WebGL and look at it.
-   arrow/index.html was deliberately left untouched (it's the one
-   confirmed-working reference implementation) rather than risk
-   swapping it to use this blind. Before using this for real:
-     1. Wire it into arrow/index.html in place of its inline scene code
-        and LOOK AT IT in a browser to confirm the swap is byte-for-byte
-        behaviorally identical to the current inline version.
-     2. Only then use it for a second ship.
+   STATUS (2026-07-30, later same night): verified. Headless Chromium
+   (Playwright) rendering of arrow/index.html wired to this module was
+   compared field-by-field against the original inline prototype -
+   hover-highlight, click-to-open popup, rack-configuration swap, missile
+   total recompute, and the non-missile (turret/gun) popup path all match
+   exactly. This DID catch two real regressions on the first pass (two
+   hardcoded provenance-note strings had been reworded during extraction -
+   one dropped "(arrow_api_raw.json)", the other dropped a trailing
+   sentence) - fixed here, see rackSourceLabel below. Full parity confirmed
+   after the fix; see run_e2e_test.py's sibling viewer-parity check
+   (compare.py, not committed - a one-off sandbox harness) for the method.
 
    Per-ship usage is meant to look like:
 
@@ -47,6 +48,11 @@ export function createHardpointViewer(opts) {
     popupId = 'popup',
     missileTotalId = 'missile-total',
     modelScale = 0.01,
+    // Shown in the rack-configuration popup's provenance note (e.g.
+    // "arrow_api_raw.json"). Kept as a per-ship parameter rather than
+    // hardcoded, since a shared engine hardcoding one ship's source
+    // filename would be wrong for every other ship that uses it.
+    rackSourceLabel = 'this ship\'s raw port-tree pull',
   } = opts;
 
   function infoForGunOrTurret(hp) {
@@ -208,7 +214,7 @@ export function createHardpointViewer(opts) {
       });
       const activeCfg = configs.find(c => c.id === currentId);
       html += `<div class="note">${activeCfg ? activeCfg.note : ''}</div>`;
-      html += `<div class="note">Rack options sourced from this ship's real port data, not assumed - only configurations the game data actually confirms are shown.</div>`;
+      html += `<div class="note">Rack options sourced from ${rackSourceLabel}, not assumed - only configurations the game data actually confirms are shown.</div>`;
       popup.innerHTML = html;
 
       popup.querySelectorAll('.rack-option').forEach(el => {
@@ -236,7 +242,7 @@ export function createHardpointViewer(opts) {
             html += `<div class="variant-row">${v}</div>`;
           });
         }
-        html += `<div class="note">Variant list is unverified against in-game grade/fit compatibility - reference only until confirmed.</div>`;
+        html += `<div class="note">Variant list is unverified against in-game grade/fit compatibility - reference only until confirmed. Buy-location data not wired up yet.</div>`;
       }
       popup.innerHTML = html;
     }

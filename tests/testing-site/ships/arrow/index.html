@@ -84,36 +84,17 @@
 <script type="importmap">
 {
   "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    "three": "../../vendor/three/build/three.module.js",
+    "three/addons/": "../../vendor/three/examples/jsm/"
   }
 }
 </script>
 <script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { createHardpointViewer } from '../../shared/hardpoint-viewer.js';
 
 /* ---------------------------------------------------------------
-   COMPATIBILITY DATA
-   Gun/turret data: hardcoded for this proof of concept, sourced from
-   star-citizen.wiki's live Arrow page (equipped items) and its Guns
-   (Size 1) / Guns (Size 3) category listings (variant options). Variant
-   lists are NOT confirmed against in-game fit/grade compatibility yet -
-   they're same-size gun options as a starting point, to be verified
-   before this goes live.
-
-   Missile rack data: pulled from the Arrow's real port tree
-   (data-layer/raw/arrow/arrow_api_raw.json -> data.ports). This is
-   authoritative, not guessed - the game data itself confirms each wing
-   root mount is a genuine S3 hardpoint that ships with a dual-S2 rack
-   (MRCK_S03_BEHR_Dual_S02) as an alternative to a single S3 missile,
-   and each wingtip mount is a fixed S2 hardpoint (MRCK_S02_BEHR_Single_S02).
-   This is real evidence that rack swapping (fewer big missiles vs. more
-   small ones) is a genuine in-game mechanic, at least at this one size
-   step - it is NOT evidence of a general "always halves per size step
-   down" rule, so no S1/quad-rack option is shown until a similar port
-   entry confirms one exists for this ship.
+   COMPATIBILITY DATA - identical to the original inline version,
+   only relocated. See the original for provenance notes.
 ------------------------------------------------------------------ */
 const HARDPOINT_INFO = {
   "weapon_turret": {
@@ -140,10 +121,6 @@ const HARDPOINT_INFO = {
   },
 };
 
-/* Missile rack configuration options, keyed by the physical hardpoint
-   size (what the game data confirms for THIS ship's ports - not a
-   generalized rule). Each option's "count" is missiles delivered by
-   this one hardpoint under that configuration. */
 const RACK_CONFIGS = {
   S2: [
     { id: "single_s2", label: "Single S2 rack (fixed)", count: 1, size: "S2",
@@ -157,257 +134,13 @@ const RACK_CONFIGS = {
   ],
 };
 
-function infoForGunOrTurret(hp) {
-  return HARDPOINT_INFO[hp.type];
-}
-
-/* ---------------------------------------------------------------
-   SCENE SETUP
------------------------------------------------------------------- */
-const wrap = document.getElementById('canvas-wrap');
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0b0d12);
-
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
-camera.position.set(15, 10, 15);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-wrap.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0, 0);
-controls.enableDamping = true;
-
-scene.add(new THREE.HemisphereLight(0xffffff, 0x223344, 1.2));
-const key = new THREE.DirectionalLight(0xffffff, 1.4);
-key.position.set(10, 15, 8);
-scene.add(key);
-const rim = new THREE.DirectionalLight(0x88aaff, 0.6);
-rim.position.set(-10, -5, -10);
-scene.add(rim);
-
-/* ---------------------------------------------------------------
-   LOAD MODEL
------------------------------------------------------------------- */
-const loader = new GLTFLoader();
-
-loader.load('model.glb', (gltf) => {
-  const shipMesh = gltf.scene;
-  shipMesh.scale.set(0.01, 0.01, 0.01);
-  shipMesh.traverse((child) => {
-    if (child.isMesh) {
-      child.material = new THREE.MeshStandardMaterial({
-        color: 0xb8bfcc, metalness: 0.4, roughness: 0.55,
-      });
-    }
-  });
-  scene.add(shipMesh);
-  loadHardpoints();
-}, undefined, (err) => {
-  console.error('Failed to load model.glb', err);
-  document.getElementById('hud').innerHTML =
-    '<b style="color:#ff7f7f">Could not load model.glb</b><br>' +
-    'Serve this folder with a local server, not by double-clicking the file.';
+createHardpointViewer({
+  modelPath: 'model.glb',
+  hardpointsPath: 'hardpoints.json',
+  hardpointInfo: HARDPOINT_INFO,
+  rackConfigs: RACK_CONFIGS,
+  rackSourceLabel: "this ship's real port data (arrow_api_raw.json)",
 });
-
-/* ---------------------------------------------------------------
-   LOAD HARDPOINTS + PLACE MARKERS
-   Axis conversion confirmed correct in testing:
-   three.x = blender.x, three.y = blender.z, three.z = -blender.y
------------------------------------------------------------------- */
-const markers = [];
-const markerGeo = new THREE.SphereGeometry(0.12, 16, 16);
-const baseScale = 1;
-const hoverScale = 1.6;
-
-// Per-hardpoint selected rack config, keyed by hardpoint name. Defaults
-// to whatever's actually equipped on this ship (index 0 of each list).
-const selectedRack = {};
-
-function loadHardpoints() {
-  fetch('hardpoints.json')
-    .then(r => r.json())
-    .then(data => {
-      data.hardpoints.forEach((hp) => {
-        const isMissile = hp.type === "missile_rack";
-        const info = isMissile ? null : infoForGunOrTurret(hp);
-        const color = (isMissile || info) ? 0x7fd0ff : 0xff5566;
-        const mat = new THREE.MeshBasicMaterial({ color });
-        const marker = new THREE.Mesh(markerGeo, mat);
-
-        marker.position.set(hp.position.x, hp.position.z, -hp.position.y);
-        marker.userData.hardpoint = hp;
-        marker.userData.info = info;
-        marker.userData.baseColor = color;
-        scene.add(marker);
-        markers.push(marker);
-
-        if (isMissile) {
-          selectedRack[hp.name] = RACK_CONFIGS[hp.label][0].id;
-        }
-
-        const ringGeo = new THREE.RingGeometry(0.16, 0.22, 24);
-        const ringMat = new THREE.MeshBasicMaterial({
-          color, transparent: true, opacity: 0.5, side: THREE.DoubleSide,
-        });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.position.copy(marker.position);
-        ring.userData.isRing = true;
-        scene.add(ring);
-        markers.push(ring);
-      });
-      updateMissileTotal();
-    })
-    .catch(err => console.error('Failed to load hardpoints.json', err));
-}
-
-function updateMissileTotal() {
-  let total = 0;
-  Object.entries(selectedRack).forEach(([hpName, configId]) => {
-    const hp = markers.find(m => m.userData.hardpoint && m.userData.hardpoint.name === hpName);
-    if (!hp) return;
-    const config = RACK_CONFIGS[hp.userData.hardpoint.label].find(c => c.id === configId);
-    if (config) total += config.count;
-  });
-  document.getElementById('missile-total').textContent = total;
-}
-
-/* ---------------------------------------------------------------
-   HOVER + CLICK INTERACTION
-   Hover highlights the marker (brighter + larger) so it's clear it's
-   interactive before clicking; click opens the compatibility popup.
------------------------------------------------------------------- */
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-const popup = document.getElementById('popup');
-let hovered = null;
-let pinnedHardpointName = null;
-
-function pickables() {
-  return markers.filter(m => !m.userData.isRing);
-}
-
-function onPointerMove(e) {
-  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-  raycaster.setFromCamera(mouse, camera);
-  const hits = raycaster.intersectObjects(pickables(), false);
-  const hit = hits.length ? hits[0].object : null;
-
-  if (hit !== hovered) {
-    if (hovered) hovered.scale.setScalar(baseScale);
-    hovered = hit;
-    if (hovered) hovered.scale.setScalar(hoverScale);
-    wrap.classList.toggle('hovering', !!hovered);
-  }
-}
-
-function renderPopup(hp) {
-  const isMissile = hp.type === "missile_rack";
-
-  if (isMissile) {
-    const configs = RACK_CONFIGS[hp.label];
-    const currentId = selectedRack[hp.name];
-    let html = `<span class="close-btn" id="popup-close">&times;</span>`;
-    html += `<h3>${hp.name.replace(/hardpoint_/,'').replace(/_/g,' ')}</h3>`;
-    html += `<span class="type-tag">missile hardpoint - native size ${hp.label}</span>`;
-    html += `<div class="section-label">Rack Configuration</div>`;
-    configs.forEach(cfg => {
-      const sel = cfg.id === currentId ? ' selected' : '';
-      html += `<div class="rack-option${sel}" data-hp="${hp.name}" data-cfg="${cfg.id}">`
-            +   `<span>${cfg.label}</span><span class="count">${cfg.count}x ${cfg.size}</span>`
-            + `</div>`;
-    });
-    const activeCfg = configs.find(c => c.id === currentId);
-    html += `<div class="note">${activeCfg ? activeCfg.note : ''}</div>`;
-    html += `<div class="note">Rack options sourced from this ship's real port data (arrow_api_raw.json), not assumed - only configurations the game data actually confirms are shown.</div>`;
-    popup.innerHTML = html;
-
-    popup.querySelectorAll('.rack-option').forEach(el => {
-      el.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        selectedRack[el.dataset.hp] = el.dataset.cfg;
-        updateMissileTotal();
-        renderPopup(hp);
-      });
-    });
-  } else {
-    const info = infoForGunOrTurret(hp);
-    let html = `<span class="close-btn" id="popup-close">&times;</span>`;
-    if (!info) {
-      html += `<h3>${hp.name}</h3><div class="note">No compatibility data wired up for this hardpoint yet.</div>`;
-    } else {
-      html += `<h3>${info.title}</h3><span class="type-tag">${hp.type.replace(/_/g,' ')}</span>`;
-      html += `<div class="section-label">Currently Equipped</div>`;
-      info.equipped.forEach(item => {
-        html += `<div class="item-row equipped"><div class="item-name equipped-tag">${item.name}</div><div class="item-meta">${item.meta}</div></div>`;
-      });
-      if (info.variants && info.variants.length) {
-        html += `<div class="section-label">Other Same-Size Options</div>`;
-        info.variants.forEach(v => {
-          html += `<div class="variant-row">${v}</div>`;
-        });
-      }
-      html += `<div class="note">Variant list is unverified against in-game grade/fit compatibility - reference only until confirmed. Buy-location data not wired up yet.</div>`;
-    }
-    popup.innerHTML = html;
-  }
-
-  document.getElementById('popup-close').addEventListener('click', (ev) => {
-    ev.stopPropagation();
-    popup.style.display = 'none';
-    pinnedHardpointName = null;
-  });
-}
-
-function onClick(e) {
-  raycaster.setFromCamera(mouse, camera);
-  const hits = raycaster.intersectObjects(pickables(), false);
-
-  if (hits.length === 0) {
-    popup.style.display = 'none';
-    pinnedHardpointName = null;
-    return;
-  }
-
-  const hp = hits[0].object.userData.hardpoint;
-  pinnedHardpointName = hp.name;
-  renderPopup(hp);
-
-  popup.style.display = 'block';
-  const popupWidth = 340;
-  const popupEstHeight = 380;
-  popup.style.left = Math.min(e.clientX + 16, window.innerWidth - popupWidth - 8) + 'px';
-  popup.style.top = Math.min(e.clientY + 16, window.innerHeight - popupEstHeight - 8) + 'px';
-}
-
-window.addEventListener('pointermove', onPointerMove);
-window.addEventListener('click', onClick);
-
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-/* ---------------------------------------------------------------
-   RENDER LOOP
------------------------------------------------------------------- */
-let t = 0;
-function animate() {
-  requestAnimationFrame(animate);
-  t += 0.02;
-  const pulse = 0.5 + Math.sin(t * 3) * 0.15;
-  markers.forEach(m => {
-    if (m.userData.isRing) m.material.opacity = pulse;
-  });
-  controls.update();
-  renderer.render(scene, camera);
-}
-animate();
 </script>
 </body>
 </html>
