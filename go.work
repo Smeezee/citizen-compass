@@ -1,0 +1,9 @@
+go 1.26.5
+
+use (
+	./pkg/pgconn
+	./pkg/pipelinelog
+	./registry-builder
+	./schema-init
+	./watcher-go
+)
