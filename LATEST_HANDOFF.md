@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #8 — 2026-07-29 9:47 PM
+# LATEST_HANDOFF.md — Update #9 — 2026-07-30 1:04 AM
 
 ---
 
@@ -10,21 +10,21 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-07-29 21:47:50 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-07-30 01:04:55 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
-**Project health score:** 30.0/100
+**Project health score:** 35.0/100
 - Data completeness: 0.0%
-- Viewer progress: 40.0%
+- Viewer progress: 50.0%
 - Documentation: 100.0%
 
-**Ships:** 2 complete viewers / 5 total (40.0%)
+**Ships:** 2 complete viewers / 4 total (50.0%)
 - Complete: arrow, cutlass-black
-- In progress / not started: constellation-aquila, cuttlass_black, gladius
+- In progress / not started: constellation-aquila, gladius
 
 **Data layers:**
-- data-layer: 6 files (0.06 MB)
+- data-layer: 7 files (0.27 MB)
 
-**Scripts:** 10  |  **3D models:** 241  |  **Docs:** 220
+**Scripts:** 11  |  **3D models:** 241  |  **Docs:** 222
 
 ---
 
@@ -182,22 +182,75 @@ then continue Phase 1 wrap-up before moving to Phase 3.
 
 ## PROJECT NOTES (from most recent full handoff doc)
 
-# UPDATE — Documentation system decision + session status (2026-07-30)
+# UPDATE — Ship Items schema + importer shipped, viewer generalization scoped (2026-07-30, overnight)
 
-## Decision (Sleven's call)
-- Keep `LATEST_HANDOFF.md` / `CLAUDE.md` pipeline as the live, auto-updating system of record — no change needed, it already works. Every time something gets done, it keeps getting updated automatically via the inbox watcher.
-- The "Citizen Compass AI Brain" numbered-folder knowledge base (`00 start here` ... `09 session logs`) is a separate project that hasn't been implemented yet — mostly empty templates (`NEXT SESSION.md` / `CHANGELOG.md` referenced in PROJECT INDEX but don't exist yet; `CURRENT STATUS.md.txt` has a blank "Last Updated" line). Queued as future work, not urgent right now.
-- Claude (via the Cowork "citizen compass" Project) is now the central coordinator across AI surfaces — no more manually copy-pasting handoff docs between different Claude tools to keep them in sync. LATEST_HANDOFF.md + the Project's own memory doc serve that purpose going forward.
+Resumed from the 2026-07-29 handoff's three open items. Sleven was asleep; proceeded on
+judgment per his standing instruction, did not decide the one item he flagged as his call.
 
-## Session status (Cowork session, desktop file bridge + computer-use to desktop-tqekvjb)
-- Connected to `C:\Users\david\citizen-compass` via the desktop file bridge — full read/write access confirmed.
-- Confirmed via `logs/schema_init.log`: `schema-init` DID run successfully against the real DB (2026-07-29 19:03:44 local) — table + indexes ready. This resolves the "not yet confirmed against the real DB" item from Update #3.
-- Confirmed via `logs/inbox_watcher.log`: the retrofitted Go watcher (using `pkg/pipelinelog`) has already run and logged correctly to the new path — the redeploy itself is done. Last log entry was a one-shot regeneration (`--once`), not a persistent running process.
-- Computer-use capability check (new this session): Terminal / PowerShell / Command Prompt can only be granted click-only access on this device — no typing, no keystrokes. Claude cannot run shell commands on this PC through automation. Task Scheduler's own app was grantable at full access (view/interact) and was used to check state only.
-- Net effect: the one remaining manual step — running `setup_watcher_task.ps1` (needs Admin elevation + a UAC "Yes" click) — genuinely cannot be automated by Claude. Sleven is running it manually now.
+## 1. Postgres schema + importer for weapons/missiles/turrets (PRIMARY — done, locally verified)
 
-## Next
-- Waiting on confirmation that `setup_watcher_task.ps1` completed and the scheduled task is registered/running.
-- Then: verify auto-restart for real (kill the process, confirm Task Scheduler relaunches it within ~90s).
-- After that: circle back to the AI Brain folder as a queued project whenever prioritized.
+Built the "Ship Items" domain locked in `docs/ARCHITECTURE_DECISIONS.md` (Class Table
+Inheritance): `component_types` lookup table + `components` base table + 5 typed detail
+tables (`weapon_details`, `missile_details`, `missile_rack_details`, `gimbal_mount_details`,
+`turret_details`), all wired to the existing `VerifiableMixin` provenance pattern
+(verification_source/confidence).
+
+- `app/models.py` — new `ComponentType`, `Component`, `WeaponDetail`, `MissileDetail`,
+  `MissileRackDetail`, `GimbalMountDetail`, `TurretDetail` classes.
+- `alembic/versions/219446ebce6a_*.py` — migration creating all 6 new tables + indexes,
+  seeding `component_types` with the 5 categories.
+- `import_ship_components.py` — hand-curated importer (per the "2-3 real importers before
+  generalizing" staged-pipeline decision), populating 8 real Arrow components sourced from
+  `data-layer/raw/arrow/arrow_api_raw.json`'s actual port tree, cross-checked against
+  `docs/HARDPOINT_MOUNT_TYPES.md`. Upserts on `class_name`, idempotent on re-run.
+- Commit: `bf22494`.
+
+**Honesty note on verification:** all of this was tested against a scratch PostgreSQL
+instance in my own cloud sandbox (upgrade/downgrade/re-upgrade cycle, `alembic check` clean,
+importer dry-run + real + re-run, full `app.main` import with routers still boots clean). It
+has **NOT** been run against the real project database — this session's tools can't reach
+`localhost:5432` on your machine from the cloud container, and the device bridge has no
+network access at all. First real run against your actual dev DB is the first thing to do
+when you're back: `alembic upgrade head` then `python import_ship_components.py`. Read the
+importer's inline notes before trusting it blind — 3 manufacturer prefixes (GATS, FSKI,
+TALN) and a couple of stat fields were deliberately left `None` because I couldn't confidently
+identify them, not because they don't matter.
+
+## 2. Viewer pattern generalization (SECONDARY — scoped down, real blocker found)
+
+Checked `constellation-aquila` and `gladius` before touching anything: neither has a
+`hardpoints.json`, and `data-layer/raw/` only has `arrow` and `misc` — there is no raw
+port-tree data for either ship. Wiring the Arrow's hover/rack-selector pattern into them
+tonight would mean inventing hardpoint positions, which is exactly the kind of guess this
+project's evidence standard rules out. Did not do that.
+
+What I did instead: extracted the reusable engine (scene setup, hover/click raycasting,
+rack-config popup, missile-total calculator) out of `arrow/index.html` into
+`tests/testing-site/shared/hardpoint-viewer.js` (`createHardpointViewer()`, parameterized).
+Commit: `64f2ee6`.
+
+**Deliberately left undone, for good reason:** did NOT wire this into `arrow/index.html`
+itself, and did NOT touch that file at all. This session has no way to render WebGL or take
+a screenshot to visually confirm the swap is behaviorally identical — the working Arrow demo
+was judged not worth risking on a blind refactor. `arrow/index.html` is untouched and still
+the known-good reference.
+
+**Real next step for this task** (not done tonight, needs you or a session with browser
+verification): (a) wire the shared module into `arrow/index.html`, look at it in a browser,
+confirm parity; (b) pull real port-tree data for constellation-aquila and gladius the same
+way it was done for the Arrow (their raw API pull → `data-layer/raw/<ship>/`), then the
+shared engine can actually be used on them.
+
+## 3. ARCHITECTURE_DEEP_REVIEW.md scope question
+
+Left exactly as flagged, per explicit instruction. Not touched, not decided.
+
+## Also worth knowing
+
+- 9 commits are now sitting local-only, ahead of `origin/main` (was 8, +1 tonight). Not
+  pushed — wasn't asked to, flagging again since it's been sitting a while.
+- Could not confirm whether `inbox_watcher.exe` is currently running from this session (no
+  Windows process/task-scheduler visibility from the device bridge) — if it's down, this
+  update file will just sit in `inbox/` until it's restarted; check `logs/inbox_watcher.log`
+  for the last "Watcher started" line when you're back.
 
