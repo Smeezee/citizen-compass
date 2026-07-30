@@ -1,0 +1,6 @@
+# Folder names directly under inbox/ that the watcher must NEVER watch or
+# auto-process, one per line. Blank lines and lines starting with # are
+# ignored. These are long-term work-in-progress areas, not transient
+# drop-zone content -- leave them exactly as they are.
+Citizen Compass AI Brain
+citizen-compass-testing-ground
