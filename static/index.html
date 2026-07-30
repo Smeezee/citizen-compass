@@ -35,6 +35,29 @@
   }
   header p { margin: 0; color: #6f89a3; font-size: .85rem; }
 
+  .manufacturer-logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 1rem auto 0;
+    padding: 0 1rem;
+  }
+  .manufacturer-logos img {
+    height: 28px;
+    width: auto;
+  }
+  /* Mirai's Fan Kit mark is black-only (no white/light variant provided).
+     A light background chip keeps it visible on the dark theme without
+     modifying, recoloring, or filtering the logo image itself. */
+  img[alt="Mirai"] {
+    background-color: #C8D6E5;
+    padding: 6px;
+    border-radius: 4px;
+  }
+
   .legend {
     display: flex;
     gap: 1rem;
@@ -135,6 +158,26 @@
   <h1>Citizen Compass</h1>
   <p>Star Citizen ship purchase reference</p>
 </header>
+
+<div class="manufacturer-logos">
+  <img src="/static/logos/sc-logo-aegis.png" alt="Aegis">
+  <img src="/static/logos/sc-logo-anvil-aerospace.png" alt="Anvil Aerospace">
+  <img src="/static/logos/sc-logo-aopoa.png" alt="AOPOA">
+  <img src="/static/logos/sc-logo-argo-astronautics.png" alt="Argo Astronautics">
+  <img src="/static/logos/sc-logo-banu.png" alt="Banu">
+  <img src="/static/logos/sc-logo-consolidated-outland.png" alt="Consolidated Outland">
+  <img src="/static/logos/sc-logo-crusader.png" alt="Crusader">
+  <img src="/static/logos/sc-logo-drake.png" alt="Drake">
+  <img src="/static/logos/sc-logo-esperia.png" alt="Esperia">
+  <img src="/static/logos/sc-logo-gatac.png" alt="GATAC">
+  <img src="/static/logos/sc-logo-greycat.svg" alt="Greycat">
+  <img src="/static/logos/sc-logo-greys-market.svg" alt="Greys Market">
+  <img src="/static/logos/sc-logo-kruger-intergalactic.png" alt="Kruger Intergalactic">
+  <img src="/static/logos/sc-logo-mirai.svg" alt="Mirai">
+  <img src="/static/logos/sc-logo-misc.png" alt="Misc">
+  <img src="/static/logos/sc-logo-origin.png" alt="Origin">
+  <img src="/static/logos/sc-logo-rsi.png" alt="RSI">
+</div>
 
 <div class="legend">
   <span><span class="swatch green"></span> Confirmed in-game purchasable</span>
