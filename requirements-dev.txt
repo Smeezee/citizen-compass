@@ -1,0 +1,6 @@
+# Test-only dependencies, kept separate from requirements.txt so the
+# production install (Railway) doesn't pull test tooling it never needs.
+# Install with: pip install -r requirements.txt -r requirements-dev.txt
+-r requirements.txt
+pytest==9.1.1
+httpx==0.28.1

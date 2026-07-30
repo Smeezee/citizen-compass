@@ -218,6 +218,14 @@ class Component(VerifiableMixin, Base):
 
     component_type: Mapped["ComponentType"] = relationship()
     manufacturer: Mapped["Manufacturer | None"] = relationship()
+    # Bug found 2026-07-30 running the API layer against real data: this
+    # relationship was missing even though the FK column has always been
+    # here (importer only ever set the raw column, never read the
+    # relationship, so it went unnoticed). Ship has the equivalent
+    # `verified_patch` relationship on the same last_verified_patch pattern -
+    # added here to match, since the component API needs to resolve the FK
+    # to a human-readable patch version string.
+    verified_patch: Mapped["Patch | None"] = relationship()
     weapon_detail: Mapped["WeaponDetail | None"] = relationship(
         back_populates="component", cascade="all, delete-orphan", uselist=False
     )
