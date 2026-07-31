@@ -125,7 +125,7 @@ def registry_sync_check(session: Session, repo_root: Path) -> list[Finding]:
         return [Finding("registry_sync", None, "LIMITATION", f"{registry_path} not found - nothing to compare")]
 
     try:
-        registry = json.loads(registry_path.read_text())
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
     except Exception as e:
         return [Finding("registry_sync", None, "DEFECT", f"{registry_path} is not valid JSON: {e}")]
 
