@@ -181,6 +181,63 @@ def orphaned_test_fixture_check(repo_root: Path) -> list[Finding]:
     return findings
 
 
+def missing_or_corrupt_3d_model_check(repo_root: Path) -> list[Finding]:
+    """For every ship folder under sc-ships/, confirm model.glb exists, is
+    non-empty, and starts with the correct glTF-binary magic header
+    (b'glTF' at offset 0). Stdlib-only - doesn't parse the actual mesh
+    (that needs Blender's bpy, not available outside Blender's own Python),
+    just confirms the file is present and not obviously corrupt. Also
+    flags a missing preview image (image.webp) as a WARNING - cosmetic,
+    doesn't block the 3D model, but worth tracking in the same pass."""
+    findings = []
+    ships_dir = repo_root / "sc-ships"
+    if not ships_dir.is_dir():
+        return [Finding("missing_or_corrupt_3d_model", None, "LIMITATION", f"{ships_dir} does not exist")]
+
+    for ship_dir in sorted(p for p in ships_dir.iterdir() if p.is_dir() and not p.name.startswith(".")):
+        model_path = ship_dir / "model.glb"
+        image_path = ship_dir / "image.webp"
+
+        if not model_path.exists():
+            findings.append(Finding(
+                "missing_or_corrupt_3d_model", ship_dir.name, "DEFECT",
+                f"{model_path.relative_to(repo_root)} does not exist"
+            ))
+        elif model_path.stat().st_size == 0:
+            findings.append(Finding(
+                "missing_or_corrupt_3d_model", ship_dir.name, "DEFECT",
+                f"{model_path.relative_to(repo_root)} exists but is 0 bytes (empty file)"
+            ))
+        else:
+            try:
+                with open(model_path, "rb") as f:
+                    header = f.read(4)
+                if header != b"glTF":
+                    findings.append(Finding(
+                        "missing_or_corrupt_3d_model", ship_dir.name, "DEFECT",
+                        f"{model_path.relative_to(repo_root)} does not start with the glTF-binary magic "
+                        f"header - likely corrupt or not actually a valid .glb file"
+                    ))
+                else:
+                    findings.append(Finding(
+                        "missing_or_corrupt_3d_model", ship_dir.name, "PASS",
+                        "model.glb present, non-empty, valid glTF-binary header"
+                    ))
+            except Exception as e:
+                findings.append(Finding(
+                    "missing_or_corrupt_3d_model", ship_dir.name, "WARNING",
+                    f"could not read {model_path.relative_to(repo_root)}: {e}"
+                ))
+
+        if not image_path.exists():
+            findings.append(Finding(
+                "missing_preview_image", ship_dir.name, "WARNING",
+                f"{image_path.relative_to(repo_root)} missing (cosmetic, does not block the 3D model)"
+            ))
+
+    return findings
+
+
 # --- ops/infra health --------------------------------------------------------
 
 
@@ -390,6 +447,7 @@ CHECKERS = [
     ("placeholder_null_density", placeholder_null_density_check),
     ("broken_asset_references", broken_asset_references_check),
     ("orphaned_test_fixture", orphaned_test_fixture_check),
+    ("missing_or_corrupt_3d_model", missing_or_corrupt_3d_model_check),
     ("log_growth", log_growth_check),
     ("backup_freshness", backup_freshness_check),
     ("scheduled_task_health", scheduled_task_health_check),
