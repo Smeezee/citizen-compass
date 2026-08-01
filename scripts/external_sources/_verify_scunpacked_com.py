@@ -20,7 +20,10 @@ spec.loader.exec_module(m)
 
 failures = []
 slept = []
-m.time = types.SimpleNamespace(sleep=lambda s: slept.append(s))
+# sleep is stubbed so backoffs do not actually wait; monotonic is passed through
+# to the real clock because the script now records per-attempt elapsed time.
+_real_monotonic = __import__("time").monotonic
+m.time = types.SimpleNamespace(sleep=lambda s: slept.append(s), monotonic=_real_monotonic)
 
 
 def check(label, got, expected):

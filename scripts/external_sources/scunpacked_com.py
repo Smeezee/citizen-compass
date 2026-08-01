@@ -44,13 +44,19 @@ REQUEST_DELAY_SECONDS = 1.0  # polite delay between the two requests
 
 # Per-request timeout. Was 30s, set with no measurement behind it.
 #
-# No timing measurement exists for THIS source - probing it would mean a pull,
-# which is out of scope for this change - so this value is not derived from an
-# observed worst case the way the sibling script's is. It matches
-# api_star_citizen_wiki.py's 180s deliberately: /api/v2/ships.json is a single
-# whole-collection document rather than a paginated page, so it is reasonable to
-# expect it to be at least as slow as one page of vehicles, which measured
-# 42.6s. 180s is headroom, not a measurement, and is recorded as such.
+# MEASURED 2026-08-01 (run 20260801T042157Z), wall-clock including body
+# download, both endpoints on the first attempt:
+#   /api/v2/ships.json    501,057 bytes    1.84s
+#   /api/labels.json    6,706,738 bytes    2.95s
+#
+# This supersedes the earlier reasoned estimate, which guessed this source would
+# be at least as slow as one page of the star-citizen.wiki vehicles endpoint
+# (42.6s). It is not - it is more than an order of magnitude faster, because
+# these are static files served with an ETag, not query-backed API pages.
+#
+# 180s is retained anyway: it is ~60x the measured worst case, which costs
+# nothing on a healthy response and still bounds a genuinely hung request. The
+# number is now justified by measurement rather than by analogy.
 REQUEST_TIMEOUT_SECONDS = 180
 
 # Ceiling on any server-supplied Retry-After. A hostile or buggy value (or an
@@ -105,6 +111,7 @@ def get_with_retry(url: str, max_retries: int = 5) -> "tuple[requests.Response, 
 
     for attempt in range(max_retries):
         is_last = attempt == max_retries - 1
+        started = time.monotonic()
         try:
             resp = requests.get(
                 url, headers={"User-Agent": USER_AGENT},
@@ -116,6 +123,9 @@ def get_with_retry(url: str, max_retries: int = 5) -> "tuple[requests.Response, 
             attempts.append({
                 "attempt": attempt + 1,
                 "outcome": "exception",
+                # Wall-clock around the whole call, so it includes body download
+                # - resp.elapsed only covers time-to-headers.
+                "elapsed_seconds": round(time.monotonic() - started, 2),
                 "exception_type": type(e).__name__,
                 "exception_message": str(e)[:200],
                 "waited_seconds_before_next": None if is_last else backoff,
@@ -159,6 +169,7 @@ def get_with_retry(url: str, max_retries: int = 5) -> "tuple[requests.Response, 
         attempts.append({
             "attempt": attempt + 1,
             "outcome": "response",
+            "elapsed_seconds": round(time.monotonic() - started, 2),
             "status_code": resp.status_code,
             "waited_seconds_before_next": None,
         })
@@ -206,6 +217,10 @@ def fetch(name: str, path: str, out_dir: Path, max_retries: int = 5) -> dict:
         "last_modified": resp.headers.get("Last-Modified"),
         "byte_size": len(resp.content),
         "sha256": hashlib.sha256(resp.content).hexdigest(),
+        # Measured wall-clock for the attempt that actually returned this
+        # response, including body download. This is the number the timeout
+        # needs to be justified against.
+        "elapsed_seconds": attempt_log[-1].get("elapsed_seconds") if attempt_log else None,
         # Set only once the body has earned a final filename.
         "written_to_disk": False,
         "file_path": None,

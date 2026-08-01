@@ -8,7 +8,7 @@
   "label": "Historical legacy schema - not evidence of current game state",
   "utc_retrieval_time_start": "2026-07-31T03:21:00Z",
   "utc_retrieval_time_end": "2026-07-31T03:21:03Z",
-  "snapshot_status": "complete",
+  "snapshot_status": "superseded",
   "snapshot_path": "data-layer/external-sources/scunpacked.com/snapshots/20260731T031754Z",
   "previous_snapshot_run_id": null,
   "license_terms_status": "unknown - no LICENSE or terms text found at the endpoints pulled; not asserted either way",
@@ -94,5 +94,31 @@
       "note": "No embedded http(s) URLs were found in either file's string values."
     }
   },
-  "record_counts_are_completeness_check_only_note": "The record counts above (156 ships, 63375 labels) confirm this run retrieved everything the endpoint returned - they are NOT evidence that this legacy dataset agrees with any other source in this run. This dataset is explicitly labeled historical/legacy and last modified 2022-11-16, predating current game state by years."
+  "record_counts_are_completeness_check_only_note": "The record counts above (156 ships, 63375 labels) confirm this run retrieved everything the endpoint returned - they are NOT evidence that this legacy dataset agrees with any other source in this run. This dataset is explicitly labeled historical/legacy and last modified 2022-11-16, predating current game state by years.",
+  "status_change_note": {
+    "appended_utc": "2026-08-01T04:30:00Z",
+    "append_only_declaration": "APPEND ONLY. Every field above this note records what happened DURING the 2026-07-31 acquisition run and is unchanged. The single field modified anywhere in this manifest is snapshot_status, which is an assessment of the run rather than a record of it. The snapshot's files were not touched.",
+    "status_changed_from": "complete",
+    "status_changed_to": "superseded",
+    "why_not_failed": "The data was genuine; the verification was absent. 'failed' would be as inaccurate as 'complete' - it would assert this run retrieved bad data, which is not what happened and not what the evidence shows.",
+    "why_the_original_complete_was_not_earned": "The 'complete' status was assigned by scripts/external_sources/scunpacked_com.py as it stood on 2026-07-31, whose main() returned None and therefore exited 0 unconditionally. No endpoint outcome could ever have failed that run. The script also wrote every response body to its final filename BEFORE examining resp.status_code, so an HTTP error page would have been saved as ships.json and reported as a successful landing. The status describes what the script always said, not what was checked.",
+    "superseded_by": {
+      "run_id": "20260801T042157Z",
+      "snapshot_path": "data-layer/external-sources/scunpacked.com/snapshots/20260801T042157Z",
+      "manifest": "data-layer/external-source-manifests/20260801T042157Z/02_scunpacked-com_manifest.json",
+      "same_two_endpoints": ["/api/v2/ships.json", "/api/labels.json"],
+      "content_relationship": "byte-identical - matching SHA-256 AND matching ETag on both endpoints",
+      "ships_sha256": "5ddfa68f4b04a3cca852fa49ddb193d66a6fb8b037606fd666599a51045f5f8f",
+      "labels_sha256": "b275f5377cf74e2135554bb38ac6b32ad02e8d54af04ecf0ae08509cf1b75502",
+      "gates": "all five passed in order (files present, JSON parses, file-type inspection, malware scan, content-indicator scan), with the malware scan preceding the rename out of .partial"
+    },
+    "what_byte_identity_does_and_does_not_establish": "Byte-identity confirms the bytes in THIS snapshot are genuine upstream bytes - the same content api served to an independently verified run. It does NOT retroactively verify this run. Nothing performed in 2026-07-31 checked anything; the confidence comes entirely from 20260801T042157Z. This snapshot is trustworthy by inheritance, not by its own process.",
+    "clarification_on_report_only_mode_confirmed": "This manifest's integrity_scan.malware_scan.report_only_mode_confirmed is false. That value is correct as written and stays. It records that Set-MpPreference failed with 'You don't have enough permissions to perform the requested operation' because the PowerShell session was not elevated - it does NOT record a scan failure. The scan itself ran and returned no threats. The superseding run avoids the issue entirely by passing -DisableRemediation on the MpCmdRun scan command, which requires no elevation.",
+    "vocabulary_note": "See status_vocabulary_reference below. At the time of this append, the project had no single canonical definition of the snapshot_status vocabulary anywhere in docs/ or code - the values existed only as strings used across manifests. That gap is recorded rather than papered over."
+  },
+  "status_vocabulary_reference": {
+    "definition_of_superseded": "superseded - the data is genuine, but the run's verification cannot be trusted; a later verified run replaces it.",
+    "canonical_location": "docs/EXTERNAL_SOURCE_STATUS_VOCABULARY.md",
+    "canonical_location_note": "That document was created on 2026-08-01 because no canonical definition of this vocabulary existed anywhere in the project beforehand. Values previously in use, observed across existing manifests: complete, partial, failed, blocked_missing_credentials, blocked_missing_provenance, not_directly_downloadable."
+  }
 }
