@@ -1,0 +1,125 @@
+{
+  "files": [
+    {
+      "file": "data-layer\\external-sources\\api.star-citizen.wiki\\snapshots\\20260801T021731Z.partial\\_pull_stderr.log",
+      "byte_size": 155,
+      "content_indicator_hits": {},
+      "distinct_domains_found": [],
+      "domain_counts": {},
+      "unexpected_domains": {}
+    },
+    {
+      "file": "data-layer\\external-sources\\api.star-citizen.wiki\\snapshots\\20260801T021731Z.partial\\game_version_default.headers",
+      "byte_size": 1024,
+      "content_indicator_hits": {},
+      "distinct_domains_found": [
+        "a.nel.cloudflare.com"
+      ],
+      "domain_counts": {
+        "a.nel.cloudflare.com": 1
+      },
+      "unexpected_domains": {
+        "a.nel.cloudflare.com": {
+          "count": 1,
+          "sample_urls": [
+            "https://a.nel.cloudflare.com/report/v4?s=PB%2B901v2gvMnszj3QQwihO4ebK8piErFRzaK%2FniStfRKp%2BTl45fFz7l9QnFvXqA%2BEkGVk%2FezQTDmulkOz71R3pySOstLlu9%2Ft2eQQNz39g7Pk9fKkGdlJdkemT7UtFcuZEmhCohVdOU%3D"
+          ]
+        }
+      }
+    },
+    {
+      "file": "data-layer\\external-sources\\api.star-citizen.wiki\\snapshots\\20260801T021731Z.partial\\openapi.headers",
+      "byte_size": 990,
+      "content_indicator_hits": {},
+      "distinct_domains_found": [
+        "a.nel.cloudflare.com"
+      ],
+      "domain_counts": {
+        "a.nel.cloudflare.com": 1
+      },
+      "unexpected_domains": {
+        "a.nel.cloudflare.com": {
+          "count": 1,
+          "sample_urls": [
+            "https://a.nel.cloudflare.com/report/v4?s=3bzyEwALarMkhrUrONlFfq955KcgWll8KfLSmF3Oub6YV2YAIFrHOtzW72CA38%2BpqPaxpTtE5RS0QKpoCYJ1b2je3xWefJ34OMoOIQDY1Z5EMotUZ00w8k2FMr7dIZ1yta8btIoB40c%3D"
+          ]
+        }
+      }
+    },
+    {
+      "file": "data-layer\\external-sources\\api.star-citizen.wiki\\snapshots\\20260801T021731Z.partial\\openapi.yaml",
+      "byte_size": 710528,
+      "content_indicator_hits": {},
+      "distinct_domains_found": [
+        "api.example.com",
+        "api.star-citizen.wiki",
+        "api.star-citizen.wiki`\\n-",
+        "docs.star-citizen.wiki)\\n\\n",
+        "example.com",
+        "opensource.org",
+        "robertsspaceindustries.com",
+        "star-citizen.wiki",
+        "star-citizen.wiki).\\n\\n",
+        "starcitizen.tools)"
+      ],
+      "domain_counts": {
+        "api.star-citizen.wiki": 8,
+        "star-citizen.wiki": 2,
+        "api.star-citizen.wiki`\\n-": 1,
+        "robertsspaceindustries.com": 2,
+        "example.com": 3,
+        "opensource.org": 1,
+        "starcitizen.tools)": 1,
+        "docs.star-citizen.wiki)\\n\\n": 1,
+        "star-citizen.wiki).\\n\\n": 1,
+        "api.example.com": 1
+      },
+      "unexpected_domains": {
+        "api.star-citizen.wiki`\\n-": {
+          "count": 1,
+          "sample_urls": [
+            "https://api.star-citizen.wiki`\\n-"
+          ]
+        },
+        "example.com": {
+          "count": 3,
+          "sample_urls": [
+            "https://example.com/vehicles/arrow",
+            "https://example.com/vehicles/uuid",
+            "https://example.com/api/vehicles/arrow"
+          ]
+        },
+        "opensource.org": {
+          "count": 1,
+          "sample_urls": [
+            "https://opensource.org/licenses/MIT"
+          ]
+        },
+        "starcitizen.tools)": {
+          "count": 1,
+          "sample_urls": [
+            "https://starcitizen.tools)"
+          ]
+        },
+        "docs.star-citizen.wiki)\\n\\n": {
+          "count": 1,
+          "sample_urls": [
+            "https://docs.star-citizen.wiki)\\n\\n##"
+          ]
+        },
+        "star-citizen.wiki).\\n\\n": {
+          "count": 1,
+          "sample_urls": [
+            "https://star-citizen.wiki).\\n\\n##"
+          ]
+        },
+        "api.example.com": {
+          "count": 1,
+          "sample_urls": [
+            "https://api.example.com/vehicles/uuid"
+          ]
+        }
+      }
+    }
+  ]
+}

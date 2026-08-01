@@ -1,0 +1,757 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260801T021731Z",
+  "source_number": 3,
+  "source_name": "api.star-citizen.wiki",
+  "source_type": "REST API (OpenAPI 3.0, pinned game version, paginated JSON:API-style)",
+  "canonical_source_url": "https://api.star-citizen.wiki",
+  "run_context": "Full self-contained re-run of source 3 after the 2026-07-31 probe established that the repeated vehicles HTTP 500 was caused by page[size]=200, not by the endpoint being down. No data was copied, resumed, or stitched from any other snapshot.",
+  "related_snapshots_not_touched": [
+    "20260731T041451Z.partial (previous run - not read, not merged, not finalized against)",
+    "20260801T015346Z.partial.aborted__pagesize50 (aborted global-page-size-50 run - not read, not merged)"
+  ],
+  "utc_retrieval_time_start": "2026-08-01T02:18:29Z",
+  "utc_retrieval_time_end": "2026-08-01T03:10:26Z",
+  "retrieval_time_provenance": "derived from file mtimes within the snapshot, not from a wall-clock reading taken at the time",
+  "snapshot_status": "complete",
+  "snapshot_path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260801T021731Z",
+  "snapshot_status_history": [
+    {
+      "status": "partial",
+      "at": "2026-08-01T03:20Z (approx, same working session)",
+      "reason": "Gate 5 failed. The folder was held at .partial and NOT renamed. See gates.gate_5_content_indicator_scan.initial_run below - that failure is retained deliberately and must not be erased."
+    },
+    {
+      "status": "complete",
+      "at": "2026-08-01T03:40Z (approx, same working session)",
+      "reason": "Gate 5 re-run and passed on its own after the gate script's coverage and URL-parsing defects were fixed. All five gates have now passed in the required order, and the malware scan preceded the rename."
+    }
+  ],
+  "requested_game_version": "4.9.0-LIVE.12232306",
+  "version_pin_verification": {
+    "method": "checked, not assumed - every landed collection page was parsed and every record's own .version field compared against the pin",
+    "game_version_default_code_equals_pin": true,
+    "records_with_top_level_version_field": 12578,
+    "records_whose_version_differs_from_pin": 0,
+    "non_pin_versions_found_elsewhere": {
+      "data[].loaner[].version": "40 occurrences - embedded loaner vehicle records carry their own version; not the requested resource's version",
+      "data[].uex_prices.purchase[].game_version": "1302 occurrences of 4.8.2-LIVE.12030094 - third-party UEX price entries tagged with the game version the price was observed in",
+      "data[].uex_prices.rental[].game_version": "9 occurrences of 4.8.2-LIVE.12030094 - same"
+    },
+    "interpretation": "The version parameter was honored on every request. The non-pin values are properties of embedded/related third-party data, not evidence of version float. Flagged for Stage 2: the UEX price data in this snapshot is one game version stale."
+  },
+  "retrieval_script": {
+    "path": "scripts/external_sources/api_star_citizen_wiki.py",
+    "sha256": "a89a60d883f5a3fee4874ed3860568789bf482d091930cac095823043fd83bc1",
+    "changes_this_run": [
+      "PAGE_SIZE_OVERRIDES added: vehicles=50; default stays 200 (items and manufacturers unaffected)",
+      "write-before-status bug fixed: a response is written to its final filename only after status==200 AND a JSON content-type AND the body parses",
+      "per-response sha256 and per-page attempt counts now recorded",
+      "REQUEST_TIMEOUT_SECONDS raised 60 -> 180",
+      "Timeout/ConnectionError now retryable against the same max_retries=5 ceiling",
+      "Retry-After: HTTP-date form now parsed (int() on it previously raised ValueError) and clamped to a 60s maximum"
+    ]
+  },
+  "preliminary_requests": [
+    {
+      "name": "game_version_default",
+      "url": "https://api.star-citizen.wiki/api/game-versions/default",
+      "http_status_code": 200,
+      "file": "game_version_default.json",
+      "byte_size": 162,
+      "sha256": "4ed896a1c01e360df36716247f9a25a765c76c0173347017d530a9eeef2ad406",
+      "note": "fetched FIRST, before any collection request; its data.code is the pin used for the whole run"
+    },
+    {
+      "name": "openapi_spec",
+      "url": "https://api.star-citizen.wiki/api/openapi",
+      "http_status_code": 200,
+      "file": "openapi.yaml",
+      "byte_size": 710528,
+      "sha256": "8b259bb9a44c1355e87228f1708a2913ad2d80298dce7d3da2c0ee984498a589",
+      "note": "sha256 is byte-identical to run 20260731T041451Z's openapi.yaml - the spec has not changed between runs"
+    }
+  ],
+  "collections": [
+    {
+      "name": "vehicles",
+      "collection_status": "complete",
+      "page_size_used": 50,
+      "page_size_source": "PAGE_SIZE_OVERRIDES",
+      "pages_fetched": 6,
+      "pages_written_to_disk": 6,
+      "pages_rejected_by_write_gate": 0,
+      "reported_last_page": 6,
+      "api_reported_total_records": 295,
+      "downloaded_total_records": 295,
+      "counts_match": true,
+      "pagination_terminated_normally": true,
+      "max_attempts_on_any_page": 1,
+      "per_page_attempts": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "http_status_codes_seen": [
+        200
+      ],
+      "content_types_seen": [
+        "application/json"
+      ]
+    },
+    {
+      "name": "items",
+      "collection_status": "complete",
+      "page_size_used": 200,
+      "page_size_source": "PAGE_SIZE default",
+      "pages_fetched": 62,
+      "pages_written_to_disk": 62,
+      "pages_rejected_by_write_gate": 0,
+      "reported_last_page": 62,
+      "api_reported_total_records": 12283,
+      "downloaded_total_records": 12283,
+      "counts_match": true,
+      "pagination_terminated_normally": true,
+      "max_attempts_on_any_page": 1,
+      "per_page_attempts": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 1,
+        "13": 1,
+        "14": 1,
+        "15": 1,
+        "16": 1,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1,
+        "21": 1,
+        "22": 1,
+        "23": 1,
+        "24": 1,
+        "25": 1,
+        "26": 1,
+        "27": 1,
+        "28": 1,
+        "29": 1,
+        "30": 1,
+        "31": 1,
+        "32": 1,
+        "33": 1,
+        "34": 1,
+        "35": 1,
+        "36": 1,
+        "37": 1,
+        "38": 1,
+        "39": 1,
+        "40": 1,
+        "41": 1,
+        "42": 1,
+        "43": 1,
+        "44": 1,
+        "45": 1,
+        "46": 1,
+        "47": 1,
+        "48": 1,
+        "49": 1,
+        "50": 1,
+        "51": 1,
+        "52": 1,
+        "53": 1,
+        "54": 1,
+        "55": 1,
+        "56": 1,
+        "57": 1,
+        "58": 1,
+        "59": 1,
+        "60": 1,
+        "61": 1,
+        "62": 1
+      },
+      "http_status_codes_seen": [
+        200
+      ],
+      "content_types_seen": [
+        "application/json"
+      ]
+    },
+    {
+      "name": "manufacturers",
+      "collection_status": "complete",
+      "page_size_used": 200,
+      "page_size_source": "PAGE_SIZE default",
+      "pages_fetched": 1,
+      "pages_written_to_disk": 1,
+      "pages_rejected_by_write_gate": 0,
+      "reported_last_page": 1,
+      "api_reported_total_records": 152,
+      "downloaded_total_records": 152,
+      "counts_match": true,
+      "pagination_terminated_normally": true,
+      "max_attempts_on_any_page": 1,
+      "per_page_attempts": {
+        "1": 1
+      },
+      "http_status_codes_seen": [
+        200
+      ],
+      "content_types_seen": [
+        "application/json"
+      ]
+    }
+  ],
+  "reported_total_records": {
+    "vehicles": 295,
+    "items": 12283,
+    "manufacturers": 152
+  },
+  "downloaded_total_records": {
+    "vehicles": 295,
+    "items": 12283,
+    "manufacturers": 152
+  },
+  "all_counts_match_api_totals": true,
+  "pages_rejected_by_write_gate_total": 0,
+  "file_inventory": {
+    "total_files": 75,
+    "total_bytes": 85674557,
+    "files": [
+      {
+        "file": "_pull_stderr.log",
+        "byte_size": 158,
+        "sha256": "225229978b8f8d03ef7e7d647677b915177b6b168390d1a5e76833cdab209eca"
+      },
+      {
+        "file": "_pull_summary.json",
+        "byte_size": 329778,
+        "sha256": "0116035f2e0369d8290ffa48d7fccaf77054ca0bf24e1639f29a51414507b638"
+      },
+      {
+        "file": "game_version_default.headers",
+        "byte_size": 1044,
+        "sha256": "25e99de450569cace4c13a820da9dec9cd258902f8a4c61aaeb7a6fd4b83a88b"
+      },
+      {
+        "file": "game_version_default.json",
+        "byte_size": 162,
+        "sha256": "4ed896a1c01e360df36716247f9a25a765c76c0173347017d530a9eeef2ad406"
+      },
+      {
+        "file": "items_page_1.json",
+        "byte_size": 1043997,
+        "sha256": "d1d1972f95e96240eae2d846454bf07b8f77ce284787fa98640b814ebd611cfb"
+      },
+      {
+        "file": "items_page_10.json",
+        "byte_size": 1217467,
+        "sha256": "2e6e3004ba2db1d59102559910e04157938b27349f4657b35cae89e9dea1e6db"
+      },
+      {
+        "file": "items_page_11.json",
+        "byte_size": 1497541,
+        "sha256": "45f85dabb7eccd09ecd52c1ecb506260a69a248aea3101f8de57534126f0c240"
+      },
+      {
+        "file": "items_page_12.json",
+        "byte_size": 1021513,
+        "sha256": "702d4941f6fbd9140c933883f5d25bd905d754a09e3385d8d9eef8e1ad3e4760"
+      },
+      {
+        "file": "items_page_13.json",
+        "byte_size": 1006346,
+        "sha256": "82cc342306fbf3d4b35e02c6e87fb6969df0fa5c78213de4e9c58c4d5ce73ca7"
+      },
+      {
+        "file": "items_page_14.json",
+        "byte_size": 1026319,
+        "sha256": "366114ece938172a5a1265de084df138120ae912c642048f4b34649eaaeebae6"
+      },
+      {
+        "file": "items_page_15.json",
+        "byte_size": 1398731,
+        "sha256": "b3817660c44b4e166d61ec1e60c1e4d07d93a9192a52e27fa392d62caa971c8d"
+      },
+      {
+        "file": "items_page_16.json",
+        "byte_size": 1019260,
+        "sha256": "6036552239714e59135d7cbe3fcfebdf30d4f000afcf0250634f95f37cc9ee78"
+      },
+      {
+        "file": "items_page_17.json",
+        "byte_size": 1147937,
+        "sha256": "fc2e13e069197c702c83b6ef524e33580a53437bc29c90b4163887459e95f150"
+      },
+      {
+        "file": "items_page_18.json",
+        "byte_size": 1371920,
+        "sha256": "b00b8fa2a7aaf05f00330cb31f3174b763239d3b3aaa3a06b92b701256cc288d"
+      },
+      {
+        "file": "items_page_19.json",
+        "byte_size": 1114975,
+        "sha256": "90ea07f8cf12e4d697ce321779b47ab9364c86dc6c398d03e8bc95dd1cec3c9f"
+      },
+      {
+        "file": "items_page_2.json",
+        "byte_size": 1676734,
+        "sha256": "ebda3b278132e90ded037619199f0df4907a97bb965d3ec5396deec8190260fa"
+      },
+      {
+        "file": "items_page_20.json",
+        "byte_size": 1235408,
+        "sha256": "39788ce8d1dc08e7e0932e6ff881ada127065e5d4378bc8cf1a8c94be0e81134"
+      },
+      {
+        "file": "items_page_21.json",
+        "byte_size": 1256378,
+        "sha256": "cf4a1bf47573fb14004b8e3dab6a167ff632607969d3d0e816167d995dcd1c36"
+      },
+      {
+        "file": "items_page_22.json",
+        "byte_size": 946633,
+        "sha256": "6fe8bad4c0ffabaee4f979db7330d3f78e07b79cd13e90f6d502ec1c90ec58ba"
+      },
+      {
+        "file": "items_page_23.json",
+        "byte_size": 831733,
+        "sha256": "7e7586d96a8d07b526ece083cc5ecf26d1f46746616fc4671f7c3734a128b702"
+      },
+      {
+        "file": "items_page_24.json",
+        "byte_size": 1610159,
+        "sha256": "147e44cbe144cb451127d24d34832da04bc412f4d82d2d353d13189f57d515fd"
+      },
+      {
+        "file": "items_page_25.json",
+        "byte_size": 541117,
+        "sha256": "19b523da859a7457209fb2c61adbeec7d4ace999fa5b403c1b58e76b5723de22"
+      },
+      {
+        "file": "items_page_26.json",
+        "byte_size": 584812,
+        "sha256": "e33cd39bf71bde55a9706b674f35b6010ee84892ef5b246f90b11d0d875360d9"
+      },
+      {
+        "file": "items_page_27.json",
+        "byte_size": 1119826,
+        "sha256": "b4b3d9a436861596a87fff719de33f519fa7499967a812da9d4880b5e83e82cc"
+      },
+      {
+        "file": "items_page_28.json",
+        "byte_size": 1342729,
+        "sha256": "736148ffa54b6b47129f88e9c34d9bf7ca10420a0e71c2283a242c8c3d36bd9c"
+      },
+      {
+        "file": "items_page_29.json",
+        "byte_size": 1139616,
+        "sha256": "0b07bb3121080f0d90c7082594dbe8780ab9dab95dbb0b6b88ef6d4985a4fe89"
+      },
+      {
+        "file": "items_page_3.json",
+        "byte_size": 861262,
+        "sha256": "7a9a57cba9810b2e3157889fc50a66ae7252a3bdc0ace552357ce2fdc3e62632"
+      },
+      {
+        "file": "items_page_30.json",
+        "byte_size": 1935587,
+        "sha256": "75def2a3bec32f3cced9d0d0e34dfd0a6974b30ff2d7ad57268f09fba248e38c"
+      },
+      {
+        "file": "items_page_31.json",
+        "byte_size": 1101316,
+        "sha256": "cf828d530f0a86f6d77fe487be4d0c10eb3db7c3474ca99dba7653802ea627bb"
+      },
+      {
+        "file": "items_page_32.json",
+        "byte_size": 927801,
+        "sha256": "f3728472b1f60073842012a20e46c7d38d7c01285466ffa5fe17eb77b5896be9"
+      },
+      {
+        "file": "items_page_33.json",
+        "byte_size": 1626530,
+        "sha256": "e34cc2474b445274dd97e5f2b7a2831da471eacf51bb9c026bd34a2c7f37a9a3"
+      },
+      {
+        "file": "items_page_34.json",
+        "byte_size": 1232431,
+        "sha256": "7860752f6eb0cee6062ae858fd9032054de235cc8848b6bec907bbe2b0afbdf8"
+      },
+      {
+        "file": "items_page_35.json",
+        "byte_size": 1520878,
+        "sha256": "6e0649b496b45adc5ad2a581d2718ee7a4509bc1b23fc97b788cc8568a767bf3"
+      },
+      {
+        "file": "items_page_36.json",
+        "byte_size": 1942143,
+        "sha256": "c478167acd3c2ad321ab334feb6c3c0933b656960188d3dfb0b08cc0c04bc86a"
+      },
+      {
+        "file": "items_page_37.json",
+        "byte_size": 1713247,
+        "sha256": "113ea8592eefad5280427fc479815ff39f6e9886756cc1c7eaf46a38182a56d3"
+      },
+      {
+        "file": "items_page_38.json",
+        "byte_size": 1874339,
+        "sha256": "d97157c11aa3203868e707dab955e824c354438dae2a1e0b720ef4f089b45e3f"
+      },
+      {
+        "file": "items_page_39.json",
+        "byte_size": 783933,
+        "sha256": "45e3b2d3aadd797fa946d1bb6a5f9b186051b208f12516e8829a37e937655f6b"
+      },
+      {
+        "file": "items_page_4.json",
+        "byte_size": 1524569,
+        "sha256": "6e68ccac96436d86da77995a2dd29cb134e04ba71b31fa10eb84aaeae98e175f"
+      },
+      {
+        "file": "items_page_40.json",
+        "byte_size": 955642,
+        "sha256": "ab1d48fc8064458d98a80a8153f3789a9b145347770b4c8fb87b76ff5af37120"
+      },
+      {
+        "file": "items_page_41.json",
+        "byte_size": 1362547,
+        "sha256": "1b1bb71788880d5b9042bb95d243bbc246e4b84fb437395a63c8474bda096d7d"
+      },
+      {
+        "file": "items_page_42.json",
+        "byte_size": 836412,
+        "sha256": "17f48c6684c56b81fa4df3400f7eff803c5749485d1ce69da1aae764f3405261"
+      },
+      {
+        "file": "items_page_43.json",
+        "byte_size": 691917,
+        "sha256": "bd39cddb5a903cb5a5046b2909324b7130caa1f8828475a940749583943d5d91"
+      },
+      {
+        "file": "items_page_44.json",
+        "byte_size": 1029253,
+        "sha256": "6b7516d07c89b92f84d7a85ceece9babc686ada56720dcc4fa1fe797be1a6b32"
+      },
+      {
+        "file": "items_page_45.json",
+        "byte_size": 745747,
+        "sha256": "1f00a43f0e17a269d7d327c6103d006d951ef2143a55ffe11de33bb4ebeec652"
+      },
+      {
+        "file": "items_page_46.json",
+        "byte_size": 258905,
+        "sha256": "b62d8e016b9fa72583a419816eee60a1d1cc472d8da54baffb349f21dd045892"
+      },
+      {
+        "file": "items_page_47.json",
+        "byte_size": 265991,
+        "sha256": "bd0bb86ff2a2c9682379f4b3be22d6468dbe685cab936a7086f319c891664506"
+      },
+      {
+        "file": "items_page_48.json",
+        "byte_size": 261302,
+        "sha256": "f89b06e09aaa15d97963388caef9988977bc80f64c371b3ac971db6ff6b2ce8e"
+      },
+      {
+        "file": "items_page_49.json",
+        "byte_size": 268147,
+        "sha256": "76315429105f1e407d7b40c08c2824b7bdf64ec69c1419c9e7ba0ee9e21479dd"
+      },
+      {
+        "file": "items_page_5.json",
+        "byte_size": 1643314,
+        "sha256": "11bc2baf4268c5b585220de4b7cd1a4dbc773b365ff21b485783fabe7d3b6fad"
+      },
+      {
+        "file": "items_page_50.json",
+        "byte_size": 595778,
+        "sha256": "e1f0488c44cbac1aaa21c37fc191a31311e81f8f0f6f24699924cfa326fa6e7a"
+      },
+      {
+        "file": "items_page_51.json",
+        "byte_size": 823470,
+        "sha256": "c96157bdb0f15007fd6e66d8ff24c9ebde269edb5b875b19fb8a4ffc1e9c709a"
+      },
+      {
+        "file": "items_page_52.json",
+        "byte_size": 830292,
+        "sha256": "905e99f9f1dd73e10d753ace01a58966807e1221997d02b127e8fe7cab5fbac0"
+      },
+      {
+        "file": "items_page_53.json",
+        "byte_size": 1757477,
+        "sha256": "ce7aad4e6cea459f3361c0ebcc1fa4e8492a4c0b875689752d907183d85fbc7b"
+      },
+      {
+        "file": "items_page_54.json",
+        "byte_size": 1281218,
+        "sha256": "96aea184f435dc9630ae3aef0d6a87805b693e1c2555cf60ba42679f44df6e1e"
+      },
+      {
+        "file": "items_page_55.json",
+        "byte_size": 1121781,
+        "sha256": "e6d39dd7a8fcb8137d634eb60719862a4a34e881e14f9ffbc1f5ac43f8395351"
+      },
+      {
+        "file": "items_page_56.json",
+        "byte_size": 819602,
+        "sha256": "fe9fe53c95d41f93ee29b3827d4fcbc1f81dc23dfefa40483796ff89f53a9d34"
+      },
+      {
+        "file": "items_page_57.json",
+        "byte_size": 1355626,
+        "sha256": "be0455a2cf2b875d01813554b0056521dd637e4befe3bb75be50c6bdbc334ae7"
+      },
+      {
+        "file": "items_page_58.json",
+        "byte_size": 856820,
+        "sha256": "1e914c9d09a67e0ff256b8c2485c9d37dacb93d62424fda78159235c10388e16"
+      },
+      {
+        "file": "items_page_59.json",
+        "byte_size": 1354118,
+        "sha256": "04deb9fc2ffd1ece382400a02c329cc77f56d3d89ff442f605d2ea8d81a3084a"
+      },
+      {
+        "file": "items_page_6.json",
+        "byte_size": 848051,
+        "sha256": "76457552f2b3f93d94b75272c4906b3d63dd1012cdcacc34eb571be9296c3b14"
+      },
+      {
+        "file": "items_page_60.json",
+        "byte_size": 1714544,
+        "sha256": "70c20033926e7851cd70763a77750003a866ca014fc7aa6cf650ddb04f6016a9"
+      },
+      {
+        "file": "items_page_61.json",
+        "byte_size": 1035795,
+        "sha256": "924d58834faee19bcb2c52d57fe2de1b34e85261f0d30fc3a372ad4ec702911c"
+      },
+      {
+        "file": "items_page_62.json",
+        "byte_size": 631765,
+        "sha256": "2fb77d1fdcdf2e9ea4cce70832f9e58f94b5c225fcdc3e956381a4a0ce1b444c"
+      },
+      {
+        "file": "items_page_7.json",
+        "byte_size": 1268533,
+        "sha256": "cb8612517fef6f4dff1f8c901640cb46ff46e3c302ac2feac1f353eab6d32c8b"
+      },
+      {
+        "file": "items_page_8.json",
+        "byte_size": 659717,
+        "sha256": "51835296e3a0a7bab02c208770eee74f271fd6756942ffa1880a8dde67a4b0cc"
+      },
+      {
+        "file": "items_page_9.json",
+        "byte_size": 999836,
+        "sha256": "45872b6da63a04e810bd020c48453fd11b64346877983e455707b6068235413c"
+      },
+      {
+        "file": "manufacturers_page_1.json",
+        "byte_size": 24283,
+        "sha256": "be320d6b6a689ea51dd78a30d6f6915d3d8637b0ce3f2d3abb691ccd43bdeafa"
+      },
+      {
+        "file": "openapi.headers",
+        "byte_size": 1009,
+        "sha256": "482615e18c09990263b6395a359d9def4148199db0f18ca5e46c64c2468a8787"
+      },
+      {
+        "file": "openapi.yaml",
+        "byte_size": 710528,
+        "sha256": "8b259bb9a44c1355e87228f1708a2913ad2d80298dce7d3da2c0ee984498a589"
+      },
+      {
+        "file": "vehicles_page_1.json",
+        "byte_size": 3271789,
+        "sha256": "06dcf546e8783f33ffab6d2fe64336bc9fc1c6b3a0b099740aea008f594ccbd5"
+      },
+      {
+        "file": "vehicles_page_2.json",
+        "byte_size": 2177479,
+        "sha256": "e722ec85c3949a402a570a663598bdae1cb0c74da8efc34e1ad6d0e141f3817b"
+      },
+      {
+        "file": "vehicles_page_3.json",
+        "byte_size": 2739271,
+        "sha256": "bcc7ca81e88db967a403f016d6c12c88cae958b1fc16893a294c47d64f7893ca"
+      },
+      {
+        "file": "vehicles_page_4.json",
+        "byte_size": 2495267,
+        "sha256": "8ae41df2889d656abedc02920df61657df9e8ee160a87507c3cf340c9e808e94"
+      },
+      {
+        "file": "vehicles_page_5.json",
+        "byte_size": 2802069,
+        "sha256": "70b56cdbb2fb6c882cee71bbc5733bae5e6efe38c6acc87f618e59fede4d0f50"
+      },
+      {
+        "file": "vehicles_page_6.json",
+        "byte_size": 2652933,
+        "sha256": "e34c169e56847c65c0a0b3e612085e72718589a82a7e5c015ea32d3ae7f458e5"
+      }
+    ]
+  },
+  "gates": {
+    "gate_order_note": "Run strictly in the stated order. The folder was NOT renamed before the malware scan - this is the correction to the source 1 ordering violation recorded in 20260731T041451Z.",
+    "gate_1_files_present": {
+      "result": "PASS",
+      "detail": "vehicles 6/6, items 62/62, manufacturers 1/1, page numbering contiguous from 1 in each collection; all 4 preliminary files and both run logs present and non-empty; zero zero-byte files; 75 files total."
+    },
+    "gate_2_json_parses": {
+      "result": "PASS",
+      "detail": "All 71 .json files parsed individually - full check, not sampled. 0 parse failures. The 4 non-.json files (openapi.yaml, 2 .headers, _pull_stderr.log) are not JSON by design and were not JSON-checked."
+    },
+    "gate_3_file_type_inspection": {
+      "result": "PASS",
+      "detail": "All 75 files inspected by magic bytes. No executables (MZ/ELF), archives (ZIP/RAR/gzip), PDFs, images or shebangs. Every .json file begins with { or [. Zero extension/content mismatches."
+    },
+    "gate_4_malware_scan": {
+      "result": "PASS",
+      "scanner": "Microsoft Defender MpCmdRun.exe",
+      "binary": "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.18.26060.3008-0\\MpCmdRun.exe",
+      "command": "-Scan -ScanType 3 -File <snapshot> -DisableRemediation",
+      "attempted": true,
+      "report_only_mode_confirmed": true,
+      "report_only_justification": "All four *ThreatDefaultAction preferences are 0 (default action = quarantine/remove) and RealTimeProtectionEnabled is True, so -DisableRemediation was mandatory to avoid the scanner mutating the snapshot under CLAUDE.md rule 1.",
+      "antivirus_signature_version": "1.455.449.0",
+      "antivirus_signature_last_updated": "2026-07-31 14:37:56 local",
+      "am_engine_version": "1.1.26060.3008",
+      "started_utc": "2026-08-01T03:12:33Z",
+      "finished_utc": "2026-08-01T03:12:33Z",
+      "exit_code": 0,
+      "output": "found no threats",
+      "duration_note": "Scan reported start and finish within the same second. Real-Time Protection is enabled and had already scanned these files as they were written, so Defender is expected to use cached per-file verdicts. Recorded as an observation; NOT claimed as a from-cold full-content scan."
+    },
+    "gate_5_content_indicator_scan": {
+      "result": "PASS",
+      "result_note": "PASS on re-run only. This gate FAILED first. The failure below is retained on purpose - it is the record of a defect that had been silently affecting every snapshot this pipeline has ever gated, and it must not be erased or summarised away.",
+      "initial_run": {
+        "result": "FAIL",
+        "gate_script_state": "scripts/external_sources/integrity_scan.py, pre-fix (globbed *.json only)",
+        "script_coverage": "71 of 75 files - the 4 non-JSON files were never opened",
+        "script_exit_code": 0,
+        "script_verdict_as_reported": "PASS",
+        "why_that_verdict_was_not_trustworthy": "The script exited 0 having never scanned openapi.yaml, game_version_default.headers, openapi.headers or _pull_stderr.log. It was reporting a pass over files it had not looked at.",
+        "manual_extension_of_same_logic_to_the_4_skipped_files": {
+          "content_indicator_hits": "NONE in any file",
+          "unexpected_domains_found_total": 7,
+          "findings": [
+            {
+              "file": "game_version_default.headers",
+              "domain": "a.nel.cloudflare.com",
+              "cause": "real domain, legitimately present, simply absent from the allowlist"
+            },
+            {
+              "file": "openapi.headers",
+              "domain": "a.nel.cloudflare.com",
+              "cause": "real domain, legitimately present, simply absent from the allowlist"
+            },
+            {
+              "file": "openapi.yaml",
+              "domain": "example.com",
+              "cause": "real domain (RFC 2606 documentation), absent from the allowlist"
+            },
+            {
+              "file": "openapi.yaml",
+              "domain": "api.example.com",
+              "cause": "real domain (RFC 2606 documentation), absent from the allowlist"
+            },
+            {
+              "file": "openapi.yaml",
+              "domain": "opensource.org",
+              "cause": "real domain (MIT licence link), absent from the allowlist"
+            },
+            {
+              "file": "openapi.yaml",
+              "domain": "starcitizen.tools)",
+              "cause": "SCANNER ARTIFACT - allowlisted domain, trailing ')' captured into the netloc by URL_RE"
+            },
+            {
+              "file": "openapi.yaml",
+              "domain": "star-citizen.wiki).\\n\\n / docs.star-citizen.wiki)\\n\\n / api.star-citizen.wiki`(backtick)",
+              "cause": "SCANNER ARTIFACT - allowlisted domains, trailing punctuation/escape captured into the netloc by URL_RE"
+            }
+          ],
+          "note": "Counted as 7 distinct unexpected-domain findings across the 3 files; the last entry groups three netlocs that share one root cause."
+        },
+        "action_taken_at_the_time": "Folder held at .partial. Not renamed. Every finding was explainable and none was an active-content indicator, but 'explainable' is not 'passed' - the gate criterion is 'unexpected_domains empty' and it was not empty."
+      },
+      "gate_script_defect": {
+        "summary": "The gate script itself was defective in two independent ways. Neither was caused by this snapshot's data.",
+        "defect_1_coverage": "main() globbed '*.json', so every non-JSON file in every snapshot this gate has ever run against was silently skipped while the gate reported PASS. This affected all previous runs of this pipeline, not only run 20260801T021731Z. Any earlier snapshot finalized on the strength of this gate was finalized on incomplete coverage.",
+        "defect_2_url_parsing": "URL_RE was r'https?://[^\\s\"'<>]+', which swallowed trailing punctuation into the netloc. Prose such as 'see https://starcitizen.tools)' produced the netloc 'starcitizen.tools)', which then failed an allowlist that does contain starcitizen.tools - a false positive manufactured entirely by the scanner."
+      },
+      "remediation": {
+        "fix_1_coverage": "main() now walks every file recursively (rglob), not '*.json'. scan_file() reads bytes so any file type can be scanned, and decodes non-UTF-8 with replacement (the indicator strings and URL pattern are ASCII, so matches cannot be hidden). A file that cannot be read is reported as UNSCANNED and FAILS the gate rather than passing by omission. A new 'coverage' block reports files_seen / files_scanned / files_unscanned / walk_errors / complete.",
+        "fix_2_url_parsing": "URL_RE now excludes backslash and backtick, and trim_url() strips trailing punctuation before the host is parsed. A closing paren is stripped only when unbalanced, so a URL legitimately ending in e.g. '_(disambiguation)' keeps it.",
+        "fix_3_allowlist": "example.com, api.example.com, opensource.org and a.nel.cloudflare.com added to ALLOWLIST_DOMAINS, each with an inline comment recording why. Fix 2 alone cleared the other 3 of the 7 findings.",
+        "explicitly_not_done": "Gate 5 was NOT scoped to data files with headers/spec marked out of scope. That would have made the coverage defect permanent by design. The gate was too narrow; narrowing it deliberately is the wrong direction.",
+        "fail_closed_regression_check": "Verified with fixtures in scripts/external_sources/_verify_integrity_scan.py that the gate still EXITS 1 on real findings and has not become always-pass: '<script>' in a JSON file -> exit 1; an unexpected domain in a .txt file (invisible to the old glob) -> exit 1; an unreadable file -> exit 1 with coverage.complete false. The 11 URL cases include the exact strings that failed here plus evil.example.net and pastebin.com, which must still be rejected - and are."
+      },
+      "final_run": {
+        "result": "PASS",
+        "gate_script_state": "scripts/external_sources/integrity_scan.py, post-fix",
+        "gate_script_sha256": "a2e1048815cc4546f6d0312112d6e8c6c14a96f2d21d3ed83416f3251aa79ec4",
+        "exit_code": 0,
+        "files_seen": 75,
+        "files_scanned": 75,
+        "files_unscanned": 0,
+        "walk_errors": "NONE",
+        "coverage_complete": true,
+        "content_indicator_hits": "NONE",
+        "unexpected_domains": "NONE",
+        "distinct_domains_found": {
+          "api.star-citizen.wiki": 149,
+          "example.com": 3,
+          "star-citizen.wiki": 3,
+          "a.nel.cloudflare.com": 2,
+          "robertsspaceindustries.com": 2,
+          "docs.star-citizen.wiki": 1,
+          "api.example.com": 1,
+          "starcitizen.tools": 1,
+          "opensource.org": 1
+        },
+        "files_requiring_replacement_decoding": "none - all 75 files are valid UTF-8",
+        "report_file": "03_integrity_scan_report_v2_fixed_script.json"
+      }
+    },
+    "gates_all_passed_in_order": true,
+    "gate_ordering_statement": "Gates 1-4 passed in order against the .partial folder. Gate 5 failed, the folder stayed .partial, the gate script was fixed, gate 5 was re-run and passed, and only then was the folder renamed. The malware scan (gate 4) preceded the rename at all times. The snapshot was confirmed byte-identical to its post-scan state immediately before the rename."
+  },
+  "post_scan_integrity": {
+    "purpose": "confirm Real-Time Protection did not quarantine, delete or alter anything during the scan",
+    "pre_scan_file_count": 75,
+    "pre_scan_total_bytes": 85674557,
+    "post_scan_file_count": 75,
+    "post_scan_total_bytes": 85674557,
+    "files_missing_after_scan": "NONE",
+    "files_added_after_scan": "NONE",
+    "files_with_changed_sha256_or_size": "NONE",
+    "method": "every file SHA-256'd immediately before the scan and again immediately after, then compared by name, size and hash",
+    "verdict": "CONFIRMED - real-time protection altered nothing"
+  },
+  "finalization": {
+    "renamed_out_of_partial": true,
+    "renamed_to": "20260801T021731Z",
+    "reason": "All five gates passed in the required order, with gate 5 passing on its own after the gate script was fixed - not waived, not scoped around, not manually overridden.",
+    "pre_rename_integrity_recheck": "Immediately before the rename, all 75 files were re-hashed and compared against the post-malware-scan SHA-256 set: 0 missing, 0 added, 0 changed. The bytes that were scanned are the bytes that were finalized.",
+    "ordering_compliance": "SATISFIED. Unlike source 1 (run 20260731T041451Z), this snapshot was never renamed out of .partial before its malware scan. The rename happened after all five gates passed."
+  },
+  "record_counts_are_completeness_check_only_note": "Record counts confirm pagination completeness against this API's own reported totals. They are not evidence that this data agrees with any other source in this project (scunpacked.com, scunpacked-data, or the existing app database). No cross-source comparison was performed.",
+  "errors_or_skipped_endpoints": [],
+  "scope_boundaries_hit": "None. Scope was vehicles/items/manufacturers plus the game-version record and the OpenAPI spec, as in previous runs."
+}
