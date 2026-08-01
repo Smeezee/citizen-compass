@@ -39,6 +39,7 @@ Requires ccpp.py in the same folder.
 """
 
 import json
+import re
 import sys
 import urllib.request
 import urllib.error
@@ -55,7 +56,12 @@ LEGACY_HANDOFF_SEED = PROJECT_ROOT / "CITIZEN_COMPASS_HANDOFF.md"
 
 # --- optional local-AI compression ------------------------------------------
 # Set to False to always show raw handoff text (no Ollama call at all).
-USE_LOCAL_AI_COMPRESSION = True
+# Disabled 2026-08-01. The local Ollama service is not running, so every
+# regeneration spent the full OLLAMA_TIMEOUT_SECONDS (120s) waiting for a
+# connection that never came, then fell back to raw text anyway - a two-minute
+# stall for no change in output. PROJECT NOTES now always uses the raw handoff
+# text. Set back to True only if a local model is actually wanted and running.
+USE_LOCAL_AI_COMPRESSION = False
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "qwen3:14b"
 OLLAMA_TIMEOUT_SECONDS = 120
@@ -66,6 +72,14 @@ HANDOFF_HEADING_HINTS = ("HANDOFF", "SESSION ARCHIVE", "AI KNOWLEDGE BASE")
 UPDATE_FILENAME_HINTS = ("update", "updates")
 UPDATE_HEADING_HINTS = ("UPDATE", "UPDATES", "CHANGELOG")
 UPDATES_LOG_PATH = HANDOFF_ARCHIVE_DIR / "_updates_log.md"
+
+# Matches ONLY the entry headers append_update() writes:
+#   ### 2026-08-01 00:11:55 — update_something.md
+# The separator between timestamp and source name is not pinned, so an entry
+# written with a hyphen instead of an em dash still parses.
+UPDATE_ENTRY_HEADER_RE = re.compile(
+    r"^### \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\b.*$", re.MULTILINE
+)
 MAX_UPDATES_SHOWN = 20  # most recent entries shown in LATEST_HANDOFF.md; full history stays in the log file
 
 
@@ -80,12 +94,31 @@ def log(message):
         pass
 
 
+def _title_line(text: str) -> str:
+    """The document's own title, uppercased — its first markdown heading, or
+    its first non-blank line if it has no heading.
+
+    Classification used to scan text[:500] for its hints, which meant any doc
+    whose *prose* happened to contain a keyword was classified by it. An update
+    saying "corrects the session handoff" was read as a full handoff doc and
+    silently replaced PROJECT NOTES instead of appending to the updates log.
+    A doc's type is stated by its title, not by whatever it mentions in passing.
+    """
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("#"):
+            return stripped.lstrip("#").strip().upper()
+        return stripped.upper()
+    return ""
+
+
 def is_handoff_doc(path: Path, text: str) -> bool:
     name = path.stem.lower()
     if any(hint in name for hint in HANDOFF_FILENAME_HINTS):
         return True
-    head = text[:500].upper()
-    return any(hint in head for hint in HANDOFF_HEADING_HINTS)
+    return any(hint in _title_line(text) for hint in HANDOFF_HEADING_HINTS)
 
 
 def is_update_doc(path: Path, text: str) -> bool:
@@ -95,8 +128,7 @@ def is_update_doc(path: Path, text: str) -> bool:
     name = path.stem.lower()
     if any(hint in name for hint in UPDATE_FILENAME_HINTS):
         return True
-    head = text[:500].upper()
-    return any(hint in head for hint in UPDATE_HEADING_HINTS)
+    return any(hint in _title_line(text) for hint in UPDATE_HEADING_HINTS)
 
 
 def compress_with_local_ai(raw_text: str):
@@ -216,17 +248,36 @@ def append_update(text: str, source_name: str):
 
 
 def _parse_update_entries():
-    """Split the updates log back into individual timestamped entries."""
+    """Split the updates log back into individual timestamped entries.
+
+    Only a header written by append_update() starts a new entry — that is,
+    '### <YYYY-MM-DD HH:MM:SS> — <source>'. Splitting on every '\\n### ' used to
+    promote any ### subheading *inside* an update body to a top-level entry,
+    which both invented entries that were never logged and truncated the real
+    entry they were lifted out of. Update bodies are free to use ### headings.
+    """
     if not UPDATES_LOG_PATH.exists():
         return []
     raw = UPDATES_LOG_PATH.read_text(encoding="utf-8")
-    chunks = raw.split("\n### ")
+    starts = [m.start() for m in UPDATE_ENTRY_HEADER_RE.finditer(raw)]
+
+    if not starts:
+        # No recognisable headers (an old or hand-edited log). Return the whole
+        # thing as one entry rather than dropping content on the floor.
+        whole = raw.strip()
+        return [whole] if whole else []
+
     entries = []
-    for i, chunk in enumerate(chunks):
-        chunk = chunk.strip()
-        if not chunk:
-            continue
-        entries.append(chunk if chunk.startswith("### ") else "### " + chunk)
+    preamble = raw[:starts[0]].strip()
+    if preamble:
+        # Anything written before the first header is kept, not discarded.
+        entries.append(preamble)
+
+    bounds = starts + [len(raw)]
+    for i in range(len(starts)):
+        chunk = raw[bounds[i]:bounds[i + 1]].strip()
+        if chunk:
+            entries.append(chunk)
     return entries
 
 

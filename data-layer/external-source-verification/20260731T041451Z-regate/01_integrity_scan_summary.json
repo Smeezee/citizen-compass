@@ -1,0 +1,54 @@
+{
+  "run": "20260731T041451Z re-gate",
+  "performed_utc": "2026-08-01",
+  "purpose": "Re-gate source 1 with the fixed integrity_scan.py. Its original gate 5 pass came from the version that globbed *.json and never opened non-JSON files.",
+  "snapshot_path": "data-layer/external-sources/scunpacked-data/snapshots/20260731T041451Z",
+  "gate_script": "scripts/external_sources/integrity_scan.py (post-coverage-fix)",
+  "coverage": {
+    "files_seen": 28993,
+    "files_scanned": 28993,
+    "files_unscanned": 0,
+    "unscanned": [],
+    "walk_errors": [],
+    "complete": true
+  },
+  "content_indicator_hits": 0,
+  "files_with_unexpected_domains": 1,
+  "flagged_files": [
+    {
+      "file": "/.git/hooks/fsmonitor-watchman.sample",
+      "unexpected_domains": {
+        "facebook.github.io": {
+          "count": 1,
+          "sample_urls": [
+            "https://facebook.github.io/watchman/)"
+          ]
+        }
+      }
+    }
+  ],
+  "distinct_domains_found": {
+    "github.com": 4,
+    "facebook.github.io": 1
+  },
+  "files_requiring_replacement_decoding": [
+    "/.git/index",
+    "/.git/objects/pack/pack-8c326a0bcd401f881f24f91f8e87d23ac1d19765.idx",
+    "/.git/objects/pack/pack-8c326a0bcd401f881f24f91f8e87d23ac1d19765.pack",
+    "/.git/objects/pack/pack-8c326a0bcd401f881f24f91f8e87d23ac1d19765.rev"
+  ],
+  "verdict": "FAIL - unexpected_domains is non-empty. Benign in substance (see assessment) but the gate criterion is not met, so no status was changed and the snapshot was not touched.",
+  "assessment": {
+    "facebook.github.io": "One occurrence, in .git/hooks/fsmonitor-watchman.sample - a stock file shipped with every git installation, linking to the Watchman docs. Not third-party content from the data source.",
+    "dot_git_directory_present": "33 files under .git/, invisible to the previous *.json-globbing gate. Includes a live remote (https://github.com/StarCitizenWiki/scunpacked-data.git) and pack objects.",
+    "active_git_hooks": [
+      "post-checkout",
+      "post-commit",
+      "post-merge",
+      "pre-push"
+    ],
+    "active_git_hooks_assessment": "All four read (reading is permitted; executing is not). Verbatim stock Git LFS hooks, 350-360 bytes each, installed locally by git lfs install during the clone. Each shells out to git lfs <verb>. Nothing injected, nothing authored by the data source.",
+    "implication": "The snapshot is not inert: a git pull inside that folder would mutate data described as an immutable snapshot, and the LFS hooks fire on git operations. Whether .git belongs in a data snapshot is an open decision - and removal would mean moving it to _to_delete/, never deleting."
+  },
+  "per_file_report": "01_integrity_scan_perfile.json - 10.4 MB, gitignored as regenerable; re-run integrity_scan.py against the same path to reproduce it."
+}

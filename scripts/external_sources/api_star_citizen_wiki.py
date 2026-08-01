@@ -97,13 +97,22 @@ def get_with_retry(url: str, params: dict, max_retries: int = 5) -> "tuple[reque
     # substitution (no different endpoint, no approximation) - it's the
     # documented-correct way to ride out a genuinely flaky upstream.
     #
-    # Correction 2026-07-31: an earlier version of this comment described the
-    # /vehicles HTML 500 at page[size]=200 as "intermittent" and "transient",
-    # inferred from 2-of-3 manual attempts failing. That was wrong. The probe
-    # of 2026-07-31 showed the failure is deterministic at page[size]=200 and
-    # absent at 20 and 50, so retrying it was never going to help - see
-    # PAGE_SIZE_OVERRIDES. Retry stays for real transients (429s, genuine
-    # upstream blips); it is not a fix for a bad request parameter.
+    # Correction 2026-07-31, amended 2026-08-01: an earlier version of this
+    # comment described the /vehicles HTML 500 at page[size]=200 as
+    # "intermittent" and "transient", inferred from 2-of-3 manual attempts
+    # failing, and treated retrying as the answer. That framing was wrong.
+    #
+    # The amendment matters: the fix comment first called the failure
+    # "deterministic", which overstated the evidence by one data point. The full
+    # record at page[size]=200 is 1 success in ~14 known attempts - run 1: 5/5
+    # failed; run 2: 5/5 failed; run 1's manual curl tests: 2 of 3 failed, 1
+    # SUCCEEDED; the 2026-07-31 probe: 1/1 failed. So it is near-deterministic,
+    # not absolute, and the manifest's single recorded success is real rather
+    # than a contradiction. Either way retrying 200 was never the answer, since
+    # 20 and 50 both return valid JSON - see PAGE_SIZE_OVERRIDES.
+    #
+    # Retry stays for real transients (429s, genuine upstream blips); it is not
+    # a fix for a bad request parameter.
     #
     # Timeout and ConnectionError are retryable here too. GET is idempotent, so
     # re-issuing the identical request is safe - it cannot double-create

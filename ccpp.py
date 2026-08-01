@@ -113,7 +113,7 @@ class CitizenCompassPacket:
             if hardpoints.exists():
                 ship_data["files"].append("hardpoints.json")
                 try:
-                    with open(hardpoints, "r") as f:
+                    with open(hardpoints, "r", encoding="utf-8") as f:
                         hp_data = json.load(f)
                         ship_data["hardpoints_count"] = len(
                             hp_data.get("hardpoints", [])
@@ -274,7 +274,7 @@ class CitizenCompassPacket:
         packet_json = json.dumps(packet, indent=2).encode()
         packet["metadata"]["checksum"] = hashlib.sha256(packet_json).hexdigest()[:16]
 
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(packet, f, indent=2)
 
         print(f"✅ Packet saved: {filename}")
@@ -282,7 +282,12 @@ class CitizenCompassPacket:
 
     def load(self, filename):
         """Load packet from file."""
-        with open(filename, "r") as f:
+        # JSON is UTF-8 by spec (RFC 8259). Without an explicit encoding these
+        # fall back to the Windows ANSI codepage (cp1252), which cannot decode
+        # non-ASCII ship names - e.g. the Xi'an "...an'tok.yaai" path raised
+        # UnicodeDecodeError on byte 0x81 and took the whole handoff
+        # regeneration down with it. The file was always valid; the reader was not.
+        with open(filename, "r", encoding="utf-8") as f:
             packet = json.load(f)
 
         self.metadata = packet.get("metadata", {})

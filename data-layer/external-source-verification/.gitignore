@@ -3,3 +3,10 @@
 # The durable evidence - verification-report.json, SHA256SUMS.txt,
 # duplicates.json, run-manifest.json and verify.log - IS tracked.
 journal.jsonl
+
+# Full per-file integrity_scan reports carry one entry per file scanned - 10.4 MB
+# for the 28,993-file source 1 snapshot - and are reproduced by re-running
+# integrity_scan.py against the same path. The summary written alongside them
+# (01_integrity_scan_summary.json: coverage, findings, flagged files, verdict)
+# IS tracked.
+*_perfile.json
