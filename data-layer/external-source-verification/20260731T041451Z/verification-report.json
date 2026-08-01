@@ -1,0 +1,43 @@
+{
+  "schema": "citizen-compass/snapshot-verification/1.0",
+  "generated_utc": "2026-07-31T08:10:15Z",
+  "snapshot_path": "C:\\Users\\david\\citizen-compass\\data-layer\\external-sources\\scunpacked-data\\snapshots\\20260731T041451Z.partial",
+  "read_only": true,
+  "totals": {
+    "files": 28993,
+    "bytes": 6069879130,
+    "json_files": 28959,
+    "non_json_files": 34,
+    "git_internal_files": 33
+  },
+  "coverage": {
+    "files_enumerated": 28993,
+    "files_inspected": 28993,
+    "files_unreadable": 0,
+    "json_files_found": 28959,
+    "json_files_parsed_ok": 28959,
+    "json_files_parse_failed": 0,
+    "inspection_complete": true,
+    "note": "Every enumerated file was hashed and every .json file was parsed. 'inspection_complete' is false if the walk hit an error or any file could not be inspected - in that case this run does NOT constitute full coverage and should not be reported as such. This supersedes the manifest's 'sampled, not exhaustive: 40 of 28,959' entry only when it is true."
+  },
+  "findings": {
+    "read_errors": 0,
+    "json_parse_failures": 0,
+    "extension_content_mismatch": 0,
+    "files_with_active_content_indicators": 0,
+    "files_with_unexpected_domains": 0,
+    "duplicate_hash_groups": 2,
+    "walk_errors": 0
+  },
+  "indicator_totals": {},
+  "unexpected_domain_totals": {},
+  "detail": {
+    "read_errors": [],
+    "json_parse_failures": [],
+    "extension_content_mismatch": [],
+    "files_with_active_content_indicators": [],
+    "files_with_unexpected_domains": [],
+    "walk_errors": []
+  },
+  "truncation_note": "Detail lists are capped at 200 entries each so this report stays readable. The journal.jsonl beside it holds every file's full record, untruncated - nothing was silently dropped."
+}

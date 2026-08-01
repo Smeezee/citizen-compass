@@ -1,0 +1,31 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260731T031754Z",
+  "source_number": 6,
+  "source_name": "UEX Corp API",
+  "source_type": "REST API (credential presence check only - no requests made)",
+  "canonical_source_url": "https://uexcorp.space/api/",
+  "utc_retrieval_time_start": "2026-07-31T03:17:30Z",
+  "utc_retrieval_time_end": "2026-07-31T03:17:45Z",
+  "snapshot_status": "blocked_missing_credentials",
+  "snapshot_path": null,
+  "previous_snapshot_run_id": null,
+  "scope_note": "Per this run's explicit instructions: did not pull anything from this source. Only checked whether a local UEX Corp API token/credential is already configured somewhere in the project.",
+  "investigation_performed": [
+    "Grepped repo (excluding .git) for 'uexcorp', 'uex_corp', 'uex.corp', 'UEX_API', 'UEXCORP' across .py/.env*/.json/.md/.yml/.yaml files.",
+    "All matches inspected in context: hits in data-layer/raw/*/​*_api_raw.json are an embedded 'uex_prices' field and 'uex_link' URL from the star-citizen.wiki API's own response data (third-party price references, not a credential). One hit in an archived handoff doc is a price-comparison mention in prose ('UEX/RSI store'), not a credential.",
+    "Checked .env directly for any 'uex'-prefixed key - none present.",
+    "No .env.example exists in this repo to check for a documented-but-unset UEX variable.",
+    "Grepped .cfg/.ini/.toml files for 'uex' - none found (no such config files use this pattern in the repo)."
+  ],
+  "conclusion": "No UEX Corp API token or credential is configured anywhere in this project. Per this run's instructions, this maps to status blocked_missing_credentials (as opposed to skipped_by_design, which would apply if a credential existed and pulling was deliberately declined anyway). No token value was ever present to print or log - none exists.",
+  "endpoints": [],
+  "reported_total_records": null,
+  "downloaded_total_records": {},
+  "errors_or_skipped_endpoints": [],
+  "scope_boundaries_hit": "None - stayed within the credential-presence-check-only scope for this source.",
+  "license_terms_status": "not evaluated - no request made",
+  "attribution_url": null,
+  "retrieval_script": null,
+  "integrity_scan": null
+}

@@ -1,0 +1,138 @@
+[2026-07-31T08:04:07Z] ======================================================================
+[2026-07-31T08:04:07Z] verify_snapshot.py - READ-ONLY verification
+[2026-07-31T08:04:07Z] snapshot: C:\Users\david\citizen-compass\data-layer\external-sources\scunpacked-data\snapshots\20260731T041451Z.partial
+[2026-07-31T08:04:07Z] output:   C:\Users\david\citizen-compass\data-layer\external-source-verification\20260731T041451Z
+[2026-07-31T08:04:07Z] enumerating files (this can take a minute on a large tree)...
+[2026-07-31T08:04:07Z] found 28993 file(s); 0 walk error(s)
+[2026-07-31T08:04:07Z] 28993 file(s) still to verify
+[2026-07-31T08:04:28Z]   250/28993 files  1902 MiB  12.2 files/s  ETA ~39 min
+[2026-07-31T08:04:30Z]   500/28993 files  1906 MiB  21.9 files/s  ETA ~22 min
+[2026-07-31T08:04:33Z]   750/28993 files  1911 MiB  29.6 files/s  ETA ~16 min
+[2026-07-31T08:04:35Z]   1000/28993 files  1916 MiB  36.0 files/s  ETA ~13 min
+[2026-07-31T08:04:38Z]   1250/28993 files  1922 MiB  41.3 files/s  ETA ~11 min
+[2026-07-31T08:04:40Z]   1500/28993 files  1927 MiB  45.8 files/s  ETA ~10 min
+[2026-07-31T08:04:43Z]   1750/28993 files  1937 MiB  49.5 files/s  ETA ~9 min
+[2026-07-31T08:04:46Z]   2000/28993 files  1958 MiB  52.3 files/s  ETA ~9 min
+[2026-07-31T08:04:48Z]   2250/28993 files  1970 MiB  55.1 files/s  ETA ~8 min
+[2026-07-31T08:04:51Z]   2500/28993 files  1988 MiB  57.3 files/s  ETA ~8 min
+[2026-07-31T08:04:54Z]   2750/28993 files  2006 MiB  59.0 files/s  ETA ~7 min
+[2026-07-31T08:04:57Z]   3000/28993 files  2028 MiB  60.3 files/s  ETA ~7 min
+[2026-07-31T08:05:00Z]   3250/28993 files  2042 MiB  61.7 files/s  ETA ~7 min
+[2026-07-31T08:05:03Z]   3500/28993 files  2057 MiB  62.9 files/s  ETA ~7 min
+[2026-07-31T08:05:06Z]   3750/28993 files  2076 MiB  64.3 files/s  ETA ~7 min
+[2026-07-31T08:05:08Z]   4000/28993 files  2096 MiB  65.7 files/s  ETA ~6 min
+[2026-07-31T08:05:11Z]   4250/28993 files  2119 MiB  67.1 files/s  ETA ~6 min
+[2026-07-31T08:05:13Z]   4500/28993 files  2135 MiB  68.5 files/s  ETA ~6 min
+[2026-07-31T08:05:16Z]   4750/28993 files  2150 MiB  69.6 files/s  ETA ~6 min
+[2026-07-31T08:05:18Z]   5000/28993 files  2170 MiB  70.6 files/s  ETA ~6 min
+[2026-07-31T08:05:21Z]   5250/28993 files  2188 MiB  71.6 files/s  ETA ~6 min
+[2026-07-31T08:05:23Z]   5500/28993 files  2207 MiB  72.6 files/s  ETA ~5 min
+[2026-07-31T08:05:26Z]   5750/28993 files  2225 MiB  73.5 files/s  ETA ~5 min
+[2026-07-31T08:05:28Z]   6000/28993 files  2247 MiB  74.3 files/s  ETA ~5 min
+[2026-07-31T08:05:31Z]   6250/28993 files  2268 MiB  74.9 files/s  ETA ~5 min
+[2026-07-31T08:05:33Z]   6500/28993 files  2283 MiB  75.6 files/s  ETA ~5 min
+[2026-07-31T08:05:36Z]   6750/28993 files  2299 MiB  76.0 files/s  ETA ~5 min
+[2026-07-31T08:05:39Z]   7000/28993 files  2315 MiB  76.3 files/s  ETA ~5 min
+[2026-07-31T08:05:43Z]   7250/28993 files  2391 MiB  75.5 files/s  ETA ~5 min
+[2026-07-31T08:05:46Z]   7500/28993 files  2418 MiB  75.7 files/s  ETA ~5 min
+[2026-07-31T08:05:50Z]   7750/28993 files  2450 MiB  75.5 files/s  ETA ~5 min
+[2026-07-31T08:05:53Z]   8000/28993 files  2474 MiB  75.6 files/s  ETA ~5 min
+[2026-07-31T08:05:57Z]   8250/28993 files  2501 MiB  75.6 files/s  ETA ~5 min
+[2026-07-31T08:06:00Z]   8500/28993 files  2538 MiB  75.4 files/s  ETA ~5 min
+[2026-07-31T08:06:03Z]   8750/28993 files  2582 MiB  75.5 files/s  ETA ~4 min
+[2026-07-31T08:06:06Z]   9000/28993 files  2617 MiB  75.8 files/s  ETA ~4 min
+[2026-07-31T08:06:09Z]   9250/28993 files  2641 MiB  76.2 files/s  ETA ~4 min
+[2026-07-31T08:06:13Z]   9500/28993 files  2728 MiB  75.7 files/s  ETA ~4 min
+[2026-07-31T08:06:17Z]   9750/28993 files  2822 MiB  75.1 files/s  ETA ~4 min
+[2026-07-31T08:06:20Z]   10000/28993 files  2837 MiB  75.7 files/s  ETA ~4 min
+[2026-07-31T08:06:22Z]   10250/28993 files  2851 MiB  76.1 files/s  ETA ~4 min
+[2026-07-31T08:06:25Z]   10500/28993 files  2865 MiB  76.4 files/s  ETA ~4 min
+[2026-07-31T08:06:27Z]   10750/28993 files  2892 MiB  76.7 files/s  ETA ~4 min
+[2026-07-31T08:06:30Z]   11000/28993 files  2901 MiB  77.2 files/s  ETA ~4 min
+[2026-07-31T08:06:32Z]   11250/28993 files  2913 MiB  77.6 files/s  ETA ~4 min
+[2026-07-31T08:06:35Z]   11500/28993 files  2926 MiB  78.0 files/s  ETA ~4 min
+[2026-07-31T08:06:37Z]   11750/28993 files  2937 MiB  78.4 files/s  ETA ~4 min
+[2026-07-31T08:06:40Z]   12000/28993 files  2948 MiB  78.7 files/s  ETA ~4 min
+[2026-07-31T08:06:43Z]   12250/28993 files  2969 MiB  78.6 files/s  ETA ~4 min
+[2026-07-31T08:06:47Z]   12500/28993 files  3008 MiB  78.3 files/s  ETA ~4 min
+[2026-07-31T08:06:51Z]   12750/28993 files  3048 MiB  78.0 files/s  ETA ~3 min
+[2026-07-31T08:06:55Z]   13000/28993 files  3090 MiB  77.6 files/s  ETA ~3 min
+[2026-07-31T08:06:58Z]   13250/28993 files  3116 MiB  77.6 files/s  ETA ~3 min
+[2026-07-31T08:07:01Z]   13500/28993 files  3126 MiB  77.9 files/s  ETA ~3 min
+[2026-07-31T08:07:04Z]   13750/28993 files  3164 MiB  77.8 files/s  ETA ~3 min
+[2026-07-31T08:07:07Z]   14000/28993 files  3193 MiB  77.9 files/s  ETA ~3 min
+[2026-07-31T08:07:10Z]   14250/28993 files  3232 MiB  77.9 files/s  ETA ~3 min
+[2026-07-31T08:07:13Z]   14500/28993 files  3250 MiB  78.1 files/s  ETA ~3 min
+[2026-07-31T08:07:16Z]   14750/28993 files  3269 MiB  78.3 files/s  ETA ~3 min
+[2026-07-31T08:07:19Z]   15000/28993 files  3332 MiB  78.2 files/s  ETA ~3 min
+[2026-07-31T08:07:24Z]   15250/28993 files  3444 MiB  77.5 files/s  ETA ~3 min
+[2026-07-31T08:07:28Z]   15500/28993 files  3500 MiB  77.4 files/s  ETA ~3 min
+[2026-07-31T08:07:31Z]   15750/28993 files  3539 MiB  77.5 files/s  ETA ~3 min
+[2026-07-31T08:07:33Z]   16000/28993 files  3564 MiB  77.7 files/s  ETA ~3 min
+[2026-07-31T08:07:36Z]   16250/28993 files  3590 MiB  77.9 files/s  ETA ~3 min
+[2026-07-31T08:07:39Z]   16500/28993 files  3618 MiB  78.0 files/s  ETA ~3 min
+[2026-07-31T08:07:41Z]   16750/28993 files  3639 MiB  78.2 files/s  ETA ~3 min
+[2026-07-31T08:07:44Z]   17000/28993 files  3652 MiB  78.5 files/s  ETA ~3 min
+[2026-07-31T08:07:47Z]   17250/28993 files  3675 MiB  78.7 files/s  ETA ~2 min
+[2026-07-31T08:07:50Z]   17500/28993 files  3728 MiB  78.7 files/s  ETA ~2 min
+[2026-07-31T08:07:53Z]   17750/28993 files  3785 MiB  78.6 files/s  ETA ~2 min
+[2026-07-31T08:07:57Z]   18000/28993 files  3833 MiB  78.5 files/s  ETA ~2 min
+[2026-07-31T08:07:59Z]   18250/28993 files  3855 MiB  78.7 files/s  ETA ~2 min
+[2026-07-31T08:08:02Z]   18500/28993 files  3878 MiB  78.9 files/s  ETA ~2 min
+[2026-07-31T08:08:04Z]   18750/28993 files  3888 MiB  79.2 files/s  ETA ~2 min
+[2026-07-31T08:08:07Z]   19000/28993 files  3930 MiB  79.2 files/s  ETA ~2 min
+[2026-07-31T08:08:10Z]   19250/28993 files  3944 MiB  79.4 files/s  ETA ~2 min
+[2026-07-31T08:08:13Z]   19500/28993 files  4000 MiB  79.3 files/s  ETA ~2 min
+[2026-07-31T08:08:17Z]   19750/28993 files  4076 MiB  79.1 files/s  ETA ~2 min
+[2026-07-31T08:08:20Z]   20000/28993 files  4101 MiB  79.2 files/s  ETA ~2 min
+[2026-07-31T08:08:23Z]   20250/28993 files  4131 MiB  79.3 files/s  ETA ~2 min
+[2026-07-31T08:08:26Z]   20500/28993 files  4168 MiB  79.4 files/s  ETA ~2 min
+[2026-07-31T08:08:28Z]   20750/28993 files  4193 MiB  79.5 files/s  ETA ~2 min
+[2026-07-31T08:08:31Z]   21000/28993 files  4210 MiB  79.7 files/s  ETA ~2 min
+[2026-07-31T08:08:34Z]   21250/28993 files  4254 MiB  79.7 files/s  ETA ~2 min
+[2026-07-31T08:08:37Z]   21500/28993 files  4281 MiB  79.8 files/s  ETA ~2 min
+[2026-07-31T08:08:39Z]   21750/28993 files  4311 MiB  79.9 files/s  ETA ~2 min
+[2026-07-31T08:08:43Z]   22000/28993 files  4348 MiB  80.0 files/s  ETA ~1 min
+[2026-07-31T08:08:45Z]   22250/28993 files  4366 MiB  80.1 files/s  ETA ~1 min
+[2026-07-31T08:08:47Z]   22500/28993 files  4369 MiB  80.4 files/s  ETA ~1 min
+[2026-07-31T08:08:49Z]   22750/28993 files  4373 MiB  80.7 files/s  ETA ~1 min
+[2026-07-31T08:08:51Z]   23000/28993 files  4376 MiB  81.0 files/s  ETA ~1 min
+[2026-07-31T08:08:54Z]   23250/28993 files  4382 MiB  81.2 files/s  ETA ~1 min
+[2026-07-31T08:08:56Z]   23500/28993 files  4400 MiB  81.4 files/s  ETA ~1 min
+[2026-07-31T08:08:59Z]   23750/28993 files  4431 MiB  81.4 files/s  ETA ~1 min
+[2026-07-31T08:09:02Z]   24000/28993 files  4447 MiB  81.6 files/s  ETA ~1 min
+[2026-07-31T08:09:05Z]   24250/28993 files  4504 MiB  81.5 files/s  ETA ~1 min
+[2026-07-31T08:09:08Z]   24500/28993 files  4541 MiB  81.5 files/s  ETA ~1 min
+[2026-07-31T08:09:11Z]   24750/28993 files  4575 MiB  81.5 files/s  ETA ~1 min
+[2026-07-31T08:09:14Z]   25000/28993 files  4599 MiB  81.6 files/s  ETA ~1 min
+[2026-07-31T08:09:17Z]   25250/28993 files  4639 MiB  81.6 files/s  ETA ~1 min
+[2026-07-31T08:09:20Z]   25500/28993 files  4690 MiB  81.5 files/s  ETA ~1 min
+[2026-07-31T08:09:24Z]   25750/28993 files  4731 MiB  81.4 files/s  ETA ~1 min
+[2026-07-31T08:09:26Z]   26000/28993 files  4756 MiB  81.5 files/s  ETA ~1 min
+[2026-07-31T08:09:30Z]   26250/28993 files  4832 MiB  81.4 files/s  ETA ~1 min
+[2026-07-31T08:09:34Z]   26500/28993 files  4906 MiB  81.2 files/s  ETA ~1 min
+[2026-07-31T08:09:36Z]   26750/28993 files  4931 MiB  81.3 files/s  ETA ~0 min
+[2026-07-31T08:09:39Z]   27000/28993 files  4963 MiB  81.4 files/s  ETA ~0 min
+[2026-07-31T08:09:48Z]   27250/28993 files  5237 MiB  80.1 files/s  ETA ~0 min
+[2026-07-31T08:09:52Z]   27500/28993 files  5315 MiB  79.9 files/s  ETA ~0 min
+[2026-07-31T08:09:54Z]   27750/28993 files  5334 MiB  80.1 files/s  ETA ~0 min
+[2026-07-31T08:09:57Z]   28000/28993 files  5372 MiB  80.1 files/s  ETA ~0 min
+[2026-07-31T08:10:01Z]   28250/28993 files  5447 MiB  79.9 files/s  ETA ~0 min
+[2026-07-31T08:10:07Z]   28500/28993 files  5634 MiB  79.2 files/s  ETA ~0 min
+[2026-07-31T08:10:11Z]   28750/28993 files  5727 MiB  79.0 files/s  ETA ~0 min
+[2026-07-31T08:10:15Z] inspection complete: 28993 file(s) this run
+[2026-07-31T08:10:15Z] ----------------------------------------------------------------------
+[2026-07-31T08:10:15Z] files verified ......... 28993
+[2026-07-31T08:10:15Z] total bytes ............ 5.65 GiB
+[2026-07-31T08:10:15Z] json files parsed ...... 28959
+[2026-07-31T08:10:15Z] json parse FAILURES .... 0
+[2026-07-31T08:10:15Z] ext/content MISMATCH ... 0
+[2026-07-31T08:10:15Z] active-content hits .... 0 file(s)
+[2026-07-31T08:10:15Z] unexpected domains ..... 0 file(s)
+[2026-07-31T08:10:15Z] duplicate hash groups .. 2
+[2026-07-31T08:10:15Z] read errors ............ 0
+[2026-07-31T08:10:15Z] walk errors ............ 0
+[2026-07-31T08:10:15Z] ----------------------------------------------------------------------
+[2026-07-31T08:10:15Z] report:  C:\Users\david\citizen-compass\data-layer\external-source-verification\20260731T041451Z\verification-report.json
+[2026-07-31T08:10:15Z] hashes:  C:\Users\david\citizen-compass\data-layer\external-source-verification\20260731T041451Z\SHA256SUMS.txt
+[2026-07-31T08:10:15Z] DONE. Nothing in the snapshot was modified.

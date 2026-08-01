@@ -1,0 +1,36 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260731T031754Z",
+  "source_number": 5,
+  "source_name": "saladin1980/sc_datapack",
+  "source_type": "GitHub repository (inspection only, no clone/pull of the pipeline itself)",
+  "canonical_source_url": "https://github.com/saladin1980/sc_datapack",
+  "utc_retrieval_time_start": "2026-07-31T03:18:00Z",
+  "utc_retrieval_time_end": "2026-07-31T03:18:45Z",
+  "snapshot_status": "not_directly_downloadable",
+  "snapshot_path": null,
+  "previous_snapshot_run_id": null,
+  "scope_note": "Per this run's explicit instructions: checked ONLY whether a directly downloadable generated dataset exists. Did NOT run runner.py, did NOT install its dependencies, did NOT attempt to access Data.p4k, did NOT execute any of its code, did NOT clone the repo - only read text/metadata (GitHub API repo/contents/releases listings, and the README.md text) needed to answer the yes/no question.",
+  "investigation_performed": [
+    "GitHub API repo listing: root contains .env.example, .gitignore, DOCS/, Data_Extraction/, README.md, SCRIPTS/, Tools/, patches/, reports/, runner.py - i.e. a pipeline you run yourself, not a published dataset.",
+    "GitHub Releases API: one release found, tag 'hailstorm-v1', titled 'Defiance Hailstorm Armor - Model Files', asset hailstorm_export.zip. This is a single scoped one-off release (3D model files for one specific armor set per its own title), not the general ships/components/armor/weapons/items/shops dataset the README describes - does not satisfy 'a real JSON/data file you can pull' for the actual dataset in question. Not downloaded (out of scope per the yes/no framing - it doesn't answer yes to the question asked).",
+    "README.md (fetched as raw text from the default branch, not executed) confirms the pipeline 'Produces human-readable HTML reference reports and machine-readable JSON exports from raw game data' and links live HTML reports at https://saladin1980.github.io/sc_datapack/ for Ships(257), Components(1791), Armor(2208), Weapons(618), Ground Vehicles(27), Items(501), Shops(6300+).",
+    "Checked the gh-pages branch (GitHub API contents listing) directly for a data/ directory or raw JSON files alongside the published HTML reports - found only .html report files (armor_preview.html, components_preview.html, ships_preview.html, etc.), no JSON assets.",
+    "HEAD-equivalent checks (HTTP status only, no body retained) against likely JSON asset paths on the live pages site (data/, ships.json, reports/ships.json) - all returned 404."
+  ],
+  "conclusion": "No directly downloadable JSON/data file exists for the actual generated dataset this source produces. The HTML reports are pre-rendered pages, not backed by a separately fetchable JSON export at any discovered path. The one real downloadable release asset (hailstorm-v1) is a scoped, unrelated one-off (armor 3D model files for a single item), not the general dataset. Per instructions, stopped here rather than running the pipeline.",
+  "endpoints": [],
+  "reported_total_records": null,
+  "downloaded_total_records": {},
+  "errors_or_skipped_endpoints": [],
+  "scope_boundaries_hit": "Did not run runner.py, install dependencies, touch Data.p4k, or execute any repo code, per explicit instruction. Did not download the unrelated hailstorm-v1 release asset since it doesn't answer the yes/no question in scope.",
+  "license_terms_status": "not evaluated - no data pulled",
+  "attribution_url": "https://github.com/saladin1980/sc_datapack",
+  "retrieval_script": null,
+  "integrity_scan": null,
+  "observations_for_the_record": {
+    "hailstorm-v1_release_exists": true,
+    "hailstorm-v1_asset_url": "https://github.com/saladin1980/sc_datapack/releases/download/hailstorm-v1/hailstorm_export.zip",
+    "hailstorm-v1_description": "Defiance Hailstorm Armor - Model Files (not pulled, out of scope for this yes/no check)"
+  }
+}

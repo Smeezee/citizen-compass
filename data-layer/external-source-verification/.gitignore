@@ -1,0 +1,5 @@
+# Per-file verification journals are regenerable and large (~10-12 MB each):
+# re-running verify_snapshot_v2.py against the same snapshot reproduces them.
+# The durable evidence - verification-report.json, SHA256SUMS.txt,
+# duplicates.json, run-manifest.json and verify.log - IS tracked.
+journal.jsonl

@@ -1,0 +1,39 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260731T031754Z",
+  "source_number": 4,
+  "source_name": "starcitizen.tools Action API",
+  "source_type": "MediaWiki Action API",
+  "canonical_source_url": "https://starcitizen.tools/api.php",
+  "utc_retrieval_time_start": "2026-07-31T03:19:00Z",
+  "utc_retrieval_time_end": "2026-07-31T03:20:30Z",
+  "snapshot_status": "blocked_missing_provenance",
+  "snapshot_path": null,
+  "previous_snapshot_run_id": null,
+  "stop_condition_triggered": "Per this run's explicit instruction: 'if the exact original query, parameters, continuation method, category definitions, or generating script cannot be proven from repository evidence (not inferred, not approximated from matching record counts), do NOT attempt to reconstruct or approximate it.' No repository evidence proving the claimed existing armor(1,168)/weapons(414) dataset's provenance was found.",
+  "investigation_performed": [
+    "Grepped entire repo (excluding .git, venv) for '1,168', '1168 items', '414 items', 'starcitizen.tools', 'Action API', 'action=query' - no generating script, docs, or handoff entry describing an armor/weapons pull from starcitizen.tools was found.",
+    "Grepped app/models.py for an Armor model/table - none exists.",
+    "Searched data-layer/**/*.json for any file matching an armor or weapons dataset of the claimed size - none found. Only ship-hardpoint component files exist (Arrow's weapons/turrets/missiles under data-layer/processed/hardpoints_by_type/), which are a different, hand-curated dataset unrelated to a general FPS armor/weapons pull.",
+    "Grepped for MediaWiki Action API query patterns (action=query, list=allpages, cmcontinue, apcontinue) across .py/.md files - zero matches anywhere in the repo.",
+    "Found DIRECT CONTRADICTING evidence instead: docs/HARDPOINT_MOUNT_TYPES.md and docs/handoff_archive/20260730_020610_update_overnight_queue_complete.md both record that direct fetches of starcitizen.tools were explicitly BLOCKED with HTTP 403 in this project's actual history ('direct fetches of starcitizen.tools and the Fandom wiki were blocked, 403', 'starcitizen.tools/Arrow (403)'), and a separate handoff records starcitizen.tools WebFetch attempts timing out. This is the opposite of a proven-successful prior armor/weapons pull from this source."
+  ],
+  "conclusion": "The premise that an existing armor(1,168 items)/weapons(414 items) dataset was successfully sourced from starcitizen.tools is not supported by any repository evidence, and existing evidence points the other way (starcitizen.tools fetches were historically blocked/403 in this project). Did not guess at query parameters, category definitions, or a continuation method. No pull attempted.",
+  "note_on_status_value_naming": "This run's STOP CONDITION section names the status 'blocked_missing_original_provenance' but the canonical allowed status-value list at the top of the run's instructions lists 'blocked_missing_provenance' instead. Used the canonical list's exact value here; flagging the spec's own internal inconsistency for the record.",
+  "reproducibility_evidence_missing": {
+    "original_query_or_script": "not found",
+    "parameters": "not found",
+    "continuation_method": "not found",
+    "category_definitions": "not found",
+    "generating_script": "not found"
+  },
+  "endpoints": [],
+  "reported_total_records": null,
+  "downloaded_total_records": {},
+  "errors_or_skipped_endpoints": ["entire source skipped per stop condition - no request made"],
+  "scope_boundaries_hit": "Explicit STOP CONDITION per this run's instructions - did not attempt a broad wiki crawl or approximate the original method from matching record counts.",
+  "license_terms_status": "not evaluated - no pull attempted",
+  "attribution_url": null,
+  "retrieval_script": null,
+  "integrity_scan": null
+}

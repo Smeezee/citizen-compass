@@ -1,0 +1,98 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260731T031754Z",
+  "source_number": 2,
+  "source_name": "scunpacked.com",
+  "source_type": "REST API (2 fixed JSON endpoints)",
+  "canonical_source_url": "https://scunpacked.com",
+  "label": "Historical legacy schema - not evidence of current game state",
+  "utc_retrieval_time_start": "2026-07-31T03:21:00Z",
+  "utc_retrieval_time_end": "2026-07-31T03:21:03Z",
+  "snapshot_status": "complete",
+  "snapshot_path": "data-layer/external-sources/scunpacked.com/snapshots/20260731T031754Z",
+  "previous_snapshot_run_id": null,
+  "license_terms_status": "unknown - no LICENSE or terms text found at the endpoints pulled; not asserted either way",
+  "attribution_url": "https://scunpacked.com",
+  "retrieval_script": {
+    "path": "scripts/external_sources/scunpacked_com.py",
+    "sha256": "5ef441f382bb2769ba2070a67a97a916baaaad2bd48727304cfccd12c337b198"
+  },
+  "scope_note": "Pulled ONLY the two documented endpoints in scope (/api/v2/ships.json, /api/labels.json). Did not crawl for sibling endpoints - none noticed at these two paths beyond what's documented in this run's original instructions.",
+  "endpoints": [
+    {
+      "name": "ships",
+      "request_url": "https://scunpacked.com/api/v2/ships.json",
+      "http_status_code": 200,
+      "redirects": [],
+      "content_type": "application/json",
+      "etag": "\"63754d94-7a541\"",
+      "last_modified": "Wed, 16 Nov 2022 20:52:36 GMT",
+      "file_path": "data-layer/external-sources/scunpacked.com/snapshots/20260731T031754Z/ships.json",
+      "byte_size": 501057,
+      "sha256": "5ddfa68f4b04a3cca852fa49ddb193d66a6fb8b037606fd666599a51045f5f8f",
+      "page_count": 1,
+      "record_count": 156,
+      "unique_primary_key_count": 156,
+      "duplicate_primary_key_count": 0,
+      "primary_key_field_assumed": "ClassName",
+      "response_top_level_keys": "bare JSON array (no top-level object keys)",
+      "response_structure_fingerprint": "dcb452a982945e5e",
+      "record_structure_fingerprint": "cf0959621d67a3aa",
+      "record_structure_top_level_keys": ["Career","Cargo","ClassName","Crew","DamageBeforeDestruction","DamageBeforeDetach","Description","FlightCharacteristics","Insurance","IsSpaceship","MannedTurrets","Manufacturer","Mass","Name","OperationsCrew","PilotHardpoints","Propulsion","QuantumTravel","RemoteTurrets","Role","Size","WeaponCrew"],
+      "pagination_structure_fingerprint": "not paginated - single response",
+      "source_last_updated_value": "Wed, 16 Nov 2022 20:52:36 GMT (Last-Modified header)",
+      "detected_game_versions": "not embedded in this legacy schema - no version field found in sampled records"
+    },
+    {
+      "name": "labels",
+      "request_url": "https://scunpacked.com/api/labels.json",
+      "http_status_code": 200,
+      "redirects": [],
+      "content_type": "application/json",
+      "etag": "\"63754d94-665632\"",
+      "last_modified": "Wed, 16 Nov 2022 20:52:36 GMT",
+      "file_path": "data-layer/external-sources/scunpacked.com/snapshots/20260731T031754Z/labels.json",
+      "byte_size": 6706738,
+      "sha256": "b275f5377cf74e2135554bb38ac6b32ad02e8d54af04ecf0ae08509cf1b75502",
+      "page_count": 1,
+      "record_count": 63375,
+      "unique_primary_key_count": 63375,
+      "duplicate_primary_key_count": 0,
+      "primary_key_field_assumed": "JSON object key (label ID)",
+      "response_top_level_keys": "bare JSON object, 63375 keys",
+      "response_structure_fingerprint": "de50f489511b3aa2",
+      "record_structure_fingerprint": "n/a - flat key:string map, not an array of records",
+      "pagination_structure_fingerprint": "not paginated - single response",
+      "source_last_updated_value": "Wed, 16 Nov 2022 20:52:36 GMT (Last-Modified header)",
+      "detected_game_versions": "not embedded - flat label-ID to display-string map"
+    }
+  ],
+  "reported_total_records": "not applicable - no total/meta count returned by either endpoint, only the raw bodies",
+  "downloaded_total_records": {"ships": 156, "labels": 63375},
+  "first_page_number": 1,
+  "last_page_number": 1,
+  "pagination_terminated_normally": true,
+  "errors_or_skipped_endpoints": [],
+  "other_endpoints_noticed_but_not_pulled": [],
+  "scope_boundaries_hit": "None beyond the fixed 2-endpoint scope itself.",
+  "integrity_scan": {
+    "json_parse_check": "pass - both files parse as valid JSON",
+    "file_type_inspection": "pass - both files confirmed JSON text (not HTML/executable) via `file` command and manual header inspection",
+    "malware_scan": {
+      "scanner": "Microsoft Defender (MpCmdRun.exe -Scan -ScanType 3)",
+      "report_only_mode_confirmed": false,
+      "report_only_mode_note": "Set-MpPreference calls to force Allow/report-only threat actions failed with 'You don't have enough permissions to perform the requested operation' - this PowerShell session is not elevated. The scan itself ran successfully under Defender's existing (unconfigured/default, value 0) threat-action settings, which were never actually changed. Restore step was therefore a no-op since nothing had changed. Result: no threats found.",
+      "result": "no threats found",
+      "scanned_path": "data-layer/external-sources/scunpacked.com/snapshots/20260731T031754Z.partial"
+    },
+    "content_indicator_scan": {
+      "indicators_checked": ["<script","javascript:","data:text/html","onload=","onerror=","onclick=","<iframe","<object","<embed"],
+      "hits": "none in ships.json or labels.json"
+    },
+    "domain_scan": {
+      "unexpected_domains_found": "none",
+      "note": "No embedded http(s) URLs were found in either file's string values."
+    }
+  },
+  "record_counts_are_completeness_check_only_note": "The record counts above (156 ships, 63375 labels) confirm this run retrieved everything the endpoint returned - they are NOT evidence that this legacy dataset agrees with any other source in this run. This dataset is explicitly labeled historical/legacy and last modified 2022-11-16, predating current game state by years."
+}

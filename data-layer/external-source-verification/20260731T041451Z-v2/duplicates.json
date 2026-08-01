@@ -1,0 +1,11 @@
+{
+  "bc3b5627347711d82187e733a7822b8e8c06ccf1369149ab8c13c0420c7de062": [
+    ".git/lfs/objects/bc/3b/bc3b5627347711d82187e733a7822b8e8c06ccf1369149ab8c13c0420c7de062",
+    "items.json"
+  ],
+  "cba4981adeb045e07bec6e74c44df28bababd788df149dcae9000a3e12e9f59a": [
+    ".git/logs/HEAD",
+    ".git/logs/refs/heads/master",
+    ".git/logs/refs/remotes/origin/HEAD"
+  ]
+}

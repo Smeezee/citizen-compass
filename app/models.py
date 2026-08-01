@@ -194,7 +194,6 @@ class Component(VerifiableMixin, Base):
     __table_args__ = (
         VerifiableMixin.confidence_check("components"),
         UniqueConstraint("class_name", name="uq_components_class_name"),
-        Index("ix_components_component_type_id", "component_type_id"),
     )
 
     component_type_id: Mapped[int] = mapped_column(

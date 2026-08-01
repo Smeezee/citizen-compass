@@ -1,0 +1,54 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260731T031754Z",
+  "source_number": 1,
+  "source_name": "StarCitizenWiki/scunpacked-data",
+  "source_type": "git repository clone",
+  "canonical_source_url": "https://github.com/StarCitizenWiki/scunpacked-data.git",
+  "utc_retrieval_time_start": "2026-07-31T03:30:40Z",
+  "utc_retrieval_time_end": "2026-07-31T03:47:00Z",
+  "snapshot_status": "failed",
+  "snapshot_path": "data-layer/external-sources/scunpacked-data/snapshots/20260731T031754Z.partial",
+  "previous_snapshot_run_id": null,
+  "failure_reason": "Elapsed-time ceiling: clone was killed after exceeding the run's 10-minute retry/elapsed ceiling (ran ~16m24s, 03:30:40Z-03:47:04Z) without completing. Not a repeated-failure retry scenario like source 3's vehicles endpoint - this was a single, unbroken, error-free transfer the whole time (git reported no errors, no retries, no dropped connections) that was simply too large/slow to finish within the ceiling given available bandwidth. GitHub-reported repo size is 1,451,508 KB (~1.42GB); ~759MB (~52%) had transferred by the time it was stopped.",
+  "why_this_is_failed_not_partial": "Unlike source 3's page-by-page JSON pulls, a git clone is all-or-nothing: refs, HEAD, and a checked-out working tree are only written once the full pack transfer completes. Interrupting it leaves .git/objects and .git/refs empty (confirmed below) - there is no usable partial state, no commit to point to, nothing that would pass git fsck. Correctly classified failed, not partial.",
+  "verification_confirming_failure": {
+    "objects_dir": "empty (0 loose objects, confirmed via directory listing)",
+    "refs_dir": "empty (no branch refs written)",
+    "head_file": "not present in .git/",
+    "important_caught_and_corrected_error": "A first attempt to check HEAD via `cd <partial-dir> && git rev-parse HEAD` appeared to return a valid-looking commit hash (55ac44d6347...). This was WRONG and would have been a false report if not caught: because the nested .git here is empty/invalid, git's repository-discovery walked UP the directory tree and silently resolved to the citizen-compass project's own top-level .git instead (confirmed by re-running with `git -C <absolute-path>` and observing `git status` report citizen-compass's own tracked files with relative paths like '../../../../../.gitignore' - i.e. it had escaped 5 directories up to the real repo root). Independently verified this hash matches citizen-compass's actual current HEAD (`git -C C:/Users/david/citizen-compass rev-parse HEAD` returns the identical hash), which is unrelated to scunpacked-data entirely. No commit hash from this source is reported anywhere in this manifest - none exists.",
+    "conclusion": "git_head_commit, git_root_tree, git_fsck_result, and git_worktree_clean are all N/A - no valid clone was ever produced to check."
+  },
+  "known_hazard_left_behind_not_deleted": "This snapshot's .partial folder contains an empty, invalid nested .git directory (data-layer/external-sources/scunpacked-data/snapshots/20260731T031754Z.partial/.git). Per this run's FOLDER STRUCTURE instruction, failed snapshot data is left in place, not deleted - but flagging explicitly: any git command run FROM inside that folder (or subfolders of it) without an explicit -C/absolute-path safeguard will silently resolve to the parent citizen-compass repository instead of erroring, exactly as demonstrated above. This is a real footgun for anyone poking around that folder later. Left as-is per instruction; recommend the user delete this empty .partial folder by hand if/when convenient, since it holds zero recoverable data.",
+  "clone_setup_confirmed_before_failure": {
+    "recurse_submodules_disabled": true,
+    "core_autocrlf_disabled": true,
+    "clone_command_used": "git clone --no-recurse-submodules -c core.autocrlf=false https://github.com/StarCitizenWiki/scunpacked-data.git <dest>",
+    "canonical_url_verification": "not reached - clone never completed far enough to run `git remote -v` meaningfully inside a valid repo; the target URL passed to the clone command itself was manually confirmed character-for-character against the canonical URL before starting (https://github.com/StarCitizenWiki/scunpacked-data.git), but post-hoc verification of the actual remote config in the resulting repo was not possible since no valid repo resulted."
+  },
+  "retrieval_reproducibility": {
+    "exact_commands_in_order": [
+      "git clone --no-recurse-submodules -c core.autocrlf=false https://github.com/StarCitizenWiki/scunpacked-data.git data-layer/external-sources/scunpacked-data/snapshots/<timestamp>.partial"
+    ],
+    "tool_versions": "git version not explicitly captured before the run - recommend capturing `git --version` output at the start of any retry",
+    "retry_backoff_behavior": "None applied - this was a single continuous clone attempt, never restarted or retried. Stopped once via kill after exceeding the elapsed-time ceiling; not re-attempted this run.",
+    "script_path": null,
+    "script_note": "A script wasn't used for this source - a one-off git clone invocation was run directly per this run's own RETRIEVAL REPRODUCIBILITY guidance for cases where a script isn't practical. The exact command above is the full reproduction record."
+  },
+  "license_terms_status": "unconfirmed for the data itself, per explicit instruction not to assume MIT just because separate API software elsewhere is MIT-licensed - moot for this run since no data was retrieved anyway.",
+  "attribution_url": "https://github.com/StarCitizenWiki/scunpacked-data",
+  "git_head_commit": null,
+  "git_root_tree": null,
+  "git_branch": null,
+  "git_origin_url": "https://github.com/StarCitizenWiki/scunpacked-data.git (as passed to clone; never independently re-verified against a resulting valid repo)",
+  "git_fsck_result": "not run - no valid repository to check",
+  "git_worktree_clean": "not applicable - no working tree was ever checked out",
+  "endpoints": [],
+  "reported_total_records": null,
+  "downloaded_total_records": {},
+  "bytes_transferred_estimate": "~759 MB of ~1,451,508 KB (~1.42GB) reported repo size, ~52%",
+  "errors_or_skipped_endpoints": ["entire clone failed - exceeded elapsed-time ceiling before completion, no retries attempted"],
+  "scope_boundaries_hit": "None related to data scope - this was purely a time/bandwidth constraint, not a scope decision.",
+  "integrity_scan": null,
+  "record_counts_are_completeness_check_only_note": "Not applicable - zero records were retrieved from this source."
+}

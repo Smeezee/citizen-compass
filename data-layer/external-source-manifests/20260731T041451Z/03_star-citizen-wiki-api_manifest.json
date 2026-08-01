@@ -1,0 +1,119 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260731T041451Z",
+  "source_number": 3,
+  "source_name": "api.star-citizen.wiki",
+  "source_type": "REST API (OpenAPI 3.0, pinned game version, paginated JSON:API-style)",
+  "canonical_source_url": "https://api.star-citizen.wiki",
+  "rerun_context": "Targeted rerun of source 3 only, following the original run 20260731T031754Z where items was deliberately stopped mid-pagination (5/62 pages) by operator instruction and manufacturers was never attempted. This rerun is fully self-contained - no data was copied or stitched from the previous snapshot.",
+  "previous_snapshot_run_id": "20260731T031754Z",
+  "previous_snapshot_outcome": "partial - vehicles failed (5/5 HTTP 500), items partial (5/62 pages, deliberately stopped), manufacturers not attempted",
+  "utc_retrieval_time_start": "2026-07-31T04:17:00Z",
+  "utc_retrieval_time_end": "2026-07-31T04:20:00Z",
+  "snapshot_status": "partial",
+  "snapshot_path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260731T041451Z.partial",
+  "snapshot_stays_partial_reason": "FOLDER STRUCTURE finalization gate criterion (1) 'all expected files present' fails - vehicles collection has 0 usable records after exhausting the retry ceiling for the second consecutive run. This snapshot will never be renamed out of .partial for this run.",
+  "requested_game_version": "4.9.0-LIVE.12232306",
+  "embedded_detected_game_version": "4.9.0-LIVE.12232306 - re-fetched fresh from /api/game-versions/default at the start of this rerun (not assumed/copied from the prior run), returned byte-identical to the previous run's capture, including an identical meta.processed_at timestamp (2026-07-30 19:37:32) - indicates the API's 'default' version pointer genuinely has not changed since the prior run, confirmed by a fresh request, not by assumption.",
+  "openapi_document_sha256": "8b259bb9a44c1355e87228f1708a2913ad2d80298dce7d3da2c0ee984498a589",
+  "openapi_version": "3.0.0",
+  "openapi_refetched_this_run": true,
+  "license_terms_status": "MIT (API itself, per openapi.yaml info.license) - underlying game data attribution per spec text: sourced from game files, RSI website, and community contributions",
+  "attribution_url": "https://star-citizen.wiki",
+  "retrieval_script": {
+    "path": "scripts/external_sources/api_star_citizen_wiki.py",
+    "note": "Reused unchanged from the original run (script takes output-dir and pinned-version as arguments, no run-specific hardcoding) - same script, fresh invocation, new output directory."
+  },
+  "preliminary_requests": [
+    {
+      "name": "game_version_default",
+      "url": "https://api.star-citizen.wiki/api/game-versions/default",
+      "http_status_code": 200,
+      "file_path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260731T041451Z.partial/game_version_default.json",
+      "byte_size": 162,
+      "sha256": "824f0d57210dde632725eb7edf6a423380a7f2421d0044a63b1f225468c830b3"
+    },
+    {
+      "name": "openapi_spec",
+      "url": "https://api.star-citizen.wiki/api/openapi",
+      "http_status_code": 200,
+      "file_path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260731T041451Z.partial/openapi.yaml",
+      "byte_size": 710528,
+      "sha256": "8b259bb9a44c1355e87228f1708a2913ad2d80298dce7d3da2c0ee984498a589"
+    }
+  ],
+  "collections": [
+    {
+      "name": "vehicles",
+      "collection_status": "failed",
+      "failure_reason": "Retry ceiling hit again: 5/5 attempts, all HTTP 500 at page[size]=200, identical failure pattern to the previous run (20260731T031754Z).",
+      "failing_request": "GET https://api.star-citizen.wiki/api/vehicles?version=4.9.0-LIVE.12232306&page%5Bsize%5D=200&page%5Bnumber%5D=1",
+      "attempt_count_exact": 5,
+      "last_http_status": 500,
+      "last_response_content_type": "text/html (HTML error page, confirmed not JSON)",
+      "backoff_schedule_seconds_exact": [3, 6, 9, 12, 15],
+      "records_collected": 0,
+      "file_saved": {
+        "path": "vehicles_page_1.json",
+        "byte_size": 40622,
+        "sha256": "3c5ad5fc9c89c136da23df39447d6b6807cd82c168fdf35a4c84f3094ded6e7f",
+        "note": "HTML error body retained, not deleted, per FOLDER STRUCTURE instruction."
+      },
+      "did_not_substitute_or_approximate": true,
+      "cross_run_significance": "This is the SECOND independent run to hit the identical HTTP 500 / same-params failure on this exact endpoint, hours apart (previous run ~03:22-03:44 UTC, this run ~04:17-04:20 UTC). Two independent failures with the same signature is meaningfully stronger evidence of a persistent upstream fault specific to the vehicles collection at page[size]=200 than a single run alone - this is very unlikely to be transient/coincidental at this point, though still not proof of root cause (could be a server-side bug specific to this collection/page-size combination, a WAF/proxy issue, or a backend timeout on a large collection)."
+    },
+    {
+      "name": "items",
+      "collection_status": "complete",
+      "reason": "Full pagination completed this run, self-contained from page 1 (NOT a resume/stitch from the previous run's partial pages).",
+      "pinned_version": "4.9.0-LIVE.12232306",
+      "page_size_used": 200,
+      "pages_fetched": 62,
+      "reported_last_page": 62,
+      "reported_total_records": 12283,
+      "downloaded_total_records": 12283,
+      "pagination_terminated_normally": true,
+      "retries_needed": "0 - every one of the 62 pages succeeded on first attempt, zero 429s, zero 5xx",
+      "unique_primary_key_count": "not separately deduplicated in this manifest pass due to time budget - all 62 pages individually confirmed valid JSON (see integrity_scan)",
+      "response_top_level_keys": ["data", "included", "links", "meta"],
+      "pagination_structure_fingerprint": "JSON:API-style: meta.current_page/last_page/per_page/total, links array"
+    },
+    {
+      "name": "manufacturers",
+      "collection_status": "complete",
+      "reason": "First successful attempt at this collection - never reached in the previous run.",
+      "pinned_version": "4.9.0-LIVE.12232306",
+      "page_size_used": 200,
+      "pages_fetched": 1,
+      "reported_last_page": 1,
+      "reported_total_records": 152,
+      "downloaded_total_records": 152,
+      "pagination_terminated_normally": true,
+      "retries_needed": 0,
+      "note": "Confirmed for the record (as flagged in the previous run before this collection was even attempted): this endpoint's OpenAPI spec does not list a 'version' filter parameter the way vehicles/items do. The version parameter was still passed on this request per this run's instruction not to let it float, even though the endpoint may not use it - single page returned regardless, consistent with manufacturers not being version-scoped data."
+    }
+  ],
+  "reported_total_records": {"vehicles": "unknown - never returned valid JSON", "items": 12283, "manufacturers": 152},
+  "downloaded_total_records": {"vehicles": 0, "items": 12283, "manufacturers": 152},
+  "first_page_number": 1,
+  "last_page_number": {"vehicles": null, "items": 62, "manufacturers": 1},
+  "pagination_terminated_normally": {"vehicles": false, "items": true, "manufacturers": true},
+  "integrity_scan": {
+    "json_parse_check": "All 64 non-vehicles files (62 items pages + 1 manufacturers page + game_version_default.json; openapi.yaml is YAML not JSON) confirmed to parse successfully, checked individually (not sampled - full check, dataset was small enough). vehicles_page_1.json confirmed to FAIL parse - it's the HTML error body, exactly as expected and previously flagged.",
+    "file_type_inspection": "1 HTML-error-page-where-JSON-expected flagged (vehicles_page_1.json), same as the previous run. No executables, DLLs, scripts-as-files, or archives found among any other downloaded file.",
+    "content_indicator_scan": {
+      "indicators_checked": ["<script", "javascript:", "data:text/html", "onload=", "onerror=", "onclick=", "<iframe", "<object", "<embed"],
+      "hits": "vehicles_page_1.json only - same error-page Alpine.js theme-toggle boilerplate as previously identified, not evidence of injected content in real data. All 62 items pages and manufacturers page: zero hits."
+    },
+    "domain_scan": "not run this pass due to the 90-minute run backstop approaching - flagged as not completed for this rerun, not claimed clean. (The prior run's domain scan on the equivalent failed vehicles response found only the wiki's own error-page analytics domain, analytics.octofox.de - likely to recur here given the identical HTML error body, but not independently re-confirmed this run.)",
+    "malware_scan": {
+      "scanner": "Microsoft Defender (MpCmdRun.exe)",
+      "attempted": false,
+      "reason_not_attempted": "Same time-budget constraint as source 1's manifest this run - approaching the 90-minute global backstop with POSTFLIGHT and the inbox update still required. Not run, not falsely claimed.",
+      "report_only_mode_confirmed": false
+    }
+  },
+  "record_counts_are_completeness_check_only_note": "Item/manufacturer record counts above confirm pagination completeness against this API's own reported totals - they are not evidence that this data agrees with any other source in this project (scunpacked.com, scunpacked-data, or the existing app database). No cross-source comparison was performed.",
+  "errors_or_skipped_endpoints": ["vehicles - see collections[0] above"],
+  "scope_boundaries_hit": "None beyond the documented vehicles/items/manufacturers/game-version scope."
+}

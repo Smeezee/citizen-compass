@@ -1,0 +1,147 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260731T031754Z",
+  "source_number": 3,
+  "source_name": "api.star-citizen.wiki",
+  "source_type": "REST API (OpenAPI 3.0, pinned game version, paginated JSON:API-style)",
+  "canonical_source_url": "https://api.star-citizen.wiki",
+  "utc_retrieval_time_start": "2026-07-31T03:22:49Z",
+  "utc_retrieval_time_end": "2026-07-31T03:44:00Z",
+  "snapshot_status": "partial",
+  "snapshot_path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260731T031754Z.partial",
+  "snapshot_stays_partial_reason": "FOLDER STRUCTURE finalization gate criterion (1) 'all expected files present' fails - vehicles collection has 0 usable records after exhausting the retry ceiling, and manufacturers was never attempted before the run was capped. This snapshot will never be renamed out of .partial for this run.",
+  "previous_snapshot_run_id": null,
+  "requested_game_version": "4.9.0-LIVE.12232306",
+  "embedded_detected_game_version": "4.9.0-LIVE.12232306 (confirmed present in sampled item records' game_version field)",
+  "openapi_document_sha256": "8b259bb9a44c1355e87228f1708a2913ad2d80298dce7d3da2c0ee984498a589",
+  "openapi_version": "3.0.0 (Star Citizen Wiki API document version 3.0.0, fetched from /api/openapi)",
+  "license_terms_status": "MIT (per openapi.yaml info.license: name=MIT, url=https://opensource.org/licenses/MIT) - applies to the API itself; underlying game data attribution per the spec's own text: 'sourced from game files, RSI website, and community contributions'",
+  "attribution_url": "https://star-citizen.wiki",
+  "retrieval_script": {
+    "path": "scripts/external_sources/api_star_citizen_wiki.py",
+    "sha256": "9dff68c153555a7697a659e498570b2107099b05fc9fbefbb1c851998ad1f366"
+  },
+  "post_processing_script": {
+    "path": "scripts/external_sources/finalize_star_citizen_wiki.py",
+    "sha256": "280ebf65b20b0a145f6d9f7717703d67b9acd18d715b90f0986a399c233de05c",
+    "note": "Not a retrieval script - computes completeness/fingerprint stats from already-downloaded pages for this manifest."
+  },
+  "preliminary_requests": [
+    {
+      "name": "openapi_spec",
+      "url": "https://api.star-citizen.wiki/api/openapi",
+      "http_status_code": 200,
+      "content_type": "application/yaml",
+      "file_path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260731T031754Z.partial/openapi.yaml",
+      "byte_size": 710528,
+      "sha256": "8b259bb9a44c1355e87228f1708a2913ad2d80298dce7d3da2c0ee984498a589"
+    },
+    {
+      "name": "game_version_default",
+      "url": "https://api.star-citizen.wiki/api/game-versions/default",
+      "http_status_code": 200,
+      "content_type": "application/json",
+      "file_path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260731T031754Z.partial/game_version_default.json",
+      "byte_size": 162,
+      "sha256": "824f0d57210dde632725eb7edf6a423380a7f2421d0044a63b1f225468c830b3",
+      "response_body": "{\"data\":{\"code\":\"4.9.0-LIVE.12232306\",\"channel\":\"live\",\"released_at\":\"2026-07-16T00:00:00+00:00\",\"is_default\":true},\"meta\":{\"processed_at\":\"2026-07-30 19:37:32\"}}"
+    }
+  ],
+  "collections": [
+    {
+      "name": "vehicles",
+      "collection_status": "failed",
+      "failure_reason": "Retry ceiling hit: HTTP 500 on every attempt at page[size]=200. Confirmed reproducible by 3 independent manual curl tests before the scripted pull even started (2 of 3 manual attempts also failed 500, 1 succeeded) - a real, intermittent upstream fault at this page size, not a one-off.",
+      "failing_request": "GET https://api.star-citizen.wiki/api/vehicles?version=4.9.0-LIVE.12232306&page%5Bsize%5D=200&page%5Bnumber%5D=1",
+      "attempt_count_exact": 5,
+      "last_http_status": 500,
+      "last_response_content_type": "text/html (confirmed body: '<!DOCTYPE html>...<title>500 - System Malfunction</title>...', not JSON)",
+      "backoff_schedule_seconds_exact": [3, 6, 9, 12, 15],
+      "total_scheduled_backoff_seconds_exact": 45,
+      "total_elapsed_wall_clock_note": "Precise per-attempt timestamps were not logged by the retry loop (only sequential attempt-number markers). Bracketed via file-mtime checks: the tail end of the cascade (attempt 4/5 logged, through attempt 5/5, the final 15s backoff sleep, and the transition to the next collection) completed within a 16-second window (03:34:53Z to 03:35:09Z). Combined with the deterministic 45s of scheduled backoff and 5 sub-5-second HTTP round trips (confirmed via 3 manual curl timing tests against the same endpoint/params: 3.6s, 3.6s, 4.9s), total elapsed time for the full 5-attempt cascade was on the order of 60-70 seconds - well under both the 5-attempt cap and the 10-minute elapsed-time cap. The retry loop self-terminated at exactly attempt 5 per its own max_retries=5 setting (built before the standing retry-ceiling policy was stated, but already compliant with it).",
+      "records_collected": 0,
+      "file_saved": {
+        "path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260731T031754Z.partial/vehicles_page_1.json",
+        "byte_size": 40622,
+        "sha256": "3c5ad5fc9c89c136da23df39447d6b6807cd82c168fdf35a4c84f3094ded6e7f",
+        "note": "Contains the HTML error page body, not vehicle data. Retained per FOLDER STRUCTURE instruction to never delete a .partial folder's contents."
+      },
+      "did_not_substitute_or_approximate": true
+    },
+    {
+      "name": "items",
+      "collection_status": "partial",
+      "reason": "Deliberately stopped mid-pagination by explicit operator instruction (cap source 3 and proceed to POSTFLIGHT) - NOT a retry-ceiling failure. Every page requested up to the stop point succeeded on the first attempt (zero 429s, zero 5xx, zero retries needed).",
+      "pinned_version": "4.9.0-LIVE.12232306",
+      "page_size_used": 200,
+      "pages_fetched": 5,
+      "reported_last_page": 62,
+      "reported_total_records": 12283,
+      "downloaded_total_records": 1000,
+      "first_page_number": 1,
+      "last_page_number_fetched": 5,
+      "pagination_terminated_normally": false,
+      "unique_primary_key_count": 1000,
+      "duplicate_primary_key_count": 0,
+      "primary_key_field_assumed": "uuid",
+      "response_top_level_keys": ["data", "included", "links", "meta"],
+      "record_structure_fingerprint": "computed per-page - see _collection_analysis.json in the snapshot folder for full detail",
+      "pagination_structure_fingerprint": "JSON:API-style: meta.current_page/last_page/per_page/total/from/to, links array with page-number entries",
+      "files_saved": [
+        {"path": "items_page_1.json", "byte_size": 1043997, "sha256": "d1d1972f95e96240eae2d846454bf07b8f77ce284787fa98640b814ebd611cfb", "record_count": 200},
+        {"path": "items_page_2.json", "byte_size": 1676734, "sha256": "ebda3b278132e90ded037619199f0df4907a97bb965d3ec5396deec8190260fa", "record_count": 200},
+        {"path": "items_page_3.json", "byte_size": 861262, "sha256": "7a9a57cba9810b2e3157889fc50a66ae7252a3bdc0ace552357ce2fdc3e62632", "record_count": 200},
+        {"path": "items_page_4.json", "byte_size": 1524569, "sha256": "6e68ccac96436d86da77995a2dd29cb134e04ba71b31fa10eb84aaeae98e175f", "record_count": 200},
+        {"path": "items_page_5.json", "byte_size": 1643314, "sha256": "11bc2baf4268c5b585220de4b7cd1a4dbc773b365ff21b485783fabe7d3b6fad", "record_count": 200}
+      ],
+      "did_not_substitute_or_approximate": true
+    },
+    {
+      "name": "manufacturers",
+      "collection_status": "not_attempted",
+      "reason": "Run was capped (see items above) before pagination reached this collection - zero requests were made.",
+      "note": "This endpoint's own OpenAPI parameter list does not include the 'version' filter (only vehicles and items do) - manufacturers are apparently not treated as version-scoped by this API. Flagging for the record even though no request was made: had this collection been reached, the version parameter would still have been passed on every request per this run's instruction, even though the endpoint may not use it.",
+      "pages_fetched": 0,
+      "downloaded_total_records": 0
+    }
+  ],
+  "reported_total_records": {"vehicles": "unknown - never returned valid JSON", "items": 12283, "manufacturers": "unknown - not attempted"},
+  "downloaded_total_records": {"vehicles": 0, "items": 1000, "manufacturers": 0},
+  "first_page_number": 1,
+  "last_page_number": {"vehicles": null, "items": 5, "manufacturers": null},
+  "pagination_terminated_normally": false,
+  "errors_or_skipped_endpoints": [
+    "vehicles: failed after 5 attempts, HTTP 500 every time (see collections[0] above)",
+    "manufacturers: skipped entirely - run capped before reaching it"
+  ],
+  "scope_boundaries_hit": "Pulled ONLY vehicles/items/manufacturers/game-version as instructed - no other collections requested. Did not substitute a different endpoint, page size choice was kept identical to what was specified (200) throughout all 5 vehicles retry attempts rather than silently dropping to a smaller size that manual testing showed was more reliable (page[size]=20 succeeded on a manual test) - that would have been an approximation/workaround of the failing request, not a straight retry, so it was not done without asking first.",
+  "integrity_scan": {
+    "json_parse_check": {
+      "items_page_1_through_5": "pass - all 5 valid JSON",
+      "vehicles_page_1": "FAIL - not valid JSON, confirmed to be an HTML error document saved where JSON was expected (flagged per this run's file-type inspection requirement for API sources)"
+    },
+    "file_type_inspection": "1 HTML-error-page-where-JSON-expected flagged (vehicles_page_1.json). No executables, DLLs, scripts-as-files, or archives found among any downloaded file.",
+    "malware_scan": {
+      "scanner": "Microsoft Defender (MpCmdRun.exe -Scan -ScanType 3)",
+      "report_only_mode_confirmed": false,
+      "report_only_mode_note": "Same permission limitation as source 2 - Set-MpPreference could not be applied (non-elevated session). Scan ran under Defender's existing default (unconfigured) settings.",
+      "result": "no threats found",
+      "scanned_path": "data-layer/external-sources/api.star-citizen.wiki/snapshots/20260731T031754Z.partial"
+    },
+    "content_indicator_scan": {
+      "indicators_checked": ["<script","javascript:","data:text/html","onload=","onerror=","onclick=","<iframe","<object","<embed"],
+      "hits": {
+        "items_page_1_through_5": "none",
+        "vehicles_page_1.json": "3x '<script' - but this is the API's own generic error-page template (Alpine.js theme toggle boilerplate), not evidence of injected content into actual data. Flagged per protocol anyway since it matched an indicator string, per instruction to report even in otherwise-explainable cases."
+      }
+    },
+    "domain_scan": {
+      "items_page_1_through_5": "no unexpected domains found in string values",
+      "vehicles_page_1.json": {
+        "unexpected_domains_found": {"analytics.octofox.de": {"count": 1, "sample_urls": ["https://analytics.octofox.de/js/script.js"]}},
+        "assessment": "This is the Star Citizen Wiki site's own analytics script reference embedded in their generic error-page HTML template, not part of any actual vehicle/item data record. Not on the allowlist (which covers SC-data domains, not the wiki's own front-end analytics vendor). Flagged, not remediated, per protocol - do not delete or auto-fix."
+      }
+    }
+  },
+  "record_counts_are_completeness_check_only_note": "The 1,000 items records collected are a partial sample (8.1% of the reported 12,283 total) confirming the endpoint and pagination mechanics work correctly for items specifically - they are NOT evidence that this dataset agrees with scunpacked.com, scunpacked-data, or any other source in this run, and are far too incomplete to be treated as a full items dataset for any downstream use."
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "citizen-compass/snapshot-verification/2.0",
+  "scanner_version": "2.0.0",
+  "config_fingerprint": "27f538c731f4a762256bae6e0a0f9c087b315f1a01bf2e2c208030d753cbb473",
+  "generated_utc": "2026-07-31T23:34:44Z",
+  "snapshot_path": "C:\\Users\\david\\citizen-compass\\data-layer\\external-sources\\scunpacked-data\\snapshots\\20260731T041451Z.partial",
+  "read_only": true,
+  "what_this_is_not": "NOT a malware scan. No AV signatures, no archive unpacking, no binary analysis, no sandboxing. A real AV pass is still required before releasing a snapshot from quarantine.",
+  "coverage": {
+    "inspection_complete": true,
+    "incomplete_reasons": [],
+    "files_enumerated": 28993,
+    "files_inspected": 28993,
+    "files_unreadable": 0,
+    "files_without_hash": 0,
+    "json_files_found": 28959,
+    "json_parsed_strictly": 28957,
+    "json_structural_only": 2,
+    "json_parse_failed": 0,
+    "json_without_verdict": 0,
+    "symlinks_or_reparse_points_refused": 0,
+    "files_changed_during_run": 0,
+    "files_appeared_during_run": 0,
+    "files_vanished_during_run": 0,
+    "stale_journal_records_excluded": 0
+  },
+  "findings": {
+    "read_errors": 0,
+    "json_parse_failures": 0,
+    "extension_content_mismatch": 0,
+    "files_with_active_content_indicators": 0,
+    "files_with_unexpected_domains": 0,
+    "duplicate_hash_groups": 2,
+    "walk_errors": 0,
+    "link_like_entries": 0
+  },
+  "indicator_totals": {},
+  "unexpected_domain_totals": {},
+  "detail": {
+    "read_errors": [],
+    "json_parse_failures": [],
+    "extension_content_mismatch": [],
+    "files_with_active_content_indicators": [],
+    "files_with_unexpected_domains": [],
+    "link_like_entries": [],
+    "files_changed_during_run": [],
+    "files_appeared_during_run": [],
+    "files_vanished_during_run": [],
+    "stale_journal_records": [],
+    "walk_errors": []
+  },
+  "truncation_note": "Detail lists cap at 200 entries. journal.jsonl beside this file holds every record untruncated - nothing was silently dropped."
+}
