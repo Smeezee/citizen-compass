@@ -18,11 +18,35 @@ from app.database import Base
 CONFIDENCE_LEVELS = ("unverified", "low", "medium", "high", "verified")
 SHIP_STATUSES = ("purchasable", "pledge_only")
 
+# CC-12 natural-key fallback. components.class_name is NOT NULL and unique
+# because it is what importers upsert on. When a component's real in-game class
+# name is genuinely absent upstream, importers must mint a deterministic
+# synthetic key rather than leaving the column NULL - a NULL would silently
+# re-open the duplicate-row hole the NOT NULL closed, because Postgres allows
+# unlimited NULLs under a unique constraint.
+#
+# Form: CC_SYNTH_<component_type_key>_<slugified name>. Deterministic, so the
+# same component yields the same key on every run and upserts idempotently.
+# A synthetic key is always visibly synthetic - it is never presented as a real
+# in-game identifier, per rule 11.
+SYNTHETIC_CLASS_NAME_PREFIX = "CC_SYNTH_"
 
-class VerifiableMixin:
-    """Common provenance/audit columns shared by every reference table."""
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+class ProvenanceMixin:
+    """Provenance/audit columns, WITHOUT a primary key.
+
+    Split out of VerifiableMixin 2026-08-01 for CC-10. The detail tables
+    (weapon_details, missile_details, ...) key on component_id, so inheriting
+    VerifiableMixin directly would add its `id` alongside component_id and
+    produce a COMPOSITE primary key ['component_id', 'id'] - and
+    Base.metadata.create_all() accepts that silently rather than raising. That
+    silent acceptance is itself a rule 12 case: nothing in checks/ touches those
+    tables, so no existing check would have caught it.
+
+    Tables that want provenance AND a surrogate id keep using VerifiableMixin,
+    which is unchanged. Tables that already have their own primary key use this.
+    """
+
     created_at: Mapped[datetime.datetime] = mapped_column(
         server_default=func.now()
     )
@@ -40,6 +64,17 @@ class VerifiableMixin:
             f"confidence IN {CONFIDENCE_LEVELS}",
             name=f"ck_{table_name}_confidence_valid",
         )
+
+
+class VerifiableMixin(ProvenanceMixin):
+    """Common provenance/audit columns shared by every reference table.
+
+    ProvenanceMixin plus a surrogate integer primary key. Behaviour is
+    identical to before the 2026-08-01 split - every table already using this
+    is unaffected.
+    """
+
+    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 class Patch(VerifiableMixin, Base):
@@ -90,6 +125,12 @@ class Ship(VerifiableMixin, Base):
         Index(
             "ix_ships_role_trgm", "role",
             postgresql_using="gin", postgresql_ops={"role": "gin_trgm_ops"},
+        ),
+        # CC-12 (2026-08-01): ships had no unique constraint at all, so an
+        # importer run twice produced duplicate ships. Both columns are already
+        # NOT NULL, so this constraint has no NULL-escape hatch.
+        UniqueConstraint(
+            "name", "manufacturer_id", name="uq_ships_name_manufacturer_id"
         ),
     )
 
@@ -203,11 +244,20 @@ class Component(VerifiableMixin, Base):
         ForeignKey("manufacturers.id"), index=True
     )
     name: Mapped[str] = mapped_column(String(150), nullable=False)
-    # In-game internal class name (e.g. "MRCK_S03_BEHR_Dual_S02") - not
-    # always known yet, but when present it's the natural key importers
-    # upsert on (per ARCHITECTURE_DECISIONS.md section 2's pipeline contract)
-    # and it's unique per Star Citizen's own data model.
-    class_name: Mapped[str | None] = mapped_column(String(150))
+    # In-game internal class name (e.g. "MRCK_S03_BEHR_Dual_S02"). This is the
+    # natural key importers upsert on (per ARCHITECTURE_DECISIONS.md section 2's
+    # pipeline contract) and it is unique per Star Citizen's own data model.
+    #
+    # NOT NULL since CC-12 (2026-08-01). It was previously nullable while
+    # sitting under uq_components_class_name, and Postgres permits unlimited
+    # NULLs in a unique constraint - so the constraint allowed unlimited
+    # duplicate rows on the very field importers dedupe by. Nothing in the
+    # pipeline was idempotent: run an importer twice, get two rows.
+    #
+    # Where the real class name is genuinely not known upstream, the defined
+    # fallback is a synthetic key - see SYNTHETIC_CLASS_NAME_PREFIX below.
+    # NULL is never the fallback.
+    class_name: Mapped[str] = mapped_column(String(150), nullable=False)
     size: Mapped[int | None] = mapped_column()
     grade: Mapped[str | None] = mapped_column(String(50))
     notes: Mapped[str | None] = mapped_column(Text)
@@ -242,11 +292,12 @@ class Component(VerifiableMixin, Base):
     )
 
 
-class WeaponDetail(Base):
+class WeaponDetail(ProvenanceMixin, Base):
     """Typed detail table for component_type='weapon' (the gun itself -
     ballistic/energy/distortion cannons and repeaters, fixed or gimballed)."""
 
     __tablename__ = "weapon_details"
+    __table_args__ = (ProvenanceMixin.confidence_check("weapon_details"),)
 
     component_id: Mapped[int] = mapped_column(
         ForeignKey("components.id", ondelete="CASCADE"), primary_key=True
@@ -260,14 +311,19 @@ class WeaponDetail(Base):
     velocity_mps: Mapped[float | None] = mapped_column(Numeric(10, 2))
     range_m: Mapped[float | None] = mapped_column(Numeric(10, 2))
 
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
+
     component: Mapped["Component"] = relationship(back_populates="weapon_detail")
 
 
-class MissileDetail(Base):
+class MissileDetail(ProvenanceMixin, Base):
     """Typed detail table for component_type='missile' (the ordnance itself,
     not the rack that launches it)."""
 
     __tablename__ = "missile_details"
+    __table_args__ = (ProvenanceMixin.confidence_check("missile_details"),)
 
     component_id: Mapped[int] = mapped_column(
         ForeignKey("components.id", ondelete="CASCADE"), primary_key=True
@@ -278,10 +334,14 @@ class MissileDetail(Base):
     lock_time_s: Mapped[float | None] = mapped_column(Numeric(6, 2))
     speed_mps: Mapped[float | None] = mapped_column(Numeric(10, 2))
 
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
+
     component: Mapped["Component"] = relationship(back_populates="missile_detail")
 
 
-class MissileRackDetail(Base):
+class MissileRackDetail(ProvenanceMixin, Base):
     """Typed detail table for component_type='missile_rack' (the launcher
     hardware, distinct from the missiles it holds). native_missile_size and
     missile_capacity together describe what this specific rack SKU carries -
@@ -294,6 +354,7 @@ class MissileRackDetail(Base):
     this table only describes the rack item itself, not hardpoint fit."""
 
     __tablename__ = "missile_rack_details"
+    __table_args__ = (ProvenanceMixin.confidence_check("missile_rack_details"),)
 
     component_id: Mapped[int] = mapped_column(
         ForeignKey("components.id", ondelete="CASCADE"), primary_key=True
@@ -301,10 +362,14 @@ class MissileRackDetail(Base):
     native_missile_size: Mapped[int | None] = mapped_column()
     missile_capacity: Mapped[int | None] = mapped_column()
 
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
+
     component: Mapped["Component"] = relationship(back_populates="missile_rack_detail")
 
 
-class GimbalMountDetail(Base):
+class GimbalMountDetail(ProvenanceMixin, Base):
     """Typed detail table for component_type='gimbal_mount' (an accessory
     item installed between a weapon and its hardpoint - e.g. "VariPuck S3
     Gimbal Mount"). Per docs/HARDPOINT_MOUNT_TYPES.md, a gimbal mount only
@@ -313,16 +378,21 @@ class GimbalMountDetail(Base):
     for this specific mount SKU."""
 
     __tablename__ = "gimbal_mount_details"
+    __table_args__ = (ProvenanceMixin.confidence_check("gimbal_mount_details"),)
 
     component_id: Mapped[int] = mapped_column(
         ForeignKey("components.id", ondelete="CASCADE"), primary_key=True
     )
     accepts_weapon_size: Mapped[int | None] = mapped_column()
 
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
+
     component: Mapped["Component"] = relationship(back_populates="gimbal_mount_detail")
 
 
-class TurretDetail(Base):
+class TurretDetail(ProvenanceMixin, Base):
     """Typed detail table for component_type='turret' (a separate rotating
     mount - manned or remote - mechanically distinct from a fixed/gimbal
     position, per docs/HARDPOINT_MOUNT_TYPES.md). weapon_slots x
@@ -331,6 +401,7 @@ class TurretDetail(Base):
     manned=False."""
 
     __tablename__ = "turret_details"
+    __table_args__ = (ProvenanceMixin.confidence_check("turret_details"),)
 
     component_id: Mapped[int] = mapped_column(
         ForeignKey("components.id", ondelete="CASCADE"), primary_key=True
@@ -338,5 +409,9 @@ class TurretDetail(Base):
     weapon_slots: Mapped[int | None] = mapped_column()
     slot_weapon_size: Mapped[int | None] = mapped_column()
     manned: Mapped[bool | None] = mapped_column()
+
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
 
     component: Mapped["Component"] = relationship(back_populates="turret_detail")
