@@ -28,15 +28,31 @@ func updatesLogPath() string {
 	return filepath.Join(handoffArchiveDir, "_updates_log.md")
 }
 
-// firstRunesUpper returns the first n runes of s, uppercased -- a
-// rune-safe equivalent of Python's text[:500].upper(), so a multi-byte
-// UTF-8 character never gets split mid-sequence.
-func firstRunesUpper(s string, n int) string {
-	r := []rune(s)
-	if len(r) > n {
-		r = r[:n]
+// firstRunesUpper was removed 2026-08-01. It returned the first n runes of a
+// document body, uppercased, and was the mechanism by which both classifiers
+// scanned prose for keywords - the cause of Defect 2. titleLine below replaces
+// it. Nothing else called it.
+
+// titleLine returns the doc's own title, uppercased -- its first markdown
+// heading, or its first non-blank line. A doc's type is stated by its title,
+// not by whatever it mentions in passing.
+//
+// Until 2026-08-01 both classifiers scanned the first 500 runes of the BODY, so
+// any update that merely mentioned "handoff" early was treated as a full
+// handoff doc: it overwrote _latest_raw.md, replaced the whole PROJECT NOTES
+// section, and never reached the updates log at all.
+func titleLine(text string) string {
+	for _, line := range strings.Split(text, "\n") {
+		stripped := strings.TrimSpace(line)
+		if stripped == "" {
+			continue
+		}
+		if strings.HasPrefix(stripped, "#") {
+			return strings.ToUpper(strings.TrimSpace(strings.TrimLeft(stripped, "#")))
+		}
+		return strings.ToUpper(stripped)
 	}
-	return strings.ToUpper(string(r))
+	return ""
 }
 
 func isHandoffDoc(path string, text string) bool {
@@ -46,7 +62,7 @@ func isHandoffDoc(path string, text string) bool {
 			return true
 		}
 	}
-	head := firstRunesUpper(text, 500)
+	head := titleLine(text)
 	for _, hint := range handoffHeadingHints {
 		if strings.Contains(head, hint) {
 			return true
@@ -62,7 +78,7 @@ func isUpdateDoc(path string, text string) bool {
 			return true
 		}
 	}
-	head := firstRunesUpper(text, 500)
+	head := titleLine(text)
 	for _, hint := range updateHeadingHints {
 		if strings.Contains(head, hint) {
 			return true

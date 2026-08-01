@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -100,22 +101,60 @@ func buildAutoBlock(p *ccppPacket) string {
 	return strings.Join(lines, "\n")
 }
 
+// updateEntryHeaderRe matches ONLY the headers appendUpdate() writes:
+//
+//	### 2026-08-01 00:11:55 — update_something.md
+//
+// The separator after the timestamp is deliberately not pinned, so an entry
+// written with a hyphen instead of an em dash still parses.
+//
+// Splitting on every "\n### " (as this did until 2026-08-01) promoted any ###
+// subheading inside an update BODY to a top-level entry, inventing entries that
+// were never logged and truncating the real entry they were cut from. Measured
+// against the live log: 63 total ### headers, 46 real timestamped ones, so 17
+// phantoms - and since display caps at 20, that meant showing 20 fragments
+// instead of 20 entries.
+var updateEntryHeaderRe = regexp.MustCompile(
+	`(?m)^### \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\b.*$`)
+
 func parseUpdateEntries() []string {
-	raw, err := os.ReadFile(updatesLogPath())
+	return parseUpdateEntriesFrom(updatesLogPath())
+}
+
+// parseUpdateEntriesFrom takes the path explicitly so the parser can be
+// exercised against known-bad input in tests (hard rule 12) rather than only
+// against whatever the live log happens to contain.
+func parseUpdateEntriesFrom(path string) []string {
+	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil
 	}
-	chunks := strings.Split(string(raw), "\n### ")
+	s := string(raw)
+	locs := updateEntryHeaderRe.FindAllStringIndex(s, -1)
+
+	// No recognisable headers (old or hand-edited log): return the whole file
+	// as one entry rather than dropping content.
+	if len(locs) == 0 {
+		whole := strings.TrimSpace(s)
+		if whole == "" {
+			return nil
+		}
+		return []string{whole}
+	}
+
 	var entries []string
-	for _, chunk := range chunks {
-		chunk = strings.TrimSpace(chunk)
-		if chunk == "" {
-			continue
+	// Preamble before the first header is kept, not discarded.
+	if pre := strings.TrimSpace(s[:locs[0][0]]); pre != "" {
+		entries = append(entries, pre)
+	}
+	for i, loc := range locs {
+		end := len(s)
+		if i+1 < len(locs) {
+			end = locs[i+1][0]
 		}
-		if !strings.HasPrefix(chunk, "### ") {
-			chunk = "### " + chunk
+		if chunk := strings.TrimSpace(s[loc[0]:end]); chunk != "" {
+			entries = append(entries, chunk)
 		}
-		entries = append(entries, chunk)
 	}
 	return entries
 }
