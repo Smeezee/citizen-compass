@@ -146,6 +146,40 @@ has returned success.
 
 ---
 
+### 13. File the handoff before you move on.
+
+**A unit of work is not finished until it is recorded. Never begin new work
+while the previous work is unfiled.**
+
+Three triggers. All of them are mandatory, not situational:
+
+1. **When work arrives.** Before you start it, drop an `inbox/` update saying
+   what you received and what you are about to do. Being handed a work order is
+   exactly this moment. "I'll log it when I'm done" is how a session dies
+   mid-task and leaves nothing behind.
+2. **When a unit of work finishes.** File it before you touch anything else.
+   Finish the thing, file it, then start the next thing. Never: finish, start
+   the next, file both later.
+3. **When you stop for any reason** - blocked, waiting on a decision, out of
+   scope, or idle with nothing left.
+
+**Frequency is not a concern. Under-reporting is.** A hundred updates in an
+hour costs nothing and is entirely acceptable. One update covering three tasks
+is a failure, because it collapses the order things happened in and hides where
+something went wrong.
+
+If you are about to start something new and cannot point at the update that
+closed the last thing, then the last thing is not closed. File it first.
+
+The test to apply: **if this session ended right now, could the next one tell
+what was finished, what was in flight, and what was never started?** If not,
+file an update before doing anything else.
+
+This is the standing rule below, promoted to a hard rule because it had to be
+reinforced in conversation more than once.
+
+---
+
 ## Standing rule: keep LATEST_HANDOFF.md current, always
 
 After completing any meaningful step or phase of work, and any time you stop
@@ -165,6 +199,40 @@ of thing to log.** A blocked action is information, not a failure.
 
 The goal: at any moment `LATEST_HANDOFF.md` reflects genuinely current
 status, never more than one completed step behind.
+
+---
+
+## How the handoff pipeline works (post Go migration, 2026-08-01)
+
+**The Go watcher is the ONLY writer of `LATEST_HANDOFF.md`.** Never invoke a
+generator directly. Dropping a file into `inbox/` is the sole supported path.
+A second writer produced a silently divergent context document for three days —
+two programs regenerating the same file, last write winning, each discarding
+tens of thousands of characters of the other's output.
+
+**There is exactly one watcher process.** The Go `inbox_watcher.exe` registered
+by `setup_watcher_task.ps1` is it. The Python `inbox_watcher.py` is retired and
+must not be started. Two watchers on the same `inbox/` directory silently
+overwrite each other's output, and the only visible symptom is a handoff
+document that changes size for no apparent reason.
+
+**The watcher logs to `logs/inbox_watcher.log`.** `pipeline_log.txt` belongs to
+the retired Python path — diagnosing watcher health from it gives the wrong
+answer, because a healthy Go watcher never writes to it at all. If
+`pipeline_log.txt` starts growing again, that is the signal that something
+revived the Python path.
+
+**Handoff compression no longer exists in any form.** `generate_handoff.py`
+carried an optional local-AI compression path, disabled and parked. The Go
+watcher has no equivalent and never did. Retiring the Python generator removed
+the only implementation. If compression is ever wanted again it is a new Go
+feature to be built, not a switch to be flipped — do not go looking for a
+disabled flag.
+
+The retired Python files (`generate_handoff.py`, `inbox_watcher.py`,
+`_verify_generate_handoff.py`) were moved to
+`_to_delete/python_handoff_path_retired_20260801/` rather than deleted, per
+rule 1.
 
 ---
 

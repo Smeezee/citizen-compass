@@ -47,13 +47,13 @@ func buildAutoBlock(p *ccppPacket) string {
 	lines = append(lines,
 		fmt.Sprintf("**Generated:** %s (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)", time.Now().Format("2006-01-02 15:04:05")),
 		"",
-		fmt.Sprintf("**Project health score:** %.1f/100", p.Scores.OverallHealth),
-		fmt.Sprintf("- Data completeness: %.1f%%", p.Scores.DataCompleteness),
-		fmt.Sprintf("- Viewer progress: %.1f%%", p.Scores.ViewerProgress),
-		fmt.Sprintf("- Documentation: %.1f%%", p.Scores.Documentation),
+		fmt.Sprintf("**Project health score:** %s/100", trimNum(p.Scores.OverallHealth)),
+		fmt.Sprintf("- Data completeness: %s%%", trimNum(p.Scores.DataCompleteness)),
+		fmt.Sprintf("- Viewer progress: %s%%", trimNum(p.Scores.ViewerProgress)),
+		fmt.Sprintf("- Documentation: %s%%", trimNum(p.Scores.Documentation)),
 		"",
-		fmt.Sprintf("**Ships:** %d complete viewers / %d total (%.1f%%)",
-			p.Crossref.ShipsWithViewers, p.Crossref.ShipsTotal, p.Crossref.ViewersProgressPct),
+		fmt.Sprintf("**Ships:** %d complete viewers / %d total (%s%%)",
+			p.Crossref.ShipsWithViewers, p.Crossref.ShipsTotal, trimNum(p.Crossref.ViewersProgressPct)),
 	)
 
 	var complete, incomplete []string
@@ -99,6 +99,18 @@ func buildAutoBlock(p *ccppPacket) string {
 			len(p.Inventory.Scripts), len(p.Inventory.Models), len(p.Inventory.Docs)))
 
 	return strings.Join(lines, "\n")
+}
+
+// trimNum renders a score the way generate_handoff.py did: the shortest
+// representation that round-trips, so a whole number prints as "35" and not
+// "35.0", while a genuinely fractional score keeps its decimals.
+//
+// Go previously used %.1f here, which was the last avoidable disagreement
+// between the two generators (Go "35.0/100" vs Python "35/100"). It was fixed
+// before Python was retired rather than accepted, so that any FUTURE difference
+// between generated documents is signal rather than known noise.
+func trimNum(f float64) string {
+	return strconv.FormatFloat(f, 'f', -1, 64)
 }
 
 // updateEntryHeaderRe matches ONLY the headers appendUpdate() writes:
