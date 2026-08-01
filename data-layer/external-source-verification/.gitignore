@@ -10,3 +10,10 @@ journal.jsonl
 # (01_integrity_scan_summary.json: coverage, findings, flagged files, verdict)
 # IS tracked.
 *_perfile.json
+
+# Pre-scan hash baselines exist only to be compared against the post-scan set;
+# once that comparison is recorded in the manifest they are transient. The
+# POST-scan set stays tracked, so the finalized bytes remain re-verifiable.
+# Only listed where the file is large enough to matter (source 1 is 3.7 MB;
+# the source 2 baselines are 8 KB and stay tracked).
+20260801T204744Z/01_prescan_sha256.json

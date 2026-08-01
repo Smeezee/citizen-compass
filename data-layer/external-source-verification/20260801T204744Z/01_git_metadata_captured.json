@@ -1,0 +1,14 @@
+{
+  "captured_before_stripping_git": true,
+  "captured_utc": "2026-08-01T21:17:25Z",
+  "git_head_commit": "4764726896973204a798325ed0f9ed7253e995e5",
+  "git_branch": "master",
+  "git_commit_date": "2026-07-16T14:46:09+02:00",
+  "git_author_date": "2026-07-16T14:46:09+02:00",
+  "git_origin_url": "https://github.com/StarCitizenWiki/scunpacked-data.git",
+  "git_origin_url_expected": "https://github.com/StarCitizenWiki/scunpacked-data.git",
+  "git_origin_url_verified_exact_match": true,
+  "git_head_subject": "4.9.0-LIVE.12232306",
+  "git_lfs_version": "git-lfs/3.7.1 (GitHub; windows amd64; go 1.25.1; git b84b3384)",
+  "git_version": "git version 2.55.0.windows.3"
+}

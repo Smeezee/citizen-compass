@@ -1,0 +1,199 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260801T204744Z",
+  "source_number": 1,
+  "source_name": "scunpacked-data",
+  "source_type": "Git repository clone (GitHub, Git LFS in use)",
+  "canonical_source_url": "https://github.com/StarCitizenWiki/scunpacked-data",
+  "run_context": "Re-acquisition of source 1 WITHOUT a .git directory, per docs/workorder-task2-source1-reacquisition.md. The previous snapshot 20260731T041451Z contained a live .git directory - 33 files, four active Git LFS hooks, and a working remote - which made a snapshot defined as inert data non-inert, and which caused its re-gate to fail gate 5 on facebook.github.io inside a stock fsmonitor-watchman.sample. This run is fully self-contained: nothing was read from, copied from, or merged with any existing snapshot.",
+  "why_reacquired_rather_than_edited": [
+    "Removing .git from a finalized snapshot would mutate a sealed snapshot in order to enforce the rule about not mutating sealed snapshots.",
+    "Git mutates its own internals on read - index refresh, gc, repack - so a hash manifest covering .git internals drifts with nobody touching the data. A sealed snapshot that fails its own integrity check for no real reason is worse than no check, because it teaches everyone to ignore the alarm.",
+    ".git held nothing the manifest lacked: head commit, branch, commit date and origin URL were already recorded in the previous manifest. What remained was liability.",
+    "With .git gone, facebook.github.io goes with it. NO allowlist entry was added, so gate 5 keeps full sensitivity on real data."
+  ],
+  "previous_snapshot_run_id": "20260731T041451Z",
+  "snapshot_status": "complete",
+  "snapshot_path": "data-layer/external-sources/scunpacked-data/snapshots/20260801T204744Z",
+  "acquisition": {
+    "method": "git clone (full history), LFS resolved at checkout by git-lfs smudge filter",
+    "command": "git clone https://github.com/StarCitizenWiki/scunpacked-data.git <snapshot>.partial",
+    "clone_exit_code": 0,
+    "clone_reported": "Resolving deltas: 100% (733310/733310); Updating files: 100% (28960/28960); Filtering content: 100% (1/1)",
+    "filtering_content_note": "'Filtering content: 100% (1/1)' is the LFS smudge filter resolving exactly one tracked file - items.json. Its presence is consistent with LFS having run, but it was NOT treated as proof; the pointer scan below is the actual evidence.",
+    "landed_as_partial": true
+  },
+  "git_metadata_captured_before_stripping": {
+    "ordering_note": "Captured BEFORE .git was stripped. Reversing these two steps would lose the provenance permanently.",
+    "git_head_commit": "4764726896973204a798325ed0f9ed7253e995e5",
+    "git_branch": "master",
+    "git_commit_date": "2026-07-16T14:46:09+02:00",
+    "git_author_date": "2026-07-16T14:46:09+02:00",
+    "git_head_subject": "4.9.0-LIVE.12232306",
+    "git_origin_url": "https://github.com/StarCitizenWiki/scunpacked-data.git",
+    "git_origin_url_verified_exact_match": true,
+    "git_version": "git version 2.55.0.windows.3",
+    "git_lfs_version": "git-lfs/3.7.1 (GitHub; windows amd64; go 1.25.1; git b84b3384)",
+    "head_commit_matches_previous_snapshot": true,
+    "head_commit_comparison_note": "Identical to the head commit recorded in 20260731T041451Z's manifest, so upstream has not advanced between the two acquisitions. This is the same upstream state, re-acquired cleanly - not a newer dataset.",
+    "head_subject_cross_check": "The head commit's subject is '4.9.0-LIVE.12232306', which matches the game version pinned for source 3 (4.9.0-LIVE.12232306). Recorded as an observation; no cross-source comparison was performed."
+  },
+  "git_directory_disposal": {
+    "stripped": true,
+    "method": "moved, NOT deleted - CLAUDE.md rule 1",
+    "moved_to": "_to_delete/20260801T204744Z_source1_git",
+    "size": "1.6 GB, 33 files",
+    "timing": "after git metadata capture, before finalization",
+    "verified_absent_from_snapshot": true,
+    "gitattributes_retained_note": ".gitattributes remains in the snapshot deliberately - it is upstream repository CONTENT, not git internals."
+  },
+  "lfs_handling": {
+    "lfs_in_use_upstream": true,
+    "gitattributes_patterns": [
+      "ships/*-raw.json filter=lfs diff=lfs merge=lfs -text",
+      "items.json filter=lfs diff=lfs merge=lfs -text"
+    ],
+    "ships_raw_json_pattern_matches": 0,
+    "ships_raw_json_note": "The ships/*-raw.json pattern matches ZERO files - ships/ holds no file with a -raw suffix. The pattern is vestigial upstream. Verified this run, not inferred.",
+    "lfs_tracked_files_actual": [
+      "items.json"
+    ],
+    "lfs_ls_files_output": "bc3b562734 * items.json",
+    "lfs_resolved": true,
+    "lfs_tool_version": "git-lfs/3.7.1 (GitHub; windows amd64; go 1.25.1; git b84b3384)",
+    "lfs_availability_checked_before_cloning": true,
+    "lfs_availability_note": "'git lfs version' was confirmed to succeed in the shell used for the clone BEFORE cloning, not after. git-lfs is NOT available in every environment on this machine - it is absent from the Linux side used by the Cowork bridge, where 'git lfs version' returns \"git: 'lfs' is not a git command.\" A clone from such a shell would have produced pointer stubs.",
+    "pointer_stub_scan": {
+      "purpose": "A clone without LFS replaces items.json with a ~130 byte pointer stub. File count, directory structure and filenames are all unchanged, so the snapshot looks complete while its largest dataset has been replaced by a text file describing itself. This is a SILENT SUCCESS in the sense of CLAUDE.md rule 12.",
+      "script": "scripts/external_sources/lfs_pointer_scan.py",
+      "script_sha256": "e357e64d90123aa0ebc64b8d6a9e9a89972cde09ec0e3b3f5a0f3e3e7a145691",
+      "method": "Every file in the snapshot checked for the signature 'version https://git-lfs.github.com/spec/v1' in its first bytes. Not sampled, not restricted to small files, not inferred from file size.",
+      "files_scanned": 28993,
+      "pointer_stubs_found": 0,
+      "unreadable_files": 0,
+      "verdict": "PASS",
+      "gate_exercised_against_known_bad_input": true,
+      "gate_exercise_evidence": "The script's --self-test builds a known-bad fixture containing a real LFS pointer stub and confirms the gate FAILS on it, reports the stub's intended size, fails a real JSON file that is under the size floor, and fails a missing expected file rather than passing by omission. Run before the gate was trusted, per rule 12."
+    },
+    "positive_assertion_on_items_json": {
+      "file": "items.json",
+      "exists": true,
+      "actual_bytes": 128570490,
+      "min_bytes_required": 104857600,
+      "size_ok": true,
+      "parses_as_json": true,
+      "passed": true,
+      "note": "Asserted positively and recorded with its result, so a future reader can see the check ran rather than trusting that it did."
+    }
+  },
+  "file_inventory": {
+    "total_files": 28960,
+    "total_bytes": 4482004723,
+    "per_file_sha256_location": "data-layer/external-source-verification/20260801T204744Z/01_postscan_sha256.json - 28,960 entries, TRACKED. These are the hashes of the finalized snapshot, so the finalized bytes can be re-verified from the repo at any time.",
+    "prescan_sha256_note": "01_prescan_sha256.json is gitignored. Its only purpose was the pre/post malware-scan comparison, whose full result is recorded under post_scan_integrity below; keeping a second 3.7 MB copy of near-identical hashes in git history buys nothing. Re-hashing the snapshot reproduces it.",
+    "largest_file": {
+      "file": "items.json",
+      "byte_size": 128570490
+    }
+  },
+  "gates": {
+    "gate_order_note": "Run strictly in order. The malware scan preceded the rename out of .partial, and the snapshot was re-hashed afterwards to confirm the bytes that were scanned are the bytes that were finalized.",
+    "gate_1_files_present": {
+      "result": "PASS",
+      "expected_present": {
+        "items.json": true,
+        ".gitattributes": true,
+        "ships/ dir": true
+      },
+      "git_directory_absent": true,
+      "zero_byte_files": [],
+      "read_errors": []
+    },
+    "gate_2_json_parses": {
+      "result": "PASS",
+      "json_files_found": 28959,
+      "json_files_parsed_ok": 28959,
+      "parse_failures": 0,
+      "note": "Every .json file parsed individually - full check, not sampled."
+    },
+    "gate_3_file_type_inspection": {
+      "result": "PASS",
+      "files_inspected": 28960,
+      "flagged": 0,
+      "signatures_checked": [
+        "DOS/PE executable",
+        "ELF executable",
+        "Java class/Mach-O",
+        "PDF",
+        "PNG",
+        "RAR archive",
+        "ZIP archive",
+        "gzip",
+        "shell shebang"
+      ],
+      "contrast_with_previous_snapshot": "The previous snapshot contained four active Git LFS hooks and stock git hook samples - shell scripts with #! shebangs - inside .git. With .git gone, zero executable signatures remain."
+    },
+    "gate_4_malware_scan": {
+      "result": "PASS",
+      "scanner": "Microsoft Defender MpCmdRun.exe",
+      "binary": "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.18.26060.3008-0\\MpCmdRun.exe",
+      "command": "-Scan -ScanType 3 -File <snapshot> -DisableRemediation",
+      "attempted": true,
+      "report_only_mode_confirmed": true,
+      "report_only_justification": "All four *ThreatDefaultAction preferences are 0 (default action = quarantine/remove) and RealTimeProtectionEnabled is True, so -DisableRemediation was required to prevent the scanner mutating the snapshot under rule 1.",
+      "antivirus_signature_version": "1.455.459.0",
+      "am_engine_version": "1.1.26060.3008",
+      "started_utc": "2026-08-01T21:20:11Z",
+      "finished_utc": "2026-08-01T21:20:55Z",
+      "elapsed_seconds": 44.4,
+      "exit_code": 0,
+      "output": "found no threats",
+      "duration_note": "44.4 seconds of genuine scanning across 4.3 GB. Recorded because previous scans in this project completed sub-second on cached Real-Time Protection verdicts and were flagged as such rather than claimed as from-cold scans. This one measurably worked."
+    },
+    "gate_5_content_indicator_scan": {
+      "result": "PASS",
+      "script": "scripts/external_sources/integrity_scan.py",
+      "script_sha256": "a2e1048815cc4546f6d0312112d6e8c6c14a96f2d21d3ed83416f3251aa79ec4",
+      "script_version_note": "Post-coverage-fix version: walks every file recursively rather than globbing *.json, and fails closed on unreadable files as well as on findings.",
+      "exit_code": 0,
+      "files_seen": 28960,
+      "files_scanned": 28960,
+      "files_unscanned": 0,
+      "walk_errors": "NONE",
+      "coverage_complete": true,
+      "content_indicator_hits": 0,
+      "unexpected_domains": 0,
+      "distinct_domains_found": "NONE - the snapshot contains no http(s) URLs at all",
+      "comparison_with_previous_snapshot": "The previous snapshot's re-gate found github.com x4 and facebook.github.io x1, every one of them inside .git (config, logs, and a stock fsmonitor-watchman.sample). With .git removed the data contains no URLs whatsoever, so the finding disappeared without an allowlist entry being added. Gate 5 retains full sensitivity on real data.",
+      "allowlist_unchanged": true
+    },
+    "gates_all_passed_in_order": true
+  },
+  "post_scan_integrity": {
+    "purpose": "confirm the bytes that were scanned are the bytes that were finalized",
+    "pre_scan_file_count": 28960,
+    "pre_scan_total_bytes": 4482004723,
+    "post_scan_file_count": 28960,
+    "post_scan_total_bytes": 4482004723,
+    "files_missing_after_scan": "NONE",
+    "files_added_after_scan": "NONE",
+    "files_with_changed_sha256_or_size": "NONE",
+    "method": "All 28,960 files SHA-256'd immediately before the malware scan and again immediately after, then compared by name, size and hash.",
+    "verdict": "CONFIRMED - real-time protection altered nothing"
+  },
+  "finalization": {
+    "renamed_out_of_partial": true,
+    "renamed_to": "20260801T204744Z",
+    "reason": "All five gates passed in the required order, with the malware scan preceding the rename and a post-scan re-hash confirming nothing changed."
+  },
+  "supersedes": {
+    "run_id": "20260731T041451Z",
+    "previous_status_before_this_run": "partial",
+    "new_status_assigned": "superseded",
+    "reasoning": "Its data is genuine - the head commit is identical, so it holds the same upstream state - but its process did not verify what is now checked for, and it carries a live .git directory that makes it non-inert. It is replaced by this run.",
+    "append_only": "Only snapshot_status was changed in the previous manifest. No acquisition record, count, hash or gate result was modified, and none of its snapshot files were touched."
+  },
+  "errors_or_skipped_endpoints": [],
+  "scope_boundaries_hit": "None. The live site, the production database, CC-10 and CC-12 were not touched, and nothing under testing/ was involved.",
+  "record_counts_are_completeness_check_only_note": "File and byte counts confirm this acquisition retrieved what the upstream repository holds at the recorded head commit. They are NOT evidence that this data agrees with any other source in this project. No cross-source comparison was performed."
+}

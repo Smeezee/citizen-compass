@@ -1,0 +1,40 @@
+{
+  "run": "20260801T204744Z",
+  "snapshot": "C:/Users/david/citizen-compass/data-layer/external-sources/scunpacked-data/snapshots/20260801T204744Z.partial",
+  "total_files": 28960,
+  "total_bytes": 4482004723,
+  "gate_1_files_present": {
+    "result": "PASS",
+    "expected_present": {
+      "items.json": true,
+      ".gitattributes": true,
+      "ships/ dir": true
+    },
+    "git_directory_absent": true,
+    "zero_byte_files": [],
+    "read_errors": []
+  },
+  "gate_2_json_parses": {
+    "result": "PASS",
+    "json_files_found": 28959,
+    "json_files_parsed_ok": 28959,
+    "parse_failures": [],
+    "note": "Every .json file parsed individually - full check, not sampled."
+  },
+  "gate_3_file_type_inspection": {
+    "result": "PASS",
+    "files_inspected": 28960,
+    "flagged": [],
+    "signatures_checked": [
+      "DOS/PE executable",
+      "ELF executable",
+      "Java class/Mach-O",
+      "PDF",
+      "PNG",
+      "RAR archive",
+      "ZIP archive",
+      "gzip",
+      "shell shebang"
+    ]
+  }
+}

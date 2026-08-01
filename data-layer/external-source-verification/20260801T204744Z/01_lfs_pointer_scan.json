@@ -1,0 +1,20 @@
+{
+  "snapshot": "data-layer/external-sources/scunpacked-data/snapshots/20260801T204744Z.partial",
+  "files_scanned": 28993,
+  "pointer_stubs_found": 0,
+  "pointer_stubs": [],
+  "unreadable_files": [],
+  "assertions": [
+    {
+      "file": "items.json",
+      "min_bytes_required": 104857600,
+      "exists": true,
+      "actual_bytes": 128570490,
+      "size_ok": true,
+      "parses_as_json": true,
+      "passed": true
+    }
+  ],
+  "failed_assertions": [],
+  "verdict": "PASS"
+}

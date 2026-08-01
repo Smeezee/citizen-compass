@@ -10,7 +10,7 @@
   "previous_snapshot_outcome": "failed - elapsed-time ceiling hit at ~52% (~759MB/1.42GB), empty/invalid .git left behind, no usable data",
   "utc_retrieval_time_start": "2026-07-31T04:16:14Z",
   "utc_retrieval_time_end": "2026-07-31T05:33:13Z",
-  "snapshot_status": "complete",
+  "snapshot_status": "superseded",
   "snapshot_path": "data-layer/external-sources/scunpacked-data/snapshots/20260731T041451Z",
   "status_reasoning": "Marked 'partial', not 'complete', despite the clone itself succeeding cleanly and passing every git-integrity gate (fsck clean, origin URL verified, working tree clean, HEAD/tree recorded) - because of a real process error: the snapshot folder was renamed out of .partial to its final name BEFORE the mandated malware scan step ran, violating this run's own required gate ordering ((1) files present, (2) JSON parses, (3) file-type inspection, (4) malware scan, (5) content-indicator scan - all required to pass BEFORE rename). This happened under time pressure approaching the 90-minute global run backstop. File-type inspection, a content-indicator string scan, and a sampled JSON-parse check WERE run (see integrity_scan below) and found nothing concerning, but the full malware scan was skipped entirely due to running out of time budget before the 90-minute backstop, and the rename-before-scan ordering error means even a clean scan result would not have satisfied this run's own stated finalization sequence. Data is real and verified by git's own integrity mechanisms (fsck, tree hash) - this is not a data-quality partial, it's a process-compliance partial. Flagging honestly rather than mislabeling as complete.",
   "requested_game_version": "not applicable - this source is not version-pinned, it's a git snapshot of the default branch at clone time",
@@ -184,5 +184,23 @@
         "ordering": "VIOLATED - see protocol_compliance above"
       }
     }
-  ]
+  ],
+  "status_change_note_appended_2026-08-01": {
+    "append_only_declaration": "APPEND ONLY. Every field above this note stands unchanged, including protocol_compliance: ordering_violated, the acquisition block's malware_scan.attempted: false, report_only_mode_confirmed: false, and the deliberate contradiction between the acquisition block and the later post_acquisition_verification. Those remain the record of what went wrong. The single field modified anywhere in this manifest is snapshot_status. This snapshot's FILES were not touched.",
+    "status_changed_from": "complete",
+    "status_changed_to": "superseded",
+    "superseded_by": {
+      "run_id": "20260801T204744Z",
+      "snapshot_path": "data-layer/external-sources/scunpacked-data/snapshots/20260801T204744Z",
+      "manifest": "data-layer/external-source-manifests/20260801T204744Z/01_scunpacked-data_manifest.json"
+    },
+    "why": "Re-acquired without a .git directory, per docs/workorder-task2-source1-reacquisition.md. This snapshot's DATA is genuine - the successor cloned the identical upstream head commit 4764726896973204a798325ed0f9ed7253e995e5, so both hold the same upstream state. What this snapshot carries that the successor does not is a live .git directory: 33 files, four active Git LFS hooks, a working remote, and pack objects. That makes a snapshot defined as inert data non-inert - a git pull inside it would mutate data described as immutable, and the LFS hooks fire on git operations.",
+    "two_reasons_it_was_replaced_rather_than_repaired": [
+      "Removing .git from this finalized snapshot would have mutated a sealed snapshot in order to enforce the rule about not mutating sealed snapshots.",
+      "Git mutates its own internals on read - index refresh, gc, repack - so any hash manifest covering .git internals drifts with nobody touching the data. A sealed snapshot that fails its own integrity check for no real reason is worse than no check, because it teaches everyone to ignore the alarm."
+    ],
+    "gate_5_finding_resolved_not_waived": "This snapshot's 2026-08-01 re-gate failed gate 5 on facebook.github.io, found in a stock .git/hooks/fsmonitor-watchman.sample. NO allowlist entry was added. The successor simply has no .git, and its gate 5 found zero unexpected domains and zero http(s) URLs of any kind across all 28,960 files. The finding was resolved by removing the cause, not by widening the gate.",
+    "what_this_snapshot_still_is": "Genuine data at a verified upstream commit, fully hashed and malware-scanned after the fact. It is superseded, not repudiated. Its provenance fields - git_head_commit, git_branch, git_commit_date, git_origin_url and git_origin_url_verified_exact_match - are what made re-acquisition safe to verify against, and they remain the reason the successor could confirm upstream had not moved.",
+    "vocabulary": "docs/EXTERNAL_SOURCE_STATUS_VOCABULARY.md, amended 2026-08-01: superseded means a later verified run replaces this one, covering both an unverified run being replaced and a verified one being replaced by a newer acquisition. This case is the former - its process did not verify what is now checked for."
+  }
 }
