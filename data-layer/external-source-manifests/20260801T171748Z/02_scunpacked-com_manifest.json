@@ -1,0 +1,233 @@
+{
+  "manifest_schema_version": "1.0",
+  "run_id": "20260801T171748Z",
+  "source_number": 2,
+  "source_name": "scunpacked.com",
+  "source_type": "REST API (2 fixed JSON endpoints)",
+  "canonical_source_url": "https://scunpacked.com",
+  "label": "Historical legacy schema - not evidence of current game state",
+  "historical_data_caveat": "Both endpoints carry Last-Modified 'Wed, 16 Nov 2022 20:52:36 GMT'. This dataset was last updated 2022-11-16 and predates current game state by years. Record counts confirm this run retrieved everything the endpoints returned - they are NOT evidence that this legacy dataset agrees with any other source in this project. Carried forward in substance from the previous manifests because it remains true.",
+  "run_context": "Second re-land of source 2 with the CC-07-hardened retrieval script, per the 2026-08-01 work order. Fully self-contained: no data was read from, copied from, merged with, or finalized against any existing snapshot.",
+  "previous_snapshot_run_id": "20260801T042157Z",
+  "utc_retrieval_time_start": "2026-08-01T17:17:51Z",
+  "utc_retrieval_time_end": "2026-08-01T17:17:55Z",
+  "retrieval_time_provenance": "derived from file mtimes within the snapshot",
+  "snapshot_status": "complete",
+  "snapshot_path": "data-layer/external-sources/scunpacked.com/snapshots/20260801T171748Z",
+  "license_terms_status": "unknown - no LICENSE or terms text found at the endpoints pulled; not asserted either way",
+  "attribution_url": "https://scunpacked.com",
+  "retrieval_script": {
+    "path": "scripts/external_sources/scunpacked_com.py",
+    "sha256": "9dd2ca5ad3d50acd9a1d3caf5341de5322c9298fa8f32fa06bd07b6923673a27",
+    "hardening_in_effect": [
+      "write-before-status fixed: a response earns its final filename only after status==200, a JSON content type, and a successful parse",
+      "Timeout and ConnectionError retryable against a max_retries=5 ceiling with 3/6/9/12s backoff",
+      "Retry-After parsed in both RFC 7231 forms and clamped to [0, 60]",
+      "per-response byte_size, sha256, attempts, attempt_log and measured elapsed_seconds recorded",
+      "main() returns 1 if any endpoint did not land"
+    ]
+  },
+  "scope_note": "Pulled ONLY the two documented endpoints in scope (/api/v2/ships.json, /api/labels.json). Did not crawl for sibling endpoints.",
+  "endpoints": [
+    {
+      "name": "ships",
+      "request_url": "https://scunpacked.com/api/v2/ships.json",
+      "http_status_code": 200,
+      "redirects": [],
+      "content_type": "application/json",
+      "content_length_header": "501057",
+      "etag": "\"63754d94-7a541\"",
+      "last_modified": "Wed, 16 Nov 2022 20:52:36 GMT",
+      "file_path": "data-layer/external-sources/scunpacked.com/snapshots/20260801T171748Z/ships.json",
+      "byte_size": 501057,
+      "sha256": "5ddfa68f4b04a3cca852fa49ddb193d66a6fb8b037606fd666599a51045f5f8f",
+      "measured_elapsed_seconds": 2.19,
+      "attempts": 1,
+      "attempt_log": [
+        {
+          "attempt": 1,
+          "outcome": "response",
+          "elapsed_seconds": 2.19,
+          "status_code": 200,
+          "waited_seconds_before_next": null
+        }
+      ],
+      "written_to_disk": true,
+      "write_gate_note": "Written only after status==200, a JSON content type, and a successful parse.",
+      "page_count": 1,
+      "record_count": 156,
+      "unique_primary_key_count": 156,
+      "duplicate_primary_key_count": 0,
+      "primary_key_field_assumed": "ClassName",
+      "response_top_level_keys": "bare JSON array (no top-level object keys)",
+      "pagination_structure_fingerprint": "not paginated - single response",
+      "source_last_updated_value": "Wed, 16 Nov 2022 20:52:36 GMT (Last-Modified header)",
+      "detected_game_versions": "not embedded in this legacy schema - no version field present"
+    },
+    {
+      "name": "labels",
+      "request_url": "https://scunpacked.com/api/labels.json",
+      "http_status_code": 200,
+      "redirects": [],
+      "content_type": "application/json",
+      "content_length_header": "6706738",
+      "etag": "\"63754d94-665632\"",
+      "last_modified": "Wed, 16 Nov 2022 20:52:36 GMT",
+      "file_path": "data-layer/external-sources/scunpacked.com/snapshots/20260801T171748Z/labels.json",
+      "byte_size": 6706738,
+      "sha256": "b275f5377cf74e2135554bb38ac6b32ad02e8d54af04ecf0ae08509cf1b75502",
+      "measured_elapsed_seconds": 3.16,
+      "attempts": 1,
+      "attempt_log": [
+        {
+          "attempt": 1,
+          "outcome": "response",
+          "elapsed_seconds": 3.16,
+          "status_code": 200,
+          "waited_seconds_before_next": null
+        }
+      ],
+      "written_to_disk": true,
+      "write_gate_note": "Written only after status==200, a JSON content type, and a successful parse.",
+      "page_count": 1,
+      "record_count": 63375,
+      "unique_primary_key_count": 63375,
+      "duplicate_primary_key_count": 0,
+      "primary_key_field_assumed": "JSON object key (label ID)",
+      "response_top_level_keys": "bare JSON object, 63375 keys",
+      "pagination_structure_fingerprint": "not paginated - single response",
+      "source_last_updated_value": "Wed, 16 Nov 2022 20:52:36 GMT (Last-Modified header)",
+      "detected_game_versions": "not embedded in this legacy schema - no version field present"
+    }
+  ],
+  "request_timing": {
+    "measured": true,
+    "note": "Wall-clock per request including body download, both on the first attempt.",
+    "ships_seconds": 2.19,
+    "labels_seconds": 3.16,
+    "timeout_setting_seconds": 180,
+    "comparison_with_previous_run": "Previous run measured 1.84s / 2.95s; this run 2.19s / 3.16s. Same order of magnitude, consistent with static ETag-served files. 180s remains ~57x the measured worst case."
+  },
+  "reported_total_records": "not applicable - no total/meta count returned by either endpoint, only the raw bodies",
+  "downloaded_total_records": {
+    "ships": 156,
+    "labels": 63375
+  },
+  "previous_runs_recorded_counts": {
+    "ships": 156,
+    "labels": 63375
+  },
+  "counts_match_previous_runs": {
+    "ships": true,
+    "labels": true,
+    "note": "Reported as an observed comparison, not an assumption."
+  },
+  "byte_identical_to_previous_runs": {
+    "ships_sha256_matches": true,
+    "labels_sha256_matches": true,
+    "etag_matches": true,
+    "method": "Compared against the sha256 and ETag values RECORDED IN the earlier manifests, which are provenance records, not snapshots. No earlier snapshot's files were read.",
+    "interpretation": "Three independent acquisitions across three days have now returned byte-identical content with an identical ETag. Expected for a static dataset last modified 2022-11-16, and strong evidence the upstream files are stable."
+  },
+  "file_inventory": {
+    "total_files": 4,
+    "total_bytes": 7209605,
+    "files": [
+      {
+        "file": "_pull_stderr.log",
+        "byte_size": 131,
+        "sha256": "0e05b87389247ee858d7f340e5d73cbfe0989d55d5345923436c1e5fd0e1ca52"
+      },
+      {
+        "file": "_pull_summary.json",
+        "byte_size": 1679,
+        "sha256": "0ae60ecb3de6cf11895589fe53ac2d3b4f706c6d98f0ea5bbfe0692f1c0d877a"
+      },
+      {
+        "file": "labels.json",
+        "byte_size": 6706738,
+        "sha256": "b275f5377cf74e2135554bb38ac6b32ad02e8d54af04ecf0ae08509cf1b75502"
+      },
+      {
+        "file": "ships.json",
+        "byte_size": 501057,
+        "sha256": "5ddfa68f4b04a3cca852fa49ddb193d66a6fb8b037606fd666599a51045f5f8f"
+      }
+    ]
+  },
+  "gates": {
+    "gate_order_note": "Run strictly in order against the .partial folder. The folder was NOT renamed before the malware scan.",
+    "gate_1_files_present": {
+      "result": "PASS",
+      "detail": "ships.json, labels.json, _pull_summary.json and _pull_stderr.log all present and non-empty; zero zero-byte files; 4 files total."
+    },
+    "gate_2_json_parses": {
+      "result": "PASS",
+      "detail": "All 3 .json files parsed individually. 0 failures. _pull_stderr.log is not JSON by design and is covered by gate 5 instead."
+    },
+    "gate_3_file_type_inspection": {
+      "result": "PASS",
+      "detail": "All 4 files inspected by magic bytes. No executables, archives, PDFs, images or shebangs. Both data files begin with a JSON array/object opener."
+    },
+    "gate_4_malware_scan": {
+      "result": "PASS",
+      "scanner": "Microsoft Defender MpCmdRun.exe",
+      "binary": "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.18.26060.3008-0\\MpCmdRun.exe",
+      "command": "-Scan -ScanType 3 -File <snapshot> -DisableRemediation",
+      "attempted": true,
+      "report_only_mode_confirmed": true,
+      "report_only_justification": "All four *ThreatDefaultAction preferences are 0 (default action = quarantine/remove) and RealTimeProtectionEnabled is True, so -DisableRemediation was required to prevent the scanner mutating the snapshot.",
+      "started_utc": "2026-08-01T17:18:30Z",
+      "finished_utc": "2026-08-01T17:18:30Z",
+      "exit_code": 0,
+      "output": "found no threats",
+      "duration_note": "Start and finish reported within the same second on 7.2 MB. Real-Time Protection is enabled and had already scanned these files as they were written, so cached per-file verdicts are expected. Recorded as an observation, not claimed as a from-cold scan."
+    },
+    "gate_5_content_indicator_scan": {
+      "result": "PASS",
+      "script": "scripts/external_sources/integrity_scan.py",
+      "script_sha256": "a2e1048815cc4546f6d0312112d6e8c6c14a96f2d21d3ed83416f3251aa79ec4",
+      "script_version_note": "Post-coverage-fix version: walks every file recursively rather than globbing *.json, and fails closed on unreadable files as well as on findings.",
+      "exit_code": 0,
+      "files_seen": 4,
+      "files_scanned": 4,
+      "files_unscanned": 0,
+      "walk_errors": "NONE",
+      "coverage_complete": true,
+      "content_indicator_hits": "NONE",
+      "unexpected_domains": "NONE",
+      "distinct_domains_found": {
+        "scunpacked.com": 4
+      }
+    },
+    "gates_all_passed_in_order": true
+  },
+  "post_scan_integrity": {
+    "purpose": "confirm Real-Time Protection did not quarantine, delete or alter anything",
+    "pre_scan_file_count": 4,
+    "pre_scan_total_bytes": 7209605,
+    "post_scan_file_count": 4,
+    "post_scan_total_bytes": 7209605,
+    "files_missing_after_scan": "NONE",
+    "files_added_after_scan": "NONE",
+    "files_with_changed_sha256_or_size": "NONE",
+    "verdict": "CONFIRMED - real-time protection altered nothing"
+  },
+  "finalization": {
+    "renamed_out_of_partial": true,
+    "renamed_to": "20260801T171748Z",
+    "reason": "All five gates passed in the required order, with the malware scan preceding the rename."
+  },
+  "supersedes": {
+    "run_id": "20260801T042157Z",
+    "previous_status_before_this_run": "complete",
+    "new_status_assigned": "superseded",
+    "reasoning": "This is a straightforward replacement, NOT a correction. Unlike the first supersession (20260731T031754Z), 20260801T042157Z was landed by the hardened script and passed all five gates honestly - its 'complete' was earned. It is superseded only because a newer verified acquisition now exists. That distinction is recorded in its own appended note rather than being flattened into the status value.",
+    "vocabulary_note": "docs/EXTERNAL_SOURCE_STATUS_VOCABULARY.md was amended 2026-08-01 for exactly this case. The original definition of 'superseded' required that the superseded run could not verify what it retrieved, which did not fit a properly gated snapshot. The definition now turns on which snapshot to use, with the reason recorded in the appended note.",
+    "append_only": "Only snapshot_status was changed in the previous manifest. No acquisition record, count, hash, timing or gate result was modified, and none of its snapshot files were touched."
+  },
+  "errors_or_skipped_endpoints": [],
+  "other_endpoints_noticed_but_not_pulled": [],
+  "scope_boundaries_hit": "None beyond the fixed 2-endpoint scope itself.",
+  "record_counts_are_completeness_check_only_note": "The record counts above (156 ships, 63375 labels) confirm this run retrieved everything the endpoints returned - they are NOT evidence that this legacy dataset agrees with any other source. This dataset is explicitly historical, last modified 2022-11-16."
+}

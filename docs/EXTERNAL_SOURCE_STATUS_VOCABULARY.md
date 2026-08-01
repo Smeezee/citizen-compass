@@ -17,7 +17,7 @@ Applies to the `snapshot_status` field in every external source manifest.
 | `complete` | Everything in scope was retrieved, and the run's own gates verified it. The status is earned by checks that could have failed. |
 | `partial` | The run retrieved some but not all of what was in scope, or a gate did not pass. A `.partial` folder suffix accompanies this. **A `.partial` folder is a correct outcome, not a failure.** |
 | `failed` | The run did not retrieve usable data. The data itself is absent, unusable, or known bad. |
-| `superseded` | **The data is genuine, but the run's verification cannot be trusted; a later verified run replaces it.** |
+| `superseded` | **A later verified run replaces this one.** Covers two cases: (a) the data is genuine but this run's verification cannot be trusted, and (b) this run was properly verified but a newer acquisition has replaced it. Either way the successor is the snapshot to use. |
 | `blocked_missing_credentials` | Retrieval could not be attempted because required credentials were unavailable. |
 | `blocked_missing_provenance` | Retrieval was possible but withheld because the source's provenance or licensing could not be established. |
 | `not_directly_downloadable` | The source exists but cannot be pulled by the documented mechanism (e.g. no API, no bulk export). |
@@ -55,16 +55,27 @@ superseded snapshot has no independent verification to fall back on.
 
 ### When to use it
 
-Use `superseded` when **all** of these hold:
+Use `superseded` when **both** of these hold:
 
-1. The snapshot's data is established as genuine — by a later verified run, or
-   by another independent check.
-2. The run that produced it did not, or could not, verify what it retrieved.
-3. A specific successor run exists and is named in the manifest.
+1. The snapshot's data is established as genuine — by its own gates, by a later
+   verified run, or by another independent check.
+2. A specific successor run exists, is itself verified, and is named in the
+   manifest.
 
-If (1) does not hold, the correct value is `partial` or `failed`. If (3) does
+If (1) does not hold, the correct value is `partial` or `failed`. If (2) does
 not hold, leave the status as it is and record the concern instead — do not mark
 something superseded by nothing.
+
+**Amended 2026-08-01.** The original wording additionally required that the
+superseded run *"did not, or could not, verify what it retrieved"* — it was
+written for `20260731T031754Z`, whose "complete" came from a script that exited
+0 unconditionally. That requirement was too narrow. When source 2 was re-landed
+a second time, snapshot `20260801T042157Z` needed superseding despite having
+passed all five gates honestly, and under the original wording no status fitted
+it: `complete` would imply it was still current, `failed` would libel good data.
+The distinction the vocabulary must preserve is **which snapshot to use**, not
+how the previous one was obtained — that detail belongs in the appended note,
+which is where it now lives for both.
 
 ---
 

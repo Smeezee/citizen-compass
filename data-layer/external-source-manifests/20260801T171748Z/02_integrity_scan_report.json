@@ -1,0 +1,60 @@
+{
+  "files": [
+    {
+      "file": "data-layer\\external-sources\\scunpacked.com\\snapshots\\20260801T171748Z.partial\\_pull_stderr.log",
+      "scanned": true,
+      "encoding": "utf-8",
+      "byte_size": 131,
+      "content_indicator_hits": {},
+      "distinct_domains_found": [
+        "scunpacked.com"
+      ],
+      "domain_counts": {
+        "scunpacked.com": 2
+      },
+      "unexpected_domains": {}
+    },
+    {
+      "file": "data-layer\\external-sources\\scunpacked.com\\snapshots\\20260801T171748Z.partial\\_pull_summary.json",
+      "scanned": true,
+      "encoding": "utf-8",
+      "byte_size": 1679,
+      "content_indicator_hits": {},
+      "distinct_domains_found": [
+        "scunpacked.com"
+      ],
+      "domain_counts": {
+        "scunpacked.com": 2
+      },
+      "unexpected_domains": {}
+    },
+    {
+      "file": "data-layer\\external-sources\\scunpacked.com\\snapshots\\20260801T171748Z.partial\\labels.json",
+      "scanned": true,
+      "encoding": "utf-8",
+      "byte_size": 6706738,
+      "content_indicator_hits": {},
+      "distinct_domains_found": [],
+      "domain_counts": {},
+      "unexpected_domains": {}
+    },
+    {
+      "file": "data-layer\\external-sources\\scunpacked.com\\snapshots\\20260801T171748Z.partial\\ships.json",
+      "scanned": true,
+      "encoding": "utf-8",
+      "byte_size": 501057,
+      "content_indicator_hits": {},
+      "distinct_domains_found": [],
+      "domain_counts": {},
+      "unexpected_domains": {}
+    }
+  ],
+  "coverage": {
+    "files_seen": 4,
+    "files_scanned": 4,
+    "files_unscanned": 0,
+    "unscanned": [],
+    "walk_errors": [],
+    "complete": true
+  }
+}
