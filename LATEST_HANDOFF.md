@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #96 — 2026-08-01 9:46 PM
+# LATEST_HANDOFF.md — Update #97 — 2026-08-01 9:54 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-01 21:46:16 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-01 21:54:19 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,203 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 58320 files (10316.44 MB)
 
-**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 549
+**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 550
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-01 21:53:54 — update_cloudflare_blocked_on_token.md
+
+# UPDATE — Cloudflare deploy built and verified; STOPPED, blocked on the API token
+
+Everything that does not require the credential is done and proven. The deploy
+itself cannot proceed: **no Cloudflare token exists and I cannot create one** —
+that needs a dashboard login I do not have and should not have.
+
+## THE BLOCKER
+
+`.env` holds `DATABASE_URL` and `UEX_API_TOKEN` only — no Cloudflare key of any
+kind. `npx wrangler whoami` reports *"You are not authenticated."*
+
+**Sleven needs to create a scoped token** at
+`https://dash.cloudflare.com/profile/api-tokens`, "Create Custom Token", with
+exactly the minimum the addendum specifies:
+
+```
+Account | Workers Scripts | Edit
+Account Resources: Include | <the Citizencompass account>
+```
+
+then add one line to `.env`:
+
+```
+CLOUDFLARE_API_TOKEN=<token>
+```
+
+**Please do not paste the token into chat.** Put it straight into `.env`. This
+project has already had the UEX token exposed in a screenshot and it *still has
+not been rotated* — no reason to repeat that. I never need to see the value; the
+script reads it from `.env` and passes it via the environment only.
+
+## THE BIG FINDING — `_deploy/` cannot be rebuilt on this machine at all
+
+The order asked me to sweep `_deploy/` for files the build does not generate.
+**The answer is all 477 of them**, and the reason is worse than the order
+assumed.
+
+`build_full.py` is hardcoded to a Linux cloud sandbox that does not exist here:
+
+| path it requires | present? |
+|---|---|
+| `/home/claude/t128/node_modules/three` | **MISSING** |
+| `/home/claude/model_files.txt` | **MISSING** |
+| `/home/claude/cc-testing-layer.html` | **MISSING** |
+| `/home/claude/latest.html` | **MISSING** |
+| `OUT = /home/claude/full` | **MISSING** |
+
+6 hardcoded `/home/claude` references. `build_portable.py` has 5 more.
+`testing/build.py` writes `testing/index.html` — **not `_deploy/` at all**.
+
+So the framing "a file the build does not generate will vanish on the next full
+build" understates it. **No build on this machine produces `_deploy/`.** It is
+not at risk of being overwritten — it is *unreproducible*. If those 477 files
+were lost today they could not be regenerated here.
+
+That is a real defect and it is bigger than this order. **Reported, not fixed** —
+making `build_full.py` run on Windows means sourcing a three.js tree,
+`model_files.txt`, and the two source HTML inputs, which is a separate job.
+
+## `keybinds.html` — orphan status confirmed independently, then removed
+
+Verified against the built page rather than accepted from the order:
+
+| pattern in `_deploy/index.html` | count |
+|---|---:|
+| `id="cc-kb"` | 1 |
+| `id="cc-kb-tab"` | 1 |
+| `cc-ship::after` | 1 |
+| `keybinds.html` | **0** |
+
+Nothing anywhere in `_deploy/` references it. It is a self-contained in-page
+overlay now.
+
+**Decision: it does not ship.** Moved to
+`_to_delete/keybinds_orphan_from_deploy_20260801/` — **moved, not deleted**, per
+rule 1. `_deploy/` is 477 files now. No copy step was added; copying an
+unreachable file into a deploy is not a fix.
+
+**I left `testing/_src/keybinds.src.html` and `kb_overlay.inc.html` alone.** They
+were written by Claude-02 **50 minutes ago** and are that session's live work.
+Deleting another session's fresh source is exactly the coordination failure this
+project keeps having. Whether the standalone source stays is Sleven's or
+Claude-02's call, not mine.
+
+## THE PASSWORD GATE IS NOT ACCESS CONTROL — and this predates the move
+
+Correction 3 asked me to verify the gate survives the move. Examining it first
+found something more important.
+
+The gate is client-side only: an FNV-1a hash comparison (`H = 2714512690` over
+`'cc-2026-' + password`) that adds a `cc-locked` CSS class and removes an
+overlay div. **All 1.5 MB of page content — the full 254-ship matrix — is inline
+in the HTML and is served to every unauthenticated request.**
+
+Confirmed against the *existing live* preview: fetching
+`citizen-compass-preview.netlify.app` with no stored state returned **200 OK**
+and the complete ship matrix, alongside the *"Private preview. Enter the
+password you were given."* prompt. The `/models/*.glb` files are likewise
+directly addressable.
+
+To be precise about what it does and does not do: **it stops a casual visitor in
+a browser. It does not prevent anyone from retrieving the content.** That is
+true on Netlify today and will be equally true on Cloudflare — the move neither
+causes nor worsens it.
+
+**Reported, not changed.** The password literal is not in the file (only its
+hash), which is the one thing done right. Altering the gate is not in this
+order's scope, and A5 explicitly says not to "fix" the per-origin storage
+behaviour.
+
+## The old Netlify preview IS still serving
+
+The order said to find out rather than assume. **It serves: HTTP 200, title
+"Citizen Compass v0.3.9".** So the credit limit blocks *deploys*, not
+*delivery* — which is precisely the bad case Correction 2 describes: reviewers
+will sit on a frozen v0.3.9 build indefinitely and report bugs that are already
+fixed, with no signal to them or to us.
+
+Not touched, not taken down. That is Sleven's call.
+
+## Cloudflare limits — headroom, from current docs
+
+Checked against Cloudflare's live documentation, not memory. Static hosting has
+moved from Pages to Workers static assets, so the config is `[assets]` in
+`wrangler.toml` and the command is `wrangler deploy`.
+
+| limit (free plan) | ceiling | current | headroom |
+|---|---|---|---|
+| files per Worker version | **20,000** | 477 | **42x** |
+| individual file size | **25 MiB** | 5.22 MiB (`Starfarer_Gemini.glb`) | **4.8x** |
+| static asset requests | *"free and unlimited"* | — | not a constraint |
+| asset storage | *"no additional cost"* | 347.2 MB | not a constraint |
+
+**This confirms the order's premise:** Cloudflare states plainly that "Requests
+to static assets are free and unlimited". The bandwidth reason for the move is
+real, independent of the credit block.
+
+The free plan's 100,000 requests/day applies to *Worker script invocations*.
+This is an assets-only Worker with no script, and asset requests are the
+unlimited category — but I have not been able to confirm by behaviour that no
+invocation is counted, so treat that as documented-but-unverified.
+
+## Built and proven
+
+`testing/wrangler.toml` — assets-only, `workers_dev = true`, **no custom
+domain** per A2.
+
+`scripts/deploy_testing.ps1` — one step, with the final permission list in its
+header so the token can be rotated without rediscovering what it needed.
+
+Rule 12 on its guards, each driven with input that must fail:
+
+| case | result |
+|---|---|
+| no `CLOUDFLARE_API_TOKEN` | **ABORT**, exit 1, with token-creation instructions |
+| `CLOUDFLARE_GLOBAL_API_KEY` present | **ABORT**, exit 1 — refuses a Global key outright |
+| models folder empty | **ABORT**, exit 1 — the silent-success case |
+| valid payload, `-WhatIf` | exit 0, **nothing uploaded** |
+
+The dry run was proven by behaviour, not by reading it — the lesson from
+`setup_checks_task.ps1` earlier today.
+
+Payload measured before upload: **477 files, 347.2 MB, 235 `.glb` models,
+largest `Starfarer_Gemini.glb` at 5.22 MB** — matching the order's 5,478,516
+bytes exactly.
+
+## What is NOT done
+
+The deploy, both URLs, the second-deploy URL-stability check, and the served
+verifications (index, `id="cc-kb"`, `cc-ship::after`, a real model file, the
+gate). All of it waits on the token.
+
+`CURRENT-STATE.md` **does not exist anywhere in the repo**. I will create it
+with the new URL once there is one.
+
+## Open human actions — stated plainly, not implied
+
+1. **Create the scoped token** and put it in `.env` (above).
+2. **Tell the reviewers directly.** Recording the new URL in `CURRENT-STATE.md`
+   helps *future sessions only*. It does nothing for people already holding the
+   Netlify link, and **a notice cannot be added to the old site, because Netlify
+   deploys are exactly what the credit limit blocks.** Sleven is the only
+   channel to those people.
+3. **The UEX token is still unrotated** after being exposed in a screenshot.
+4. **`.env` will hold three secrets and has no backup.** It is gitignored, so it
+   exists in exactly one place on one machine, and it compounds with the open
+   offsite-backup gap. Flagged per A3, not solved. Whoever solves it: encrypted
+   store or password manager only — a secrets file inside an unencrypted backup
+   is worse than none, because it feels solved.
 
 ### 2026-08-01 21:45:51 — update_cloudflare_deploy_intake.md
 
@@ -1897,163 +2089,7 @@ public-facing package is a standing question regardless.
 `static/preview.html`, `releases/latest.html` and `testing/_deploy/` untouched.
 No commits, no pushes. Only `testing/_layer.html` and inbox notes were written.
 
-### 2026-08-01 18:25:16 — update_partB_complete_phase1_closed.md
-
-# UPDATE — PART B COMPLETE: source 6 landed and gated. Phase 1 is closed.
-
-Snapshot `20260801T235530Z` is finalized. All five gates passed in order.
-
-## Credential
-
-Verified with **one request** to `/game_versions/` before any data endpoint was
-touched — HTTP 200, `application/json`, envelope `status: "ok"`, data present.
-The script refuses to pull if that check fails.
-
-`.env` confirmed **gitignored and untracked**. Token: 40 hex chars, no stray
-whitespace, `DATABASE_URL` intact.
-
-I also fixed a defect in my own script before running it: its docstring claimed
-the token was "loaded from `.env`" but nothing loaded it. It would have refused
-to run on a token that was present. Fixtures re-run green after the fix.
-
-## What landed
-
-114 files, 12,402,823 bytes.
-
-| endpoint | records |
-|---|---:|
-| `items_prices_all` | **23,734** |
-| `terminals` | 823 |
-| `vehicles_purchases_prices_all` | 288 |
-| `companies` | 311 |
-| `planets` | 324 |
-| `outposts` | 117 |
-| `categories` | 100 |
-| `star_systems` | 96 |
-| `moons` | 73 |
-| `space_stations` | 60 |
-| `cities` | 5 |
-| **items, via 100 category queries** | **7,728 (5,566 with a UUID)** |
-
-## The refused endpoint — recorded, not smoothed over
-
-`GET /items/` returned **HTTP 400**:
-
-```json
-{"status":"requires_id_category_or_id_company_or_uuid","http_code":400,"data":[],"message":""}
-```
-
-The write gate rejected it and wrote nothing — which is why no HTTP 400 body is
-sitting in the snapshot named `items.json`.
-
-Coverage was obtained by fetching the **same documented endpoint** per category:
-`/items/?id_category=<id>` for all 100 ids read from the `categories.json` this
-run landed. All 100 returned HTTP 200 with a valid envelope; **0 rejected**.
-
-This is not sibling-crawling — it is the endpoint parameterised exactly as its
-own error message demands. The manifest records the attempt, the refusal, the
-body, and how coverage was obtained.
-
-**Honest limitation, also in the manifest:** item coverage is the union of 100
-category queries, not a single authoritative enumeration. An item belonging to
-no category would not appear. That gap is unmeasured, because the endpoint that
-would measure it is the one the API refuses.
-
-## Gates, in order
-
-| # | gate | result |
-|---|---|---|
-| 1 | files present | PASS — 114 files, 0 zero-byte, 0 read errors |
-| 2 | JSON parses | PASS — **113/113** parsed individually, 0 failures |
-| 3 | file-type inspection | PASS — 114 inspected, 0 flagged |
-| 4 | malware scan | PASS — MpCmdRun ScanType 3 `-DisableRemediation`, exit 0 |
-| 5 | content-indicator scan | **PASS on re-run** — failed first, see below |
-
-**Post-scan integrity:** 114 files / 12,402,823 bytes before **and** after. 0
-missing, 0 added, 0 changed. The bytes scanned are the bytes finalized.
-
-Gate 4 took 0.2s on 12.4 MB — RTP had already scanned these files as they were
-written, so cached verdicts are expected. Recorded as an observation, not
-claimed as a from-cold scan.
-
-## Gate 5 failed first, and why the fix is not a whitewash
-
-Initial run: **exit 1**, `unexpected_domains` non-empty — `api.uexcorp.uk`, in 3
-of 114 files. All three are this pipeline's **own provenance records**
-(`_pull_summary.json`, `_pull_stderr.log`, `_items_by_category_summary.json`),
-which store request URLs. **Zero data files contained it.**
-
-Added `api.uexcorp.uk` and `uexcorp.uk` to `ALLOWLIST_DOMAINS`. The reasoning,
-recorded in both the code and the manifest: this is source 6's own canonical API
-domain, and every other landed source's canonical domain was already on that
-list (`api.star-citizen.wiki`, `scunpacked.com`, `starcitizen.tools`,
-`robertsspaceindustries.com`). It was absent only because source 6 had never
-been pulled.
-
-**Deliberately contrasted with `facebook.github.io`**, which was refused an
-allowlist entry during the source 1 re-acquisition. That was a foreign domain
-inside third-party content whose cause — a bundled `.git` directory — could be
-removed instead. There is no cause to remove here, because the domain *is* the
-source.
-
-**Fail-closed re-verified after the change:** the gate still exits 1 on a
-`<script>` tag, on `evil.example.net` and `pastebin.com`, and on an unreadable
-file. Two allowlist entries did not make it permissive.
-
-## Tier C — stated explicitly
-
-Recorded in the manifest as `data_tier: "C"` with a full statement. UEX declares
-its own data community-reported and crowdsourced, with tolerances of **±20% on
-commodities and ±100% on items**. Authoritative for aUEC prices and dealer
-locations *only* because nothing else has them. **Never auto-promoted without
-review.** Stated explicitly because a manifest silent on tier gets read as
-game-file truth.
-
-## Join key — recorded
-
-`items.uuid` is the Star Citizen UUID. **5,566 of 7,728** item records carry
-one. It joins directly to `reference` and `stdItem.UUID` in the already-landed
-`fps-items.json`. The manifest carries the explicit instruction: **join on UUID,
-do not build a name-matching path.**
-
-## Credential rotation — outstanding, and it is yours
-
-The token was pasted into a chat screenshot, so it must be treated as exposed.
-**I could not rotate it** — that requires signing in to the UEX account. The
-manifest records that this pull ran under a credential to be rotated, so a later
-audit knows this snapshot was retrieved with a since-rotated one.
-
-**Action for Sleven:** regenerate the token in the UEX account, then replace
-`UEX_API_TOKEN` in `.env`.
-
-## Correction to the status brief
-
-The brief said Part B had stopped with 22 category files and "no data missing".
-In fact the pull was **still running** when I resumed — PID 34692 was writing
-`items_category_62.json` 26 seconds before I looked, and **39 of 100 categories
-were still unfetched**. Gating then would have sealed an incomplete snapshot
-*and* run the pre/post-scan hash comparison against a directory being actively
-written, making the integrity check meaningless. I waited for it to finish; it
-completed all 100 with 0 rejections.
-
-## PHASE 1 IS COMPLETE
-
-This is the first time that is true, and it is true now because source 6's gates
-passed — not because the work was declared done.
-
-- Source 1 (scunpacked-data) — complete, re-acquired without `.git`
-- Source 2 (scunpacked.com) — complete
-- Source 3 (api.star-citizen.wiki) — complete
-- Source 4 — correctly ruled out, self-blocked on provenance
-- Source 5 — correctly ruled out, not directly downloadable
-- **Source 6 (UEX Corp) — complete**
-
-Five sources collected, two correctly ruled out.
-
-No data promoted into the database. This is Stage 1: collect and seal. Stage 2
-does not exist yet.
-
-*(+59 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+60 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
