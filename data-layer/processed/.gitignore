@@ -1,0 +1,15 @@
+# Derived build inputs, regenerated from the sealed snapshots by the WO-CRAFT-01
+# scripts. Not tracked, for the same reason journal.jsonl and *_perfile.json are
+# not: they are large, fully reproducible from inputs that ARE tracked, and
+# committing them puts a 10.9 MB blob into permanent history on every rebuild.
+#
+# Reproduce with the reference implementation in docs/workorder-craft-01.md,
+# which asserts every count exactly and fails loudly if a snapshot has moved.
+#
+# The snapshots they derive from are sealed and hash-verified, and the assertion
+# counts are recorded in the work order, so the outputs are re-derivable and
+# their correctness is checkable without storing them.
+blueprint_index.json
+item_descriptions.json
+ingredient_index.json
+blueprint_sources.json
