@@ -13,6 +13,51 @@ if (-not (Test-Path $exePath)) {
     exit 1
 }
 
+# ---------------------------------------------------------------------------
+# DUPLICATE-WATCHER GUARD - matched STRUCTURALLY, on what a task EXECUTES.
+#
+# Two watchers on one inbox silently overwrite each other's output, and the
+# only visible symptom is a handoff document that changes size for no apparent
+# reason. That already happened here and cost ~37,000 characters per
+# regeneration for three days.
+#
+# The guard deliberately does NOT match on task names. A name pattern like
+# "*Watcher*" is a naming convention, and it fails precisely when it matters -
+# the moment someone passes -TaskName "Nightly Media Sync". Matching on the
+# action's command line answers the real question, "is something already
+# watching this inbox", and cannot be evaded by choosing a different name.
+#
+# Tasks with the SAME name as the one being registered are excluded, because
+# replacing the canonical task is the whole point of a legitimate re-run. It is
+# a SECOND watcher under a DIFFERENT name that is the failure.
+#
+# This runs BEFORE the elevation check on purpose: detecting a duplicate needs
+# no privileges, a dry run must be able to report the refusal, and there is no
+# reason to raise a UAC prompt for a run that is going to refuse anyway.
+# ---------------------------------------------------------------------------
+$otherWatchers = @(
+    Get-ScheduledTask -ErrorAction SilentlyContinue | ForEach-Object {
+        $t = $_
+        $cmd = ($t.Actions | ForEach-Object { "$($_.Execute) $($_.Arguments)" }) -join ' '
+        if ($cmd -match 'inbox_watcher' -and $t.TaskName -ne $taskName) {
+            [pscustomobject]@{ Name = $t.TaskName; Path = $t.TaskPath; Cmd = $cmd.Trim() }
+        }
+    }
+)
+
+if ($otherWatchers.Count -gt 0) {
+    Write-Host "REFUSING TO REGISTER - something else already runs the inbox watcher:" -ForegroundColor Red
+    foreach ($w in $otherWatchers) {
+        Write-Host "   $($w.Path)$($w.Name)" -ForegroundColor Red
+        Write-Host "      -> $($w.Cmd)" -ForegroundColor DarkRed
+    }
+    Write-Host ""
+    Write-Host "Two watchers on one inbox silently overwrite each other's output." -ForegroundColor Red
+    Write-Host "Registering '$taskName' as well would make that three-day bug reachable again." -ForegroundColor Red
+    Write-Host "Remove or rename the task(s) above first, then re-run." -ForegroundColor Red
+    exit 1
+}
+
 $isAdmin = ([Security.Principal.WindowsPrincipal] `
     [Security.Principal.WindowsIdentity]::GetCurrent() `
     ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)

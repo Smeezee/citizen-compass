@@ -48,6 +48,45 @@ if (-not (Test-Path $wrapper)) {
     exit 1
 }
 
+# ---------------------------------------------------------------------------
+# DUPLICATE-WRITER GUARD - matched STRUCTURALLY, on what a task EXECUTES.
+#
+# This guard used to match task NAMES ("*Auditor*", "*Citizen Compass
+# Checks*"). That is a naming convention pretending to be a check: it fails the
+# instant someone passes a -TaskName outside the pattern, which is exactly the
+# situation a duplicate arrives in. Matching the action's command line answers
+# "is anything already scheduled to write the findings tables" and cannot be
+# evaded by choosing a different name.
+#
+# Same-name tasks are excluded - replacing the canonical task is what a
+# legitimate re-run does. A SECOND writer under a DIFFERENT name is the failure.
+#
+# Runs BEFORE the elevation check: detecting a duplicate needs no privileges, a
+# dry run must be able to report the refusal, and a run that will refuse should
+# not raise a UAC prompt first.
+# ---------------------------------------------------------------------------
+$otherWriters = @(
+    Get-ScheduledTask -ErrorAction SilentlyContinue | ForEach-Object {
+        $t = $_
+        $cmd = ($t.Actions | ForEach-Object { "$($_.Execute) $($_.Arguments)" }) -join ' '
+        if ($cmd -match 'run_checks' -and $t.TaskName -ne $TaskName) {
+            [pscustomobject]@{ Name = $t.TaskName; Path = $t.TaskPath; Cmd = $cmd.Trim() }
+        }
+    }
+)
+
+if ($otherWriters.Count -gt 0) {
+    Write-Host "REFUSING TO REGISTER - something else already runs the checks:" -ForegroundColor Red
+    foreach ($w in $otherWriters) {
+        Write-Host "   $($w.Path)$($w.Name)" -ForegroundColor Red
+        Write-Host "      -> $($w.Cmd)" -ForegroundColor DarkRed
+    }
+    Write-Host ""
+    Write-Host "Two schedules writing one findings table is the duplicate-writer failure" -ForegroundColor Red
+    Write-Host "this project has already had twice. Remove or rename the task(s) above first." -ForegroundColor Red
+    exit 1
+}
+
 $isAdmin = ([Security.Principal.WindowsPrincipal] `
     [Security.Principal.WindowsIdentity]::GetCurrent() `
     ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
@@ -86,19 +125,6 @@ if (-not $isAdmin) {
     )
     Start-Process powershell -ArgumentList $fwd -Verb RunAs
     exit
-}
-
-# Guard against the exact failure this project keeps having: a second task
-# writing the same thing. Report it rather than silently adding another.
-$existing = Get-ScheduledTask -ErrorAction SilentlyContinue |
-    Where-Object { $_.TaskName -like '*Auditor*' -or $_.TaskName -like '*Citizen Compass Checks*' } |
-    Where-Object { $_.TaskName -ne $TaskName }
-if ($existing) {
-    Write-Host "REFUSING TO REGISTER - other auditor-looking tasks already exist:" -ForegroundColor Red
-    $existing | ForEach-Object { Write-Host "   $($_.TaskName) [$($_.State)]" -ForegroundColor Red }
-    Write-Host "Two schedules writing one findings table is the failure this design avoids." -ForegroundColor Red
-    Write-Host "Remove or rename them first, then re-run." -ForegroundColor Red
-    exit 1
 }
 
 $action = New-ScheduledTaskAction `

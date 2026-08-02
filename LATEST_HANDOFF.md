@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #92 — 2026-08-01 9:04 PM
+# LATEST_HANDOFF.md — Update #95 — 2026-08-01 9:34 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-01 21:04:19 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-01 21:34:04 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,242 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 58320 files (10316.44 MB)
 
-**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 544
+**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 547
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-01 21:33:39 — update_structural_duplicate_guards.md
+
+# UPDATE — structural duplicate-writer guards, proven by a decoy
+
+You were right that this was still open: I made `-TaskName` forward correctly
+and left the door it opens unguarded. `-TaskName "Watcher 2"` would reliably
+have produced a second watcher — the ~37,000-characters-per-regeneration
+failure, reachable *through the parameter I had just made work*.
+
+## What changed
+
+Both setup scripts now refuse to register when something else already does the
+job, and both match **structurally — on what a task EXECUTES**, not on what it
+is called.
+
+- `setup_watcher_task.ps1` — refuses if any task's action runs
+  `inbox_watcher`.
+- `setup_checks_task.ps1` — its old `*Auditor*` / `*Citizen Compass Checks*`
+  name patterns are **gone**, replaced by a match on any action running
+  `run_checks`.
+
+Tasks with the **same name** as the target are excluded, because replacing the
+canonical task is exactly what a legitimate re-run does. A second writer under a
+*different* name is the failure.
+
+**Both guards run BEFORE the elevation check.** Detecting a duplicate needs no
+privileges, a dry run has to be able to report the refusal, and a run that is
+going to refuse should not raise a UAC prompt first. With the guard after the
+elevation branch it would have been unreachable from a non-admin dry run — the
+check would have existed without ever being able to run.
+
+## Rule 12 — the decoy
+
+Registered `Nightly Media Sync`, a task whose action runs `inbox_watcher.exe`.
+The name is deliberately unrelated: **no name pattern would ever match it.**
+Second decoy `Quarterly Report Builder` running `run_checks.py`.
+
+| stage | watcher script | checks script |
+|---|---|---|
+| **baseline**, no decoy | exit 0, reached "would register" | exit 0, reached "would register" |
+| **decoy present** | **exit 1, REFUSED** | **exit 1, REFUSED** |
+| reached register stage? | **No** | **No** |
+| **decoy removed** | exit 0, reached "would register" | exit 0, reached "would register" |
+
+The baseline matters: without it a refusal proves nothing, because a guard that
+refuses unconditionally is as broken as one that never refuses.
+
+## The direct comparison, which is the whole point
+
+At the moment both decoys were live:
+
+| guard | tasks matched |
+|---|---:|
+| **old, name-based** (`*Auditor*`, `*Citizen Compass Checks*`, `*Watcher*`) | **0** |
+| **new, structural** (action runs `inbox_watcher` / `run_checks`) | **4** |
+
+**The old guard matched nothing.** It would have let both decoys through and
+registered a second watcher alongside them. This is not a hypothetical about
+naming conventions — it is measured, against the exact scenario the parameter
+makes reachable.
+
+## A flaw in my own test, corrected
+
+My first assertion reported `REFUSING=False` even though the console plainly
+showed the refusal. Cause: the guard uses `Write-Host`, which goes to the
+**information stream**, and `2>&1` does not capture it — so the captured string
+was empty and every `-match` was trivially false. A test that reads an empty
+buffer and reports "not found" is a check that cannot fail. Re-run with `6>&1`
+and the assertions are real.
+
+## Machine state afterwards
+
+Decoys removed; nothing left behind.
+
+```
+total scheduled tasks       : 226   (unchanged from before the test)
+tasks running inbox_watcher : 1     Citizen Compass Inbox Watcher
+tasks running run_checks    : 1     Citizen Compass Auditor Checks
+watcher process PID         : 21764 (unchanged throughout - never restarted)
+```
+
+Both scripts parse with 0 errors.
+
+### 2026-08-01 21:31:03 — update_workorder_cloudflare_testing_deploy_2026-08-02.md
+
+# UPDATE — work order issued: automate testing-site deploys via Cloudflare
+
+Claude-02, 2026-08-02. Work order only. Nothing built, no commits, no pushes.
+
+## Decision on record
+
+Sleven's call: automate deployment for the **testing site only**, on Cloudflare.
+The live site stays on Netlify and stays manual. Netlify production deploys are
+currently blocked by an account credit limit — that is being waited out
+deliberately, not worked around, and the live site is unaffected because
+published sites stay up.
+
+## Why this came up
+
+Deploying the testing site is a hand-drag of 478 files / 349 MB into a browser
+upload widget. It stalled tonight. The browser tab is a single point of failure
+for a 358 MB transfer, and the whole loop of "build something, look at it live,
+iterate" depends on that step working.
+
+## The order, in brief
+
+Set up wrangler for project `citizen-compass-testing` on the Cloudflare account
+`Citizencompass.contact@gmail.com` (account id `ad974500ce73c9694e94213c4d762f3e`),
+deploying `testing/_deploy/` as a static site with `index.html` as entry and
+`keybinds.html` reachable at `/keybinds.html`. Wrap it in a one-step script.
+
+**Check Cloudflare's current docs before choosing a command.** Static hosting has
+moved from Pages to Workers static assets and the dashboard now presents it as
+"Create a Worker". The syntax should be read, not recalled.
+
+API token goes in `.env` (already gitignored, already holds `UEX_API_TOKEN` and
+`DATABASE_URL`). Never into the repo, a log, or a manifest.
+
+## Bundled fix — a silent failure already armed
+
+`build_full.py` generates `testing/_deploy/` and does **not** copy
+`keybinds.html` into it. That file is currently present only because it was
+placed by hand. The next full build drops it with no error and the KEYBINDS tab
+404s.
+
+Add: `testing/_src/keybinds.src.html` -> `testing/_deploy/keybinds.html`
+
+Also: `testing/_src/` holds the master layer source and all three build scripts,
+is not gitignored, and is the only copy. It should be committed.
+
+## Verification required — rule 12
+
+A zero exit code is not proof. The order requires fetching the deployed URL and
+asserting: index serves, `/keybinds.html` serves, the served index contains
+`id="cc-kb"` and `cc-ship::after`, a model file returns 200 with a plausible
+size, and a second deploy reuses the same URL rather than minting a new one.
+
+The model check matters — a deploy that silently drops the 358 MB models folder
+would otherwise present as success.
+
+## Boundaries
+
+Live site, `static/preview.html`, `releases/latest.html`, database and all source
+snapshots out of scope. Commit the wrangler config, deploy script, the
+`build_full.py` fix and `testing/_src/`. Do not commit `.env`, `testing/_deploy/`
+or anything under `sc-ships/`.
+
+## Context for whoever picks this up
+
+A `testing/_deploy_lite/` folder also exists — 243 files, 6 MB, same site without
+the models. Created so the operator could get a working deploy up in seconds
+while the full upload was stalling. It is a convenience copy, not a build output,
+and nothing generates it.
+
+### 2026-08-01 21:10:59 — update_watcher_elevation_flaw_fixed.md
+
+# UPDATE — fixed the elevation flaw at its source: `setup_watcher_task.ps1`
+
+This was the origin of the defect. `setup_checks_task.ps1` was copied from this
+file and inherited it; I fixed the copy and left the original, calling it
+"outside this order" and its parameters "inert". **That reasoning was wrong.**
+The defect is not about parameters — it is that the script has no working dry
+run at all, and this is the more dangerous of the two.
+
+## Why this one mattered more
+
+`setup_watcher_task.ps1` runs `Unregister-ScheduledTask` followed by
+`Register-ScheduledTask` against the **inbox watcher — the sole writer of
+`LATEST_HANDOFF.md`**. A "dry run" that is not dry tears down and rebuilds a
+live service, and this project has already lost ~37,000 characters per
+regeneration to two writers on one file. Leaving it was leaving a loaded
+version of the exact failure that cost a day to diagnose.
+
+## One subtlety worth stating
+
+I added `-TaskName` while fixing this. Before, the name was hardcoded, so a real
+run could only ever replace the existing task. **With a parameter, a second
+watcher under a different name is now possible where it was not before** — which
+makes forwarding the argument on elevation load-bearing rather than cosmetic. It
+is forwarded, and `-WhatIf` refuses to elevate at all.
+
+Also removed a `Read-Host "Press Enter to close"` from the "exe not found" error
+path, which would have hung any non-interactive run.
+
+## Proven by behaviour, from OUTSIDE the script
+
+The script's own "Nothing was changed" line is not evidence. Scheduler state was
+captured before and after and diffed.
+
+**`setup_watcher_task.ps1 -WhatIf`:**
+
+| | before | after |
+|---|---:|---:|
+| total scheduled tasks | 226 | 226 |
+| diff rows (Name/Path/State/Action) | — | **0** |
+| tasks matching `inbox_watcher` | 1 | **1** |
+| watcher process PID | 21764 | **21764** |
+| `LATEST_HANDOFF.md` bytes | 107978 | 107978 |
+
+**The unchanged PID is the strongest single fact here** — the watcher was never
+stopped, so nothing was torn down and rebuilt.
+
+**`setup_checks_task.ps1 -WhatIf`** — re-proven the same way, because I had only
+shown it echoing its parameters, which is the script talking about itself. Run
+with a **deliberately different** `-TaskName 'CC Leak Probe Task' -At 04:44`, so
+a leak would appear as a brand-new task in the diff rather than quietly
+overwriting the existing one:
+
+- 226 tasks before, 226 after, **0 diff rows**
+- probe task exists: **False**
+- tasks invoking `run_checks`: **exactly 1**
+
+## Blast radius confirmed independently
+
+Grepped every `.ps1` for `RunAs` / `Start-Process` rather than taking the count
+on trust. Three hits, in two files: `setup_checks_task.ps1:87` and
+`setup_watcher_task.ps1:65`, both now using the forwarding array, plus
+`setup_watcher_task.ps1:25`, which is the comment documenting the old line.
+`Backup-CitizenCompass.ps1` and `run_checks_scheduled.ps1` do not elevate.
+That is the whole surface, and it is closed.
+
+Both files parse with 0 errors, and the watcher script's real registration path
+(`Unregister` → `Register` → `Start`) is intact at lines 112/115/128.
+
+## The general rule, already recorded
+
+CLAUDE.md now carries this under hard rule 12: a safety flag that silently does
+not apply is a check that cannot fail, in the same class as `main()` returning
+`None`. **Prove the flag by behaviour** — run the dry run, then confirm from the
+outside that nothing changed.
 
 ### 2026-08-01 21:03:52 — update_swept_in_claude02_keybinds_work.md
 
@@ -1813,252 +2044,7 @@ Forgetting either is safe by construction: LIVE falls back to the index, PTU fal
 
 `docs/workorder-patch-link-resolver.md` — the Go resolver that removes both manual steps. **Explicitly ranked behind Part B and Part C**; the page degrades safely without it and Phase 1 matters more.
 
-### 2026-08-01 18:07:11 — update_ptu_patch_link.md
-
-# Testing area — PTU patch notes now have their own link — 2026-08-02
-
-Cowork session. Testing area only. `testing/_layer.html` and `testing/_deploy/index.html` updated. No repo code outside `testing/` touched.
-
-## The defect
-
-The version banner showed two tags — LIVE 4.9.0 and PTU 4.10.0 — wrapped in **one** anchor pointing at `https://robertsspaceindustries.com/en/patch-notes`.
-
-**That index lists LIVE releases only.** Verified: 20 entries, Alpha 4.9 back to 3.24.0, no PTU among them. So clicking the PTU tag took a visitor to a page that did not contain what the tag named. Not a broken link — a link to the wrong thing, which is worse, because nothing signals the mistake.
-
-## What was found about where PTU notes actually live
-
-RSI publishes no PTU page on the patch-notes index or as a comm-link. PTU notes exist **only** as Spectrum threads in the Patch Notes channel, forum `190048`.
-
-Two facts that decide the implementation:
-
-1. **Thread slugs are not stable across builds.** Alpha 4.10 alone has at least five separate threads — builds 12311913, 12326622, 12335477, 12358556, 12368639 — at `…/star-citizen-alpha-4-10-ptu-patch-notes`, `-1`, `-2`, `-4`, `-5`. A link to any one of them is stale within days and there is no derivable pattern to chase. **So the link goes to the channel**, where the newest build is always the top thread.
-2. **Spectrum is a client-rendered SPA.** A fetch of forum 190048 returns meta tags and no thread list. Irrelevant for a link — a real browser runs the JS — but it rules out scraping PTU notes server-side later without a headless browser. Recorded now so a future session does not rediscover it.
-
-LIVE is the opposite case: per-release comm-link pages are stable once published — `https://robertsspaceindustries.com/comm-link/Patch-Notes/21245-Star-Citizen-Alpha-49` for 4.9 — but **the ID is assigned by RSI and cannot be derived from the version string.** So it has to be a lookup table.
-
-## What was built
-
-The banner's single anchor is replaced by two, each carrying its own tag:
-
-- **LIVE tag** → `CC_PATCH.live[version]`, read from the DOM's own `.sc-live .sc-ver` text, falling back to the index when the version is unmapped.
-- **PTU tag** → the Spectrum channel, with a title attribute saying the newest build is the top thread.
-
-Config block is `CC_PATCH` at the top of the script. Adding a release is one line.
-
-**The fallback is the point.** An unmapped version yields the index — less specific, never wrong. A stale table degrades to today's behaviour rather than to a wrong destination.
-
-**Bails out rather than guessing.** If `.sc-tag.sc-live` or `.sc-tag.sc-ptu` is absent — the live page changed shape — `split()` returns false and the banner is left exactly as the live page rendered it. Only `<a>` elements are removed; anything else on the banner survives.
-
-## Two things that broke on the way
-
-**The "Star Citizen" label was inside the anchor being replaced.** Item 16 injected `.cc-scgame` into `.sc-banner a`. Replacing that anchor would have deleted the label, and the two blocks would have raced depending on which retry interval fired last. Fixed by moving the label onto `.sc-banner` itself as first child. Both blocks are idempotent and now converge on the same DOM regardless of order.
-
-**`width:100%` did nothing on mobile.** `.sc-banner` is a flex row with no `flex-wrap`, so two 100%-width children just shared one line and ran off the right edge — measured at 390px, the second link ended at x=474 in a 390px viewport. Adding `flex-wrap:wrap` at ≤640px fixed it. Verified after: two full-width rows at y=291 and y=329, `scrollWidth` 390 against `innerWidth` 390 — no horizontal overflow.
-
-*A width that a flex parent is free to ignore is not a width.* Same shape as the earlier lesson about checks that cannot fail.
-
-## Verification
-
-Headless, against the built deploy file, not against the source:
-
-- Anchor count, `href`, `title`, tag text and label text read back from the DOM — both correct, LIVE resolving to the 4.9 comm-link rather than the fallback.
-- Bounding boxes at 390, 820 and 1400px. No overlap at any width; stacked at 390, side by side above.
-- `pageerror` listener attached for the whole run — zero errors.
-
-**One verification bug worth recording:** the first run reported all-zero rects and looked like a layout failure. The real cause was the harness writing `localStorage.ccGate = 'apples'` when the gate stores `'1'` — so the page was still locked and every element measured zero. *A test that measures a hidden page reports plausible-looking numbers rather than failing.* Fixed the harness, not the layer.
-
-## Maintenance this creates
-
-`CC_PATCH.live` needs one line when a release goes LIVE. Currently mapped: 4.9.0 → comm-link 21245. When 4.10 goes LIVE its comm-link ID must be read off the patch-notes index — it cannot be computed.
-
-If that maintenance is unwanted, deleting the `live` map entirely leaves LIVE pointing at the index, which is still correct for LIVE. The PTU link needs no maintenance at all.
-
-### 2026-08-01 17:52:43 — update_partB_resume_pull_still_running.md
-
-# UPDATE — PART B resume: the pull is still RUNNING, gates deferred
-
-Filed on resume per rule 13. Correcting the status brief on two points, both
-verified on disk just now.
-
-## The pull did not stop
-
-The status check reported "Part B: STOPPED after the pull. Nothing since 17:01."
-
-**It is running.** Process 34692, started 17:07:28, wrote
-`items_category_62.json` at **17:51:40** — 26 seconds before I looked. Files are
-landing roughly 43 seconds apart, which matches every UEX request measured this
-run (payload size is irrelevant; 4 KB `cities` took 42.77s and 6.2 MB
-`items_prices_all` took 43.2s, so ~43s is a fixed server-side cost).
-
-## Coverage is not yet complete
-
-The brief said 22 `items_category_*` files. On disk there are **62**, and the
-count rose from 60 to 61 to 62 while I was checking — which is what revealed the
-process was still alive.
-
-**39 of 100 categories have not been fetched yet:** ids 63, 64, 65, 67-75,
-79-84, 86, 87, 90-103, 107, 109-112.
-
-Current landed coverage: **7,247 item records, 5,315 carrying a uuid**, across
-61 parseable category files. Zero unparseable.
-
-So "the 22 files cover the same ground, so no data is missing" is not yet
-established. It will be true when the run finishes; it is not true now.
-
-## Why I am not gating yet
-
-Two reasons, either sufficient on its own:
-
-1. **Sealing now would finalize a snapshot missing 39 categories** — and
-   `/items/` is the endpoint carrying the Star Citizen UUID that is this
-   source's entire join value.
-2. **The integrity check would be meaningless.** Gate 4 requires hashing before
-   the malware scan and re-hashing after, to prove the bytes scanned are the
-   bytes finalized. Running that against a directory a live process is still
-   writing to guarantees a mismatch that says nothing about Real-Time
-   Protection. This is the same failure mode I flagged on source 3 earlier in
-   this session, for the same reason.
-
-`_items_by_category_summary.json` is also absent, because the script writes it
-only after the last category — its absence is itself the signal the run has not
-finished.
-
-## Not re-pulling
-
-To be explicit, since the instruction was "do not re-pull": I am not re-fetching
-anything already on disk. The existing 61 category files, the 11 endpoint files
-and `_pull_summary.json` are untouched. The running process is finishing the
-categories it never reached.
-
-## What happens next, unchanged
-
-When the process exits: five gates in order, malware scan before the rename out
-of `.partial`, re-hash after the scan, then the manifest with Tier C stated
-explicitly, the `items.uuid` join key, and the bare-`/items/` 400 recorded
-honestly rather than smoothed over.
-
-**Phase 1 is not complete and will not be called complete until source 6's gates
-pass.**
-
-### 2026-08-01 17:01:08 — update_station_directory_idea_2026-08-01.md
-
-# UPDATE — Station directory idea raised and parked
-
-Filed from the Cowork brainstorming session (Claude-02), 2026-08-01. Nothing
-built, nothing started, no code written. This is an idea recorded so it is not
-lost, not a work order.
-
-Full write-up lives in the claude.ai project as `claude/station-directory-plan.md`.
-This is the machine-side copy so sessions here can see it exists.
-
-## The idea
-
-For every station and landing zone, record what shops are inside it, what they
-sell, and how to physically get to them. Not "Everus Harbour sells food" but
-"the food kiosk is on the ground floor, right outside the hangar elevators."
-Some shops are ten steps from the hangar; some need an internal elevator and a
-walk across the station. A player currently has no way to know which before
-landing.
-
-## Why it is worth doing
-
-- It makes the tagline literally true. "Know where to buy, before you fly"
-  should mean knowing which elevator to take, not just the price.
-- It is the only dataset in this project that cannot be copied. Everything else
-  comes from files anyone can download. This is knowledge players hold in their
-  heads and trade in Discord, and it disappears when the chat scrolls.
-- It is the query an in-flight assistant would actually be asked, and no
-  Star Citizen tool answers it today.
-
-## What already exists
-
-Fragments, in prose, scattered. The Star Citizen Wiki's Everus Harbor page says
-the commodities terminal is reached "by visiting the Galleria, walking up the
-stairs, and entering the Admin booth" — exactly the right kind of information,
-one sentence, buried, no floors, no elevators, nothing about the other shops.
-Similar scraps exist in YouTube station tours and guide sites.
-
-Nobody has it organised. Work starts from scattered material, not from zero.
-
-## What it connects to on our side
-
-- The location list already pulled from game data: 1,774 places, each knowing
-  which place contains it.
-- UEX once pulled: shop names and prices per location.
-
-Directions sit between those two. Add them and "where is it" and "what does it
-cost" become one answer instead of two lookups.
-
-## Size, estimated honestly
-
-Roughly 20-40 locations actually matter — the major landing zones and stations
-people genuinely dock at. Five to fifteen shops each, so 200-500 entries total.
-Walking one location and recording it properly is 15-30 minutes, so 10-20 hours
-in-game overall.
-
-Spread over normal play across several weeks this is manageable. As a single
-push it is a slog. Treat it as the former.
-
-An earlier figure of "a weekend" was given in conversation and is corrected here.
-
-## Capture method proposed
-
-Use the existing inbox pipeline rather than building anything new. A minimal
-form — where you are, what you found, how you reached it — that drops a file
-into `inbox/`. Alt-tab, thirty seconds, back into the game. Logging a shop must
-be faster than deciding whether to bother.
-
-## Staleness — the part that matters
-
-This data goes stale differently from everything else here. Game files can be
-re-downloaded and re-verified automatically. A reworked station cannot — only a
-person walking through it notices.
-
-Every entry must carry the game version it was checked in, and the front end
-must surface it. An old note has to flag itself rather than quietly send someone
-on a twenty-minute trip for nothing.
-
-This is the strongest use case in the project for the verification columns that
-landed 2026-08-01. Elsewhere they are good practice. Here they are the
-difference between useful and actively harmful.
-
-## Risk, stated plainly
-
-Every other dataset here scales with compute — a script runs, data arrives. This
-one scales with Sleven's time. If he stops playing it stops growing and rots.
-
-That should be accepted deliberately rather than discovered later. The
-counterweight: the same property is what makes it defensible.
-
-## Open, not decided
-
-1. Player submissions ever? Removes the bottleneck, brings accounts, moderation
-   and spam. Much larger build, not assumed. Standing rule stands: no site
-   feature may require an RSI account login.
-2. Text, screenshots, or both? Screenshots are far clearer and raise their own
-   publishing questions.
-3. How fine does the detail go? "Second floor, north side" versus "out of the
-   elevator, turn left, past the clothing shop."
-4. Which locations first? Probably wherever Sleven already spends time, not a
-   systematic sweep.
-5. What happens when a station is reworked — flag the whole location unverified,
-   or leave entries with an old version stamp until re-checked?
-
-## Where it sits
-
-Not part of Phase 1 (collection, now one pull from done). Not a blocker for
-Phase 2 (validation). A content project that can run alongside everything else,
-because starting needs no code — only somewhere to put the notes.
-
-Sensible first move is not building anything: walk one station, write it down by
-hand, and see how long it really takes and how useful it reads.
-
-## Boundaries
-
-Nothing else written. No commits, no pushes. Snapshots, database and live site
-untouched.
-
-*(+55 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+58 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

@@ -6012,3 +6012,157 @@ CLAUDE.md now carries this under hard rule 12: a safety flag that silently does
 not apply is a check that cannot fail, in the same class as `main()` returning
 `None`. **Prove the flag by behaviour** — run the dry run, then confirm from the
 outside that nothing changed.
+
+### 2026-08-01 21:31:03 — update_workorder_cloudflare_testing_deploy_2026-08-02.md
+
+# UPDATE — work order issued: automate testing-site deploys via Cloudflare
+
+Claude-02, 2026-08-02. Work order only. Nothing built, no commits, no pushes.
+
+## Decision on record
+
+Sleven's call: automate deployment for the **testing site only**, on Cloudflare.
+The live site stays on Netlify and stays manual. Netlify production deploys are
+currently blocked by an account credit limit — that is being waited out
+deliberately, not worked around, and the live site is unaffected because
+published sites stay up.
+
+## Why this came up
+
+Deploying the testing site is a hand-drag of 478 files / 349 MB into a browser
+upload widget. It stalled tonight. The browser tab is a single point of failure
+for a 358 MB transfer, and the whole loop of "build something, look at it live,
+iterate" depends on that step working.
+
+## The order, in brief
+
+Set up wrangler for project `citizen-compass-testing` on the Cloudflare account
+`Citizencompass.contact@gmail.com` (account id `ad974500ce73c9694e94213c4d762f3e`),
+deploying `testing/_deploy/` as a static site with `index.html` as entry and
+`keybinds.html` reachable at `/keybinds.html`. Wrap it in a one-step script.
+
+**Check Cloudflare's current docs before choosing a command.** Static hosting has
+moved from Pages to Workers static assets and the dashboard now presents it as
+"Create a Worker". The syntax should be read, not recalled.
+
+API token goes in `.env` (already gitignored, already holds `UEX_API_TOKEN` and
+`DATABASE_URL`). Never into the repo, a log, or a manifest.
+
+## Bundled fix — a silent failure already armed
+
+`build_full.py` generates `testing/_deploy/` and does **not** copy
+`keybinds.html` into it. That file is currently present only because it was
+placed by hand. The next full build drops it with no error and the KEYBINDS tab
+404s.
+
+Add: `testing/_src/keybinds.src.html` -> `testing/_deploy/keybinds.html`
+
+Also: `testing/_src/` holds the master layer source and all three build scripts,
+is not gitignored, and is the only copy. It should be committed.
+
+## Verification required — rule 12
+
+A zero exit code is not proof. The order requires fetching the deployed URL and
+asserting: index serves, `/keybinds.html` serves, the served index contains
+`id="cc-kb"` and `cc-ship::after`, a model file returns 200 with a plausible
+size, and a second deploy reuses the same URL rather than minting a new one.
+
+The model check matters — a deploy that silently drops the 358 MB models folder
+would otherwise present as success.
+
+## Boundaries
+
+Live site, `static/preview.html`, `releases/latest.html`, database and all source
+snapshots out of scope. Commit the wrangler config, deploy script, the
+`build_full.py` fix and `testing/_src/`. Do not commit `.env`, `testing/_deploy/`
+or anything under `sc-ships/`.
+
+## Context for whoever picks this up
+
+A `testing/_deploy_lite/` folder also exists — 243 files, 6 MB, same site without
+the models. Created so the operator could get a working deploy up in seconds
+while the full upload was stalling. It is a convenience copy, not a build output,
+and nothing generates it.
+
+### 2026-08-01 21:33:39 — update_structural_duplicate_guards.md
+
+# UPDATE — structural duplicate-writer guards, proven by a decoy
+
+You were right that this was still open: I made `-TaskName` forward correctly
+and left the door it opens unguarded. `-TaskName "Watcher 2"` would reliably
+have produced a second watcher — the ~37,000-characters-per-regeneration
+failure, reachable *through the parameter I had just made work*.
+
+## What changed
+
+Both setup scripts now refuse to register when something else already does the
+job, and both match **structurally — on what a task EXECUTES**, not on what it
+is called.
+
+- `setup_watcher_task.ps1` — refuses if any task's action runs
+  `inbox_watcher`.
+- `setup_checks_task.ps1` — its old `*Auditor*` / `*Citizen Compass Checks*`
+  name patterns are **gone**, replaced by a match on any action running
+  `run_checks`.
+
+Tasks with the **same name** as the target are excluded, because replacing the
+canonical task is exactly what a legitimate re-run does. A second writer under a
+*different* name is the failure.
+
+**Both guards run BEFORE the elevation check.** Detecting a duplicate needs no
+privileges, a dry run has to be able to report the refusal, and a run that is
+going to refuse should not raise a UAC prompt first. With the guard after the
+elevation branch it would have been unreachable from a non-admin dry run — the
+check would have existed without ever being able to run.
+
+## Rule 12 — the decoy
+
+Registered `Nightly Media Sync`, a task whose action runs `inbox_watcher.exe`.
+The name is deliberately unrelated: **no name pattern would ever match it.**
+Second decoy `Quarterly Report Builder` running `run_checks.py`.
+
+| stage | watcher script | checks script |
+|---|---|---|
+| **baseline**, no decoy | exit 0, reached "would register" | exit 0, reached "would register" |
+| **decoy present** | **exit 1, REFUSED** | **exit 1, REFUSED** |
+| reached register stage? | **No** | **No** |
+| **decoy removed** | exit 0, reached "would register" | exit 0, reached "would register" |
+
+The baseline matters: without it a refusal proves nothing, because a guard that
+refuses unconditionally is as broken as one that never refuses.
+
+## The direct comparison, which is the whole point
+
+At the moment both decoys were live:
+
+| guard | tasks matched |
+|---|---:|
+| **old, name-based** (`*Auditor*`, `*Citizen Compass Checks*`, `*Watcher*`) | **0** |
+| **new, structural** (action runs `inbox_watcher` / `run_checks`) | **4** |
+
+**The old guard matched nothing.** It would have let both decoys through and
+registered a second watcher alongside them. This is not a hypothetical about
+naming conventions — it is measured, against the exact scenario the parameter
+makes reachable.
+
+## A flaw in my own test, corrected
+
+My first assertion reported `REFUSING=False` even though the console plainly
+showed the refusal. Cause: the guard uses `Write-Host`, which goes to the
+**information stream**, and `2>&1` does not capture it — so the captured string
+was empty and every `-match` was trivially false. A test that reads an empty
+buffer and reports "not found" is a check that cannot fail. Re-run with `6>&1`
+and the assertions are real.
+
+## Machine state afterwards
+
+Decoys removed; nothing left behind.
+
+```
+total scheduled tasks       : 226   (unchanged from before the test)
+tasks running inbox_watcher : 1     Citizen Compass Inbox Watcher
+tasks running run_checks    : 1     Citizen Compass Auditor Checks
+watcher process PID         : 21764 (unchanged throughout - never restarted)
+```
+
+Both scripts parse with 0 errors.
