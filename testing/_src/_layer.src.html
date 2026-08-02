@@ -961,21 +961,16 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
   border-top:1px solid #22364F;color:#6B8091;font:400 12.5px/1.6 inherit}
 </style>
 
-<style>
-#cc-lo-tab{position:fixed;top:calc(44% + 430px);right:0;z-index:100002;
-  background:#4DA3FF;color:#04182B;border:0;border-radius:7px 0 0 7px;
-  padding:16px 9px;font:700 13px/1 system-ui,sans-serif;letter-spacing:.16em;
-  writing-mode:vertical-rl;cursor:pointer;box-shadow:-3px 0 14px rgba(0,0,0,.42);
-  text-decoration:none;transition:transform .28s ease;display:block}
-#cc-lo-tab:hover{background:#7CBDFF}
-body.cc-drawer-open #cc-lo-tab{transform:translateX(-380px)}
-@media (max-width:820px){
-  #cc-lo-tab{top:auto !important;bottom:10px;right:250px;
-    writing-mode:horizontal-tb;padding:11px 14px;border-radius:7px}
-  body.cc-drawer-open #cc-lo-tab{transform:none}
-}
-</style>
-<a id="cc-lo-tab" class="cc-ui" href="loadout.html" title="Loadout bench">LOADOUT</a>
+<!-- The LOADOUT tab was removed 2026-08-02 on Sleven's call, for two reasons.
+     POSITION: the right edge stacks tabs at 44% + 0/150/290/430px. The fourth
+     one started at 826px on a 900px-tall window - off the bottom of the screen
+     on any window under about 1000px. The stack was designed for two.
+     PLACE: a floating tab has no idea which ship you are looking at. The
+     loadout belongs on the ship page, reached from the ship, opening on that
+     ship. That entry point is deliberately NOT wired yet - loadout.html
+     currently knows one ship, so 315 of 316 links would dead-end. It goes in
+     when the bench is driven by the real per-ship slot data, which is on disk
+     and verified. See docs/workorder-loadout-real-data.md. -->
 <button id="cc-kb-tab" class="cc-ui" title="Keybinding tester">KEYBINDS</button>
 
 <div id="cc-kb" class="cc-ui">
@@ -1333,6 +1328,33 @@ $('cc-kb').addEventListener('click',function(e){
 })();
 </script>
 
+<!-- LOADOUT floating tab removed 2026-08-02, second removal.
+     Two reasons, recorded so it does not return a third time:
+     1. The right edge stacks tabs at 44% + 0/150/290/430px. The fourth starts
+        at 826px on a 900px-tall window - off the bottom of the screen on
+        anything under roughly 1000px.
+     2. A floating tab has no idea which ship you are on. The loadout entry
+        point belongs on the ship page.
+     It lands at Phase 6 of docs/workorder-loadout-real-data.md, once the bench
+     covers more than one ship. Today it knows exactly one, so 315 of 316 links
+     would dead-end.
+     loadout.src.html and its PAGES copy step are deliberately untouched - the
+     page stays reachable, only the floating tab is gone. -->
+<style>
+#cc-fi-tab{position:fixed;top:calc(44% + 570px);right:0;z-index:100002;
+  background:#FFC24D;color:#2A1B00;border:0;border-radius:7px 0 0 7px;
+  padding:16px 9px;font:700 13px/1 system-ui,sans-serif;letter-spacing:.16em;
+  writing-mode:vertical-rl;cursor:pointer;box-shadow:-3px 0 14px rgba(0,0,0,.42);
+  text-decoration:none;transition:transform .28s ease;display:block}
+#cc-fi-tab:hover{background:#FFD284}
+body.cc-drawer-open #cc-fi-tab{transform:translateX(-380px)}
+@media (max-width:820px){
+  #cc-fi-tab{top:auto !important;bottom:10px;right:376px;
+    writing-mode:horizontal-tb;padding:11px 14px;border-radius:7px}
+  body.cc-drawer-open #cc-fi-tab{transform:none}
+}
+</style>
+<a id="cc-fi-tab" class="cc-ui" href="find.html" title="Find an item, shop or price">FIND IT</a>
 <button id="cc-fb-tab" class="cc-ui" title="Leave feedback">FEEDBACK</button>
 <div id="cc-fb">
   <div class="shell">

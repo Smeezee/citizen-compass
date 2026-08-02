@@ -200,7 +200,53 @@ reinforced in conversation more than once.
 
 ---
 
-### 14. Every file open states its encoding.
+### 14. One writer per artifact. Make the second writer impossible, not discouraged.
+
+**Every artifact in this repo has exactly one writer, and that constraint is
+enforced by construction — never by everyone remembering it.**
+
+Current assignments:
+
+- `LATEST_HANDOFF.md` — the Go `inbox_watcher.exe`, and nothing else. Dropping a
+  file in `inbox/` is the only supported way to change it.
+- `pipeline_check_results` / `pipeline_findings` — one scheduled task running
+  `run_checks_scheduled.ps1`.
+- **`testing/` — Claude Code, and nothing else.** C1 (Cowork) constructs orders;
+  C2 builds plans and hands them to C1. **Nothing under `testing/` changes
+  unless it arrived from C1 as an edit.** C1 does not push files into `testing/`
+  and C2 does not write to the repo at all.
+
+**This is the third instance of the same defect, and the first two both cost
+real work:**
+
+1. Two handoff generators on `LATEST_HANDOFF.md` — three days, ~37,000
+   characters discarded per regeneration, and the only symptom was a file that
+   changed size for no apparent reason.
+2. Two sessions on one layer, then a scheduled task registered twice over.
+3. `testing/` — a concurrent session rewrote `_layer.src.html` mid-verification,
+   twice in one evening. Once it deleted a keybinds overlay and a compliance
+   strip that were caught only by a marker check before deploy; once it landed
+   an in-progress feature into a commit that was not about it.
+
+**A rule that depends on several sessions remembering it is a convention, not a
+guard.** Conventions fail silently and are discovered afterwards, in the diff.
+
+So when a second writer is possible, close it the way the first two were closed:
+`setup_watcher_task.ps1` and `setup_checks_task.ps1` now **refuse to register**
+when any task already runs the same target, matched on **what a task executes
+rather than what it is called** — structural, not name-based, so it cannot be
+evaded by picking a different name.
+
+**Where a write genuinely cannot be prevented** — several agents running as one
+OS user on one machine can all write the same path — prevention is not
+available, and saying "enforced" would be a lie. In that case the requirement
+is: **make an unauthorised write loud and immediate, and refuse to ship
+un-provenanced content.** Detect on every build, fail the deploy, name the files
+that moved. Never let it be discovered later in a diff.
+
+---
+
+### 15. Every file open states its encoding.
 
 **Every `open()`, `read_text()` and `write_text()` in this project specifies
 `encoding="utf-8"` explicitly. No exceptions, including in throwaway

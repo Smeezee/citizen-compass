@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Citizen Compass — Find it</title>
+<style>
+:root{--bg:#070D16;--panel:#0E1B2E;--panel2:#12233A;--line:#22364F;--text:#EDE3D8;
+ --muted:#93A7B6;--accent:#FF6B00;--accent2:#00C9A7;--good:#3FE3C4;--warn:#FFC24D;--bad:#FF6B6B}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+ font:17px/1.6 "Segoe UI",system-ui,sans-serif;padding:0 16px 40px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.top{display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:12px 0;
+ border-bottom:1px solid var(--line);margin-bottom:16px}
+.top .logo{font:800 19px inherit;color:var(--text)}
+.top .logo span{color:var(--accent)}
+.mock{margin-left:auto;background:#3A2408;border:1px solid #7A4E12;color:#F0C070;
+ padding:5px 11px;border-radius:6px;font-size:12.5px;font-weight:600}
+
+/* ---------- search ---------- */
+.searchwrap{max-width:760px;margin:0 auto 8px}
+.searchwrap.hero{margin-top:8vh}
+.hero h1{font:800 32px/1.2 inherit;text-align:center;margin:0 0 6px}
+.hero p{text-align:center;color:var(--muted);margin:0 0 22px;font-size:17px}
+.sbox{display:flex;gap:9px}
+#q{flex:1 1 auto;background:var(--panel2);color:var(--text);border:2px solid var(--line);
+ border-radius:10px;padding:15px 17px;font:17px inherit}
+#q:focus{outline:none;border-color:var(--accent)}
+.sbox button{background:var(--accent);color:#1A0E04;border:0;border-radius:10px;
+ padding:0 22px;font:800 16px inherit;cursor:pointer}
+.egs{margin-top:10px;color:var(--muted);font-size:14.5px;text-align:center}
+.egs b{color:var(--text);font-weight:600}
+.egs a{margin:0 4px;color:var(--accent2)}
+
+/* ---------- answer line ---------- */
+.answer{background:var(--panel2);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;
+ padding:14px 17px;margin-bottom:16px;font-size:18px}
+.answer b{color:var(--accent2)}
+.answer .cheap{font-weight:800}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+ padding:16px 18px;margin-bottom:14px}
+.card h2{font-size:14px;margin:0 0 12px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.hdr{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.hdr h1{font:800 28px/1.2 inherit;margin:0}
+.hdr .cat{background:var(--panel2);border:1px solid var(--line);border-radius:20px;
+ padding:3px 12px;font-size:13.5px;color:var(--muted)}
+.hdr .mfr{color:var(--muted);font-size:16px}
+.crumb{color:var(--muted);font-size:14.5px;margin-bottom:14px}
+
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{text-align:left;color:var(--muted);font-size:12.5px;text-transform:uppercase;
+ letter-spacing:.05em;padding:7px 8px;border-bottom:1px solid var(--line);font-weight:700}
+td{padding:11px 8px;border-bottom:1px solid #16283D;vertical-align:top}
+tr.best td{background:rgba(0,201,167,.07)}
+td.price{color:var(--accent2);font-weight:800;white-space:nowrap;font-size:17px}
+td.sell{color:var(--warn);font-weight:700;white-space:nowrap}
+.pill{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:4px;
+ background:rgba(0,201,167,.15);color:var(--accent2);margin-left:7px}
+.conf{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.conf.old{color:var(--warn)}
+
+.res{display:block;padding:13px 15px;border:1px solid var(--line);border-radius:10px;
+ background:var(--panel);margin-bottom:9px;color:var(--text)}
+.res:hover{border-color:var(--accent);text-decoration:none;background:#122335}
+.res .rt{font:700 18px inherit}
+.res .rs{color:var(--muted);font-size:14.5px;margin-top:2px}
+.res .rp{float:right;text-align:right}
+.res .rp b{display:block;color:var(--accent2);font-size:17px;font-weight:800}
+.res .rp small{color:var(--muted);font-size:13px}
+.why{display:inline-block;font-size:12px;color:var(--muted);background:var(--panel2);
+ border-radius:4px;padding:1px 7px;margin-left:8px}
+
+.warn{background:#1A1206;border:1px solid #4A3410;border-radius:9px;padding:12px 15px;
+ font-size:15px;color:#E8C9A0;margin-bottom:14px}
+.none{text-align:center;padding:34px 16px;color:var(--muted)}
+.none b{display:block;color:var(--text);font-size:19px;margin-bottom:6px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.chips a{background:var(--panel2);border:1px solid var(--line);border-radius:18px;
+ padding:6px 13px;font-size:14px;color:var(--muted)}
+.chips a:hover{border-color:var(--accent);color:var(--text);text-decoration:none}
+.mock2{margin:14px 0;padding:11px 14px;background:#1A1206;border:1px solid #4A3410;
+ border-radius:9px;font-size:14px;color:#E8C9A0}
+footer{margin:26px -16px 0;padding:16px;background:#0B1626;border-top:1px solid var(--line);
+ color:#6B8091;font:400 13px/1.6 inherit}
+</style>
+
+<div class="top">
+  <a href="#" class="logo">Citizen <span>Compass</span></a>
+  <span style="color:var(--muted);font-size:14.5px">Know where to buy, before you fly</span>
+  <span class="mock">MOCKUP — prices and shops are invented</span>
+</div>
+
+<div id="view"></div>
+
+<footer>
+This is an unofficial Star Citizen fan site, not affiliated with the Cloud Imperium group of
+companies. All content on this site not authored by its host or users are property of their
+respective owners. Official site: robertsspaceindustries.com<br>
+Star Citizen&reg;, Roberts Space Industries&reg; and Cloud Imperium&reg; are registered
+trademarks of Cloud Imperium Rights LLC.
+</footer>
+
+<script>
+/* ================= invented data ================= */
+const LOC={
+ area18:{n:"Area18",p:"ArcCorp",sys:"Stanton"},
+ nb:{n:"New Babbage",p:"microTech",sys:"Stanton"},
+ lor:{n:"Lorville",p:"Hurston",sys:"Stanton"},
+ orison:{n:"Orison",p:"Crusader",sys:"Stanton"},
+ everus:{n:"Everus Harbour",p:"Hurston orbit",sys:"Stanton"},
+ grim:{n:"GrimHEX",p:"Yela orbit",sys:"Stanton"}
+};
+const SHOP={
+ centermass:{n:"Centermass",loc:"area18",kind:"Weapons & ammo"},
+ cubby:{n:"Cubby Blast",loc:"grim",kind:"Weapons & ammo"},
+ casaba:{n:"Casaba Outlet",loc:"area18",kind:"Clothing & flight suits"},
+ casabanb:{n:"Casaba Outlet",loc:"nb",kind:"Clothing & flight suits"},
+ dumper:{n:"Dumper's Depot",loc:"nb",kind:"Ship components"},
+ tammany:{n:"Tammany & Sons",loc:"lor",kind:"Ship components"},
+ platinum:{n:"Platinum Bay",loc:"everus",kind:"Commodities"},
+ medbay:{n:"medical supplies kiosk",loc:"orison",kind:"Medical"},
+ gm:{n:"G-Loc Bar",loc:"area18",kind:"Food & drink"}
+};
+const ITEM={
+ pembroke:{n:"Pembroke Flight Suit",cat:"Flight suits",mfr:"CDS",
+   d:"A light flight suit. Keeps you breathing in vacuum and takes up little room.",
+   px:[{s:"casaba",p:14200,age:"4 hours"},{s:"casabanb",p:15900,age:"1 day"}]},
+ tailwind:{n:"Tailwind Flight Suit",cat:"Flight suits",mfr:"Roberts Space Industries",
+   d:"Mid-weight flight suit with better temperature range than the entry models.",
+   px:[{s:"casabanb",p:22400,age:"6 hours"},{s:"casaba",p:23100,age:"2 days"}]},
+ novikov:{n:"Novikov Backpack",cat:"Backpacks",mfr:"CDS",
+   d:"Large capacity backpack. Slows you slightly when full.",
+   px:[{s:"casaba",p:9800,age:"3 hours"},{s:"casabanb",p:10400,age:"5 hours"}]},
+ inquis:{n:"Inquisitor Armour — Full Set",cat:"Armor",mfr:"Clark Defense",
+   d:"Heavy armour set. Good protection, poor stamina.",
+   px:[{s:"centermass",p:118000,age:"9 hours"}]},
+ killshot:{n:"Killshot Rifle",cat:"Personal weapons",mfr:"Kastak Arms",
+   d:"Ballistic marksman rifle. Common in bunker work.",
+   px:[{s:"centermass",p:41500,age:"2 hours"},{s:"cubby",p:39900,age:"11 hours"}]},
+ killammo:{n:"Killshot Ammo Box",cat:"Ammo",mfr:"Kastak Arms",
+   d:"Refill for the Killshot. Cheap, and everyone forgets to buy it.",
+   px:[{s:"centermass",p:1200,age:"2 hours"},{s:"cubby",p:1150,age:"11 hours"}]},
+ deadbolt:{n:"Deadbolt III",cat:"Ship weapons",mfr:"Behring",
+   d:"Size 3 ballistic repeater. No energy draw, so it stays quiet.",
+   px:[{s:"centermass",p:412000,age:"4 hours"}]},
+ erebos:{n:"Erebos Quantum Drive",cat:"Quantum drives",mfr:"Juno Starwerk",
+   d:"Size 1 quantum drive. Longer range than stock, lower signature.",
+   px:[{s:"dumper",p:598000,age:"1 day"},{s:"tammany",p:611000,age:"3 hours"}]},
+ palisade:{n:"Palisade Shield Generator",cat:"Shield generators",mfr:"Gorgon Defender",
+   d:"Size 1 shield with a much smaller electronic footprint than the stock unit.",
+   px:[{s:"dumper",p:688000,age:"2 days"}]},
+ frost:{n:"Frost Star Cooler",cat:"Coolers",mfr:"JS-Defense",
+   d:"Size 1 cooler. More headroom, runs quieter.",
+   px:[{s:"dumper",p:194000,age:"5 hours"},{s:"tammany",p:201000,age:"3 hours"}]},
+ medpen:{n:"MedPen",cat:"Medical",mfr:"CureLife",
+   d:"One-shot injector. Stops bleeding and gets you upright.",
+   px:[{s:"medbay",p:280,age:"1 hour"},{s:"centermass",p:340,age:"4 hours"}]},
+ hydrapen:{n:"HydraPen",cat:"Medical",mfr:"CureLife",
+   d:"Rehydration injector. Cheap insurance on long hauls.",
+   px:[{s:"medbay",p:190,age:"1 hour"}]},
+ wafer:{n:"Ration Wafer",cat:"Food",mfr:"Various",
+   d:"Dense emergency food. Tastes like it sounds.",
+   px:[{s:"gm",p:65,age:"2 hours"},{s:"medbay",p:70,age:"1 hour"}]},
+ cruzlox:{n:"Cruz Lox Energy Drink",cat:"Drinks",mfr:"Cruz",
+   d:"Caffeinated. Popular with haulers on long runs.",
+   px:[{s:"gm",p:120,age:"2 hours"}]},
+ hadanite:{n:"Hadanite",cat:"Harvestables",mfr:"—",
+   d:"Gemstone found in caves. Hand-mined, then sold.",
+   px:[],sell:[{s:"platinum",p:2750,age:"3 hours"},{s:"cubby",p:2610,age:"8 hours"}]},
+ tungsten:{n:"Tungsten",cat:"Commodities",mfr:"—",
+   d:"Industrial metal. Bulk cargo.",
+   px:[{s:"platinum",p:38,age:"3 hours"}],sell:[{s:"platinum",p:41,age:"3 hours"}]},
+ fabricator:{n:"Item Fabricator",cat:"Crafting",mfr:"Greycat",
+   d:"Bench unit for crafting components from blueprints and raw materials.",
+   px:[{s:"dumper",p:1240000,age:"7 hours"},{s:"tammany",p:1198000,age:"2 hours"}]}
+};
+
+/* words people type that carry no meaning for matching */
+const STOP=new Set(["star","citizen","sc","where","to","buy","find","can","i","get","the","a","an",
+ "how","much","is","does","cost","at","in","on","for","of","do","you","what","price","prices",
+ "sell","sells","selling","best","in-game","ingame","game","location","locations","shop","shops"]);
+
+const $=s=>document.querySelector(s);
+const fmt=n=>n>=1000?Math.round(n).toLocaleString():String(n);
+function ageClass(a){return /day|week/.test(a)?"old":"";}
+function locLine(sid){const s=SHOP[sid],l=LOC[s.loc];return `${s.n}, ${l.n} — ${l.p}, ${l.sys}`;}
+
+/* ================= search ================= */
+function tokens(q){
+  return q.toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/)
+    .filter(t=>t&&!STOP.has(t));
+}
+function search(q){
+  const ts=tokens(q); if(!ts.length) return [];
+  const out=[];
+  // items
+  for(const k in ITEM){
+    const it=ITEM[k];
+    const hay=(it.n+" "+it.cat+" "+it.mfr).toLowerCase();
+    const locs=(it.px||[]).concat(it.sell||[]).map(x=>LOC[SHOP[x.s].loc].n.toLowerCase()+" "+SHOP[x.s].n.toLowerCase()).join(" ");
+    let score=0, why=[];
+    ts.forEach(t=>{
+      if(hay.includes(t)){score+=(it.n.toLowerCase().includes(t)?4:2);}
+      else if(locs.includes(t)){score+=3;why.push("sold in that area");}
+    });
+    if(score) out.push({type:"item",k,score,why:[...new Set(why)]});
+  }
+  // shops
+  for(const k in SHOP){
+    const s=SHOP[k], hay=(s.n+" "+s.kind+" "+LOC[s.loc].n+" "+LOC[s.loc].p).toLowerCase();
+    let score=0; ts.forEach(t=>{if(hay.includes(t))score+=3;});
+    if(score) out.push({type:"shop",k,score});
+  }
+  // locations
+  for(const k in LOC){
+    const l=LOC[k], hay=(l.n+" "+l.p+" "+l.sys).toLowerCase();
+    let score=0; ts.forEach(t=>{if(hay.includes(t))score+=2;});
+    if(score) out.push({type:"loc",k,score});
+  }
+  return out.sort((a,b)=>b.score-a.score);
+}
+
+/* ================= views ================= */
+function searchBox(val,hero){
+  return `<div class="searchwrap${hero?' hero':''}">
+    ${hero?`<h1>What are you looking for?</h1>
+      <p>Type it how you'd say it. "flight suits in new babbage" works fine.</p>`:""}
+    <div class="sbox">
+      <input id="q" placeholder="flight suits new babbage" value="${val||""}" autocomplete="off">
+      <button onclick="go()">Find it</button></div>
+    <div class="egs">Try:
+      <a href="#s/where to buy flight suits">where to buy flight suits</a>·
+      <a href="#s/how much is a medpen">how much is a medpen</a>·
+      <a href="#s/killshot ammo">killshot ammo</a>·
+      <a href="#s/what sells at area18">what sells at area18</a>·
+      <a href="#s/hadanite">hadanite</a></div></div>`;
+}
+function home(){
+  return searchBox("",true)+`<div class="mock2" style="max-width:760px;margin:22px auto 0">
+    <strong>Mockup.</strong> Seventeen invented items across nine invented shops, to show how
+    finding something would work. Prices are made up.</div>`;
+}
+function results(q){
+  const r=search(q);
+  let h=searchBox(q)+`<div style="max-width:900px;margin:18px auto 0">`;
+  if(!r.length){
+    h+=`<div class="none"><b>Nothing matched "${q}"</b>
+      That might be our fault, not yours — tell us what you were after.
+      <div class="chips" style="justify-content:center">
+        <a href="#s/flight suits">flight suits</a><a href="#s/medpen">medpen</a>
+        <a href="#s/quantum drive">quantum drive</a><a href="#s/hadanite">hadanite</a>
+        <a href="#s/ammo">ammo</a></div></div>`;
+    return h+"</div>";
+  }
+  h+=`<p style="color:var(--muted);font-size:15px">${r.length} result${r.length>1?"s":""}
+      for <b style="color:var(--text)">${q}</b></p>`;
+  r.slice(0,14).forEach(x=>{
+    if(x.type==="item"){
+      const it=ITEM[x.k], buy=(it.px||[]).slice().sort((a,b)=>a.p-b.p)[0];
+      h+=`<a class="res" href="#i/${x.k}">
+        <span class="rp">${buy?`<b>${fmt(buy.p)} aUEC</b><small>cheapest of ${it.px.length}</small>`
+          :`<b style="color:var(--warn)">sells for ${fmt(it.sell[0].p)}</b><small>not bought in shops</small>`}</span>
+        <span class="rt">${it.n}</span>
+        ${x.why.length?`<span class="why">${x.why[0]}</span>`:""}
+        <div class="rs">${it.cat}${it.mfr!=="—"?" · "+it.mfr:""}</div></a>`;
+    } else if(x.type==="shop"){
+      const s=SHOP[x.k];
+      h+=`<a class="res" href="#p/${x.k}"><span class="rt">${s.n}</span>
+        <span class="why">shop</span>
+        <div class="rs">${s.kind} · ${LOC[s.loc].n}, ${LOC[s.loc].p}</div></a>`;
+    } else {
+      const l=LOC[x.k];
+      const shops=Object.keys(SHOP).filter(k=>SHOP[k].loc===x.k);
+      h+=`<a class="res" href="#p/${shops[0]}"><span class="rt">${l.n}</span>
+        <span class="why">place</span>
+        <div class="rs">${l.p}, ${l.sys} · ${shops.length} shop${shops.length>1?"s":""} listed</div></a>`;
+    }
+  });
+  return h+"</div>";
+}
+function item(k){
+  const it=ITEM[k]; if(!it) return home();
+  const buys=(it.px||[]).slice().sort((a,b)=>a.p-b.p);
+  const sells=(it.sell||[]).slice().sort((a,b)=>b.p-a.p);
+  let ans;
+  if(buys.length){
+    const b=buys[0], l=LOC[SHOP[b.s].loc];
+    ans=`Sold at <b>${buys.length} shop${buys.length>1?"s":""}</b>. Cheapest is
+      <span class="cheap">${SHOP[b.s].n} in ${l.n}</span> at <b>${fmt(b.p)} aUEC</b>.`;
+    if(sells.length) ans+=` It sells back for about <b>${fmt(sells[0].p)}</b>.`;
+  } else if(sells.length){
+    const s=sells[0];
+    ans=`Shops don't sell this — you find it out in the world.
+      Best price to <b>sell</b> it is <span class="cheap">${SHOP[s.s].n} in ${LOC[SHOP[s.s].loc].n}</span>
+      at <b>${fmt(s.p)} aUEC</b>.`;
+  } else ans="We don't have price information for this yet.";
+
+  let h=`<div style="max-width:960px;margin:0 auto">${searchBox("")}
+    <div class="crumb" style="margin-top:16px"><a href="#">Home</a> ›
+      <a href="#s/${encodeURIComponent(it.cat)}">${it.cat}</a> › ${it.n}</div>
+    <div class="hdr"><h1>${it.n}</h1><span class="cat">${it.cat}</span>
+      ${it.mfr!=="—"?`<span class="mfr">${it.mfr}</span>`:""}</div>
+    <p style="color:var(--muted);margin:0 0 16px;font-size:17px">${it.d}</p>
+    <div class="answer">${ans}</div>`;
+
+  if(buys.length){
+    h+=`<div class="card"><h2>Where to buy it</h2><table>
+      <tr><th>Shop</th><th>Where</th><th>Price</th></tr>`;
+    buys.forEach((b,i)=>{
+      const s=SHOP[b.s], l=LOC[s.loc];
+      h+=`<tr class="${i===0?'best':''}"><td><a href="#p/${b.s}">${s.n}</a>
+        ${i===0?'<span class="pill">CHEAPEST</span>':''}</td>
+        <td>${l.n}<div class="conf">${l.p}, ${l.sys}</div></td>
+        <td class="price">${fmt(b.p)}
+        <span class="conf ${ageClass(b.age)}">player-reported, ${b.age} ago</span></td></tr>`;
+    });
+    h+=`</table></div>`;
+  }
+  if(sells.length){
+    h+=`<div class="card"><h2>What it sells for</h2><table>
+      <tr><th>Shop</th><th>Where</th><th>They pay</th></tr>`;
+    sells.forEach((b,i)=>{const s=SHOP[b.s],l=LOC[s.loc];
+      h+=`<tr class="${i===0?'best':''}"><td><a href="#p/${b.s}">${s.n}</a>
+        ${i===0?'<span class="pill">BEST</span>':''}</td>
+        <td>${l.n}<div class="conf">${l.p}, ${l.sys}</div></td>
+        <td class="sell">${fmt(b.p)}
+        <span class="conf ${ageClass(b.age)}">player-reported, ${b.age} ago</span></td></tr>`;});
+    h+=`</table></div>`;
+  }
+  h+=`<div class="warn"><strong>How sure are we?</strong> These prices come from players
+    reporting what they saw, not from the game itself. Gear and component prices in particular
+    swing a long way. Treat them as "about right", and check the age next to each one.</div>`;
+  const same=Object.keys(ITEM).filter(x=>x!==k&&ITEM[x].cat===it.cat);
+  if(same.length){
+    h+=`<div class="card"><h2>Others in ${it.cat}</h2><div class="chips">`+
+      same.map(x=>`<a href="#i/${x}">${ITEM[x].n}</a>`).join("")+`</div></div>`;
+  }
+  return h+"</div>";
+}
+function shop(k){
+  const s=SHOP[k]; if(!s) return home();
+  const l=LOC[s.loc];
+  const rows=[];
+  for(const ik in ITEM){
+    (ITEM[ik].px||[]).forEach(x=>{if(x.s===k)rows.push({ik,p:x.p,age:x.age,kind:"buy"});});
+    (ITEM[ik].sell||[]).forEach(x=>{if(x.s===k)rows.push({ik,p:x.p,age:x.age,kind:"sell"});});
+  }
+  const buys=rows.filter(r=>r.kind==="buy").sort((a,b)=>a.p-b.p);
+  const sells=rows.filter(r=>r.kind==="sell");
+  const alsoHere=Object.keys(SHOP).filter(x=>x!==k&&SHOP[x].loc===s.loc);
+  let h=`<div style="max-width:960px;margin:0 auto">${searchBox("")}
+    <div class="crumb" style="margin-top:16px"><a href="#">Home</a> › ${l.sys} › ${l.p} › ${l.n} › ${s.n}</div>
+    <div class="hdr"><h1>${s.n}</h1><span class="cat">${s.kind}</span></div>
+    <p style="color:var(--muted);margin:0 0 16px;font-size:17px">${l.n} — ${l.p}, ${l.sys}</p>
+    <div class="answer">Stocks <b>${buys.length} thing${buys.length!==1?"s":""}</b> we know about${
+      sells.length?`, and buys <b>${sells.length}</b> off you`:""}.
+      ${buys.length?`Cheapest here is <span class="cheap">${ITEM[buys[0].ik].n}</span> at
+      <b>${fmt(buys[0].p)} aUEC</b>.`:""}</div>`;
+  if(buys.length){
+    h+=`<div class="card"><h2>What they sell</h2><table>
+      <tr><th>Item</th><th>Category</th><th>Price</th></tr>`;
+    buys.forEach(r=>{h+=`<tr><td><a href="#i/${r.ik}">${ITEM[r.ik].n}</a></td>
+      <td style="color:var(--muted)">${ITEM[r.ik].cat}</td>
+      <td class="price">${fmt(r.p)}<span class="conf ${ageClass(r.age)}">seen ${r.age} ago</span></td></tr>`;});
+    h+=`</table></div>`;
+  }
+  if(sells.length){
+    h+=`<div class="card"><h2>What they'll buy from you</h2><table>
+      <tr><th>Item</th><th>They pay</th></tr>`;
+    sells.forEach(r=>{h+=`<tr><td><a href="#i/${r.ik}">${ITEM[r.ik].n}</a></td>
+      <td class="sell">${fmt(r.p)}<span class="conf ${ageClass(r.age)}">seen ${r.age} ago</span></td></tr>`;});
+    h+=`</table></div>`;
+  }
+  if(alsoHere.length){
+    h+=`<div class="card"><h2>Also at ${l.n}</h2><div class="chips">`+
+      alsoHere.map(x=>`<a href="#p/${x}">${SHOP[x].n} — ${SHOP[x].kind}</a>`).join("")+`</div></div>`;
+  }
+  return h+"</div>";
+}
+
+/* ================= routing ================= */
+function go(){const v=document.getElementById('q').value.trim();
+  if(v)location.hash="s/"+encodeURIComponent(v);}
+function route(){
+  const h=decodeURIComponent(location.hash.slice(1));
+  let out;
+  if(h.startsWith("i/")) out=item(h.slice(2));
+  else if(h.startsWith("p/")) out=shop(h.slice(2));
+  else if(h.startsWith("s/")) out=results(h.slice(2));
+  else out=home();
+  document.getElementById('view').innerHTML=out;
+  const q=document.getElementById('q');
+  if(q){q.onkeydown=e=>{if(e.key==="Enter")go();};}
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange',route); route();
+</script>
+</html>

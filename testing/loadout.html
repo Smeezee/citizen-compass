@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Citizen Compass — Loadout Bench</title>
+<style>
+:root{--bg:#070D16;--panel:#0E1B2E;--panel2:#12233A;--line:#22364F;--text:#EDE3D8;
+ --muted:#93A7B6;--accent:#FF6B00;--accent2:#00C9A7;--a:#4DA3FF;--b:#FF8A00;
+ --good:#3FE3C4;--bad:#FF6B6B}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+ font:16px/1.5 "Segoe UI",system-ui,sans-serif;padding:0 16px 40px}
+a{color:var(--accent)}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 0;
+ border-bottom:1px solid var(--line);margin-bottom:13px}
+.top h1{font-size:21px;margin:0}
+.top select{background:var(--panel2);color:var(--text);border:1px solid var(--line);
+ border-radius:7px;padding:9px 12px;font:600 15px inherit}
+.mock{margin-left:auto;background:#3A2408;border:1px solid #7A4E12;color:#F0C070;
+ padding:5px 11px;border-radius:6px;font-size:12.5px;font-weight:600}
+.btn{background:var(--panel2);color:var(--muted);border:1px solid var(--line);
+ border-radius:7px;padding:9px 13px;font:700 13.5px inherit;cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--text)}
+.btn.on{background:var(--accent);border-color:var(--accent);color:#1A0E04}
+.btn.blue.on{background:var(--a);border-color:var(--a);color:#04182B}
+.btn.orange.on{background:var(--b);border-color:var(--b);color:#1A0E04}
+
+.outcome{background:var(--panel);border:1px solid var(--line);border-radius:11px;
+ padding:13px 15px;margin-bottom:13px}
+.outcome h2{font-size:13px;margin:0 0 10px;color:var(--accent);letter-spacing:.06em;
+ text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.stat.stealth{border-color:rgba(0,201,167,.4)}
+.stat .k{font-size:11.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.stat.stealth .k{color:var(--accent2)}
+.stat .row{display:flex;align-items:baseline;gap:8px;margin-top:3px;flex-wrap:wrap}
+.va{font:800 19px/1 inherit;color:var(--a)}
+.vb{font:800 19px/1 inherit;color:var(--b)}
+.vb.ghost{opacity:.55;font-style:italic}
+.d{font-size:12.5px;font-weight:700;padding:1px 6px;border-radius:4px}
+.d.up{background:rgba(63,227,196,.14);color:var(--good)}
+.d.down{background:rgba(255,107,107,.14);color:var(--bad)}
+.d.flat{background:rgba(147,167,182,.12);color:var(--muted)}
+.sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.budgets{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:10px}
+.bud{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.bud .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.bud .v{font:700 15px inherit;margin-top:2px}
+.bar{height:7px;background:#0A1524;border-radius:5px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent2);transition:width .18s}
+.bar i.over{background:var(--bad)}
+
+.wrap{display:grid;grid-template-columns:1fr 1fr 330px;gap:12px;align-items:start}
+@media(max-width:1250px){.wrap{grid-template-columns:1fr 1fr}.picker{grid-column:1/-1}}
+@media(max-width:820px){.wrap{grid-template-columns:1fr}}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.col.a{border-top:3px solid var(--a)}.col.b{border-top:3px solid var(--b)}
+.colhead{display:flex;align-items:center;gap:9px;padding:10px 13px;background:var(--panel2);
+ border-bottom:1px solid var(--line);flex-wrap:wrap}
+.colhead .name{font:800 15px inherit}
+.col.a .name{color:var(--a)}.col.b .name{color:var(--b)}
+.colhead .cost{margin-left:auto;font:700 14px inherit;color:var(--accent2)}
+.grp h3{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+ margin:11px 13px 5px}
+.slot{display:flex;align-items:center;gap:9px;padding:7px 13px;border-top:1px solid #16283D;cursor:pointer}
+.slot:hover{background:#122335}
+.slot.sel{background:rgba(255,107,0,.13);box-shadow:inset 3px 0 0 var(--accent)}
+.slot.fixed{opacity:.5;cursor:not-allowed}
+.slot .sz{flex:0 0 32px;height:24px;border-radius:5px;background:#16283D;color:var(--muted);
+ display:flex;align-items:center;justify-content:center;font:700 12px inherit}
+.slot .nm{flex:1 1 auto;min-width:0}
+.slot .nm b{display:block;font-size:14px;font-weight:600;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis}
+.slot .nm small{color:var(--muted);font-size:12px}
+.slot .pr{flex:0 0 auto;text-align:right;font-size:12px;color:var(--muted)}
+.slot .pr b{display:block;color:var(--text);font-size:13px}
+.slot.changed{background:rgba(255,138,0,.08)}
+.slot.changed .nm b{color:var(--b)}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:0 5px;border-radius:3px;
+ background:#16283D;color:var(--muted);margin-left:5px}
+.tag.st{background:rgba(0,201,167,.16);color:var(--accent2)}
+
+.picker{background:var(--panel);border:1px solid var(--line);border-radius:11px;
+ position:sticky;top:10px;max-height:calc(100vh - 24px);display:flex;flex-direction:column}
+.picker .ph{padding:11px 13px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.picker .ph b{display:block;font-size:15px}
+.picker .ph small{color:var(--muted);font-size:12.5px}
+.picker .sortrow{display:flex;gap:6px;flex-wrap:wrap;padding:9px 13px;border-bottom:1px solid var(--line)}
+.picker .sortrow button{background:#16283D;color:var(--muted);border:1px solid var(--line);
+ border-radius:6px;padding:6px 10px;font:700 12px inherit;cursor:pointer}
+.picker .sortrow button.on{background:var(--accent2);border-color:var(--accent2);color:#04231D}
+.plist{overflow:auto;flex:1 1 auto}
+.pi{padding:9px 13px;border-top:1px solid #16283D;cursor:pointer}
+.pi:hover{background:#16283D}
+.pi.fitted{background:rgba(77,163,255,.10)}
+.pi b{font-size:14px;font-weight:600}
+.pi .m{color:var(--muted);font-size:12px}
+.pi .st{display:flex;gap:10px;flex-wrap:wrap;margin-top:3px;font-size:12px;color:var(--muted)}
+.pi .st span b{color:var(--text);font-weight:700}
+.pi .buy{float:right;text-align:right;font-size:12px;color:var(--muted)}
+.pi .buy b{display:block;color:var(--accent2);font-size:13.5px}
+.empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:14px}
+
+.buy{margin-top:13px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+.buy h2{font-size:13px;margin:0 0 9px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-size:11.5px;text-transform:uppercase;
+ letter-spacing:.04em;padding:5px 7px;border-bottom:1px solid var(--line)}
+td{padding:7px;border-bottom:1px solid #16283D}
+td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
+.conf{font-size:11.5px;color:var(--muted)}
+.trip{margin-top:11px;padding:11px 13px;background:var(--panel2);border-left:3px solid var(--accent2);
+ border-radius:0 8px 8px 0;font-size:14.5px}
+.note{margin-top:13px;padding:11px 13px;background:#1A1206;border:1px solid #4A3410;
+ border-radius:8px;font-size:13.5px;color:#E8C9A0}
+footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px solid var(--line);
+ color:#6B8091;font:400 12.5px/1.6 inherit}
+</style>
+
+<div class="top">
+  <a href="index.html" style="text-decoration:none;font-weight:700">&larr; Back</a>
+  <h1>Loadout Bench</h1>
+  <select id="ship"></select>
+  <button class="btn blue on" id="edA">Editing A</button>
+  <button class="btn orange" id="edB">Editing B</button>
+  <button class="btn" id="copyA">Copy A &rarr; B</button>
+  <button class="btn" id="share">Copy share link</button>
+  <span class="mock">MOCKUP — components and prices are invented</span>
+</div>
+
+<div class="outcome">
+  <h2>What this ship actually does — A vs B</h2>
+  <div class="stats" id="stats"></div>
+  <div class="budgets" id="budgets"></div>
+</div>
+
+<div class="wrap">
+  <div class="col a" id="colA"></div>
+  <div class="col b" id="colB"></div>
+  <div class="picker" id="picker"></div>
+</div>
+
+<div class="buy" id="buy"></div>
+
+<div class="note">
+  <strong>Mockup.</strong> Slot layout, sizes and which slots are locked follow the shape of real
+  game-file data. Component names, stats and prices are invented to show how it behaves.
+  Nothing here is a real recommendation.
+</div>
+
+<footer>
+This is an unofficial Star Citizen fan site, not affiliated with the Cloud Imperium group of
+companies. All content on this site not authored by its host or users are property of their
+respective owners. Official site: robertsspaceindustries.com<br>
+Star Citizen&reg;, Roberts Space Industries&reg; and Cloud Imperium&reg; are registered
+trademarks of Cloud Imperium Rights LLC.
+</footer>
+
+<script>
+/* ============ invented catalogue ============ */
+const P={
+ // weapons  size3
+ pan3:{n:"CF-337 Panther Repeater",m:"Klaus & Werner",t:"wpn",s:3,dps:310,ir:210,em:180,pw:340,ht:26,pr:0,shop:"stock",loc:"fitted"},
+ dead3:{n:"Deadbolt III",m:"Behring",t:"wpn",s:3,dps:472,ir:150,em:40,pw:180,ht:18,pr:412000,shop:"Centermass",loc:"Area18",st:1},
+ attr3:{n:"Attrition-3",m:"Klaus & Werner",t:"wpn",s:3,dps:395,ir:265,em:240,pw:420,ht:33,pr:298000},
+ revn3:{n:"Revenant Gatling",m:"Gallenson",t:"wpn",s:3,dps:540,ir:180,em:60,pw:210,ht:41,pr:604000},
+ // shields size1
+ fr66:{n:"FR-66",m:"Basilisk",t:"shd",s:1,ehp:6100,ir:400,em:2980,pw:620,ht:22,pr:0,shop:"stock",loc:"fitted"},
+ pali:{n:"Palisade",m:"Gorgon Defender",t:"shd",s:1,ehp:4900,ir:260,em:940,pw:480,ht:15,pr:688000,shop:"Dumper's Depot",loc:"New Babbage",st:1},
+ fr76:{n:"FR-76",m:"Basilisk",t:"shd",s:1,ehp:7400,ir:520,em:3610,pw:790,ht:31,pr:512000},
+ // power size1
+ regu:{n:"Regulus",m:"Amon & Reese",t:"pow",s:1,cap:5200,ir:900,em:1400,ht:30,pr:0,shop:"stock",loc:"fitted"},
+ cirr:{n:"Cirrus",m:"Juno Starwerk",t:"pow",s:1,cap:4600,ir:410,em:520,ht:19,pr:510000,shop:"Tammany & Sons",loc:"Lorville",st:1},
+ endo:{n:"Endo",m:"Lightning Power",t:"pow",s:1,cap:6100,ir:1180,em:1900,ht:38,pr:355000},
+ // coolers size1
+ brac:{n:"Bracer",m:"JS-Defense",t:"col",s:1,cool:60,ir:120,em:210,pw:90,pr:0,shop:"stock",loc:"fitted"},
+ frst:{n:"Frost Star",m:"JS-Defense",t:"col",s:1,cool:82,ir:70,em:150,pw:120,pr:194000,shop:"Centermass",loc:"Area18",st:1},
+ blze:{n:"Blaze",m:"Aegis",t:"col",s:1,cool:97,ir:180,em:300,pw:160,pr:271000},
+ // quantum size1
+ atls:{n:"Atlas",m:"Tarsus",t:"qtm",s:1,qt:41.2,ir:300,em:800,pw:200,ht:12,pr:0,shop:"stock",loc:"fitted"},
+ vk00:{n:"VK-00",m:"Wei-Tek",t:"qtm",s:1,qt:58.6,ir:420,em:1150,pw:280,ht:17,pr:766000},
+ ereb:{n:"Erebos",m:"Juno Starwerk",t:"qtm",s:1,qt:47.9,ir:190,em:430,pw:230,ht:14,pr:598000,shop:"Astro Armada",loc:"Area18",st:1}
+};
+const TYPE={wpn:"Weapon",shd:"Shield",pow:"Power plant",col:"Cooler",qtm:"Quantum drive"};
+
+const SHIPS={
+ vulture:{n:"Drake Vulture",m:"Drake Interplanetary",role:"Salvage",hull:6200,base:198,
+  slots:[
+   {id:"w1",g:"Weapons",t:"wpn",s:3,stock:"pan3"},
+   {id:"w2",g:"Weapons",t:"wpn",s:3,stock:"pan3"},
+   {id:"sv1",g:"Weapons",t:"wpn",s:1,fixed:1,label:"Salvage Beam"},
+   {id:"sv2",g:"Weapons",t:"wpn",s:1,fixed:1,label:"Salvage Beam"},
+   {id:"s1",g:"Shields",t:"shd",s:1,stock:"fr66"},
+   {id:"p1",g:"Power & cooling",t:"pow",s:1,stock:"regu"},
+   {id:"c1",g:"Power & cooling",t:"col",s:1,stock:"brac"},
+   {id:"c2",g:"Power & cooling",t:"col",s:1,stock:"brac"},
+   {id:"q1",g:"Quantum",t:"qtm",s:1,stock:"atls"}]},
+ cutlass:{n:"Drake Cutlass Black",m:"Drake Interplanetary",role:"Multi-role",hull:7400,base:210,
+  slots:[
+   {id:"w1",g:"Weapons",t:"wpn",s:3,stock:"attr3"},
+   {id:"w2",g:"Weapons",t:"wpn",s:3,stock:"attr3"},
+   {id:"w3",g:"Weapons",t:"wpn",s:3,stock:"attr3"},
+   {id:"s1",g:"Shields",t:"shd",s:1,stock:"fr66"},
+   {id:"s2",g:"Shields",t:"shd",s:1,stock:"fr66"},
+   {id:"p1",g:"Power & cooling",t:"pow",s:1,stock:"endo"},
+   {id:"c1",g:"Power & cooling",t:"col",s:1,stock:"brac"},
+   {id:"q1",g:"Quantum",t:"qtm",s:1,stock:"atls"}]}
+};
+
+let shipId="vulture", editing="A", sel=null, sort="best", ghost=null;
+let A={}, B={};
+const $=id=>document.getElementById(id);
+const ship=()=>SHIPS[shipId];
+const fmt=n=>n>=1e6?(n/1e6).toFixed(2)+"M":n>=1000?Math.round(n).toLocaleString():Math.round(n);
+
+function stockBuild(){const o={};ship().slots.forEach(s=>{if(!s.fixed)o[s.id]=s.stock;});return o;}
+function reset(){A=stockBuild();B=stockBuild();sel=null;}
+
+/* ---------- maths ---------- */
+function calc(build,over){
+  const sh=ship(); let r={dps:0,ehp:sh.hull,speed:sh.base,ir:0,em:0,pw:0,cap:0,ht:0,cool:0,qt:0,cost:0};
+  sh.slots.forEach(s=>{
+    if(s.fixed) return;
+    let id=build[s.id]; if(over&&over.slot===s.id) id=over.part;
+    const p=P[id]; if(!p) return;
+    r.dps+=p.dps||0; r.ehp+=p.ehp||0; r.ir+=p.ir||0; r.em+=p.em||0;
+    r.pw+=p.pw||0; r.cap+=p.cap||0; r.ht+=p.ht||0; r.cool+=p.cool||0;
+    if(p.qt) r.qt=p.qt;
+    if(p.pr && id!==s.stock) r.cost+=p.pr;
+  });
+  r.speed = Math.round(sh.base - (r.ehp-sh.hull)/900);
+  return r;
+}
+function delta(a,b,lowerBetter){
+  if(a===b) return {c:"flat",t:"same"};
+  const pct = a===0?100:Math.round((b-a)/Math.abs(a)*100);
+  const better = lowerBetter ? b<a : b>a;
+  const txt = lowerBetter && b<a ? Math.abs(pct)+"% quieter" : (pct>0?"+":"")+pct+"%";
+  return {c:better?"up":"down",t:txt};
+}
+
+/* ---------- render ---------- */
+function stat(k,a,b,sub,lower,stealth,fmtf){
+  const f=fmtf||fmt, d=delta(a,b,lower);
+  return `<div class="stat${stealth?' stealth':''}"><div class="k">${k}</div>
+    <div class="row"><span class="va">${f(a)}</span>
+    <span class="vb${ghost?' ghost':''}">${f(b)}</span>
+    <span class="d ${d.c}">${d.t}</span></div><div class="sub">${sub}</div></div>`;
+}
+function renderStats(){
+  const ra=calc(A), rb=calc(B, ghost&&editing==="B"?ghost:null);
+  const rA=calc(A, ghost&&editing==="A"?ghost:null);
+  const L=ghost&&editing==="A"?rA:ra;
+  $('stats').innerHTML=
+    stat("Sustained DPS",L.dps,rb.dps,"from fitted weapons")+
+    stat("Effective HP",L.ehp,rb.ehp,"hull + shields")+
+    stat("Top speed",L.speed,rb.speed,"m/s · heavier is slower")+
+    stat("Quantum range",L.qt,rb.qt,"Gm",false,false,n=>n.toFixed(1))+
+    stat("IR signature",L.ir,rb.ir,"heat · lower is stealthier",true,true)+
+    stat("EM signature",L.em,rb.em,"electronics · lower is stealthier",true,true)+
+    stat("Build cost",L.cost,rb.cost,"aUEC to change from stock",true);
+  const pw=Math.min(200,Math.round(rb.pw/Math.max(rb.cap,1)*100));
+  const cl=Math.min(200,Math.round(rb.ht/Math.max(rb.cool,1)*100));
+  $('budgets').innerHTML=
+   `<div class="bud"><div class="k">Power draw — build B</div>
+     <div class="v">${fmt(rb.pw)} / ${fmt(rb.cap)}</div>
+     <div class="bar"><i class="${pw>100?'over':''}" style="width:${Math.min(pw,100)}%"></i></div>
+     <div class="sub" style="${pw>100?'color:var(--bad)':''}">${pw}% used${pw>100?" — not enough power":""}</div></div>
+    <div class="bud"><div class="k">Cooling — build B</div>
+     <div class="v">${rb.ht} / ${rb.cool}</div>
+     <div class="bar"><i class="${cl>100?'over':''}" style="width:${Math.min(cl,100)}%"></i></div>
+     <div class="sub" style="${cl>100?'color:var(--bad)':''}">${cl}% used${cl>100?" — this build overheats":""}</div></div>`;
+}
+function renderCol(which){
+  const build=which==="A"?A:B, other=which==="A"?B:A;
+  const r=calc(build), sh=ship(); let h="";
+  h+=`<div class="colhead"><span class="name">Build ${which}</span>
+      <span class="cost">${r.cost?fmt(r.cost)+" aUEC":"stock — 0 aUEC"}</span></div>`;
+  let lastG=null;
+  sh.slots.forEach(s=>{
+    if(s.g!==lastG){h+=`<div class="grp"><h3>${s.g}</h3></div>`;lastG=s.g;}
+    if(s.fixed){
+      h+=`<div class="slot fixed"><span class="sz">S${s.s}</span><span class="nm">
+        <b>${s.label}</b><small>can't be changed<span class="tag">LOCKED</span></small></span>
+        <span class="pr"><b>&mdash;</b></span></div>`;return;}
+    const id=build[s.id],p=P[id];
+    const changed=id!==s.stock, active=sel&&sel.slot===s.id&&editing===which;
+    h+=`<div class="slot${changed?' changed':''}${active?' sel':''}"
+      data-slot="${s.id}" data-col="${which}">
+      <span class="sz">S${s.s}</span><span class="nm">
+      <b>${p?p.n:"empty"}</b><small>${p?p.m:""}${p&&p.st?'<span class="tag st">QUIET</span>':''}</small></span>
+      <span class="pr"><b>${changed?fmt(p.pr):"stock"}</b>${changed?p.loc:"fitted"}</span></div>`;
+  });
+  $('col'+which).innerHTML=h;
+}
+function fits(slot){
+  return Object.keys(P).filter(k=>P[k].t===slot.t&&P[k].s===slot.s);
+}
+function renderPicker(){
+  if(!sel){$('picker').innerHTML=`<div class="empty">Click any slot on the left or right
+    to see what fits it.<br><br>Hover an option and the numbers above preview the change.</div>`;return;}
+  const sh=ship(), slot=sh.slots.find(x=>x.id===sel.slot);
+  const build=editing==="A"?A:B, cur=build[slot.id];
+  let opts=fits(slot);
+  const base=calc(build);
+  opts.sort((x,y)=>{
+    const px=P[x],py=P[y];
+    if(sort==="cheap") return (px.pr||0)-(py.pr||0);
+    if(sort==="quiet") return ((px.ir||0)+(px.em||0))-((py.ir||0)+(py.em||0));
+    const key=slot.t==="wpn"?"dps":slot.t==="shd"?"ehp":slot.t==="qtm"?"qt":slot.t==="pow"?"cap":"cool";
+    return (py[key]||0)-(px[key]||0);
+  });
+  let h=`<div class="ph"><b>${TYPE[slot.t]} &middot; size ${slot.s}</b>
+    <small>editing build ${editing} &middot; ${opts.length} parts fit this slot</small></div>
+    <div class="sortrow">
+      <button data-s="best" class="${sort==='best'?'on':''}">Best</button>
+      <button data-s="cheap" class="${sort==='cheap'?'on':''}">Cheapest</button>
+      <button data-s="quiet" class="${sort==='quiet'?'on':''}">Quietest</button>
+    </div><div class="plist">`;
+  opts.forEach(k=>{
+    const p=P[k], fit=k===cur;
+    const bits=[];
+    if(p.dps)bits.push(`<span>DPS <b>${p.dps}</b></span>`);
+    if(p.ehp)bits.push(`<span>HP <b>${fmt(p.ehp)}</b></span>`);
+    if(p.qt)bits.push(`<span>Range <b>${p.qt}Gm</b></span>`);
+    if(p.cap)bits.push(`<span>Power <b>${fmt(p.cap)}</b></span>`);
+    if(p.cool)bits.push(`<span>Cooling <b>${p.cool}</b></span>`);
+    bits.push(`<span>IR <b>${p.ir||0}</b></span>`);
+    bits.push(`<span>EM <b>${p.em||0}</b></span>`);
+    h+=`<div class="pi${fit?' fitted':''}" data-part="${k}">
+      <div class="buy"><b>${p.pr?fmt(p.pr):"stock"}</b>${p.loc||"—"}</div>
+      <b>${p.n}</b>${p.st?'<span class="tag st">QUIET</span>':''}<div class="m">${p.m}</div>
+      <div class="st">${bits.join("")}</div></div>`;
+  });
+  $('picker').innerHTML=h+"</div>";
+}
+function renderBuy(){
+  const sh=ship(); const rows=[];
+  sh.slots.forEach(s=>{
+    if(s.fixed)return; const id=B[s.id];
+    if(id===s.stock)return; const p=P[id];
+    const key=id+"|"+p.shop;
+    const ex=rows.find(r=>r.key===key);
+    if(ex)ex.qty++; else rows.push({key,n:p.n,qty:1,shop:p.shop||"—",loc:p.loc||"—",pr:p.pr});
+  });
+  if(!rows.length){$('buy').innerHTML=`<h2>What build B costs and where to get it</h2>
+    <p style="color:var(--muted);margin:0">Build B is stock. Change something and the shopping
+    list appears here.</p>`;return;}
+  let h=`<h2>What build B costs and where to get it</h2><table>
+    <tr><th>Part</th><th>Qty</th><th>Shop</th><th>Where</th><th>Price each</th><th>Confidence</th></tr>`;
+  rows.forEach(r=>{h+=`<tr><td>${r.n}</td><td>${r.qty}</td><td>${r.shop}</td><td>${r.loc}</td>
+    <td class="p">${fmt(r.pr)}</td><td class="conf">player-reported &middot; gear prices vary widely</td></tr>`;});
+  h+="</table>";
+  // ---- procedurally generated trip line ----
+  const places={};
+  rows.forEach(r=>{places[r.loc]=(places[r.loc]||0)+r.qty;});
+  const names=Object.keys(places);
+  const total=rows.reduce((t,r)=>t+r.pr*r.qty,0);
+  let trip=`<strong>${names.length} stop${names.length>1?"s":""}:</strong> `;
+  trip += names.map(n=>`${n} for ${places[n]} part${places[n]>1?"s":""}`).join(", then ");
+  trip += `. Total ${fmt(total)} aUEC.`;
+  // worst value change
+  const base=calc(stockBuild()), now=calc(B);
+  let worst=null;
+  sh.slots.forEach(s=>{
+    if(s.fixed||B[s.id]===s.stock)return;
+    const test=Object.assign({},B); test[s.id]=s.stock;
+    const without=calc(test);
+    const gain=Math.abs(now.dps-without.dps)+Math.abs(now.ehp-without.ehp)/50
+             +Math.abs(now.ir-without.ir)/20+Math.abs(now.em-without.em)/20;
+    const cost=P[B[s.id]].pr||0;
+    const ratio=cost/Math.max(gain,1);
+    if(cost>0&&(!worst||ratio>worst.ratio))worst={ratio,slot:s,cost};
+  });
+  if(worst) trip+=` <span style="color:var(--muted)">Weakest value: the ${P[B[worst.slot.id]].n}
+    at ${fmt(worst.cost)} — drop it and you save that for the least gain.</span>`;
+  $('buy').innerHTML=h+`<div class="trip">${trip}</div>`;
+}
+function renderAll(){renderStats();renderCol("A");renderCol("B");renderPicker();renderBuy();writeHash();}
+
+/* ---------- interaction ---------- */
+document.addEventListener('click',e=>{
+  const sl=e.target.closest('.slot[data-slot]');
+  if(sl){const s=ship().slots.find(x=>x.id===sl.dataset.slot);
+    if(s.fixed)return; editing=sl.dataset.col; sel={slot:s.id};
+    $('edA').className="btn blue"+(editing==="A"?" on":"");
+    $('edB').className="btn orange"+(editing==="B"?" on":"");
+    renderAll();return;}
+  const so=e.target.closest('.sortrow button');
+  if(so){sort=so.dataset.s;renderPicker();return;}
+  const pi=e.target.closest('.pi[data-part]');
+  if(pi&&sel){const b=editing==="A"?A:B; b[sel.slot]=pi.dataset.part; ghost=null; renderAll();return;}
+});
+document.addEventListener('mouseover',e=>{
+  const pi=e.target.closest('.pi[data-part]');
+  if(pi&&sel){ghost={slot:sel.slot,part:pi.dataset.part};renderStats();}
+});
+document.addEventListener('mouseout',e=>{
+  if(e.target.closest('.pi[data-part]')){ghost=null;renderStats();}
+});
+$('edA').onclick=()=>{editing="A";$('edA').className="btn blue on";$('edB').className="btn orange";renderAll();};
+$('edB').onclick=()=>{editing="B";$('edB').className="btn orange on";$('edA').className="btn blue";renderAll();};
+$('copyA').onclick=()=>{B=Object.assign({},A);renderAll();};
+$('share').onclick=()=>{writeHash();
+  navigator.clipboard&&navigator.clipboard.writeText(location.href);
+  $('share').textContent="Link copied";setTimeout(()=>$('share').textContent="Copy share link",1400);};
+
+/* ---------- shareable URL ---------- */
+function writeHash(){
+  const enc=b=>ship().slots.filter(s=>!s.fixed).map(s=>b[s.id]).join(",");
+  history.replaceState(null,"","#"+shipId+"|"+enc(A)+"|"+enc(B));
+}
+function readHash(){
+  const h=decodeURIComponent(location.hash.slice(1)); if(!h)return false;
+  const [sid,a,b]=h.split("|"); if(!SHIPS[sid])return false;
+  shipId=sid; reset();
+  const eds=ship().slots.filter(s=>!s.fixed);
+  (a||"").split(",").forEach((v,i)=>{if(eds[i]&&P[v])A[eds[i].id]=v;});
+  (b||"").split(",").forEach((v,i)=>{if(eds[i]&&P[v])B[eds[i].id]=v;});
+  return true;
+}
+
+$('ship').innerHTML=Object.keys(SHIPS).map(k=>
+  `<option value="${k}">${SHIPS[k].n}</option>`).join("");
+$('ship').onchange=e=>{shipId=e.target.value;reset();renderAll();};
+
+if(!readHash()) reset();
+$('ship').value=shipId;
+renderAll();
+</script>
+</html>

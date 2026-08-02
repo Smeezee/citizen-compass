@@ -1,4 +1,4 @@
-import base64, json, os, re, glob, shutil, sys
+import base64, json, os, re, glob, sys
 
 # ---------------------------------------------------------------------------
 # Repo-relative build. This script used to hardcode a cloud-sandbox path, which
@@ -291,49 +291,51 @@ _b = out.lower().index('<body')
 _b = out.index('>', _b) + 1
 out = out[:_b] + '\n' + GATE + out[_b:]
 
-# newline='' is what makes this build REPRODUCIBLE ACROSS PLATFORMS, and it is
-# not optional.
+# newline='' is what makes this build REPRODUCIBLE ACROSS PLATFORMS. Not
+# optional, and it has already been lost once to a concurrent edit.
 #
 # Text mode with the default newline=None translates every '\n' to os.linesep
-# on write. On Linux that is '\n'; on Windows it is '\r\n'. So the identical
-# inputs produced a byte-different artifact depending on which machine ran the
-# build - 8,473 extra CR bytes here, one per line, and a completely different
-# sha256 despite character-for-character identical content.
+# on write: '\n' on Linux, '\r\n' on Windows. Identical inputs then produce a
+# byte-different artifact depending on which machine ran the build - 8,473
+# extra CR bytes here, one per line, and a completely different sha256 despite
+# character-for-character identical content.
 #
-# That is a reproducibility claim that silently holds on one platform and fails
-# on another, which is worse than no claim: the hash comparison that is supposed
-# to prove the artifact matches production reports a mismatch for a reason that
-# has nothing to do with the content.
-#
-# newline='' writes '\n' through untouched, so the output is byte-identical on
-# every platform and matches the deployed artifact.
+# That breaks the hash comparison that is supposed to prove the built artifact
+# matches production: it reports a mismatch for a reason with nothing to do
+# with the content, so the next person either chases a phantom change or
+# redeploys to "fix" it and churns the live site for nothing.
 open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
-print('written:', len(out)/1048576, 'MB')
 
-# ---- companion pages the built page actually links to ----------------------
-# keybinds.html is emitted ONLY because index.html links to it. The rule this
-# enforces: nothing exists in _deploy/ because a human once put it there - if
-# the page needs it, the build produces it, so a rebuild can never orphan it.
+# ---------------------------------------------------------------------------
+# Standalone pages that ship alongside index.html.
 #
-# History worth keeping, because this flipped once already. The keybinds tab
-# was briefly a self-contained in-page overlay (id="cc-kb"), which made the
-# standalone page unreachable, and it was removed from _deploy as a 25 KB
-# orphan. The layer has since gone back to linking it. So reachability is
-# checked here on every build rather than assumed either way.
-_kb_src = os.path.join(SRC, 'keybinds.src.html')
-_linked = 'keybinds.html' in out
-
-if _linked:
-    if not os.path.exists(_kb_src):
-        sys.exit("BUILD INPUT MISSING: %s\n"
-                 "index.html links to keybinds.html but the source is gone. Refusing to\n"
-                 "publish a page with a dead link." % _kb_src)
-    shutil.copyfile(_kb_src, os.path.join(OUT, 'keybinds.html'))
-    print('written: keybinds.html (index.html links to it)')
-else:
-    # Not linked - make sure a stale copy from an earlier design cannot linger
-    # and be served as an unreachable orphan.
-    _stale = os.path.join(OUT, 'keybinds.html')
-    if os.path.exists(_stale):
-        os.remove(_stale)
-        print('removed: stale keybinds.html (nothing links to it)')
+# These are NOT generated - they are authored in _src/ and copied. An earlier
+# build silently dropped keybinds.html: no error, no warning, and the KEYBINDS
+# tab would have 404'd on a deploy that reported complete success. A file that
+# only exists because a human once put it there is a file that vanishes on the
+# next build.
+#
+# Adding a page = one line in PAGES. Missing source = hard failure, never a
+# silent skip, because a silent skip is exactly the defect this block exists
+# to close.
+# ---------------------------------------------------------------------------
+import shutil
+PAGES = [
+    ('keybinds.src.html', 'keybinds.html'),
+    ('loadout.src.html',  'loadout.html'),
+]
+_copied, _absent = [], []
+for _src_name, _out_name in PAGES:
+    _s = os.path.join(SRC, _src_name)
+    if os.path.exists(_s):
+        shutil.copyfile(_s, os.path.join(OUT, _out_name)); _copied.append(_out_name)
+    else:
+        _absent.append(_src_name)
+if _absent:
+    sys.exit("PAGE SOURCE MISSING: %s\n"
+             "index.html was written but these pages were NOT copied, so any link\n"
+             "to them would 404. Fix the source or remove the entry from PAGES.\n"
+             "Failing loudly rather than shipping a page with dead links."
+             % ', '.join(_absent))
+print('pages copied:', ', '.join(_copied) if _copied else 'none')
+print('written:', len(out)/1048576, 'MB')
