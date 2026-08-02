@@ -1,0 +1,30 @@
+# Cloudflare Workers static-assets config for the TESTING site only.
+#
+# SCOPE: this deploys testing/_deploy/ and nothing else. The live site
+# (citizencompass.netlify.app) is hand-deployed on Netlify and is NOT touched
+# by anything here.
+#
+# WHY WORKERS AND NOT PAGES: Cloudflare moved static hosting from Pages to
+# Workers static assets; the dashboard now presents it as "Create a Worker".
+# Checked against current docs 2026-08-01 rather than assumed from memory.
+#
+# WHY CLOUDFLARE AT ALL: 347 MB of ship models is bandwidth-heavy.
+# Cloudflare's own billing page states "Requests to static assets are free and
+# unlimited" and "There is no additional cost for storing Assets". The Netlify
+# credit block was the trigger; unmetered bandwidth is the reason.
+#
+# NO CUSTOM DOMAIN - deliberately. Stays on *.workers.dev. If
+# citizencompass.net is bought later, the testing site belongs on
+# testing.<domain> and the apex stays reserved for the real site.
+
+name = "citizen-compass-testing"
+account_id = "ad974500ce73c9694e94213c4d762f3e"
+compatibility_date = "2026-08-01"
+
+# Publish on <name>.<subdomain>.workers.dev. No routes, no custom domain.
+workers_dev = true
+
+[assets]
+# Relative to this file: citizen-compass/testing/_deploy
+# 477 files, ~347 MB, entry point index.html.
+directory = "./_deploy"
