@@ -68,6 +68,25 @@ ALLOWLIST_DOMAINS = {
     # property of the CDN fronting api.star-citizen.wiki and is expected to
     # recur on every run that captures response headers.
     "a.nel.cloudflare.com",
+
+    # Added 2026-08-02 when source 6 (UEX Corp) was first landed. This is that
+    # source's own canonical API domain - the one we deliberately fetch from -
+    # and every other landed source's canonical domain is already on this list
+    # (api.star-citizen.wiki, scunpacked.com, starcitizen.tools,
+    # robertsspaceindustries.com). It was absent only because source 6 had
+    # never been pulled before.
+    #
+    # On its first run it appeared in exactly 3 of 114 files, all of them this
+    # pipeline's OWN provenance records (_pull_summary.json, _pull_stderr.log,
+    # _items_by_category_summary.json), which store the request URLs. ZERO data
+    # files contained it.
+    #
+    # Deliberately NOT the same judgement as facebook.github.io, which was
+    # refused an allowlist entry: that was a foreign domain embedded in
+    # third-party content whose cause (a bundled .git directory) could be
+    # removed instead. This is the address of the source itself.
+    "api.uexcorp.uk",
+    "uexcorp.uk",
 }
 
 # URL matching, then hostname extraction.

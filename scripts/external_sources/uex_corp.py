@@ -54,6 +54,15 @@ from pathlib import Path
 
 import requests
 
+try:
+    from dotenv import load_dotenv
+    # The token lives in .env, which is gitignored and untracked. Without this
+    # the script's own docstring ("loaded from .env") would be a lie and it
+    # would refuse to run for a token that is actually present.
+    load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+except ImportError:  # dotenv is optional; a pre-exported env var still works
+    pass
+
 BASE = "https://api.uexcorp.uk/2.0"
 
 # Documented endpoints in scope. Nothing else is pulled and no sibling endpoint
@@ -279,6 +288,109 @@ def fetch(name, path, out_dir, token, max_retries=5):
     meta["written_to_disk"] = True
     meta["file_path"] = str(out_path)
     return meta
+
+
+def fetch_items_by_category(out_dir, token, max_retries=5):
+    """Pull /items/ per category, because it cannot be pulled unfiltered.
+
+    Discovered live 2026-08-01: GET /items/ with no parameters returns HTTP 400
+    with {"status": "requires_id_category_or_id_company_or_uuid"}. The endpoint
+    is in documented scope and carries the Star Citizen UUID that is this
+    source's whole join value, so it is fetched the way the API requires -
+    once per category id, read from the categories.json this same run landed.
+
+    This is NOT crawling for sibling endpoints. It is the same documented
+    endpoint, parameterised as its own error message demands.
+
+    Each response passes the identical write gate as everything else; a rejected
+    category response is recorded and never written.
+    """
+    cats_path = out_dir / "categories.json"
+    if not cats_path.is_file():
+        return [{
+            "endpoint": "/items/", "url": BASE + "/items/",
+            "written_to_disk": False, "file_path": None, "attempts": 0,
+            "attempt_log": [],
+            "error": "categories.json not present in the snapshot, so the "
+                     "category ids required by /items/ are unknown; nothing fetched",
+        }]
+
+    cats = json.loads(cats_path.read_text(encoding="utf-8")).get("data") or []
+    ids = [c["id"] for c in cats if isinstance(c, dict) and c.get("id") is not None]
+
+    results = []
+    for index, cat_id in enumerate(ids):
+        if index:
+            time.sleep(REQUEST_DELAY_SECONDS)
+        url = f"{BASE}/items/?id_category={cat_id}"
+        print(f"  items id_category={cat_id} ({index + 1}/{len(ids)}) ...", file=sys.stderr)
+        try:
+            resp, attempt_log = get_with_retry(url, token, max_retries=max_retries)
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+            exhausted = getattr(e, "attempts_log", [])
+            results.append({
+                "endpoint": f"/items/?id_category={cat_id}", "url": url,
+                "id_category": cat_id,
+                "attempts": len(exhausted), "attempt_log": exhausted,
+                "written_to_disk": False, "file_path": None,
+                "error": f"retry ceiling exhausted on {type(e).__name__}: "
+                         f"{str(e)[:200]}; body NOT saved",
+            })
+            continue
+
+        meta = {
+            "endpoint": f"/items/?id_category={cat_id}",
+            "url": resp.url,
+            "id_category": cat_id,
+            "attempts": len(attempt_log),
+            "attempt_log": attempt_log,
+            "elapsed_seconds": attempt_log[-1].get("elapsed_seconds") if attempt_log else None,
+            "status_code": resp.status_code,
+            "content_type": resp.headers.get("Content-Type"),
+            "byte_size": len(resp.content),
+            "sha256": hashlib.sha256(resp.content).hexdigest(),
+            "written_to_disk": False,
+            "file_path": None,
+        }
+
+        def reject(reason):
+            meta["error"] = f"{reason}; body NOT saved"
+            meta["rejected_body_first_200_chars"] = resp.text[:200]
+            return meta
+
+        if resp.status_code != 200:
+            results.append(reject(f"non-200 status ({resp.status_code})"))
+            continue
+        ctype = resp.headers.get("Content-Type") or ""
+        if "json" not in ctype.lower():
+            results.append(reject(f"non-JSON Content-Type ({ctype!r})"))
+            continue
+        try:
+            body = json.loads(resp.content)
+        except Exception as e:
+            results.append(reject(f"failed to parse JSON: {e}"))
+            continue
+        if not isinstance(body, dict) or "data" not in body:
+            results.append(reject("response is not a UEX envelope (no 'data' key)"))
+            continue
+        if body.get("status") != "ok":
+            results.append(reject(f"UEX envelope status is {body.get('status')!r}, not 'ok'"))
+            continue
+
+        data = body["data"]
+        meta["record_count"] = len(data) if isinstance(data, list) else None
+        meta["records_with_uuid"] = sum(
+            1 for x in data if isinstance(x, dict) and x.get("uuid")
+        ) if isinstance(data, list) else None
+        meta["envelope_status"] = "ok"
+
+        out_path = out_dir / f"items_category_{cat_id}.json"
+        out_path.write_bytes(resp.content)
+        meta["written_to_disk"] = True
+        meta["file_path"] = str(out_path)
+        results.append(meta)
+
+    return results
 
 
 def verify_credential(token):

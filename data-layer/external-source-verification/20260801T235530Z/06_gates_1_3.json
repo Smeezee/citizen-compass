@@ -1,0 +1,41 @@
+{
+  "run": "20260801T235530Z",
+  "snapshot": "data-layer/external-sources/uexcorp/snapshots/20260801T235530Z.partial",
+  "total_files": 114,
+  "total_bytes": 12402823,
+  "gate_1_files_present": {
+    "result": "PASS",
+    "expected_present": {
+      "_pull_summary.json": true,
+      "_items_by_category_summary.json": true,
+      "categories.json": true,
+      "items_prices_all.json": true,
+      "terminals.json": true,
+      "100 items_category_*.json": true
+    },
+    "zero_byte_files": [],
+    "read_errors": []
+  },
+  "gate_2_json_parses": {
+    "result": "PASS",
+    "json_files": 113,
+    "parsed_ok": 113,
+    "parse_failures": [],
+    "note": "Every .json parsed individually - full check, not sampled."
+  },
+  "gate_3_file_type_inspection": {
+    "result": "PASS",
+    "files_inspected": 114,
+    "flagged": [],
+    "signatures_checked": [
+      "ELF",
+      "PDF",
+      "PE exe",
+      "PNG",
+      "RAR",
+      "ZIP",
+      "gzip",
+      "shebang"
+    ]
+  }
+}
