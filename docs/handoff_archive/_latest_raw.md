@@ -1,71 +1,124 @@
-# UPDATE — Ship Items schema + importer shipped, viewer generalization scoped (2026-07-30, overnight)
+# UPDATE — PART C: both Go defects fixed and proven; STOPPED at step 4's stop condition
 
-Resumed from the 2026-07-29 handoff's three open items. Sleven was asleep; proceeded on
-judgment per his standing instruction, did not decide the one item he flagged as his call.
+Defects 1 and 2 are fixed and proven against known-bad input. Step 4's
+comparison found a **third difference**, so per the work order I have stopped
+and am reporting rather than proceeding to delete `generate_handoff.py`.
 
-## 1. Postgres schema + importer for weapons/missiles/turrets (PRIMARY — done, locally verified)
+## Defect 1 — invented entries — FIXED
 
-Built the "Ship Items" domain locked in `docs/ARCHITECTURE_DECISIONS.md` (Class Table
-Inheritance): `component_types` lookup table + `components` base table + 5 typed detail
-tables (`weapon_details`, `missile_details`, `missile_rack_details`, `gimbal_mount_details`,
-`turret_details`), all wired to the existing `VerifiableMixin` provenance pattern
-(verification_source/confidence).
+`watcher-go/handoff_regen.go`. `strings.Split(string(raw), "\n### ")` replaced
+with `updateEntryHeaderRe`, matching only the headers `appendUpdate()` writes.
+Both required edge cases preserved: an empty header set returns the whole file
+as one entry, and preamble before the first header is kept.
 
-- `app/models.py` — new `ComponentType`, `Component`, `WeaponDetail`, `MissileDetail`,
-  `MissileRackDetail`, `GimbalMountDetail`, `TurretDetail` classes.
-- `alembic/versions/219446ebce6a_*.py` — migration creating all 6 new tables + indexes,
-  seeding `component_types` with the 5 categories.
-- `import_ship_components.py` — hand-curated importer (per the "2-3 real importers before
-  generalizing" staged-pipeline decision), populating 8 real Arrow components sourced from
-  `data-layer/raw/arrow/arrow_api_raw.json`'s actual port tree, cross-checked against
-  `docs/HARDPOINT_MOUNT_TYPES.md`. Upserts on `class_name`, idempotent on re-run.
-- Commit: `bf22494`.
+Also extracted `parseUpdateEntriesFrom(path)` so the parser can be exercised
+against fixtures rather than only whatever the live log happens to hold.
+`parseUpdateEntries()` calls it with `updatesLogPath()` — behaviour unchanged.
 
-**Honesty note on verification:** all of this was tested against a scratch PostgreSQL
-instance in my own cloud sandbox (upgrade/downgrade/re-upgrade cycle, `alembic check` clean,
-importer dry-run + real + re-run, full `app.main` import with routers still boots clean). It
-has **NOT** been run against the real project database — this session's tools can't reach
-`localhost:5432` on your machine from the cloud container, and the device bridge has no
-network access at all. First real run against your actual dev DB is the first thing to do
-when you're back: `alembic upgrade head` then `python import_ship_components.py`. Read the
-importer's inline notes before trusting it blind — 3 manufacturer prefixes (GATS, FSKI,
-TALN) and a couple of stat fields were deliberately left `None` because I couldn't confidently
-identify them, not because they don't matter.
+## Defect 2 — classification by prose — FIXED
 
-## 2. Viewer pattern generalization (SECONDARY — scoped down, real blocker found)
+`watcher-go/handoff.go`. `titleLine()` added; both `isHandoffDoc()` and
+`isUpdateDoc()` now use it instead of `firstRunesUpper(text, 500)`.
+**Evaluation order unchanged** — filename hints first, `isHandoffDoc()` before
+`isUpdateDoc()`, a doc matching both is a full handoff. `firstRunesUpper` had no
+remaining callers and was removed, with a comment recording what it was and why
+it went.
 
-Checked `constellation-aquila` and `gladius` before touching anything: neither has a
-`hardpoints.json`, and `data-layer/raw/` only has `arrow` and `misc` — there is no raw
-port-tree data for either ship. Wiring the Arrow's hover/rack-selector pattern into them
-tonight would mean inventing hardpoint positions, which is exactly the kind of guess this
-project's evidence standard rules out. Did not do that.
+## Rule 12 — proven, not asserted
 
-What I did instead: extracted the reusable engine (scene setup, hover/click raycasting,
-rack-config popup, missile-total calculator) out of `arrow/index.html` into
-`tests/testing-site/shared/hardpoint-viewer.js` (`createHardpointViewer()`, parameterized).
-Commit: `64f2ee6`.
+`watcher-go/handoff_defects_test.go` and `handoff_livelog_test.go`. `go build`,
+`go vet` and `go test ./...` all clean.
 
-**Deliberately left undone, for good reason:** did NOT wire this into `arrow/index.html`
-itself, and did NOT touch that file at all. This session has no way to render WebGL or take
-a screenshot to visually confirm the swap is behaviorally identical — the working Arrow demo
-was judged not worth risking on a blind refactor. `arrow/index.html` is untouched and still
-the known-good reference.
+| test | asserts |
+|---|---|
+| subheadings stay inside their entry | a body with two `###` subheadings yields **1** entry, not 3, and keeps both |
+| no headers returns whole file | content is not dropped |
+| preamble preserved | text before the first header survives |
+| hyphen separator parses | `-` works as well as `—` |
+| update mentioning "handoff" in BODY | classified as **update**, not handoff |
+| genuine handoff title | still detected (`CITIZEN COMPASS HANDOFF`, `SESSION ARCHIVE`) |
+| filename hint still wins | evaluation order intact |
+| `titleLine` | first heading, else first non-blank line |
+| **live `_updates_log.md`** | **70 total `###` headers -> 50 parsed entries, 0 phantoms** |
 
-**Real next step for this task** (not done tonight, needs you or a session with browser
-verification): (a) wire the shared module into `arrow/index.html`, look at it in a browser,
-confirm parity; (b) pull real port-tree data for constellation-aquila and gladius the same
-way it was done for the Arrow (their raw API pull → `data-layer/raw/<ship>/`), then the
-shared engine can actually be used on them.
+Python (fixed) on the same live log: **50 entries, 0 phantoms.** Identical.
 
-## 3. ARCHITECTURE_DEEP_REVIEW.md scope question
+## Step 4 — the comparison, and the STOP
 
-Left exactly as flagged, per explicit instruction. Not touched, not decided.
+Built the fixed binary and regenerated via `--once`, then regenerated with
+`generate_handoff.py`, and diffed.
 
-## Also worth knowing
+**The improvement is real and large:** fixed Go emitted **102,901 chars** where
+the deployed binary was emitting ~65,000. That recovers almost exactly the
+~37,000 characters the addendum measured as discarded.
 
-- 9 commits are now sitting local-only, ahead of `origin/main` (was 8, +1 tonight). Not
-  pushed — wasn't asked to, flagging again since it's been sitting a while.
-- Could not confirm whether `inbox_watcher.exe` is currently running from this session (no
-  Windows process/task-scheduler visibility from the device bridge) — if it's down, this
-  update file will just sit in `inbox/` until it's restarted; check `logs/inbox_watcher.log`
-  for the last "Watcher started" line when you're back.
+**Both defects are confirmed fixed by structural comparison:**
+
+| | Go (fixed) | Python (fixed) |
+|---|---:|---:|
+| `###` headers in output | 40 | 40 |
+| timestamped entries shown | 20 | 20 |
+
+Identical. No phantoms, no classification divergence.
+
+### But the outputs still disagree — third difference found
+
+Beyond the Go-only version-marker block (which is the KEEP feature and is
+expected), the diff is 21 lines in two groups:
+
+**1. Number formatting — 5 lines.**
+
+| Go | Python |
+|---|---|
+| `**Project health score:** 35.0/100` | `**Project health score:** 35/100` |
+| `- Data completeness: 0.0%` | `- Data completeness: 0%` |
+| `- Viewer progress: 50.0%` | `- Viewer progress: 50%` |
+| `- Documentation: 100.0%` | `- Documentation: 100%` |
+| `**Ships:** ... (50.0%)` | `**Ships:** ... (50%)` |
+
+**2. Python emits a trailing line Go has no equivalent for:**
+
+```
+*(raw text of the most recently adopted handoff doc — local AI compression
+unavailable right now, showing it unmodified)*
+```
+
+That is Python's Ollama-fallback footer. Ollama is disabled and parked, so
+Python takes the fallback path and says so; Go never compresses at all, so it
+has nothing to report.
+
+### Why I am stopping rather than judging
+
+The work order is explicit: *"If they still disagree there is a third difference
+— stop and report, do not assume Go is correct because it was fixed twice."*
+
+They disagree. I can characterise both differences and neither touches entry
+content or classification — but "I can explain it" is not "it matches", and this
+is precisely the reasoning the stop condition exists to prevent. **Not
+executed:** step 5 (delete `generate_handoff.py` and `_verify_generate_handoff.py`)
+and step 6 (the CLAUDE.md additions).
+
+### The decision these need
+
+- **Number formatting:** which is correct? Python's `35/100` reads better;
+  Go's `35.0/100` is what the live document will show. One of them should
+  change so the two agree, or Python's retirement makes it moot.
+- **The Ollama footer:** Go is arguably right to omit it, since it never
+  attempts compression. If so, this difference is expected rather than a defect
+  — but that is a call to make explicitly, not to assume.
+
+## Deployment state — the fix is NOT live
+
+`inbox_watcher_fixed.exe` (5,735,424 bytes, built from fixed source) sits in the
+repo root. `inbox_watcher.exe` (3,884,032 bytes, 29 July) is still the binary
+the scheduled task runs.
+
+**So the live watcher is still the defective one**, still emitting ~65k with
+phantoms. Replacing it means stopping the scheduled task to unlock the file, and
+I have not done that — deploying while an unexplained third difference stands
+would bake in whichever formatting Go happens to use. Say the word and it is a
+two-minute change.
+
+Nothing deleted. `generate_handoff.py`, `_verify_generate_handoff.py` and
+`inbox_watcher.py` are all still on disk. Comparison artifacts moved to
+`_to_delete/go_migration_comparison_20260801/`.

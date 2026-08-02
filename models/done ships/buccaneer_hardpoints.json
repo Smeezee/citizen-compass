@@ -1,0 +1,76 @@
+{
+  "ship_name": "buccaneer",
+  "ship_slug": "buccaneer",
+  "hardpoints": [
+    {
+      "name": "hardpoint_missile_rack_s3_ls",
+      "type": "missile_rack",
+      "label": "S3 LS",
+      "position": {
+        "x": -2.3331,
+        "y": -1.234,
+        "z": -0.0258
+      }
+    },
+    {
+      "name": "hardpoint_missile_rack_s3_rs",
+      "type": "missile_rack",
+      "label": "S3 RS",
+      "position": {
+        "x": 2.2711,
+        "y": -1.3148,
+        "z": -0.0484
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_s1_rs_is",
+      "type": "weapon_gun",
+      "label": "S1 RS IS",
+      "position": {
+        "x": 7.4863,
+        "y": -1.2214,
+        "z": -0.7079
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_s3_ls_is",
+      "type": "weapon_gun",
+      "label": "S3 LS IS",
+      "position": {
+        "x": -5.395,
+        "y": -0.81,
+        "z": -0.4615
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_s3_rs_is",
+      "type": "weapon_gun",
+      "label": "S3 RS IS",
+      "position": {
+        "x": 5.4232,
+        "y": -1.0128,
+        "z": -0.569
+      }
+    },
+    {
+      "name": "hardpoint_weapon_gun_s4",
+      "type": "weapon_gun",
+      "label": "S3",
+      "position": {
+        "x": -0.0527,
+        "y": -2.1763,
+        "z": 1.7122
+      }
+    },
+    {
+      "name": "hardpoint_weapon_turret_s1_ls_wt",
+      "type": "weapon_turret",
+      "label": "S1 LS WT",
+      "position": {
+        "x": -7.4386,
+        "y": -1.1837,
+        "z": -0.6659
+      }
+    }
+  ]
+}

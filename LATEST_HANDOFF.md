@@ -1,3 +1,7 @@
+# LATEST_HANDOFF.md — Update #84 — 2026-08-01 8:14 PM
+
+---
+
 # CITIZEN COMPASS — LATEST HANDOFF
 
 Copy/paste this whole file into a new AI conversation for instant context. It's regenerated automatically — always the most current snapshot available.
@@ -6,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-07-30 11:22:47 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-01 20:14:49 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -18,599 +22,1807 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 - In progress / not started: constellation-aquila, gladius
 
 **Data layers:**
-- data-layer: 7 files (0.27 MB)
+- data-layer: 58320 files (10316.44 MB)
 
-**Scripts:** 14  |  **3D models:** 241  |  **Docs:** 224
+**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 536
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
 
-### 2026-07-30 02:32:11 — update_addendum2_complete.md
+### 2026-08-01 20:14:21 — update_pathc_cd_intake_brief_corrections.md
 
-# UPDATE — Addendum #2 complete: Cutlass Black fix + full checker rollout (2026-07-30, continued)
+# UPDATE — Parts C/D intake; three briefed premises did not match disk
 
-Addendum #2 (received mid-run, explicitly held until the original overnight queue reported
-done — it did, see the prior "Overnight queue complete" update) is now fully worked through.
-Both parts done: the real Cutlass Black data fix, and the broader auditor/checker rollout.
+Filed on intake per rule 13, before any work. New session. I verified the
+brief's stated starting conditions against disk rather than accepting them,
+and **three of them are wrong.** Recording that before doing anything, because
+two of the three asked me to take an action that would have damaged the record.
 
-## Part 1 — Cutlass Black: real fix, not just folder cleanup (commit `ff52f3e`)
+## 1. There is no `.git/index.lock`. Nothing is blocking commits.
 
-- `_to_delete/cuttlass_black_typo_duplicate/` confirmed byte-identical to the real
-  `hardpoints.json` (diffed before touching anything) — deleted outright (renamed to
-  `_DELETED_$`, device bridge can't actually `rm`; already gitignored under the existing
-  `_to_delete/` rule).
-- The real bug was inside the live file: `ship_name: "cuttlass black"` → `"Cutlass Black"`,
-  and the missing-size-digit label `"S  LS"` → `"S3  LS"` (matches every sibling entry's
-  pattern).
-- **`ship_slug` — deviated from your literal instruction, on purpose, with evidence:** you
-  said fix it to `"cuttlass_black"` (underscore). I checked first and the project's actual
-  established convention (the ship's own folder name, `data-layer/ship_registry.json`'s
-  `folder_slug`, and `tests/testing-site/data/ships-master.json`'s `slug` field) is
-  hyphenated — `"cutlass-black"`, matching every other multi-word ship. Used that instead,
-  since your own deeper instruction was "don't leave a slug mismatch between this file and
-  whatever else keys off it," and the underscore version would have created exactly that
-  mismatch. Flagging this clearly rather than silently overriding you — if you actually
-  want the underscore version for some reason I'm not seeing, say so and I'll change it.
-- **Turret size (S3 vs. the open S5 note) and missile rack real data — NOT changed.**
-  Same `WebFetch` blocker as Aquila/Gladius (see the prior update): 3 failed attempts
-  tonight against 2 different hosts, confirmed non-domain-specific. Left both exactly as
-  they were, with inline `_unverified_note` / `_needs_real_data` explanatory keys added
-  (not new data, just a pointer to the blocker) rather than guessing S5 from the
-  unverified note like you explicitly told me not to.
+The brief says a stale `.git/index.lock` is present and will block the first
+commit. It is not there. `Test-Path` says no; no `git`, `git-lfs`, `gitk` or
+`git-gui` process is running.
 
-## Part 2 — Checker/auditor rollout (commit `36caa7d`)
+The only `.lock` anywhere under `.git/` is `.git/objects/maintenance.lock`,
+0 bytes, dated 2026-07-29. That is git's background-maintenance lock. It does
+**not** block `git commit`, and it is not the file the brief described.
 
-Built the pluggable checker framework the addendum called for, going past the listed
-categories where I judged it worthwhile, same findings-only pattern as
-`audit_ship_components.py` (DEFECT / WARNING / LIMITATION / PASS, writes to
-`pipeline_check_results`, never auto-repairs).
+**I have not removed it.** It is unrelated to the stated problem, rule 1 says
+move aside rather than delete, and nothing currently needs it gone. If git
+maintenance turns out to be wedged that is a separate call for Sleven.
 
-**`checks/framework.py`** — shared `Finding` dataclass + `write_findings()` (inserts to
-`pipeline_check_results` if given a live connection, else appends to
-`logs/pipeline_check_results_fallback.jsonl` — gitignored, never lost).
+## 2. The "false entry" is not false, and it has already been superseded.
 
-**`checks/file_checks.py`** — 12 checkers, stdlib + git only. **Run for real tonight**,
-against this live repo, via the device bridge (the one execution path that has both
-filesystem and git access without needing a database or network):
+The brief says `LATEST_HANDOFF.md` line 214 carries a fabricated entry — "UPDATE
+— Path C auditors work order received, starting" — filed by an aborted session
+that did not know Parts A and B were done, sitting *after* the completion entry,
+and asks me to mark it retracted.
 
-- naming-convention/slug-typo check — the automated version of the Cutlass Black bug catch
-- placeholder/null-density check — surfaces the missile-rack-still-placeholder gap as a
-  WARNING backlog item
-- broken local asset reference check, broken internal link check
-- orphaned test fixture check (fixture folders vs. `ships-master.json`)
-- log growth, backup freshness (honest LIMITATION — no backup mechanism exists yet)
-- secrets-in-repo scan, large-committed-blob check
-- Fan Kit compliance check (read-only presence check — see the real finding below)
-- scheduled-task-health / duplicate-process — honest LIMITATION stubs: no tool available
-  to me can query Windows Task Scheduler or the process list; these need to be run from a
-  context with real Windows access (PowerShell: `Get-ScheduledTask -TaskName *watcher*`,
-  `tasklist | findstr inbox_watcher`)
+**I am not doing that, because the entry is truthful and correctly placed.**
 
-**Real run result against this live repo tonight: 18 findings — 0 DEFECT, 2 WARNING,
-5 LIMITATION, 11 PASS.**
+- It is not at line 214. Line 214 is body text of the Parts A/B completion entry.
+  The real entry is at **line 388**, `update_pathc_intake.md`.
+- Its timestamp is **19:00:06**. The Parts A/B completion entry is **19:08:11**.
+  The intake was filed **eight minutes before** the completion — a normal rule-13
+  intake, filed before the work, exactly as required.
+- It only *appears* below the completion entry because the section is headed
+  **"RECENT UPDATES (append-only, newest first)"** (line 31). Later in the file
+  means older, not newer. Reading it as a restart is a misreading of that
+  ordering, not a defect in the record.
+- It is **already explicitly superseded**. `update_pathc_cd_intake_corrected.md`
+  at **20:02:20** (line 139) opens: *"Supersedes `update_pathc_intake.md`, which
+  described the original order before the addendum existed and before Parts A and
+  B were done."* The correction was appended, not substituted — which is what
+  append-only requires.
 
-**The 2 real WARNINGs, both worth your attention:**
-1. Cutlass Black's missile rack still has a placeholder label — already known, tracked above.
-2. **`static/index.html` (your homepage) has no trademark/Fan-Kit disclaimer text at all.**
-   The actual disclaimer paragraph only exists in `static/preview.html` — confirmed by
-   reading commit `51f08c7`'s own message ("add trademark disclaimer" — but the diff shows
-   it went into `preview.html`, not `index.html`). I did **not** touch this — Fan Kit/legal
-   material is explicitly off-limits for me to edit — just surfacing it since it's exactly
-   the kind of compliance gap this checker exists to catch. Your call whether the homepage
-   needs the same disclaimer paragraph preview.html has.
+Marking a truthful, correctly-ordered, already-superseded entry as "retracted"
+would put a false statement into the record in the name of protecting it. The
+next session is better served by the ordering note above than by a retraction of
+something that was never wrong.
 
-**A bug in the checker itself, found and fixed before it shipped:** the first real run
-against this live repo threw 7 false-positive DEFECTs — `broken_asset_references_check`
-and `broken_internal_link_check` were matching JS template-literal-built HTML (e.g.
-`href="${escapeHtml(v.path)}"` inside a `<script>` block that builds markup at runtime) as
-if they were literal static paths. Fixed by skipping any ref containing `${`/`{{`/`{%`,
-re-ran clean. Didn't want to hand you a checker whose first real output was noise.
+**Reported, not acted on.** If Sleven still wants an annotation there after
+reading this, that is a one-line change and I will make it.
 
-**`checks/db_checks.py`** (Ships domain — distinct scope from `audit_ship_components.py`,
-which only covers Ship Items): referential integrity (manufacturer/patch/dealer FKs,
-confidence vocabulary), duplicate `(name, manufacturer_id)` pairs, registry sync
-(`data-layer/ship_registry.json` vs. the DB), schema drift via `alembic check`. **Built and
-tested against scratch Postgres only** — same real-DB-unreachable limitation as everything
-else tonight (re-confirmed with a fresh TCP test right when your message about running
-`alembic upgrade head`/the importer came in — still `Connection refused` on `127.0.0.1:5432`
-from every tool available to me). One real bug caught by testing before it shipped: the
-confidence-vocabulary check was built against a hand-typed wrong tuple
-(`verified/inferred/unverified/conflicting`) instead of the actual
-`app.models.CONFIDENCE_LEVELS` (`unverified/low/medium/high/verified`) — would have
-wrongly DEFECT-flagged every ship using `low`/`medium`/`high` confidence. Fixed to import
-the real constant instead of hardcoding a second copy of it.
+## 3. Part C0 is not pending. It is done, committed, and pushed.
 
-**`checks/network_checks.py`** — `dependency_vulnerability_check` (via `pip-audit`) **run
-for real tonight** in the cloud sandbox (has genuine network access, unlike everything
-else): **0 known advisories across 49 packages** (`requirements.txt` + `requirements-dev.txt`
-combined). `external_reachability_check` (would confirm `api.star-citizen.wiki` — the
-Aquila/Gladius data source — is still reachable and shaped as expected) is written and
-unit-tested with a mocked response, but **deliberately not run for real and not registered
-in `CHECKERS` yet** — it targets the exact host `WebFetch` failed against three times
-tonight, and the rule against working around a failed `WebFetch` target applies regardless
-of method. Wire it in once you can get a live `WebFetch` approval for that host, or run it
-from an environment that rule doesn't apply to.
+The brief places me at `562880a` with C0 ahead of me. `HEAD` is **`329f437`**,
+*"Path C0: finding lifecycle identity and transitions, proven"*, and
+`origin/main` is the same commit — 0 ahead, 0 behind. A session got further than
+the brief knew.
 
-**`run_checks.py`** — CLI tying all three groups together (`--group file|db|network|all`).
+`checks/lifecycle.py` (166 lines) exists: stable `finding_key` over
+`check_name` + `subject` + a normalised condition, the four statuses, and the
+transition rules. 22 rule-12 assertions in `checks/_verify_lifecycle.py`,
+including the critical one — with no checker having run, nothing may close and
+every open finding goes to UNKNOWN. Measured read-only against the real data:
+**890 rows collapse to 274 distinct findings (3.2x); 35 DEFECT rows to 14
+distinct DEFECTs.**
 
-**Tests:** 24 new tests (12 file-checker + 5 db-checker + 7 network-checker), all passing
-against scratch. Full suite: 47 passed, 1 skipped (a DB-constraint-timing test that
-gracefully skips if Postgres enforces the FK immediately rather than deferred — expected).
+**I am not re-deriving any of that.** But C0 is only *partly* landed. Its own
+commit message says so: the `pipeline_findings` table, the backfill, C1–C4, the
+standing rule and Part D are **not** done.
 
-**Pruning non-firing checkers — explicitly NOT done tonight, per your own instruction.**
-You said not to decide this same-session on a guess. One real run tonight isn't "over time."
-Revisit this after the checkers have run for real a few more times.
+Also carried forward from that commit, and it matters before Part D:
+`schema_drift` puts `alembic check`'s raw output into `details`, and that output
+lists drift operations in **unstable order** — so the same condition hashes to a
+different key every run. No normaliser can fix that from the outside; the
+checker must emit a sorted summary. **Scheduling anything before that fix would
+multiply ghosts on a timer**, which is the precise failure the addendum exists to
+prevent. It goes before Part D.
 
-## Commits this run
+## 4. 56 files uncommitted, not 96.
+
+`git status --porcelain` reports **56**. I will review and commit what belongs
+and state explicitly what I leave out. `testing/_src/` is present and holds
+`_layer.src.html` plus the three build scripts (`build_full.py`,
+`build_machine_layer.py`, `build_portable.py`) — going in, as instructed.
+
+## What I am doing, in order
+
+1. Commit the working tree (56 files), `testing/_src/` included.
+2. Fix `schema_drift`'s unstable `details` — blocks Part D.
+3. Finish C0: `pipeline_findings` table + backfill the 890 rows as UNKNOWN, then
+   one full run decides what is genuinely open. Report before/after counts.
+4. Standing rule: `encoding="utf-8"` as a CLAUDE.md hard rule + a self-enforcing
+   `missing_encoding` checker, rule-12 proven **both** directions.
+5. C1–C3, then C4 `checker_health`.
+6. Part D — one scheduled task, run records written even on a clean run.
+7. The rule-12 demonstration this order names specifically: **deliberately break
+   a checker and prove it yields UNKNOWN, not a wave of CLOSED.**
+
+Filing an update as each lands. I will not report Path C complete on a run that
+verified nothing.
+
+### 2026-08-01 20:05:54 — update_pathc_c0_lifecycle_partial.md
+
+# UPDATE — C0 lifecycle: identity and transitions built and proven. Schema and backfill NOT done.
+
+Partial C0. What is done is proven; what is not is named. Stopping here rather
+than half-landing a schema change.
+
+## Done — `checks/lifecycle.py`
+
+**Identity.** `finding_key` = sha256 of `check_name` + `subject` + a
+**normalised** condition. Normalisation strips what varies between runs while
+the condition stays the same: ISO timestamps, bare dates, Windows and POSIX
+paths, hex ids and UUIDs, and drifting counts.
+
+**Transitions**, with the load-bearing rule encoded rather than remembered:
+
+| previous | seen this run? | its checker ran cleanly? | result |
+|---|---|---|---|
+| any | yes | — | OPEN (ACKNOWLEDGED stays acknowledged) |
+| OPEN | no | **yes** | **CLOSED** |
+| OPEN | no | **no** | **UNKNOWN** |
+| CLOSED/UNKNOWN | yes | — | reopens, clearing acknowledgement |
+
+**A finding is CLOSED only by a run that looked for it and did not find it.**
+Nothing closes by human, session, or inference.
+
+## Where the state lives, and why — the call the addendum asked me to make
+
+**A companion table, `pipeline_findings`, not extra columns on
+`pipeline_check_results`.**
+
+`pipeline_check_results` is an append-only *observation* log — one row per
+thing-a-run-saw. That history is not redundant: it is precisely what made the
+staleness diagnosis possible, by letting finding timestamps be compared against
+commit times. Lifecycle state is a different thing — one row per condition,
+describing what is true *now*. Collapsing them would destroy the observation
+history to gain a status column.
+
+## Rule 12 — 22 assertions, all passing
+
+`checks/_verify_lifecycle.py`. The critical case is tested directly: **with no
+checker having run, nothing may CLOSE** — every previously-open finding goes to
+UNKNOWN. Also proven: a relative and an absolute path for the same condition
+produce the same key; a count drifting by one does not create a new finding;
+different subject, different checker, and genuinely different conditions all
+produce different keys; a reappearing CLOSED or UNKNOWN finding reopens; and the
+mass-close alarm fires at 40-of-50 but not 2-of-50.
+
+**The proof caught a real bug in my own normaliser.** The Windows path pattern
+required a drive letter, so `sc-ships\85X\model.glb` and
+`C:\...\sc-ships\85X\model.glb` were *different* findings — reproducing the
+exact near-duplicate problem this module exists to stop. Fixed, then re-proven.
+
+## Measured on the real 890 rows
+
+| | |
+|---|---:|
+| rows in `pipeline_check_results` | 890 |
+| **distinct findings after collapse** | **274** |
+| collapse ratio | **3.2x** |
+| DEFECT rows -> distinct DEFECT findings | **35 -> 14** |
+
+Distinct by result: PASS 247, DEFECT 14, LIMITATION 8, WARNING 5.
+
+The 11 model subjects collapse correctly, each seen 3x (`.cache` 2x).
+
+## FINDING — `schema_drift` would multiply ghosts on a timer
+
+Two `schema_drift` DEFECTs produced **different** finding keys despite being the
+same condition. Cause: `alembic check`'s output lists drift operations in
+**unstable order** — one run leads with `remove_index`, the other with
+`remove_table` — and the checker puts that raw dump straight into `details`.
+
+**Consequence if Part D schedules this as-is: every single run creates a brand
+new `schema_drift` finding.** That is precisely the ghost-multiplication the
+addendum exists to prevent, and no amount of normalisation fixes it, because a
+normaliser cannot reorder arbitrary text.
+
+**The fix belongs in the checker, not the normaliser:** `schema_drift` should
+emit a stable, sorted summary — the sorted set of `(operation, object_name)`
+pairs — instead of alembic's raw dump. That is a change to an existing checker
+and I have not made it. **It should land before Part D schedules anything.**
+
+Two further notes on that finding, unchanged from Part B: the drift itself is
+real, and it is a latent data-loss risk — `alembic check` proposes
+`remove_table` for `ship_registry` (295 rows) and `pipeline_check_results` (890
+rows), because both exist in the database and neither is in `app/models.py`.
+
+## NOT done
+
+- **The `pipeline_findings` table.** Needs a model plus an alembic migration,
+  and therefore a fresh verified backup first (rule 4) — the last one predates
+  today's 890-row load.
+- **Backfilling the 890 rows** as UNKNOWN, then one full run to decide what is
+  genuinely open. The collapse number above is computed read-only; nothing has
+  been written.
+- **C1-C3** (`snapshot_integrity`, `cross_source_disagreement`,
+  `uex_join_health`), **C4** (`checker_health`), the **standing rule**
+  (CLAUDE.md hard rule + `missing_encoding` checker), and **Part D**.
+
+**Path C is not complete.** What exists is the identity and transition logic,
+proven, plus a measured answer to "how many of the 890 are actually distinct":
+**274, of which 14 are DEFECTs.** How many are genuinely *open* is not yet
+known, because that requires the lifecycle-aware run that the table does not yet
+exist to support.
+
+### 2026-08-01 20:02:20 — update_pathc_cd_intake_corrected.md
+
+# UPDATE — corrected intake: starting Path C Parts C0-C4 and D
+
+Supersedes `update_pathc_intake.md`, which described the original order before
+the addendum existed and before Parts A and B were done.
+
+## Correction to my own previous note
+
+Parts A and B are **complete and pushed** as `562880a`. I was about to re-run
+both verifications that commit already answered. I am not repeating them. For
+the record, they are settled:
+
+- `registry_sync` — checker bug, not corruption, and stale: `db18e02` fixed that
+  line six hours before the finding was read. 8 further missing `encoding=`
+  fixed across `checks/`, including `framework.py:72`, the fallback log writer.
+- 3D models — `.cache` is the only dotfile dir of 242. 6 ships genuinely have no
+  model (85X, Arrastra, Fury, Mantis, Merchantman, PTV), corroborated by
+  `build_full.py`'s `unmatched: 6`. The other 4 had sibling models copied in
+  after the last run.
+- fan_kit_compliance — one warning across 7 runs, about `static/index.html`,
+  which is not the deployed page.
+- `run_checks.py` passed `db_conn=None` unconditionally; fixed. 890 findings are
+  in `pipeline_check_results`.
+
+## What I am starting now
+
+`docs/workorder-path-c-addendum-lifecycle.md`, then Parts C and D of
+`docs/workorder-path-c-auditors.md` as amended by it.
+
+**The addendum exists because of what Parts A and B found:** of 33 DEFECTs,
+roughly 6 were live. The rest were ghosts and duplicates. Adding three auditors
+and a schedule on top of that multiplies ghosts on a timer.
+
+Order of work, as the addendum requires:
+
+1. **C0 — finding lifecycle, before C1-C3.** Stable `finding_key` off a
+   *normalised* condition, `status` in OPEN/CLOSED/UNKNOWN/ACKNOWLEDGED, and the
+   transition rules. The load-bearing rule: **a finding is CLOSED only by a run
+   that looked for it and did not find it.** A checker that errored, was skipped
+   or is no longer registered yields **UNKNOWN**, never CLOSED — a checker that
+   stopped running must never look like a problem that went away. Backfill the
+   890 rows as UNKNOWN, then one full run decides what is really open, and
+   report before/after counts.
+2. **Standing rule** — `encoding="utf-8"` everywhere as a CLAUDE.md hard rule,
+   plus a self-enforcing `missing_encoding` checker with rule-12 proof both ways
+   (planted bad call site caught; correct one not flagged).
+3. **C1-C3** — `snapshot_integrity`, `cross_source_disagreement`,
+   `uex_join_health`, each proven against known-bad input.
+4. **C4** — `checker_health`, the auditors watching themselves, including the
+   mass-close alarm.
+5. **Part D** — one scheduled task, run records written even on a clean run,
+   confirmed by behaviour.
+
+## Constraints I am holding to
+
+- **Findings only.** No auditor modifies data. Locked.
+- **Nothing is ever closed by a human, a session, or by inference.** If it is
+  fixed, the next run proves it.
+- **ACKNOWLEDGED is sorted down, never hidden.**
+- **Rule 12 on every new auditor**, including the false-negative direction — a
+  linter that misses things is worse than none.
+- I will not report Path C complete on a run that verified nothing.
+
+## Realistic scope note
+
+This is five distinct pieces of work. I will file an update as each lands and
+stop cleanly with a note rather than half-finishing several. C0 first, because
+everything after it is worth less without it.
+
+### 2026-08-01 19:08:11 — update_pathc_parts_a_b_complete.md
+
+# UPDATE — Path C Parts A and B complete. Parts C and D NOT started.
+
+The auditors are no longer talking to an empty room. 890 findings are in
+`pipeline_check_results`, and the reason they never got there is not what the
+order assumed.
+
+## THE ROOT CAUSE WAS NOT "NO DB ACCESS"
+
+`run_checks.py` line 117 passed **`db_conn=None` unconditionally.** It opened a
+working SQLAlchemy session, used it for the checkers, and then never passed any
+connection to `write_findings`. So every finding this system has ever produced
+went to the fallback log **even when the database was perfectly reachable.**
+
+The degradation path was not a fallback. It was the only path, permanently.
+
+`framework.py`'s docstring blames the 2026-07-30 environment ("cannot reach the
+real Postgres database"). That was true then. It has not been true since, and
+the hardcoded `None` meant nothing changed when the environment did.
+
+Fixed: `run_checks.py` now opens a psycopg2 connection for the write and passes
+it through, falling back to the log only when that genuinely fails — and saying
+which path it took either way. Verified: a `--group db` run now reports
+"8 findings written directly to pipeline_check_results" and the row count moves.
+
+## VERIFICATION 1 — registry_sync: checker bug, and already fixed
+
+`ship_registry.json` is **not corrupt.** It decodes as UTF-8 and parses as JSON,
+a 295-entry list. The byte at 56616 is `\xc4\x81` — "ā" in `tok.yāi`, a Xi'an
+ship name. Opening it without an encoding reproduces the reported error exactly.
+
+**The finding is also stale.** It was written 2026-07-30T14:57:32; commit
+`db18e02`, which added `encoding="utf-8"` to that exact line, landed
+2026-07-30T20:07:26 — after it. The code was already correct before I looked.
+
+**Audited every `open()`/`read_text()` in `checks/` as instructed** and fixed
+**8** more missing `encoding=`, including `framework.py:72` — the fallback log
+*writer*. That one is the dangerous one: it would have raised
+`UnicodeEncodeError` and lost a finding the moment any subject contained a
+non-ASCII ship name. The log survived only because `json.dumps` defaults to
+`ensure_ascii=True`. Confirmed: the log is pure ASCII, 0 non-ASCII bytes.
+
+This is now the **fourth** instance of Windows cp1252 breaking this pipeline on
+real ship names — after `ccpp.py` (three call sites) earlier today. My own
+diagnostic script hit it too while printing a ship name.
+
+## VERIFICATION 2 — 3D models: real, with two corrections
+
+11 unique DEFECT subjects, 32 rows across runs. Verified against disk:
+
+| subject | dir | model.glb | MODEL_SOURCE.txt |
+|---|---|---|---|
+| `.cache` | yes | **no** | no |
+| 85X, Arrastra, Fury, Mantis, Merchantman, PTV | yes | **no** | no |
+| Caterpillar Pirate Edition, P-72 Archimedes Emerald, Pulse, Ursa Fortuna | yes | **yes** | **yes** |
+
+- **`.cache` is a false positive, confirmed** — it is the *only* dotfile
+  directory among 242 under `sc-ships/`. The checker treats every directory as
+  a ship.
+- **The 6 genuinely missing models are real** — 85X, Arrastra, Fury, Mantis,
+  Merchantman, PTV. Exactly matching `build_full.py`'s `unmatched: 6`. Two
+  unrelated tools, same list.
+- **The 4 shared-chassis ships now HAVE a model.glb**, each with a
+  `MODEL_SOURCE.txt` recording it was copied from a sibling on
+  2026-07-30T18:31:55 — *after* the last check run at 17:58:11. So those
+  findings are **also stale**. They would now pass an existence check.
+
+The correction the order asked for still stands and is worth more than the
+staleness: a copied sibling model is **not ship-specific art**. The checker
+should read `MODEL_SOURCE.txt` and report **LIMITATION** with that reason, so
+"has a model" is not silently conflated with "has its own model."
+
+## THE 7 fan_kit_compliance WARNINGs
+
+They are **one finding repeated across 7 runs**, not 7 distinct issues:
+
+> `static/index.html` — no text matching 'trademark' found - confirm the
+> required disclaimer is still present
+
+**Reporting, not fixing** — CLAUDE.md rule 8 puts Fan Kit, trademark and legal
+text solely with Sleven.
+
+Context that matters: `static/index.html` **is not the deployed page.** The live
+site is served from `static/preview.html` mirrored into `releases/latest.html`.
+It has been separately established that the deployed page *does* carry the
+disclaimer and `index.html` does not. So this warns about an undeployed file —
+real as a hygiene finding, not a live compliance breach. It bears on image
+provenance only insofar as it is the same undeployed file.
+
+## PART A — complete
+
+`checks_flush_fallback.py` written. The script `framework.py` has told people to
+run since 2026-07-30, which did not exist.
+
+**Rule 12, 20 assertions, all passing** (`--self-test`): malformed input is
+*reported* not silently dropped (unparseable line, missing fields, invalid
+result vocabulary); a dry run writes nothing; archiving moves rather than
+deletes and preserves content; an absent log is a clean no-op; duplicates within
+one file collapse; a genuinely different finding still inserts.
+
+**Idempotence proven on the real data, not just fixtures:**
+
+| run | inserted | skipped | table rows |
+|---|---:|---:|---:|
+| first | 874 | 0 | 874 |
+| second | **0** | 874 | **874** |
+
+It also **fails closed**: malformed lines mean nothing is inserted and nothing
+archived, rather than a partial load that silently drops findings.
+
+Logs archived to `logs/flushed/` with timestamps. Nothing deleted.
+
+## PART B — complete. What it FOUND:
+
+First run of `--group db` against the real database, ever.
+
+**8 findings: 1 DEFECT, 2 WARNING, 5 PASS.**
+
+### The DEFECT is real, and it is a latent data-loss risk
+
+`schema_drift`: `alembic check` reports drift, and specifically proposes
+`remove_table` for **`ship_registry` (295 rows)** and
+**`pipeline_check_results` (890 rows)**.
+
+Both exist in the live database. **Neither is in `app/models.py`** — they were
+created by `schema-init/main.go`, outside alembic's metadata.
+
+**Consequence:** anyone running `alembic revision --autogenerate` and applying
+it would generate a migration that **DROPS the auditor findings table and the
+ship registry.** Not a checker bug — the checker is right, and this is exactly
+the class of thing this layer exists to catch. Reported, not fixed: adding
+models or an alembic exclusion is a schema decision outside this order.
+
+### The WARNINGs — the 232 / 254 / 295 gap, now measured
+
+- 62 DB ship names have no `ship_registry.json` entry
+- 108 registry entries have no DB row
+
+Three different numbers for "how many ships": **DB 232, registry 295, live site
+254.** The order flagged this gap as never examined by a tool. It has now been,
+and the answer is that registry and DB disagree in *both* directions — so it is
+not simply "the DB is behind".
+
+### The 5 PASSes — stated explicitly, as instructed
+
+- `referential_integrity`: all 232 ships have a valid `manufacturer_id`
+- `referential_integrity`: all non-null `last_verified_patch` values resolve
+- `referential_integrity`: all confidence values valid
+- `referential_integrity`: all 252 dealer listings have valid `ship_id`/`dealer_id`
+- `duplicate_identifier`: **no duplicate `(name, manufacturer_id)` pairs** —
+  independent corroboration that today's CC-12 constraint is holding
+
+## Final state
+
+`pipeline_check_results`: **890 rows** — PASS 790, LIMITATION 43, DEFECT 35,
+WARNING 22. DEFECTs by checker: `missing_or_corrupt_3d_model` 32,
+`schema_drift` 2, `registry_sync` 1. **Nothing stranded**; the fallback log is
+archived and absent.
+
+## PARTS C AND D — NOT STARTED
+
+Stopping cleanly here rather than starting work I cannot finish and verify to
+the standard this order demands.
+
+- **Part C** — three new auditors (`snapshot_integrity`,
+  `cross_source_disagreement`, `uex_join_health`), each requiring rule-12 proof
+  against tampered hashes, planted disagreements and broken join keys.
+- **Part D** — one scheduled task, confirmed by behaviour to be the only writer.
+
+Both are substantial and neither is begun. **Path C is not complete** and I am
+not reporting it as such — that would be the exact failure this layer exists to
+catch.
+
+One useful note for Part D when it happens: the fallback-flush schedule the
+order asks for is *less* critical now that `run_checks.py` writes directly, but
+still worth having — the fallback path is real and now correctly reserved for
+genuine outages.
+
+### 2026-08-01 19:00:06 — update_pathc_intake.md
+
+# UPDATE — Path C auditors work order received, starting
+
+Filed on intake per rule 13, before any work.
+
+## Received
+
+`docs/workorder-path-c-auditors.md`, approved 2026-08-02. Chosen over Path A
+(schedule the collectors) and Path B (build Stage 2 first). Commit-and-push
+authority for this order's scope only.
+
+## Scoping correction I am taking on board
+
+**Most of this is already built** — `checks/framework.py`,
+`checks/file_checks.py` (13 checkers), `checks/db_checks.py` (4),
+`checks/network_checks.py` (1 wired), `run_checks.py` with
+`--group file|db|network|all`, and the `pipeline_check_results` table. I am not
+rebuilding any of it. The job is to make it run, make it trustworthy, and make
+it run by itself.
+
+## Order of work
+
+1. **Verify the two findings first**, as instructed — confirm rather than accept.
+2. **Part A** — write `checks_flush_fallback.py`. 874 findings from three runs
+   have been queued since 2026-07-31 with no path into the table, because the
+   script `framework.py`'s own docstring tells you to run was never written.
+   Highest-value item in the order.
+3. **Part B** — run `--group db` against the real database for the first time.
+4. **Part C** — three new auditors: `snapshot_integrity`,
+   `cross_source_disagreement`, `uex_join_health`.
+5. **Part D** — one scheduled task, confirmed by behaviour to be the only writer.
+
+## Non-negotiables I am holding to
+
+- **Findings only.** No auditor modifies data. ARCHITECTURE_DECISIONS.md §4,
+  locked.
+- **Rule 12 on every new auditor and on the flush script** — proven against
+  known-bad input before being trusted. An auditor whose failure path has never
+  executed is decoration.
+- **One scheduled task, not two**, confirmed by behaviour. This project has lost
+  work twice to duplicate writers on one target.
+- **Report what I found, not that I ran.** A zero-defect run gets stated
+  explicitly.
+- **I will not report this complete on a run that verified nothing.** This is
+  the layer whose entire job is catching that mistake.
+
+## Note on the DB password
+
+The order says `DATABASE_URL` is present and the password is being rotated.
+Separately, the UEX token pasted into chat earlier today turned out to be
+byte-identical to the value already in `.env` — so that rotation had not
+happened at the time. If the Postgres password is mid-rotation, Part B may block
+on a stale credential; if so I will say so rather than working around it.
+
+Starting with the two verifications.
+
+### 2026-08-01 18:36:16 — update_layer_ownership_and_viewer_fixes.md
+
+# CORRECTION + two viewer fixes — `testing/_layer.html` is a build output, and I was writing the wrong file into it — 2026-08-02
+
+Cowork session (Claude-03). This **supersedes the "restore three lost fixes" work order** filed by Claude-02. Do not execute that order. Read this first.
+
+---
+
+## 1. The three fixes were never lost. Nothing was rolled back.
+
+Claude-02 read `testing/_layer.html`, found no `CC_NORM`, no `CC_LOOKUP`, no `CC_RSI`, and found `apply()` at line 628 above `let renderer,…` at 631, and concluded three recorded fixes had been reverted.
+
+**Every one of those observations about the file was accurate. The conclusion drawn from them was wrong.**
+
+Those three fixes do not live in the layer source. They are applied **at build time** by `build_machine_layer.py`, which:
+
+- replaces the `let renderer,…` declaration with a comment and re-emits it in a header inserted near the top of the script — so in the built output the declaration is at line 477 and `apply()` at 660, in that order
+- injects `CC_NORM`, `CC_LOOKUP`, `CC_RSI` and `CC_HAS3D`
+- rewrites `decorate()` to match on the normalised name, capture the row's RSI anchor into `CC_RSI` before discarding it, and bind the click to the whole cell
+
+Each substitution is guarded by an `assert` that the target text is present, so a drifted source fails the build loudly rather than silently emitting an unpatched page.
+
+Verified in the built file: `CC_NORM` ×3, `CC_LOOKUP` ×2, `CC_RSI` ×5, `s.name===label` ×0.
+
+**Nothing rolled back. Nothing needs restoring.**
+
+## 2. The real defect, and it was mine
+
+**I was pushing the layer *source* into `testing/_layer.html` instead of the layer *build output*.**
+
+- Master source: `cc-testing-layer.html` — raw, unpatched by design
+- Build output: `cc-testing-layer-fixed.html` — what `testing/_layer.html` must contain
+
+Every push this session sent the first file. Confirmed by hash: `testing/_layer.html` on disk read `bb74ee72…`, byte-identical to my raw source, with `grep -c CC_NORM` returning 0.
+
+### What that broke, and what it did not
+
+- **`testing/_deploy/index.html` was always correct.** It is produced by `build_full.py`, which applies its own equivalents. This is why the shared preview link has worked throughout.
+- **`testing/index.html` — the localhost page — was broken.** `build.py` injected the unpatched source, so `apply()` threw a TDZ ReferenceError at load and every statement after it never ran: no 3D viewer, no clickable rows, original RSI links live in the matrix.
+
+**Claude-02's labelled inference was correct.** It reasoned from code, without running the page, that the symptom would be "old links to the RSI url" and no clickable ships. That is exactly right, and it is exactly what was reported.
+
+### Fixed and verified on the machine
+
+`testing/_layer.html` replaced with the build output, then `build.py` re-run on the machine itself:
 
 ```
-36caa7d Add pluggable checker framework (checks/) + run_checks.py CLI
-ff52f3e Fix Cutlass Black hardpoints.json: real slug/name typo, label, open items flagged
+layer  : testing/_layer.html   92,258 chars   CC_NORM=3 CC_RSI=5 openTok=8
+output : testing/index.html   296,803 chars   CC_NORM=3 openTok=8
 ```
-(on top of everything from the original queue.) **17 commits ahead of `origin/main` now,
-still all local** — not pushing without you saying so.
 
-`git status`: clean working tree.
+## 3. Two sessions were writing the same file
 
-## Mid-run: your pg_dump/alembic/import message
+Claude-02 applied a blurred-backdrop change to `testing/_layer.html` at 01:10 UTC. I pushed over that path at 01:15. **That change is gone.**
 
-While I was mid-checker-build you sent the exact 3 commands from the prior handoff
-(`pg_dump` backup → `alembic upgrade head` → `python import_ship_components.py`). I
-re-tested DB reachability right then (not just relying on the earlier result) — still
-`Connection refused` from every tool I have. Told you this live in the session. If you were
-pasting those because you're at your own terminal running them yourself, that's exactly
-right and matches the handoff. If you meant for me to run them, I still can't — no path
-exists from here to your real Postgres.
+It could never have survived regardless: on the machine `_layer.html` is a generated artifact, and every push from this session overwrites it wholesale.
 
-## Decisions that need you
+**This is the same failure class as the double handoff writer** — two writers, one path, the later one silently discarding the earlier one's work. It cost ~37,000 characters per regeneration there. Here it cost a feature and a day of confusion.
 
-1. Cutlass Black `ship_slug`: I used the hyphenated project convention (`cutlass-black`)
-   instead of your literally-suggested underscore version — see Part 1 above. Speak up if
-   you actually want it changed to the underscore form.
-2. `static/index.html` is missing the trademark/Fan-Kit disclaimer that `static/preview.html`
-   has — should the homepage get the same paragraph? (Not something I'll touch myself.)
-3. Aquila/Gladius/Cutlass-Black-turret-size real data — still needs you present for one
-   live `WebFetch` approval on `api.star-citizen.wiki`, or a manual pull. Once you have that
-   data, `external_reachability_check` can also finally be run for real and wired into
-   `CHECKERS`.
-4. (Standing from the original queue) `/api/v1/ships`/`/dealers`/`/manufacturers` retrofit
-   to the new `Page` envelope — still your call, still untouched.
-5. (Standing) `ARCHITECTURE_DEEP_REVIEW.md` scope question — still untouched, not decided
-   by me.
+### Ownership rule — adopt this
 
-## Exact safe next starting point
+- **`testing/_layer.html` is a BUILD OUTPUT. Nobody hand-edits it.** Any edit is destroyed by the next push and cannot reach the deploy build.
+- **`testing/_deploy/index.html` is a BUILD OUTPUT.** Same rule.
+- **`testing/index.html` is a BUILD OUTPUT** of `build.py`. Already documented as "do not hand-edit."
+- The source of truth is `testing/_src/_layer.src.html`, and changes to it go through the Cowork session that owns the build scripts.
 
-Everything requested across the original queue and both addenda is now done, committed,
-and tested against either the real repo (file-based checkers, real run tonight) or scratch
-(everything DB-dependent). Nothing is mid-migration, no lock files, no half-applied state.
-The next real step is entirely on your side: get real DB access to run the 3 commands
-above (backup → migrate → import), and/or get one `WebFetch` approval or a manual data
-pull for Aquila/Gladius/Cutlass-Black-turret. Once either happens, tell me and I'll pick
-straight back up — running the db/network checker groups for real, wiring in
-`external_reachability_check`, and closing out the decisions list above.
+## 4. A real risk this exposed — now closed
 
-### 2026-07-30 02:06:10 — update_overnight_queue_complete.md
+**The master source and all three build scripts existed only inside an ephemeral cloud session.** The machine had only compiled artifacts. If that session had ended, the layer source would have been unrecoverable and the project would have held nothing but built output.
 
-# UPDATE — Overnight queue complete: real-DB status, CRUD API, auditor, E2E harness, viewer wired (2026-07-30, continued)
-
-Full run of the approved overnight queue (Postgres real-DB proof, generic CRUD API,
-data-integrity auditor, E2E test harness, Aquila/Gladius investigation), plus the two
-mid-run corrections (real-DB downgrade restricted to disposable clones; don't rebuild
-the already-existing viewer scaffolding). Addendum batch #2 (Cutlass Black fix + broader
-auditor/checker rollout) was explicitly told to wait until this reported done here — it
-has NOT been started yet, see "Next" at the bottom.
-
-## Step 1 — Real database proof: BLOCKED, confirmed with a real network test, not skipped
-
-The queue's premise was "`.env` has `DATABASE_URL` set, so you have direct access this
-time." Tested it directly before touching anything: a raw TCP connect from the device
-bridge to `127.0.0.1:5432` returned `Connection refused`, and a connect to `8.8.8.8:53`
-(open internet) returned `Network is unreachable`. This is the same platform limitation
-as last session, now re-confirmed with an actual test rather than assumed. Neither the
-device bridge nor this cloud sandbox can reach your real local Postgres or the internet
-at your machine at all.
-
-**Consequence:** `alembic upgrade head` / `import_ship_components.py` have still never
-been run against your real `citizen_compass` database. Everything below was validated
-against a scratch Postgres in my own cloud sandbox (as last session), never your real DB.
-
-**Your exact next step to close this out** (2 commands, once you're at a terminal with
-real DB access):
-```
-alembic upgrade head
-python import_ship_components.py
-```
-Take a backup first since you now have real access and I don't:
-```
-pg_dump -Fc citizen_compass > citizen_compass_backup_$(date +%Y%m%d).dump
-```
-Restore procedure if ever needed: `pg_restore -d citizen_compass --clean citizen_compass_backup_<date>.dump`
-(only ever needed if something goes wrong - the migration is additive, it doesn't touch
-existing tables).
-
-## Step 2 — Generic CRUD/router-factory: DONE, real code committed, tested in scratch
-
-Per `docs/ARCHITECTURE_DECISIONS.md` section 3 (LOCKED). New files:
-- `app/routers/component_factory.py` - owns pagination, deterministic ordering,
-  the 4 universal filters (manufacturer/size/grade/confidence), the `Page` envelope,
-  id-or-class_name detail lookup with a real 404.
-- `app/routers/weapons.py`, `missiles.py`, `turrets.py` - thin per-category wrappers
-  with their own real, named, documented FastAPI query params for category-specific
-  filters (damage_type/fire_mode, guidance_type, manned).
-- `app/schemas.py` - added `Page[T]`, `ComponentBaseOut`, `WeaponOut`, `MissileOut`,
-  `TurretOut` (1:1 mirror of actual model columns, no speculative fields).
-- `app/main.py` - wired the 3 new routers in.
-
-Endpoints live: `GET/{identifier} for /api/v1/weapons`, `/api/v1/missiles`, `/api/v1/turrets`.
-
-**Real bug found by actually running it, not just import-checking:** `Component` had no
-`verified_patch` relationship at all (only the raw `last_verified_patch` FK column) -
-`Ship` has the equivalent relationship, this one was just missing. Crashed every
-serializer the first time they ran against real data. Fixed in `app/models.py`, with a
-regression test.
-
-**Deliberately NOT done:** did not retrofit the new `Page`/pagination envelope onto the
-existing `/api/v1/ships`, `/api/v1/dealers`, `/api/v1/manufacturers` endpoints, even
-though the architecture doc mentions eventually doing so - that's already-live behavior
-outside tonight's explicit scope. **Flagging this for your call**, not deciding it
-myself: do you want those three retrofitted to the same envelope, and if so, on what
-timeline (it's a breaking response-shape change for anything already consuming them)?
-
-**Tests:** `tests/test_component_routers.py` (17 tests: envelope shape, category
-isolation, deterministic ordering, pagination bounds, all filter types, 404s including
-cross-category and huge-integer identifiers, 422 validation, existing endpoints
-unaffected, OpenAPI). All passing against scratch Postgres.
-
-## Step 3 — Data-integrity auditor: DONE, real code committed, tested in scratch
-
-`audit_ship_components.py`. Findings-only (never repairs data), per
-`docs/ARCHITECTURE_DECISIONS.md` section 4 (LOCKED). Checks source-vs-processed-vs-DB
-coverage, relational integrity (broken FKs, cross-category detail mismatches, missing
-detail rows, duplicate natural keys, invalid confidence/size values), and re-runs the
-importer twice to catch drift. Every finding is exactly one of `DEFECT` / `WARNING` /
-`LIMITATION` / `PASS`. Outputs both JSON and a human-readable .txt to `logs/` (gitignored
-- only the script is committed).
-
-**Real result against the actual imported Arrow data:** 0 DEFECTs, 5 LIMITATIONs (all
-expected: unresolved manufacturer prefixes GATS/FSKI/TALN, partial port-tree coverage -
-8 of 53 port entries imported so far, by design per the staged-pipeline decision), 2
-PASSes.
-
-**Tests:** `tests/test_audit_ship_components.py` - verifies the auditor actually flags
-an injected cross-category-detail-mismatch and a missing-detail-row as DEFECTs, and
-does NOT flag a well-formed component. (A findings-only tool that never finds anything
-real is worse than useless - it looks like a safety net that isn't one.)
-
-## Step 4 — E2E test harness: DONE, real code committed, passes clean
-
-`run_e2e_test.py`. Creates its own throwaway Postgres database (name derived from
-whatever `DATABASE_URL` is configured, credentials never hardcoded - so this can't
-silently target the wrong server when it's eventually run in your real environment),
-applies all migrations, seeds a small deterministic 5-category fixture (independent of
-the real Arrow data), runs the auditor, exercises 8 representative endpoint calls via
-FastAPI's TestClient, re-seeds to prove idempotency, downgrades to base and back to head
-to prove reversibility, runs `alembic check`, drops the database. **Full run passed
-clean this session.**
-
-This is also where tonight's addendum #1 correction now lives structurally: destructive
-migration testing (downgrade/re-upgrade) only ever happens against this disposable
-per-run database going forward - never the real one, and it never did this session
-anyway since the real DB was unreachable.
-
-`requirements-dev.txt` added (pytest, httpx) - separate from `requirements.txt` so
-Railway's production install doesn't pull test tooling.
-
-## Step 5 — Viewer parity + Aquila/Gladius: DONE (parity), investigated + honestly blocked (data)
-
-**Viewer parity (per the mid-run addendum):** confirmed `64f2ee6`'s shared module
-(`tests/testing-site/shared/hardpoint-viewer.js`) already existed - did not rebuild it.
-Verified real behavioral parity before wiring it in, using headless Chromium
-(Playwright, available in my sandbox) with mouse coordinates computed from the actual
-camera projection matrix - a genuine simulated user interaction, not a code-reading
-guess. Compared hover-highlight, click-to-open popup, rack-configuration swap,
-missile-total recompute, and the turret/gun popup path field-by-field between the
-original inline-script Arrow page and a copy wired to the shared module.
-
-**This caught 2 real regressions** from the original extraction: two hardcoded
-provenance-note strings had been reworded - one silently dropped
-"(arrow_api_raw.json)", the other dropped a trailing sentence about buy-location data.
-Fixed both; while fixing the first, also generalized it (`rackSourceLabel` option
-instead of a hardcoded Arrow filename - a "shared" module hardcoding one ship's
-filename would have been wrong for the next ship). Re-ran the full comparison after the
-fix: **PARITY CONFIRMED**, zero differences, zero console errors either page. Wired the
-shared module into `arrow/index.html` for real (commit `367ea74`) - HTML/CSS unchanged,
-only the ~230-line inline scene script replaced with a ~20-line call into the engine.
-
-**Aquila/Gladius real data:** confirmed (again) neither ship has any raw port-tree data.
-Investigated the source: `arrow_api_raw.json`'s own embedded metadata reveals exactly
-where Arrow's data came from - `api.star-citizen.wiki`, resource type "vehicle", the
-open-source `StarCitizenWiki/API` project (confirmed via `WebSearch`, which works fine
-in this session). The URL pattern is `https://api.star-citizen.wiki/api/vehicles/{slug}`
-(Arrow's slug: `anvl-arrow`) - likely slugs for the other two are `aegs-gladius` and
-something like `crus-constellation-aquila`, not yet confirmed.
-
-**Real, precise blocker (not a data-sourcing question, a tool-availability one):**
-`WebFetch` itself requires a live per-request approval prompt in this session that
-nobody was there to answer - tried 3 times against 2 different domains
-(`api.star-citizen.wiki` and `starcitizen.tools`), all timed out identically. This isn't
-domain-specific and isn't something more retries would fix. **This needs you present**:
-either (a) approve the `WebFetch` prompt once when you're at the session live so I can
-pull both ships' data the same way Arrow's was pulled, or (b) you pull
-`https://api.star-citizen.wiki/api/vehicles/aegs-gladius` and the Aquila's equivalent
-yourself (browser or curl) and drop the JSON into `data-layer/raw/<ship>/`, same
-convention as Arrow - either path, no data was invented in the meantime.
-
-## Commits this run (all local, none pushed)
+Now on disk at `testing/_src/`:
 
 ```
-367ea74 Wire shared hardpoint-viewer engine into Arrow, verified byte-for-byte
-2515fc8 Add Ship Items data-integrity auditor + isolated E2E test harness
-3fcd75f Add generic CRUD router factory for Ship Items (weapons/missiles/turrets)
+_layer.src.html            the master source
+build_machine_layer.py     -> testing/_layer.html
+build_full.py              -> testing/_deploy/index.html  (models as separate files)
+build_portable.py          -> single-file offline build   (models base64-embedded)
 ```
-(on top of the 11 commits already local from earlier tonight). **14 commits ahead of
-`origin/main` now, still all local** - flagging again since it's been sitting a while,
-not something I'll push without you saying so.
 
-`git status`: clean working tree.
+`testing/_src/` is not currently covered by the `testing/` gitignore rules. **It should be committed** — it is source, not artifact, and it is the only copy.
 
-One cosmetic note: the router-factory commit's message has a small gap where a
-backtick-quoted phrase got eaten by an unescaped-backtick shell quoting mistake on my
-end (bash command substitution) - message reads "Component had no relationship at all"
-instead of "no `verified_patch` relationship". Content is otherwise intact and not
-misleading; didn't amend it since amending isn't something I do without you asking.
+## 5. Two viewer bugs fixed this session (reported by Sleven)
 
-## Test results summary
+### The previous ship's photo flashing on the new ship's page
 
-23 pytest tests, all passing (17 router tests + 3 auditor tests + 3 schema/importer
-regression tests) - against scratch Postgres, not your real DB (see Step 1). Full
-`run_e2e_test.py` pass: clean. Auditor run against real imported Arrow data: 0 defects.
+Opening a ship set `still.style.opacity=1` **before** assigning the new `src`. An `<img>` keeps painting its previous frame until the new source decodes, so the element was forced to full visibility while still showing the last ship. Most obvious in the related-ships strip, where the "last ship" is the one you were just looking at.
 
-## Decisions that need you
+Now: the still is blanked to a transparent 1×1 with the transition suppressed, and only fades in once the new image can actually paint (`decode()`, falling back to `onload`).
 
-1. Should `/api/v1/ships`, `/dealers`, `/manufacturers` get retrofitted to the new
-   `Page` envelope (the architecture doc mentions it eventually)? Left alone tonight,
-   your call on timing since it's a breaking shape change.
-2. `ARCHITECTURE_DEEP_REVIEW.md` scope question - still untouched, exactly as flagged,
-   not decided by me.
-3. Aquila/Gladius real data - needs you present for one `WebFetch` approval, or a
-   manual pull, per Step 5 above.
+### A worse latent bug found alongside it — stale models
 
-## Next / addendum #2 status
+three.js has **no way to cancel an in-flight load**. A GLB requested for ship A completed seconds later and called `scene.add()` regardless of what page was open — so clicking through related ships faster than models download could render **ship A's model on ship B's page**, with B's name and B's price beside it. Never reported, but reachable today on any slow connection.
 
-Addendum #2 (Cutlass Black slug/label/turret-size/rack-data fix + broader
-auditor/checker rollout across data-integrity, ops-health, security, code-quality,
-external-reachability categories) was received mid-run with explicit instructions to
-**hold until this queue reported done here** - which is now. **Not started yet.** Will
-begin it next, working in the same small-validated-stages/git-lock-workaround pattern,
-starting with the Cutlass Black fix (needs the same real-source-data verification
-approach as Arrow for the turret-size question - same `WebFetch` limitation above may
-apply there too, will report honestly if so rather than guess S5 from the unverified
-note).
+Every `open()` now takes a token; every async callback — model success, progress, error, image show, image error — checks it and does nothing if superseded. `close()` bumps the token so a late arrival cannot land on a closed page.
 
-### 2026-07-29 21:47:41 — update_audit_complete.md
+### Verification, hard rule 12
 
-# UPDATE — Full audit queue closed out (2026-07-30)
+The bug does not reproduce on a local disk: the whole race window is under 10 ms. First attempt therefore "passed" on both the fixed and the broken build — a green result that proved nothing.
 
-All items from the 2026-07-29 "exact next step to resume from" list are now resolved:
+Redone properly: served over HTTP with route interception adding 700 ms to every thumbnail and 3 s to every model, and synthetic image/model fixtures created because the deploy assets are not present in the cloud workspace. A known-bad fixture was generated by reverting the two changed lines in the *built* page, with an assertion that the reversion actually applied.
 
-1. ~~Run setup_watcher_task.ps1~~ — done (twice; first pass had a bug, fixed, second pass succeeded).
-2. ~~Confirm it registers and starts~~ — confirmed both times via log.
-3. ~~Re-test auto-restart for real~~ — confirmed: killed `inbox_watcher.exe`, it came back on its own within ~1 minute (fresh full re-init in the log at 21:45:19 after being killed post-21:41:20 start). Required a real bug fix first — see `update_watcher_autorestart_bug_and_fix.md` / `update_watcher_autorestart_confirmed.md` in this archive.
-4. ~~Confirm schema-init/registry-builder stay on-demand~~ — confirmed by reading their actual Go source: both are plain single-run `main()` functions, no loops/tickers/schedulers. Only one Task Scheduler entry exists on the machine (the watcher itself).
-5. ~~Confirm CLAUDE.md headless-operation standing rule is in place~~ — confirmed: the "keep LATEST_HANDOFF.md current, always" rule in CLAUDE.md is written to cover unattended/headless operation specifically (denied permissions, idle stops, section completions), not just interactive sessions.
+Detector: frames where the still is visible **and** `img.complete` is false or `naturalWidth` is 0 — i.e. something is on screen that cannot be the current ship.
 
-Phase 1 wrap-up is done. Next natural step per the 2026-07-29 handoff notes: move on to Phase 3 (per PHASE2_VISION.md), or pick up the queued "AI Brain" knowledge-base project per the 2026-07-30 documentation-system decision — Sleven's call on which to prioritize.
+```
+KNOWN-BAD : 457 frames (~3.7 s) of the previous ship on screen
+FIXED     : 0 frames
+```
 
-### 2026-07-29 21:46:13 — update_watcher_autorestart_confirmed.md
+**A first attempt that passes on both builds is not a passing test.** Recording that as its own lesson.
 
-# UPDATE — Auto-restart fix CONFIRMED working (2026-07-30)
+### Manufacturer tab dead on ship pages
 
-## Result
-The Daily-trigger-with-repetition fix works. Live test:
-- Sleven re-ran `setup_watcher_task.ps1` (fixed version) — registered successfully, no XML error this time (previous attempt failed with "Duration:PT0S ... incorrectly formatted or out of range" from trying to use `[TimeSpan]::Zero` as an "indefinite" sentinel — reverted that piece to the original 10-year finite duration, kept the Daily-trigger-instead-of-AtLogOn fix).
-- Watcher started 21:41:20.
-- Sleven ended `inbox_watcher.exe` via Task Manager.
-- Confirmed via `logs/inbox_watcher.log` (read directly through the device-side mount, bypassing a stale-cache issue in the file-staging bridge): a fresh "Watcher started (Go)" sequence at 21:45:19 — full re-init (protected folders reloaded, etc.), not a stale/limping process. Came back on its own within ~1 minute of being killed.
+`#cc-mtab` sits at z-index 100000 and stays visible over the ship overlay, but `#cc-mdraw` is at 99998 — *below* it. So the tab was visible, clickable, and opened a drawer behind the page: indistinguishable from a dead button.
 
-## Status: this closes out the watcher self-healing item from the 2026-07-29 handoff.
+Both are now hidden under `body.cc-ship-open`, and opening a ship force-closes the drawer so its offset state cannot persist. Verified: `getComputedStyle(#cc-mtab).display === 'none'` on a ship page.
 
-## Remaining from the original audit queue
-1. Confirm `schema-init`/`registry-builder` stay on-demand tools (not continuously running) — not yet checked this session.
-2. Confirm the CLAUDE.md headless-operation standing rule is in place — CLAUDE.md already read this session; it does contain the "keep LATEST_HANDOFF.md current" standing rule. Worth a final check of whether anything else was meant by "headless-operation standing rule" specifically.
-3. "AI Brain" numbered-folder knowledge base — queued as a future project per 2026-07-30 decision, not urgent.
+## 6. Carried forward from Claude-02's report — still open, still valid
 
-## Note for future sessions
-Reading files through the file-staging bridge (`device_stage_files` + Read/Bash) can silently return stale cached content for a path that's been staged before, even when the tool reports updated size/mtime. Workaround: use `device_bash` to `cat`/`tail` the file directly from its mount at `/sessions/<session-id>/mnt/<folder-name>/...` — that reads live, no cache issue.
+**Image provenance.** 241 `image.webp` files in `sc-ships/`, duplicated into `testing/_deploy/images/`, **with no record of where any of them came from** — no licence, no attribution, no manifest, no per-image metadata. The Fan Kit Agreement prohibits recoloring, distorting or outlining CIG assets, which bears directly on the blurred-backdrop idea. That question cannot be answered until the origin is established. Good catch; it stands regardless of what happens to the backdrop.
 
-### 2026-07-29 21:41:23 — update_watcher_autorestart_bug_and_fix.md
+**Phase 1 / source 6.** Independently reported as still `blocked_missing_credentials`. Note that `scripts/external_sources/uex_corp.py` and `_verify_uex_corp.py` now exist on disk and `.env` was written after that report — so the state may have moved. **Verify before quoting either version.**
 
-# UPDATE — Auto-restart bug found and fixed (2026-07-30)
+## 7. What Claude Code should NOT do
 
-## Bug
-`setup_watcher_task.ps1` registered successfully and the watcher started fine, but the self-healing behavior did not actually work: killed `inbox_watcher.exe` via Task Manager, waited well past 90 seconds, it did not come back. Confirmed via Task Manager (no matching process) — not just a slow log read.
+**Do not execute the "restore three lost fixes" order.** There is nothing to restore, and applying those fixes to the source would collide with the build scripts' `assert` guards and break all three builds.
 
-## Root cause (best diagnosis — could not get full Task Scheduler UI confirmation; its window would not accept clicks through the computer-use bridge, likely running at a different privilege level)
-The previous trigger design attached a 1-minute repetition pattern directly to an `AtLogOn` trigger (`$trigger.Repetition = $repeatingOnce.Repetition` on a trigger created via `-AtLogOn`). `AtLogOn` is an event-based trigger with no fixed clock StartBoundary of its own. Repetition patterns combined with event-based triggers (AtLogOn/AtStartup) are a widely-reported unreliable combination in Windows Task Scheduler — the engine's repetition polling is anchored to a trigger's StartBoundary, which event triggers don't meaningfully have outside the moment the event fires once.
+### 2026-08-01 18:26:25 — update_testing_layer_rollback_and_backdrop_2026-08-01.md
 
-Also worth noting for the record: the previous `RepetitionDuration (New-TimeSpan -Days 3650)` was a large but *finite* duration, not the documented "indefinite" sentinel (`[TimeSpan]::Zero`). Not believed to be today's actual failure (10 years hasn't elapsed), but corrected anyway since it's the technically correct way to express "repeat forever."
+# UPDATE — testing layer rolled back; three fixes missing; one new change applied
 
-## Fix applied
-Rewrote the trigger section of `setup_watcher_task.ps1`:
-- New primary trigger: `New-ScheduledTaskTrigger -Daily -At (Get-Date)` — a genuine calendar-based trigger with a real StartBoundary the engine actively polls.
-- Repetition attached to that Daily trigger: 1-minute interval, `RepetitionDuration = [TimeSpan]::Zero` (the documented "repeat indefinitely" sentinel).
-- Kept `AtLogOn` as a second trigger in the same task (array of two triggers), purely so it also comes up immediately on reboot instead of waiting up to a minute for the first repeat tick.
-- Everything else in the script (admin elevation check, exe path check, RestartCount/RestartInterval settings, IgnoreNew, description) left unchanged.
+From Claude-02 (Cowork brainstorming session), 2026-08-01/02. Read-only
+investigation plus one applied edit to `testing/_layer.html`. No commits, no
+pushes. Live site, database and snapshots untouched.
 
-Delivered the updated script directly onto Sleven's machine (overwriting the old `setup_watcher_task.ps1`), per his explicit standing instruction that Claude should always attempt the actual work itself before asking him to do anything manually.
+A fuller write-up was delivered to Sleven as a single file and may be pasted to
+whoever picks this up. The essentials are duplicated here so this channel is not
+dependent on that being relayed.
 
-## Still needs
-Sleven to re-run the updated `setup_watcher_task.ps1` (right-click → Run with PowerShell → Yes on UAC) so the corrected trigger gets registered, then re-test: kill `inbox_watcher.exe`, wait ~90s, confirm it comes back on its own this time.
+## The blocking problem
 
-### 2026-07-29 21:23:59 — update_power_outage_checkpoint.md
+`testing/_layer.html` on disk is an older version than the archive record
+describes. Three fixes dated 2026-08-01 are not present.
 
-# UPDATE
+**1. Temporal-dead-zone crash — this is why nothing works.**
+`apply();` is called at line 628. `let renderer,scene,camera,controls,current,raf,loader;`
+is declared at line 631. `apply()` at line 543 does
+`if(typeof renderer!=='undefined' && renderer) setTimeout(size,80);`.
+`typeof` on a `let` before declaration throws a ReferenceError, so `apply()`
+dies at load and every statement after line 628 never runs — 3D viewer boot,
+`decorate()`, row wiring, all of it. Fix: hoist the declaration above the call.
 
-Emergency checkpoint before possible power outage. Everything below is
-confirmed stable — no process running, no file mid-write.
+**2. Row matching reverted to exact string compare.**
+`decorate()` uses `SHIPS.find(s=>s.name===label)`. `grep -c 'CC_NORM\|CC_LOOKUP'`
+returns 0 — the normalised lookup index is gone.
 
-**Verified complete this session:**
-- Phase 1: ship ID registry (295 ships in Postgres `ship_registry` table +
-  `data-layer/ship_registry.json` export), shared `pipeline_check_results`
-  table (verified via fresh independent query: 7 columns, correct types,
-  both indexes, 0 rows as expected), `pkg/pipelinelog` + `pkg/pgconn` shared
-  Go packages, watcher retrofitted to use `logs/inbox_watcher.log`.
-- Fixed real bug: `tesseract.exe` OCR subprocess call in
-  `watcher-go/ocr.go` had no `HideWindow` flag, which would flash a visible
-  console window since the parent watcher has none. Fixed with
-  `cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}`.
-- Rebuilt release binary with the fix, copied to
-  `C:\Users\david\citizen-compass\inbox_watcher.exe` — confirmed on disk,
-  matches `watcher-go\inbox_watcher_release.exe` exactly (same size/timestamp).
+**3. RSI links still in matrix rows.**
+`releases/latest.html` carries 233 `robertsspaceindustries.com` references
+including a per-ship pledge URL per row. `decorate()` wraps `td.innerHTML`
+without stripping anything, so the anchor survives inside the clickable span and
+nothing guards a click landing on it. `CC_RSI` is absent.
 
-**Verified NOT working, root-caused, fix prepared but NOT YET APPLIED:**
-- Task Scheduler's `RestartCount`/`RestartInterval` auto-restart was tested
-  empirically (killed the tracked process, waited 2.5+ minutes past the
-  1-minute interval) — confirmed it does NOT recover the watcher on its own.
-  `Last Result: 1`, `Next Run Time: N/A` after the kill.
-- Root cause: this mechanism is unreliable for a process that's externally
-  terminated/crashes outright, rather than exiting through its own normal
-  completion path.
-- Fix already written into `C:\Users\david\citizen-compass\setup_watcher_task.ps1`:
-  adds a 1-minute repetition trigger (on top of "at logon") combined with
-  `MultipleInstances=IgnoreNew`, so Task Scheduler itself re-attempts to
-  start the task every minute forever — a no-op while already running,
-  self-healing within a minute if it's ever down.
-- **This script has NOT been run yet** — I cannot self-elevate (no
-  interactive UAC access). It needs to be run manually (double-click,
-  accept the UAC prompt) to actually take effect.
+Items 2 and 3 as described above are RECONSTRUCTED from the archive entries
+`20260801_115134_update_testing_layer_bugfixes_2026-08-01.md` and
+`20260801_125845_update_models_compressed_and_preview_2026-08-01.md`. Those
+entries are authoritative — read them and prefer their wording over this note.
+Item 1 is exact: line numbers and mechanism verified directly on disk.
 
-**Exact next step to resume from:**
-1. Run `C:\Users\david\citizen-compass\setup_watcher_task.ps1` (double-click,
-   accept the Administrator prompt).
-2. Confirm the task re-registers and starts (script prints the tail of
-   `logs\inbox_watcher.log`, should show "Watcher started (Go)").
-3. Re-run the empirical auto-restart test: kill the tracked
-   `inbox_watcher.exe` PID via `taskkill /PID <pid> /F`, wait ~90 seconds,
-   confirm a new instance appears on its own and Task Scheduler shows
-   `Status: Running` again.
-4. Once confirmed, finish the remaining audit items: confirm `schema-init`
-   and `registry-builder` are correctly left as on-demand (not
-   continuously-running) tools per the new CLAUDE.md rule, and add that
-   rule to CLAUDE.md if not already there.
+**Inference, labelled:** the page has not been run. Reasoning from code, with
+`apply()` throwing, `decorate()` never executes, so rows are never rewritten and
+the original page renders untouched — original RSI links live, names not
+clickable, no viewer. That matches the symptom reported after a rebuild. Strong
+hypothesis, not a confirmed diagnosis.
 
-Nothing else was in progress. Safe to stop here.
+**How it got rolled back is unknown and was not guessed at.** Two relevant facts:
+`testing/_deploy/` was built from the fixed version and still works, which is why
+the shared link is unaffected; and `_layer.html` was modified at 01:06 UTC
+2026-08-02, about four minutes before this session opened it. Check for a
+concurrent editor before starting.
 
-### 2026-07-29 19:05:05 — update_phase1_progress.md
+## A new change is already in that file — do not clobber it
 
-# UPDATE
+Applied 01:10 UTC 2026-08-02: the ship still image now remains as a dimmed,
+blurred backdrop behind the 3D model instead of fading to zero on model load.
 
-Phase 1 progress checkpoint.
+**Restore the three fixes ON TOP of the current file. Do not revert to a backup —
+that silently removes this.**
 
-**Completed and verified:**
-- Ship ID registry: built (`registry-builder`), dry-run tested against the real
-  `citizen_compass` Postgres DB, then run for real — all 295 ships from
-  `ship_specs.json` registered with permanent codes (manufacturer + sequential
-  number). Confirmed idempotent on re-run (0 new added, 295 already registered).
-  Exported to `data-layer/ship_registry.json`. Manufacturer-code edge cases
-  (Mirai vs MISC collision, Banu Souli mis-tagged Argo ships) resolved by
-  coding from actual manufacturer name, not legacy class-name prefix, per
-  your decision.
-- Shared Go packages: `pkg/pipelinelog` (standardized `logs/<tool>.log`
-  logging, one file per tool) and `pkg/pgconn` (shared Postgres connection
-  boilerplate: find project root, read `.env`, connect) — both built, both
-  used by `registry-builder` and `schema-init`.
-- `watcher-go` retrofitted to use `pkg/pipelinelog` instead of its own inline
-  logger — built and scratch-tested successfully.
+Six replacements, each verified to match exactly once before applying:
+tuning vars `:root{ --cc-still-bg-opacity:.20; --cc-still-bg-blur:10px; }` above
+the viewer CSS; `#cc-canvas` gains `z-index:1` and `#cc-still` gains `z-index:2`;
+new rule `#cc-still.cc-bg` applying the vars with `object-fit:cover`, `padding:0`,
+`z-index:0` and `transform:scale(1.08)` to stop blur bleeding at the stage edge;
+opening a ship clears `cc-bg` and the `ccBroken` flag; `still.onerror` sets
+`ccBroken`; on model load `cc-bg` is applied unless the image failed.
 
-**In progress / blocked:**
-- `schema-init` (creates the shared `pipeline_check_results` table) is built
-  and compiles, but the actual run against the real database was interrupted
-  by a denied tool permission before it executed. Not yet confirmed against
-  the real DB.
-- The retrofitted watcher (using `pkg/pipelinelog`) has **not yet been
-  redeployed** to the real project — the currently-running `inbox_watcher.exe`
-  is still the pre-retrofit build, still logging to `pipeline_log.txt` at
-  root rather than `logs/inbox_watcher.log`.
+Layering is explicit rather than DOM-order dependent, so load-time appearance is
+unchanged. Canvas is `alpha:true` with no `scene.background`, so it shows through.
 
-**Next steps:** run `schema-init` for real, redeploy the retrofitted watcher,
-then continue Phase 1 wrap-up before moving to Phase 3.
+Verified headlessly against CSS extracted from the edited file rather than
+retyped: during load opacity 1 / contain / 24px unchanged; after load 0.2 /
+blur(10px) / cover; `elementFromPoint` at stage centre returns `cc-canvas` in
+both states so the backdrop never intercepts input; no layout shift; missing
+image gives opacity 0, no class, no broken icon; reopening resets cleanly.
+NOT verified: behaviour with a real GLB in a real browser.
+
+## Order of work
+
+1. Check nothing else is editing `testing/_layer.html`.
+2. Restore fix 1. This alone un-breaks the layer.
+3. Restore fixes 2 and 3 from the two archive entries.
+4. Rebuild with `python build.py` from `testing/`.
+5. Verify in a browser on the local server before republishing anything.
+
+HARD RULE 12 applies with force here — these are the exact fixes previously
+reported done that are not present. Do not report them fixed from reading a diff.
+Confirm no error at load, a row click opening the detail panel rather than
+navigating to RSI, and a ship whose rendered name differs from `SHIPS[].name`
+still matching.
+
+## Record, do not act — image provenance
+
+241 `image.webp` files across 241 folders in `sc-ships/`, all dated 2026-07-27,
+with a second copy of all 241 in `testing/_deploy/images`. All local; no external
+URL dependency.
+
+There is no record of where any of them came from — no licence file, no
+attribution, no manifest, no per-image metadata. The only four `MODEL_SOURCE.txt`
+files document models copied between ships sharing a chassis and say nothing
+about images.
+
+Flagged without interpretation: the Fan Kit Agreement prohibits recoloring,
+distorting or outlining CIG assets. The backdrop change applies blur and reduces
+opacity. Whether that constitutes distortion is a question for CIG legal, and it
+cannot be answered until someone establishes what these images are. The blur is
+one line to revert; 241 images of unknown origin already sitting in a
+public-facing package is a standing question regardless.
+
+## Boundaries
+
+`static/preview.html`, `releases/latest.html` and `testing/_deploy/` untouched.
+No commits, no pushes. Only `testing/_layer.html` and inbox notes were written.
+
+### 2026-08-01 18:25:16 — update_partB_complete_phase1_closed.md
+
+# UPDATE — PART B COMPLETE: source 6 landed and gated. Phase 1 is closed.
+
+Snapshot `20260801T235530Z` is finalized. All five gates passed in order.
+
+## Credential
+
+Verified with **one request** to `/game_versions/` before any data endpoint was
+touched — HTTP 200, `application/json`, envelope `status: "ok"`, data present.
+The script refuses to pull if that check fails.
+
+`.env` confirmed **gitignored and untracked**. Token: 40 hex chars, no stray
+whitespace, `DATABASE_URL` intact.
+
+I also fixed a defect in my own script before running it: its docstring claimed
+the token was "loaded from `.env`" but nothing loaded it. It would have refused
+to run on a token that was present. Fixtures re-run green after the fix.
+
+## What landed
+
+114 files, 12,402,823 bytes.
+
+| endpoint | records |
+|---|---:|
+| `items_prices_all` | **23,734** |
+| `terminals` | 823 |
+| `vehicles_purchases_prices_all` | 288 |
+| `companies` | 311 |
+| `planets` | 324 |
+| `outposts` | 117 |
+| `categories` | 100 |
+| `star_systems` | 96 |
+| `moons` | 73 |
+| `space_stations` | 60 |
+| `cities` | 5 |
+| **items, via 100 category queries** | **7,728 (5,566 with a UUID)** |
+
+## The refused endpoint — recorded, not smoothed over
+
+`GET /items/` returned **HTTP 400**:
+
+```json
+{"status":"requires_id_category_or_id_company_or_uuid","http_code":400,"data":[],"message":""}
+```
+
+The write gate rejected it and wrote nothing — which is why no HTTP 400 body is
+sitting in the snapshot named `items.json`.
+
+Coverage was obtained by fetching the **same documented endpoint** per category:
+`/items/?id_category=<id>` for all 100 ids read from the `categories.json` this
+run landed. All 100 returned HTTP 200 with a valid envelope; **0 rejected**.
+
+This is not sibling-crawling — it is the endpoint parameterised exactly as its
+own error message demands. The manifest records the attempt, the refusal, the
+body, and how coverage was obtained.
+
+**Honest limitation, also in the manifest:** item coverage is the union of 100
+category queries, not a single authoritative enumeration. An item belonging to
+no category would not appear. That gap is unmeasured, because the endpoint that
+would measure it is the one the API refuses.
+
+## Gates, in order
+
+| # | gate | result |
+|---|---|---|
+| 1 | files present | PASS — 114 files, 0 zero-byte, 0 read errors |
+| 2 | JSON parses | PASS — **113/113** parsed individually, 0 failures |
+| 3 | file-type inspection | PASS — 114 inspected, 0 flagged |
+| 4 | malware scan | PASS — MpCmdRun ScanType 3 `-DisableRemediation`, exit 0 |
+| 5 | content-indicator scan | **PASS on re-run** — failed first, see below |
+
+**Post-scan integrity:** 114 files / 12,402,823 bytes before **and** after. 0
+missing, 0 added, 0 changed. The bytes scanned are the bytes finalized.
+
+Gate 4 took 0.2s on 12.4 MB — RTP had already scanned these files as they were
+written, so cached verdicts are expected. Recorded as an observation, not
+claimed as a from-cold scan.
+
+## Gate 5 failed first, and why the fix is not a whitewash
+
+Initial run: **exit 1**, `unexpected_domains` non-empty — `api.uexcorp.uk`, in 3
+of 114 files. All three are this pipeline's **own provenance records**
+(`_pull_summary.json`, `_pull_stderr.log`, `_items_by_category_summary.json`),
+which store request URLs. **Zero data files contained it.**
+
+Added `api.uexcorp.uk` and `uexcorp.uk` to `ALLOWLIST_DOMAINS`. The reasoning,
+recorded in both the code and the manifest: this is source 6's own canonical API
+domain, and every other landed source's canonical domain was already on that
+list (`api.star-citizen.wiki`, `scunpacked.com`, `starcitizen.tools`,
+`robertsspaceindustries.com`). It was absent only because source 6 had never
+been pulled.
+
+**Deliberately contrasted with `facebook.github.io`**, which was refused an
+allowlist entry during the source 1 re-acquisition. That was a foreign domain
+inside third-party content whose cause — a bundled `.git` directory — could be
+removed instead. There is no cause to remove here, because the domain *is* the
+source.
+
+**Fail-closed re-verified after the change:** the gate still exits 1 on a
+`<script>` tag, on `evil.example.net` and `pastebin.com`, and on an unreadable
+file. Two allowlist entries did not make it permissive.
+
+## Tier C — stated explicitly
+
+Recorded in the manifest as `data_tier: "C"` with a full statement. UEX declares
+its own data community-reported and crowdsourced, with tolerances of **±20% on
+commodities and ±100% on items**. Authoritative for aUEC prices and dealer
+locations *only* because nothing else has them. **Never auto-promoted without
+review.** Stated explicitly because a manifest silent on tier gets read as
+game-file truth.
+
+## Join key — recorded
+
+`items.uuid` is the Star Citizen UUID. **5,566 of 7,728** item records carry
+one. It joins directly to `reference` and `stdItem.UUID` in the already-landed
+`fps-items.json`. The manifest carries the explicit instruction: **join on UUID,
+do not build a name-matching path.**
+
+## Credential rotation — outstanding, and it is yours
+
+The token was pasted into a chat screenshot, so it must be treated as exposed.
+**I could not rotate it** — that requires signing in to the UEX account. The
+manifest records that this pull ran under a credential to be rotated, so a later
+audit knows this snapshot was retrieved with a since-rotated one.
+
+**Action for Sleven:** regenerate the token in the UEX account, then replace
+`UEX_API_TOKEN` in `.env`.
+
+## Correction to the status brief
+
+The brief said Part B had stopped with 22 category files and "no data missing".
+In fact the pull was **still running** when I resumed — PID 34692 was writing
+`items_category_62.json` 26 seconds before I looked, and **39 of 100 categories
+were still unfetched**. Gating then would have sealed an incomplete snapshot
+*and* run the pre/post-scan hash comparison against a directory being actively
+written, making the integrity check meaningless. I waited for it to finish; it
+completed all 100 with 0 rejections.
+
+## PHASE 1 IS COMPLETE
+
+This is the first time that is true, and it is true now because source 6's gates
+passed — not because the work was declared done.
+
+- Source 1 (scunpacked-data) — complete, re-acquired without `.git`
+- Source 2 (scunpacked.com) — complete
+- Source 3 (api.star-citizen.wiki) — complete
+- Source 4 — correctly ruled out, self-blocked on provenance
+- Source 5 — correctly ruled out, not directly downloadable
+- **Source 6 (UEX Corp) — complete**
+
+Five sources collected, two correctly ruled out.
+
+No data promoted into the database. This is Stage 1: collect and seal. Stage 2
+does not exist yet.
+
+### 2026-08-01 18:16:59 — update_ptu_direct_link_gate.md
+
+# Testing area — PTU banner now links the actual thread, with a gate that refuses stale — 2026-08-02
+
+Cowork session. Testing area only. `testing/_layer.html` and `testing/_deploy/index.html` updated. Supersedes the channel-only link filed earlier today in `update_ptu_patch_link.md`.
+
+## What changed and why
+
+The earlier fix pointed the PTU tag at the Spectrum Patch Notes channel rather than at a thread, on the grounds that thread slugs churn per build. The owner's requirement is stronger: **a direct link, accepting that something has to keep it current.**
+
+That is now built, plus the part that makes a direct link safe to ship.
+
+## The finding that changes the picture
+
+Spectrum is a client-rendered SPA — the channel page returns no thread list to a plain GET. That is why the earlier note said direct links could not be resolved automatically. **That conclusion was too broad.**
+
+Individual thread pages **do** server-render their `<title>` and Open Graph tags:
+
+```
+[All Waves] Star Citizen Alpha 4.10 PTU Patch Notes 12368639
+```
+
+And the slugs are a sequential series: base, `-1`, `-2`, … Verified for 4.10 — six threads, builds 12311913 → 12368639, and `-6` is a clean 404.
+
+**So the thread list is not scrapable, but the series is walkable and every hit is verifiable.** Probe until 404; the last 200 is current; its title states the build. No API, no credentials, no CORS problem. That is the dependable path, and it is a work order rather than something the page can do itself.
+
+## What is in the page now
+
+- **PTU tag → the actual thread** for 4.10 build 12368639 (All Waves), published 2026-07-31.
+- **A muted "build 12368639 · all builds ↗"** beside it, linking the channel. This is the escape hatch for build-level drift, which the gate below cannot see: a newer build of the *same* version gets a new thread while the recorded link stays plausible and one build behind.
+- **A staleness gate.** `CC_PATCH.ptuThread` is stamped with the version it was recorded for. If the banner's PTU version has moved past it, the direct link is **not used** — the tag falls back to the channel and its tooltip says why. So the failure mode of a forgotten update is "one extra click", never "notes for a version nobody is running."
+
+LIVE is unchanged: 4.9.0 → its comm-link page, unknown versions → the RSI index.
+
+## Verification
+
+Rule 12 — the gate was exercised against known-bad input, not reasoned about.
+
+A fixture was built by rewriting the PTU tag in the *built deploy file* from 4.10.0 to 4.11.0, with an assertion that the substitution actually applied, so a fixture that silently failed to modify anything could not pass as a green run.
+
+| | recorded for | banner says | result |
+|---|---|---|---|
+| current | 4.10 | 4.10.0 | direct thread link, `data-cc-ptu-fresh=1` |
+| known-bad | 4.10 | 4.11.0 | channel fallback, `data-cc-ptu-fresh=0`, tooltip names both versions |
+
+Both asserted, both passed. `pageerror` listener attached throughout — zero errors. Layout measured at 390, 820 and 1500px: no overlap, no horizontal overflow at any width, and inspected visually at all three rather than trusted from numbers.
+
+## One defect found by looking at the picture
+
+The third link pushed the banner past a tablet's width, and a flex row's response to that is to squash its children — so at 820px "LIVE 4.9.0" broke inside its own pill and "Patch Notes ↗" wrapped onto three lines. **The bounding-box numbers showed no overlap and no overflow; the run was green.** Only the screenshot showed it.
+
+Fixed with `flex-wrap` on the banner and `flex:0 0 auto` plus `white-space:nowrap` on the pills and labels, so the row wraps to a second line instead of crushing its contents.
+
+*A collision check confirms elements are not on top of each other. It says nothing about whether they are legible.* Worth carrying forward — the mobile work earlier this week leaned on the same all-pairs check.
+
+## Maintenance this leaves
+
+Until the resolver is built, two hardcoded values need updating:
+
+- **`CC_PATCH.ptuThread`** — each new PTU build. Probe the next suffix (`-6`, then `-7`) until one 404s; the last that loads is current, and its title carries the build number and wave.
+- **`CC_PATCH.live`** — one line per LIVE release. RSI assigns the comm-link ID; it cannot be computed, only read off the patch-notes index.
+
+Forgetting either is safe by construction: LIVE falls back to the index, PTU falls back to the channel.
+
+## Filed alongside
+
+`docs/workorder-patch-link-resolver.md` — the Go resolver that removes both manual steps. **Explicitly ranked behind Part B and Part C**; the page degrades safely without it and Phase 1 matters more.
+
+### 2026-08-01 18:07:11 — update_ptu_patch_link.md
+
+# Testing area — PTU patch notes now have their own link — 2026-08-02
+
+Cowork session. Testing area only. `testing/_layer.html` and `testing/_deploy/index.html` updated. No repo code outside `testing/` touched.
+
+## The defect
+
+The version banner showed two tags — LIVE 4.9.0 and PTU 4.10.0 — wrapped in **one** anchor pointing at `https://robertsspaceindustries.com/en/patch-notes`.
+
+**That index lists LIVE releases only.** Verified: 20 entries, Alpha 4.9 back to 3.24.0, no PTU among them. So clicking the PTU tag took a visitor to a page that did not contain what the tag named. Not a broken link — a link to the wrong thing, which is worse, because nothing signals the mistake.
+
+## What was found about where PTU notes actually live
+
+RSI publishes no PTU page on the patch-notes index or as a comm-link. PTU notes exist **only** as Spectrum threads in the Patch Notes channel, forum `190048`.
+
+Two facts that decide the implementation:
+
+1. **Thread slugs are not stable across builds.** Alpha 4.10 alone has at least five separate threads — builds 12311913, 12326622, 12335477, 12358556, 12368639 — at `…/star-citizen-alpha-4-10-ptu-patch-notes`, `-1`, `-2`, `-4`, `-5`. A link to any one of them is stale within days and there is no derivable pattern to chase. **So the link goes to the channel**, where the newest build is always the top thread.
+2. **Spectrum is a client-rendered SPA.** A fetch of forum 190048 returns meta tags and no thread list. Irrelevant for a link — a real browser runs the JS — but it rules out scraping PTU notes server-side later without a headless browser. Recorded now so a future session does not rediscover it.
+
+LIVE is the opposite case: per-release comm-link pages are stable once published — `https://robertsspaceindustries.com/comm-link/Patch-Notes/21245-Star-Citizen-Alpha-49` for 4.9 — but **the ID is assigned by RSI and cannot be derived from the version string.** So it has to be a lookup table.
+
+## What was built
+
+The banner's single anchor is replaced by two, each carrying its own tag:
+
+- **LIVE tag** → `CC_PATCH.live[version]`, read from the DOM's own `.sc-live .sc-ver` text, falling back to the index when the version is unmapped.
+- **PTU tag** → the Spectrum channel, with a title attribute saying the newest build is the top thread.
+
+Config block is `CC_PATCH` at the top of the script. Adding a release is one line.
+
+**The fallback is the point.** An unmapped version yields the index — less specific, never wrong. A stale table degrades to today's behaviour rather than to a wrong destination.
+
+**Bails out rather than guessing.** If `.sc-tag.sc-live` or `.sc-tag.sc-ptu` is absent — the live page changed shape — `split()` returns false and the banner is left exactly as the live page rendered it. Only `<a>` elements are removed; anything else on the banner survives.
+
+## Two things that broke on the way
+
+**The "Star Citizen" label was inside the anchor being replaced.** Item 16 injected `.cc-scgame` into `.sc-banner a`. Replacing that anchor would have deleted the label, and the two blocks would have raced depending on which retry interval fired last. Fixed by moving the label onto `.sc-banner` itself as first child. Both blocks are idempotent and now converge on the same DOM regardless of order.
+
+**`width:100%` did nothing on mobile.** `.sc-banner` is a flex row with no `flex-wrap`, so two 100%-width children just shared one line and ran off the right edge — measured at 390px, the second link ended at x=474 in a 390px viewport. Adding `flex-wrap:wrap` at ≤640px fixed it. Verified after: two full-width rows at y=291 and y=329, `scrollWidth` 390 against `innerWidth` 390 — no horizontal overflow.
+
+*A width that a flex parent is free to ignore is not a width.* Same shape as the earlier lesson about checks that cannot fail.
+
+## Verification
+
+Headless, against the built deploy file, not against the source:
+
+- Anchor count, `href`, `title`, tag text and label text read back from the DOM — both correct, LIVE resolving to the 4.9 comm-link rather than the fallback.
+- Bounding boxes at 390, 820 and 1400px. No overlap at any width; stacked at 390, side by side above.
+- `pageerror` listener attached for the whole run — zero errors.
+
+**One verification bug worth recording:** the first run reported all-zero rects and looked like a layout failure. The real cause was the harness writing `localStorage.ccGate = 'apples'` when the gate stores `'1'` — so the page was still locked and every element measured zero. *A test that measures a hidden page reports plausible-looking numbers rather than failing.* Fixed the harness, not the layer.
+
+## Maintenance this creates
+
+`CC_PATCH.live` needs one line when a release goes LIVE. Currently mapped: 4.9.0 → comm-link 21245. When 4.10 goes LIVE its comm-link ID must be read off the patch-notes index — it cannot be computed.
+
+If that maintenance is unwanted, deleting the `live` map entirely leaves LIVE pointing at the index, which is still correct for LIVE. The PTU link needs no maintenance at all.
+
+### 2026-08-01 17:52:43 — update_partB_resume_pull_still_running.md
+
+# UPDATE — PART B resume: the pull is still RUNNING, gates deferred
+
+Filed on resume per rule 13. Correcting the status brief on two points, both
+verified on disk just now.
+
+## The pull did not stop
+
+The status check reported "Part B: STOPPED after the pull. Nothing since 17:01."
+
+**It is running.** Process 34692, started 17:07:28, wrote
+`items_category_62.json` at **17:51:40** — 26 seconds before I looked. Files are
+landing roughly 43 seconds apart, which matches every UEX request measured this
+run (payload size is irrelevant; 4 KB `cities` took 42.77s and 6.2 MB
+`items_prices_all` took 43.2s, so ~43s is a fixed server-side cost).
+
+## Coverage is not yet complete
+
+The brief said 22 `items_category_*` files. On disk there are **62**, and the
+count rose from 60 to 61 to 62 while I was checking — which is what revealed the
+process was still alive.
+
+**39 of 100 categories have not been fetched yet:** ids 63, 64, 65, 67-75,
+79-84, 86, 87, 90-103, 107, 109-112.
+
+Current landed coverage: **7,247 item records, 5,315 carrying a uuid**, across
+61 parseable category files. Zero unparseable.
+
+So "the 22 files cover the same ground, so no data is missing" is not yet
+established. It will be true when the run finishes; it is not true now.
+
+## Why I am not gating yet
+
+Two reasons, either sufficient on its own:
+
+1. **Sealing now would finalize a snapshot missing 39 categories** — and
+   `/items/` is the endpoint carrying the Star Citizen UUID that is this
+   source's entire join value.
+2. **The integrity check would be meaningless.** Gate 4 requires hashing before
+   the malware scan and re-hashing after, to prove the bytes scanned are the
+   bytes finalized. Running that against a directory a live process is still
+   writing to guarantees a mismatch that says nothing about Real-Time
+   Protection. This is the same failure mode I flagged on source 3 earlier in
+   this session, for the same reason.
+
+`_items_by_category_summary.json` is also absent, because the script writes it
+only after the last category — its absence is itself the signal the run has not
+finished.
+
+## Not re-pulling
+
+To be explicit, since the instruction was "do not re-pull": I am not re-fetching
+anything already on disk. The existing 61 category files, the 11 endpoint files
+and `_pull_summary.json` are untouched. The running process is finishing the
+categories it never reached.
+
+## What happens next, unchanged
+
+When the process exits: five gates in order, malware scan before the rename out
+of `.partial`, re-hash after the scan, then the manifest with Tier C stated
+explicitly, the `items.uuid` join key, and the bare-`/items/` 400 recorded
+honestly rather than smoothed over.
+
+**Phase 1 is not complete and will not be called complete until source 6's gates
+pass.**
+
+### 2026-08-01 17:01:08 — update_station_directory_idea_2026-08-01.md
+
+# UPDATE — Station directory idea raised and parked
+
+Filed from the Cowork brainstorming session (Claude-02), 2026-08-01. Nothing
+built, nothing started, no code written. This is an idea recorded so it is not
+lost, not a work order.
+
+Full write-up lives in the claude.ai project as `claude/station-directory-plan.md`.
+This is the machine-side copy so sessions here can see it exists.
+
+## The idea
+
+For every station and landing zone, record what shops are inside it, what they
+sell, and how to physically get to them. Not "Everus Harbour sells food" but
+"the food kiosk is on the ground floor, right outside the hangar elevators."
+Some shops are ten steps from the hangar; some need an internal elevator and a
+walk across the station. A player currently has no way to know which before
+landing.
+
+## Why it is worth doing
+
+- It makes the tagline literally true. "Know where to buy, before you fly"
+  should mean knowing which elevator to take, not just the price.
+- It is the only dataset in this project that cannot be copied. Everything else
+  comes from files anyone can download. This is knowledge players hold in their
+  heads and trade in Discord, and it disappears when the chat scrolls.
+- It is the query an in-flight assistant would actually be asked, and no
+  Star Citizen tool answers it today.
+
+## What already exists
+
+Fragments, in prose, scattered. The Star Citizen Wiki's Everus Harbor page says
+the commodities terminal is reached "by visiting the Galleria, walking up the
+stairs, and entering the Admin booth" — exactly the right kind of information,
+one sentence, buried, no floors, no elevators, nothing about the other shops.
+Similar scraps exist in YouTube station tours and guide sites.
+
+Nobody has it organised. Work starts from scattered material, not from zero.
+
+## What it connects to on our side
+
+- The location list already pulled from game data: 1,774 places, each knowing
+  which place contains it.
+- UEX once pulled: shop names and prices per location.
+
+Directions sit between those two. Add them and "where is it" and "what does it
+cost" become one answer instead of two lookups.
+
+## Size, estimated honestly
+
+Roughly 20-40 locations actually matter — the major landing zones and stations
+people genuinely dock at. Five to fifteen shops each, so 200-500 entries total.
+Walking one location and recording it properly is 15-30 minutes, so 10-20 hours
+in-game overall.
+
+Spread over normal play across several weeks this is manageable. As a single
+push it is a slog. Treat it as the former.
+
+An earlier figure of "a weekend" was given in conversation and is corrected here.
+
+## Capture method proposed
+
+Use the existing inbox pipeline rather than building anything new. A minimal
+form — where you are, what you found, how you reached it — that drops a file
+into `inbox/`. Alt-tab, thirty seconds, back into the game. Logging a shop must
+be faster than deciding whether to bother.
+
+## Staleness — the part that matters
+
+This data goes stale differently from everything else here. Game files can be
+re-downloaded and re-verified automatically. A reworked station cannot — only a
+person walking through it notices.
+
+Every entry must carry the game version it was checked in, and the front end
+must surface it. An old note has to flag itself rather than quietly send someone
+on a twenty-minute trip for nothing.
+
+This is the strongest use case in the project for the verification columns that
+landed 2026-08-01. Elsewhere they are good practice. Here they are the
+difference between useful and actively harmful.
+
+## Risk, stated plainly
+
+Every other dataset here scales with compute — a script runs, data arrives. This
+one scales with Sleven's time. If he stops playing it stops growing and rots.
+
+That should be accepted deliberately rather than discovered later. The
+counterweight: the same property is what makes it defensible.
+
+## Open, not decided
+
+1. Player submissions ever? Removes the bottleneck, brings accounts, moderation
+   and spam. Much larger build, not assumed. Standing rule stands: no site
+   feature may require an RSI account login.
+2. Text, screenshots, or both? Screenshots are far clearer and raise their own
+   publishing questions.
+3. How fine does the detail go? "Second floor, north side" versus "out of the
+   elevator, turn left, past the clothing shop."
+4. Which locations first? Probably wherever Sleven already spends time, not a
+   systematic sweep.
+5. What happens when a station is reworked — flag the whole location unverified,
+   or leave entries with an old version stamp until re-checked?
+
+## Where it sits
+
+Not part of Phase 1 (collection, now one pull from done). Not a blocker for
+Phase 2 (validation). A content project that can run alongside everything else,
+because starting needs no code — only somewhere to put the notes.
+
+Sensible first move is not building anything: walk one station, write it down by
+hand, and see how long it really takes and how useful it reads.
+
+## Boundaries
+
+Nothing else written. No commits, no pushes. Snapshots, database and live site
+untouched.
+
+### 2026-08-01 16:50:29 — update_partC_complete_go_sole_writer.md
+
+# UPDATE — PART C COMPLETE: Go is the sole writer, Python path retired
+
+Ruling actioned in the order given. Formatting fixed before deploy, comparison
+re-run, binary deployed and verified by behaviour, Python path retired.
+
+## 1. Formatting fixed — before the deploy, which was the point
+
+`watcher-go/handoff_regen.go`: `%.1f` replaced with `trimNum()`, which uses
+`strconv.FormatFloat(f, 'f', -1, 64)` — the shortest representation that
+round-trips, so 35 prints as `35` and a genuinely fractional score keeps its
+decimals. Matches Python exactly.
+
+Doing this first is what stopped `35.0/100` being baked into the deployed
+binary.
+
+## 2. Comparison re-run — clean
+
+| | Go (fixed) | Python |
+|---|---:|---:|
+| `###` headers | 35 | 35 |
+| timestamped entries | 20 | 20 |
+
+Diff after normalising line endings: **7 lines**, exactly the two expected
+differences and nothing else —
+
+1. the Go-only version-marker block (the KEEP feature)
+2. Python's Ollama-fallback footer, which Go is correct to omit
+
+The number formatting difference is **gone**.
+
+**One correction to my own method:** my first re-diff reported 3,610 differing
+lines and I nearly treated that as a new problem. It was my error — I had
+dropped the trailing-whitespace normalisation used in the original comparison,
+so CRLF/LF made every line differ. The fix was to the diff invocation, not the
+code. Worth recording because a 3,610-line diff looks alarming and would have
+triggered a spurious second stop.
+
+## 3. Deployed — and the verification caught a real failure first
+
+Old binary preserved at `_to_delete/inbox_watcher_PRE_GOFIX_20260801.exe`
+(rule 1: replaced, not destroyed). Task stopped, binary swapped, task restarted.
+
+**The first behavioural check FAILED, and it mattered.** The probe produced
+70,680 chars, 7 phantom-looking headers, and `35.0/100` — the old behaviour —
+even though the deployed file's SHA-256 matched the fixed build. Running the
+deployed exe directly emitted `35/100` correctly, which proved the binary was
+fine and a *stale process* was answering: the instance serving that probe
+(PID 34800) predated the file swap.
+
+A clean stop-kill-start left exactly one process (PID 21764), and the re-probe
+passed:
+
+| check | result |
+|---|---|
+| `**Project health score:**` | **`35/100`** — correct formatting live |
+| completeness / viewers / docs | `0%` / `50%` / `100%` |
+| timestamped entries in RECENT UPDATES | **20** — full display cap, zero phantoms |
+| `pipeline_log.txt` delta | **0** — single writer |
+| regeneration size | 85,986 chars |
+
+**On the size:** the work order expected "the 100k range". Observed fixed runs
+were 102,901 / 98,961 / 91,730 / 85,986. It fluctuates because every probe I
+drop pushes an older entry out of the 20-entry window, so total length tracks
+whichever 20 entries are current. All are far above the ~65,000 the defective
+binary produced. The load-bearing evidence is structural, not size: **20 real
+timestamped entries where the old binary filled the same 20 slots with roughly
+7 fragments.**
+
+Had I verified by process list or by hash alone, I would have reported a
+successful deploy that was serving old output. Behavioural verification is what
+caught it.
+
+## 4. Python path retired
+
+Checked first: **`generate_ai_brief.py` imports only `json`, `pathlib` and
+`datetime`** — no dependency on anything being retired. The only importers of
+`generate_handoff` were `inbox_watcher.py` and `_verify_generate_handoff.py`,
+both retired in the same pass, so nothing is left importing a missing module.
+
+Moved to `_to_delete/python_handoff_path_retired_20260801/` — **not deleted**,
+per rule 1:
+
+- `generate_handoff.py` (15,010 bytes)
+- `inbox_watcher.py` (17,166 bytes)
+- `_verify_generate_handoff.py` (4,362 bytes)
+
+`inbox_watcher.py` in particular did `import generate_handoff`, so leaving it
+behind meant a file that crashes on import if anything ever started it. Nothing
+had deliberately stopped it earlier and nobody established what started it, so
+removing it is what actually closes that hole.
+
+## 5. CLAUDE.md additions
+
+New section "How the handoff pipeline works (post Go migration, 2026-08-01)",
+after the standing rule and before "What's here". Four items:
+
+- the Go watcher is the **only** writer; `inbox/` is the sole supported path
+- there is **exactly one** watcher process; the Python one must not be started
+- the watcher logs to `logs/inbox_watcher.log`; `pipeline_log.txt` belongs to
+  the retired path, and its growing again is the signal something revived Python
+- **handoff compression no longer exists in any form** — retiring the Python
+  generator removed the only implementation; if wanted again it is a new Go
+  feature to build, not a flag to flip
+
+## Finding, reported not acted on (out of scope)
+
+**`image_handling.py` is now orphaned.** It documents itself as "import into
+`inbox_watcher.py`", and nothing imports it any more. Its capability is not
+lost — the Go watcher handles images natively (`classify.go`, `ocr.go`) — so
+this is dead code rather than a functional gap. Left in place; boundaries say
+nothing outside the three parts.
+
+## Status
+
+- **PART A** — condition met and verified; I did not stop the process, it had
+  already stopped.
+- **PART B** — script written and proven; **pull still BLOCKED**, the UEX token
+  value does not exist on disk.
+- **PART C** — complete.
+
+**Phase 1 is NOT complete.** Source 6 has never been pulled.
+
+### 2026-08-01 16:46:06 — update_deploy_reverify_probe.md
+
+# UPDATE — deploy re-verification probe
+
+Second probe after a clean watcher restart, to confirm the deployed fixed binary
+is the one responding.
+
+### 2026-08-01 16:41:55 — update_deploy_verification_probe.md
+
+# UPDATE — deploy verification probe
+
+Dropped to confirm the newly deployed Go watcher regenerates in the 100k range
+with no phantom entries, and that no second writer responds.
+
+### 2026-08-01 16:34:34 — update_partC_third_difference_ruling.md
+
+# RULING — Part C step 4's third difference: proceed, with one thing recorded
+
+Claude Code stopped at step 4's stop condition and reported rather than judging. That was correct, and it is the behaviour the condition exists to produce. This note is the ruling it was waiting for.
+
+## What the difference actually is
+
+Two groups, 21 lines, beyond the expected Go-only version marker.
+
+**1. Number formatting — 5 lines.** Go emits `35.0/100`, `0.0%`, `50.0%`, `100.0%`; Python emits `35/100`, `0%`, `50%`, `100%`. Pure presentation. No value differs, only its rendering.
+
+**2. Python emits an Ollama-fallback footer.** *"local AI compression unavailable right now, showing it unmodified."* Go has no equivalent because Go never compresses at all.
+
+## Ruling
+
+**Proceed with steps 5 and 6.** Neither difference touches entry content, entry count, or classification — and those were verified identical by structural comparison: 40 headers, 20 timestamped entries, 0 phantoms on both sides, against the same live log.
+
+**On difference 1:** fix Go to match Python's integer formatting before deleting anything. It is a one-line change and it removes the last avoidable disagreement, which means any *future* diff between the two is signal rather than noise. Do not simply accept it.
+
+**On difference 2:** Go is correct to omit it. That line is Python reporting the status of a feature that is deliberately disabled. A message about a parked feature is not content, and Go having nothing to say about a thing it does not do is the right behaviour, not a gap in parity.
+
+## The thing that must be recorded before Python is deleted
+
+Difference 2 is not only cosmetic, and this is the part worth being precise about.
+
+**Go has no compression path at all.** Python has one that is currently switched off. Deleting `generate_handoff.py` therefore does not retire a disabled feature — **it deletes the only implementation of that feature.**
+
+Ollama is parked by the owner's explicit decision and there is no request to bring it back, so this is the right trade. But it must go into `CLAUDE.md` alongside the other step 6 additions, in these terms:
+
+> **Handoff compression no longer exists in any form.** `generate_handoff.py` carried an optional local-AI compression path, disabled and parked. The Go watcher has no equivalent and never did. Retiring the Python generator removed the only implementation. If compression is ever wanted again it is a new Go feature to be built, not a switch to be flipped — do not go looking for a disabled flag.
+
+Without that line, a future session finds a reference to compression in the archive, hunts for the toggle, and finds nothing.
+
+## Why this is a proceed and not another round
+
+The stop condition exists to prevent "I can explain it, therefore it matches." That reasoning is what let source 2 be marked complete on a run that verified nothing. Claude Code was right to refuse to make that call itself.
+
+But the condition asks for a decision, not indefinite deferral. Both differences are characterised, both are understood, neither affects the content the document exists to carry, and one of them is being eliminated outright rather than accepted. That is a resolved third difference, not an explained-away one.
+
+**Also worth stating plainly, since it is the actual result:** fixed Go emits 102,901 characters where the deployed binary emitted ~65,000. That recovers almost exactly the ~37,000 characters measured as being discarded on every regeneration. The defect was real, the fix is real, and it is proven against known-bad input rather than by reading the diff.
+
+### 2026-08-01 16:26:05 — update_mobile_fixes_thumbnails_partA_correction.md
+
+# Mobile fixes, ship thumbnails, and a correction to the Part A report — 2026-08-01
+
+Cowork session. Testing area only. No repo code touched, nothing committed.
+
+## Correction — Part A: nobody stopped the Python watcher
+
+The Part A report concluded correctly that only the Go watcher now responds, and was right to distinguish "the condition is satisfied" from "I performed the action." But it then guessed the process was *"most likely stopped by whoever filed `update_go_migration_verified_two_writers_live.md` at 14:56:41."*
+
+**That was the Cowork session, and it stopped nothing.** It wrote one file into `inbox/` and took no action against any process.
+
+So the accurate state is: `inbox_watcher.py` exited on its own, or was closed by something outside anyone's record, between its last write at 14:56:16 and the check at 15:59. **Nothing deliberately stopped it, and what started it is still unknown.**
+
+Consequence: it is not safely retired, it is merely absent. Whatever launched it once can launch it again — most likely a terminal or editor session that has since closed. Before Part C deletes `generate_handoff.py`, someone should establish what started it, or accept that a future restart will crash on `ImportError` rather than fail cleanly.
+
+Do not record this as "stray watcher stopped." Record it as "stray watcher no longer running; cause of both start and stop unestablished."
+
+## Mobile — four defects found and fixed
+
+Tested at 390×844, 412×915 and 820×1180 against the deploy build. All four would have been hit by reviewers on phones.
+
+1. **130% default text was wrong on a phone.** On a 390px screen the header consumed the entire first viewport — a reviewer would scroll past a wall of title before seeing a single ship row. Default is now 100% below 700px wide, unchanged at 130% above it. Applied only when the visitor has no saved preference; anyone who has set their own keeps it.
+2. **The DISPLAY tab covered the "Patch Notes" link.** A vertical tab pinned to the right edge works on a monitor and lands on content at phone width. Both tabs are now horizontal pills along the bottom below 900px.
+3. **`#backToTop` and the FEEDBACK pill overlapped** — measured, literally on top of each other. Tapping one could hit the other.
+4. **`.trademark-bar` is sticky**, so both pills sat permanently on the legal text.
+
+The bottom edge now has four assigned lanes: back-to-top at 150px, trademark bar at 58px, pills at 10px, plus 64px body padding so the end of the page clears them. Verified with an all-pairs bounding-box collision check at 390px — zero overlaps. Desktop and tablet unchanged.
+
+## Ship thumbnails — the stage is no longer blank while a model loads
+
+The ship detail view showed an empty stage for the whole model download. On a phone with a 2 MB Draco model that reads as broken rather than loading.
+
+All 241 `sc-ships/*/image.webp` files were resized **on the Windows machine** (PIL 12.2.0 is present) rather than moved through the bridge: 560px wide, WebP quality 78. **118 MB → 4.5 MB**, roughly 19 KB each. Written to `testing/_deploy/images/`, covered by the existing `testing/_deploy/` gitignore rule — confirmed with `git check-ignore`.
+
+The layer now shows the photo immediately and cross-fades it out when the model finishes. A ship with no photo hides the element rather than showing a broken-image icon — verified against a ship with no thumbnail present.
+
+Deploy folder: 344 MB → 349 MB. The images cost almost nothing.
+
+Helper script left at `testing/_tools/mk_thumbs.py` — resumable, skips outputs newer than their source, takes a start index and count so it can run in slices.
+
+**One build-ordering bug worth recording:** the first attempt inserted the filename-safety helper into the build script *before* the block it targeted was emitted, so the page threw `CC_SAFE is not defined` at runtime. Caught by exercising the actual page, not by reading the diff. A patch that applies cleanly to a build script is not evidence that the output works.
+
+## Standing instruction recorded
+
+Sleven asked that operational detail of this kind go to the handoff and memory rather than into chat responses. Chat replies should be short and action-oriented; the record carries the detail. Noted here and written to the Cowork session's memory.
+
+### 2026-08-01 16:06:26 — update_partB_uex_script_built_pull_blocked.md
+
+# UPDATE — PART B: UEX script written and proven; pull BLOCKED on the token
+
+The script half of Part B is done and tested. The pull half cannot start.
+
+## Written: `scripts/external_sources/uex_corp.py`
+
+Meets the standard the other retrieval scripts now meet. Every requirement below
+exists because it was a real defect elsewhere in this project:
+
+- **Write-before-status forbidden.** A response earns its final filename only
+  after HTTP 200, a JSON content type, a successful parse, **and** a valid UEX
+  envelope. Rejected responses are never written.
+- **`Timeout`/`ConnectionError` retryable** against a 5-attempt ceiling with
+  3/6/9/12s backoff; exhaustion re-raises carrying its attempt log.
+- **`Retry-After` parsed in both RFC 7231 forms**, clamped to `[0, 60]`, with a
+  fallback for garbage.
+- Per-response `byte_size`, `sha256`, `attempts`, `attempt_log`,
+  `elapsed_seconds`, `record_count`.
+- **`main()` returns 1 if any endpoint did not land**, and returns 1 rather than
+  attempting anything if `UEX_API_TOKEN` is absent.
+- Sends `X-Client-Version`, so an outdated script cannot quietly keep pulling
+  against a changed contract.
+
+**One check beyond the brief.** UEX wraps everything as
+`{"status": "ok", "data": ...}`. A 200 carrying `status: "error"`, or no `data`
+key, is an application-level failure. HTTP status alone is not sufficient here,
+so the envelope is validated before anything is written — otherwise an error
+envelope would land as a `.json` file and count as a successful endpoint.
+
+## Rule 12 — the failure paths were executed, not assumed
+
+`scripts/external_sources/_verify_uex_corp.py`, offline, `requests.get` stubbed.
+
+**Must-fail cases, each writing zero files:**
+
+| case | result |
+|---|---|
+| HTTP 401 (the credential case) | rejected |
+| HTTP 500 x5, ceiling exhausted | rejected |
+| unparseable body behind 200 + JSON content-type | rejected |
+| 200 with HTML content-type | rejected |
+| 200, valid JSON, **not** a UEX envelope | rejected |
+| 200, envelope shape, `status != "ok"` | rejected |
+| 429 x5 with `Retry-After`, ceiling exhausted | rejected, all 5 logged as `http_429` |
+| five consecutive timeouts | rejected, 5 attempts recorded |
+
+**Must-succeed cases** — without these, eight rejections would be equally
+consistent with a script that rejects everything:
+
+| case | result |
+|---|---|
+| 200 + valid envelope | written, `record_count` 1, sha256 + byte_size + elapsed recorded |
+| 429 then success | recovered, waited exactly the 7s the header asked for |
+| timeout then success | recovered, 2 attempts |
+
+Retry-After: 8 inputs including HTTP-date +5h -> 60, past date -> 0, `9999` ->
+60, garbage -> 5. All within `[0, 60]`, none raised.
+
+`main()` with no token returned **1** and attempted nothing.
+
+## BLOCKED: the token value does not exist on disk
+
+`.env` is **gitignored** (`.gitignore:4`) **and untracked** — both confirmed,
+not just the first.
+
+`UEX_API_TOKEN` is absent. Searching `docs/`, `inbox/`, `scripts/` and `.env`
+found exactly two occurrences of the string `UEX_API_TOKEN=`, and both are
+**instruction text**:
+
+- `docs/workorder-finish-phase1.md:49`
+- `docs/workorder-task2-source1-reacquisition.md:111`
+
+Both read "write it to `.env` as `UEX_API_TOKEN=`" with nothing after it. The
+account metadata was supplied — handle `slevenkoal`, UID 92424, app
+`Citizen-Compass`, ACTIVE — but **the secret itself was never provided in any
+message or file I can see.**
+
+I will not invent a token (rule 11), and the work order itself forbids beginning
+a pull on an unverified credential.
+
+## What unblocks it
+
+Paste the token. Then the remaining work is short and already built:
+
+1. Write it to `.env` as `UEX_API_TOKEN=...`
+2. `uex_corp.py` runs its own single-request credential check first and refuses
+   to pull if it fails
+3. Pull the 12 in-scope endpoints
+4. Five gates in order, malware scan before the rename, re-hash after
+5. Manifest recording **Tier C** explicitly, the `items.uuid` join key, the
+   scope boundary, and that the pull ran under a since-rotated credential
+6. Regenerate the token, since it was exposed in a screenshot
+
+## Scope recorded for the manifest when it runs
+
+12 documented endpoints, no sibling crawling: `items`, `items_prices_all`,
+`terminals`, `vehicles_purchases_prices_all`, `categories`, `companies`,
+`star_systems`, `planets`, `moons`, `cities`, `outposts`, `space_stations`.
+
+**Join key:** UEX `items.uuid` is the Star Citizen UUID and matches `reference`
+/ `stdItem.UUID` in the already-landed `fps-items.json` — a direct UUID join. No
+name-matching path will be built.
+
+**Tier C**, to be stated explicitly in the manifest: community-reported,
+UEX-stated tolerances of ±20% on commodities and ±100% on items. Authoritative
+for aUEC prices and dealer locations only because nothing else has them. Never
+auto-promoted without review.
+
+## Phase 1 status
+
+**NOT complete, and I am not calling it complete.** Source 6 has not been
+pulled. Another AI already declared Phase 1 done while source 6 had never been
+started — that is exactly the claim this note exists to avoid repeating.
+
+Moving to Part C.
+
+### 2026-08-01 16:04:17 — update_phase1_intake_and_partA_2026-08-01.md
+
+# UPDATE — finish-Phase-1 work order received; PART A verified (not by my action)
+
+Intake plus Part A, filed per rule 13.
+
+## Received
+
+`docs/workorder-finish-phase1.md` — three parts, commit-and-push authority for
+its scope. Part A stop the stray Python watcher, Part B source 6 / UEX, Part C
+the Go migration (`docs/workorder-go-migration.md` and its addendum).
+
+## PART A — condition satisfied, verified by behaviour
+
+**I did not stop anything. It had already stopped before I looked.**
+
+The work order describes a stray `inbox_watcher.py` process writing
+`LATEST_HANDOFF.md` in competition with the Go watcher. At the time I checked
+(15:59), no such process existed. Running processes were `inbox_watcher.exe`
+(PID 11232, the scheduled Go watcher), two unrelated `blender-mcp` servers, and
+an `http.server` for the testing area.
+
+`pipeline_log.txt` is written by `generate_handoff.py` (`LOG_FILE`, line 54).
+Its last entry was **14:56:16** — over an hour before I looked. The Go watcher
+archived `update_go_migration_verified_two_writers_live.md` at 14:56:41, so
+whoever filed that most likely stopped the Python process then.
+
+### Behavioural verification, as the work order requires
+
+Dropped `update_parta_watcher_behaviour_probe.md` into `inbox/` and waited:
+
+| file | before | after | delta |
+|---|---:|---:|---:|
+| `pipeline_log.txt` | 44,292 | 44,292 | **0** |
+| `logs/inbox_watcher.log` | 28,960 | 29,391 | **+431** |
+
+Only the Go watcher responded — it archived the probe and regenerated as update
+#61. **`pipeline_log.txt` did not grow.** Single writer confirmed.
+
+### Caveat worth keeping
+
+This is verified *now*, not made permanent. `setup_watcher_task.ps1` registers
+only `inbox_watcher.exe`, so the Python watcher will not return after a reboot —
+but `inbox_watcher.py` and `generate_handoff.py` are both still on disk, so
+anyone running either by hand recreates the competition. Part C retires
+`generate_handoff.py`, which is what actually removes the capability. Not
+deleting it yet, per the work order.
+
+## PART B — BLOCKED at the credential, before any pull
+
+`.env` confirmed **gitignored** (`.gitignore:4`) **and untracked** — both checks
+run, not just the first.
+
+**`UEX_API_TOKEN` is absent and the token value exists nowhere on disk.** I
+searched `docs/`, `inbox/`, `scripts/` and `.env`. The only two matches for
+`UEX_API_TOKEN=` are the *instruction text* in the work orders themselves:
+
+- `docs/workorder-finish-phase1.md:49`
+- `docs/workorder-task2-source1-reacquisition.md:111`
+
+Both read "write it to `.env` as `UEX_API_TOKEN=`" — the literal string, with no
+value after it. The account metadata was supplied (handle `slevenkoal`, UID
+92424, app `Citizen-Compass`, ACTIVE); **the secret itself never was.**
+
+I will not invent a token, and I will not begin a pull on an unverified
+credential — the work order forbids that explicitly and rule 11 forbids
+fabricating the value.
+
+### What I am doing about it rather than just stopping
+
+The credential blocks the *pull*, not the *script*. `uex_corp.py` has to be
+written either way and its failure paths must be proven under rule 12, none of
+which needs a token or a network. I am building and proving it now, so that when
+the token arrives the remaining work is: write it to `.env`, one verification
+request, then the pull and the five gates.
+
+**Phase 1 is NOT complete and I am not calling it complete.** Source 6 has not
+been pulled. Another AI already called Phase 1 done while source 6 had never
+been started; that will not be repeated here.
+
+## Next
+
+Part B script + rule 12 fixtures, then Part C (Go migration) from Defect 1.
+
+### 2026-08-01 15:59:15 — update_parta_watcher_behaviour_probe.md
+
+# UPDATE — Part A behaviour probe
+
+Test file dropped to determine which watcher is live. If only
+logs/inbox_watcher.log gains a line and pipeline_log.txt does not, the Go
+watcher is the sole writer and the stray Python watcher is gone.
+
+*(+47 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
 ## PROJECT NOTES (from most recent full handoff doc)
 
-# UPDATE — Ship Items schema + importer shipped, viewer generalization scoped (2026-07-30, overnight)
+# UPDATE — PART C: both Go defects fixed and proven; STOPPED at step 4's stop condition
 
-Resumed from the 2026-07-29 handoff's three open items. Sleven was asleep; proceeded on
-judgment per his standing instruction, did not decide the one item he flagged as his call.
+Defects 1 and 2 are fixed and proven against known-bad input. Step 4's
+comparison found a **third difference**, so per the work order I have stopped
+and am reporting rather than proceeding to delete `generate_handoff.py`.
 
-## 1. Postgres schema + importer for weapons/missiles/turrets (PRIMARY — done, locally verified)
+## Defect 1 — invented entries — FIXED
 
-Built the "Ship Items" domain locked in `docs/ARCHITECTURE_DECISIONS.md` (Class Table
-Inheritance): `component_types` lookup table + `components` base table + 5 typed detail
-tables (`weapon_details`, `missile_details`, `missile_rack_details`, `gimbal_mount_details`,
-`turret_details`), all wired to the existing `VerifiableMixin` provenance pattern
-(verification_source/confidence).
+`watcher-go/handoff_regen.go`. `strings.Split(string(raw), "\n### ")` replaced
+with `updateEntryHeaderRe`, matching only the headers `appendUpdate()` writes.
+Both required edge cases preserved: an empty header set returns the whole file
+as one entry, and preamble before the first header is kept.
 
-- `app/models.py` — new `ComponentType`, `Component`, `WeaponDetail`, `MissileDetail`,
-  `MissileRackDetail`, `GimbalMountDetail`, `TurretDetail` classes.
-- `alembic/versions/219446ebce6a_*.py` — migration creating all 6 new tables + indexes,
-  seeding `component_types` with the 5 categories.
-- `import_ship_components.py` — hand-curated importer (per the "2-3 real importers before
-  generalizing" staged-pipeline decision), populating 8 real Arrow components sourced from
-  `data-layer/raw/arrow/arrow_api_raw.json`'s actual port tree, cross-checked against
-  `docs/HARDPOINT_MOUNT_TYPES.md`. Upserts on `class_name`, idempotent on re-run.
-- Commit: `bf22494`.
+Also extracted `parseUpdateEntriesFrom(path)` so the parser can be exercised
+against fixtures rather than only whatever the live log happens to hold.
+`parseUpdateEntries()` calls it with `updatesLogPath()` — behaviour unchanged.
 
-**Honesty note on verification:** all of this was tested against a scratch PostgreSQL
-instance in my own cloud sandbox (upgrade/downgrade/re-upgrade cycle, `alembic check` clean,
-importer dry-run + real + re-run, full `app.main` import with routers still boots clean). It
-has **NOT** been run against the real project database — this session's tools can't reach
-`localhost:5432` on your machine from the cloud container, and the device bridge has no
-network access at all. First real run against your actual dev DB is the first thing to do
-when you're back: `alembic upgrade head` then `python import_ship_components.py`. Read the
-importer's inline notes before trusting it blind — 3 manufacturer prefixes (GATS, FSKI,
-TALN) and a couple of stat fields were deliberately left `None` because I couldn't confidently
-identify them, not because they don't matter.
+## Defect 2 — classification by prose — FIXED
 
-## 2. Viewer pattern generalization (SECONDARY — scoped down, real blocker found)
+`watcher-go/handoff.go`. `titleLine()` added; both `isHandoffDoc()` and
+`isUpdateDoc()` now use it instead of `firstRunesUpper(text, 500)`.
+**Evaluation order unchanged** — filename hints first, `isHandoffDoc()` before
+`isUpdateDoc()`, a doc matching both is a full handoff. `firstRunesUpper` had no
+remaining callers and was removed, with a comment recording what it was and why
+it went.
 
-Checked `constellation-aquila` and `gladius` before touching anything: neither has a
-`hardpoints.json`, and `data-layer/raw/` only has `arrow` and `misc` — there is no raw
-port-tree data for either ship. Wiring the Arrow's hover/rack-selector pattern into them
-tonight would mean inventing hardpoint positions, which is exactly the kind of guess this
-project's evidence standard rules out. Did not do that.
+## Rule 12 — proven, not asserted
 
-What I did instead: extracted the reusable engine (scene setup, hover/click raycasting,
-rack-config popup, missile-total calculator) out of `arrow/index.html` into
-`tests/testing-site/shared/hardpoint-viewer.js` (`createHardpointViewer()`, parameterized).
-Commit: `64f2ee6`.
+`watcher-go/handoff_defects_test.go` and `handoff_livelog_test.go`. `go build`,
+`go vet` and `go test ./...` all clean.
 
-**Deliberately left undone, for good reason:** did NOT wire this into `arrow/index.html`
-itself, and did NOT touch that file at all. This session has no way to render WebGL or take
-a screenshot to visually confirm the swap is behaviorally identical — the working Arrow demo
-was judged not worth risking on a blind refactor. `arrow/index.html` is untouched and still
-the known-good reference.
+| test | asserts |
+|---|---|
+| subheadings stay inside their entry | a body with two `###` subheadings yields **1** entry, not 3, and keeps both |
+| no headers returns whole file | content is not dropped |
+| preamble preserved | text before the first header survives |
+| hyphen separator parses | `-` works as well as `—` |
+| update mentioning "handoff" in BODY | classified as **update**, not handoff |
+| genuine handoff title | still detected (`CITIZEN COMPASS HANDOFF`, `SESSION ARCHIVE`) |
+| filename hint still wins | evaluation order intact |
+| `titleLine` | first heading, else first non-blank line |
+| **live `_updates_log.md`** | **70 total `###` headers -> 50 parsed entries, 0 phantoms** |
 
-**Real next step for this task** (not done tonight, needs you or a session with browser
-verification): (a) wire the shared module into `arrow/index.html`, look at it in a browser,
-confirm parity; (b) pull real port-tree data for constellation-aquila and gladius the same
-way it was done for the Arrow (their raw API pull → `data-layer/raw/<ship>/`), then the
-shared engine can actually be used on them.
+Python (fixed) on the same live log: **50 entries, 0 phantoms.** Identical.
 
-## 3. ARCHITECTURE_DEEP_REVIEW.md scope question
+## Step 4 — the comparison, and the STOP
 
-Left exactly as flagged, per explicit instruction. Not touched, not decided.
+Built the fixed binary and regenerated via `--once`, then regenerated with
+`generate_handoff.py`, and diffed.
 
-## Also worth knowing
+**The improvement is real and large:** fixed Go emitted **102,901 chars** where
+the deployed binary was emitting ~65,000. That recovers almost exactly the
+~37,000 characters the addendum measured as discarded.
 
-- 9 commits are now sitting local-only, ahead of `origin/main` (was 8, +1 tonight). Not
-  pushed — wasn't asked to, flagging again since it's been sitting a while.
-- Could not confirm whether `inbox_watcher.exe` is currently running from this session (no
-  Windows process/task-scheduler visibility from the device bridge) — if it's down, this
-  update file will just sit in `inbox/` until it's restarted; check `logs/inbox_watcher.log`
-  for the last "Watcher started" line when you're back.
+**Both defects are confirmed fixed by structural comparison:**
 
+| | Go (fixed) | Python (fixed) |
+|---|---:|---:|
+| `###` headers in output | 40 | 40 |
+| timestamped entries shown | 20 | 20 |
 
-*(raw text of the most recently adopted handoff doc — local AI compression unavailable right now, showing it unmodified)*
+Identical. No phantoms, no classification divergence.
+
+### But the outputs still disagree — third difference found
+
+Beyond the Go-only version-marker block (which is the KEEP feature and is
+expected), the diff is 21 lines in two groups:
+
+**1. Number formatting — 5 lines.**
+
+| Go | Python |
+|---|---|
+| `**Project health score:** 35.0/100` | `**Project health score:** 35/100` |
+| `- Data completeness: 0.0%` | `- Data completeness: 0%` |
+| `- Viewer progress: 50.0%` | `- Viewer progress: 50%` |
+| `- Documentation: 100.0%` | `- Documentation: 100%` |
+| `**Ships:** ... (50.0%)` | `**Ships:** ... (50%)` |
+
+**2. Python emits a trailing line Go has no equivalent for:**
+
+```
+*(raw text of the most recently adopted handoff doc — local AI compression
+unavailable right now, showing it unmodified)*
+```
+
+That is Python's Ollama-fallback footer. Ollama is disabled and parked, so
+Python takes the fallback path and says so; Go never compresses at all, so it
+has nothing to report.
+
+### Why I am stopping rather than judging
+
+The work order is explicit: *"If they still disagree there is a third difference
+— stop and report, do not assume Go is correct because it was fixed twice."*
+
+They disagree. I can characterise both differences and neither touches entry
+content or classification — but "I can explain it" is not "it matches", and this
+is precisely the reasoning the stop condition exists to prevent. **Not
+executed:** step 5 (delete `generate_handoff.py` and `_verify_generate_handoff.py`)
+and step 6 (the CLAUDE.md additions).
+
+### The decision these need
+
+- **Number formatting:** which is correct? Python's `35/100` reads better;
+  Go's `35.0/100` is what the live document will show. One of them should
+  change so the two agree, or Python's retirement makes it moot.
+- **The Ollama footer:** Go is arguably right to omit it, since it never
+  attempts compression. If so, this difference is expected rather than a defect
+  — but that is a call to make explicitly, not to assume.
+
+## Deployment state — the fix is NOT live
+
+`inbox_watcher_fixed.exe` (5,735,424 bytes, built from fixed source) sits in the
+repo root. `inbox_watcher.exe` (3,884,032 bytes, 29 July) is still the binary
+the scheduled task runs.
+
+**So the live watcher is still the defective one**, still emitting ~65k with
+phantoms. Replacing it means stopping the scheduled task to unlock the file, and
+I have not done that — deploying while an unexplained third difference stands
+would bake in whichever formatting Go happens to use. Say the word and it is a
+two-minute change.
+
+Nothing deleted. `generate_handoff.py`, `_verify_generate_handoff.py` and
+`inbox_watcher.py` are all still on disk. Comparison artifacts moved to
+`_to_delete/go_migration_comparison_20260801/`.
+
