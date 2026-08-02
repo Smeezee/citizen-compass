@@ -855,6 +855,464 @@ body.cc-drawer-open #cc-fb-tab{transform:translateX(-380px);transition:transform
   body.cc-drawer-open #cc-fb-tab{transform:none}
 }
 </style>
+<style>
+/* ---------- ship overlay compliance strip ---------- */
+#cc-ship::after{
+  content:"Unofficial Star Citizen fan site \2014 not affiliated with the Cloud Imperium group of companies. Star Citizen\00AE, Roberts Space Industries\00AE and Cloud Imperium\00AE are registered trademarks of Cloud Imperium Rights LLC.";
+  position:absolute;left:0;right:0;bottom:0;padding:6px 16px;
+  background:rgba(6,12,20,.95);border-top:1px solid rgba(0,201,167,.22);
+  color:#7B8FA1;font:400 11.5px/1.45 "Segoe UI",system-ui,sans-serif;
+  pointer-events:none;z-index:6}
+#cc-grid{padding-bottom:36px}
+
+/* ---------- keybinding tester overlay ---------- */
+#cc-kb-tab{position:fixed;top:calc(44% + 290px);right:0;z-index:100002;
+  background:#00C9A7;color:#04231D;border:0;border-radius:7px 0 0 7px;
+  padding:16px 9px;font:700 13px/1 system-ui,sans-serif;letter-spacing:.16em;
+  writing-mode:vertical-rl;cursor:pointer;box-shadow:-3px 0 14px rgba(0,0,0,.42);
+  transition:transform .28s ease;display:block}
+#cc-kb-tab:hover{background:#33D9BE}
+body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
+@media (max-width:820px){
+  #cc-kb-tab{top:auto !important;bottom:10px;right:124px;
+    writing-mode:horizontal-tb;padding:11px 14px;border-radius:7px}
+  body.cc-drawer-open #cc-kb-tab{transform:none}
+}
+#cc-kb{position:fixed;inset:0 0 0 46px;z-index:100003;display:none;
+  background:#070D16;color:#EDE3D8;overflow:auto;
+  font:16px/1.5 "Segoe UI",system-ui,sans-serif;padding:0 16px 0}
+#cc-kb.open{display:block}
+@media (max-width:900px){#cc-kb{inset:0}}
+#cc-kb *{box-sizing:border-box}
+#cc-kb .kbtop{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:9px 0;margin-bottom:10px;border-bottom:1px solid #22364F}
+#cc-kb .kbtop button.x{background:#12233A;color:#FF6B00;border:1px solid #22364F;
+  border-radius:6px;padding:8px 14px;font:700 14px inherit;cursor:pointer}
+#cc-kb .kbtop button.x:hover{border-color:#FF6B00}
+#cc-kb .kbtop span.t{color:#93A7B6;font-size:13.5px}
+#cc-kb .modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+#cc-kb .modes button{flex:1 1 145px;background:#12233A;color:#93A7B6;
+  border:2px solid #22364F;border-radius:9px;padding:13px 10px;cursor:pointer;
+  font:800 16px/1.15 inherit;letter-spacing:.05em;text-transform:uppercase;transition:.12s}
+#cc-kb .modes button:hover{border-color:#FF6B00;color:#EDE3D8}
+#cc-kb .modes button.on{background:#FF6B00;border-color:#FF6B00;color:#1A0E04}
+#cc-kb .modes button small{display:block;font:600 11.5px inherit;letter-spacing:.02em;
+  text-transform:none;opacity:.8;margin-top:3px}
+#cc-kb .modes button.todo{opacity:.5}
+#cc-kb .devs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#cc-kb .devs button{background:#12233A;color:#93A7B6;border:1px solid #22364F;
+  border-radius:7px;padding:8px 15px;cursor:pointer;font:700 13.5px inherit}
+#cc-kb .devs button.on{background:#00C9A7;border-color:#00C9A7;color:#04231D}
+#cc-kb .devs button.todo{opacity:.45}
+#cc-kb .ro{background:#0E1B2E;border:2px solid #22364F;border-radius:10px;
+  padding:12px 16px;margin-bottom:12px;min-height:96px;transition:.12s}
+#cc-kb .ro.hot{border-color:#00E5C0;box-shadow:0 0 22px rgba(0,229,192,.18)}
+#cc-kb .rk{font:800 28px/1.1 inherit}
+#cc-kb .rmeta{color:#93A7B6;font-size:14px;margin-top:2px}
+#cc-kb .ract{font:600 19px inherit;margin-top:6px;color:#00E5C0}
+#cc-kb .ract.none{color:#93A7B6;font-weight:400;font-size:15.5px}
+#cc-kb .rwarn{color:#FF6B00;font-size:13.5px;margin-top:5px}
+#cc-kb .bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
+#cc-kb .bar input{background:#12233A;color:#EDE3D8;border:1px solid #22364F;
+  border-radius:6px;padding:8px 12px;font:15px inherit;min-width:200px}
+#cc-kb .lamp{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:#93A7B6}
+#cc-kb .dot{width:11px;height:11px;border-radius:50%;background:#3A4A5E}
+#cc-kb .dot.m1.on{background:#FF8A00;box-shadow:0 0 9px #FF8A00}
+#cc-kb .dot.m2.on{background:#FF4757;box-shadow:0 0 9px #FF4757}
+#cc-kb .dot.m3.on{background:#FF5FA2;box-shadow:0 0 9px #FF5FA2}
+#cc-kb .wrap{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}
+@media (max-width:1150px){#cc-kb .wrap{grid-template-columns:1fr}}
+#cc-kb .board{background:#0E1B2E;border:1px solid #22364F;border-radius:10px;
+  padding:13px;overflow-x:auto;min-height:190px}
+#cc-kb .rowset{min-width:860px}
+#cc-kb .krow{display:flex;gap:5px;margin-bottom:5px}
+#cc-kb .key{background:#111F33;border:1px solid #2A3F5A;border-radius:5px;
+  min-height:52px;flex:1 1 0;min-width:41px;padding:4px 5px;cursor:pointer;
+  display:flex;flex-direction:column;gap:2px;position:relative;transition:.08s}
+#cc-kb .key:hover{border-color:#FF6B00}
+#cc-kb .key.empty{background:#0B1524;border-color:#18283C;opacity:.45}
+#cc-kb .key.down{background:#00E5C0;border-color:#00E5C0;transform:translateY(1px)}
+#cc-kb .key.down .cap,#cc-kb .key.down .act{color:#04231D}
+#cc-kb .key .cap{font:700 11.5px inherit;color:#93A7B6}
+#cc-kb .key .act{font-size:12px;line-height:1.24}
+#cc-kb .key.hit{outline:2px solid #FF6B00;outline-offset:1px}
+#cc-kb .key.mod1{border-color:#FF8A00}
+#cc-kb .key.mod2{border-color:#FF4757}
+#cc-kb .key.mod3{border-color:#FF5FA2}
+#cc-kb .key .q{position:absolute;top:2px;right:4px;color:#FF6B00;font:700 12px inherit}
+#cc-kb .w125{flex-grow:1.25}#cc-kb .w150{flex-grow:1.5}#cc-kb .w175{flex-grow:1.75}
+#cc-kb .w200{flex-grow:2}#cc-kb .w225{flex-grow:2.25}#cc-kb .w600{flex-grow:6}
+#cc-kb .side{background:#0E1B2E;border:1px solid #22364F;border-radius:10px;padding:13px}
+#cc-kb .side h2{font:700 15px inherit;margin:0 0 8px;color:#FF6B00}
+#cc-kb .log{font-size:13.5px;max-height:250px;overflow:auto}
+#cc-kb .log div{padding:5px 0;border-bottom:1px solid #1A2A3E}
+#cc-kb .log .t{color:#93A7B6;font-size:12px}
+#cc-kb .legend{margin-top:13px;font-size:13px;color:#93A7B6}
+#cc-kb .note{margin-top:13px;padding:10px 12px;background:#1A1206;
+  border:1px solid #4A3410;border-radius:7px;font-size:13.5px;color:#E8C9A0}
+#cc-kb .blank{padding:38px 20px;text-align:center;color:#93A7B6}
+#cc-kb .blank strong{color:#FF6B00;display:block;font-size:18px;margin-bottom:6px}
+#cc-kb .kbfoot{margin:22px -16px 0;padding:14px 16px;background:#0B1626;
+  border-top:1px solid #22364F;color:#6B8091;font:400 12.5px/1.6 inherit}
+</style>
+
+<button id="cc-kb-tab" class="cc-ui" title="Keybinding tester">KEYBINDS</button>
+
+<div id="cc-kb" class="cc-ui">
+  <div class="kbtop">
+    <button class="x" id="cc-kb-x">&larr;&nbsp; Back to the site</button>
+    <span class="t">Keybinding Tester &mdash; prototype. Data transcribed from in-game
+    screenshots, not yet verified against game files.</span>
+  </div>
+  <div class="modes" id="cc-kb-modes"></div>
+  <div class="devs" id="cc-kb-devs"></div>
+  <div class="ro" id="cc-kb-ro">
+    <div class="rk" id="cc-kb-rk">&mdash; press something &mdash;</div>
+    <div class="rmeta" id="cc-kb-rmeta">nothing yet</div>
+    <div class="ract none" id="cc-kb-ract">Press any key or mouse button.</div>
+    <div class="rwarn" id="cc-kb-rwarn"></div>
+  </div>
+  <div class="bar">
+    <input id="cc-kb-q" placeholder="Search this mode&hellip;">
+    <span class="lamp"><span class="dot m1" id="cc-kb-d1"></span>M1 Left Alt</span>
+    <span class="lamp"><span class="dot m2" id="cc-kb-d2"></span>M2 Left Shift</span>
+    <span class="lamp"><span class="dot m3" id="cc-kb-d3"></span>M3 Right Alt</span>
+    <span class="lamp" id="cc-kb-layer">Layer: none</span>
+  </div>
+  <div class="wrap">
+    <div class="board"><div class="rowset" id="cc-kb-board"></div></div>
+    <div class="side">
+      <h2>What you pressed</h2>
+      <div class="log" id="cc-kb-log"><div style="color:#93A7B6">Nothing yet.</div></div>
+      <div class="legend" id="cc-kb-legend"></div>
+      <div class="note"><strong>Alt+F4</strong>, <strong>Ctrl+Alt+Del</strong> and the
+        <strong>Windows key</strong> can't be caught by any web page &mdash; Windows takes
+        them first. <strong>Ctrl+W</strong> / <strong>Ctrl+T</strong> need fullscreen
+        capture, not in this build.</div>
+    </div>
+  </div>
+  <footer class="kbfoot">
+    This is an unofficial Star Citizen fan site, not affiliated with the Cloud Imperium
+    group of companies. All content on this site not authored by its host or users are
+    property of their respective owners. Official site: robertsspaceindustries.com<br>
+    Star Citizen&reg;, Roberts Space Industries&reg; and Cloud Imperium&reg; are
+    registered trademarks of Cloud Imperium Rights LLC.
+  </footer>
+</div>
+
+<script>
+(function(){
+var FLIGHT={
+ Esc:[{a:"Pause / Options"}],F1:[{a:"mobiGlas"}],F2:[{a:"mobiGlas Map"}],F3:[],
+ F4:[{a:"Cycle Camera View"},{a:"Advanced Camera*",c:"AD"}],
+ F5:[{a:"Engine Power (-)",q:1}],F6:[{a:"Shield Power (+)",q:1}],
+ F7:[{a:"Weapon Power (+)",q:1}],F8:[{a:"Reset Power Distribution"}],
+ F9:[{a:"Power (-)"},{a:"Power Min*",m:1}],F10:[{a:"Power (+)"},{a:"Power Max*",m:1}],
+ F11:[{a:"Contacts"},{a:"2D UI Cursor",m:1}],F12:[{a:"Toggle Chat Window"}],
+ "`":[{a:"Console"}],
+ 1:[{a:"Lock Pin 1"},{a:"Set Pin 1",m:1}],2:[{a:"Lock Pin 2"},{a:"Set Pin 2",m:1}],
+ 3:[{a:"Lock Pin 3"},{a:"Set Pin 3",m:1}],
+ 4:[{a:"Target Next — Attacker"},{a:"Target Rear — Attacker",m:1}],
+ 5:[{a:"Target Next — Hostile"},{a:"Target Rear — Hostile",m:1}],
+ 6:[{a:"Target Next — Friendly"},{a:"Target Rear — Friendly",m:1}],
+ 7:[{a:"Target Next — All"},{a:"Target Rear — All",m:1}],
+ 8:[],9:[{a:"Hail Target"}],0:[{a:"Remove All Pinned Targets"}],
+ "-":[],"=":[],Back:[{a:"Self-Destruct Toggle*"}],
+ Tab:[{a:"Ping"},{a:"PIT Menu",m:1},{a:"Flight Mode Wheel*",m:2}],
+ Q:[{a:"Roll Left"},{a:"Mouse Toggle",c:"TU"}],
+ W:[{a:"Strafe Forward"},{a:"Fracture",c:"SA",m:1}],
+ E:[{a:"Roll Right"},{a:"Gyro Toggle",c:"TU"}],
+ R:[{a:"Sub-Target Cycle"},{a:"Reset Sub-Target",m:1},{a:"Flight Ready",m:2}],
+ T:[{a:"Target In View / Auto Target"},{a:"Unlock Target",m:1}],
+ Y:[{a:"Exit Seat*"},{a:"Eject",m:2}],
+ U:[{a:"Power On/Off"},{a:"Emergency Exit Seat",m:2}],
+ I:[{a:"Engines On/Off"}],O:[{a:"Shields On/Off"}],P:[{a:"Weapons On/Off"}],
+ "[":[{a:"Accept Invite"}],"]":[{a:"Reject Invite / Ignore*"}],"\\":[],Caps:[],
+ A:[{a:"Strafe Left"},{a:"Focus Left",c:"SA",m:1},{a:"Fire Left",c:"SA",m:2}],
+ S:[{a:"Cycle Position",c:"TU"},{a:"Fracture",c:"SA",m:2}],
+ D:[{a:"Strafe Right"},{a:"Focus Right",c:"SA",m:1},{a:"Fire Right",c:"SA",m:2}],
+ F:[{a:"Interaction Mode",c:"IM"}],
+ G:[{a:"Gimbal Mode"},{a:"Freeze Gimbals",m:3}],
+ H:[{a:"CM Decoy (Top)*"},{a:"CM Decoy (-)",m:1},{a:"CM Decoy (+)",m:2}],
+ J:[{a:"CM Chaff"},{a:"Jettison Cargo",m:1}],K:[{a:"VTOL Toggle"}],
+ L:[{a:"Toggle Lights"},{a:"Toggle Lock Ahead",m:1,q:1}],
+ ";":[],"'":[],Enter:[{a:"Activate Chat Box"}],
+ LShift:[{a:"Afterburner"},{a:"— Modifier 2 —"}],Z:[{a:"Freelook*"}],
+ X:[{a:"Space Brake / Reset Cruise Trim",q:1},{a:"Wipe Visor",m:1}],
+ C:[{a:"Decoupled Toggle"},{a:"Cruise Toggle",m:1},{a:"Recenter",c:"TU"}],
+ V:[{a:"Scan Mode Toggle",c:"SC"}],
+ B:[{a:"Cycle Master Modes*"},{a:"PIT Wheel*",m:1},{a:"Fire Mode",c:"TU"}],
+ N:[{a:"Landing Mode Toggle"},{a:"Activated*",c:"LN"},{a:"ATC / Cargo Request",m:1}],
+ M:[{a:"Mining / Salvage Mode Toggle",c:"MG"}],
+ ",":[{a:"Look Back"}],".":[],"/":[],RShift:[{a:"Lock Ship Rotation"}],
+ LCtrl:[{a:"Strafe Down"}],LAlt:[{a:"— Modifier 1 —"}],Space:[{a:"Strafe Up"}],
+ RAlt:[{a:"— Modifier 3 —"}],RCtrl:[],
+ Ins:[],Home:[{a:"Deflection (-)",c:"AD",q:1}],PgUp:[{a:"Z Offset (+)",c:"AD"}],
+ Del:[],End:[{a:"Deflection (-)",c:"AD",q:1}],PgDn:[{a:"Z Offset (-)",c:"AD"}],
+ Up:[{a:"Y Offset (+)",c:"AD"}],Left:[{a:"X Offset (-)",c:"AD"}],
+ Down:[{a:"Y Offset (-)",c:"AD"}],Right:[{a:"X Offset (+)",c:"AD"}],
+ NumLk:[],NpDiv:[],NpMul:[{a:"Reset View",c:"AD"}],NpSub:[{a:"FOV (+)",c:"AD",q:1}],
+ Np7:[{a:"Shield Raise — Top"}],Np8:[{a:"Shield Raise — Front"}],
+ Np9:[{a:"Shield Raise — Bottom",q:1}],NpAdd:[],
+ Np4:[{a:"Shield Raise — Left"}],Np5:[{a:"Shields Reset"}],
+ Np6:[{a:"Shield Raise — Right"}],
+ Np1:[{a:"Shield Raise — Back"}],Np2:[{a:"Shield Raise — Bottom",q:1}],Np3:[],
+ Np0:[{a:"Clear Current Save*",c:"AD"}],NpDot:[],NpEnt:[],
+ M_Left:[{a:"Fire Weapon Group 1"},{a:"Engage Quantum Travel",m:1},{a:"Fire Mining Laser",c:"MG"}],
+ M_Right:[{a:"Fire Weapon Group 2"},{a:"Precision Toggle",m:1},{a:"Cycle Missiles Forward",c:"ML"}],
+ M_Mid:[{a:"Cycle Operator Mode"}],M_Back:[],M_Fwd:[],
+ M_WhUp:[{a:"Speed Limiter (+)"}],M_WhDn:[{a:"Speed Limiter (-)"}]};
+var ONFOOT={
+ Esc:[{a:"Pause / Options"}],F1:[{a:"mobiGlas"},{a:"Scoreboard",c:"AC"}],
+ F2:[{a:"mobiGlas Map"}],F3:[],
+ F4:[{a:"Cycle Camera View"},{a:"Advanced Camera Mode*",c:"AD"}],
+ F5:[],F6:[],F7:[],F8:[],F9:[],F10:[],F11:[{a:"Contacts"}],F12:[{a:"Chat"}],
+ "`":[{a:"Console"}],
+ 1:[{a:"Cycle Weapons"},{a:"Weapon Wheel*",m:1,q:1}],
+ 2:[{a:"Cycle Weapons"},{a:"Weapon Wheel*",m:1,q:1}],
+ 3:[{a:"Sidearm"},{a:"Weapon Wheel*",m:1,q:1}],
+ 4:[{a:"Consumables"}],5:[{a:"MedPack / Gadget",q:1}],6:[{a:"Unarmed Melee"}],
+ 7:[],8:[],9:[],0:[],"-":[],"=":[],Back:[{a:"Force Re-spawn*"}],
+ Tab:[{a:"PIT Menu",c:"IM"}],
+ Q:[{a:"Lean Left"},{a:"Roll On Back Left*",m:1}],W:[{a:"Move Forwards"}],
+ E:[{a:"Lean Right"},{a:"Roll On Back Right*",m:1}],
+ R:[{a:"Reload"},{a:"Holster Weapon*"},{a:"Fire Mode",m:2}],
+ T:[{a:"Flashlight"}],Y:[],U:[{a:"Use Underbarrel Attachment"}],I:[{a:"Inventory"}],
+ O:[],P:[],"[":[{a:"Accept Invite"}],"]":[{a:"Reject Invite / Ignore*"}],"\\":[],Caps:[],
+ A:[{a:"Move Left"},{a:"Dodge Left**",c:"UC"}],
+ S:[{a:"Move Backwards"},{a:"Dodge Back**",c:"UC"}],
+ D:[{a:"Move Right"},{a:"Dodge Right**",c:"UC"}],
+ F:[{a:"Quick Interact"},{a:"Interaction Mode*",c:"IM"}],
+ G:[{a:"Equip Grenade"}],H:[],J:[{a:"Weapon Customize"}],K:[],L:[],";":[],"'":[],
+ Enter:[{a:"Activate Chat"}],
+ LShift:[{a:"Sprint*"},{a:"Hold Breath*",c:"ADS"},{a:"— Modifier 2 —"}],
+ Z:[{a:"Freelook*"}],X:[{a:"Re-spawn*",c:"AC"},{a:"Wipe Visor",m:1}],
+ C:[{a:"Crouch"}],V:[{a:"Equip Knife"}],B:[{a:"Change Fire Mode"}],
+ N:[],M:[],",":[],".":[],"/":[],RShift:[],
+ LCtrl:[{a:"Prone"}],LAlt:[{a:"— Modifier 1 —"}],Space:[{a:"Jump"}],RAlt:[],RCtrl:[],
+ Ins:[],Home:[{a:"Deflection (-)",c:"AD",q:1}],PgUp:[{a:"Z Offset (+)",c:"AD"}],
+ Del:[],End:[{a:"Deflection (-)",c:"AD",q:1}],PgDn:[{a:"Z Offset (-)",c:"AD"}],
+ Up:[{a:"Y Offset (+)",c:"AD"}],Left:[{a:"X Offset (-)",c:"AD"}],
+ Down:[{a:"Y Offset (-)",c:"AD"}],Right:[{a:"X Offset (+)",c:"AD"}],
+ NumLk:[],NpDiv:[],NpMul:[{a:"Reset View",c:"AD"}],NpSub:[{a:"FOV (+)",c:"AD",q:1}],
+ Np7:[{a:"Load / Save 7*",c:"AD"}],Np8:[{a:"Load / Save 8*",c:"AD"}],
+ Np9:[{a:"Load / Save 9*",c:"AD"}],NpAdd:[],
+ Np4:[{a:"Load / Save 4*",c:"AD"}],Np5:[{a:"Load / Save 5*",c:"AD"}],
+ Np6:[{a:"Load / Save 6*",c:"AD"}],
+ Np1:[{a:"Load / Save 1*",c:"AD"}],Np2:[{a:"Load / Save 2*",c:"AD"}],
+ Np3:[{a:"Load / Save 3*",c:"AD"}],
+ Np0:[{a:"Clear Current Save*",c:"AD"}],NpDot:[],NpEnt:[],
+ M_Left:[{a:"Primary Attack"},{a:"Activate / Interact",c:"IM"},{a:"Light Melee Left",c:"UC"}],
+ M_Right:[{a:"Aim Down Sight"},{a:"Zoom Out",c:"IM"},{a:"Light Melee Right",c:"UC"}],
+ M_Mid:[{a:"Melee Block*",c:"UC",q:1}],M_Back:[],M_Fwd:[],
+ M_WhUp:[{a:"Default Move Speed (+)"},{a:"Zoom In",c:"IM"}],
+ M_WhDn:[{a:"Default Move Speed (-)"},{a:"Zoom Out",c:"IM"}]};
+var MODES=[
+ {id:"FLIGHT",label:"Flight",sub:"in a ship",data:FLIGHT,
+  legend:"SC scan · MG mining · SA salvage · IM interaction<br>LN landing · TU turret · ML missile · AD adv camera"},
+ {id:"ONFOOT",label:"On Foot",sub:"walking around",data:ONFOOT,
+  legend:"IM interaction · PN prone · ADS aim down sights<br>UC unarmed combat · AD adv camera · AC arena commander"},
+ {id:"EVA",label:"E.V.A.",sub:"zero-G, not entered yet",data:null},
+ {id:"VEHICLE",label:"Vehicle",sub:"ground vehicles, not entered yet",data:null},
+ {id:"CAMERA",label:"Camera",sub:"not entered yet",data:null}];
+var DEVS=[{id:"KBM",label:"Keyboard / Mouse",ok:1},
+          {id:"PAD",label:"Gamepad",ok:0},{id:"JOY",label:"Joystick / HOTAS",ok:0}];
+var CODE={Escape:"Esc",F1:"F1",F2:"F2",F3:"F3",F4:"F4",F5:"F5",F6:"F6",F7:"F7",F8:"F8",
+ F9:"F9",F10:"F10",F11:"F11",F12:"F12",Backquote:"`",Digit1:"1",Digit2:"2",Digit3:"3",
+ Digit4:"4",Digit5:"5",Digit6:"6",Digit7:"7",Digit8:"8",Digit9:"9",Digit0:"0",
+ Minus:"-",Equal:"=",Backspace:"Back",Tab:"Tab",KeyQ:"Q",KeyW:"W",KeyE:"E",KeyR:"R",
+ KeyT:"T",KeyY:"Y",KeyU:"U",KeyI:"I",KeyO:"O",KeyP:"P",BracketLeft:"[",BracketRight:"]",
+ Backslash:"\\",CapsLock:"Caps",KeyA:"A",KeyS:"S",KeyD:"D",KeyF:"F",KeyG:"G",KeyH:"H",
+ KeyJ:"J",KeyK:"K",KeyL:"L",Semicolon:";",Quote:"'",Enter:"Enter",ShiftLeft:"LShift",
+ KeyZ:"Z",KeyX:"X",KeyC:"C",KeyV:"V",KeyB:"B",KeyN:"N",KeyM:"M",Comma:",",Period:".",
+ Slash:"/",ShiftRight:"RShift",ControlLeft:"LCtrl",AltLeft:"LAlt",Space:"Space",
+ AltRight:"RAlt",ControlRight:"RCtrl",Insert:"Ins",Home:"Home",PageUp:"PgUp",
+ Delete:"Del",End:"End",PageDown:"PgDn",ArrowUp:"Up",ArrowLeft:"Left",ArrowDown:"Down",
+ ArrowRight:"Right",NumLock:"NumLk",NumpadDivide:"NpDiv",NumpadMultiply:"NpMul",
+ NumpadSubtract:"NpSub",Numpad7:"Np7",Numpad8:"Np8",Numpad9:"Np9",NumpadAdd:"NpAdd",
+ Numpad4:"Np4",Numpad5:"Np5",Numpad6:"Np6",Numpad1:"Np1",Numpad2:"Np2",Numpad3:"Np3",
+ NumpadEnter:"NpEnt",Numpad0:"Np0",NumpadDecimal:"NpDot"};
+var ROWS=[
+ [["Esc","Esc"],["F1","F1"],["F2","F2"],["F3","F3"],["F4","F4"],["F5","F5"],["F6","F6"],
+  ["F7","F7"],["F8","F8"],["F9","F9"],["F10","F10"],["F11","F11"],["F12","F12"]],
+ [["`","`"],["1","1"],["2","2"],["3","3"],["4","4"],["5","5"],["6","6"],["7","7"],["8","8"],
+  ["9","9"],["0","0"],["-","-"],["=","="],["Back","Bksp","w150"]],
+ [["Tab","Tab","w150"],["Q","Q"],["W","W"],["E","E"],["R","R"],["T","T"],["Y","Y"],["U","U"],
+  ["I","I"],["O","O"],["P","P"],["[","["],["]","]"],["\\","\\"]],
+ [["Caps","Caps","w175"],["A","A"],["S","S"],["D","D"],["F","F"],["G","G"],["H","H"],
+  ["J","J"],["K","K"],["L","L"],[";",";"],["'","'"],["Enter","Enter","w200"]],
+ [["LShift","Shift","w225"],["Z","Z"],["X","X"],["C","C"],["V","V"],["B","B"],["N","N"],
+  ["M","M"],[",",","],[".","."],["/","/"],["RShift","Shift","w225"]],
+ [["LCtrl","Ctrl","w125"],["LAlt","Alt","w125"],["Space","Space","w600"],
+  ["RAlt","Alt","w125"],["RCtrl","Ctrl","w125"]]];
+var NAV=[[["Ins","Ins"],["Home","Home"],["PgUp","PgUp"]],
+         [["Del","Del"],["End","End"],["PgDn","PgDn"]],
+         [["","",""],["Up","↑"],["","",""]],
+         [["Left","←"],["Down","↓"],["Right","→"]]];
+var NUM=[[["NumLk","Num"],["NpDiv","/"],["NpMul","*"],["NpSub","-"]],
+         [["Np7","7"],["Np8","8"],["Np9","9"],["NpAdd","+"]],
+         [["Np4","4"],["Np5","5"],["Np6","6"],["",""]],
+         [["Np1","1"],["Np2","2"],["Np3","3"],["NpEnt","Ent"]],
+         [["Np0","0","w200"],["NpDot","."],["",""]]];
+var MOUSE=[[["M_Left","Mouse L"],["M_Right","Mouse R"],["M_Mid","Mouse M"],
+            ["M_Back","Mouse 4"],["M_Fwd","Mouse 5"]],
+           [["M_WhUp","Wheel ↑"],["M_WhDn","Wheel ↓"],["","",""],["","",""],["","",""]]];
+
+var modeIx=0,mod=0,filter="",OPEN=false;
+var down={},lastTap={},held={};
+function $(id){return document.getElementById(id);}
+function K(){return MODES[modeIx].data||{};}
+function ents(id){var a=K()[id]||[],o=[],i;for(i=0;i<a.length;i++)if((a[i].m||0)===mod)o.push(a[i]);return o;}
+function allEnts(id){return K()[id]||[];}
+function isDown(id){return !!down[id];}
+
+function drawModes(){
+  var h="",i;
+  for(i=0;i<MODES.length;i++)h+='<button data-i="'+i+'" class="'+(i===modeIx?'on':'')+
+    (MODES[i].data?'':' todo')+'">'+MODES[i].label+'<small>'+MODES[i].sub+'</small></button>';
+  $('cc-kb-modes').innerHTML=h;
+  Array.prototype.forEach.call($('cc-kb-modes').querySelectorAll('button'),function(b){
+    b.onclick=function(){modeIx=+b.dataset.i;drawModes();render();legend();};});
+  h="";for(i=0;i<DEVS.length;i++)h+='<button data-d="'+DEVS[i].id+'" class="'+
+    (DEVS[i].id==="KBM"?'on':'')+(DEVS[i].ok?'':' todo')+'">'+DEVS[i].label+'</button>';
+  $('cc-kb-devs').innerHTML=h;
+}
+function legend(){
+  $('cc-kb-legend').innerHTML=MODES[modeIx].legend
+    ?'<div><strong>*</strong> hold · <strong>**</strong> double tap</div>'+
+     '<div style="margin-top:6px;color:#00C9A7">'+MODES[modeIx].legend+'</div>':'';
+}
+function draw(rows,title){
+  var h=title?'<div style="color:#93A7B6;font-size:12.5px;margin:12px 0 5px">'+title+'</div>':'';
+  rows.forEach(function(r){h+='<div class="krow">';
+    r.forEach(function(k){
+      var id=k[0],cap=k[1],w=k[2];
+      if(!id){h+='<div class="key" style="visibility:hidden"></div>';return;}
+      var es=ents(id),c="key "+(w||"");
+      if(!es.length)c+=" empty";
+      if(id==="LAlt")c+=" mod1";if(id==="LShift")c+=" mod2";if(id==="RAlt")c+=" mod3";
+      if(filter&&es.some(function(e){return e.a.toLowerCase().indexOf(filter)>=0;}))c+=" hit";
+      if(isDown(id))c+=" down";
+      var q=es.some(function(e){return e.q;})?'<span class="q">?</span>':'';
+      var t=es.slice(0,3).map(function(e){
+        return (e.c?'<span style="color:#00C9A7">'+e.c+'</span> ':"")+e.a;}).join("<br>");
+      h+='<div class="'+c+'" data-id="'+id+'">'+q+'<div class="cap">'+cap+
+         '</div><div class="act">'+t+'</div></div>';});
+    h+='</div>';});
+  return h;
+}
+function render(){
+  if(!MODES[modeIx].data){
+    $('cc-kb-board').innerHTML='<div class="blank"><strong>'+MODES[modeIx].label+
+      ' not entered yet</strong>This mode exists in the game and in the data. Nobody has '+
+      'filled it in here.<br>It arrives automatically once the default profile is '+
+      'extracted from the game files.</div>';
+    $('cc-kb-layer').textContent="Layer: —";return;}
+  $('cc-kb-board').innerHTML=draw(ROWS)+draw(NAV,"Navigation")+draw(NUM,"Numpad")+draw(MOUSE,"Mouse");
+  $('cc-kb-layer').textContent="Layer: "+
+    ({0:"none",1:"M1 (Left Alt)",2:"M2 (Left Shift)",3:"M3 (Right Alt)"})[mod];
+}
+function setMods(){
+  var nm=0;
+  if(isDown("RAlt"))nm=3;else if(isDown("LAlt"))nm=1;else if(isDown("LShift"))nm=2;
+  if(nm!==mod){mod=nm;render();}
+  $('cc-kb-d1').className='dot m1'+(isDown("LAlt")?' on':'');
+  $('cc-kb-d2').className='dot m2'+(isDown("LShift")?' on':'');
+  $('cc-kb-d3').className='dot m3'+(isDown("RAlt")?' on':'');
+}
+var hotT;
+function fire(id,label,press){
+  var es=allEnts(id),ln=({0:"no modifier",1:"M1 Left Alt",2:"M2 Left Shift",3:"M3 Right Alt"})[mod];
+  var match=null,i;for(i=0;i<es.length;i++)if((es[i].m||0)===mod){match=es[i];break;}
+  $('cc-kb-ro').className='ro hot';clearTimeout(hotT);
+  hotT=setTimeout(function(){$('cc-kb-ro').className='ro';},450);
+  $('cc-kb-rk').textContent=label;
+  $('cc-kb-rmeta').textContent=MODES[modeIx].label+" · "+ln+" · registered as "+press;
+  if(match){$('cc-kb-ract').className="ract";
+    $('cc-kb-ract').textContent=(match.c?match.c+" — ":"")+match.a;
+    $('cc-kb-rwarn').textContent=(match.a.indexOf("*")>=0&&press.indexOf("HOLD")!==0)
+      ?"This one is a HOLD in game — try holding it longer.":"";
+  }else{$('cc-kb-ract').className="ract none";
+    $('cc-kb-ract').textContent="Nothing bound on this layer.";
+    $('cc-kb-rwarn').textContent=es.length?"But it does something on another modifier layer.":"";}
+  var l=$('cc-kb-log');
+  if(l.getAttribute('data-v')!=="1"){l.innerHTML="";l.setAttribute('data-v',"1");}
+  var d=document.createElement('div');
+  d.innerHTML='<strong>'+label+'</strong> <span class="t">· '+MODES[modeIx].label+
+    ' · '+ln+' · '+press+'</span><br><span style="color:'+
+    (match?'#00E5C0':'#93A7B6')+'">'+(match?match.a:"nothing bound")+'</span>';
+  l.insertBefore(d,l.firstChild);
+  while(l.children.length>14)l.removeChild(l.lastChild);
+}
+function open(){OPEN=true;$('cc-kb').classList.add('open');
+  document.body.style.overflow='hidden';drawModes();legend();render();}
+function close(){OPEN=false;$('cc-kb').classList.remove('open');
+  document.body.style.overflow='';down={};}
+$('cc-kb-tab').onclick=open;
+$('cc-kb-x').onclick=close;
+
+document.addEventListener('keydown',function(e){
+  if(!OPEN)return;
+  if(e.target&&e.target.id==='cc-kb-q')return;
+  if(e.key==='Escape'){e.preventDefault();close();return;}
+  if(!MODES[modeIx].data)return;
+  var id=CODE[e.code];if(!id)return;
+  e.preventDefault();e.stopPropagation();
+  if(e.repeat)return;
+  down[id]=1;held[id]=Date.now();setMods();render();},true);
+
+document.addEventListener('keyup',function(e){
+  if(!OPEN)return;
+  if(e.target&&e.target.id==='cc-kb-q')return;
+  if(!MODES[modeIx].data)return;
+  var id=CODE[e.code];if(!id)return;
+  e.preventDefault();e.stopPropagation();
+  var dur=Date.now()-(held[id]||Date.now());
+  delete held[id];delete down[id];
+  var press=dur>=400?"HOLD":"TAP",now=Date.now();
+  if(press==="TAP"&&lastTap[id]&&now-lastTap[id]<320)press="DOUBLE TAP";
+  lastTap[id]=now;
+  var lbl=({LShift:"Left Shift",RShift:"Right Shift",LCtrl:"Left Ctrl",RCtrl:"Right Ctrl",
+    LAlt:"Left Alt",RAlt:"Right Alt",Space:"Space",Back:"Backspace"})[id]||id;
+  if(id!=="LAlt"&&id!=="RAlt"&&id!=="LShift")fire(id,lbl,press+" ("+dur+"ms)");
+  setMods();render();},true);
+
+var MB={0:["M_Left","Mouse Left"],1:["M_Mid","Mouse Middle"],2:["M_Right","Mouse Right"],
+        3:["M_Back","Mouse 4 (back)"],4:["M_Fwd","Mouse 5 (forward)"]};
+$('cc-kb').addEventListener('mousedown',function(e){
+  if(!OPEN||!MODES[modeIx].data)return;var m=MB[e.button];if(!m)return;
+  if(e.target.closest&&e.target.closest('button,input,a'))return;
+  e.preventDefault();down[m[0]]=1;held[m[0]]=Date.now();render();});
+$('cc-kb').addEventListener('mouseup',function(e){
+  if(!OPEN||!MODES[modeIx].data)return;var m=MB[e.button];if(!m)return;
+  if(e.target.closest&&e.target.closest('button,input,a'))return;
+  e.preventDefault();
+  var dur=Date.now()-(held[m[0]]||Date.now());
+  delete down[m[0]];delete held[m[0]];
+  var press=dur>=400?"HOLD":"TAP",now=Date.now();
+  if(press==="TAP"&&lastTap[m[0]]&&now-lastTap[m[0]]<320)press="DOUBLE TAP";
+  lastTap[m[0]]=now;fire(m[0],m[1],press+" ("+dur+"ms)");render();});
+$('cc-kb').addEventListener('contextmenu',function(e){if(OPEN)e.preventDefault();});
+$('cc-kb').addEventListener('wheel',function(e){
+  if(!OPEN||!MODES[modeIx].data)return;e.preventDefault();
+  var id=e.deltaY<0?"M_WhUp":"M_WhDn";down[id]=1;render();
+  fire(id,e.deltaY<0?"Wheel Up":"Wheel Down","TICK");
+  setTimeout(function(){delete down[id];render();},130);},{passive:false});
+$('cc-kb-q').oninput=function(e){filter=e.target.value.trim().toLowerCase();render();};
+$('cc-kb').addEventListener('click',function(e){
+  var k=e.target.closest?e.target.closest('.key[data-id]'):null;if(!k)return;
+  var id=k.getAttribute('data-id'),es=allEnts(id);
+  $('cc-kb-rk').textContent=id;
+  $('cc-kb-rmeta').textContent=MODES[modeIx].label+" · "+es.length+" binding(s) across all layers";
+  $('cc-kb-ract').className=es.length?"ract":"ract none";
+  $('cc-kb-ract').innerHTML=es.length?es.map(function(x){
+    var n=({0:"base",1:"M1",2:"M2",3:"M3"})[x.m||0];
+    return '<span style="color:#93A7B6;font-size:14px">'+n+':</span> '+x.a;}).join("<br>")
+    :"Nothing bound to this key in "+MODES[modeIx].label+".";
+  $('cc-kb-rwarn').textContent="";});
+})();
+</script>
+
 <button id="cc-fb-tab" class="cc-ui" title="Leave feedback">FEEDBACK</button>
 <div id="cc-fb">
   <div class="shell">

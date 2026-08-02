@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Citizen Compass — Keybinding Tester</title>
+<style>
+:root{
+  --bg:#070D16;--panel:#0E1B2E;--panel2:#12233A;--line:#22364F;
+  --text:#EDE3D8;--muted:#93A7B6;--accent:#FF6B00;--accent2:#00C9A7;
+  --m1:#FF8A00;--m2:#FF4757;--m3:#FF5FA2;
+  --key:#111F33;--keyline:#2A3F5A;--keydim:#0B1524;--live:#00E5C0;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.5 "Segoe UI",system-ui,sans-serif;padding:0 18px 22px}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:9px 0;
+  margin-bottom:12px;border-bottom:1px solid var(--line)}
+.top a{color:var(--accent);text-decoration:none;font-weight:700;font-size:14px}
+.top span.t{color:var(--muted);font-size:13.5px}
+
+/* --- the big obvious mode switcher --- */
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.modes button{flex:1 1 150px;background:var(--panel2);color:var(--muted);
+  border:2px solid var(--line);border-radius:9px;padding:14px 12px;cursor:pointer;
+  font:800 17px/1.15 inherit;letter-spacing:.05em;text-transform:uppercase;
+  transition:.12s;position:relative}
+.modes button:hover{border-color:var(--accent);color:var(--text)}
+.modes button.on{background:var(--accent);border-color:var(--accent);color:#1A0E04}
+.modes button small{display:block;font-size:11.5px;font-weight:600;letter-spacing:.02em;
+  text-transform:none;opacity:.8;margin-top:3px}
+.modes button.todo{opacity:.5}
+.devs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.devs button{background:var(--panel2);color:var(--muted);border:1px solid var(--line);
+  border-radius:7px;padding:9px 16px;cursor:pointer;font:700 14px inherit}
+.devs button.on{background:var(--accent2);border-color:var(--accent2);color:#04231D}
+.devs button.todo{opacity:.45}
+
+.readout{background:var(--panel);border:2px solid var(--line);border-radius:10px;
+  padding:13px 17px;margin-bottom:13px;min-height:100px;transition:.12s}
+.readout.hot{border-color:var(--live);box-shadow:0 0 22px rgba(0,229,192,.18)}
+.rk{font-size:29px;font-weight:800;line-height:1.1}
+.rmeta{color:var(--muted);font-size:14px;margin-top:2px}
+.ract{font-size:20px;margin-top:7px;color:var(--live);font-weight:600}
+.ract.none{color:var(--muted);font-weight:400;font-size:16px}
+.rwarn{color:var(--accent);font-size:14px;margin-top:5px}
+
+.bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+button.tg{background:var(--panel2);color:var(--muted);border:1px solid var(--line);
+  border-radius:6px;padding:9px 14px;font:600 14px inherit;cursor:pointer}
+button.tg.on{background:var(--accent);border-color:var(--accent);color:#1A0E04}
+input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
+  border-radius:6px;padding:9px 12px;font:15px inherit;min-width:220px}
+.lamp{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--muted)}
+.dot{width:11px;height:11px;border-radius:50%;background:#3A4A5E}
+.dot.m1.on{background:var(--m1);box-shadow:0 0 9px var(--m1)}
+.dot.m2.on{background:var(--m2);box-shadow:0 0 9px var(--m2)}
+.dot.m3.on{background:var(--m3);box-shadow:0 0 9px var(--m3)}
+
+.wrap{display:grid;grid-template-columns:1fr 310px;gap:16px;align-items:start}
+@media(max-width:1150px){.wrap{grid-template-columns:1fr}}
+.board{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:14px;overflow-x:auto;min-height:200px}
+.rowset{min-width:870px}
+.krow{display:flex;gap:5px;margin-bottom:5px}
+.key{background:var(--key);border:1px solid var(--keyline);border-radius:5px;
+  min-height:54px;flex:1 1 0;min-width:42px;padding:4px 5px;cursor:pointer;
+  display:flex;flex-direction:column;gap:2px;position:relative;transition:.08s}
+.key:hover{border-color:var(--accent)}
+.key.empty{background:var(--keydim);border-color:#18283C;opacity:.45}
+.key.down{background:var(--live);border-color:var(--live);transform:translateY(1px)}
+.key.down .cap,.key.down .act{color:#04231D}
+.key .cap{font-size:11.5px;font-weight:700;color:var(--muted)}
+.key .act{font-size:12px;line-height:1.24}
+.key.hit{outline:2px solid var(--accent);outline-offset:1px}
+.key.mod1{border-color:var(--m1)}.key.mod2{border-color:var(--m2)}.key.mod3{border-color:var(--m3)}
+.key .q{position:absolute;top:2px;right:4px;color:var(--accent);font-size:12px;font-weight:700}
+.w125{flex-grow:1.25}.w150{flex-grow:1.5}.w175{flex-grow:1.75}
+.w200{flex-grow:2}.w225{flex-grow:2.25}.w600{flex-grow:6}
+.side{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.side h2{font-size:15px;margin:0 0 9px;color:var(--accent)}
+.log{font-size:13.5px;max-height:270px;overflow:auto}
+.log div{padding:5px 0;border-bottom:1px solid #1A2A3E}
+.log .t{color:var(--muted);font-size:12px}
+.legend{margin-top:14px;font-size:13px;color:var(--muted)}
+.note{margin-top:14px;padding:10px 12px;background:#1A1206;border:1px solid #4A3410;
+  border-radius:7px;font-size:13.5px;color:#E8C9A0}
+.blank{padding:40px 20px;text-align:center;color:var(--muted)}
+.blank strong{color:var(--accent);display:block;font-size:18px;margin-bottom:6px}
+</style>
+
+<div class="top">
+  <a href="index.html">&larr; Back to Citizen Compass</a>
+  <span class="t">Keybinding Tester &mdash; prototype. Data transcribed from in-game
+  screenshots, not yet verified against game files.</span>
+</div>
+
+<div class="modes" id="modes"></div>
+<div class="devs" id="devs"></div>
+
+<div class="readout" id="ro">
+  <div class="rk" id="rk">&mdash; press something &mdash;</div>
+  <div class="rmeta" id="rmeta">nothing yet</div>
+  <div class="ract none" id="ract">Click anywhere on the page first so it can hear your keys.</div>
+  <div class="rwarn" id="rwarn"></div>
+</div>
+
+<div class="bar">
+  <button class="tg on" id="capture">Capture: ON</button>
+  <input id="q" placeholder="Search this mode&hellip;">
+  <span class="lamp"><span class="dot m1" id="d1"></span>M1 Left Alt</span>
+  <span class="lamp"><span class="dot m2" id="d2"></span>M2 Left Shift</span>
+  <span class="lamp"><span class="dot m3" id="d3"></span>M3 Right Alt</span>
+  <span class="lamp" id="layerlbl">Layer: none</span>
+</div>
+
+<div class="wrap">
+  <div class="board"><div class="rowset" id="board"></div></div>
+  <div class="side">
+    <h2>What you pressed</h2>
+    <div class="log" id="log"><div style="color:var(--muted)">Nothing yet.</div></div>
+    <div class="legend" id="legend"></div>
+    <div class="note">
+      <strong>Alt+F4</strong>, <strong>Ctrl+Alt+Del</strong> and the <strong>Windows key</strong>
+      can't be caught by any web page &mdash; Windows takes them first.
+      <strong>Ctrl+W</strong> / <strong>Ctrl+T</strong> need fullscreen capture, not in this build.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- MODES ---------- */
+const FLIGHT={
+ Esc:[{a:"Pause / Options"}],F1:[{a:"mobiGlas"}],F2:[{a:"mobiGlas Map"}],F3:[],
+ F4:[{a:"Cycle Camera View"},{a:"Advanced Camera*",c:"AD"}],
+ F5:[{a:"Engine Power (-)",q:1}],F6:[{a:"Shield Power (+)",q:1}],
+ F7:[{a:"Weapon Power (+)",q:1}],F8:[{a:"Reset Power Distribution"}],
+ F9:[{a:"Power (-)"},{a:"Power Min*",m:1}],F10:[{a:"Power (+)"},{a:"Power Max*",m:1}],
+ F11:[{a:"Contacts"},{a:"2D UI Cursor",m:1}],F12:[{a:"Toggle Chat Window"}],
+ "`":[{a:"Console"}],
+ 1:[{a:"Lock Pin 1"},{a:"Set Pin 1",m:1}],2:[{a:"Lock Pin 2"},{a:"Set Pin 2",m:1}],
+ 3:[{a:"Lock Pin 3"},{a:"Set Pin 3",m:1}],
+ 4:[{a:"Target Next — Attacker"},{a:"Target Rear — Attacker",m:1}],
+ 5:[{a:"Target Next — Hostile"},{a:"Target Rear — Hostile",m:1}],
+ 6:[{a:"Target Next — Friendly"},{a:"Target Rear — Friendly",m:1}],
+ 7:[{a:"Target Next — All"},{a:"Target Rear — All",m:1}],
+ 8:[],9:[{a:"Hail Target"}],0:[{a:"Remove All Pinned Targets"}],
+ "-":[],"=":[],Back:[{a:"Self-Destruct Toggle*"}],
+ Tab:[{a:"Ping"},{a:"PIT Menu",m:1},{a:"Flight Mode Wheel*",m:2}],
+ Q:[{a:"Roll Left"},{a:"Mouse Toggle",c:"TU"}],
+ W:[{a:"Strafe Forward"},{a:"Fracture",c:"SA",m:1}],
+ E:[{a:"Roll Right"},{a:"Gyro Toggle",c:"TU"}],
+ R:[{a:"Sub-Target Cycle"},{a:"Reset Sub-Target",m:1},{a:"Flight Ready",m:2}],
+ T:[{a:"Target In View / Auto Target"},{a:"Unlock Target",m:1}],
+ Y:[{a:"Exit Seat*"},{a:"Eject",m:2}],
+ U:[{a:"Power On/Off"},{a:"Emergency Exit Seat",m:2}],
+ I:[{a:"Engines On/Off"}],O:[{a:"Shields On/Off"}],P:[{a:"Weapons On/Off"}],
+ "[":[{a:"Accept Invite"}],"]":[{a:"Reject Invite / Ignore*"}],"\\":[],Caps:[],
+ A:[{a:"Strafe Left"},{a:"Focus Left",c:"SA",m:1},{a:"Fire Left",c:"SA",m:2}],
+ S:[{a:"Cycle Position",c:"TU"},{a:"Fracture",c:"SA",m:2}],
+ D:[{a:"Strafe Right"},{a:"Focus Right",c:"SA",m:1},{a:"Fire Right",c:"SA",m:2}],
+ F:[{a:"Interaction Mode",c:"IM"}],
+ G:[{a:"Gimbal Mode"},{a:"Freeze Gimbals",m:3}],
+ H:[{a:"CM Decoy (Top)*"},{a:"CM Decoy (-)",m:1},{a:"CM Decoy (+)",m:2}],
+ J:[{a:"CM Chaff"},{a:"Jettison Cargo",m:1}],K:[{a:"VTOL Toggle"}],
+ L:[{a:"Toggle Lights"},{a:"Toggle Lock Ahead",m:1,q:1}],
+ ";":[],"'":[],Enter:[{a:"Activate Chat Box"}],
+ LShift:[{a:"Afterburner"},{a:"— Modifier 2 —"}],Z:[{a:"Freelook*"}],
+ X:[{a:"Space Brake / Reset Cruise Trim",q:1},{a:"Wipe Visor",m:1}],
+ C:[{a:"Decoupled Toggle"},{a:"Cruise Toggle",m:1},{a:"Recenter",c:"TU"}],
+ V:[{a:"Scan Mode Toggle",c:"SC"}],
+ B:[{a:"Cycle Master Modes*"},{a:"PIT Wheel*",m:1},{a:"Fire Mode",c:"TU"}],
+ N:[{a:"Landing Mode Toggle"},{a:"Activated*",c:"LN"},{a:"ATC / Cargo Request",m:1}],
+ M:[{a:"Mining / Salvage Mode Toggle",c:"MG"}],
+ ",":[{a:"Look Back"}],".":[],"/":[],RShift:[{a:"Lock Ship Rotation"}],
+ LCtrl:[{a:"Strafe Down"}],LAlt:[{a:"— Modifier 1 —"}],Space:[{a:"Strafe Up"}],
+ RAlt:[{a:"— Modifier 3 —"}],RCtrl:[],
+ Ins:[],Home:[{a:"Deflection (-)",c:"AD",q:1}],PgUp:[{a:"Z Offset (+)",c:"AD"}],
+ Del:[],End:[{a:"Deflection (-)",c:"AD",q:1}],PgDn:[{a:"Z Offset (-)",c:"AD"}],
+ Up:[{a:"Y Offset (+)",c:"AD"}],Left:[{a:"X Offset (-)",c:"AD"}],
+ Down:[{a:"Y Offset (-)",c:"AD"}],Right:[{a:"X Offset (+)",c:"AD"}],
+ NumLk:[],NpDiv:[],NpMul:[{a:"Reset View",c:"AD"}],NpSub:[{a:"FOV (+)",c:"AD",q:1}],
+ Np7:[{a:"Shield Raise — Top"}],Np8:[{a:"Shield Raise — Front"}],
+ Np9:[{a:"Shield Raise — Bottom",q:1}],NpAdd:[],
+ Np4:[{a:"Shield Raise — Left"}],Np5:[{a:"Shields Reset"}],Np6:[{a:"Shield Raise — Right"}],
+ Np1:[{a:"Shield Raise — Back"}],Np2:[{a:"Shield Raise — Bottom",q:1}],Np3:[],
+ Np0:[{a:"Clear Current Save*",c:"AD"}],NpDot:[],NpEnt:[],
+ M_Left:[{a:"Fire Weapon Group 1"},{a:"Engage Quantum Travel",m:1},{a:"Fire Mining Laser",c:"MG"}],
+ M_Right:[{a:"Fire Weapon Group 2"},{a:"Precision Toggle",m:1},{a:"Cycle Missiles Forward",c:"ML"}],
+ M_Mid:[{a:"Cycle Operator Mode"}],M_Back:[],M_Fwd:[],
+ M_WhUp:[{a:"Speed Limiter (+)"}],M_WhDn:[{a:"Speed Limiter (-)"}]
+};
+const ONFOOT={
+ Esc:[{a:"Pause / Options"}],F1:[{a:"mobiGlas"},{a:"Scoreboard",c:"AC"}],
+ F2:[{a:"mobiGlas Map"}],F3:[],
+ F4:[{a:"Cycle Camera View"},{a:"Advanced Camera Mode*",c:"AD"}],
+ F5:[],F6:[],F7:[],F8:[],F9:[],F10:[],F11:[{a:"Contacts"}],F12:[{a:"Chat"}],
+ "`":[{a:"Console"}],
+ 1:[{a:"Cycle Weapons"},{a:"Weapon Wheel*",m:1,q:1}],
+ 2:[{a:"Cycle Weapons"},{a:"Weapon Wheel*",m:1,q:1}],
+ 3:[{a:"Sidearm"},{a:"Weapon Wheel*",m:1,q:1}],
+ 4:[{a:"Consumables"}],5:[{a:"MedPack / Gadget",q:1}],6:[{a:"Unarmed Melee"}],
+ 7:[],8:[],9:[],0:[],"-":[],"=":[],Back:[{a:"Force Re-spawn*"}],
+ Tab:[{a:"PIT Menu",c:"IM"}],
+ Q:[{a:"Lean Left"},{a:"Roll On Back Left*",m:1}],
+ W:[{a:"Move Forwards"}],
+ E:[{a:"Lean Right"},{a:"Roll On Back Right*",m:1}],
+ R:[{a:"Reload"},{a:"Holster Weapon*"},{a:"Fire Mode",m:2}],
+ T:[{a:"Flashlight"}],Y:[],U:[{a:"Use Underbarrel Attachment"}],I:[{a:"Inventory"}],
+ O:[],P:[],"[":[{a:"Accept Invite"}],"]":[{a:"Reject Invite / Ignore*"}],"\\":[],Caps:[],
+ A:[{a:"Move Left"},{a:"Dodge Left**",c:"UC"}],
+ S:[{a:"Move Backwards"},{a:"Dodge Back**",c:"UC"}],
+ D:[{a:"Move Right"},{a:"Dodge Right**",c:"UC"}],
+ F:[{a:"Quick Interact"},{a:"Interaction Mode*",c:"IM"}],
+ G:[{a:"Equip Grenade"}],H:[],J:[{a:"Weapon Customize"}],K:[],L:[],";":[],"'":[],
+ Enter:[{a:"Activate Chat"}],
+ LShift:[{a:"Sprint*"},{a:"Hold Breath*",c:"ADS"},{a:"— Modifier 2 —"}],
+ Z:[{a:"Freelook*"}],X:[{a:"Re-spawn*",c:"AC"},{a:"Wipe Visor",m:1}],
+ C:[{a:"Crouch"}],V:[{a:"Equip Knife"}],B:[{a:"Change Fire Mode"}],
+ N:[],M:[],",":[],".":[],"/":[],RShift:[],
+ LCtrl:[{a:"Prone"}],LAlt:[{a:"— Modifier 1 —"}],Space:[{a:"Jump"}],RAlt:[],RCtrl:[],
+ Ins:[],Home:[{a:"Deflection (-)",c:"AD",q:1}],PgUp:[{a:"Z Offset (+)",c:"AD"}],
+ Del:[],End:[{a:"Deflection (-)",c:"AD",q:1}],PgDn:[{a:"Z Offset (-)",c:"AD"}],
+ Up:[{a:"Y Offset (+)",c:"AD"}],Left:[{a:"X Offset (-)",c:"AD"}],
+ Down:[{a:"Y Offset (-)",c:"AD"}],Right:[{a:"X Offset (+)",c:"AD"}],
+ NumLk:[],NpDiv:[],NpMul:[{a:"Reset View",c:"AD"}],NpSub:[{a:"FOV (+)",c:"AD",q:1}],
+ Np7:[{a:"Load / Save 7*",c:"AD"}],Np8:[{a:"Load / Save 8*",c:"AD"}],
+ Np9:[{a:"Load / Save 9*",c:"AD"}],NpAdd:[],
+ Np4:[{a:"Load / Save 4*",c:"AD"}],Np5:[{a:"Load / Save 5*",c:"AD"}],
+ Np6:[{a:"Load / Save 6*",c:"AD"}],
+ Np1:[{a:"Load / Save 1*",c:"AD"}],Np2:[{a:"Load / Save 2*",c:"AD"}],
+ Np3:[{a:"Load / Save 3*",c:"AD"}],
+ Np0:[{a:"Clear Current Save*",c:"AD"}],NpDot:[],NpEnt:[],
+ M_Left:[{a:"Primary Attack"},{a:"Activate / Interact",c:"IM"},{a:"Light Melee Left",c:"UC"}],
+ M_Right:[{a:"Aim Down Sight"},{a:"Zoom Out",c:"IM"},{a:"Light Melee Right",c:"UC"}],
+ M_Mid:[{a:"Melee Block*",c:"UC",q:1}],M_Back:[],M_Fwd:[],
+ M_WhUp:[{a:"Default Move Speed (+)"},{a:"Zoom In",c:"IM"}],
+ M_WhDn:[{a:"Default Move Speed (-)"},{a:"Zoom Out",c:"IM"}]
+};
+const MODES=[
+ {id:"FLIGHT",label:"Flight",sub:"in a ship",data:FLIGHT,
+  legend:"SC scan · MG mining · SA salvage · SFH salvage focus · IM interaction<br>LN landing · TU turret · QT quantum · ML missile · AD adv camera · AC arena"},
+ {id:"ONFOOT",label:"On Foot",sub:"walking around",data:ONFOOT,
+  legend:"IM interaction · PN prone · ADS aim down sights<br>UC unarmed combat · AD adv camera · AC arena commander"},
+ {id:"EVA",label:"E.V.A.",sub:"zero-G, not entered yet",data:null},
+ {id:"VEHICLE",label:"Vehicle",sub:"ground vehicles, not entered yet",data:null},
+ {id:"CAMERA",label:"Camera",sub:"not entered yet",data:null}
+];
+const DEVS=[{id:"KBM",label:"Keyboard / Mouse",ok:1},
+            {id:"PAD",label:"Gamepad",ok:0},{id:"JOY",label:"Joystick / HOTAS",ok:0}];
+
+const CODE={Escape:"Esc",F1:"F1",F2:"F2",F3:"F3",F4:"F4",F5:"F5",F6:"F6",F7:"F7",F8:"F8",
+ F9:"F9",F10:"F10",F11:"F11",F12:"F12",Backquote:"`",Digit1:"1",Digit2:"2",Digit3:"3",
+ Digit4:"4",Digit5:"5",Digit6:"6",Digit7:"7",Digit8:"8",Digit9:"9",Digit0:"0",
+ Minus:"-",Equal:"=",Backspace:"Back",Tab:"Tab",KeyQ:"Q",KeyW:"W",KeyE:"E",KeyR:"R",
+ KeyT:"T",KeyY:"Y",KeyU:"U",KeyI:"I",KeyO:"O",KeyP:"P",BracketLeft:"[",BracketRight:"]",
+ Backslash:"\\",CapsLock:"Caps",KeyA:"A",KeyS:"S",KeyD:"D",KeyF:"F",KeyG:"G",KeyH:"H",
+ KeyJ:"J",KeyK:"K",KeyL:"L",Semicolon:";",Quote:"'",Enter:"Enter",ShiftLeft:"LShift",
+ KeyZ:"Z",KeyX:"X",KeyC:"C",KeyV:"V",KeyB:"B",KeyN:"N",KeyM:"M",Comma:",",Period:".",
+ Slash:"/",ShiftRight:"RShift",ControlLeft:"LCtrl",AltLeft:"LAlt",Space:"Space",
+ AltRight:"RAlt",ControlRight:"RCtrl",Insert:"Ins",Home:"Home",PageUp:"PgUp",
+ Delete:"Del",End:"End",PageDown:"PgDn",ArrowUp:"Up",ArrowLeft:"Left",ArrowDown:"Down",
+ ArrowRight:"Right",NumLock:"NumLk",NumpadDivide:"NpDiv",NumpadMultiply:"NpMul",
+ NumpadSubtract:"NpSub",Numpad7:"Np7",Numpad8:"Np8",Numpad9:"Np9",NumpadAdd:"NpAdd",
+ Numpad4:"Np4",Numpad5:"Np5",Numpad6:"Np6",Numpad1:"Np1",Numpad2:"Np2",Numpad3:"Np3",
+ NumpadEnter:"NpEnt",Numpad0:"Np0",NumpadDecimal:"NpDot"};
+
+const ROWS=[
+ [["Esc","Esc"],["F1","F1"],["F2","F2"],["F3","F3"],["F4","F4"],["F5","F5"],["F6","F6"],
+  ["F7","F7"],["F8","F8"],["F9","F9"],["F10","F10"],["F11","F11"],["F12","F12"]],
+ [["`","`"],["1","1"],["2","2"],["3","3"],["4","4"],["5","5"],["6","6"],["7","7"],["8","8"],
+  ["9","9"],["0","0"],["-","-"],["=","="],["Back","Bksp","w150"]],
+ [["Tab","Tab","w150"],["Q","Q"],["W","W"],["E","E"],["R","R"],["T","T"],["Y","Y"],["U","U"],
+  ["I","I"],["O","O"],["P","P"],["[","["],["]","]"],["\\","\\"]],
+ [["Caps","Caps","w175"],["A","A"],["S","S"],["D","D"],["F","F"],["G","G"],["H","H"],
+  ["J","J"],["K","K"],["L","L"],[";",";"],["'","'"],["Enter","Enter","w200"]],
+ [["LShift","Shift","w225"],["Z","Z"],["X","X"],["C","C"],["V","V"],["B","B"],["N","N"],
+  ["M","M"],[",",","],[".","."],["/","/"],["RShift","Shift","w225"]],
+ [["LCtrl","Ctrl","w125"],["LAlt","Alt","w125"],["Space","Space","w600"],
+  ["RAlt","Alt","w125"],["RCtrl","Ctrl","w125"]]];
+const NAV=[[["Ins","Ins"],["Home","Home"],["PgUp","PgUp"]],[["Del","Del"],["End","End"],["PgDn","PgDn"]],
+           [["","",""],["Up","↑"],["","",""]],[["Left","←"],["Down","↓"],["Right","→"]]];
+const NUM=[[["NumLk","Num"],["NpDiv","/"],["NpMul","*"],["NpSub","-"]],
+           [["Np7","7"],["Np8","8"],["Np9","9"],["NpAdd","+"]],
+           [["Np4","4"],["Np5","5"],["Np6","6"],["",""]],
+           [["Np1","1"],["Np2","2"],["Np3","3"],["NpEnt","Ent"]],
+           [["Np0","0","w200"],["NpDot","."],["",""]]];
+const MOUSE=[[["M_Left","Mouse L"],["M_Right","Mouse R"],["M_Mid","Mouse M"],
+              ["M_Back","Mouse 4"],["M_Fwd","Mouse 5"]],
+             [["M_WhUp","Wheel ↑"],["M_WhDn","Wheel ↓"],["","",""],["","",""],["","",""]]];
+
+let modeIx=0,dev="KBM",mod=0,filter="",capture=true;
+const down=new Set(),lastTap={},held={};
+const $=id=>document.getElementById(id);
+const K=()=>MODES[modeIx].data||{};
+function ents(id){return (K()[id]||[]).filter(e=>(e.m||0)===mod);}
+function allEnts(id){return K()[id]||[];}
+
+function drawModes(){
+  $('modes').innerHTML=MODES.map((m,i)=>
+    `<button data-i="${i}" class="${i===modeIx?'on':''}${m.data?'':' todo'}">${m.label}
+     <small>${m.sub}</small></button>`).join("");
+  $('modes').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    modeIx=+b.dataset.i;drawModes();render();
+    $('legend').innerHTML=MODES[modeIx].legend
+      ?`<div><strong>*</strong> hold · <strong>**</strong> double tap</div>
+        <div style="margin-top:6px;color:var(--accent2)">${MODES[modeIx].legend}</div>`:"";
+  });
+  $('devs').innerHTML=DEVS.map(d=>
+    `<button data-d="${d.id}" class="${d.id===dev?'on':''}${d.ok?'':' todo'}">${d.label}</button>`).join("");
+  $('devs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    if(!DEVS.find(x=>x.id===b.dataset.d).ok)return; dev=b.dataset.d;drawModes();render();});
+}
+function draw(rows,title){
+  let h=title?`<div style="color:var(--muted);font-size:12.5px;margin:12px 0 5px">${title}</div>`:"";
+  rows.forEach(r=>{h+='<div class="krow">';
+    r.forEach(([id,cap,w])=>{
+      if(!id){h+='<div class="key" style="visibility:hidden"></div>';return;}
+      const es=ents(id);let c="key "+(w||"");
+      if(!es.length)c+=" empty";
+      if(id==="LAlt")c+=" mod1";if(id==="LShift")c+=" mod2";if(id==="RAlt")c+=" mod3";
+      if(filter&&es.some(e=>e.a.toLowerCase().includes(filter)))c+=" hit";
+      if(down.has(id))c+=" down";
+      const q=es.some(e=>e.q)?'<span class="q">?</span>':'';
+      const t=es.slice(0,3).map(e=>(e.c?`<span style="color:var(--accent2)">${e.c}</span> `:"")+e.a).join("<br>");
+      h+=`<div class="${c}" data-id="${id}">${q}<div class="cap">${cap}</div><div class="act">${t}</div></div>`;
+    });h+='</div>';});
+  return h;
+}
+function render(){
+  if(!MODES[modeIx].data){
+    $('board').innerHTML=`<div class="blank"><strong>${MODES[modeIx].label} not entered yet</strong>
+      This mode exists in the game and in the data. Nobody has filled it in here.<br>
+      It arrives automatically once the default profile is extracted from the game files.</div>`;
+    $('layerlbl').textContent="Layer: —";return;}
+  $('board').innerHTML=draw(ROWS)+draw(NAV,"Navigation")+draw(NUM,"Numpad")+draw(MOUSE,"Mouse");
+  $('layerlbl').textContent="Layer: "+{0:"none",1:"M1 (Left Alt)",2:"M2 (Left Shift)",3:"M3 (Right Alt)"}[mod];
+}
+function setMods(){
+  let nm=0;
+  if(down.has("RAlt"))nm=3;else if(down.has("LAlt"))nm=1;else if(down.has("LShift"))nm=2;
+  if(nm!==mod){mod=nm;render();}
+  $('d1').classList.toggle('on',down.has("LAlt"));
+  $('d2').classList.toggle('on',down.has("LShift"));
+  $('d3').classList.toggle('on',down.has("RAlt"));
+}
+function fire(id,label,press){
+  const es=allEnts(id),ln={0:"no modifier",1:"M1 Left Alt",2:"M2 Left Shift",3:"M3 Right Alt"}[mod];
+  const match=es.find(e=>(e.m||0)===mod);
+  $('ro').classList.add('hot');clearTimeout(fire._t);
+  fire._t=setTimeout(()=>$('ro').classList.remove('hot'),450);
+  $('rk').textContent=label;
+  $('rmeta').textContent=`${MODES[modeIx].label} · ${ln} · registered as ${press}`;
+  if(match){$('ract').className="ract";
+    $('ract').textContent=(match.c?match.c+" — ":"")+match.a;
+    $('rwarn').textContent=match.a.includes("*")&&!press.startsWith("HOLD")
+      ?"This one is a HOLD in game — try holding it longer.":"";
+  }else{$('ract').className="ract none";
+    $('ract').textContent="Nothing bound on this layer.";
+    $('rwarn').textContent=es.length?"But it does something on another modifier layer.":"";}
+  const l=$('log');if(l.dataset.v!=="1"){l.innerHTML="";l.dataset.v="1";}
+  const d=document.createElement('div');
+  d.innerHTML=`<strong>${label}</strong> <span class="t">· ${MODES[modeIx].label} · ${ln} · ${press}</span><br>`+
+    `<span style="color:${match?'var(--live)':'var(--muted)'}">${match?match.a:"nothing bound"}</span>`;
+  l.prepend(d);while(l.children.length>14)l.lastChild.remove();
+}
+addEventListener('keydown',e=>{
+  if(!capture||!MODES[modeIx].data)return;const id=CODE[e.code];if(!id)return;
+  e.preventDefault();if(e.repeat)return;
+  down.add(id);held[id]=performance.now();setMods();render();},{capture:true});
+addEventListener('keyup',e=>{
+  if(!capture||!MODES[modeIx].data)return;const id=CODE[e.code];if(!id)return;
+  e.preventDefault();
+  const dur=performance.now()-(held[id]||performance.now());
+  delete held[id];down.delete(id);
+  let press=dur>=400?"HOLD":"TAP";const now=performance.now();
+  if(press==="TAP"&&lastTap[id]&&now-lastTap[id]<320)press="DOUBLE TAP";
+  lastTap[id]=now;
+  const lbl={LShift:"Left Shift",RShift:"Right Shift",LCtrl:"Left Ctrl",RCtrl:"Right Ctrl",
+    LAlt:"Left Alt",RAlt:"Right Alt",Space:"Space",Back:"Backspace"}[id]||id;
+  if(!["LAlt","RAlt","LShift"].includes(id))fire(id,lbl,press+` (${Math.round(dur)}ms)`);
+  setMods();render();},{capture:true});
+const MB={0:["M_Left","Mouse Left"],1:["M_Mid","Mouse Middle"],2:["M_Right","Mouse Right"],
+          3:["M_Back","Mouse 4 (back)"],4:["M_Fwd","Mouse 5 (forward)"]};
+addEventListener('mousedown',e=>{if(!capture||!MODES[modeIx].data)return;
+  const m=MB[e.button];if(!m)return;e.preventDefault();
+  down.add(m[0]);held[m[0]]=performance.now();render();});
+addEventListener('mouseup',e=>{if(!capture||!MODES[modeIx].data)return;
+  const m=MB[e.button];if(!m)return;e.preventDefault();
+  const dur=performance.now()-(held[m[0]]||performance.now());
+  down.delete(m[0]);delete held[m[0]];
+  let press=dur>=400?"HOLD":"TAP";const now=performance.now();
+  if(press==="TAP"&&lastTap[m[0]]&&now-lastTap[m[0]]<320)press="DOUBLE TAP";
+  lastTap[m[0]]=now;fire(m[0],m[1],press+` (${Math.round(dur)}ms)`);render();});
+addEventListener('contextmenu',e=>{if(capture)e.preventDefault();});
+addEventListener('wheel',e=>{if(!capture||!MODES[modeIx].data)return;e.preventDefault();
+  const id=e.deltaY<0?"M_WhUp":"M_WhDn";down.add(id);render();
+  fire(id,e.deltaY<0?"Wheel Up":"Wheel Down","TICK");
+  setTimeout(()=>{down.delete(id);render();},130);},{passive:false});
+$('capture').onclick=()=>{capture=!capture;
+  $('capture').textContent="Capture: "+(capture?"ON":"OFF");
+  $('capture').classList.toggle('on',capture);};
+$('q').oninput=e=>{filter=e.target.value.trim().toLowerCase();render();};
+$('q').onkeydown=e=>e.stopPropagation();
+document.addEventListener('click',e=>{
+  const k=e.target.closest('.key[data-id]');if(!k)return;
+  const id=k.dataset.id,es=allEnts(id);
+  $('rk').textContent=id;
+  $('rmeta').textContent=MODES[modeIx].label+" · "+es.length+" binding(s) across all layers";
+  $('ract').className=es.length?"ract":"ract none";
+  $('ract').innerHTML=es.length?es.map(x=>{const n={0:"base",1:"M1",2:"M2",3:"M3"}[x.m||0];
+    return `<span style="color:var(--muted);font-size:14px">${n}:</span> ${x.a}`;}).join("<br>")
+    :"Nothing bound to this key in "+MODES[modeIx].label+".";
+  $('rwarn').textContent="";});
+drawModes();
+$('legend').innerHTML=`<div><strong>*</strong> hold · <strong>**</strong> double tap</div>
+  <div style="margin-top:6px;color:var(--accent2)">${MODES[0].legend}</div>`;
+render();
+</script>
+<footer style="margin:26px -18px 0;padding:16px 18px;background:#0B1626;
+  border-top:1px solid #22364F;color:#6B8091;
+  font:400 12.5px/1.6 'Segoe UI',system-ui,sans-serif">
+This is an unofficial Star Citizen fan site, not affiliated with the Cloud Imperium
+group of companies. All content on this site not authored by its host or users are
+property of their respective owners. Official site: robertsspaceindustries.com<br>
+Star Citizen&reg;, Roberts Space Industries&reg; and Cloud Imperium&reg; are registered
+trademarks of Cloud Imperium Rights LLC.
+</footer>
+</html>
