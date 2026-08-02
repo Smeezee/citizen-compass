@@ -1,0 +1,2300 @@
+{
+ "generated_from": "snapshot 20260801T204744Z + releases/latest.html",
+ "counts": {
+  "site": 254,
+  "matched": 221,
+  "ambiguous": 0,
+  "no_game_file": 33,
+  "tier_variants": 6,
+  "game_only": 89
+ },
+ "matched": [
+  {
+   "site": "100i",
+   "status": "purchasable",
+   "file": "orig_100i.json",
+   "game_name": "Origin 100i",
+   "has_model": true
+  },
+  {
+   "site": "125a",
+   "status": "purchasable",
+   "file": "orig_125a.json",
+   "game_name": "Origin 125a",
+   "has_model": true
+  },
+  {
+   "site": "135c",
+   "status": "purchasable",
+   "file": "orig_135c.json",
+   "game_name": "Origin 135c",
+   "has_model": true
+  },
+  {
+   "site": "300i",
+   "status": "purchasable",
+   "file": "orig_300i.json",
+   "game_name": "Origin 300i",
+   "has_model": true
+  },
+  {
+   "site": "315p",
+   "status": "purchasable",
+   "file": "orig_315p.json",
+   "game_name": "Origin 315p",
+   "has_model": true
+  },
+  {
+   "site": "325a",
+   "status": "purchasable",
+   "file": "orig_325a.json",
+   "game_name": "Origin 325a",
+   "has_model": true
+  },
+  {
+   "site": "350r",
+   "status": "purchasable",
+   "file": "orig_350r.json",
+   "game_name": "Origin 350r",
+   "has_model": true
+  },
+  {
+   "site": "400i",
+   "status": "purchasable",
+   "file": "orig_400i.json",
+   "game_name": "Origin 400i",
+   "has_model": true
+  },
+  {
+   "site": "600i Touring",
+   "status": "purchasable",
+   "file": "orig_600i_touring.json",
+   "game_name": "Origin 600i Touring",
+   "has_model": true
+  },
+  {
+   "site": "85X",
+   "status": "purchasable",
+   "file": "orig_85x.json",
+   "game_name": "Origin 85X Limited",
+   "has_model": true
+  },
+  {
+   "site": "890 Jump",
+   "status": "purchasable",
+   "file": "orig_890jump.json",
+   "game_name": "Origin 890 Jump",
+   "has_model": true
+  },
+  {
+   "site": "A1 Spirit",
+   "status": "purchasable",
+   "file": "crus_spirit_a1.json",
+   "game_name": "Crusader A1 Spirit",
+   "has_model": true
+  },
+  {
+   "site": "A2 Hercules Starlifter",
+   "status": "purchasable",
+   "file": "crus_starlifter_a2.json",
+   "game_name": "Crusader A2 Hercules Starlifter",
+   "has_model": false
+  },
+  {
+   "site": "Apollo Medivac",
+   "status": "purchasable",
+   "file": "rsi_apollo_medivac.json",
+   "game_name": "RSI Apollo Medivac",
+   "has_model": true
+  },
+  {
+   "site": "Apollo Triage",
+   "status": "purchasable",
+   "file": "rsi_apollo_triage.json",
+   "game_name": "RSI Apollo Triage",
+   "has_model": true
+  },
+  {
+   "site": "Arrow",
+   "status": "purchasable",
+   "file": "anvl_arrow.json",
+   "game_name": "Anvil Arrow",
+   "has_model": false
+  },
+  {
+   "site": "Asgard",
+   "status": "purchasable",
+   "file": "anvl_asgard.json",
+   "game_name": "Anvil Asgard",
+   "has_model": true
+  },
+  {
+   "site": "ATLS",
+   "status": "purchasable",
+   "file": "argo_atls.json",
+   "game_name": "Argo ATLS",
+   "has_model": true
+  },
+  {
+   "site": "ATLS GEO",
+   "status": "purchasable",
+   "file": "argo_atls_geo.json",
+   "game_name": "Argo ATLS GEO",
+   "has_model": true
+  },
+  {
+   "site": "Aurora CL",
+   "status": "purchasable",
+   "file": "rsi_aurora_gs_cl.json",
+   "game_name": "RSI Aurora Mk I CL",
+   "has_model": true
+  },
+  {
+   "site": "Aurora ES",
+   "status": "purchasable",
+   "file": "rsi_aurora_gs_es.json",
+   "game_name": "RSI Aurora Mk I ES",
+   "has_model": true
+  },
+  {
+   "site": "Aurora LN",
+   "status": "purchasable",
+   "file": "rsi_aurora_gs_ln.json",
+   "game_name": "RSI Aurora Mk I LN",
+   "has_model": true
+  },
+  {
+   "site": "Aurora LX",
+   "status": "purchasable",
+   "file": "rsi_aurora_gs_lx.json",
+   "game_name": "RSI Aurora Mk I  LX",
+   "has_model": true
+  },
+  {
+   "site": "Aurora Mk II",
+   "status": "pledge_only",
+   "file": "rsi_aurora_mk2.json",
+   "game_name": "RSI Aurora Mk II",
+   "has_model": false
+  },
+  {
+   "site": "Aurora MR",
+   "status": "purchasable",
+   "file": "rsi_aurora_gs_mr.json",
+   "game_name": "RSI Aurora Mk I MR",
+   "has_model": true
+  },
+  {
+   "site": "Aurora SE",
+   "status": "pledge_only",
+   "file": "rsi_aurora_gs_se.json",
+   "game_name": "RSI Aurora Mk I SE",
+   "has_model": false
+  },
+  {
+   "site": "Avenger Stalker",
+   "status": "purchasable",
+   "file": "aegs_avenger_stalker.json",
+   "game_name": "Aegis Avenger Stalker",
+   "has_model": true
+  },
+  {
+   "site": "Avenger Titan",
+   "status": "purchasable",
+   "file": "aegs_avenger_titan.json",
+   "game_name": "Aegis Avenger Titan",
+   "has_model": true
+  },
+  {
+   "site": "Avenger Titan Renegade",
+   "status": "purchasable",
+   "file": "aegs_avenger_titan_renegade.json",
+   "game_name": "Aegis Avenger Titan Renegade",
+   "has_model": true
+  },
+  {
+   "site": "Avenger Warlock",
+   "status": "purchasable",
+   "file": "aegs_avenger_warlock.json",
+   "game_name": "Aegis Avenger Warlock",
+   "has_model": true
+  },
+  {
+   "site": "Ballista",
+   "status": "purchasable",
+   "file": "anvl_ballista.json",
+   "game_name": "Anvil Ballista",
+   "has_model": true
+  },
+  {
+   "site": "Basher",
+   "status": "pledge_only",
+   "file": "glsn_basher.json",
+   "game_name": "Grey's Basher",
+   "has_model": false
+  },
+  {
+   "site": "Blade",
+   "status": "purchasable",
+   "file": "vncl_blade.json",
+   "game_name": "Esperia Blade",
+   "has_model": true
+  },
+  {
+   "site": "Buccaneer",
+   "status": "purchasable",
+   "file": "drak_buccaneer.json",
+   "game_name": "Drake Buccaneer",
+   "has_model": true
+  },
+  {
+   "site": "C1 Spirit",
+   "status": "purchasable",
+   "file": "crus_spirit_c1.json",
+   "game_name": "Crusader C1 Spirit",
+   "has_model": true
+  },
+  {
+   "site": "C2 Hercules Starlifter",
+   "status": "purchasable",
+   "file": "crus_starlifter_c2.json",
+   "game_name": "Crusader C2 Hercules Starlifter",
+   "has_model": false
+  },
+  {
+   "site": "C8 Pisces",
+   "status": "purchasable",
+   "file": "anvl_c8_pisces.json",
+   "game_name": "Anvil C8 Pisces",
+   "has_model": true
+  },
+  {
+   "site": "C8R Pisces Rescue",
+   "status": "purchasable",
+   "file": "anvl_c8r_pisces.json",
+   "game_name": "Anvil C8R Pisces Rescue",
+   "has_model": false
+  },
+  {
+   "site": "C8X Pisces Expedition",
+   "status": "purchasable",
+   "file": "anvl_c8x_pisces_expedition.json",
+   "game_name": "Anvil C8X Pisces Expedition",
+   "has_model": true
+  },
+  {
+   "site": "Carrack",
+   "status": "purchasable",
+   "file": "anvl_carrack.json",
+   "game_name": "Anvil Carrack",
+   "has_model": true
+  },
+  {
+   "site": "Caterpillar",
+   "status": "purchasable",
+   "file": "drak_caterpillar.json",
+   "game_name": "Drake Caterpillar",
+   "has_model": true
+  },
+  {
+   "site": "Centurion",
+   "status": "purchasable",
+   "file": "anvl_centurion.json",
+   "game_name": "Anvil Centurion",
+   "has_model": true
+  },
+  {
+   "site": "Clipper",
+   "status": "purchasable",
+   "file": "drak_clipper.json",
+   "game_name": "Drake Clipper",
+   "has_model": true
+  },
+  {
+   "site": "Constellation Andromeda",
+   "status": "purchasable",
+   "file": "rsi_constellation_andromeda.json",
+   "game_name": "RSI Constellation Andromeda",
+   "has_model": true
+  },
+  {
+   "site": "Constellation Aquila",
+   "status": "purchasable",
+   "file": "rsi_constellation_aquila.json",
+   "game_name": "RSI Constellation Aquila",
+   "has_model": false
+  },
+  {
+   "site": "Constellation Phoenix",
+   "status": "purchasable",
+   "file": "rsi_constellation_phoenix.json",
+   "game_name": "RSI Constellation Phoenix",
+   "has_model": true
+  },
+  {
+   "site": "Constellation Taurus",
+   "status": "purchasable",
+   "file": "rsi_constellation_taurus.json",
+   "game_name": "RSI Constellation Taurus",
+   "has_model": true
+  },
+  {
+   "site": "Corsair",
+   "status": "purchasable",
+   "file": "drak_corsair.json",
+   "game_name": "Drake Corsair",
+   "has_model": true
+  },
+  {
+   "site": "CSV-SM",
+   "status": "purchasable",
+   "file": "argo_csv_cargo.json",
+   "game_name": "Argo CSV-SM",
+   "has_model": true
+  },
+  {
+   "site": "Cutlass Black",
+   "status": "purchasable",
+   "file": "drak_cutlass_black.json",
+   "game_name": "Drake Cutlass Black",
+   "has_model": false
+  },
+  {
+   "site": "Cutlass Blue",
+   "status": "purchasable",
+   "file": "drak_cutlass_blue.json",
+   "game_name": "Drake Cutlass Blue",
+   "has_model": true
+  },
+  {
+   "site": "Cutlass Red",
+   "status": "purchasable",
+   "file": "drak_cutlass_red.json",
+   "game_name": "Drake Cutlass Red",
+   "has_model": true
+  },
+  {
+   "site": "Cutlass Steel",
+   "status": "purchasable",
+   "file": "drak_cutlass_steel.json",
+   "game_name": "Drake Cutlass Steel",
+   "has_model": true
+  },
+  {
+   "site": "Cutter",
+   "status": "purchasable",
+   "file": "drak_cutter.json",
+   "game_name": "Drake Cutter",
+   "has_model": true
+  },
+  {
+   "site": "Cutter Rambler",
+   "status": "purchasable",
+   "file": "drak_cutter_rambler.json",
+   "game_name": "Drake Cutter Rambler",
+   "has_model": true
+  },
+  {
+   "site": "Cutter Scout",
+   "status": "purchasable",
+   "file": "drak_cutter_scout.json",
+   "game_name": "Drake Cutter Scout",
+   "has_model": true
+  },
+  {
+   "site": "Cyclone",
+   "status": "purchasable",
+   "file": "tmbl_cyclone.json",
+   "game_name": "Tumbril Cyclone",
+   "has_model": true
+  },
+  {
+   "site": "Cyclone AA",
+   "status": "purchasable",
+   "file": "tmbl_cyclone_aa.json",
+   "game_name": "Tumbril Cyclone AA",
+   "has_model": true
+  },
+  {
+   "site": "Cyclone MT",
+   "status": "purchasable",
+   "file": "tmbl_cyclone_mt.json",
+   "game_name": "Tumbril Cyclone MT",
+   "has_model": true
+  },
+  {
+   "site": "Cyclone RC",
+   "status": "purchasable",
+   "file": "tmbl_cyclone_rc.json",
+   "game_name": "Tumbril Cyclone RC",
+   "has_model": true
+  },
+  {
+   "site": "Cyclone RN",
+   "status": "purchasable",
+   "file": "tmbl_cyclone_rn.json",
+   "game_name": "Tumbril Cyclone RN",
+   "has_model": true
+  },
+  {
+   "site": "Cyclone TR",
+   "status": "purchasable",
+   "file": "tmbl_cyclone_tr.json",
+   "game_name": "Tumbril Cyclone TR",
+   "has_model": true
+  },
+  {
+   "site": "Defender",
+   "status": "purchasable",
+   "file": "banu_defender.json",
+   "game_name": "Banu Defender",
+   "has_model": true
+  },
+  {
+   "site": "Dragonfly",
+   "status": "purchasable",
+   "file": "drak_dragonfly.json",
+   "game_name": "Drake Dragonfly",
+   "has_model": false
+  },
+  {
+   "site": "Eclipse",
+   "status": "purchasable",
+   "file": "aegs_eclipse.json",
+   "game_name": "Aegis Eclipse",
+   "has_model": true
+  },
+  {
+   "site": "F7C-M Super Hornet Mk I",
+   "status": "purchasable",
+   "file": "anvl_hornet_f7cm.json",
+   "game_name": "Anvil F7C-M Super Hornet Mk I",
+   "has_model": true
+  },
+  {
+   "site": "F7C-R Hornet Tracker Mk I",
+   "status": "purchasable",
+   "file": "anvl_hornet_f7cr.json",
+   "game_name": "Anvil F7C-R Hornet Tracker Mk I",
+   "has_model": true
+  },
+  {
+   "site": "F7C-R Hornet Tracker Mk II",
+   "status": "purchasable",
+   "file": "anvl_hornet_f7cr_mk2.json",
+   "game_name": "Anvil F7C-R Hornet Tracker Mk II",
+   "has_model": true
+  },
+  {
+   "site": "F7C-S Hornet Ghost Mk I",
+   "status": "purchasable",
+   "file": "anvl_hornet_f7cs.json",
+   "game_name": "Anvil F7C-S Hornet Ghost Mk I",
+   "has_model": true
+  },
+  {
+   "site": "F7C-S Hornet Ghost Mk II",
+   "status": "purchasable",
+   "file": "anvl_hornet_f7cs_mk2.json",
+   "game_name": "Anvil F7C-S Hornet Ghost Mk II",
+   "has_model": true
+  },
+  {
+   "site": "F7C Hornet Mk I",
+   "status": "purchasable",
+   "file": "anvl_hornet_f7c.json",
+   "game_name": "Anvil F7C Hornet Mk I",
+   "has_model": true
+  },
+  {
+   "site": "F7C Hornet Mk II",
+   "status": "purchasable",
+   "file": "anvl_hornet_f7c_mk2.json",
+   "game_name": "Anvil F7C Hornet Mk II",
+   "has_model": true
+  },
+  {
+   "site": "F7C Hornet Wildfire Mk I",
+   "status": "purchasable",
+   "file": "anvl_hornet_f7c_wildfire.json",
+   "game_name": "Anvil F7C Hornet Wildfire Mk I",
+   "has_model": true
+  },
+  {
+   "site": "Fortune",
+   "status": "purchasable",
+   "file": "misc_fortune.json",
+   "game_name": "MISC Fortune",
+   "has_model": true
+  },
+  {
+   "site": "Freelancer",
+   "status": "purchasable",
+   "file": "misc_freelancer.json",
+   "game_name": "MISC Freelancer",
+   "has_model": true
+  },
+  {
+   "site": "Freelancer DUR",
+   "status": "purchasable",
+   "file": "misc_freelancer_dur.json",
+   "game_name": "MISC Freelancer DUR",
+   "has_model": true
+  },
+  {
+   "site": "Freelancer MAX",
+   "status": "purchasable",
+   "file": "misc_freelancer_max.json",
+   "game_name": "MISC Freelancer MAX",
+   "has_model": true
+  },
+  {
+   "site": "Freelancer MIS",
+   "status": "purchasable",
+   "file": "misc_freelancer_mis.json",
+   "game_name": "MISC Freelancer MIS",
+   "has_model": true
+  },
+  {
+   "site": "Fury",
+   "status": "purchasable",
+   "file": "misc_fury.json",
+   "game_name": "Mirai Fury",
+   "has_model": true
+  },
+  {
+   "site": "Fury LX",
+   "status": "purchasable",
+   "file": "misc_fury_lx.json",
+   "game_name": "Mirai Fury LX",
+   "has_model": true
+  },
+  {
+   "site": "Fury MX",
+   "status": "purchasable",
+   "file": "misc_fury_miru.json",
+   "game_name": "Mirai Fury MX",
+   "has_model": true
+  },
+  {
+   "site": "Gladiator",
+   "status": "purchasable",
+   "file": "anvl_gladiator.json",
+   "game_name": "Anvil Gladiator",
+   "has_model": true
+  },
+  {
+   "site": "Gladius",
+   "status": "purchasable",
+   "file": "aegs_gladius.json",
+   "game_name": "Aegis Gladius",
+   "has_model": false
+  },
+  {
+   "site": "Gladius Valiant",
+   "status": "purchasable",
+   "file": "aegs_gladius_valiant.json",
+   "game_name": "Aegis Gladius Valiant",
+   "has_model": true
+  },
+  {
+   "site": "Glaive",
+   "status": "pledge_only",
+   "file": "vncl_glaive.json",
+   "game_name": "Esperia Glaive",
+   "has_model": true
+  },
+  {
+   "site": "Golem",
+   "status": "purchasable",
+   "file": "drak_golem.json",
+   "game_name": "Drake Golem",
+   "has_model": true
+  },
+  {
+   "site": "Golem OX",
+   "status": "pledge_only",
+   "file": "drak_golem_ox.json",
+   "game_name": "Drake Golem OX",
+   "has_model": true
+  },
+  {
+   "site": "Guardian",
+   "status": "purchasable",
+   "file": "mrai_guardian.json",
+   "game_name": "Mirai Guardian",
+   "has_model": true
+  },
+  {
+   "site": "Guardian MX",
+   "status": "purchasable",
+   "file": "mrai_guardian_mx.json",
+   "game_name": "Mirai Guardian MX",
+   "has_model": true
+  },
+  {
+   "site": "Guardian QI",
+   "status": "pledge_only",
+   "file": "mrai_guardian_qi.json",
+   "game_name": "Mirai Guardian QI",
+   "has_model": true
+  },
+  {
+   "site": "Hammerhead",
+   "status": "purchasable",
+   "file": "aegs_hammerhead.json",
+   "game_name": "Aegis Hammerhead",
+   "has_model": true
+  },
+  {
+   "site": "Hawk",
+   "status": "purchasable",
+   "file": "anvl_hawk.json",
+   "game_name": "Anvil Hawk",
+   "has_model": true
+  },
+  {
+   "site": "Herald",
+   "status": "purchasable",
+   "file": "drak_herald.json",
+   "game_name": "Drake Herald",
+   "has_model": true
+  },
+  {
+   "site": "Hermes",
+   "status": "purchasable",
+   "file": "rsi_hermes.json",
+   "game_name": "RSI Hermes",
+   "has_model": false
+  },
+  {
+   "site": "HoverQuad",
+   "status": "purchasable",
+   "file": "cnou_hoverquad.json",
+   "game_name": "C.O. HoverQuad",
+   "has_model": true
+  },
+  {
+   "site": "Hull A",
+   "status": "purchasable",
+   "file": "misc_hull_a.json",
+   "game_name": "MISC Hull A",
+   "has_model": true
+  },
+  {
+   "site": "Hull B",
+   "status": "pledge_only",
+   "file": "misc_hull_b.json",
+   "game_name": "MISC Hull B",
+   "has_model": true
+  },
+  {
+   "site": "Hull C",
+   "status": "purchasable",
+   "file": "misc_hull_c.json",
+   "game_name": "MISC Hull C",
+   "has_model": true
+  },
+  {
+   "site": "Hurricane",
+   "status": "purchasable",
+   "file": "anvl_hurricane.json",
+   "game_name": "Anvil Hurricane",
+   "has_model": true
+  },
+  {
+   "site": "Idris-M",
+   "status": "pledge_only",
+   "file": "aegs_idris_m.json",
+   "game_name": "Aegis Idris-M",
+   "has_model": true
+  },
+  {
+   "site": "Idris-P",
+   "status": "pledge_only",
+   "file": "aegs_idris_p.json",
+   "game_name": "Aegis Idris-P",
+   "has_model": true
+  },
+  {
+   "site": "Intrepid",
+   "status": "purchasable",
+   "file": "crus_intrepid.json",
+   "game_name": "Crusader Intrepid",
+   "has_model": true
+  },
+  {
+   "site": "Ironclad",
+   "status": "pledge_only",
+   "file": "drak_ironclad.json",
+   "game_name": "Drake Ironclad",
+   "has_model": true
+  },
+  {
+   "site": "Ironclad Assault",
+   "status": "pledge_only",
+   "file": "drak_ironclad_assault.json",
+   "game_name": "Drake Ironclad Assault",
+   "has_model": true
+  },
+  {
+   "site": "Javelin",
+   "status": "pledge_only",
+   "file": "aegs_javelin.json",
+   "game_name": "Aegis Javelin",
+   "has_model": true
+  },
+  {
+   "site": "Khartu-al",
+   "status": "purchasable",
+   "file": "xian_scout.json",
+   "game_name": "Aopoa Khartu-al",
+   "has_model": true
+  },
+  {
+   "site": "L-21 Wolf",
+   "status": "purchasable",
+   "file": "krig_l21_wolf.json",
+   "game_name": "Kruger L-21 Wolf",
+   "has_model": true
+  },
+  {
+   "site": "L-22 Alpha Wolf",
+   "status": "pledge_only",
+   "file": "krig_l22_alphawolf.json",
+   "game_name": "Kruger L-22 Alpha Wolf",
+   "has_model": true
+  },
+  {
+   "site": "Lynx",
+   "status": "purchasable",
+   "file": "rsi_lynx.json",
+   "game_name": "RSI Lynx",
+   "has_model": true
+  },
+  {
+   "site": "M2 Hercules Starlifter",
+   "status": "purchasable",
+   "file": "crus_starlifter_m2.json",
+   "game_name": "Crusader M2 Hercules Starlifter",
+   "has_model": false
+  },
+  {
+   "site": "M50",
+   "status": "purchasable",
+   "file": "orig_m50.json",
+   "game_name": "Origin M50 Interceptor",
+   "has_model": true
+  },
+  {
+   "site": "M80",
+   "status": "pledge_only",
+   "file": "orig_m80.json",
+   "game_name": "Origin M80",
+   "has_model": false
+  },
+  {
+   "site": "Mantis",
+   "status": "purchasable",
+   "file": "rsi_mantis.json",
+   "game_name": "RSI Mantis",
+   "has_model": true
+  },
+  {
+   "site": "MDC",
+   "status": "purchasable",
+   "file": "grin_mdc.json",
+   "game_name": "Greycat MDC",
+   "has_model": true
+  },
+  {
+   "site": "Mercury Star Runner",
+   "status": "purchasable",
+   "file": "crus_star_runner.json",
+   "game_name": "Crusader Mercury Star Runner",
+   "has_model": false
+  },
+  {
+   "site": "Meteor",
+   "status": "purchasable",
+   "file": "rsi_meteor.json",
+   "game_name": "RSI Meteor",
+   "has_model": true
+  },
+  {
+   "site": "MOLE",
+   "status": "purchasable",
+   "file": "argo_mole.json",
+   "game_name": "Argo MOLE",
+   "has_model": true
+  },
+  {
+   "site": "MOTH",
+   "status": "purchasable",
+   "file": "argo_moth.json",
+   "game_name": "Argo MOTH",
+   "has_model": false
+  },
+  {
+   "site": "MPUV Cargo",
+   "status": "purchasable",
+   "file": "argo_mpuv.json",
+   "game_name": "Argo MPUV Cargo",
+   "has_model": true
+  },
+  {
+   "site": "MPUV Personnel",
+   "status": "purchasable",
+   "file": "argo_mpuv_transport.json",
+   "game_name": "Argo MPUV Personnel",
+   "has_model": true
+  },
+  {
+   "site": "MPUV Tractor",
+   "status": "purchasable",
+   "file": "argo_mpuv_1t.json",
+   "game_name": "Argo MPUV Tractor",
+   "has_model": true
+  },
+  {
+   "site": "MTC",
+   "status": "purchasable",
+   "file": "grin_mtc.json",
+   "game_name": "Greycat MTC",
+   "has_model": true
+  },
+  {
+   "site": "Mule",
+   "status": "purchasable",
+   "file": "drak_mule.json",
+   "game_name": "Drake Mule",
+   "has_model": true
+  },
+  {
+   "site": "Mustang Alpha",
+   "status": "purchasable",
+   "file": "cnou_mustang_alpha.json",
+   "game_name": "C.O. Mustang Alpha",
+   "has_model": true
+  },
+  {
+   "site": "Mustang Beta",
+   "status": "purchasable",
+   "file": "cnou_mustang_beta.json",
+   "game_name": "C.O. Mustang Beta",
+   "has_model": true
+  },
+  {
+   "site": "Mustang Delta",
+   "status": "purchasable",
+   "file": "cnou_mustang_delta.json",
+   "game_name": "C.O. Mustang Delta",
+   "has_model": true
+  },
+  {
+   "site": "Mustang Gamma",
+   "status": "purchasable",
+   "file": "cnou_mustang_gamma.json",
+   "game_name": "C.O. Mustang Gamma",
+   "has_model": true
+  },
+  {
+   "site": "Nomad",
+   "status": "purchasable",
+   "file": "cnou_nomad.json",
+   "game_name": "C.O. Nomad",
+   "has_model": true
+  },
+  {
+   "site": "Nox",
+   "status": "purchasable",
+   "file": "xian_nox.json",
+   "game_name": "Aopoa Nox",
+   "has_model": true
+  },
+  {
+   "site": "P-52 Merlin",
+   "status": "purchasable",
+   "file": "krig_p52_merlin.json",
+   "game_name": "Kruger P-52 Merlin",
+   "has_model": true
+  },
+  {
+   "site": "P-72 Archimedes",
+   "status": "purchasable",
+   "file": "krig_p72_archimedes.json",
+   "game_name": "Kruger P-72 Archimedes",
+   "has_model": true
+  },
+  {
+   "site": "Paladin",
+   "status": "purchasable",
+   "file": "anvl_paladin.json",
+   "game_name": "Anvil Paladin",
+   "has_model": true
+  },
+  {
+   "site": "Perseus",
+   "status": "purchasable",
+   "file": "rsi_perseus.json",
+   "game_name": "RSI Perseus",
+   "has_model": true
+  },
+  {
+   "site": "Pitbull",
+   "status": "pledge_only",
+   "file": "drak_pitbull.json",
+   "game_name": "Drake Pitbull",
+   "has_model": false
+  },
+  {
+   "site": "Polaris",
+   "status": "pledge_only",
+   "file": "rsi_polaris.json",
+   "game_name": "RSI Polaris",
+   "has_model": true
+  },
+  {
+   "site": "Prospector",
+   "status": "purchasable",
+   "file": "misc_prospector.json",
+   "game_name": "MISC Prospector",
+   "has_model": true
+  },
+  {
+   "site": "Prowler",
+   "status": "purchasable",
+   "file": "espr_prowler.json",
+   "game_name": "Esperia Prowler",
+   "has_model": true
+  },
+  {
+   "site": "Prowler Utility",
+   "status": "purchasable",
+   "file": "espr_prowler_utility.json",
+   "game_name": "Esperia Prowler Utility",
+   "has_model": true
+  },
+  {
+   "site": "PTV",
+   "status": "purchasable",
+   "file": "grin_ptv.json",
+   "game_name": "Greycat PTV",
+   "has_model": true
+  },
+  {
+   "site": "Pulse",
+   "status": "purchasable",
+   "file": "mrai_pulse.json",
+   "game_name": "Mirai Pulse",
+   "has_model": true
+  },
+  {
+   "site": "Pulse LX",
+   "status": "purchasable",
+   "file": "mrai_pulse_lx.json",
+   "game_name": "Mirai Pulse LX",
+   "has_model": true
+  },
+  {
+   "site": "RAFT",
+   "status": "purchasable",
+   "file": "argo_raft.json",
+   "game_name": "Argo RAFT",
+   "has_model": true
+  },
+  {
+   "site": "Railen",
+   "status": "pledge_only",
+   "file": "gama_railen.json",
+   "game_name": "Gatac Railen",
+   "has_model": true
+  },
+  {
+   "site": "Razor",
+   "status": "purchasable",
+   "file": "misc_razor.json",
+   "game_name": "Mirai Razor",
+   "has_model": true
+  },
+  {
+   "site": "Razor EX",
+   "status": "purchasable",
+   "file": "misc_razor_ex.json",
+   "game_name": "Mirai Razor EX",
+   "has_model": true
+  },
+  {
+   "site": "Razor LX",
+   "status": "purchasable",
+   "file": "misc_razor_lx.json",
+   "game_name": "Mirai Razor LX",
+   "has_model": true
+  },
+  {
+   "site": "Reclaimer",
+   "status": "purchasable",
+   "file": "aegs_reclaimer.json",
+   "game_name": "Aegis Reclaimer",
+   "has_model": true
+  },
+  {
+   "site": "Redeemer",
+   "status": "purchasable",
+   "file": "aegs_redeemer.json",
+   "game_name": "Aegis Redeemer",
+   "has_model": true
+  },
+  {
+   "site": "Reliant Kore",
+   "status": "purchasable",
+   "file": "misc_reliant.json",
+   "game_name": "MISC Reliant Kore",
+   "has_model": true
+  },
+  {
+   "site": "Reliant Mako",
+   "status": "purchasable",
+   "file": "misc_reliant_mako.json",
+   "game_name": "MISC Reliant Mako",
+   "has_model": true
+  },
+  {
+   "site": "Reliant Sen",
+   "status": "purchasable",
+   "file": "misc_reliant_sen.json",
+   "game_name": "MISC Reliant Sen",
+   "has_model": true
+  },
+  {
+   "site": "Reliant Tana",
+   "status": "purchasable",
+   "file": "misc_reliant_tana.json",
+   "game_name": "MISC Reliant Tana",
+   "has_model": true
+  },
+  {
+   "site": "Retaliator",
+   "status": "purchasable",
+   "file": "aegs_retaliator.json",
+   "game_name": "Aegis Retaliator",
+   "has_model": true
+  },
+  {
+   "site": "ROC",
+   "status": "purchasable",
+   "file": "grin_roc.json",
+   "game_name": "Greycat ROC",
+   "has_model": true
+  },
+  {
+   "site": "ROC-DS",
+   "status": "purchasable",
+   "file": "grin_roc_ds.json",
+   "game_name": "Greycat ROC-DS",
+   "has_model": true
+  },
+  {
+   "site": "Sabre",
+   "status": "purchasable",
+   "file": "aegs_sabre.json",
+   "game_name": "Aegis Sabre",
+   "has_model": true
+  },
+  {
+   "site": "Sabre Comet",
+   "status": "purchasable",
+   "file": "aegs_sabre_comet.json",
+   "game_name": "Aegis Sabre Comet",
+   "has_model": true
+  },
+  {
+   "site": "Sabre Firebird",
+   "status": "purchasable",
+   "file": "aegs_sabre_firebird.json",
+   "game_name": "Aegis Sabre Firebird",
+   "has_model": true
+  },
+  {
+   "site": "Sabre Peregrine",
+   "status": "purchasable",
+   "file": "aegs_sabre_peregrine.json",
+   "game_name": "Aegis Sabre Peregrine",
+   "has_model": true
+  },
+  {
+   "site": "Salvation",
+   "status": "purchasable",
+   "file": "rsi_salvation.json",
+   "game_name": "RSI Salvation",
+   "has_model": true
+  },
+  {
+   "site": "San'tok.yai",
+   "status": "purchasable",
+   "file": "xnaa_santokyai.json",
+   "game_name": "Aopoa San'tok.y\\u0101i",
+   "has_model": true
+  },
+  {
+   "site": "Scorpius",
+   "status": "purchasable",
+   "file": "rsi_scorpius.json",
+   "game_name": "RSI Scorpius",
+   "has_model": true
+  },
+  {
+   "site": "Scorpius Antares",
+   "status": "purchasable",
+   "file": "rsi_scorpius_antares.json",
+   "game_name": "RSI Scorpius Antares",
+   "has_model": true
+  },
+  {
+   "site": "Scythe",
+   "status": "pledge_only",
+   "file": "vncl_scythe.json",
+   "game_name": "Vanduul Scythe",
+   "has_model": true
+  },
+  {
+   "site": "Shiv",
+   "status": "purchasable",
+   "file": "glsn_shiv.json",
+   "game_name": "Grey's Shiv",
+   "has_model": true
+  },
+  {
+   "site": "Spartan",
+   "status": "purchasable",
+   "file": "anvl_spartan.json",
+   "game_name": "Anvil Spartan",
+   "has_model": true
+  },
+  {
+   "site": "SRV",
+   "status": "purchasable",
+   "file": "argo_srv.json",
+   "game_name": "Argo SRV",
+   "has_model": true
+  },
+  {
+   "site": "Starfarer",
+   "status": "purchasable",
+   "file": "misc_starfarer.json",
+   "game_name": "MISC Starfarer",
+   "has_model": true
+  },
+  {
+   "site": "Starfarer Gemini",
+   "status": "purchasable",
+   "file": "misc_starfarer_gemini.json",
+   "game_name": "MISC Starfarer Gemini",
+   "has_model": true
+  },
+  {
+   "site": "Starlancer MAX",
+   "status": "purchasable",
+   "file": "misc_starlancer_max.json",
+   "game_name": "MISC Starlancer MAX",
+   "has_model": true
+  },
+  {
+   "site": "Starlancer TAC",
+   "status": "purchasable",
+   "file": "misc_starlancer_tac.json",
+   "game_name": "MISC Starlancer TAC",
+   "has_model": true
+  },
+  {
+   "site": "Starlite",
+   "status": "pledge_only",
+   "file": "misc_starlite.json",
+   "game_name": "MISC Starlite",
+   "has_model": false
+  },
+  {
+   "site": "Stinger",
+   "status": "purchasable",
+   "file": "vncl_stinger.json",
+   "game_name": "Esperia Stinger",
+   "has_model": true
+  },
+  {
+   "site": "Storm",
+   "status": "purchasable",
+   "file": "tmbl_storm.json",
+   "game_name": "Tumbril Storm",
+   "has_model": true
+  },
+  {
+   "site": "Storm AA",
+   "status": "purchasable",
+   "file": "tmbl_storm_aa.json",
+   "game_name": "Tumbril Storm AA",
+   "has_model": true
+  },
+  {
+   "site": "STV",
+   "status": "purchasable",
+   "file": "grin_stv.json",
+   "game_name": "Greycat STV",
+   "has_model": true
+  },
+  {
+   "site": "Syulen",
+   "status": "purchasable",
+   "file": "gama_syulen.json",
+   "game_name": "Gatac Syulen",
+   "has_model": true
+  },
+  {
+   "site": "Talon",
+   "status": "purchasable",
+   "file": "espr_talon.json",
+   "game_name": "Esperia Talon",
+   "has_model": true
+  },
+  {
+   "site": "Talon Shrike",
+   "status": "purchasable",
+   "file": "espr_talon_shrike.json",
+   "game_name": "Esperia Talon Shrike",
+   "has_model": true
+  },
+  {
+   "site": "Terrapin",
+   "status": "purchasable",
+   "file": "anvl_terrapin.json",
+   "game_name": "Anvil Terrapin",
+   "has_model": true
+  },
+  {
+   "site": "Terrapin Medic",
+   "status": "purchasable",
+   "file": "anvl_terrapin_medic.json",
+   "game_name": "Anvil Terrapin Medic",
+   "has_model": true
+  },
+  {
+   "site": "Tiburon",
+   "status": "pledge_only",
+   "file": "aegs_tiburon.json",
+   "game_name": "Aegis Tiburon",
+   "has_model": false
+  },
+  {
+   "site": "Tyilui",
+   "status": "pledge_only",
+   "file": "gama_tyilui.json",
+   "game_name": "Gatac Tyilui",
+   "has_model": false
+  },
+  {
+   "site": "Ursa",
+   "status": "purchasable",
+   "file": "rsi_ursa_rover.json",
+   "game_name": "RSI Ursa",
+   "has_model": true
+  },
+  {
+   "site": "Ursa Medivac",
+   "status": "purchasable",
+   "file": "rsi_ursa_medivac.json",
+   "game_name": "RSI Ursa Medivac",
+   "has_model": true
+  },
+  {
+   "site": "UTV",
+   "status": "pledge_only",
+   "file": "grin_utv.json",
+   "game_name": "Greycat UTV",
+   "has_model": false
+  },
+  {
+   "site": "Valkyrie",
+   "status": "purchasable",
+   "file": "anvl_valkyrie.json",
+   "game_name": "Anvil Valkyrie",
+   "has_model": true
+  },
+  {
+   "site": "Vanguard Harbinger",
+   "status": "purchasable",
+   "file": "aegs_vanguard_harbinger.json",
+   "game_name": "Aegis Vanguard Harbinger",
+   "has_model": true
+  },
+  {
+   "site": "Vanguard Hoplite",
+   "status": "purchasable",
+   "file": "aegs_vanguard_hoplite.json",
+   "game_name": "Aegis Vanguard Hoplite",
+   "has_model": true
+  },
+  {
+   "site": "Vanguard Sentinel",
+   "status": "purchasable",
+   "file": "aegs_vanguard_sentinel.json",
+   "game_name": "Aegis Vanguard Sentinel",
+   "has_model": true
+  },
+  {
+   "site": "Vanguard Warden",
+   "status": "purchasable",
+   "file": "aegs_vanguard.json",
+   "game_name": "Aegis Vanguard Warden",
+   "has_model": true
+  },
+  {
+   "site": "Vulture",
+   "status": "purchasable",
+   "file": "drak_vulture.json",
+   "game_name": "Drake Vulture",
+   "has_model": true
+  },
+  {
+   "site": "X1",
+   "status": "purchasable",
+   "file": "orig_x1.json",
+   "game_name": "Origin X1",
+   "has_model": true
+  },
+  {
+   "site": "X1 Force",
+   "status": "purchasable",
+   "file": "orig_x1_force.json",
+   "game_name": "Origin X1 Force",
+   "has_model": true
+  },
+  {
+   "site": "X1 Velocity",
+   "status": "purchasable",
+   "file": "orig_x1_velocity.json",
+   "game_name": "Origin X1 Velocity",
+   "has_model": true
+  },
+  {
+   "site": "Zeus Mk II ES",
+   "status": "purchasable",
+   "file": "rsi_zeus_es.json",
+   "game_name": "RSI Zeus Mk II ES",
+   "has_model": true
+  },
+  {
+   "site": "600i Executive Edition",
+   "status": "pledge_only",
+   "file": "orig_600i_executive_edition.json",
+   "game_name": "Origin 600i Executive Edition",
+   "has_model": false
+  },
+  {
+   "site": "ATLS GEO IKTI",
+   "status": "pledge_only",
+   "file": "argo_atls_geo_ikti.json",
+   "game_name": "Argo ATLS GEO IKTI",
+   "has_model": false
+  },
+  {
+   "site": "ATLS IKTI",
+   "status": "pledge_only",
+   "file": "argo_atls_ikti.json",
+   "game_name": "Argo ATLS IKTI",
+   "has_model": false
+  },
+  {
+   "site": "ATLS IKTI RAD",
+   "status": "pledge_only",
+   "file": "argo_atls_ikti_argos.json",
+   "game_name": "Argo ATLS IKTI Rad",
+   "has_model": false
+  },
+  {
+   "site": "Ballista Dunestalker",
+   "status": "pledge_only",
+   "file": "anvl_ballista_dunestalker.json",
+   "game_name": "Anvil Ballista Dunestalker",
+   "has_model": false
+  },
+  {
+   "site": "Ballista Snowblind",
+   "status": "pledge_only",
+   "file": "anvl_ballista_snowblind.json",
+   "game_name": "Anvil Ballista Snowblind",
+   "has_model": false
+  },
+  {
+   "site": "Carrack Expedition",
+   "status": "pledge_only",
+   "file": "anvl_carrack_expedition.json",
+   "game_name": "Anvil Carrack Expedition",
+   "has_model": true
+  },
+  {
+   "site": "Constellation Phoenix Emerald",
+   "status": "pledge_only",
+   "file": "rsi_constellation_phoenix_emerald.json",
+   "game_name": "RSI Constellation Phoenix Emerald",
+   "has_model": true
+  },
+  {
+   "site": "F7A Hornet Mk I",
+   "status": "pledge_only",
+   "file": "anvl_hornet_f7a_mk1.json",
+   "game_name": "Anvil F7A Hornet Mk I",
+   "has_model": true
+  },
+  {
+   "site": "F7A Hornet Mk II",
+   "status": "pledge_only",
+   "file": "anvl_hornet_f7a_mk2.json",
+   "game_name": "Anvil F7A Hornet Mk II",
+   "has_model": true
+  },
+  {
+   "site": "F7C-M Hornet Heartseeker Mk II",
+   "status": "pledge_only",
+   "file": "anvl_hornet_f7cm_mk2_heartseeker.json",
+   "game_name": "Anvil F7C-M Hornet Heartseeker Mk II",
+   "has_model": false
+  },
+  {
+   "site": "F7C-M Super Hornet Mk II",
+   "status": "pledge_only",
+   "file": "anvl_hornet_f7cm_mk2.json",
+   "game_name": "Anvil F7C-M Super Hornet Mk II",
+   "has_model": true
+  },
+  {
+   "site": "F8C Lightning Executive Edition",
+   "status": "pledge_only",
+   "file": "anvl_lightning_f8c_exec.json",
+   "game_name": "Anvil F8C Lightning Executive Edition",
+   "has_model": true
+  },
+  {
+   "site": "Gladius Dunlevy",
+   "status": "pledge_only",
+   "file": "aegs_gladius_dunlevy.json",
+   "game_name": "Aegis Gladius Dunlevy",
+   "has_model": false
+  },
+  {
+   "site": "Gladius Pirate",
+   "status": "pledge_only",
+   "file": "aegs_gladius_pir.json",
+   "game_name": "Aegis Gladius Pirate",
+   "has_model": false
+  },
+  {
+   "site": "Mustang Omega",
+   "status": "pledge_only",
+   "file": "cnou_mustang_omega.json",
+   "game_name": "C.O. Mustang Omega",
+   "has_model": true
+  },
+  {
+   "site": "P-72 Archimedes Emerald",
+   "status": "pledge_only",
+   "file": "krig_p72_archimedes_emerald.json",
+   "game_name": "Kruger P-72 Archimedes Emerald",
+   "has_model": true
+  },
+  {
+   "site": "Sabre Raven",
+   "status": "pledge_only",
+   "file": "aegs_sabre_raven.json",
+   "game_name": "Aegis Sabre Raven",
+   "has_model": true
+  },
+  {
+   "site": "Ursa Fortuna",
+   "status": "pledge_only",
+   "file": "rsi_ursa_rover_emerald.json",
+   "game_name": "RSI Ursa Fortuna",
+   "has_model": true
+  },
+  {
+   "site": "600i Explorer",
+   "status": "purchasable",
+   "file": "orig_600i.json",
+   "game_name": "Origin 600i",
+   "has_model": null,
+   "resolved_by": "manual cross-reference 2026-08-02"
+  },
+  {
+   "site": "Ares Inferno",
+   "status": "purchasable",
+   "file": "crus_starfighter_inferno.json",
+   "game_name": "Crusader Ares Star Fighter Inferno",
+   "has_model": null,
+   "resolved_by": "manual cross-reference 2026-08-02"
+  },
+  {
+   "site": "Ares Ion",
+   "status": "purchasable",
+   "file": "crus_starfighter_ion.json",
+   "game_name": "Crusader Ares Star Fighter Ion",
+   "has_model": null,
+   "resolved_by": "manual cross-reference 2026-08-02"
+  },
+  {
+   "site": "Nova Tank",
+   "status": "purchasable",
+   "file": "tmbl_nova.json",
+   "game_name": "Tumbril Nova",
+   "has_model": null,
+   "resolved_by": "manual cross-reference 2026-08-02"
+  },
+  {
+   "site": "F8C Lightning",
+   "file": "anvl_lightning_f8c.json",
+   "game_name": null,
+   "resolved_by": "base file is canonical; variants recorded below",
+   "variants": [
+    "anvl_lightning_f8c_plat.json"
+   ]
+  },
+  {
+   "site": "Zeus Mk II CL",
+   "file": "rsi_zeus_cl.json",
+   "game_name": null,
+   "resolved_by": "base file is canonical; variants recorded below",
+   "variants": [
+    "rsi_zeus_cl_collector_indust.json"
+   ]
+  }
+ ],
+ "no_game_file": [
+  {
+   "site": "Arrastra",
+   "status": "pledge_only",
+   "mfr": "Roberts Space Industries"
+  },
+  {
+   "site": "Crucible",
+   "status": "pledge_only",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "site": "CSV-FM",
+   "status": "pledge_only",
+   "mfr": "Argo Astronautics"
+  },
+  {
+   "site": "E1 Spirit",
+   "status": "pledge_only",
+   "mfr": "Crusader Industries"
+  },
+  {
+   "site": "Endeavor",
+   "status": "pledge_only",
+   "mfr": "MISC"
+  },
+  {
+   "site": "Expanse",
+   "status": "pledge_only",
+   "mfr": "MISC"
+  },
+  {
+   "site": "G12",
+   "status": "pledge_only",
+   "mfr": "Origin Jumpworks"
+  },
+  {
+   "site": "G12a",
+   "status": "pledge_only",
+   "mfr": "Origin Jumpworks"
+  },
+  {
+   "site": "G12r",
+   "status": "pledge_only",
+   "mfr": "Origin Jumpworks"
+  },
+  {
+   "site": "Galaxy",
+   "status": "pledge_only",
+   "mfr": "Roberts Space Industries"
+  },
+  {
+   "site": "Genesis Starliner",
+   "status": "pledge_only",
+   "mfr": "Crusader Industries"
+  },
+  {
+   "site": "Hull D",
+   "status": "pledge_only",
+   "mfr": "MISC"
+  },
+  {
+   "site": "Hull E",
+   "status": "pledge_only",
+   "mfr": "MISC"
+  },
+  {
+   "site": "Kraken",
+   "status": "pledge_only",
+   "mfr": "Drake Interplanetary"
+  },
+  {
+   "site": "Kraken Privateer",
+   "status": "pledge_only",
+   "mfr": "Drake Interplanetary"
+  },
+  {
+   "site": "Legionnaire",
+   "status": "pledge_only",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "site": "Liberator",
+   "status": "pledge_only",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "site": "Merchantman",
+   "status": "pledge_only",
+   "mfr": "Banu (Souli)"
+  },
+  {
+   "site": "Nautilus",
+   "status": "pledge_only",
+   "mfr": "Aegis Dynamics"
+  },
+  {
+   "site": "Odin",
+   "status": "pledge_only",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "site": "Odyssey",
+   "status": "pledge_only",
+   "mfr": "MISC"
+  },
+  {
+   "site": "Orion",
+   "status": "pledge_only",
+   "mfr": "Roberts Space Industries"
+  },
+  {
+   "site": "Pioneer",
+   "status": "pledge_only",
+   "mfr": "Consolidated Outland"
+  },
+  {
+   "site": "Ranger CV",
+   "status": "pledge_only",
+   "mfr": "Tumbril Land Systems"
+  },
+  {
+   "site": "Ranger RC",
+   "status": "pledge_only",
+   "mfr": "Tumbril Land Systems"
+  },
+  {
+   "site": "Ranger TR",
+   "status": "pledge_only",
+   "mfr": "Tumbril Land Systems"
+  },
+  {
+   "site": "RAPTOR",
+   "status": "pledge_only",
+   "mfr": "MISC"
+  },
+  {
+   "site": "Starlancer BLD",
+   "status": "pledge_only",
+   "mfr": "MISC"
+  },
+  {
+   "site": "Vulcan",
+   "status": "pledge_only",
+   "mfr": "Aegis Dynamics"
+  },
+  {
+   "site": "Zeus Mk II MR",
+   "status": "pledge_only",
+   "mfr": "Roberts Space Industries"
+  },
+  {
+   "site": "F7C-M Super Hornet Heartseeker Mk I",
+   "status": "pledge_only",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "site": "Mustang Alpha Vindicator",
+   "status": "pledge_only",
+   "mfr": "Consolidated Outland"
+  },
+  {
+   "site": "Valkyrie Liberator",
+   "status": "pledge_only",
+   "mfr": "Anvil Aerospace"
+  }
+ ],
+ "ambiguous": [],
+ "tier_variants": [
+  "rsi_apollo_medivac_tier_1.json",
+  "rsi_apollo_medivac_tier_2.json",
+  "rsi_apollo_medivac_tier_3.json",
+  "rsi_apollo_triage_tier_1.json",
+  "rsi_apollo_triage_tier_2.json",
+  "rsi_apollo_triage_tier_3.json"
+ ],
+ "game_only": [
+  {
+   "file": "aegs_eclipse_bis2950.json",
+   "name": "Aegis Eclipse",
+   "career": "Combat",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "aegs_hammerhead_gs.json",
+   "name": "Aegis Hammerhead",
+   "career": "Combat",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "aegs_hammerhead_showdown.json",
+   "name": "Aegis Hammerhead 2949 Best In Show Edition",
+   "career": "Combat",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "aegs_idris_p_collector_military.json",
+   "name": "Aegis Idris-P Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "aegs_idris_p_fw_25.json",
+   "name": "Aegis Idris-P",
+   "career": "Combat",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "aegs_idris_p_tsg.json",
+   "name": "Aegis Idris-P",
+   "career": "Combat",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "aegs_reclaimer_showdown.json",
+   "name": "Aegis Reclaimer 2949 Best In Show Edition",
+   "career": "Industrial",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "aegs_reclaimer_teach.json",
+   "name": "Aegis Reclaimer Teach's Special",
+   "career": "Industrial",
+   "bucket": "dealer special (Teach's)"
+  },
+  {
+   "file": "aegs_sabre_firebird_collector_milt.json",
+   "name": "Aegis Sabre Firebird Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "aegs_sabre_peregrine_collector_competition.json",
+   "name": "Aegis Sabre Peregrine Wikelo Speedy Special",
+   "career": "Competition",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "anvl_asgard_collector_military.json",
+   "name": "Anvil Asgard Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "anvl_carrack_bis2950.json",
+   "name": "Anvil Carrack",
+   "career": "Exploration",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "anvl_hornet_f7_mk2_collector_mod.json",
+   "name": "Anvil F7 Hornet Mk Wikelo",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "anvl_hornet_f7a_mk2_exec_military.json",
+   "name": "Hornet F7A Mk II PYAM Exec",
+   "career": "Combat",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "anvl_hornet_f7a_mk2_exec_stealth.json",
+   "name": "Hornet F7A Mk II PYAM Exec",
+   "career": "Combat",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "anvl_hornet_f7cm_heartseeker.json",
+   "name": "Anvil F7C-M Hornet Heartseeker Mk I",
+   "career": "Combat",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "anvl_lightning_f8.json",
+   "name": "Anvil F8A Lightning",
+   "career": "Combat",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "anvl_lightning_f8c_collector_military.json",
+   "name": "Anvil F8C Lightning Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "anvl_lightning_f8c_collector_stealth.json",
+   "name": "Anvil F8C Lightning Wikelo Sneak Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "anvl_lightning_f8c_exec_military.json",
+   "name": "F8C Lightning PYAM Exec",
+   "career": "Combat",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "anvl_lightning_f8c_exec_stealth.json",
+   "name": "F8C Lightning PYAM Exec",
+   "career": "Combat",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "anvl_lightning_f8c_plat.json",
+   "name": "Anvil F8C Lightning",
+   "career": "Combat",
+   "bucket": "colour / minor variant"
+  },
+  {
+   "file": "anvl_terrapin_medic_collector_medic.json",
+   "name": "Anvil Terrapin Medic Wikelo Savior Special",
+   "career": "Support",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "anvl_valkyrie_bis2950.json",
+   "name": "Anvil Valkyrie",
+   "career": "Combat",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "argo_atls_geo_collector_grad01.json",
+   "name": "ATLS Snowland Color",
+   "career": "Ground",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "argo_atls_geo_collector_grad02.json",
+   "name": "ATLS Orange Line",
+   "career": "Ground",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "argo_atls_geo_collector_grad03.json",
+   "name": "ATLS Cool Metal Color",
+   "career": "Ground",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "argo_mole_btala.json",
+   "name": "ARGO MOLE Alliance",
+   "career": "Industrial",
+   "bucket": "Alliance edition"
+  },
+  {
+   "file": "argo_mole_teach.json",
+   "name": "Argo MOLE Teach's Special",
+   "career": "Industrial",
+   "bucket": "dealer special (Teach's)"
+  },
+  {
+   "file": "argo_raft_collector_indust.json",
+   "name": "Argo RAFT Wikelo Work Special",
+   "career": "Transporter",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "cnou_mustang_alpha_citizencon2018.json",
+   "name": "C.O. Mustang CitizenCon 2948 Edition",
+   "career": "Multi-Role",
+   "bucket": "event edition"
+  },
+  {
+   "file": "cnou_nomad_teach.json",
+   "name": "C.O. Nomad Teach's Special",
+   "career": "Transporter",
+   "bucket": "dealer special (Teach's)"
+  },
+  {
+   "file": "crus_intrepid_collector_indust.json",
+   "name": "Crusader Intrepid Wikelo Work Special",
+   "career": "Starter",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "crus_spirit_c1_civilian.json",
+   "name": "Crusader C1 Spirit Wikelo Special",
+   "career": "Transporter",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "crus_starfighter_inferno_collector_military.json",
+   "name": "Crusader Ares Star Fighter Inferno Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "crus_starfighter_ion_collector_stealth.json",
+   "name": "Crusader Ares Star Fighter Ion Wikelo Sneak Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "crus_starlifter_a2_collector_military.json",
+   "name": "Crusader A2 Hercules Starlifter Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "drak_caterpillar_boarded.json",
+   "name": "Drake Caterpillar",
+   "career": "Transporter",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "drak_caterpillar_pirate.json",
+   "name": "Drake Caterpillar Pirate",
+   "career": "Transporter",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "drak_clipper_collector_military.json",
+   "name": "Drake Clipper Wikelo War Special",
+   "career": "Exploration",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "drak_command_module.json",
+   "name": "Drake Command Module",
+   "career": "Transport",
+   "bucket": "not a ship"
+  },
+  {
+   "file": "drak_corsair_exec_military.json",
+   "name": "Corsair PYAM Exec",
+   "career": "Exploration",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "drak_corsair_exec_stealthindustrial.json",
+   "name": "Corsair PYAM Exec",
+   "career": "Exploration",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "drak_cutlass_black_bis2950.json",
+   "name": "Drake Cutlass Black",
+   "career": "Multi-Role",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "drak_cutlass_black_exec_military.json",
+   "name": "Cutlass Black PYAM Exec",
+   "career": "Multi-Role",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "drak_cutlass_black_exec_stealth.json",
+   "name": "Cutlass Black PYAM Exec",
+   "career": "Multi-Role",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "drak_cutlass_blue_bis2950.json",
+   "name": "Drake Cutlass Blue",
+   "career": "Combat",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "drak_cutlass_red_bis2950.json",
+   "name": "Drake Cutlass Red",
+   "career": "Support",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "drak_dragonfly_pink.json",
+   "name": "Drake Dragonfly Star Kitten",
+   "career": "Competition",
+   "bucket": "colour / minor variant"
+  },
+  {
+   "file": "drak_dragonfly_yellow.json",
+   "name": "Drake Dragonfly Yellowjacket",
+   "career": "Competition",
+   "bucket": "colour / minor variant"
+  },
+  {
+   "file": "drak_golem_btala.json",
+   "name": "Drake Golem Alliance",
+   "career": "Industrial",
+   "bucket": "Alliance edition"
+  },
+  {
+   "file": "drak_golem_collector_indust.json",
+   "name": "Drake Golem Wikelo Work Special",
+   "career": "Industrial",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "drak_golem_low_fuel_temporary.json",
+   "name": "Drake Golem",
+   "career": "Industrial",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "drak_golem_teach.json",
+   "name": "Drake Golem Teach's Special",
+   "career": "Industrial",
+   "bucket": "dealer special (Teach's)"
+  },
+  {
+   "file": "drak_vulture_teach.json",
+   "name": "Drake Vulture Teach's Special",
+   "career": "Industrial",
+   "bucket": "dealer special (Teach's)"
+  },
+  {
+   "file": "espr_prowler_utility_collector_indust.json",
+   "name": "Esperia Prowler Utility Wikelo Work Special",
+   "career": "Transporter",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "gama_syulen_exec_military.json",
+   "name": "Syulen PYAM Exec",
+   "career": "Multi-Role",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "gama_syulen_exec_stealth.json",
+   "name": "Syulen PYAM Exec",
+   "career": "Multi-Role",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "glsn_shiv_temp_cosa.json",
+   "name": "Grey's Shiv",
+   "career": "Combat",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "glsn_shiv_temp_cosb.json",
+   "name": "Grey's Shiv",
+   "career": "Combat",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "glsn_shiv_temp_cosc.json",
+   "name": "Grey's Shiv",
+   "career": "Combat",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "krig_l21_wolf_collector_military.json",
+   "name": "Kruger L-21 Wolf Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "krig_l21_wolf_collector_stealth.json",
+   "name": "Kruger L-21 Wolf Wikelo Sneak Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "krig_l22_alphawolf_collector_military.json",
+   "name": "Kruger L-22 Alpha Wolf Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "misc_fortune_collector_industrial.json",
+   "name": "MISC Fortune Wikelo Special",
+   "career": "Industrial",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "misc_fortune_teach.json",
+   "name": "MISC Fortune Teach's Special",
+   "career": "Industrial",
+   "bucket": "dealer special (Teach's)"
+  },
+  {
+   "file": "misc_prospector_btala.json",
+   "name": "MISC Prospector Alliance",
+   "career": "Industrial",
+   "bucket": "Alliance edition"
+  },
+  {
+   "file": "misc_prospector_collector_indust.json",
+   "name": "MISC Prospector Wikelo Work Special",
+   "career": "Industrial",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "misc_starfarer_teach.json",
+   "name": "MISC Starfarer Teach's Special",
+   "career": "Support",
+   "bucket": "dealer special (Teach's)"
+  },
+  {
+   "file": "misc_starlancer_max_collector_indust.json",
+   "name": "MISC Starlancer MAX Wikelo Work Special",
+   "career": "Transporter",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "misc_starlancer_tac_collector_military.json",
+   "name": "MISC Starlancer TAC Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "mrai_guardian_military.json",
+   "name": "Mirai Guardian Wikelo War Special",
+   "career": "Combat",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "mrai_guardian_mx_collector_military.json",
+   "name": "Mirai Guardian MX Wikelo War Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "mrai_guardian_qi_collector_indust.json",
+   "name": "Mirai Guardian QI Wikelo Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "orig_600i_bis2951.json",
+   "name": "Origin 600i 2951 BIS",
+   "career": "Exploration",
+   "bucket": "Best In Show edition"
+  },
+  {
+   "file": "powersuit.json",
+   "name": "Power Suit",
+   "career": "",
+   "bucket": "not a ship"
+  },
+  {
+   "file": "rsi_apollo_triage_collector_stealth.json",
+   "name": "RSI Apollo Triage Wikelo Sneak Special",
+   "career": "Support",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "rsi_constellation_taurus_military.json",
+   "name": "RSI Constellation Taurus Wikelo War Special",
+   "career": "Transporter",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "rsi_meteor_collector_military.json",
+   "name": "RSI Meteor PYAM Exec",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "rsi_meteor_collector_stealth.json",
+   "name": "RSI Meteor Wikelo Sneak Special",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "rsi_meteor_temp_laserrepeater.json",
+   "name": "RSI Meteor",
+   "career": "Combat",
+   "bucket": "test / temporary build"
+  },
+  {
+   "file": "rsi_polaris_collector_military.json",
+   "name": "RSI Polaris",
+   "career": "Combat",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "rsi_scorpius_stealth.json",
+   "name": "RSI Scorpius Wikelo Sneak Special",
+   "career": "Combat",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "rsi_ursa_medivac_stealth.json",
+   "name": "RSI Ursa Medivac Wikelo Special",
+   "career": "Support",
+   "bucket": "unclassified"
+  },
+  {
+   "file": "rsi_zeus_cl_collector_indust.json",
+   "name": "RSI Zeus Mk II CL",
+   "career": "Transporter",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "rsi_zeus_es_collector_indust.json",
+   "name": "RSI Zeus Mk II ES Wikelo Work Special",
+   "career": "Exploration",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "vncl_mauler.json",
+   "name": "Vanduul Mauler Destroyer",
+   "career": "Combat",
+   "bucket": "NPC / alien ship"
+  },
+  {
+   "file": "xian_nox_collector_mod.json",
+   "name": "Aopoa Nox Wikelo Special",
+   "career": "Competition",
+   "bucket": "collector / Wikelo special"
+  },
+  {
+   "file": "xian_nox_kue.json",
+   "name": "Aopoa Nox Kue",
+   "career": "Competition",
+   "bucket": "NPC / alien ship"
+  }
+ ],
+ "notes": [
+  "Four ships listed purchasable-with-no-game-file were name mismatches, not missing data.",
+  "Ares Inferno/Ion are 'Crusader Ares Star Fighter Inferno/Ion' in the game files (crus_starfighter_*). Nova Tank is 'Tumbril Nova'. 600i Explorer is the base orig_600i - the site splits Explorer/Touring where the game has 600i + 600i Touring.",
+  "Lesson: suffix matching on the display name is not sufficient. Some game names share no words with the site name at all ('Starfighter Inferno' vs 'Ares Inferno').",
+  "Both ambiguities resolved 2026-08-02: base file is canonical, variant recorded. Same rule as the tier variants.",
+  "The 95 game-only files are now bucketed. 35 are 'collector' special editions whose display names carry Wikelo tags (War/Sneak/Work/Savior/Speedy Special); 7 are Best In Show editions; 18 are named variants of ships already listed. Only the remainder are genuinely unaccounted for.",
+  "INTERPRETATION, not data: the Wikelo ships appear to be acquired through an in-game trader rather than bought with aUEC at a dealer. If so they are a whole acquisition route the site does not cover. Verify before publishing anything that says so."
+ ],
+ "game_only_breakdown": {
+  "Best In Show edition": 9,
+  "test / temporary build": 9,
+  "collector / Wikelo special": 35,
+  "dealer special (Teach's)": 7,
+  "unclassified": 18,
+  "colour / minor variant": 3,
+  "Alliance edition": 3,
+  "event edition": 1,
+  "not a ship": 2,
+  "NPC / alien ship": 2
+ }
+}

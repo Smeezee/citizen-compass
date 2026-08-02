@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #125 — 2026-08-02 9:25 AM
+# LATEST_HANDOFF.md — Update #128 — 2026-08-02 9:37 AM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-02 09:25:32 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-02 09:37:01 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,549 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 65990 files (10340.07 MB)
 
-**Scripts:** 16  |  **3D models:** 723  |  **Docs:** 584
+**Scripts:** 16  |  **3D models:** 723  |  **Docs:** 587
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-02 09:36:28 — update_plan_in_game_capture_overlay.md
+
+# PLAN — in-game capture: what it would actually take
+
+**From C2. 2026-08-02. Planning only. Nothing built, nothing written to the repository.**
+
+Two answers here. The store-link question is §1 and it is short. The overlay
+question is §2 onward, and it turned out better than expected — **the hard part
+is already solved by a file the game writes.**
+
+---
+
+## 1. THE RSI STORE LINK ROUTE — dead end for the group that needed it
+
+Measured across all 7,728 items.
+
+    items carrying an RSI store link                    1,387
+    price-without-description group                       461
+      ...of those with a store link                        34   (7%)
+
+    all items with no description                       2,384
+      ...with a store link                                716   (30%)
+
+    store links by section:  Liveries 601 · Armor 348 · Miscellaneous 127
+                             Personal Weapons 106 · Clothing 101 · Undersuits 37
+
+**34 of 461. The cheap fix is not there.** Worse, the links are unreliable as
+image sources even where they exist — `ORC-mkX Arms Iceborn` points at
+*Medical-Career-Kit-Medium*, and several Morozov-SH pieces share one
+*Sangar-Helmet-And-Mo…* bundle page. **They are pledge-bundle pages, not item
+pages.** An image scraped from one would frequently be the wrong object.
+
+And 601 of the 1,387 are Liveries, which get no doorway and no screenshots.
+
+**Conclusion: screenshots are the route for the 461. There is no shortcut.**
+
+---
+
+## 2. WHAT ALREADY EXISTS — do not rebuild it
+
+`overlay_app.py`, `ask_engine.py` and `ASK_OVERLAY_SETUP.md` are already in the
+repo. A `Ctrl+Shift+Space` global-hotkey popup, `tkinter`, runs headless under
+`pythonw.exe`, searches local project files, falls back to a DuckDuckGo scrape,
+answers through local `qwen3:14b` via Ollama.
+
+**That is the shell.** What Sleven is asking for is a second mode inside it —
+capture rather than ask. Its known limitations already recorded: hotkey
+conflicts, and needing to run as Administrator to receive a hotkey while an
+elevated game window has focus.
+
+---
+
+## 3. THE SAFETY BOUNDARY — non-negotiable, and there is a precedent
+
+Star Citizen runs **Easy Anti-Cheat**. RSI's own knowledge-base article is
+vague about third-party software — it addresses modded game files and says
+nothing specific about overlays or capture tools — so the boundary has to be
+drawn from what is demonstrably accepted rather than from a written permission.
+
+**The precedent is `SCOverlay`, posted on RSI's own Community Hub.** It displays
+in-game action names as keys are pressed, and it is built to be anti-cheat safe
+by construction:
+
+- **no DLL injection**
+- **no function hooking**
+- native Windows Raw Input API only
+- reads the player's own `actionmaps.xml` off disk
+- draws a transparent top-most window
+
+**That is exactly the architecture to copy, and the line not to cross:**
+
+    ALLOWED    read files the game writes
+               read raw OS input
+               capture the screen at OS level
+               draw an overlay window
+
+    NEVER      read or write game memory
+               inject a DLL, hook any function
+               send synthetic input into the game
+               modify any game file
+
+Anything in the second list risks a ban on Sleven's own account and would put a
+Fan-Kit-compliant site next to a tool that violates the ToS. **The first list is
+enough — see §4.**
+
+---
+
+## 4. THE FINDING — the game already logs the loadout, by name we can join
+
+Read from `StarCitizen/LIVE/Game.log` and `LIVE/logbackups/`.
+
+**Every session log carries the exact build:**
+
+    FileVersion: 4.9.188.23497
+    ProductVersion: 4.9.188.23497
+    BackupNameAttachment=" Build(12344265) 01 Aug 26 (19 43 20)"
+
+**Screenshots are already timestamped to the second** —
+`ScreenShot-2026-07-22_11-29-29-35A.jpg` — and log lines are UTC to the
+millisecond. **Correlating a screenshot to what was happening is arithmetic, not
+guesswork.**
+
+A real 39,159-line play session carries `[Cargo]` 13,057, `[Inventory]` 2,800,
+`[Missions]` 1,536, plus location-bearing asset paths like
+`data/objectcontainers/pu/loc/mod/stanton/station/ser/reststop_cargo/…`.
+
+**And the `[Inventory]` lines are the prize:**
+
+    <2026-01-28T22:38:17.463Z> [Notice] <AttachmentReceived> Player[Sleven-K]
+      Attachment[rsi_odyssey_undersuit_01_01_01_200000000232,
+                 rsi_odyssey_undersuit_01_01_01, 200000000232]
+      Status[persistent] Port[Armor_Undersuit]
+
+That middle field is a **ClassName**, and ClassName is a join key we already
+hold — `stdItem.ClassName` in `fps-items.json` / `ship-items.json`, and the
+suffix of `labels.json`'s `item_Desc_<ClassName>` keys.
+
+### Tested, one session, against 10,804 catalogue ClassNames
+
+    distinct attachment ClassNames in the session      49
+      joined to the catalogue                          28
+      not joined                                       21
+
+**Every one of the 21 misses is a character-rig part** — `body_01_noMagicPocket`,
+`FP_Visor`, `PU_Protos_Head`, `Head_Teeth`, `Shared_Scalp_Unified`, `brows_001`,
+`Head_Eyelashes`, `universal_necksock_01`. Not gear, and correctly absent from an
+item catalogue.
+
+**On actual equipment the join rate is effectively 100%:**
+
+    Armor_Undersuit   rsi_odyssey_undersuit_01_01_01        Odyssey II Undersuit Alpha
+    Armor_Helmet      rrs_specialist_light_helmet_01_04_01  Arden-SL Helmet Archangel
+    Armor_Torso       rrs_specialist_light_core_01_04_01    Arden-SL Core Archangel
+    Armor_Arms        rrs_specialist_light_arms_01_04_01    Arden-SL Arms Archangel
+    Armor_Legs        rrs_specialist_light_legs_01_04_01    Arden-SL Legs Archangel
+    backpack          rrs_combat_light_backpack_01_04_01    Arden-CL Backpack Archangel
+    wep_sidearm       klwe_pistol_energy_01                 Arclight Pistol
+    magazine_attach_1 klwe_pistol_energy_01_mag             Arclight Pistol Battery (30 cap)
+    medPen_attach_1   crlf_consumable_healing_01            MedPen (Hemozal)
+    mobiglas_attach   MobiGlas                              mobiGlas Original Casing
+
+### What this changes
+
+**The player's real loadout is readable from a log file, with zero process
+interaction.** No injection, no memory, no ToS question — the same safety class
+as a tool RSI hosts a post about.
+
+That does three things at once:
+
+1. **It solves screenshot labelling.** A screenshot taken at 22:38:17 can be
+   auto-tagged with everything equipped at 22:38:17 — with UUIDs, because
+   ClassName resolves to UUID. The naming-by-UUID discipline from the capture
+   protocol stops being manual.
+2. **It delivers `claude/historian-loadout-context.md` without the manual step.**
+   That doc assumed a player builds a loadout in the bench and hands it over.
+   They would not have to. *"My power plant is dying, can I fix it at Everus"*
+   becomes answerable because the log already said what is fitted.
+3. **It is a differentiator no competitor has.** All four crafting tools and both
+   keybinding tools are catalogues. **None of them knows what you are actually
+   wearing.**
+
+---
+
+## 5. ARCHITECTURE — three layers, each independently useful
+
+**L1 — the log reader (build first, no UI at all).**
+Tail `Game.log`. Parse `<AttachmentReceived>` into
+`{timestamp, port, class_name, entity_id}`, resolve ClassName → UUID → catalogue
+row. Capture `FileVersion` at session start as the patch stamp. Emit a rolling
+`session_state.json`.
+**Testable entirely offline against the existing `logbackups/` — 39,159 lines of
+real session already on disk.** No game needed, no overlay needed, no risk.
+
+**L2 — capture and correlate.**
+Use the game's own screenshot key so the game writes the file. A watcher on
+`LIVE/screenshots/` matches each new file to the nearest L1 state by timestamp
+and writes a sidecar: patch, UTC time, equipped items with UUIDs, and the last
+location-bearing asset path seen.
+**Deliberately no screen-capture API at first.** The game already writes a clean
+JPG; adding an OS capture path buys nothing and adds a moving part.
+
+**L3 — the overlay, extending `overlay_app.py`.**
+A second hotkey that says *"tag the last screenshot"* and offers the equipped
+items as the pick list, plus a free-text field for what a shop kiosk is showing.
+**This is where a human closes the gap the log cannot** — the log knows what is
+worn, not what is on a shelf.
+
+**Order matters.** L1 is useful on its own (the Historian gets a loadout), L2 is
+useful without L3 (screenshots arrive labelled), and L3 is pure convenience. If
+the project stops after L1 it has still gained something real.
+
+---
+
+## 6. WHAT THIS CANNOT DO — state it before anyone assumes otherwise
+
+- **It cannot read shop shelves.** Nothing in the log names an item on a kiosk.
+  Prices and stock still come from UEX, or from OCR, or from Sleven typing them.
+- **It cannot give a precise position.** Location comes from asset-path loading
+  events — "a reststop in Stanton" — not coordinates. Good enough to say which
+  station; not good enough to say which floor.
+- **OCR is a separate project, and I would not start it.** Reading item names off
+  a shop UI means handling the game's font, scaling, HDR, and every UI change per
+  patch. Two of the four crafting sites already have community submission forms
+  because this is harder than it looks.
+- **It only ever knows Sleven's own session.** This is a personal capture tool,
+  not telemetry, and it should stay that way — the moment it collects anyone
+  else's data it becomes a privacy question and a very different conversation.
+
+---
+
+## 7. RISKS
+
+- **EAC risk is low but not zero.** File reads and an overlay window are the
+  SCOverlay pattern, but EAC behaviour changes without notice and RSI's article
+  is not a permission slip. **Never run capture during anything competitive, and
+  stop at the first sign of an EAC warning.**
+- **Log format is undocumented and will change.** `<AttachmentReceived>` is an
+  internal debug line, not an API. Parse defensively, assert the join rate stays
+  near 100% on gear, and treat a sudden drop as "the format moved," not "the
+  player changed clothes."
+- **Administrator rights.** Already recorded in `ASK_OVERLAY_SETUP.md` — a
+  global hotkey will not fire over an elevated game window unless the overlay is
+  elevated too. That is a real friction point for L3, and it is why L1 and L2
+  are designed to need no hotkey at all.
+- **Log rotation.** `logbackups/` is how sessions persist; `Game.log` is
+  overwritten on launch. **Anything not read before the next launch is gone.**
+
+---
+
+## 8. NOT VERIFIED
+
+- **Whether `[Cargo]` lines name cargo contents.** 13,057 of them in one session
+  and I only sampled four — they looked like elevator/platform loading, not
+  manifests. **Worth a proper look; if they carry commodity names and amounts,
+  the mining and trading side gets the same treatment as gear.**
+- **Whether ship components appear as attachments** the way personal gear does.
+  The sampled session was on foot. **If they do, the loadout bench gets its real
+  data from the log too.**
+- **Whether the location asset paths resolve to our 479 shops or 1,774 positioned
+  entities.** They are file paths, not UUIDs, and the mapping is unproven.
+- **Whether the join rate holds across sessions.** One session, 28 of 28 on gear.
+- **Current EAC behaviour toward overlay windows.** Read RSI's article and the
+  SCOverlay post; ran nothing.
+
+### 2026-08-02 09:28:51 — update_decision_ship_honest_now_images_later.md
+
+# DECISION — foundation first, images later, honesty as the standing constraint
+
+**Ruled by Sleven, 2026-08-02. Recorded by C2. Planning only, nothing built.**
+
+---
+
+## THE RULING
+
+1. **Foundation first.** The data is gathered. The job now is putting it where
+   people can use it — not waiting for a better version.
+2. **Images are a later, separate workstream.** Sleven will capture in-game
+   screenshots of items, weapons, gear, locations and routes himself. It is
+   legwork, it is attainable, and it does not gate anything.
+3. **Ship what we have, presented as well as it can be presented.**
+4. **The constraint: never misrepresent what the information is.** Partial is
+   fine. Dressed-up is not.
+
+Point 4 is the extension of rule 4 (*every price shows its age and its source*)
+from prices to the whole site. **Rule 4 says how sure we are about a number.
+This says how sure we are about a page.**
+
+---
+
+## WHY THIS IS THE RIGHT CALL, AND NOT JUST AN ACCEPTABLE ONE
+
+**Only 136 items of 7,728 — 1.8% — have nothing beyond a name and a category.**
+69% can say what a thing is; 36% can say where to buy it; 98.2% can say
+something more than a name.
+
+Waiting for images would hold back a site that can already answer more than any
+competitor for the categories people actually search.
+
+**And the images, when they come, will have better provenance than anything else
+on the site.** The ship models came from a Hugging Face pack whose author's
+redistribution rights are unestablished. UEX's 394 shop screenshots are
+community-uploaded with unknown licensing. **Screenshots Sleven takes himself
+have none of those questions** — known capturer, known patch, no third-party
+redistribution. That makes the later workstream cleaner than the shortcut would
+have been.
+
+---
+
+## PER-DOORWAY COVERAGE — measured, all 7,728
+
+This was flagged as unknown in the Build A plan. 69% was the average; the split
+matters more.
+
+| doorway | items | with description | with price |
+|---|---:|---:|---:|
+| Clothing | 1,809 | **87%** | 58% |
+| Food, drink & meds | 170 | **85%** | 69% |
+| Ship parts | 758 | 74% | 63% |
+| Suits & armour | 2,565 | 71% | 32% |
+| Weapons & ammo | 558 | **50%** | **28%** |
+| Tools & equipment | 111 | **50%** | **94%** |
+| *(no doorway)* Liveries | 1,099 | 72% | 2% |
+| *(no doorway)* Decorations | 77 | 52% | 19% |
+| *(no doorway)* Miscellaneous | 334 | 19% | 12% |
+| *(no doorway)* Commodities | 175 | **0%** | **0%** |
+
+**No doorway is catastrophically thin — the worst is 50%.** The eight-doorway
+structure survives the data.
+
+Three things worth acting on:
+
+- **Weapons & ammo is the weakest doorway** — 50% description, 28% priced — and
+  it is a high-demand category. It will look thinnest exactly where people look
+  hardest. **It is also the strongest candidate for the first screenshot batch.**
+- **Tools & equipment is inverted** — 94% priced but only 50% described. It
+  answers *"where do I buy it"* almost perfectly and *"what is it"* poorly. That
+  is a different page emphasis, not a worse page.
+- **Commodities is 0% and 0%.** Nothing at all. Confirms it gets no doorway, and
+  is a second argument for pulling UEX commodity prices.
+
+---
+
+## THE ENGINEERING CONSEQUENCE — build the slot now, fill it later
+
+Images being a later workstream is only cheap **if the data model expects them
+today.** Retrofitting a media layer into 7,728 rendered pages is expensive;
+declaring the field now costs nothing.
+
+**Add to the item record in the Build A data contract, nullable from day one:**
+
+    img       relative path, or null
+    img_src   'sleven' | 'rsi_store' | 'uex' | null
+    img_patch patch the screenshot was taken in
+    img_date  capture date
+
+`img_src` matters because the three sources have **different permission
+stories** and a future question about one must not force a review of all of
+them. `img_patch` matters because a screenshot of a 4.9 item is wrong by 4.12
+and nothing else on the page would say so.
+
+**The rendering rule from the coverage work still holds:** a null image produces
+**no visible gap** — no placeholder box, no grey silhouette, no "image coming
+soon." The layout is designed imageless and images are added *into* it, not
+reserved *within* it.
+
+---
+
+## CAPTURE PROTOCOL — worth agreeing before the first batch, not after
+
+The legwork is the expensive part. These are the things that are free at capture
+time and unrecoverable afterwards.
+
+1. **Record the patch version with every batch.** A folder per patch —
+   `shots/4.9/` — is enough. Without it every image silently rots and nothing on
+   the page can flag it.
+2. **Name by UUID, not by display name.** `28c76343-8da9-495a-9339-3d5de02e6c3c.jpg`,
+   not `venture-helmet-white.jpg`. Display names change between patches and
+   collide — "Full Set" exists twice, "Container" exists twice. **UUIDs are the
+   join key everywhere else on the site and they do not move.**
+3. **One item, one frame, consistent framing.** A gear page with fifteen
+   differently-lit, differently-cropped shots looks worse than no images at all.
+   Same angle, same background, same distance — a shop inspection view is
+   probably the most repeatable.
+4. **Capture the shop, not just the item, when you are already there.** 394 of
+   479 shops have a UEX screenshot of unknown licence. Our own would replace
+   those cleanly, and a shop photo answers *"what does this place look like so I
+   can find it"* — which nothing currently does.
+5. **Start with Weapons & ammo.** Weakest doorway, high demand, and the 461
+   price-without-description items are the group where a picture carries the most
+   information.
+6. **Do not capture liveries.** 1,099 items, 2% priced, no doorway. It is the
+   largest category and the least worth the walking.
+
+---
+
+## WHAT THIS DOES NOT CHANGE
+
+Nothing in `claude/plan-build-a-static.md` or `WO-CRAFT-01`. The four-question
+standard, the no-visible-gap rule, and the doorway structure were all designed
+imageless. **This ruling confirms the plan rather than altering it** — which is
+the useful thing about having designed for the constraint before deciding to
+accept it.
+
+---
+
+## NOT VERIFIED
+
+- **Whether the 461 price-without-description items overlap the 1,387 carrying an
+  RSI store link.** Still not computed. If they do, that group has a cheap
+  legitimate image source before any screenshot is taken.
+- **Whether RSI store images may be hotlinked or copied at all** under the Fan
+  Kit position. Not researched.
+- **What the 136 truly-bare items are.** Some are likely placeholder or debug
+  records that should not get a page rather than a photograph.
+
+### 2026-08-02 09:27:09 — update_coverage_and_newbie_standard.md
+
+# The completeness picture, measured — and what "usable for the newest player" has to mean
+
+**From C2. 2026-08-02. Planning input, not a build. Nothing written to the repository.**
+
+Sleven's position: the missing images do not matter much if the information is
+structured so the newest player can use it, because the asset is having
+everything in one place that other sites scatter.
+
+**That position is correct, and it is now measured rather than asserted.** But
+it carries an obligation, in §3.
+
+---
+
+## 1. WHAT AN ITEM PAGE CAN ACTUALLY ANSWER — all 7,728 measured
+
+|  | has a price | no price | total |
+|---|---:|---:|---:|
+| **has a description** | **2,337 (30%)** | 3,007 (39%) | 5,344 (69%) |
+| **no description** | 461 (6%) | 1,923 (25%) | 2,384 (31%) |
+| **total** | 2,798 (36%) | 4,930 (64%) | 7,728 |
+
+Read as four different pages:
+
+- **2,337 — the full answer.** What it is, what it costs, which shops, where
+  those shops are, how old the price is. **No competitor has this combination
+  for a single item.**
+- **3,007 — "what it is" without "where to buy".** Still a real page: CIG's own
+  description, category, manufacturer, and an honest line about stock.
+- **461 — "where to buy" without "what it is".** Weakest class, and the one
+  where a picture would help most.
+- **1,923 — neither.**
+
+## 2. THE FLOOR IS MUCH HIGHER THAN 25%
+
+The 1,923 with neither description nor price are not blank. Checking what else
+they carry — manufacturer, size, RSI store link, pledge-only flag, patch stamp:
+
+    5 extra fields      3
+    4 extra fields    202
+    3 extra fields    385
+    2 extra fields    515
+    1 extra field     682
+    0 extra fields    136
+
+**Only 136 items — 1.8% of the catalogue — have nothing beyond a name and a
+category.** The other 1,787 carry something worth putting on a page.
+
+**So the real shape is:** 69% can say what a thing is, 36% can say where to buy
+it, and **98.2% can say something more than its name.** That is a much better
+starting position than "no images, 64% unpriced" suggests, and it is the number
+that should be quoted internally instead of the scary one.
+
+---
+
+## 3. THE OBLIGATION THIS CREATES
+
+"Usable for the newest player" is not a design intention. Left as one it becomes
+a slogan that everybody agrees with and nobody can fail.
+
+**Proposed testable standard — the four questions.** Every item page answers
+these in plain words, above the fold, in this order, and **each has a defined
+answer when the data is missing:**
+
+| # | question | when known | when not known |
+|---|---|---|---|
+| 1 | **What is this?** | CIG's description | category + manufacturer + size, as a sentence |
+| 2 | **Can I get it, and how?** | "Sold at 4 shops" | "You can't buy this in the game — it came with a pledge" *or* "No shop we know of stocks this" |
+| 3 | **What does it cost?** | cheapest price + where | omitted entirely, never "N/A" or "—" |
+| 4 | **How sure are you?** | price age + source | "This is a player report, and gear prices swing a lot" |
+
+**Question 4 is the one nobody else answers at all**, and it is the whole reason
+to trust the site over a confident wrong number elsewhere.
+
+**This is assertable, which is the point.** Four coverage classes exist in §1;
+the test is that a page from each renders all four questions with no blank
+field, no dangling label, and no dash standing in for an answer. That is a rule
+12 check, not a design review.
+
+### The rule that follows
+
+**A missing field must never produce a visible gap.** Not an empty heading, not
+"Unknown", not a grey placeholder box where an image would go. **Sections
+disappear; sentences change.** A page with three of four answers should look
+like a page that was only ever meant to have three.
+
+This is stricter than the earlier plan's "assert a page renders correctly with
+optional fields empty" — that permits an empty-but-present section. At 64%
+unpriced and 100% imageless, empty-but-present is most of the site.
+
+---
+
+## 4. WHERE THE "EVERYTHING IN ONE PLACE" CLAIM IS TRUE, AND WHERE IT IS NOT
+
+Worth being precise, because the claim is the strategy.
+
+**True:** UEX has prices and terminals but no item descriptions or stats. Erkul
+has ship-component stats but no FPS gear, no prices, no locations. The wiki has
+lore and some stats but not current prices. **The join across all of it exists
+only here** — item, description, stats, price, shop, location, patch stamp,
+confidence.
+
+**Not yet true:** for the 461 price-without-description items we hold *less*
+than the wiki does. For liveries and cosmetics we hold almost nothing anyone
+wants. And for anything needing an image, we hold nothing at all.
+
+**So the honest version of the claim is narrower and stronger:** *for the things
+people actually search for — gear, weapons, components, consumables — this is
+the only place the whole answer sits on one page.* It is not "we have everything
+about everything," and it should not be sold as that internally, because the
+first person to check a livery page will find out.
+
+---
+
+## 5. WHAT THIS CHANGES ABOUT BUILD ORDER
+
+Nothing about the plan. One thing about priority:
+
+**The description wiring (WO-CRAFT-01 §WO-1) is the highest-value item in the
+project and this measurement raises it further.** It is the difference between
+2,798 pages that can answer anything (36%) and 5,344 that can (69%). It needs no
+new data, no decisions, and it is not blocked by the tab layout question that
+holds up everything else in Build A.
+
+**Images stay worth chasing for one narrow group** — the 461
+price-without-description items, where a picture is the only thing that would
+tell someone what they are looking at. 1,387 items carry an RSI store link,
+which is the cheapest route to a legitimate image and has not been examined.
+
+---
+
+## 6. NOT VERIFIED
+
+- **Whether the 461 overlap with the 1,387 carrying an RSI store link.** Not
+  computed. If they do, that group has a cheap fix.
+- **Whether the 136 truly-bare items are real game content** or debug/placeholder
+  records. `fps-items.json` is known to carry ~230 placeholder entries, so some
+  of the 136 may not deserve a page at all.
+- **Whether descriptions are evenly spread across the doorways.** 69% is the
+  total; a doorway sitting at 20% would look broken while the average looked fine.
+  **Worth computing before the doorway pages are designed.**
 
 ### 2026-08-02 09:24:59 — update_craft_split_and_rule14_proposal.md
 
@@ -2650,245 +3188,7 @@ Builds A, B and C are downstream of 2 and 3 and I am not starting them.
 Live site, `releases/latest.html`, `static/preview.html` and sealed snapshots
 untouched. No FastAPI work. No tab emission.
 
-### 2026-08-02 00:12:37 — update_doorway_plan_and_data_corrections.md
-
-# Doorway plan filed + four corrections to the front-end build plan — 2026-08-02, C2
-
-Plan at `claude/plan-doorways-and-browse-layer.md` on claude.ai. **C2 wrote
-nothing to the repository** — new write-authority rule, see
-`claude/session-write-authority.md`. C1 owns repo writes now.
-
-All figures below were computed by reading UEX snapshot `20260801T235530Z`
-directly, not quoted from any manifest.
-
-## The number that matters
-
-**Only 2,798 of 7,728 items (36%) have a price anywhere.** The other 4,930:
-1,313 are pledge/subscriber/concierge exclusives, 1,080 are liveries, and
-**2,524 have no explanation in the data at all.**
-
-Design consequence: exclusives get an honest non-price answer ("you can't buy
-this in game"), liveries stay out of the main doorways, and the 2,524 get flat
-wording — "no shop we know of stocks this" — because we do not know why.
-
-## Four corrections to `claude/front-end-build-plan-2026-08-02.md`
-
-I wrote that plan and did not check these against the data first.
-
-1. **"823 shops" is wrong.** 823 is all terminals. Item-selling terminals: **479**.
-   With at least one price row: **469**. Also wrong in `claude/state-2026-08-02.md`.
-2. **"What it sells for" must not be a standing item-page section.** Only
-   **171 items of 7,728 (2.2%)** have a sell price; only 248 of 23,734 price rows
-   carry one. Make it a conditional line, not a section.
-3. **"Prices a day or older render amber" would amber the whole site.** Median
-   price age is **66 days**; 75% of rows exceed 30 days. Thresholds must come off
-   the real distribution. Sleven to set them.
-4. **Items have no images; shops do.** 0 of 7,728 items have a `screenshot`.
-   **394 of 479 item terminals do.** Shop and place pages can be visual. Whether
-   we may display UEX-hosted screenshots is unresolved and touches the 7 unread
-   `fan_kit_compliance` warnings in `logs/pipeline_check_results_fallback.jsonl`.
-
-## Other verified facts worth having
-
-- **Item terminals exist in 3 star systems only** — Stanton 269, Pyro 139,
-  Nyx 71. The snapshot holds 96 systems. 93 have no item terminal.
-- **Breadcrumbs cannot assume a city.** Of 479 item terminals: space station 379,
-  planet 340, city 65, outpost 39, moon 9. Build the breadcrumb from whichever
-  location fields are non-null.
-- **Terminals carry `game_version`** — a real last-verified-patch per shop, set
-  on 429 of 479. Heavily stale: 3.24.2 (154), 4.0 (108), 3.24.1 (56).
-- **UEX's category tree is unusable as site structure.** 4 of 100 categories
-  return zero items; `Full Set`, `Container` and `Other` each appear twice;
-  `Consumable #69` is empty while the real consumables sit at
-  `Miscellaneous → Consumables #16`.
-- **Best-covered data on the site is Utility+Technology** — 104 priced of 111
-  (94%) — and **Clothing**, 1,055 of 1,809 (58%).
-
-## Explicitly NOT verified — do not build on these
-
-- What `is_available` / `is_available_live` / `is_visible` mean. Check UEX docs.
-- Whether `id_parent` is specifically a colour-variant link. **Inferred, not
-  verified.** The variant-grouping design depends on it.
-- `tags.json` in the scunpacked snapshot was never opened. It may replace the
-  proposed tag model outright — worth ten minutes before building.
-- Licence/hotlink status of UEX terminal screenshots.
-
-### 2026-08-01 23:57:48 — update_front_end_build_plan.md
-
-# Front end build plan filed — 2026-08-02, Cowork Claude-02
-
-Full plan on disk at `docs/workorder-front-end-build-plan.md` and in the
-claude.ai project at `claude/front-end-build-plan-2026-08-02.md`. This note is
-the pointer, not the content.
-
-## What it covers
-
-Three builds, in priority order:
-
-- **Build A — find / item / shop.** Plain-English search with a stop-word strip,
-  one page per item, one page per shop. Highest demand, serves three of the five
-  gaps found in the demand research. Nine real search phrases are given as test
-  cases; they are the requirement, not a tidy unit test.
-- **Build B — loadout bench.** A/B component comparison with signature as a
-  first-class stat, power and cooling budgets that can go red, hover-preview, and
-  a generated shopping trip. First feature that genuinely needs FastAPI serving
-  public traffic.
-- **Build C — keybinding reference.** Blocked on `defaultProfile.xml`.
-
-Plus: the data inventory with join keys and gaps, and the architecture decisions
-already taken (tags not folders, ~7 doorways, components in two places,
-shareable URL state).
-
-## Two build defects that block everything else
-
-Fix these first — they have both already failed silently.
-
-1. **`build_deploy.py` does not own the three right-edge tabs.** `cc-kb-tab`
-   (teal, keybinds.html), `cc-lo-tab` (blue, loadout.html), `cc-fi-tab` (amber,
-   find.html). Wiped by rebuilds twice on 2026-08-02 — at 01:15 and again at
-   06:33, the second time including `_src/_layer.src.html` itself. Something
-   upstream regenerates the source. Emit the tabs from a list; hand-patching
-   after every build is not workable.
-
-2. **`build_deploy.py` does not copy the three pages** into `_deploy/`:
-
-       _src/keybinds.src.html  ->  _deploy/keybinds.html
-       _src/loadout.src.html   ->  _deploy/loadout.html
-       _src/find.src.html      ->  _deploy/find.html
-
-   `keybinds.html` was dropped silently once already and restored by hand.
-   Without the copy steps the tabs point at 404s and nothing errors.
-
-**Prove both per hard rule 12:** delete the three files, remove the three tabs,
-run the build, assert all six are present afterwards.
-
-## Prototypes on disk
-
-`testing/_src/find.src.html`, `loadout.src.html`, `keybinds.src.html`,
-`kb_overlay.inc.html`. All run, all deployed, **all data invented.** Executable
-specifications for layout and behaviour. Where the plan and a prototype
-disagree, the plan wins.
-
-`testing/_src/` is still uncommitted. `_deploy_lite/` (243 files, ~6 MB) is
-hand-made and nothing regenerates it — make it a build target or delete it.
-
-## Finding worth acting on
-
-Manual Blender hardpoint placement is **not** required for component comparison.
-`ships/drak_vulture.json` carries a `Loadout` array of 85 entries with
-`HardpointName`, `Type`, `Grade`, `MinSize`, `MaxSize`, `CompatibleTypes`,
-`ClassName` and `Editable`. Every slot, size range, compatible part, stock
-fitting and editable flag — for all 316 ships, from the game files. Blender is
-only needed for 3D marker placement on the model, which is a separate later
-layer. **One file was checked. Confirm it holds across others.**
-
-## Known gap that shapes every page
-
-**No item images. Zero.** All 7,728 UEX items have an empty `screenshot` field
-and no wiki link; 1,387 carry an RSI store link. Templates must look finished
-with the optional fields empty, or twenty thousand pages look broken.
-
-### 2026-08-01 23:50:19 — update_find_page_and_tab_ownership_problem_2026-08-02.md
-
-# UPDATE — search/item/shop pages added, and the tabs keep getting wiped
-
-Claude-02, 2026-08-02. One new page, three tabs restored, and a process problem
-that needs solving rather than repeatedly patching. No commits, no pushes.
-
-## THE PROCESS PROBLEM — please read this first
-
-Tab injections into the layer have now been wiped **twice** by rebuilds during
-this session.
-
-- 01:15 — a push overwrote `testing/_layer.html`, destroying a blurred-backdrop
-  change (documented by Claude-03).
-- 06:33 — a rebuild rewrote `_src/_layer.src.html`, `_layer.html` and
-  `_deploy/index.html`, removing the `cc-lo-tab` LOADOUT tab. The keybinding
-  overlay survived; the tab did not.
-
-Note that the **source file itself** was rewritten at 06:33, not just the build
-outputs. So "put it in the source and it survives" is not currently true —
-something upstream is regenerating `_layer.src.html` (a `_pull_b.html` appeared
-in `_src/` at 06:30).
-
-**Patching this by hand after every build is not a workable arrangement.** The
-three tabs need to be emitted by `build_deploy.py` itself, from a small list, so
-a rebuild produces them rather than removing them.
-
-The tabs are:
-
-| id | colour | links to | label |
-|---|---|---|---|
-| `cc-kb-tab` | teal `#00C9A7` | `keybinds.html` | KEYBINDS |
-| `cc-lo-tab` | blue `#4DA3FF` | `loadout.html` | LOADOUT |
-| `cc-fi-tab` | amber `#FFC24D` | `find.html` | FIND IT |
-
-They sit on the right edge below the existing FEEDBACK tab, each with a mobile
-fallback that drops to the bottom bar. All three are currently present in all
-five layer files, restored by hand at 06:49. They will go again on the next
-rebuild unless the build owns them.
-
-## And the copy-step gap is still open
-
-`build_deploy.py` must copy **three** pages into `_deploy/` now:
-
-    _src/keybinds.src.html  ->  _deploy/keybinds.html
-    _src/loadout.src.html   ->  _deploy/loadout.html
-    _src/find.src.html      ->  _deploy/find.html
-
-`keybinds.html` was already dropped silently once and restored by hand. Without
-these steps the tabs point at 404s and nothing raises an error.
-
-## What was added — the find / item / shop path
-
-`_src/find.src.html`, mirrored to `testing/`, `_deploy/` and `_deploy_lite/`.
-
-Three connected views in one file: a plain-language search box, an item page,
-and a shop page. Built directly against the search-demand research, which found
-that the strongest real intent is "where do I buy X" phrased in ordinary words,
-and that no existing tool serves it — UEX presents a Trade Center, the wiki
-presents a category tree, Erkul presents a DPS calculator.
-
-**Design decisions worth keeping:**
-
-- **The search strips filler.** "star citizen how much is a medpen" and "where to
-  buy flight suits" both work, because words like *star, citizen, where, to, buy,
-  how, much, is* are removed before matching. The remaining terms are matched
-  against item names, categories, manufacturers, shop names and place names.
-- **It is location-aware.** "flight suits new babbage" ranks items sold there
-  above items that are not, and labels why with a small "sold in that area" chip.
-- **The answer is a sentence, above the table.** *"Sold at 2 shops. Cheapest is
-  medical supplies kiosk in Orison at 280 aUEC."* The detail sits underneath for
-  anyone who wants it.
-- **Sell-side is a first-class section.** The demand research found people search
-  "how much does X sell for" as a separate question, and that competitors bury it
-  inside trade tooling. Hadanite, for example, shows "shops do not sell this — you
-  find it out in the world" and leads with the best sell price instead.
-- **Every price carries its age and its source.** "player-reported, 4 hours ago",
-  and anything a day or older turns amber. A standing panel explains that these
-  are player reports, not game data, and that gear prices swing widely.
-- **A failed search apologises rather than blaming the user**, and offers real
-  suggestions. If a real search phrase returns nothing, that is a bug in the
-  search, not in the person typing.
-
-**Verified headlessly** against eight real phrases taken from the demand
-research: "where to buy flight suits", "star citizen how much is a medpen",
-"flight suits new babbage", "killshot ammo", "hadanite", "what sells at area18",
-"quantum drive", and one nonsense string. All seven real phrases returned the
-right thing first; the nonsense string produced the helpful empty state. Zero
-page errors. Item page and shop page both render with generated answer lines.
-
-**All data is invented** — 17 items across 9 shops in 6 locations. The page says
-so in a banner. The structure mirrors the real UEX shape (item, price, terminal,
-location, timestamp) so swapping in real data is a data job, not a redesign.
-
-## Boundaries
-
-`static/preview.html`, `releases/latest.html`, database, snapshots untouched.
-No commits, no pushes. Build scripts not edited — the two fixes above are flagged
-for their owner.
-
-*(+86 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+89 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
