@@ -291,7 +291,23 @@ _b = out.lower().index('<body')
 _b = out.index('>', _b) + 1
 out = out[:_b] + '\n' + GATE + out[_b:]
 
-open(OUT+'/index.html','w',encoding='utf-8').write(out)
+# newline='' is what makes this build REPRODUCIBLE ACROSS PLATFORMS, and it is
+# not optional.
+#
+# Text mode with the default newline=None translates every '\n' to os.linesep
+# on write. On Linux that is '\n'; on Windows it is '\r\n'. So the identical
+# inputs produced a byte-different artifact depending on which machine ran the
+# build - 8,473 extra CR bytes here, one per line, and a completely different
+# sha256 despite character-for-character identical content.
+#
+# That is a reproducibility claim that silently holds on one platform and fails
+# on another, which is worse than no claim: the hash comparison that is supposed
+# to prove the artifact matches production reports a mismatch for a reason that
+# has nothing to do with the content.
+#
+# newline='' writes '\n' through untouched, so the output is byte-identical on
+# every platform and matches the deployed artifact.
+open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
 print('written:', len(out)/1048576, 'MB')
 
 # ---- companion pages the built page actually links to ----------------------
