@@ -84,39 +84,84 @@ if ($modelCount -lt 1) { Fail "no .glb model files found in $assetsDir - the mod
 if ($files.Count -gt 20000) { Fail "$($files.Count) files exceeds Cloudflare's 20,000-file limit per Worker version" }
 if ($largest.Length -gt 25MB) { Fail "$($largest.Name) is over Cloudflare's 25 MiB per-file limit" }
 
-# --- token ------------------------------------------------------------------
-if (-not (Test-Path $envFile)) { Fail "no .env at $envFile" }
-
+# --- credentials ------------------------------------------------------------
+# TWO ACCEPTED PATHS, checked in this order:
+#
+#   1. wrangler is ALREADY authenticated (e.g. `wrangler login` stored an OAuth
+#      credential outside .env). If so, use it - do not demand a token that is
+#      not needed.
+#   2. otherwise, a scoped CLOUDFLARE_API_TOKEN from .env.
+#
+# Path 1 is checked by BEHAVIOUR - asking wrangler itself - rather than by
+# looking for a credential file, because the file's location has moved between
+# wrangler versions and an absent file is not proof of an absent credential.
+# .env is read FIRST, and the reason is accuracy rather than precedence.
+# wrangler v4 loads .env from the project directory itself, so once a token is
+# present `wrangler whoami` reports "authenticated" BECAUSE OF that token. An
+# earlier version of this block asked whoami first and then announced
+# "already authenticated - no .env token needed", which was simply false: the
+# .env token was what authenticated it. Checking .env first means the script
+# can say which credential is actually in use instead of guessing.
 $token = $null
-foreach ($line in Get-Content $envFile -Encoding utf8) {
-    if ($line -match '^\s*CLOUDFLARE_API_TOKEN\s*=\s*(.+?)\s*$') {
-        $token = $matches[1].Trim().Trim('"').Trim("'")
-    }
-    if ($line -match '^\s*CLOUDFLARE_GLOBAL_API_KEY\s*=') {
-        Fail "CLOUDFLARE_GLOBAL_API_KEY found in .env. A Global API Key grants DNS and billing access. Use a scoped token (see this script's header) and remove that line."
+if (Test-Path $envFile) {
+    foreach ($line in Get-Content $envFile -Encoding utf8) {
+        if ($line -match '^\s*CLOUDFLARE_API_TOKEN\s*=\s*(.+?)\s*$') {
+            $token = $matches[1].Trim().Trim('"').Trim("'")
+        }
+        if ($line -match '^\s*CLOUDFLARE_GLOBAL_API_KEY\s*=') {
+            Fail "CLOUDFLARE_GLOBAL_API_KEY found in .env. A Global API Key grants DNS and billing access. Use a scoped token (see this script's header) and remove that line."
+        }
     }
 }
-if (-not $token) {
-    Fail @"
-CLOUDFLARE_API_TOKEN is not set in .env.
 
-Create a SCOPED token at https://dash.cloudflare.com/profile/api-tokens
-with exactly:
+$usingExistingAuth = $false
+if (-not $token) {
+    # No token here, so anything wrangler reports must come from a credential
+    # stored elsewhere - an OAuth login from `wrangler login`, or a CLOUDFLARE_*
+    # environment variable.
+    $prevEAP2 = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $who = (& npx wrangler whoami 2>&1 | Out-String)
+    $ErrorActionPreference = $prevEAP2
+    if ($who -notmatch 'not authenticated') {
+        $usingExistingAuth = $true
+        $acct = ([regex]::Match($who, '([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+)')).Value
+        Write-Host "auth    : no token in .env; wrangler is authenticated by a stored credential$(if($acct){" as $acct"}) - using that"
+    }
+}
+
+if (-not $usingExistingAuth) {
+    if (-not (Test-Path $envFile)) { Fail "no .env at $envFile" }
+
+    # A placeholder is not a credential. This has already been pasted twice as
+    # the literal string <TOKEN>; writing it through would fail later as a
+    # confusing auth error instead of here as an obvious one.
+    if ($token -match '^<.*>$' -or $token -eq 'YOUR_TOKEN_HERE') {
+        Fail "CLOUDFLARE_API_TOKEN in .env is a placeholder ('$token'), not a real credential. Replace it with the actual token value."
+    }
+
+    if (-not $token) {
+        Fail @"
+Not authenticated, and CLOUDFLARE_API_TOKEN is not set in .env.
+
+Either run:  npx wrangler login
+or create a SCOPED token at https://dash.cloudflare.com/profile/api-tokens with:
 
     Account | Workers Scripts | Edit
     Account Resources: Include | this account only
 
-then add to .env (which is gitignored and untracked):
+and add to .env (gitignored, untracked):
 
     CLOUDFLARE_API_TOKEN=<token>
 
 Do not use a Global API Key.
 "@
-}
+    }
 
-# Handed to wrangler via the environment - never on a command line, never echoed.
-$env:CLOUDFLARE_API_TOKEN = $token
-Write-Host "token   : loaded from .env (length $($token.Length), not shown)"
+    # Handed to wrangler via the environment - never a command line, never echoed.
+    $env:CLOUDFLARE_API_TOKEN = $token
+    Write-Host "auth    : scoped token loaded from .env (length $($token.Length), not shown)"
+}
 
 if (-not $PSCmdlet.ShouldProcess('Cloudflare Workers', "deploy $($files.Count) files from testing\_deploy")) {
     Write-Host ""
@@ -127,8 +172,28 @@ if (-not $PSCmdlet.ShouldProcess('Cloudflare Workers', "deploy $($files.Count) f
 
 Write-Host ""
 Write-Host "deploying..." -ForegroundColor Cyan
+
+# ---------------------------------------------------------------------------
+# $ErrorActionPreference MUST be 'Continue' across this call.
+#
+# This bit her cost a deploy. Windows PowerShell 5.1 wraps every stderr line
+# from a native executable in an ErrorRecord (NativeCommandError). wrangler
+# writes an ordinary WARNING to stderr - "Preview URLs will be enabled..." -
+# so with $ErrorActionPreference = 'Stop' the script aborted on a WARNING,
+# reported exit 1, and looked like a failed deploy.
+#
+# It was not. wrangler had already uploaded all 477 files and published the
+# version; only the PowerShell wrapper failed, AFTER the work was done. So the
+# script reported failure on a success - the mirror image of reporting success
+# on a failure, and just as misleading.
+#
+# The exit code is the authority here, not the presence of stderr output.
+# ---------------------------------------------------------------------------
+$prevEAP = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
 & npx wrangler deploy --config $config
 $code = $LASTEXITCODE
+$ErrorActionPreference = $prevEAP
 
 $env:CLOUDFLARE_API_TOKEN = $null   # do not leave it in the session
 

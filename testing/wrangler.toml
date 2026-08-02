@@ -17,7 +17,15 @@
 # citizencompass.net is bought later, the testing site belongs on
 # testing.<domain> and the apex stays reserved for the real site.
 
-name = "citizen-compass-testing"
+# MUST match the worker already serving at
+#   citizencompasstesting.citizencompass-contact.workers.dev
+# The Worker name IS the subdomain, so a different name does not update that
+# site - it creates a SECOND one at a second URL. This file previously said
+# "citizen-compass-testing" (hyphenated), which would have published to
+# citizen-compass-testing.citizencompass-contact.workers.dev and left the live
+# testing site untouched while looking like a complete success. That is exactly
+# the two-URLs-in-circulation problem the order warns about, self-inflicted.
+name = "citizencompasstesting"
 account_id = "ad974500ce73c9694e94213c4d762f3e"
 compatibility_date = "2026-08-01"
 

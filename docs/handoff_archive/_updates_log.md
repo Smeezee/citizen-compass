@@ -6659,3 +6659,253 @@ word and I will deploy and run the full verification: index serves, `cc-tm`
 present, **a real model file returns 200 with a plausible byte count**,
 `keybinds.html` resolves, the gate blocks from a clean context, and a second
 deploy keeps the same URL.
+
+### 2026-08-01 22:57:47 — update_cloudflare_token_and_auth_route.md
+
+# UPDATE — token stored; the auth question answered; worker-name mismatch caught
+
+Filed per rule 13. Deploy is running as this is written; results follow in a
+separate update.
+
+## CREDENTIAL — written, never echoed
+
+`CLOUDFLARE_API_TOKEN` is in `.env`. Before writing, `.env` was re-confirmed
+**untracked and absent from HEAD *at write time*** — not relying on the check
+from earlier in the session. Appended, not overwritten, and the script refuses
+to clobber an existing key.
+
+Verified afterwards **by key name and length only**: `DATABASE_URL` 78,
+`UEX_API_TOKEN` 40, `CLOUDFLARE_API_TOKEN` 53. The value has never been printed
+by me, and `.env` remains gitignored and unstaged.
+
+**ROTATION NOTE, as requested:** an earlier value of this token was exposed in a
+chat transcript and was **rolled before first use**. No Cloudflare credential was
+ever written to `.env` or used before this one — the two earlier attempts both
+arrived as the literal placeholder `<TOKEN>` and were correctly refused rather
+than written. So **the exposed value was never live here**, and nobody should
+mistake it for the working credential.
+
+**Said once and then dropped:** this replacement also arrived over chat, so it
+now sits in a transcript too. Rotate it whenever convenient; nothing in the
+tooling depends on the specific value.
+
+## THE AUTH QUESTION — answered by evidence, and the answer is "no"
+
+You suspected `wrangler login` had stored an OAuth credential outside `.env`.
+**It had not.** Established before the token was written:
+
+- **No credential store.** The real config dir is
+  `AppData\Roaming\xdg.config\.wrangler`, and it contained **no
+  `config/default.toml`** — where an OAuth login would live. `~/.wrangler` and
+  the other candidate paths did not exist at all.
+- **No `CLOUDFLARE_*` or `CF_*` environment variables.**
+- **Only three wrangler invocations ever logged on this machine**, all from this
+  session, two of them `whoami`. No `login`, no `deploy`, no upload.
+
+So the site already serving at
+`citizencompasstesting.citizencompass-contact.workers.dev` **was not deployed
+from this machine.** It came from elsewhere — the dashboard, or another machine.
+The token genuinely was needed; it was not being demanded unnecessarily.
+
+`deploy_testing.ps1` now accepts both routes anyway, as asked: it asks wrangler
+itself whether it is authenticated and only falls back to the `.env` token if
+not. Checked **by behaviour** rather than by looking for a credential file,
+because that file's location has moved between wrangler versions and an absent
+file is not proof of an absent credential.
+
+**A defect in my own diagnostic, found by running it.** On the real deploy the
+script printed *"wrangler is already authenticated … no .env token needed"* —
+which is **wrong**. Wrangler v4 loads `.env` from the project directory itself,
+so the token I had just written is exactly what authenticated it. The dual-path
+logic works; the message misattributes why. Left alone mid-deploy rather than
+edited under a running upload; being corrected immediately after.
+
+It is worth being clear this does not undermine the finding above: the
+`whoami` that reported *not* authenticated ran **before** any token existed in
+`.env`, which is precisely what rules out a stored OAuth credential.
+
+## A WORKER-NAME MISMATCH THAT WOULD HAVE PUBLISHED A THIRD URL
+
+The live worker is **`citizencompasstesting`** — the Worker name *is* the
+subdomain. My `wrangler.toml` said **`citizen-compass-testing`** (hyphenated).
+
+Deploying that would have created a **second Worker** at
+`citizen-compass-testing.citizencompass-contact.workers.dev`, left the live
+testing site untouched, **and reported complete success.** A third address in
+circulation, self-inflicted, in the middle of an order whose whole Correction 2
+is about two URLs being one too many. Corrected to match before deploying.
+
+This is the same shape as the models-folder case: the command succeeds, the
+output looks right, and the thing you cared about did not happen.
+
+## YOUR THREE FILES — verified, and one orphan of mine removed
+
+All three SHA-256 hashes **MATCH**, checked twice and again immediately before
+upload. Markers confirm your account exactly: `id="cc-kb"` 1, `cc-ship::after`
+2, `keybinds.html` 0, `cc-rel` 9.
+
+**Rule 8 check on the git restore** — disclaimer text is intact and identical to
+the preserved known-good: `trademark` 11, `Roberts Space Industries` 38,
+`Cloud Imperium` 10, `not affiliated` 3, `unofficial` 4. Nothing was lost in the
+restore.
+
+I removed a stale `keybinds.html` that **my own** earlier rebuild had left in
+`_deploy/`. Your page references it zero times, so it would have shipped as an
+unreachable 25 KB orphan. Moved aside, not deleted; `index.html` hash unchanged
+afterwards. Payload: **477 files, 347.2 MB, 235 `.glb`**.
+
+**I did not run `build_deploy.py` before deploying** — it would have overwritten
+the exact bytes you checksummed. Deploying your verified artifact, not a rebuild
+of it.
+
+## On the stale-transfer incident
+
+No apology needed. A transfer that reports the correct byte count **and** a fresh
+timestamp while serving stale bytes defeats the mtime check I was told to run —
+the check reports a property it is not actually measuring, which is the same
+failure class as everything else caught today. Your checksums are what caught
+it, and that is why I re-verified them rather than trusting my earlier read.
+
+### 2026-08-01 23:05:12 — update_cloudflare_deployed_verified.md
+
+# UPDATE — DEPLOYED and verified from the served site, not from an exit code
+
+**Live: https://citizencompasstesting.citizencompass-contact.workers.dev**
+
+## The deploy "failed" with exit 1. It had actually succeeded.
+
+`scripts/deploy_testing.ps1` aborted and reported exit 1. **The deploy had
+already completed.**
+
+Windows PowerShell 5.1 wraps every stderr line from a native executable in an
+ErrorRecord. wrangler wrote an ordinary **WARNING** to stderr — *"Preview URLs
+will be enabled for this deployment by default"* — and my script's
+`$ErrorActionPreference = 'Stop'` turned that warning into a terminating error,
+**after** wrangler had uploaded all 477 files and published the version.
+
+Confirmed against Cloudflare's own deployment list rather than guessed:
+
+```
+2026-08-02T04:29:38Z  Source: Upload               <- the pre-existing site
+2026-08-02T05:59:39Z  Source: Unknown (deployment) <- this deploy
+```
+
+**This is the mirror image of the failure the order warns about.** The order
+says do not report success from an exit code; this reported *failure* on a
+success. Both come from trusting the wrapper instead of the result. Fixed:
+`$ErrorActionPreference` is now `Continue` across the wrangler call, and the
+exit code is the authority rather than the presence of stderr output.
+
+## VERIFICATION — from the served site
+
+**1. `index.html` serves.** HTTP **200 OK**, `text/html`, **1,507,473 bytes**.
+
+**2. Byte-identical, three ways.** Raw bytes downloaded and hashed:
+
+```
+served sha256 : 62b22b7d1fdf83dfa5caf4045ceb1bd8e9e09d56d9a69e47e5f01e570d9207ea
+local  sha256 : 62b22b7d1fdf83dfa5caf4045ceb1bd8e9e09d56d9a69e47e5f01e570d9207ea
+your checksum : 62b22b7d1fdf83dfa5caf4045ceb1bd8e9e09d56d9a69e47e5f01e570d9207ea
+```
+
+The exact bytes you checksummed are the exact bytes being served. My first
+attempt at this compared a *re-encoded* string and produced a mismatch — that
+was a flaw in the check, not the deploy, so it was redone on raw bytes.
+
+**3. Markers in the served page:** `id="cc-kb"` **1**, `cc-ship::after` **2**,
+`cc-rel` **9**, `CC_EMBED` **5**, `keybinds.html` **0**. Your overlay,
+compliance strip and Related-button clearance all shipped.
+
+**4. Models genuinely serve — the silent-drop case is ruled out.**
+
+| file | served | local | identical | header |
+|---|---:|---:|---|---|
+| `Hammerhead.glb` | 3,608,636 | 3,608,636 | **yes** | `glTF` |
+| `Starfarer_Gemini.glb` | 5,478,516 | 5,478,516 | **yes** | `glTF` |
+
+Byte-identical with valid glTF-binary magic headers, not merely a 200 with a
+plausible size. `Starfarer_Gemini.glb` matches the order's stated largest file
+exactly.
+
+**5. `keybinds.html` → 404.** Correct: nothing references it, so your orphan
+removal stands and no unreachable page ships.
+
+**6. Password gate, from a genuinely clean context** — `WebClient`, no cookies,
+no localStorage: gate markup present (`cc-gate` 15, `cc-pw` 6, `cc-locked` 5,
+"Private preview" 1) and **the password literal appears 0 times** — only its
+hash ships.
+
+**But the gate is still not access control, and that is unchanged by the move.**
+The same clean fetch returned "Ship Purchase Matrix" and the full inline
+content. It hides the page from a browser visitor; it does not stop anyone
+retrieving it. True on Netlify before, true here now — reported, not altered.
+
+## A worker-name mismatch caught before it shipped
+
+`wrangler.toml` said `citizen-compass-testing`; the live worker is
+`citizencompasstesting`. **The Worker name is the subdomain**, so deploying
+that would have published a **second site at a third URL**, left the live
+testing site untouched, and reported complete success. Corrected before
+deploying.
+
+Same shape as the models case: command succeeds, output looks right, the thing
+you cared about did not happen.
+
+## Two URLs now serving — the human action this does not solve
+
+| | |
+|---|---|
+| **new (Cloudflare)** | `citizencompasstesting.citizencompass-contact.workers.dev` |
+| **old (Netlify)** | `citizen-compass-preview.netlify.app` — **still serving**, HTTP 200, frozen at v0.3.9 |
+
+The credit limit blocks *deploys*, not *delivery*. So reviewers holding the old
+link sit on a frozen build and will report bugs already fixed.
+
+**Recording the new URL in `CURRENT-STATE.md` helps future sessions and does
+nothing for those people.** A notice **cannot** be added to the old site —
+Netlify deploys are exactly what is blocked. **Sleven telling them directly is
+the only channel.** Stated as an open human action, not implied.
+
+Recommendation, not acted on: leave the old site up until reviewers have moved,
+then take it down. Taking it down now turns a stale-build problem into a
+dead-link problem for people who have not been told yet.
+
+## Credential
+
+`CLOUDFLARE_API_TOKEN` written to `.env`, which was re-confirmed **untracked and
+absent from HEAD at write time**. Verified by key name and length only
+(**53**); the value has never been printed by me. `.env` remains gitignored and
+unstaged.
+
+**Rotation, as asked:** an earlier value was exposed in a chat transcript and
+**rolled before first use**. No Cloudflare credential was ever written or used
+here before this one — the two earlier attempts arrived as the literal
+placeholder `<TOKEN>` and were refused rather than written. **The exposed value
+was never live on this machine.** This replacement also arrived over chat, so it
+is in a transcript too; rotate at your convenience, nothing depends on the value.
+
+**The token was genuinely needed.** Before it existed, there was no
+`config/default.toml`, no `CLOUDFLARE_*` env var, and only three wrangler
+invocations ever logged on this machine — all from this session, two `whoami`,
+no login and no deploy. The live site was not deployed from here.
+
+Second defect in my own script, found by running it: it announced *"already
+authenticated — no .env token needed"* when wrangler v4 had loaded that very
+token from `.env`. The logic was right, the attribution was false. `.env` is now
+read first so the script can say which credential is actually in use.
+
+## Limits and headroom
+
+| limit (free) | ceiling | now | headroom |
+|---|---|---|---|
+| files per version | 20,000 | 477 | **42x** |
+| individual file | 25 MiB | 5.22 MiB | **4.8x** |
+| static asset requests | *"free and unlimited"* | — | not a constraint |
+| asset storage | *"no additional cost"* | 347.2 MB | not a constraint |
+
+## Still open
+
+- `CURRENT-STATE.md` does not exist; creating it with the new URL.
+- `build_portable.py` still has 5 `/home/claude` refs and cannot run here.
+- `.env` now holds **three** secrets on one machine with no backup (A3), and the
+  UEX token remains unrotated after its own screenshot exposure.

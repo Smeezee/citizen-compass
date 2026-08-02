@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #98 — 2026-08-01 10:21 PM
+# LATEST_HANDOFF.md — Update #101 — 2026-08-01 11:05 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-01 22:21:31 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-01 23:05:44 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,373 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 58320 files (10316.44 MB)
 
-**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 551
+**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 554
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-01 23:05:12 — update_cloudflare_deployed_verified.md
+
+# UPDATE — DEPLOYED and verified from the served site, not from an exit code
+
+**Live: https://citizencompasstesting.citizencompass-contact.workers.dev**
+
+## The deploy "failed" with exit 1. It had actually succeeded.
+
+`scripts/deploy_testing.ps1` aborted and reported exit 1. **The deploy had
+already completed.**
+
+Windows PowerShell 5.1 wraps every stderr line from a native executable in an
+ErrorRecord. wrangler wrote an ordinary **WARNING** to stderr — *"Preview URLs
+will be enabled for this deployment by default"* — and my script's
+`$ErrorActionPreference = 'Stop'` turned that warning into a terminating error,
+**after** wrangler had uploaded all 477 files and published the version.
+
+Confirmed against Cloudflare's own deployment list rather than guessed:
+
+```
+2026-08-02T04:29:38Z  Source: Upload               <- the pre-existing site
+2026-08-02T05:59:39Z  Source: Unknown (deployment) <- this deploy
+```
+
+**This is the mirror image of the failure the order warns about.** The order
+says do not report success from an exit code; this reported *failure* on a
+success. Both come from trusting the wrapper instead of the result. Fixed:
+`$ErrorActionPreference` is now `Continue` across the wrangler call, and the
+exit code is the authority rather than the presence of stderr output.
+
+## VERIFICATION — from the served site
+
+**1. `index.html` serves.** HTTP **200 OK**, `text/html`, **1,507,473 bytes**.
+
+**2. Byte-identical, three ways.** Raw bytes downloaded and hashed:
+
+```
+served sha256 : 62b22b7d1fdf83dfa5caf4045ceb1bd8e9e09d56d9a69e47e5f01e570d9207ea
+local  sha256 : 62b22b7d1fdf83dfa5caf4045ceb1bd8e9e09d56d9a69e47e5f01e570d9207ea
+your checksum : 62b22b7d1fdf83dfa5caf4045ceb1bd8e9e09d56d9a69e47e5f01e570d9207ea
+```
+
+The exact bytes you checksummed are the exact bytes being served. My first
+attempt at this compared a *re-encoded* string and produced a mismatch — that
+was a flaw in the check, not the deploy, so it was redone on raw bytes.
+
+**3. Markers in the served page:** `id="cc-kb"` **1**, `cc-ship::after` **2**,
+`cc-rel` **9**, `CC_EMBED` **5**, `keybinds.html` **0**. Your overlay,
+compliance strip and Related-button clearance all shipped.
+
+**4. Models genuinely serve — the silent-drop case is ruled out.**
+
+| file | served | local | identical | header |
+|---|---:|---:|---|---|
+| `Hammerhead.glb` | 3,608,636 | 3,608,636 | **yes** | `glTF` |
+| `Starfarer_Gemini.glb` | 5,478,516 | 5,478,516 | **yes** | `glTF` |
+
+Byte-identical with valid glTF-binary magic headers, not merely a 200 with a
+plausible size. `Starfarer_Gemini.glb` matches the order's stated largest file
+exactly.
+
+**5. `keybinds.html` → 404.** Correct: nothing references it, so your orphan
+removal stands and no unreachable page ships.
+
+**6. Password gate, from a genuinely clean context** — `WebClient`, no cookies,
+no localStorage: gate markup present (`cc-gate` 15, `cc-pw` 6, `cc-locked` 5,
+"Private preview" 1) and **the password literal appears 0 times** — only its
+hash ships.
+
+**But the gate is still not access control, and that is unchanged by the move.**
+The same clean fetch returned "Ship Purchase Matrix" and the full inline
+content. It hides the page from a browser visitor; it does not stop anyone
+retrieving it. True on Netlify before, true here now — reported, not altered.
+
+## A worker-name mismatch caught before it shipped
+
+`wrangler.toml` said `citizen-compass-testing`; the live worker is
+`citizencompasstesting`. **The Worker name is the subdomain**, so deploying
+that would have published a **second site at a third URL**, left the live
+testing site untouched, and reported complete success. Corrected before
+deploying.
+
+Same shape as the models case: command succeeds, output looks right, the thing
+you cared about did not happen.
+
+## Two URLs now serving — the human action this does not solve
+
+| | |
+|---|---|
+| **new (Cloudflare)** | `citizencompasstesting.citizencompass-contact.workers.dev` |
+| **old (Netlify)** | `citizen-compass-preview.netlify.app` — **still serving**, HTTP 200, frozen at v0.3.9 |
+
+The credit limit blocks *deploys*, not *delivery*. So reviewers holding the old
+link sit on a frozen build and will report bugs already fixed.
+
+**Recording the new URL in `CURRENT-STATE.md` helps future sessions and does
+nothing for those people.** A notice **cannot** be added to the old site —
+Netlify deploys are exactly what is blocked. **Sleven telling them directly is
+the only channel.** Stated as an open human action, not implied.
+
+Recommendation, not acted on: leave the old site up until reviewers have moved,
+then take it down. Taking it down now turns a stale-build problem into a
+dead-link problem for people who have not been told yet.
+
+## Credential
+
+`CLOUDFLARE_API_TOKEN` written to `.env`, which was re-confirmed **untracked and
+absent from HEAD at write time**. Verified by key name and length only
+(**53**); the value has never been printed by me. `.env` remains gitignored and
+unstaged.
+
+**Rotation, as asked:** an earlier value was exposed in a chat transcript and
+**rolled before first use**. No Cloudflare credential was ever written or used
+here before this one — the two earlier attempts arrived as the literal
+placeholder `<TOKEN>` and were refused rather than written. **The exposed value
+was never live on this machine.** This replacement also arrived over chat, so it
+is in a transcript too; rotate at your convenience, nothing depends on the value.
+
+**The token was genuinely needed.** Before it existed, there was no
+`config/default.toml`, no `CLOUDFLARE_*` env var, and only three wrangler
+invocations ever logged on this machine — all from this session, two `whoami`,
+no login and no deploy. The live site was not deployed from here.
+
+Second defect in my own script, found by running it: it announced *"already
+authenticated — no .env token needed"* when wrangler v4 had loaded that very
+token from `.env`. The logic was right, the attribution was false. `.env` is now
+read first so the script can say which credential is actually in use.
+
+## Limits and headroom
+
+| limit (free) | ceiling | now | headroom |
+|---|---|---|---|
+| files per version | 20,000 | 477 | **42x** |
+| individual file | 25 MiB | 5.22 MiB | **4.8x** |
+| static asset requests | *"free and unlimited"* | — | not a constraint |
+| asset storage | *"no additional cost"* | 347.2 MB | not a constraint |
+
+## Still open
+
+- `CURRENT-STATE.md` does not exist; creating it with the new URL.
+- `build_portable.py` still has 5 `/home/claude` refs and cannot run here.
+- `.env` now holds **three** secrets on one machine with no backup (A3), and the
+  UEX token remains unrotated after its own screenshot exposure.
+
+### 2026-08-01 22:57:47 — update_cloudflare_token_and_auth_route.md
+
+# UPDATE — token stored; the auth question answered; worker-name mismatch caught
+
+Filed per rule 13. Deploy is running as this is written; results follow in a
+separate update.
+
+## CREDENTIAL — written, never echoed
+
+`CLOUDFLARE_API_TOKEN` is in `.env`. Before writing, `.env` was re-confirmed
+**untracked and absent from HEAD *at write time*** — not relying on the check
+from earlier in the session. Appended, not overwritten, and the script refuses
+to clobber an existing key.
+
+Verified afterwards **by key name and length only**: `DATABASE_URL` 78,
+`UEX_API_TOKEN` 40, `CLOUDFLARE_API_TOKEN` 53. The value has never been printed
+by me, and `.env` remains gitignored and unstaged.
+
+**ROTATION NOTE, as requested:** an earlier value of this token was exposed in a
+chat transcript and was **rolled before first use**. No Cloudflare credential was
+ever written to `.env` or used before this one — the two earlier attempts both
+arrived as the literal placeholder `<TOKEN>` and were correctly refused rather
+than written. So **the exposed value was never live here**, and nobody should
+mistake it for the working credential.
+
+**Said once and then dropped:** this replacement also arrived over chat, so it
+now sits in a transcript too. Rotate it whenever convenient; nothing in the
+tooling depends on the specific value.
+
+## THE AUTH QUESTION — answered by evidence, and the answer is "no"
+
+You suspected `wrangler login` had stored an OAuth credential outside `.env`.
+**It had not.** Established before the token was written:
+
+- **No credential store.** The real config dir is
+  `AppData\Roaming\xdg.config\.wrangler`, and it contained **no
+  `config/default.toml`** — where an OAuth login would live. `~/.wrangler` and
+  the other candidate paths did not exist at all.
+- **No `CLOUDFLARE_*` or `CF_*` environment variables.**
+- **Only three wrangler invocations ever logged on this machine**, all from this
+  session, two of them `whoami`. No `login`, no `deploy`, no upload.
+
+So the site already serving at
+`citizencompasstesting.citizencompass-contact.workers.dev` **was not deployed
+from this machine.** It came from elsewhere — the dashboard, or another machine.
+The token genuinely was needed; it was not being demanded unnecessarily.
+
+`deploy_testing.ps1` now accepts both routes anyway, as asked: it asks wrangler
+itself whether it is authenticated and only falls back to the `.env` token if
+not. Checked **by behaviour** rather than by looking for a credential file,
+because that file's location has moved between wrangler versions and an absent
+file is not proof of an absent credential.
+
+**A defect in my own diagnostic, found by running it.** On the real deploy the
+script printed *"wrangler is already authenticated … no .env token needed"* —
+which is **wrong**. Wrangler v4 loads `.env` from the project directory itself,
+so the token I had just written is exactly what authenticated it. The dual-path
+logic works; the message misattributes why. Left alone mid-deploy rather than
+edited under a running upload; being corrected immediately after.
+
+It is worth being clear this does not undermine the finding above: the
+`whoami` that reported *not* authenticated ran **before** any token existed in
+`.env`, which is precisely what rules out a stored OAuth credential.
+
+## A WORKER-NAME MISMATCH THAT WOULD HAVE PUBLISHED A THIRD URL
+
+The live worker is **`citizencompasstesting`** — the Worker name *is* the
+subdomain. My `wrangler.toml` said **`citizen-compass-testing`** (hyphenated).
+
+Deploying that would have created a **second Worker** at
+`citizen-compass-testing.citizencompass-contact.workers.dev`, left the live
+testing site untouched, **and reported complete success.** A third address in
+circulation, self-inflicted, in the middle of an order whose whole Correction 2
+is about two URLs being one too many. Corrected to match before deploying.
+
+This is the same shape as the models-folder case: the command succeeds, the
+output looks right, and the thing you cared about did not happen.
+
+## YOUR THREE FILES — verified, and one orphan of mine removed
+
+All three SHA-256 hashes **MATCH**, checked twice and again immediately before
+upload. Markers confirm your account exactly: `id="cc-kb"` 1, `cc-ship::after`
+2, `keybinds.html` 0, `cc-rel` 9.
+
+**Rule 8 check on the git restore** — disclaimer text is intact and identical to
+the preserved known-good: `trademark` 11, `Roberts Space Industries` 38,
+`Cloud Imperium` 10, `not affiliated` 3, `unofficial` 4. Nothing was lost in the
+restore.
+
+I removed a stale `keybinds.html` that **my own** earlier rebuild had left in
+`_deploy/`. Your page references it zero times, so it would have shipped as an
+unreachable 25 KB orphan. Moved aside, not deleted; `index.html` hash unchanged
+afterwards. Payload: **477 files, 347.2 MB, 235 `.glb`**.
+
+**I did not run `build_deploy.py` before deploying** — it would have overwritten
+the exact bytes you checksummed. Deploying your verified artifact, not a rebuild
+of it.
+
+## On the stale-transfer incident
+
+No apology needed. A transfer that reports the correct byte count **and** a fresh
+timestamp while serving stale bytes defeats the mtime check I was told to run —
+the check reports a property it is not actually measuring, which is the same
+failure class as everything else caught today. Your checksums are what caught
+it, and that is why I re-verified them rather than trusting my earlier read.
+
+### 2026-08-01 22:36:44 — update_keybinds_relink_build_step.md
+
+# UPDATE — your trademark change verified in source; found and fixed a 404 it would have shipped. Deploy still not run.
+
+## THE HEADLINE: NOTHING IS LIVE. I cannot confirm the change is deployed.
+
+I ran `scripts/deploy_testing.ps1` as asked. **It aborted, exit 1** —
+`CLOUDFLARE_API_TOKEN` is still not in `.env`, which holds only `DATABASE_URL`
+and `UEX_API_TOKEN`.
+
+So there is no deployed site to check the change against. **I am not reporting
+this as done, and the earlier `<TOKEN>` placeholder was never written.**
+
+Also worth stating precisely: `testing/_deploy/` is **gitignored**, so an updated
+`index.html` cannot arrive here by `git pull`. The file did change on this
+machine (22:27:04), but nothing was pushed to me — I am reading local disk.
+
+## YOUR CHANGE IS REAL AND IT IS IN THE SOURCE
+
+The trademark bar was not lost, it was **reimplemented**: `cc-ship::after` (the
+pseudo-element) is gone and `cc-tm` (5 references) replaces it, with `trademark`
+10→12, `Trademark` 1→4 and `sticky` 10→12. That matches "the ship page now ends
+above the sticky trademark bar instead of running under it."
+
+**And it is reproducible.** Rebuilt from `_layer.src.html` in an isolated
+fixture and compared marker-for-marker against your file:
+
+| marker | your file | rebuilt from source |
+|---|---:|---:|
+| `cc-tm` | 5 | 5 |
+| `id="cc-kb"` | 0 | 0 |
+| `cc-ship::after` | 0 | 0 |
+| `keybinds.html` | 1 | 1 |
+| `KEYBINDS` | 1 | 1 |
+
+Exact on all five. The change lives in the layer source, so a rebuild will not
+silently undo it — which was the first thing I checked, because that is the
+defect this whole order exists around.
+
+## THE PROBLEM I FOUND — and it would have deployed silently
+
+**The design flipped back, and I had removed the file it now needs.**
+
+Correction 1 told me the keybinds tab was a self-contained in-page overlay and
+`keybinds.html` was a 25 KB orphan. Verified at the time and true then:
+`id="cc-kb"` 1, `keybinds.html` 0. I moved the orphan to `_to_delete/`.
+
+Your update reverses that: `cc-kb` references drop **128 → 6**, the in-page
+overlay is gone, and the page **links to `keybinds.html` again**.
+
+Which I had removed. **The KEYBINDS tab would have 404'd on the live site** — and
+nothing about a successful `wrangler deploy` would have revealed it. The page
+loads, looks correct, and one tab is dead.
+
+## THE FIX — in the build, not by hand
+
+The order's own condition applies: *"if it is still wanted as a directly-linkable
+reference, wire a link to it in the layer source so it is reachable, then add the
+copy step."* The link is now wired in the source, so the copy step is correct.
+
+I did **not** hand-copy the file back. The order is explicit that nothing should
+exist in `_deploy/` because a human put it there. `build_deploy.py` now emits it,
+and decides by reading the built page rather than by assumption:
+
+- page **links** `keybinds.html` → build emits it from `testing/_src/keybinds.src.html`
+- page **does not link** it → build **removes** any stale copy, so an earlier
+  design cannot leave an orphan behind
+- linked but **source missing** → build **fails loudly** rather than publishing a
+  dead link
+
+The two files are byte-identical (25,106), so the source genuinely regenerates
+what I had moved aside.
+
+**Rule 12, all three directions proven in the fixture:**
+
+| case | result |
+|---|---|
+| linked | `keybinds.html` emitted |
+| not linked, stale copy present | stale copy **removed** |
+| linked, source missing | **exit 1**, refuses, no page written |
+
+That last one matters most: it converts "dead link ships silently" into "build
+stops".
+
+## Current payload
+
+**478 files, 347.2 MB, 235 `.glb`, `index.html` 1,488,997 bytes**, largest asset
+`Starfarer_Gemini.glb` at 5.22 MB. Rebuild reports `unmatched: 6` — 85X,
+Arrastra, Fury, Mantis, Merchantman, PTV — the same six the auditor layer
+reaches independently.
+
+## One discrepancy I could not resolve, stated rather than smoothed over
+
+My rebuild from the current layer is **1,488,997** bytes; the file you left was
+**1,480,972** — 8,025 bytes apart, despite every marker matching. So your
+`index.html` was probably not produced by `build_deploy.py` from this exact
+layer — possibly built elsewhere, or before a later tweak. Functionally
+equivalent on every check the order specifies, but not byte-identical, and I
+would rather say so than call it a match.
+
+**The deployable artifact is now the rebuilt one**, since that is the one whose
+provenance I can demonstrate and whose links resolve.
+
+## Still blocked
+
+The token. `CLOUDFLARE_API_TOKEN=<real value>` straight into `.env` — please not
+into chat, since a chat transcript is what burned the previous one. Then say the
+word and I will deploy and run the full verification: index serves, `cc-tm`
+present, **a real model file returns 200 with a plausible byte count**,
+`keybinds.html` resolves, the gate blocks from a clean context, and a second
+deploy keeps the same URL.
 
 ### 2026-08-01 22:21:06 — update_build_reproducible_token_placeholder.md
 
@@ -1723,369 +2085,7 @@ This is five distinct pieces of work. I will file an update as each lands and
 stop cleanly with a note rather than half-finishing several. C0 first, because
 everything after it is worth less without it.
 
-### 2026-08-01 19:08:11 — update_pathc_parts_a_b_complete.md
-
-# UPDATE — Path C Parts A and B complete. Parts C and D NOT started.
-
-The auditors are no longer talking to an empty room. 890 findings are in
-`pipeline_check_results`, and the reason they never got there is not what the
-order assumed.
-
-## THE ROOT CAUSE WAS NOT "NO DB ACCESS"
-
-`run_checks.py` line 117 passed **`db_conn=None` unconditionally.** It opened a
-working SQLAlchemy session, used it for the checkers, and then never passed any
-connection to `write_findings`. So every finding this system has ever produced
-went to the fallback log **even when the database was perfectly reachable.**
-
-The degradation path was not a fallback. It was the only path, permanently.
-
-`framework.py`'s docstring blames the 2026-07-30 environment ("cannot reach the
-real Postgres database"). That was true then. It has not been true since, and
-the hardcoded `None` meant nothing changed when the environment did.
-
-Fixed: `run_checks.py` now opens a psycopg2 connection for the write and passes
-it through, falling back to the log only when that genuinely fails — and saying
-which path it took either way. Verified: a `--group db` run now reports
-"8 findings written directly to pipeline_check_results" and the row count moves.
-
-## VERIFICATION 1 — registry_sync: checker bug, and already fixed
-
-`ship_registry.json` is **not corrupt.** It decodes as UTF-8 and parses as JSON,
-a 295-entry list. The byte at 56616 is `\xc4\x81` — "ā" in `tok.yāi`, a Xi'an
-ship name. Opening it without an encoding reproduces the reported error exactly.
-
-**The finding is also stale.** It was written 2026-07-30T14:57:32; commit
-`db18e02`, which added `encoding="utf-8"` to that exact line, landed
-2026-07-30T20:07:26 — after it. The code was already correct before I looked.
-
-**Audited every `open()`/`read_text()` in `checks/` as instructed** and fixed
-**8** more missing `encoding=`, including `framework.py:72` — the fallback log
-*writer*. That one is the dangerous one: it would have raised
-`UnicodeEncodeError` and lost a finding the moment any subject contained a
-non-ASCII ship name. The log survived only because `json.dumps` defaults to
-`ensure_ascii=True`. Confirmed: the log is pure ASCII, 0 non-ASCII bytes.
-
-This is now the **fourth** instance of Windows cp1252 breaking this pipeline on
-real ship names — after `ccpp.py` (three call sites) earlier today. My own
-diagnostic script hit it too while printing a ship name.
-
-## VERIFICATION 2 — 3D models: real, with two corrections
-
-11 unique DEFECT subjects, 32 rows across runs. Verified against disk:
-
-| subject | dir | model.glb | MODEL_SOURCE.txt |
-|---|---|---|---|
-| `.cache` | yes | **no** | no |
-| 85X, Arrastra, Fury, Mantis, Merchantman, PTV | yes | **no** | no |
-| Caterpillar Pirate Edition, P-72 Archimedes Emerald, Pulse, Ursa Fortuna | yes | **yes** | **yes** |
-
-- **`.cache` is a false positive, confirmed** — it is the *only* dotfile
-  directory among 242 under `sc-ships/`. The checker treats every directory as
-  a ship.
-- **The 6 genuinely missing models are real** — 85X, Arrastra, Fury, Mantis,
-  Merchantman, PTV. Exactly matching `build_full.py`'s `unmatched: 6`. Two
-  unrelated tools, same list.
-- **The 4 shared-chassis ships now HAVE a model.glb**, each with a
-  `MODEL_SOURCE.txt` recording it was copied from a sibling on
-  2026-07-30T18:31:55 — *after* the last check run at 17:58:11. So those
-  findings are **also stale**. They would now pass an existence check.
-
-The correction the order asked for still stands and is worth more than the
-staleness: a copied sibling model is **not ship-specific art**. The checker
-should read `MODEL_SOURCE.txt` and report **LIMITATION** with that reason, so
-"has a model" is not silently conflated with "has its own model."
-
-## THE 7 fan_kit_compliance WARNINGs
-
-They are **one finding repeated across 7 runs**, not 7 distinct issues:
-
-> `static/index.html` — no text matching 'trademark' found - confirm the
-> required disclaimer is still present
-
-**Reporting, not fixing** — CLAUDE.md rule 8 puts Fan Kit, trademark and legal
-text solely with Sleven.
-
-Context that matters: `static/index.html` **is not the deployed page.** The live
-site is served from `static/preview.html` mirrored into `releases/latest.html`.
-It has been separately established that the deployed page *does* carry the
-disclaimer and `index.html` does not. So this warns about an undeployed file —
-real as a hygiene finding, not a live compliance breach. It bears on image
-provenance only insofar as it is the same undeployed file.
-
-## PART A — complete
-
-`checks_flush_fallback.py` written. The script `framework.py` has told people to
-run since 2026-07-30, which did not exist.
-
-**Rule 12, 20 assertions, all passing** (`--self-test`): malformed input is
-*reported* not silently dropped (unparseable line, missing fields, invalid
-result vocabulary); a dry run writes nothing; archiving moves rather than
-deletes and preserves content; an absent log is a clean no-op; duplicates within
-one file collapse; a genuinely different finding still inserts.
-
-**Idempotence proven on the real data, not just fixtures:**
-
-| run | inserted | skipped | table rows |
-|---|---:|---:|---:|
-| first | 874 | 0 | 874 |
-| second | **0** | 874 | **874** |
-
-It also **fails closed**: malformed lines mean nothing is inserted and nothing
-archived, rather than a partial load that silently drops findings.
-
-Logs archived to `logs/flushed/` with timestamps. Nothing deleted.
-
-## PART B — complete. What it FOUND:
-
-First run of `--group db` against the real database, ever.
-
-**8 findings: 1 DEFECT, 2 WARNING, 5 PASS.**
-
-### The DEFECT is real, and it is a latent data-loss risk
-
-`schema_drift`: `alembic check` reports drift, and specifically proposes
-`remove_table` for **`ship_registry` (295 rows)** and
-**`pipeline_check_results` (890 rows)**.
-
-Both exist in the live database. **Neither is in `app/models.py`** — they were
-created by `schema-init/main.go`, outside alembic's metadata.
-
-**Consequence:** anyone running `alembic revision --autogenerate` and applying
-it would generate a migration that **DROPS the auditor findings table and the
-ship registry.** Not a checker bug — the checker is right, and this is exactly
-the class of thing this layer exists to catch. Reported, not fixed: adding
-models or an alembic exclusion is a schema decision outside this order.
-
-### The WARNINGs — the 232 / 254 / 295 gap, now measured
-
-- 62 DB ship names have no `ship_registry.json` entry
-- 108 registry entries have no DB row
-
-Three different numbers for "how many ships": **DB 232, registry 295, live site
-254.** The order flagged this gap as never examined by a tool. It has now been,
-and the answer is that registry and DB disagree in *both* directions — so it is
-not simply "the DB is behind".
-
-### The 5 PASSes — stated explicitly, as instructed
-
-- `referential_integrity`: all 232 ships have a valid `manufacturer_id`
-- `referential_integrity`: all non-null `last_verified_patch` values resolve
-- `referential_integrity`: all confidence values valid
-- `referential_integrity`: all 252 dealer listings have valid `ship_id`/`dealer_id`
-- `duplicate_identifier`: **no duplicate `(name, manufacturer_id)` pairs** —
-  independent corroboration that today's CC-12 constraint is holding
-
-## Final state
-
-`pipeline_check_results`: **890 rows** — PASS 790, LIMITATION 43, DEFECT 35,
-WARNING 22. DEFECTs by checker: `missing_or_corrupt_3d_model` 32,
-`schema_drift` 2, `registry_sync` 1. **Nothing stranded**; the fallback log is
-archived and absent.
-
-## PARTS C AND D — NOT STARTED
-
-Stopping cleanly here rather than starting work I cannot finish and verify to
-the standard this order demands.
-
-- **Part C** — three new auditors (`snapshot_integrity`,
-  `cross_source_disagreement`, `uex_join_health`), each requiring rule-12 proof
-  against tampered hashes, planted disagreements and broken join keys.
-- **Part D** — one scheduled task, confirmed by behaviour to be the only writer.
-
-Both are substantial and neither is begun. **Path C is not complete** and I am
-not reporting it as such — that would be the exact failure this layer exists to
-catch.
-
-One useful note for Part D when it happens: the fallback-flush schedule the
-order asks for is *less* critical now that `run_checks.py` writes directly, but
-still worth having — the fallback path is real and now correctly reserved for
-genuine outages.
-
-### 2026-08-01 19:00:06 — update_pathc_intake.md
-
-# UPDATE — Path C auditors work order received, starting
-
-Filed on intake per rule 13, before any work.
-
-## Received
-
-`docs/workorder-path-c-auditors.md`, approved 2026-08-02. Chosen over Path A
-(schedule the collectors) and Path B (build Stage 2 first). Commit-and-push
-authority for this order's scope only.
-
-## Scoping correction I am taking on board
-
-**Most of this is already built** — `checks/framework.py`,
-`checks/file_checks.py` (13 checkers), `checks/db_checks.py` (4),
-`checks/network_checks.py` (1 wired), `run_checks.py` with
-`--group file|db|network|all`, and the `pipeline_check_results` table. I am not
-rebuilding any of it. The job is to make it run, make it trustworthy, and make
-it run by itself.
-
-## Order of work
-
-1. **Verify the two findings first**, as instructed — confirm rather than accept.
-2. **Part A** — write `checks_flush_fallback.py`. 874 findings from three runs
-   have been queued since 2026-07-31 with no path into the table, because the
-   script `framework.py`'s own docstring tells you to run was never written.
-   Highest-value item in the order.
-3. **Part B** — run `--group db` against the real database for the first time.
-4. **Part C** — three new auditors: `snapshot_integrity`,
-   `cross_source_disagreement`, `uex_join_health`.
-5. **Part D** — one scheduled task, confirmed by behaviour to be the only writer.
-
-## Non-negotiables I am holding to
-
-- **Findings only.** No auditor modifies data. ARCHITECTURE_DECISIONS.md §4,
-  locked.
-- **Rule 12 on every new auditor and on the flush script** — proven against
-  known-bad input before being trusted. An auditor whose failure path has never
-  executed is decoration.
-- **One scheduled task, not two**, confirmed by behaviour. This project has lost
-  work twice to duplicate writers on one target.
-- **Report what I found, not that I ran.** A zero-defect run gets stated
-  explicitly.
-- **I will not report this complete on a run that verified nothing.** This is
-  the layer whose entire job is catching that mistake.
-
-## Note on the DB password
-
-The order says `DATABASE_URL` is present and the password is being rotated.
-Separately, the UEX token pasted into chat earlier today turned out to be
-byte-identical to the value already in `.env` — so that rotation had not
-happened at the time. If the Postgres password is mid-rotation, Part B may block
-on a stale credential; if so I will say so rather than working around it.
-
-Starting with the two verifications.
-
-### 2026-08-01 18:36:16 — update_layer_ownership_and_viewer_fixes.md
-
-# CORRECTION + two viewer fixes — `testing/_layer.html` is a build output, and I was writing the wrong file into it — 2026-08-02
-
-Cowork session (Claude-03). This **supersedes the "restore three lost fixes" work order** filed by Claude-02. Do not execute that order. Read this first.
-
----
-
-## 1. The three fixes were never lost. Nothing was rolled back.
-
-Claude-02 read `testing/_layer.html`, found no `CC_NORM`, no `CC_LOOKUP`, no `CC_RSI`, and found `apply()` at line 628 above `let renderer,…` at 631, and concluded three recorded fixes had been reverted.
-
-**Every one of those observations about the file was accurate. The conclusion drawn from them was wrong.**
-
-Those three fixes do not live in the layer source. They are applied **at build time** by `build_machine_layer.py`, which:
-
-- replaces the `let renderer,…` declaration with a comment and re-emits it in a header inserted near the top of the script — so in the built output the declaration is at line 477 and `apply()` at 660, in that order
-- injects `CC_NORM`, `CC_LOOKUP`, `CC_RSI` and `CC_HAS3D`
-- rewrites `decorate()` to match on the normalised name, capture the row's RSI anchor into `CC_RSI` before discarding it, and bind the click to the whole cell
-
-Each substitution is guarded by an `assert` that the target text is present, so a drifted source fails the build loudly rather than silently emitting an unpatched page.
-
-Verified in the built file: `CC_NORM` ×3, `CC_LOOKUP` ×2, `CC_RSI` ×5, `s.name===label` ×0.
-
-**Nothing rolled back. Nothing needs restoring.**
-
-## 2. The real defect, and it was mine
-
-**I was pushing the layer *source* into `testing/_layer.html` instead of the layer *build output*.**
-
-- Master source: `cc-testing-layer.html` — raw, unpatched by design
-- Build output: `cc-testing-layer-fixed.html` — what `testing/_layer.html` must contain
-
-Every push this session sent the first file. Confirmed by hash: `testing/_layer.html` on disk read `bb74ee72…`, byte-identical to my raw source, with `grep -c CC_NORM` returning 0.
-
-### What that broke, and what it did not
-
-- **`testing/_deploy/index.html` was always correct.** It is produced by `build_full.py`, which applies its own equivalents. This is why the shared preview link has worked throughout.
-- **`testing/index.html` — the localhost page — was broken.** `build.py` injected the unpatched source, so `apply()` threw a TDZ ReferenceError at load and every statement after it never ran: no 3D viewer, no clickable rows, original RSI links live in the matrix.
-
-**Claude-02's labelled inference was correct.** It reasoned from code, without running the page, that the symptom would be "old links to the RSI url" and no clickable ships. That is exactly right, and it is exactly what was reported.
-
-### Fixed and verified on the machine
-
-`testing/_layer.html` replaced with the build output, then `build.py` re-run on the machine itself:
-
-```
-layer  : testing/_layer.html   92,258 chars   CC_NORM=3 CC_RSI=5 openTok=8
-output : testing/index.html   296,803 chars   CC_NORM=3 openTok=8
-```
-
-## 3. Two sessions were writing the same file
-
-Claude-02 applied a blurred-backdrop change to `testing/_layer.html` at 01:10 UTC. I pushed over that path at 01:15. **That change is gone.**
-
-It could never have survived regardless: on the machine `_layer.html` is a generated artifact, and every push from this session overwrites it wholesale.
-
-**This is the same failure class as the double handoff writer** — two writers, one path, the later one silently discarding the earlier one's work. It cost ~37,000 characters per regeneration there. Here it cost a feature and a day of confusion.
-
-### Ownership rule — adopt this
-
-- **`testing/_layer.html` is a BUILD OUTPUT. Nobody hand-edits it.** Any edit is destroyed by the next push and cannot reach the deploy build.
-- **`testing/_deploy/index.html` is a BUILD OUTPUT.** Same rule.
-- **`testing/index.html` is a BUILD OUTPUT** of `build.py`. Already documented as "do not hand-edit."
-- The source of truth is `testing/_src/_layer.src.html`, and changes to it go through the Cowork session that owns the build scripts.
-
-## 4. A real risk this exposed — now closed
-
-**The master source and all three build scripts existed only inside an ephemeral cloud session.** The machine had only compiled artifacts. If that session had ended, the layer source would have been unrecoverable and the project would have held nothing but built output.
-
-Now on disk at `testing/_src/`:
-
-```
-_layer.src.html            the master source
-build_machine_layer.py     -> testing/_layer.html
-build_full.py              -> testing/_deploy/index.html  (models as separate files)
-build_portable.py          -> single-file offline build   (models base64-embedded)
-```
-
-`testing/_src/` is not currently covered by the `testing/` gitignore rules. **It should be committed** — it is source, not artifact, and it is the only copy.
-
-## 5. Two viewer bugs fixed this session (reported by Sleven)
-
-### The previous ship's photo flashing on the new ship's page
-
-Opening a ship set `still.style.opacity=1` **before** assigning the new `src`. An `<img>` keeps painting its previous frame until the new source decodes, so the element was forced to full visibility while still showing the last ship. Most obvious in the related-ships strip, where the "last ship" is the one you were just looking at.
-
-Now: the still is blanked to a transparent 1×1 with the transition suppressed, and only fades in once the new image can actually paint (`decode()`, falling back to `onload`).
-
-### A worse latent bug found alongside it — stale models
-
-three.js has **no way to cancel an in-flight load**. A GLB requested for ship A completed seconds later and called `scene.add()` regardless of what page was open — so clicking through related ships faster than models download could render **ship A's model on ship B's page**, with B's name and B's price beside it. Never reported, but reachable today on any slow connection.
-
-Every `open()` now takes a token; every async callback — model success, progress, error, image show, image error — checks it and does nothing if superseded. `close()` bumps the token so a late arrival cannot land on a closed page.
-
-### Verification, hard rule 12
-
-The bug does not reproduce on a local disk: the whole race window is under 10 ms. First attempt therefore "passed" on both the fixed and the broken build — a green result that proved nothing.
-
-Redone properly: served over HTTP with route interception adding 700 ms to every thumbnail and 3 s to every model, and synthetic image/model fixtures created because the deploy assets are not present in the cloud workspace. A known-bad fixture was generated by reverting the two changed lines in the *built* page, with an assertion that the reversion actually applied.
-
-Detector: frames where the still is visible **and** `img.complete` is false or `naturalWidth` is 0 — i.e. something is on screen that cannot be the current ship.
-
-```
-KNOWN-BAD : 457 frames (~3.7 s) of the previous ship on screen
-FIXED     : 0 frames
-```
-
-**A first attempt that passes on both builds is not a passing test.** Recording that as its own lesson.
-
-### Manufacturer tab dead on ship pages
-
-`#cc-mtab` sits at z-index 100000 and stays visible over the ship overlay, but `#cc-mdraw` is at 99998 — *below* it. So the tab was visible, clickable, and opened a drawer behind the page: indistinguishable from a dead button.
-
-Both are now hidden under `body.cc-ship-open`, and opening a ship force-closes the drawer so its offset state cannot persist. Verified: `getComputedStyle(#cc-mtab).display === 'none'` on a ship page.
-
-## 6. Carried forward from Claude-02's report — still open, still valid
-
-**Image provenance.** 241 `image.webp` files in `sc-ships/`, duplicated into `testing/_deploy/images/`, **with no record of where any of them came from** — no licence, no attribution, no manifest, no per-image metadata. The Fan Kit Agreement prohibits recoloring, distorting or outlining CIG assets, which bears directly on the blurred-backdrop idea. That question cannot be answered until the origin is established. Good catch; it stands regardless of what happens to the backdrop.
-
-**Phase 1 / source 6.** Independently reported as still `blocked_missing_credentials`. Note that `scripts/external_sources/uex_corp.py` and `_verify_uex_corp.py` now exist on disk and `.env` was written after that report — so the state may have moved. **Verify before quoting either version.**
-
-## 7. What Claude Code should NOT do
-
-**Do not execute the "restore three lost fixes" order.** There is nothing to restore, and applying those fixes to the source would collide with the build scripts' `assert` guards and break all three builds.
-
-*(+61 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+64 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
