@@ -27,6 +27,7 @@ CI later. Run: python run_e2e_test.py
 """
 
 import os
+import re
 import subprocess
 import sys
 import uuid
@@ -57,12 +58,114 @@ DB_NAME = f"citizen_compass_e2e_{uuid.uuid4().hex[:8]}"
 ADMIN_DSN = urlunsplit((_parts.scheme, _parts.netloc, "/postgres", "", ""))
 TEST_DATABASE_URL = urlunsplit((_parts.scheme, _parts.netloc, f"/{DB_NAME}", "", ""))
 
+# --------------------------------------------------------------------------
+# SAFETY GUARDS (added 2026-07-31)
+#
+# This harness was already sound about WHICH database it drops: DB_NAME is a
+# fixed prefix plus a fresh random suffix, never anything derived from
+# DATABASE_URL, so DROP DATABASE can only ever name a database this process
+# just created. These guards do not fix that - there was nothing to fix.
+#
+# What they DO address is WHICH SERVER it runs against. The connection above
+# inherits host/port/credentials from DATABASE_URL, and line 52 silently falls
+# back to RAILWAY_DATABASE_URL when DATABASE_URL is unset. That means an
+# unset environment variable is enough to point CREATE DATABASE / DROP
+# DATABASE / "alembic downgrade base" at the PRODUCTION server. Nothing
+# previously stopped that.
+#
+# Everything here fails CLOSED: on any doubt the harness refuses to run
+# rather than guessing.
+# --------------------------------------------------------------------------
+
+# A database this harness is allowed to create and drop must look exactly
+# like one it generated itself. Re-checked immediately before each
+# destructive call, not just once at import.
+THROWAWAY_NAME_PATTERN = re.compile(r"^citizen_compass_e2e_[0-9a-f]{8}$")
+
+# Hosts the harness will operate against without an explicit override.
+LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1", "[::1]", ""}
+
+# Substrings that mark a managed/hosted database. Seeing any of these means
+# we are almost certainly pointed at production.
+PRODUCTION_HOST_MARKERS = (
+    "railway", "rlwy.net", "rds.amazonaws.com", "neon.tech",
+    "supabase.co", "render.com", "heroku", "azure", "digitalocean",
+)
+
+ALLOW_REMOTE = os.environ.get("CC_E2E_ALLOW_REMOTE") == "1"
+
+
+def _configured_db_name() -> str:
+    """The database name DATABASE_URL actually points at - i.e. the real one."""
+    return _parts.path.lstrip("/")
+
+
+def assert_safe_target() -> None:
+    """Refuse to run at all unless the target is unambiguously disposable."""
+    problems = []
+
+    if not THROWAWAY_NAME_PATTERN.match(DB_NAME):
+        problems.append(
+            f"generated database name {DB_NAME!r} does not match the throwaway "
+            f"pattern {THROWAWAY_NAME_PATTERN.pattern!r}"
+        )
+
+    configured = _configured_db_name()
+    if configured and DB_NAME == configured:
+        problems.append(
+            f"throwaway name collides with the configured database {configured!r}"
+        )
+
+    host = (_parts.hostname or "").lower()
+    if host not in LOCAL_HOSTS and not ALLOW_REMOTE:
+        marker = next((m for m in PRODUCTION_HOST_MARKERS if m in host), None)
+        if marker:
+            problems.append(
+                f"DATABASE_URL points at a hosted/managed server ({host!r}, matched "
+                f"{marker!r}). This harness runs CREATE DATABASE, DROP DATABASE and "
+                f"'alembic downgrade base'. Refusing."
+            )
+        else:
+            problems.append(
+                f"DATABASE_URL points at a non-local host ({host!r}). This harness is "
+                f"only intended for a local Postgres server. Set CC_E2E_ALLOW_REMOTE=1 "
+                f"if you genuinely mean it."
+            )
+
+    if not os.environ.get("DATABASE_URL"):
+        problems.append(
+            "DATABASE_URL is not set, so the connection fell back to "
+            "RAILWAY_DATABASE_URL - which is production. Set DATABASE_URL explicitly."
+        )
+
+    if problems:
+        log("REFUSING TO RUN - safety guard tripped:")
+        for p in problems:
+            log(f"  - {p}")
+        log("Nothing was created, modified or dropped.")
+        raise SystemExit(2)
+
+    log(f"safety guard OK: local server {host or 'socket'}, throwaway DB {DB_NAME}")
+
+
+def assert_disposable(name: str, operation: str) -> None:
+    """Last line of defence, called immediately before anything destructive."""
+    if not THROWAWAY_NAME_PATTERN.match(name):
+        raise SystemExit(
+            f"[e2e] REFUSING {operation}: {name!r} is not a throwaway database name."
+        )
+    if name == _configured_db_name():
+        raise SystemExit(
+            f"[e2e] REFUSING {operation}: {name!r} is the configured database."
+        )
+
 
 def log(msg: str) -> None:
     print(f"[e2e] {msg}", flush=True)
 
 
 def create_database() -> None:
+    assert_disposable(DB_NAME, "CREATE DATABASE")
     conn = psycopg2.connect(ADMIN_DSN)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     try:
@@ -84,6 +187,7 @@ def create_database() -> None:
 
 
 def drop_database() -> None:
+    assert_disposable(DB_NAME, "DROP DATABASE")
     conn = psycopg2.connect(ADMIN_DSN)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     try:
@@ -224,6 +328,9 @@ def alembic(*args):
 
 
 def main():
+    # Fails closed and exits before touching anything if the target is not
+    # unambiguously a disposable database on a local server.
+    assert_safe_target()
     log(f"target throwaway DB: {DB_NAME}")
     create_database()
     try:
