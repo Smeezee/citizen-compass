@@ -26,6 +26,58 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+# ---------------------------------------------------------------------------
+# Tables owned by another authority, deliberately invisible to autogenerate.
+#
+# THE HAZARD THIS CLOSES (2026-08-02): these tables exist in the database but
+# in no SQLAlchemy model, so `alembic revision --autogenerate` proposed
+# `remove_table` for all three. Applying that migration would have dropped the
+# findings the checker layer had just spent a night producing. Autogenerate
+# output looks like ordinary work; nothing in it announces the loss.
+#
+# WHY EXCLUSION RATHER THAN DECLARATION, for these three specifically:
+# they are the checker subsystem's operational telemetry, not application
+# domain data. `schema-init/main.go` owns their DDL. They are written only by
+# checks/findings_store.py and checks/framework.py, read by nothing in app/,
+# and their schema moves with the checker layer rather than with the app.
+#
+# This is the "one writer per artifact" rule applied to schema. Two authorities
+# over one table is the same defect as two watchers on one handoff file or two
+# scheduled tasks on one target - both of which this project has already been
+# bitten by. Naming the boundary is applying that rule, not evading it.
+#
+# NAMED EXPLICITLY, never pattern-matched. A prefix rule like "pipeline_*"
+# would silently adopt the next table someone adds, which is precisely the
+# failure being closed. A new table belongs in models.py OR in this list, as a
+# deliberate act - and checks/schema_checks.py enforces exactly that, reporting
+# any table claimed by neither or by both.
+#
+# ship_registry is NOT here on purpose: it is domain data, it is what
+# registry_sync compares the database against, and it is now declared in
+# app/models.py.
+EXCLUDED_TABLES = {
+    "pipeline_check_results",
+    "pipeline_findings",
+    "pipeline_check_runs",
+}
+
+
+def include_object(object, name, type_, reflected, compare_to):
+    """Hide externally-owned tables from autogenerate.
+
+    Returning False for a table means autogenerate neither creates nor drops
+    it. It does not stop a hand-written migration touching it - that is a
+    different control, and checks/schema_checks.py is where it lives.
+    """
+    if type_ == "table" and name in EXCLUDED_TABLES:
+        return False
+    if type_ == "index" and getattr(object, "table", None) is not None:
+        if object.table.name in EXCLUDED_TABLES:
+            return False
+    return True
+# ---------------------------------------------------------------------------
+
+
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
@@ -48,6 +100,7 @@ def run_migrations_offline() -> None:
     context.configure(
         url=url,
         target_metadata=target_metadata,
+        include_object=include_object,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
@@ -71,7 +124,8 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, target_metadata=target_metadata,
+            include_object=include_object,
         )
 
         with context.begin_transaction():

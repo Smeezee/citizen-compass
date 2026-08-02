@@ -30,6 +30,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models import CONFIDENCE_LEVELS, Dealer, Manufacturer, Ship, ShipDealerListing
+from checks.schema_checks import schema_ownership_check
 from checks.framework import Finding
 
 REGISTRY_PATH = Path("data-layer") / "ship_registry.json"
@@ -370,4 +371,9 @@ CHECKERS = [
     ("duplicate_identifier", duplicate_identifier_check),
     ("registry_sync", registry_sync_check),
     ("schema_drift", schema_drift_check),
+    # Closes the CLASS the schema_drift DEFECT exposed: not "does the
+    # schema match the models" but "is every table claimed by exactly one
+    # authority". A table claimed by neither is the next unregistered
+    # pipeline_* nobody declared; claimed by both is ambiguous ownership.
+    ("schema_ownership", schema_ownership_check),
 ]

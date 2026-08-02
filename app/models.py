@@ -415,3 +415,39 @@ class TurretDetail(ProvenanceMixin, Base):
     )
 
     component: Mapped["Component"] = relationship(back_populates="turret_detail")
+
+
+# ---------------------------------------------------------------------------
+# Ship registry — declared here 2026-08-02 to close a real hazard.
+#
+# This table existed in the database but in no SQLAlchemy model, so
+# `alembic revision --autogenerate` proposed `remove_table:ship_registry`
+# along with three pipeline_* tables — a migration that would have dropped
+# 295 registry rows and 3,456 rows of checker findings. Autogenerate output
+# looks like ordinary work; nothing in it announces that.
+#
+# It is domain data — it is what `registry_sync` compares the database
+# against — so alembic owns it, per the 2026-08-02 ruling. The DDL below
+# mirrors registry-builder/main.go's ensureSchema() exactly; a mismatch
+# would make autogenerate propose ALTERs instead of drops, which is quieter
+# and equally wrong.
+#
+# Deliberately NOT a VerifiableMixin table: this is a generated cross-index
+# rebuilt from source, not community-sourced ship data with a provenance
+# story of its own.
+# ---------------------------------------------------------------------------
+
+
+class ShipRegistry(Base):
+    __tablename__ = "ship_registry"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    ship_code: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    manufacturer_code: Mapped[str] = mapped_column(String(10), nullable=False)
+    manufacturer_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    ship_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    source_slug: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
+    folder_slug: Mapped[str | None] = mapped_column(String(150))
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        server_default=func.now(), nullable=False
+    )
