@@ -1,0 +1,1687 @@
+<!-- ============================================================
+     CITIZEN COMPASS — TESTING LAYER
+     Injected into a copy of the live page. The live page is never
+     edited to add this. Everything experimental lives in here.
+     v2 · 2026-08-01 · full display control panel
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+
+<style>
+/* ===================================================================
+   DISPLAY ENGINE
+   Everything is driven from CSS custom properties so any control can
+   change any part of the page live. The site's own variables are
+   overridden here, which is why backgrounds, borders and accents all
+   follow along.
+   =================================================================== */
+:root{
+  --cc-scale:1;
+  --cc-weight:inherit;
+  --cc-track:0em;
+  --cc-word:0em;
+  --cc-lead:1.5;
+  --cc-radius:6px;
+  --cc-rowpad:7px;
+  --cc-border-a:0.28;
+  --cc-border-w:1px;
+}
+html{ font-size: calc(16px * var(--cc-scale)); }
+
+body.cc-on{
+  --mg-bg-dark:      var(--cc-bg);
+  --mg-panel-bg:     var(--cc-panel);
+  --mg-thead-bg:     var(--cc-head);
+  --mg-manu-row-bg:  var(--cc-head);
+  --mg-cyan:         var(--cc-accent);
+  --mg-amber:        var(--cc-accent2);
+  --text-main:       var(--cc-text);
+  --text-muted:      var(--cc-muted);
+  --border-color:    rgba(var(--cc-accent-rgb), var(--cc-border-a));
+  background: var(--cc-bg) !important;
+  color: var(--cc-text) !important;
+}
+
+/* ---- typography overrides ---- */
+body.cc-f-system, body.cc-f-system *:not(.cc-ui):not(.cc-ui *){
+  font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,sans-serif !important}
+body.cc-f-legible, body.cc-f-legible *:not(.cc-ui):not(.cc-ui *){
+  font-family:"Atkinson Hyperlegible","Segoe UI",sans-serif !important}
+body.cc-f-lexend, body.cc-f-lexend *:not(.cc-ui):not(.cc-ui *){
+  font-family:"Lexend","Segoe UI",sans-serif !important}
+body.cc-f-serif, body.cc-f-serif *:not(.cc-ui):not(.cc-ui *){
+  font-family:"Source Serif 4",Georgia,serif !important}
+body.cc-f-mono, body.cc-f-mono *:not(.cc-ui):not(.cc-ui *){
+  font-family:ui-monospace,Consolas,"Courier New",monospace !important}
+
+body.cc-w td, body.cc-w th, body.cc-w p, body.cc-w span, body.cc-w div,
+body.cc-w a, body.cc-w li, body.cc-w h1, body.cc-w h2, body.cc-w h3{
+  font-weight: var(--cc-weight) !important}
+
+body.cc-sp, body.cc-sp td, body.cc-sp th, body.cc-sp p, body.cc-sp span,
+body.cc-sp a, body.cc-sp li{
+  letter-spacing: var(--cc-track) !important;
+  word-spacing: var(--cc-word) !important}
+body.cc-sp td, body.cc-sp p, body.cc-sp li{ line-height: var(--cc-lead) !important}
+
+/* ---- structure ---- */
+body.cc-on table td, body.cc-on table th{
+  padding-top: var(--cc-rowpad) !important;
+  padding-bottom: var(--cc-rowpad) !important}
+body.cc-stripe tbody tr:nth-child(even) td{
+  background: rgba(var(--cc-accent-rgb), .055) !important}
+body.cc-hover tbody tr:hover td{
+  background: rgba(var(--cc-accent-rgb), .17) !important}
+body.cc-noborder td, body.cc-noborder th, body.cc-noborder .cc-panel{
+  border-color: transparent !important}
+body.cc-strongborder td, body.cc-strongborder th{
+  border-bottom: var(--cc-border-w) solid rgba(var(--cc-accent-rgb),.55) !important}
+body.cc-on .cc-panel, body.cc-on #cc-stage{ border-radius: var(--cc-radius) !important}
+
+/* ---- effects ---- */
+body.cc-noglow *{ text-shadow:none !important; box-shadow:none !important }
+body.cc-noglow #cc-panel{ box-shadow:0 10px 40px rgba(0,0,0,.7) !important }
+body.cc-nomotion *{ animation:none !important; transition:none !important;
+  scroll-behavior:auto !important }
+body.cc-nomotion #cc-panel{ transition:right .01s !important }
+body.cc-links a:not(.cc-ui):not(#cc-back){ text-decoration:underline !important;
+  text-underline-offset:3px }
+body.cc-focus :focus-visible{ outline:3px solid var(--cc-accent2) !important;
+  outline-offset:2px !important }
+body.cc-caps *{ text-transform:none !important }
+
+/* ===================================================================
+   CONTROL PANEL  (all .cc-ui so page overrides never touch it)
+   =================================================================== */
+@media (max-width:900px){
+  /* The bottom edge is crowded on a phone: the site has a sticky trademark bar
+     and its own back-to-top button, and we add two pills. Give each a lane
+     instead of letting them stack on top of each other. */
+  .trademark-bar{ bottom:58px !important }
+  #backToTop{ bottom:150px !important }
+  #cc-tab{position:fixed !important;top:auto !important;bottom:10px !important;
+    left:10px !important;right:auto !important;writing-mode:horizontal-tb !important;
+    border-radius:8px !important;padding:11px 18px !important;
+    font-size:14px !important;letter-spacing:.1em !important;z-index:100003 !important}
+  body{padding-bottom:64px !important}
+  #cc-panel{width:100% !important;right:-100% !important}
+  #cc-panel.open{right:0 !important}
+}
+#cc-tab{position:absolute;top:44%;right:calc(100% + 2px);z-index:1;
+  background:#00C9A7;color:#04252E;border:0;border-radius:8px 0 0 8px;
+  padding:16px 9px;font:700 14px/1 "Segoe UI",sans-serif;cursor:pointer;
+  writing-mode:vertical-rl;letter-spacing:.14em;
+  box-shadow:-3px 0 16px rgba(0,0,0,.5)}
+#cc-tab:hover{background:#3FE3C4}
+
+#cc-panel{position:fixed;top:0;right:-380px;overflow:visible;bottom:0;width:380px;z-index:100001;
+  background:#101F35;border-left:2px solid #00C9A7;
+  box-shadow:-10px 0 44px rgba(0,0,0,.72);
+  font:400 15px/1.55 "Segoe UI",-apple-system,sans-serif;color:#E8F2F8;
+  display:flex;flex-direction:column;transition:right .28s ease}
+#cc-panel.open{right:0}
+#cc-panel *{box-sizing:border-box}
+
+#cc-panel .top{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;background:#16294a;border-bottom:1px solid rgba(0,201,167,.35)}
+#cc-panel .top h4{margin:0;font-size:18px;font-weight:700;color:#7FE8D4}
+#cc-panel .x{background:none;border:0;color:#A8BECD;font-size:26px;
+  cursor:pointer;line-height:1;padding:0 4px}
+#cc-panel .x:hover{color:#fff}
+
+#cc-tabs{display:flex;background:#0C1A2C;border-bottom:1px solid rgba(0,201,167,.25)}
+#cc-tabs button{flex:1;background:none;border:0;border-bottom:3px solid transparent;
+  color:#8FA6B6;padding:11px 4px;font:600 14px/1 inherit;cursor:pointer}
+#cc-tabs button:hover{color:#CFE6F2}
+#cc-tabs button.on{color:#3FE3C4;border-bottom-color:#00C9A7;background:rgba(0,201,167,.08)}
+
+#cc-body{flex:1;overflow-y:auto;padding:16px}
+.cc-pane{display:none} .cc-pane.on{display:block}
+
+.cc-g{margin-bottom:20px}
+.cc-g > .t{font-size:15px;font-weight:700;color:#B4F0E2;margin-bottom:9px;
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cc-g > .t em{font-style:normal;font-weight:600;color:#8FA6B6;font-size:14px;
+  font-variant-numeric:tabular-nums}
+.cc-hint{font-size:13px;color:#8FA6B6;margin:-4px 0 8px;line-height:1.45}
+
+.cc-row{display:flex;gap:6px;flex-wrap:wrap}
+.cc-row button{flex:1;min-width:60px;background:rgba(0,201,167,.09);
+  border:1px solid rgba(0,201,167,.32);color:#DCEAF3;border-radius:5px;
+  padding:9px 7px;font:600 14px/1.15 inherit;cursor:pointer}
+.cc-row button:hover{background:rgba(0,201,167,.25)}
+.cc-row button.on{background:#00C9A7;border-color:#00C9A7;color:#04252E}
+.cc-row button.wide{flex:0 0 100%}
+
+.cc-sw{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 0;border-bottom:1px solid rgba(168,190,205,.14);font-size:15px}
+.cc-sw:last-child{border-bottom:0}
+.cc-sw span{flex:1}
+.cc-sw .knob{width:50px;height:27px;border-radius:99px;background:#2b405e;
+  border:1px solid rgba(168,190,205,.35);position:relative;cursor:pointer;
+  flex:0 0 auto;transition:.18s}
+.cc-sw .knob::after{content:"";position:absolute;top:2px;left:2px;width:21px;
+  height:21px;border-radius:50%;background:#9FB4C6;transition:.18s}
+.cc-sw .knob.on{background:#00C9A7;border-color:#00C9A7}
+.cc-sw .knob.on::after{left:26px;background:#04252E}
+
+input[type=range]{width:100%;accent-color:#00C9A7;height:26px;cursor:pointer}
+
+.cc-sws{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.cc-sws button{aspect-ratio:1;border-radius:5px;border:2px solid transparent;
+  cursor:pointer;padding:0}
+.cc-sws button.on{border-color:#fff;box-shadow:0 0 0 2px #00C9A7}
+
+#cc-out{width:100%;height:190px;background:#08131f;color:#B4F0E2;
+  border:1px solid rgba(0,201,167,.35);border-radius:5px;padding:10px;
+  font:400 12px/1.5 ui-monospace,Consolas,monospace;resize:vertical}
+
+#cc-panel .foot{padding:12px 16px;border-top:1px solid rgba(0,201,167,.25);
+  background:#0C1A2C;display:flex;gap:8px}
+#cc-panel .foot button{flex:1;border-radius:5px;padding:11px;
+  font:700 14px/1 inherit;cursor:pointer}
+#cc-save{background:#00C9A7;border:0;color:#04252E}
+#cc-reset{background:rgba(255,107,0,.16);border:1px solid rgba(255,107,0,.5);
+  color:#FFA45C}
+
+/* ---------- testing banner ---------- */
+#cc-flag{position:fixed;top:0;left:0;right:0;z-index:99998;
+  background:repeating-linear-gradient(45deg,#FF6B00,#FF6B00 14px,#b04a00 14px,#b04a00 28px);
+  color:#160900;font:700 14px/1 "Segoe UI",sans-serif;letter-spacing:.1em;
+  text-transform:uppercase;text-align:center;padding:7px 0;pointer-events:none}
+body{padding-top:30px}
+
+/* ---------- clickable ship names ---------- */
+#matrix-body td:first-child .cc-open{color:var(--cc-accent);cursor:pointer;
+  font-weight:600;border-bottom:2px solid rgba(var(--cc-accent-rgb),.5);
+  padding-bottom:1px}
+#matrix-body td:first-child .cc-open:hover{color:var(--cc-accent2);
+  border-bottom-color:var(--cc-accent2)}
+.cc-nomodel{opacity:.72}
+
+/* ---------- ship view ---------- */
+#cc-ship{position:fixed;top:0;right:0;bottom:0;left:46px;z-index:99999;background:var(--cc-bg);
+  display:none;flex-direction:column;overflow:hidden;color:var(--cc-text)}
+#cc-ship.open{display:flex}
+#cc-bar{display:flex;align-items:center;gap:16px;padding:13px 18px;
+  background:var(--cc-panel);border-bottom:1px solid rgba(var(--cc-accent-rgb),.32);
+  flex:0 0 auto}
+#cc-back{background:var(--cc-accent);
+  border:2px solid var(--cc-accent);color:#04252E;
+  border-radius:7px;
+  padding:calc(11px * var(--cc-scale,1)) calc(22px * var(--cc-scale,1));
+  font:800 calc(16px * var(--cc-scale,1))/1 inherit;
+  letter-spacing:.02em;white-space:nowrap;cursor:pointer;
+  box-shadow:0 3px 14px rgba(0,0,0,.4)}
+#cc-back:hover{filter:brightness(1.12)}
+#cc-back:active{transform:translateY(1px)}
+#cc-bar h2{margin:0;font-size:24px;font-weight:700;color:var(--cc-text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cc-bar .mfr{color:var(--cc-muted);font-size:15px;white-space:nowrap}
+#cc-bar img{height:26px;width:auto}
+#cc-bar .spacer{flex:1}
+#cc-badge{padding:5px 13px;border-radius:99px;font-size:13px;font-weight:700;white-space:nowrap}
+.cc-buy{background:var(--cc-accent);color:#04252E}
+.cc-pledge{background:var(--cc-accent2);color:#241100}
+
+#cc-grid{flex:1;display:grid;grid-template-columns:300px 1fr 340px;gap:12px;
+  padding:12px;min-height:0}
+@media(max-width:1200px){#cc-grid{grid-template-columns:1fr;overflow-y:auto}}
+.cc-col{display:flex;flex-direction:column;gap:12px;min-height:0;overflow-y:auto}
+.cc-panel{background:var(--cc-panel);
+  border:var(--cc-border-w) solid rgba(var(--cc-accent-rgb),var(--cc-border-a));
+  border-radius:var(--cc-radius);padding:14px 16px;flex:0 0 auto}
+.cc-panel h3{margin:0 0 11px;font-size:15px;color:var(--cc-accent);font-weight:700;
+  padding-bottom:8px;border-bottom:1px solid rgba(var(--cc-accent-rgb),.25)}
+.cc-kv{display:flex;justify-content:space-between;gap:12px;align-items:baseline;
+  padding:7px 0;font-size:16px;border-bottom:1px solid rgba(var(--cc-muted-rgb),.16)}
+.cc-kv:last-child{border-bottom:0}
+.cc-kv .k{color:var(--cc-muted);font-size:14px;white-space:nowrap;font-weight:600}
+.cc-kv .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--cc-text);font-weight:600}
+.cc-kv .v.big{font-size:21px;font-weight:700;color:var(--cc-accent)}
+.cc-kv .v.amber{color:var(--cc-accent2)}
+.cc-kv .v.none{color:var(--cc-muted);font-style:italic;font-size:14px;font-weight:400}
+.cc-sub{font-size:14px;color:var(--cc-muted);font-weight:600;margin-top:10px}
+.cc-dealers{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.cc-dealers span{background:rgba(var(--cc-accent-rgb),.15);
+  border:1px solid rgba(var(--cc-accent-rgb),.42);color:var(--cc-accent);
+  padding:5px 11px;border-radius:4px;font-size:14px;font-weight:600}
+.cc-note{font-size:15px;color:var(--cc-text);line-height:1.65;margin:0;opacity:.92}
+.cc-link{display:block;text-align:center;background:rgba(255,107,0,.16);
+  border:1px solid var(--cc-accent2);color:var(--cc-accent2);padding:11px;
+  border-radius:5px;font-size:15px;font-weight:600;text-decoration:none;margin-top:12px}
+.cc-link:hover{background:var(--cc-accent2);color:#241100}
+#cc-stage{position:relative;background:var(--cc-panel);
+  border:var(--cc-border-w) solid rgba(var(--cc-accent-rgb),var(--cc-border-a));
+  border-radius:var(--cc-radius);overflow:hidden;min-height:320px}
+#cc-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#cc-still{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  transition:opacity .5s;pointer-events:none;padding:24px}
+#cc-status{position:absolute;left:14px;bottom:12px;font-size:14px;
+  color:var(--cc-muted);pointer-events:none;font-weight:600;
+  background:rgba(0,0,0,.4);padding:4px 9px;border-radius:4px}
+#cc-hint{position:absolute;right:14px;bottom:12px;font-size:14px;color:var(--cc-muted)}
+#cc-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:9px;color:var(--cc-muted);font-size:16px;text-align:center;padding:24px}
+.cc-slots{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.cc-slot{background:rgba(0,0,0,.25);border:1px solid rgba(var(--cc-muted-rgb),.28);
+  border-radius:4px;padding:9px 11px;min-height:56px;display:flex;flex-direction:column;
+  justify-content:center}
+.cc-slot .sn{font-size:13px;color:var(--cc-muted);font-weight:700}
+.cc-slot .sv{font-size:14px;color:var(--cc-muted);font-style:italic;margin-top:3px;opacity:.8}
+.cc-pending{font-size:14px;color:var(--cc-text);line-height:1.6;opacity:.9;
+  background:rgba(255,107,0,.1);border-left:3px solid var(--cc-accent2);
+  padding:10px 12px;border-radius:0 4px 4px 0;margin-bottom:11px}
+.cc-prov{font-size:14px;color:var(--cc-muted);display:flex;gap:16px;flex-wrap:wrap}
+.cc-prov b{color:var(--cc-accent);font-weight:700}
+#cc-rel{flex:0 0 auto;background:var(--cc-panel);
+  border-top:1px solid rgba(var(--cc-accent-rgb),.32);padding:11px 14px;
+  display:flex;gap:9px;align-items:center;overflow-x:auto}
+#cc-rel .lbl{font-size:14px;color:var(--cc-accent);white-space:nowrap;
+  padding-right:6px;font-weight:700}
+#cc-rel button{background:rgba(var(--cc-accent-rgb),.12);
+  border:1px solid rgba(var(--cc-accent-rgb),.38);color:var(--cc-text);
+  border-radius:4px;padding:8px 14px;font:600 14px/1 inherit;cursor:pointer;white-space:nowrap}
+#cc-rel button:hover{background:rgba(var(--cc-accent-rgb),.3)}
+</style>
+
+<div id="cc-flag">Testing area &mdash; not the live site</div>
+
+<div id="cc-panel" class="cc-ui">
+  <button id="cc-tab" class="cc-ui">DISPLAY</button>
+  <div class="top"><h4>Display controls</h4><button class="x" id="cc-close">&times;</button></div>
+  <div id="cc-tabs">
+    <button data-p="quick" class="on">Quick</button>
+    <button data-p="type">Type</button>
+    <button data-p="colour">Colour</button>
+    <button data-p="layout">Layout</button>
+    <button data-p="export">Export</button>
+  </div>
+  <div id="cc-body">
+
+    <div class="cc-pane on" data-p="quick">
+      <div class="cc-g">
+        <div class="t">One-click profiles</div>
+        <p class="cc-hint">Each sets several things at once. Start here, then fine-tune in the other tabs.</p>
+        <div class="cc-row" id="cc-presets">
+          <button class="wide" data-pre="default">Site default</button>
+          <button class="wide" data-pre="astig">Easier on tired eyes &mdash; thicker, no glow, softer contrast</button>
+          <button class="wide" data-pre="dyslexia">Dyslexia friendly &mdash; legible font, wider spacing</button>
+          <button class="wide" data-pre="lowvis">Low vision &mdash; 150%, bold, high contrast, roomy rows</button>
+          <button class="wide" data-pre="light">Light mode</button>
+          <button class="wide" data-pre="amber">Amber on black</button>
+          <button class="wide" data-pre="calm">Calm &mdash; muted colour, no motion, soft borders</button>
+        </div>
+      </div>
+      <div class="cc-g">
+        <div class="t">Text size <em id="cc-scale-v">100%</em></div>
+        <input type="range" id="cc-scale" min="80" max="200" step="5" value="100">
+      </div>
+      <div class="cc-g">
+        <div class="t">Quick switches</div>
+        <div class="cc-sw"><span>Thicker text</span><div class="knob" data-t="bold"></div></div>
+        <div class="cc-sw"><span>Remove all glow</span><div class="knob" data-t="noglow"></div></div>
+        <div class="cc-sw"><span>Stop animation</span><div class="knob" data-t="nomotion"></div></div>
+        <div class="cc-sw"><span>Stripe table rows</span><div class="knob" data-t="stripe"></div></div>
+      </div>
+    </div>
+
+    <div class="cc-pane" data-p="type">
+      <div class="cc-g">
+        <div class="t">Typeface</div>
+        <p class="cc-hint">Legible is Atkinson Hyperlegible, built by the Braille Institute. Lexend is designed to raise reading speed.</p>
+        <div class="cc-row" id="cc-fonts">
+          <button data-f="">Site</button><button data-f="cc-f-system">System</button>
+          <button data-f="cc-f-legible">Legible</button><button data-f="cc-f-lexend">Lexend</button>
+          <button data-f="cc-f-serif">Serif</button><button data-f="cc-f-mono">Mono</button>
+        </div>
+      </div>
+      <div class="cc-g"><div class="t">Weight <em id="cc-weight-v">site</em></div>
+        <input type="range" id="cc-weight" min="0" max="800" step="100" value="0"></div>
+      <div class="cc-g"><div class="t">Letter spacing <em id="cc-track-v">0</em></div>
+        <input type="range" id="cc-track" min="-2" max="12" step="1" value="0"></div>
+      <div class="cc-g"><div class="t">Word spacing <em id="cc-word-v">0</em></div>
+        <input type="range" id="cc-word" min="0" max="30" step="2" value="0"></div>
+      <div class="cc-g"><div class="t">Line height <em id="cc-lead-v">1.5</em></div>
+        <input type="range" id="cc-lead" min="120" max="260" step="5" value="150"></div>
+      <div class="cc-g"><div class="t">Other</div>
+        <div class="cc-sw"><span>Underline every link</span><div class="knob" data-t="links"></div></div>
+        <div class="cc-sw"><span>Remove ALL-CAPS styling</span><div class="knob" data-t="caps"></div></div>
+      </div>
+    </div>
+
+    <div class="cc-pane" data-p="colour">
+      <div class="cc-g"><div class="t">Background</div>
+        <div class="cc-sws" id="cc-bgs"></div></div>
+      <div class="cc-g"><div class="t">Text brightness <em id="cc-tb-v">100%</em></div>
+        <input type="range" id="cc-tb" min="60" max="130" step="5" value="100"></div>
+      <div class="cc-g"><div class="t">Main accent</div>
+        <div class="cc-sws" id="cc-acc"></div></div>
+      <div class="cc-g"><div class="t">Second accent</div>
+        <div class="cc-sws" id="cc-acc2"></div></div>
+      <div class="cc-g"><div class="t">Colour intensity <em id="cc-sat-v">100%</em></div>
+        <p class="cc-hint">Turning this down helps if bright colours feel harsh or smear.</p>
+        <input type="range" id="cc-sat" min="0" max="150" step="10" value="100"></div>
+    </div>
+
+    <div class="cc-pane" data-p="layout">
+      <div class="cc-g"><div class="t">Row height <em id="cc-rowpad-v">normal</em></div>
+        <input type="range" id="cc-rowpad" min="2" max="20" step="1" value="7"></div>
+      <div class="cc-g"><div class="t">Border strength <em id="cc-bord-v">normal</em></div>
+        <input type="range" id="cc-bord" min="0" max="100" step="5" value="28"></div>
+      <div class="cc-g"><div class="t">Border thickness <em id="cc-bw-v">1px</em></div>
+        <input type="range" id="cc-bw" min="0" max="4" step="1" value="1"></div>
+      <div class="cc-g"><div class="t">Corner rounding <em id="cc-rad-v">6px</em></div>
+        <input type="range" id="cc-rad" min="0" max="22" step="1" value="6"></div>
+      <div class="cc-g"><div class="t">Table</div>
+        <div class="cc-sw"><span>Stripe alternate rows</span><div class="knob" data-t="stripe"></div></div>
+        <div class="cc-sw"><span>Strong row hover</span><div class="knob" data-t="hover"></div></div>
+        <div class="cc-sw"><span>Heavy row lines</span><div class="knob" data-t="strongborder"></div></div>
+        <div class="cc-sw"><span>Hide all borders</span><div class="knob" data-t="noborder"></div></div>
+      </div>
+      <div class="cc-g"><div class="t">Focus &amp; motion</div>
+        <div class="cc-sw"><span>Bold keyboard focus ring</span><div class="knob" data-t="focus"></div></div>
+        <div class="cc-sw"><span>Stop all animation</span><div class="knob" data-t="nomotion"></div></div>
+        <div class="cc-sw"><span>Remove glow and shadow</span><div class="knob" data-t="noglow"></div></div>
+      </div>
+    </div>
+
+    <div class="cc-pane" data-p="export">
+      <div class="cc-g">
+        <div class="t">Your settings as CSS</div>
+        <p class="cc-hint">Once a combination works, paste this into the live site's stylesheet and it becomes the default for everyone.</p>
+        <textarea id="cc-out" readonly></textarea>
+        <div class="cc-row" style="margin-top:8px">
+          <button id="cc-copy">Copy to clipboard</button>
+        </div>
+      </div>
+      <div class="cc-g">
+        <div class="t">Current state</div>
+        <div id="cc-state" class="cc-hint" style="font-family:ui-monospace,monospace"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="foot">
+    <button id="cc-reset">Reset all</button>
+    <button id="cc-save">Settings saved automatically</button>
+  </div>
+</div>
+
+<div id="cc-ship">
+  <div id="cc-bar">
+    <button id="cc-back">&larr;&nbsp; Back to all ships</button>
+    <img id="cc-logo" alt="" style="display:none">
+    <h2 id="cc-name"></h2><span class="mfr" id="cc-mfr"></span>
+    <span id="cc-badge"></span><span class="spacer"></span>
+    <span class="mfr" id="cc-role"></span>
+  </div>
+  <div id="cc-grid">
+    <div class="cc-col">
+      <div class="cc-panel"><h3>Acquisition</h3>
+        <div class="cc-kv"><span class="k">In-game price</span><span class="v big" id="cc-auec"></span></div>
+        <div class="cc-kv"><span class="k">Pledge price</span><span class="v amber" id="cc-usd"></span></div>
+        <div id="cc-dealwrap"><div class="cc-sub">Sold at</div>
+          <div class="cc-dealers" id="cc-dealers"></div></div>
+        <a class="cc-link" id="cc-rsi" target="_blank" rel="noopener">View on RSI &#8599;</a>
+      </div>
+      <div class="cc-panel" id="cc-notewrap"><h3>Notes</h3><p class="cc-note" id="cc-note"></p></div>
+      <div class="cc-panel"><h3>Record</h3><div class="cc-prov" id="cc-prov"></div></div>
+    </div>
+    <div id="cc-stage">
+      <canvas id="cc-canvas"></canvas><img id="cc-still" alt="">
+      <div id="cc-empty" style="display:none"></div>
+      <div id="cc-status"></div><div id="cc-hint">drag to rotate &middot; scroll to zoom</div>
+    </div>
+    <div class="cc-col">
+      <div class="cc-panel"><h3>Loadout</h3>
+        <div class="cc-pending">Hardpoint and component data is not in the site file yet. It lives in PostgreSQL and reaches this panel once the API is wired in. Slot structure shown, no invented values.</div>
+        <div class="cc-slots" id="cc-slots"></div></div>
+      <div class="cc-panel"><h3>Classification</h3>
+        <div class="cc-kv"><span class="k">Role</span><span class="v" id="cc-role2"></span></div>
+        <div class="cc-kv"><span class="k">Manufacturer</span><span class="v" id="cc-mfr2"></span></div>
+        <div class="cc-kv"><span class="k">Status</span><span class="v" id="cc-stat2"></span></div>
+        <div class="cc-kv"><span class="k">Model folder</span><span class="v" id="cc-mfile"></span></div>
+      </div>
+    </div>
+  </div>
+  <div id="cc-rel"><span class="lbl">Related</span><span id="cc-relitems" style="display:contents"></span></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const CC_MODELS = {"129": "100i", "130": "125a", "131": "135c", "132": "300i", "133": "315p", "134": "325a", "135": "350r", "136": "400i", "137": "600i Explorer", "138": "600i Touring", "139": "85X", "140": "890 Jump", "61": "A1 Spirit", "62": "A2 Hercules", "145": "Apollo Medivac", "146": "Apollo Triage", "63": "Ares Inferno", "64": "Ares Ion", "203": "Arrastra", "21": "Asgard", "44": "ATLS", "45": "ATLS GEO", "147": "Aurora CL", "148": "Aurora ES", "149": "Aurora LN", "150": "Aurora LX", "151": "Aurora MR", "1": "Avenger Stalker", "2": "Avenger Titan", "3": "Avenger Titan Renegade", "4": "Avenger Warlock", "22": "Ballista", "86": "Blade", "70": "Buccaneer", "65": "C1 Spirit", "66": "C2 Hercules", "23": "C8 Pisces", "24": "C8R Pisces", "25": "C8X Pisces Expedition", "26": "Carrack", "71": "Caterpillar", "27": "Centurion", "72": "Clipper", "152": "Constellation Andromeda", "154": "Constellation Phoenix", "155": "Constellation Taurus", "73": "Corsair", "191": "Crucible", "46": "CSV-SM", "74": "Cutlass Black Best In Show Edition 2949", "75": "Cutlass Blue", "76": "Cutlass Red", "77": "Cutlass Steel", "78": "Cutter", "79": "Cutter Rambler", "80": "Cutter Scout", "168": "Cyclone", "173": "Cyclone AA", "174": "Cyclone MT", "175": "Cyclone RC", "176": "Cyclone RN", "177": "Cyclone TR", "54": "Defender", "81": "Dragonfly Black", "204": "E1 Spirit", "5": "Eclipse", "196": "Endeavor", "198": "Expanse", "31": "F7C-M Super Hornet Mk I", "32": "F7C-R Hornet Tracker Mk I", "33": "F7C-R Hornet Tracker Mk II", "34": "F7C-S Hornet Ghost Mk I", "35": "F7C-S Hornet Ghost Mk II", "28": "F7C Hornet Mk I", "29": "F7C Hornet Mk II", "30": "F7C Hornet Wildfire Mk I", "214": "F8C Lightning", "103": "Fortune", "104": "Freelancer", "105": "Freelancer DUR", "106": "Freelancer MAX", "107": "Freelancer MIS", "119": "Fury", "120": "Fury LX", "121": "Fury MX", "211": "G12", "212": "G12a", "213": "G12r", "182": "Galaxy", "197": "Genesis", "36": "Gladiator", "6": "Gladius Valiant", "7": "Gladius Valiant", "230": "Glaive", "82": "Golem", "224": "Golem OX", "122": "Guardian", "123": "Guardian MX", "232": "Guardian QI", "8": "Hammerhead", "37": "Hawk", "83": "Herald", "55": "HoverQuad", "108": "Hull A", "222": "Hull B", "109": "Hull C", "199": "Hull D", "200": "Hull E", "38": "Hurricane", "188": "Idris-M", "189": "Idris-P", "67": "Intrepid", "218": "Ironclad", "219": "Ironclad Assault", "187": "Javelin", "165": "Khartu-Al", "181": "Kraken", "202": "Kraken Privateer", "100": "L-21 Wolf", "229": "L-22 Alpha Wolf", "195": "Legionnaire", "183": "Liberator", "170": "Lynx", "68": "M2 Hercules", "141": "M50", "157": "Mantis", "94": "MDC", "186": "Merchantman", "69": "Mercury", "158": "Meteor", "47": "MOLE", "49": "MPUV Cargo", "50": "MPUV Personnel", "51": "MPUV Tractor", "95": "MTC", "84": "Mule", "56": "Mustang Alpha", "57": "Mustang Beta", "58": "Mustang Delta", "59": "Mustang Gamma", "190": "Nautilus", "60": "Nomad", "169": "Nova", "166": "Nox", "201": "Odyssey", "193": "Orion", "101": "P-52 Merlin", "102": "P-72 Archimedes", "39": "Paladin", "159": "Perseus", "184": "Pioneer", "221": "Polaris", "110": "Prospector", "87": "Prowler", "88": "Prowler Utility", "96": "PTV", "124": "Pulse", "125": "Pulse LX", "52": "RAFT", "228": "Railen", "206": "Ranger CV", "207": "Ranger RC", "208": "Ranger TR", "126": "Razor", "127": "Razor EX", "128": "Razor LX", "9": "Reclaimer", "10": "Redeemer", "111": "Reliant Kore", "112": "Reliant Mako", "113": "Reliant Sen", "114": "Reliant Tana", "11": "Retaliator", "97": "ROC", "98": "ROC-DS", "12": "Sabre", "13": "Sabre Comet", "14": "Sabre Firebird", "15": "Sabre Peregrine", "160": "Salvation", "167": "San'tok.yāi", "161": "Scorpius", "171": "Scorpius Antares", "231": "Scythe", "93": "Shiv", "40": "Spartan", "53": "SRV", "115": "Starfarer", "116": "Starfarer Gemini", "117": "Starlancer MAX", "118": "Starlancer TAC", "89": "Stinger", "178": "Storm", "179": "Storm AA", "99": "STV", "92": "Syulen", "90": "Talon", "91": "Talon Shrike", "41": "Terrapin", "42": "Terrapin Medic", "162": "Ursa", "163": "Ursa Medivac", "43": "Valkyrie", "16": "Vanguard Harbinger", "17": "Vanguard Hoplite", "18": "Vanguard Sentinel", "19": "Vanguard Warden", "194": "Vulcan", "85": "Vulture", "142": "X1", "143": "X1 Force", "144": "X1 Velocity", "164": "Zeus Mk II CL", "172": "Zeus Mk II ES", "205": "Zeus Mk II MR", "234": "ATLS", "235": "ATLS", "236": "ATLS", "237": "Ballista", "238": "Ballista", "239": "Carrack Expedition", "240": "Constellation Phoenix Emerald", "241": "F7A Hornet Mk I", "242": "F7A Hornet Mk II", "244": "F7C-M Super Hornet Heartseeker Mk I", "245": "F7C-M Super Hornet Mk II", "246": "F8C Lightning Executive Edition", "248": "Gladius Pirate Edition", "249": "Mustang Alpha Vindicator", "250": "Mustang Omega", "251": "P-72 Archimedes Emerald", "252": "Sabre Raven", "253": "Ursa Fortuna", "254": "Valkyrie"};
+const CC_DIR="../sc-ships/", CC_FILE="model_scaled.glb";
+const $=id=>document.getElementById(id);
+const hex2rgb=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16)).join(',')};
+
+/* ================= display engine ================= */
+const BG = {
+  'Site':      {bg:'#0D1B2E',panel:'#112244',head:'#0F2850',text:'#C8D6E5',muted:'#6B8A99'},
+  'Deep':      {bg:'#05080D',panel:'#0D1420',head:'#111B29',text:'#DCE7EF',muted:'#8296A6'},
+  'Softer':    {bg:'#141F2E',panel:'#1D2C40',head:'#22344B',text:'#DDE7EE',muted:'#9BAFBE'},
+  'Slate':     {bg:'#1A1F26',panel:'#252C36',head:'#2C3540',text:'#DFE5EA',muted:'#98A4AF'},
+  'Warm dark': {bg:'#171310',panel:'#241D18',head:'#2C231C',text:'#EDE3D8',muted:'#AA9A8A'},
+  'Light':     {bg:'#F2F5F8',panel:'#FFFFFF',head:'#E4EBF1',text:'#182430',muted:'#5A6B7A'}
+};
+const ACC = ['#00C9A7','#3FE3C4','#4FA8FF','#9D7BFF','#FFD24A','#FF6B00'];
+const ACC2= ['#FF6B00','#FF9448','#FFD24A','#FF5C8A','#7FE8D4','#9D7BFF'];
+const D = {scale:130,font:'',weight:0,track:0,word:0,lead:150,bg:'Site',tb:100,
+  acc:'#00C9A7',acc2:'#FF6B00',sat:100,rowpad:7,bord:28,bw:1,rad:6,
+  bold:false,noglow:false,nomotion:false,stripe:false,hover:false,
+  strongborder:false,noborder:false,links:false,caps:false,focus:false};
+let S = Object.assign({}, D);
+let _saved=null;
+try{ _saved = localStorage.getItem('ccDisplay'); }catch(e){}
+if(_saved){ try{ Object.assign(S, JSON.parse(_saved)); }catch(e){} }
+else if(innerWidth < 700){
+  // 130% suits a monitor; on a phone it costs a whole screen of header before
+  // any content. Only applied when the visitor has no saved preference.
+  S.scale = 100;
+}
+
+function shade(hex,pct){
+  const [r,g,b]=hex2rgb(hex).split(',').map(Number);
+  const f=pct/100;
+  return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v*f)))
+    .toString(16).padStart(2,'0')).join('');
+}
+function apply(){
+  const p=BG[S.bg]||BG.Site, r=document.documentElement, b=document.body;
+  b.classList.add('cc-on');
+  r.style.setProperty('--cc-scale', S.scale/100);
+  r.style.setProperty('--cc-bg', p.bg);
+  r.style.setProperty('--cc-panel', p.panel);
+  r.style.setProperty('--cc-head', p.head);
+  r.style.setProperty('--cc-text', shade(p.text, S.tb));
+  r.style.setProperty('--cc-muted', shade(p.muted, S.tb));
+  r.style.setProperty('--cc-muted-rgb', hex2rgb(p.muted));
+  r.style.setProperty('--cc-accent', S.acc);
+  r.style.setProperty('--cc-accent-rgb', hex2rgb(S.acc));
+  r.style.setProperty('--cc-accent2', S.acc2);
+  r.style.setProperty('--cc-weight', S.weight||'inherit');
+  r.style.setProperty('--cc-track', (S.track/100)+'em');
+  r.style.setProperty('--cc-word', (S.word/100)+'em');
+  r.style.setProperty('--cc-lead', S.lead/100);
+  r.style.setProperty('--cc-rowpad', S.rowpad+'px');
+  r.style.setProperty('--cc-border-a', S.bord/100);
+  r.style.setProperty('--cc-border-w', S.bw+'px');
+  r.style.setProperty('--cc-radius', S.rad+'px');
+  b.style.filter = S.sat!==100 ? 'saturate('+S.sat+'%)' : '';
+
+  ['cc-f-system','cc-f-legible','cc-f-lexend','cc-f-serif','cc-f-mono']
+    .forEach(c=>b.classList.remove(c));
+  if(S.font) b.classList.add(S.font);
+  b.classList.toggle('cc-w', !!S.weight);
+  b.classList.toggle('cc-sp', S.track!==0||S.word!==0||S.lead!==150);
+  ['bold','noglow','nomotion','stripe','hover','strongborder','noborder','links','caps','focus']
+    .forEach(k=>b.classList.toggle('cc-'+k, !!S[k]));
+  if(S.bold && !S.weight) r.style.setProperty('--cc-weight','600'), b.classList.add('cc-w');
+
+  // reflect UI
+  const setv=(id,v)=>{const e=$(id); if(e)e.textContent=v;};
+  setv('cc-scale-v', S.scale+'%'); setv('cc-tb-v', S.tb+'%'); setv('cc-sat-v', S.sat+'%');
+  setv('cc-weight-v', S.weight||'site'); setv('cc-track-v', (S.track/100).toFixed(2)+'em');
+  setv('cc-word-v', (S.word/100).toFixed(2)+'em'); setv('cc-lead-v', (S.lead/100).toFixed(2));
+  setv('cc-rowpad-v', S.rowpad+'px'); setv('cc-bord-v', S.bord+'%');
+  setv('cc-bw-v', S.bw+'px'); setv('cc-rad-v', S.rad+'px');
+  [['cc-scale','scale'],['cc-tb','tb'],['cc-sat','sat'],['cc-weight','weight'],
+   ['cc-track','track'],['cc-word','word'],['cc-lead','lead'],['cc-rowpad','rowpad'],
+   ['cc-bord','bord'],['cc-bw','bw'],['cc-rad','rad']].forEach(([id,k])=>{
+     const e=$(id); if(e) e.value=S[k];});
+  document.querySelectorAll('#cc-fonts button').forEach(x=>x.classList.toggle('on',x.dataset.f===S.font));
+  document.querySelectorAll('.knob').forEach(x=>x.classList.toggle('on',!!S[x.dataset.t]));
+  document.querySelectorAll('#cc-bgs button').forEach(x=>x.classList.toggle('on',x.dataset.v===S.bg));
+  document.querySelectorAll('#cc-acc button').forEach(x=>x.classList.toggle('on',x.dataset.v===S.acc));
+  document.querySelectorAll('#cc-acc2 button').forEach(x=>x.classList.toggle('on',x.dataset.v===S.acc2));
+
+  buildExport();
+  try{ localStorage.setItem('ccDisplay', JSON.stringify(S)); }catch(e){}
+  if(typeof renderer!=='undefined' && renderer) setTimeout(size,80);
+}
+function buildExport(){
+  const p=BG[S.bg]||BG.Site;
+  const L=[':root {',
+   '  --mg-bg-dark: '+p.bg+';','  --mg-panel-bg: '+p.panel+';','  --mg-thead-bg: '+p.head+';',
+   '  --mg-cyan: '+S.acc+';','  --mg-amber: '+S.acc2+';',
+   '  --text-main: '+shade(p.text,S.tb)+';','  --text-muted: '+shade(p.muted,S.tb)+';',
+   '  --border-color: rgba('+hex2rgb(S.acc)+', '+(S.bord/100)+');','}','',
+   'html { font-size: '+(16*S.scale/100).toFixed(1)+'px; }','','body {'];
+  if(S.font==='cc-f-legible') L.push('  font-family: "Atkinson Hyperlegible", "Segoe UI", sans-serif;');
+  if(S.font==='cc-f-lexend')  L.push('  font-family: "Lexend", "Segoe UI", sans-serif;');
+  if(S.font==='cc-f-system')  L.push('  font-family: "Segoe UI", -apple-system, sans-serif;');
+  if(S.font==='cc-f-serif')   L.push('  font-family: "Source Serif 4", Georgia, serif;');
+  if(S.font==='cc-f-mono')    L.push('  font-family: ui-monospace, Consolas, monospace;');
+  if(S.weight||S.bold) L.push('  font-weight: '+(S.weight||600)+';');
+  if(S.track) L.push('  letter-spacing: '+(S.track/100).toFixed(2)+'em;');
+  if(S.word)  L.push('  word-spacing: '+(S.word/100).toFixed(2)+'em;');
+  if(S.lead!==150) L.push('  line-height: '+(S.lead/100).toFixed(2)+';');
+  L.push('}','','td, th {','  padding-top: '+S.rowpad+'px;','  padding-bottom: '+S.rowpad+'px;');
+  if(S.bw!==1) L.push('  border-width: '+S.bw+'px;');
+  L.push('}');
+  if(S.stripe) L.push('','tbody tr:nth-child(even) td {',
+    '  background: rgba('+hex2rgb(S.acc)+', .055);','}');
+  if(S.noglow) L.push('','* { text-shadow: none; box-shadow: none; }');
+  if(S.nomotion) L.push('','* { animation: none; transition: none; }');
+  if(S.links) L.push('','a { text-decoration: underline; text-underline-offset: 3px; }');
+  const e=$('cc-out'); if(e) e.value=L.join('\n');
+  const st=$('cc-state');
+  if(st) st.textContent = Object.entries(S).filter(([k,v])=>v!==D[k])
+    .map(([k,v])=>k+'='+v).join('  ·  ') || 'all defaults';
+}
+
+/* presets */
+const PRE={
+  default:{},
+  astig:{bold:true,noglow:true,bg:'Softer',tb:92,sat:80,weight:600,scale:110},
+  dyslexia:{font:'cc-f-legible',track:3,word:12,lead:180,bg:'Softer',scale:110,rowpad:11},
+  lowvis:{scale:150,weight:700,bold:true,bg:'Deep',tb:120,rowpad:14,bw:2,bord:60,stripe:true},
+  light:{bg:'Light',acc:'#00806B',acc2:'#C24E00',tb:100,noglow:true},
+  amber:{bg:'Deep',acc:'#FFB000',acc2:'#FF6B00',tb:105,noglow:true,weight:500},
+  calm:{sat:45,nomotion:true,noglow:true,bord:14,bg:'Slate',rad:10}
+};
+document.querySelectorAll('#cc-presets button').forEach(b=>b.onclick=()=>{
+  S=Object.assign({},D,PRE[b.dataset.pre]||{}); apply(); });
+
+/* swatches */
+function swatches(host,list,key){
+  const h=$(host); if(!h) return; h.innerHTML='';
+  list.forEach(v=>{
+    const b=document.createElement('button');
+    b.dataset.v = typeof v==='string' ? v : v.k;
+    b.style.background = typeof v==='string' ? v : v.c;
+    b.title = b.dataset.v;
+    b.onclick=()=>{ S[key]=b.dataset.v; apply(); };
+    h.appendChild(b);
+  });
+}
+swatches('cc-bgs', Object.keys(BG).map(k=>({k, c:BG[k].bg})), 'bg');
+swatches('cc-acc', ACC, 'acc');
+swatches('cc-acc2', ACC2, 'acc2');
+
+/* wiring */
+[['cc-scale','scale'],['cc-tb','tb'],['cc-sat','sat'],['cc-weight','weight'],
+ ['cc-track','track'],['cc-word','word'],['cc-lead','lead'],['cc-rowpad','rowpad'],
+ ['cc-bord','bord'],['cc-bw','bw'],['cc-rad','rad']].forEach(([id,k])=>{
+  const e=$(id); if(e) e.oninput=()=>{ S[k]=+e.value; apply(); };});
+document.querySelectorAll('#cc-fonts button').forEach(b=>b.onclick=()=>{S.font=b.dataset.f;apply();});
+document.querySelectorAll('.knob').forEach(b=>b.onclick=()=>{S[b.dataset.t]=!S[b.dataset.t];apply();});
+document.querySelectorAll('#cc-tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#cc-tabs button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelectorAll('.cc-pane').forEach(p=>p.classList.toggle('on',p.dataset.p===b.dataset.p));
+});
+$('cc-tab').onclick=()=>{
+  const open=$('cc-panel').classList.toggle('open');
+  document.body.classList.toggle('cc-drawer-open', open);
+};
+$('cc-close').onclick=()=>$('cc-panel').classList.remove('open');
+$('cc-reset').onclick=()=>{ S=Object.assign({},D); apply(); };
+$('cc-copy').onclick=()=>{ const t=$('cc-out'); t.select();
+  document.execCommand('copy'); $('cc-copy').textContent='Copied';
+  setTimeout(()=>$('cc-copy').textContent='Copy to clipboard',1400); };
+addEventListener('keydown',e=>{ if(e.key.toLowerCase()==='d'&&e.altKey)
+  $('cc-panel').classList.toggle('open'); });
+apply();
+
+/* ================= 3D viewer ================= */
+let renderer,scene,camera,controls,current,raf,loader;
+/* Every open() bumps this. Async work started for an earlier ship checks it
+   and does nothing if it has been superseded. Needed because three.js has no
+   way to cancel an in-flight load: without this, a GLB requested for ship A
+   still calls back seconds later and adds A's model to ship B's page. */
+let openTok=0;
+/* 1×1 transparent GIF. Assigning '' to img.src makes some browsers re-request
+   the document URL, so blanking uses a real image instead. */
+const CC_BLANK='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+function boot(){
+  if(renderer) return;
+  const cv=$('cc-canvas');
+  renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(42,1,.01,10000);
+  controls=new THREE.OrbitControls(camera,cv);
+  controls.enableDamping=true;controls.dampingFactor=.08;
+  controls.autoRotate=true;controls.autoRotateSpeed=.7;
+  scene.add(new THREE.HemisphereLight(0xbfe9ff,0x18324d,1.15));
+  const k=new THREE.DirectionalLight(0xffffff,1.5);k.position.set(4,7,5);scene.add(k);
+  const r=new THREE.DirectionalLight(0x00c9a7,1.1);r.position.set(-6,2,-5);scene.add(r);
+  const f=new THREE.DirectionalLight(0xff6b00,.35);f.position.set(2,-4,-3);scene.add(f);
+  loader=new THREE.GLTFLoader(); addEventListener('resize',size);
+}
+function size(){const st=$('cc-stage');if(!st||!renderer)return;
+  const w=st.clientWidth,h=st.clientHeight;
+  renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+function loop(){raf=requestAnimationFrame(loop);
+  if(controls)controls.update(); if(renderer)renderer.render(scene,camera);}
+function clearModel(){ if(!current)return; scene.remove(current);
+  current.traverse(o=>{if(o.geometry)o.geometry.dispose();
+    if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());});
+  current=null;}
+function frame(o){const box=new THREE.Box3().setFromObject(o),
+  sz=box.getSize(new THREE.Vector3()),c=box.getCenter(new THREE.Vector3());
+  o.position.sub(c); const max=Math.max(sz.x,sz.y,sz.z)||1;
+  const d=max/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov)/2))*1.55;
+  camera.position.set(d*.75,d*.42,d*.85);
+  camera.near=max/500;camera.far=max*60;camera.updateProjectionMatrix();
+  controls.target.set(0,0,0);controls.update(); return {sz};}
+
+function open(ship){
+  const dir=CC_MODELS[String(ship.id)], tok=++openTok;
+  $('cc-ship').classList.add('open'); document.body.classList.add('cc-ship-open');
+  if(window.ccCloseManuDrawer) window.ccCloseManuDrawer();
+  boot(); if(!raf)loop();
+  $('cc-name').textContent=ship.name;
+  $('cc-mfr').textContent=ship.manufacturer; $('cc-mfr2').textContent=ship.manufacturer;
+  $('cc-role').textContent=ship.role||''; $('cc-role2').textContent=ship.role||'—';
+  const logo=(typeof MANUFACTURER_LOGOS!=='undefined')?MANUFACTURER_LOGOS[ship.manufacturer]:null;
+  const lg=$('cc-logo'); if(logo){lg.src=logo;lg.style.display='';}else lg.style.display='none';
+  const buy=ship.status==='purchasable', b=$('cc-badge');
+  b.textContent=buy?'In-game':'Pledge only'; b.className=buy?'cc-buy':'cc-pledge';
+  $('cc-stat2').textContent=buy?'Purchasable in-game':'Concept / pledge only';
+  const au=$('cc-auec');
+  if(ship.auec_price!=null){au.textContent=ship.auec_price.toLocaleString()+' aUEC';au.className='v big';}
+  else{au.textContent='not purchasable in-game';au.className='v none';}
+  const usd=$('cc-usd');
+  if(ship.pledge_price_usd!=null){usd.textContent='$'+Number(ship.pledge_price_usd)
+    .toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});usd.className='v amber';}
+  else{usd.textContent='no listed pledge price';usd.className='v none';}
+  const dz=$('cc-dealers');dz.innerHTML='';
+  if(ship.dealers&&ship.dealers.length){$('cc-dealwrap').style.display='';
+    ship.dealers.forEach(d=>{const s=document.createElement('span');s.textContent=d;dz.appendChild(s);});}
+  else $('cc-dealwrap').style.display='none';
+  const rsi=$('cc-rsi');
+  if(ship.pledge_url){rsi.href=ship.pledge_url;rsi.style.display='';}else rsi.style.display='none';
+  $('cc-notewrap').style.display=ship.notes?'':'none'; $('cc-note').textContent=ship.notes||'';
+  $('cc-prov').innerHTML='<span>Confidence <b>'+(ship.confidence||'unrecorded')+
+    '</b></span><span>Last verified <b>'+(ship.last_verified_patch||'not recorded')+
+    '</b></span><span>Record <b>#'+ship.id+'</b></span>';
+  $('cc-slots').innerHTML=[['Pilot weapons'],['Missile racks'],['Turrets'],['Shield generators'],
+    ['Power plants'],['Coolers'],['Quantum drive'],['Fuel']].map(([n])=>
+    '<div class="cc-slot"><span class="sn">'+n+'</span><span class="sv">awaiting data</span></div>').join('');
+  $('cc-mfile').textContent=dir||'none matched';
+  const rel=SHIPS.filter(s=>s.id!==ship.id&&(s.manufacturer===ship.manufacturer||s.role===ship.role)).slice(0,14);
+  const ri=$('cc-relitems');ri.innerHTML='';
+  rel.forEach(s=>{const btn=document.createElement('button');btn.textContent=s.name;
+    btn.onclick=()=>open(s);ri.appendChild(btn);});
+  clearModel();
+  const still=$('cc-still'),empty=$('cc-empty'),status=$('cc-status');
+  empty.style.display='none';
+  if(!dir){still.style.display='none';empty.style.display='flex';
+    empty.innerHTML='<div>No 3D model folder matched for this ship.</div>'+
+      '<div style="opacity:.75;font-size:14px">'+SHIPS.length+' ships &middot; '+
+      Object.keys(CC_MODELS).length+' matched</div>';
+    status.textContent='';size();return;}
+  /* Blank the still BEFORE making it visible.
+     An <img> keeps painting its previous frame until the new src decodes, and
+     the old code set opacity=1 first — so opening a second ship flashed the
+     PREVIOUS ship's photo at full strength until the new one arrived. Kill the
+     transition, blank it, then fade the new photo in only once it can paint. */
+  still.style.display='';
+  still.style.transition='none';
+  still.style.opacity=0;
+  still.onerror=null; still.onload=null;
+  still.src=CC_BLANK;
+  void still.offsetWidth;                 // force the blank to commit
+
+  const img=CC_DIR+encodeURIComponent(dir)+'/image.webp';
+  const showStill=()=>{ if(tok!==openTok) return;      // a later ship owns the stage
+    still.style.transition=''; still.style.opacity=1; };
+  still.onload=()=>{ if(still.src.indexOf(CC_BLANK)===0) return; showStill(); };
+  still.onerror=()=>{ if(tok!==openTok) return; still.style.transition=''; still.style.opacity=0; };
+  still.src=img;
+  if(still.decode) still.decode().then(showStill).catch(()=>{});
+
+  status.textContent='loading model…'; size();
+  const url=CC_DIR+encodeURIComponent(dir)+'/'+CC_FILE, t0=performance.now();
+  loader.load(url,g=>{
+    /* three.js cannot cancel a load. Without this check a model requested for
+       an earlier ship arrives late and gets added to whatever page is open. */
+    if(tok!==openTok) return;
+    clearModel();current=g.scene;
+    current.traverse(o=>{if(o.isMesh&&o.material)
+      (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.side=THREE.DoubleSide);});
+    scene.add(current); const i=frame(current);
+    still.style.transition=''; still.style.opacity=0;
+    status.textContent=dir+' · '+((performance.now()-t0)/1000).toFixed(1)+'s · '+
+      i.sz.x.toFixed(1)+' × '+i.sz.y.toFixed(1)+' × '+i.sz.z.toFixed(1);},
+    x=>{if(tok!==openTok)return;
+      if(x.lengthComputable)status.textContent='loading… '+
+      Math.round(x.loaded/x.total*100)+'% ('+(x.total/1048576).toFixed(1)+' MB)';},
+    e=>{if(tok!==openTok)return;
+      status.textContent='model failed — is the local server running?';console.warn('[cc]',url,e);});
+}
+function close(){openTok++;   // orphan any load still in flight for this page
+  $('cc-ship').classList.remove('open');
+  document.body.classList.remove('cc-ship-open');clearModel();
+  if(raf){cancelAnimationFrame(raf);raf=null;}}
+$('cc-back').onclick=close;
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('cc-ship').classList.contains('open'))close();});
+
+function decorate(){
+  const body=$('matrix-body'); if(!body)return;
+  body.querySelectorAll('tr').forEach(tr=>{
+    const td=tr.querySelector('td'); if(!td||td.dataset.ccDone)return;
+    const label=td.textContent.trim(); if(!label)return;
+    const ship=SHIPS.find(s=>s.name===label); if(!ship)return;
+    td.dataset.ccDone='1';
+    const has=!!CC_MODELS[String(ship.id)];
+    td.innerHTML='<span class="cc-open'+(has?'':' cc-nomodel')+'">'+td.innerHTML+'</span>';
+    td.querySelector('.cc-open').onclick=()=>open(ship);
+  });
+}
+new MutationObserver(decorate).observe(document.body,{childList:true,subtree:true});
+decorate();setTimeout(decorate,400);setTimeout(decorate,1500);
+console.log('[cc-testing] v2 · display engine + '+Object.keys(CC_MODELS).length+' ships mapped');
+</script>
+
+<style>
+#cc-fb-tab{position:fixed;top:calc(44% + 150px);right:0;z-index:100002;
+  background:#FF6B00;color:#1A0E04;border:0;border-radius:7px 0 0 7px;
+  padding:16px 9px;font:700 13px/1 system-ui,sans-serif;letter-spacing:.16em;
+  writing-mode:vertical-rl;cursor:pointer;box-shadow:-3px 0 14px rgba(0,0,0,.42)}
+#cc-fb-tab:hover{background:#FF8A33}
+body.cc-drawer-open #cc-fb-tab{transform:translateX(-380px);transition:transform .28s ease}
+#cc-fb-tab{transition:transform .28s ease}
+#cc-fb{position:fixed;inset:0;z-index:100010;display:none;
+  align-items:center;justify-content:center;background:rgba(4,8,14,.82);
+  backdrop-filter:blur(3px);padding:20px;box-sizing:border-box}
+#cc-fb.open{display:flex}
+#cc-fb .shell{width:min(96vw,780px);max-height:92vh;display:flex;flex-direction:column;
+  background:#0E1B2E;border:1px solid rgba(255,107,0,.42);border-radius:12px;
+  box-shadow:0 26px 70px rgba(0,0,0,.7);overflow:hidden}
+#cc-fb .top{display:flex;align-items:center;gap:14px;padding:16px 20px;
+  background:#12233A;border-bottom:1px solid rgba(255,107,0,.3);flex:0 0 auto}
+#cc-fb .top h3{margin:0;font:700 19px/1.25 system-ui,sans-serif;color:#F2E4D8}
+#cc-fb .top p{margin:3px 0 0;font:400 14px/1.4 system-ui,sans-serif;color:#93A7B6}
+#cc-fb .x{margin-left:auto;background:none;border:0;color:#93A7B6;font-size:30px;
+  line-height:1;cursor:pointer;padding:0 4px}
+#cc-fb .x:hover{color:#F2E4D8}
+#cc-fb iframe{width:100%;flex:1 1 auto;min-height:60vh;border:0;background:#fff}
+#cc-fb .ft{padding:10px 20px;font:400 12.5px/1.5 system-ui,sans-serif;
+  color:#6B8091;background:#0B1626;flex:0 0 auto;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#cc-fb .ft span{flex:1 1 200px}
+#cc-fb-again{flex:0 0 auto;background:rgba(255,107,0,.14);
+  border:1px solid rgba(255,107,0,.55);color:#FFAE72;border-radius:6px;
+  padding:8px 15px;font:600 13px/1 system-ui,sans-serif;cursor:pointer}
+#cc-fb-again:hover{background:rgba(255,107,0,.28);color:#FFD2AE}
+#cc-fb-again:active{transform:translateY(1px)}
+@media (max-width:900px){
+  #cc-fb-tab{top:auto !important;bottom:10px;right:10px;
+    writing-mode:horizontal-tb;border-radius:8px;padding:11px 18px;
+    font-size:14px;letter-spacing:.1em;box-shadow:0 3px 16px rgba(0,0,0,.5)}
+  body.cc-drawer-open #cc-fb-tab{transform:none}
+}
+</style>
+<button id="cc-fb-tab" class="cc-ui" title="Leave feedback">FEEDBACK</button>
+<div id="cc-fb">
+  <div class="shell">
+    <div class="top">
+      <div>
+        <h3>Tell me what you think</h3>
+        <p>Takes two minutes. Blunt is better than polite.</p>
+      </div>
+      <button class="x" id="cc-fb-x" title="Close">&times;</button>
+    </div>
+    <iframe id="cc-fb-frame" title="Citizen Compass feedback form" data-src="https://form.jotform.com/262126879809067"></iframe>
+    <div class="ft">
+      <span>Goes straight to me. Nothing else on this page is recorded.</span>
+      <button id="cc-fb-again" type="button">Send another response</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('cc-fb'), fr=document.getElementById('cc-fb-frame');
+  function openFb(){
+    if(!fr.src) fr.src=fr.dataset.src;   // load only when asked for
+    box.classList.add('open');
+  }
+  function closeFb(){ box.classList.remove('open'); }
+  document.getElementById('cc-fb-tab').onclick=openFb;
+  document.getElementById('cc-fb-x').onclick=closeFb;
+  // After submitting, the embedded form sits on its thank-you page and there is
+  // no way back to a blank one without reloading the whole site. This reloads
+  // just the form.
+  document.getElementById('cc-fb-again').onclick=function(){
+    var u=fr.dataset.src;
+    fr.src='about:blank';
+    setTimeout(function(){ fr.src = u + (u.indexOf('?')<0?'?':'&') + 'r=' + Date.now(); }, 40);
+  };
+  box.addEventListener('click',function(e){ if(e.target===box) closeFb(); });
+  addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&box.classList.contains('open')) closeFb(); });
+})();
+</script>
+
+<style>
+#cc-rail{position:fixed;left:0;top:0;bottom:0;width:46px;z-index:100000;
+  background:linear-gradient(90deg,#0A1524 0%,#0C1A2C 100%);
+  border-right:1px solid rgba(0,201,167,.28);
+  display:flex;flex-direction:column;align-items:stretch;
+  padding:14px 0;gap:8px;box-shadow:3px 0 18px rgba(0,0,0,.42);
+  overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+#cc-rail button{flex:0 1 auto;background:none;border:0;border-left:3px solid transparent;
+  color:#8FA6B6;writing-mode:vertical-rl;text-orientation:mixed;
+  font:600 13.5px/1 "Segoe UI",-apple-system,sans-serif;letter-spacing:.07em;
+  padding:16px 0;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s}
+#cc-rail button:hover{color:#CFE6F2;background:rgba(0,201,167,.07)}
+#cc-rail button.on{color:#3FE3C4;border-left-color:#00C9A7;background:rgba(0,201,167,.11)}
+body.cc-railed{padding-left:46px !important}
+body.cc-railed nav a[href^="#"]{display:none !important}
+body.cc-railed nav{justify-content:flex-end}
+body.cc-ship-open #cc-rail{z-index:100001}
+@media (max-width:900px){
+  #cc-rail{display:none}
+  #cc-ship{left:0}
+  body.cc-railed{padding-left:0 !important}
+  body.cc-railed nav a[href^="#"]{display:inline-block !important}
+}
+</style>
+<script>
+(function(){
+  function build(){
+    var nav=document.querySelector('nav'); if(!nav) return false;
+    var links=[].slice.call(nav.querySelectorAll('a[href^="#"]'));
+    if(!links.length) return false;
+    if(document.getElementById('cc-rail')) return true;
+
+    var rail=document.createElement('div'); rail.id='cc-rail'; rail.className='cc-ui';
+    var targets=[];
+    links.forEach(function(a){
+      var id=a.getAttribute('href').slice(1);
+      var sec=document.getElementById(id); if(!sec) return;
+      targets.push(sec);
+      var b=document.createElement('button');
+      b.textContent=a.textContent.trim().replace(/\s*&\s*/g,' & ');
+      b.dataset.target=id;
+      b.title=a.textContent.trim();
+      b.onclick=function(){
+        var det=document.getElementById('cc-ship');
+        if(det&&det.classList.contains('open')&&typeof close==='function'){
+          close();                                   // leave the ship page first
+          setTimeout(function(){ sec.scrollIntoView({behavior:'smooth',block:'start'}); },60);
+        } else {
+          sec.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      };
+      rail.appendChild(b);
+    });
+    if(!rail.children.length) return false;
+    document.body.appendChild(rail);
+    document.body.classList.add('cc-railed');
+
+    // highlight whichever section is actually in view
+    var btns=[].slice.call(rail.querySelectorAll('button'));
+    function mark(id){ btns.forEach(function(b){ b.classList.toggle('on', b.dataset.target===id); }); }
+    if('IntersectionObserver' in window){
+      var seen={};
+      var io=new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ seen[e.target.id]=e.intersectionRatio; });
+        var best=null,bv=0;
+        Object.keys(seen).forEach(function(k){ if(seen[k]>bv){bv=seen[k];best=k;} });
+        if(best&&bv>0) mark(best);
+      },{rootMargin:'-15% 0px -70% 0px',threshold:[0,.2,.5,1]});
+      targets.forEach(function(t){ io.observe(t); });
+    }
+    mark(targets[0]&&targets[0].id);
+    return true;
+  }
+  if(!build()){
+    var tries=0, iv=setInterval(function(){ if(build()||++tries>20) clearInterval(iv); },300);
+  }
+})();
+</script>
+
+<style>
+/* ===================================================================
+   SECTION HEADINGS
+   The page's own h2 is 1.15rem against a 2.2rem h1, so a section title
+   read as a caption rather than a place. Centred and enlarged so each
+   section announces where you are — still clearly below the site title.
+   =================================================================== */
+main section > h2{
+  text-align:center !important;
+  font-size:2rem !important;
+  font-weight:700 !important;
+  letter-spacing:.045em !important;
+  line-height:1.2 !important;
+  margin:2.2rem 0 .5rem !important;
+  padding-bottom:.55rem !important;
+  position:relative;
+}
+main section > h2::after{
+  content:"";
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:clamp(90px,16%,220px);height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,currentColor 22%,currentColor 78%,transparent);
+  opacity:.55;
+}
+main section > h2 + p,
+main section > h2 + .callout{ margin-top:.35rem }
+@media (min-width:1100px){ main section > h2{ font-size:2.4rem !important } }
+@media (max-width:600px){ main section > h2{ font-size:1.6rem !important;margin-top:1.6rem !important } }
+</style>
+
+<style>
+/* ---- browse bar: category + manufacturer pickers under the search box ---- */
+#cc-browse{display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  margin:10px 0 4px;position:relative;z-index:60}
+#cc-browse .bb{background:rgba(var(--cc-accent-rgb,0,201,167),.12);
+  border:1px solid rgba(var(--cc-accent-rgb,0,201,167),.5);
+  color:var(--cc-accent,#00C9A7);border-radius:7px;
+  padding:calc(9px * var(--cc-scale,1)) calc(16px * var(--cc-scale,1));
+  font:700 calc(14px * var(--cc-scale,1))/1 inherit;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+#cc-browse .bb:hover{background:rgba(var(--cc-accent-rgb,0,201,167),.28)}
+#cc-browse .bb .cv{opacity:.7;font-weight:600}
+#cc-browse .bb.on{background:var(--cc-accent,#00C9A7);color:#04252E}
+#cc-extra{display:inline-flex;align-items:center;gap:14px;flex-wrap:wrap}
+#cc-browse .cc-budget,#cc-browse .cc-buyonly{display:inline-flex;align-items:center;
+  gap:7px;font:600 calc(13.5px * var(--cc-scale,1))/1 inherit;
+  color:var(--cc-muted,#6B8A99);white-space:nowrap;cursor:pointer}
+#cc-browse .cc-budget input{width:calc(140px * var(--cc-scale,1));
+  background:rgba(0,0,0,.28);border:1px solid rgba(var(--cc-accent-rgb,0,201,167),.45);
+  border-radius:6px;color:var(--cc-text,#C8D6E5);
+  padding:calc(7px * var(--cc-scale,1)) calc(10px * var(--cc-scale,1));
+  font:600 calc(13.5px * var(--cc-scale,1))/1 inherit;outline:none}
+#cc-browse .cc-budget input:focus{border-color:var(--cc-accent,#00C9A7);
+  box-shadow:0 0 0 3px rgba(var(--cc-accent-rgb,0,201,167),.16)}
+#cc-browse .cc-buyonly input{width:calc(17px * var(--cc-scale,1));
+  height:calc(17px * var(--cc-scale,1));accent-color:var(--cc-accent,#00C9A7);cursor:pointer}
+#cc-browse .clr{background:none;border:0;color:var(--cc-accent2,#FF6B00);
+  font:600 calc(13px * var(--cc-scale,1))/1 inherit;cursor:pointer;
+  text-decoration:underline;padding:6px 2px;display:none}
+#cc-browse .clr.show{display:inline-block}
+
+.cc-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:120;
+  background:var(--cc-panel,#112244);
+  border:1px solid rgba(var(--cc-accent-rgb,0,201,167),.55);border-radius:10px;
+  box-shadow:0 18px 48px rgba(0,0,0,.62);padding:14px;
+  max-width:min(94vw,720px);max-height:60vh;overflow-y:auto;display:none}
+.cc-pop.open{display:block}
+.cc-pop h5{margin:0 0 10px;font:700 calc(14px * var(--cc-scale,1))/1.2 inherit;
+  color:var(--cc-accent,#00C9A7);letter-spacing:.04em}
+.cc-pop .chips{display:flex;flex-wrap:wrap;gap:7px}
+.cc-pop .chips button{background:rgba(255,255,255,.05);
+  border:1px solid rgba(var(--cc-accent-rgb,0,201,167),.34);
+  color:var(--cc-text,#C8D6E5);border-radius:6px;
+  padding:calc(8px * var(--cc-scale,1)) calc(13px * var(--cc-scale,1));
+  font:600 calc(13.5px * var(--cc-scale,1))/1 inherit;cursor:pointer;
+  display:inline-flex;align-items:baseline;gap:7px}
+.cc-pop .chips button:hover{background:rgba(var(--cc-accent-rgb,0,201,167),.26);
+  border-color:var(--cc-accent,#00C9A7)}
+.cc-pop .chips button.on{background:var(--cc-accent,#00C9A7);
+  border-color:var(--cc-accent,#00C9A7);color:#04252E}
+.cc-pop .chips .n{font-size:.82em;opacity:.62;font-weight:500}
+@media (max-width:640px){ .cc-pop{left:0;right:0;max-width:none} }
+</style>
+<script>
+(function(){
+  function build(){
+    var box=document.getElementById('shipSearch');
+    var body=document.getElementById('matrix-body');
+    if(!box||!body||!body.querySelector('tr')) return false;
+    if(document.getElementById('cc-browse')) return true;
+
+    /* Both lists come from the table itself, so they cannot drift from what is
+       actually rendered. */
+    var roles={}, manus=[], label={};
+    if(typeof SHIPS!=='undefined') SHIPS.forEach(function(sh){
+      if(sh.role) label[String(sh.role).toLowerCase()] = sh.role;   // real casing
+    });
+    var pretty=function(r){ return label[r] || r.replace(/\b\w/g,function(c){return c.toUpperCase()}); };
+    body.querySelectorAll('tr').forEach(function(tr){
+      if(tr.classList.contains('manu-row')){
+        /* the row spans every column, so textContent drags the dealer headings
+           in with it - the name lives in the first cell only */
+        var c=tr.querySelector('td');
+        var t=((c?c.textContent:'')||'').trim();
+        if(t) manus.push({label:t});
+      } else {
+        var r=(tr.getAttribute('data-role')||'').trim();
+        if(r) roles[r]=(roles[r]||0)+1;
+      }
+    });
+    var roleNames=Object.keys(roles).sort(function(a,b){
+      return pretty(a).localeCompare(pretty(b));
+    });
+    if(!roleNames.length && !manus.length) return false;
+
+    var bar=document.createElement('div'); bar.id='cc-browse'; bar.className='cc-ui';
+    bar.innerHTML =
+      '<button class="bb" id="cc-bcat" type="button">Browse by category '+
+        '<span class="cv">'+roleNames.length+'</span></button>'+
+      '<button class="bb" id="cc-bman" type="button">Jump to manufacturer '+
+        '<span class="cv">'+manus.length+'</span></button>'+
+      '<button class="clr" id="cc-bclr" type="button">Clear filter</button>'+
+      '<div class="cc-pop" id="cc-pcat"><h5>Pick a category</h5><div class="chips"></div></div>'+
+      '<div class="cc-pop" id="cc-pman"><h5>Jump to a manufacturer</h5><div class="chips"></div></div>';
+
+    /* sit it directly under the search box */
+    var anchor = box.closest('.search-wrap, .search-row, div') || box.parentNode;
+    anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+
+    /* the long "Categories you can search: ..." line is what this replaces */
+    [].slice.call(document.querySelectorAll('#matrix p, #matrix div')).forEach(function(el){
+      if(el.children.length===0 && /^Categories you can search:/i.test((el.textContent||'').trim()))
+        el.style.display='none';
+    });
+
+    var pcat=bar.querySelector('#cc-pcat'), pman=bar.querySelector('#cc-pman');
+    var clr=bar.querySelector('#cc-bclr');
+
+    function setFilter(v){
+      box.value=v;
+      box.dispatchEvent(new Event('input',{bubbles:true}));   // the site's own filter
+      clr.classList.toggle('show', v!=='');
+      pcat.querySelectorAll('.chips button').forEach(function(b){
+        b.classList.toggle('on', b.dataset.role===v);
+      });
+      bar.querySelector('#cc-bcat').classList.toggle('on', v!=='');
+    }
+    function closeAll(){ pcat.classList.remove('open'); pman.classList.remove('open'); }
+
+    roleNames.forEach(function(r){
+      var b=document.createElement('button'); b.type='button'; b.dataset.role=r;
+      b.innerHTML=pretty(r)+' <span class="n">'+roles[r]+'</span>';
+      b.onclick=function(){ setFilter(box.value.toLowerCase()===r.toLowerCase()?'':r); closeAll(); };
+      pcat.querySelector('.chips').appendChild(b);
+    });
+
+    manus.forEach(function(m){
+      var b=document.createElement('button'); b.type='button';
+      b.textContent=m.label;
+      b.onclick=function(){
+        setFilter('');                       // a hidden row cannot be scrolled to
+        closeAll();
+        setTimeout(function(){
+          /* Look the row up fresh. The page rebuilds #matrix-body (currency
+             change, re-render), so a node captured at build time can be detached
+             by now - and a detached node reports a zero rect, which silently
+             scrolls to the top instead of failing. */
+          var row=null;
+          document.querySelectorAll('#matrix-body tr.manu-row').forEach(function(tr){
+            var c=tr.querySelector('td');
+            if(c && c.textContent.trim()===m.label) row=tr;
+          });
+          if(!row) return;
+          /* scrollIntoView gets absorbed by the .table-wrap scroll container and
+             never reaches the window, so set the page position directly and
+             leave room for the sticky column header. */
+          var y = row.getBoundingClientRect().top + (window.pageYOffset||0) - 110;
+          window.scrollTo({ top: Math.max(0, y), behavior:'smooth' });
+        },60);
+      };
+      pman.querySelector('.chips').appendChild(b);
+    });
+
+    bar.querySelector('#cc-bcat').onclick=function(e){
+      e.stopPropagation(); var was=pcat.classList.contains('open');
+      closeAll(); if(!was) pcat.classList.add('open'); };
+    bar.querySelector('#cc-bman').onclick=function(e){
+      e.stopPropagation(); var was=pman.classList.contains('open');
+      closeAll(); if(!was) pman.classList.add('open'); };
+    clr.onclick=function(){ setFilter(''); closeAll(); };
+
+    document.addEventListener('click',function(e){ if(!bar.contains(e.target)) closeAll(); });
+    addEventListener('keydown',function(e){ if(e.key==='Escape') closeAll(); });
+    box.addEventListener('input',function(){ clr.classList.toggle('show', box.value!==''); });
+    return true;
+  }
+  if(!build()){ var n=0, iv=setInterval(function(){ if(build()||++n>25) clearInterval(iv); },300); }
+})();
+</script>
+
+<style>
+/* The header already shows "Citizen Compass v0.3.9". Without a label, the
+   4.9.0 / 4.10.0 in this banner read like more site versions. Name the game. */
+.cc-scgame{font:700 calc(14px * var(--cc-scale,1))/1 inherit;
+  letter-spacing:.055em;color:var(--cc-text,#C8D6E5);opacity:.9;
+  margin-right:calc(4px * var(--cc-scale,1));white-space:nowrap}
+@media (max-width:640px){ .cc-scgame{display:block;width:100%;margin:0 0 6px;text-align:center} }
+</style>
+<script>
+(function(){
+  function add(){
+    // Sits on the banner itself, not inside the anchor, because the banner's
+    // single anchor is about to be replaced by two (LIVE and PTU).
+    var b=document.querySelector('.sc-banner');
+    if(!b) return false;
+    if(b.querySelector('.cc-scgame')) return true;
+    if(!b.querySelector('.sc-tag')) return false;
+    var s=document.createElement('span');
+    s.className='cc-scgame cc-ui';
+    s.textContent='Star Citizen';
+    b.insertBefore(s, b.firstChild);
+    return true;
+  }
+  if(!add()){ var n=0, iv=setInterval(function(){ if(add()||++n>25) clearInterval(iv); },300); }
+})();
+</script>
+
+<style>
+/* ---- split the patch-notes banner: LIVE and PTU go to different places ---
+   The banner showed two versions behind one link, and that link went to RSI's
+   patch-notes index, which lists LIVE releases only. Clicking the PTU tag
+   landed on a page with no PTU on it. */
+/* Three items at 130% default scale overflow a tablet-width banner, and a flex
+   row's answer to that is to squash children until words break mid-pill. Let
+   the row wrap onto a second line and refuse to shrink the pills instead. */
+.sc-banner{flex-wrap:wrap}
+.cc-patchlink{cursor:pointer;flex:0 0 auto}
+.cc-patchlink .sc-tag,
+.cc-patchlink .sc-patch-label{white-space:nowrap;flex:0 0 auto}
+.cc-patchlink + .cc-patchlink{margin-left:calc(10px * var(--cc-scale,1))}
+.cc-patchall{font:600 calc(11px * var(--cc-scale,1))/1 inherit;letter-spacing:.03em;
+  opacity:.62;white-space:nowrap;text-decoration:none;
+  margin-left:calc(8px * var(--cc-scale,1))}
+.cc-patchall:hover{opacity:1}
+@media (max-width:640px){
+  /* .sc-banner is a non-wrapping flex row, so width:100% alone just makes the
+     two links share one line and run off the right edge. It has to wrap. */
+  .sc-banner{flex-wrap:wrap}
+  .cc-patchlink{display:flex;justify-content:center;width:100%;flex:0 0 100%}
+  .cc-patchlink + .cc-patchlink{margin-left:0;margin-top:6px}
+  .cc-patchall{display:block;width:100%;flex:0 0 100%;text-align:center;margin:6px 0 0}
+}
+</style>
+<script>
+(function(){
+  /* Patch-note destinations.
+
+     PTU: RSI publishes no PTU page on the patch-notes index and the wiki does
+     not cover PTU either — it points back here. PTU notes exist ONLY as
+     Spectrum threads, and each new PTU build gets a NEW thread: the slug is
+     the base plus an incrementing suffix (…-patch-notes, -1, -2, …). So a
+     direct thread link is exact today and silently one build behind tomorrow.
+
+     `ptuThread` is therefore stamped with the version and build it was set
+     for, and the code below REFUSES to use it once the banner's PTU version
+     has moved on — it falls back to the channel rather than sending anyone to
+     notes for a version that is no longer on the PTU. The channel is always
+     offered alongside as "all builds", which covers same-version build drift.
+
+     UPDATING THE DIRECT LINK: probe the next suffix (…-6, then -7) until one
+     404s; the last one that loads is current, and its <title> carries the
+     build number and wave. Verified 2026-08-02: -5 loads, -6 is a clean 404.
+
+     LIVE: per-release comm-link pages are stable once published, but the ID is
+     assigned by RSI and cannot be derived from the version. Hence a lookup.
+     An unknown version falls back to the index — less specific, never wrong.
+     ADDING A RELEASE: one line in `live` below. */
+  var CC_PATCH = {
+    index: 'https://robertsspaceindustries.com/en/patch-notes',
+    ptu:   'https://robertsspaceindustries.com/spectrum/community/SC/forum/190048',
+    ptuThread: {
+      version: '4.10',                 // must match the banner's PTU tag, major.minor
+      build:   '12368639',
+      wave:    'All Waves',
+      url: 'https://robertsspaceindustries.com/spectrum/community/SC/forum/190048/thread/star-citizen-alpha-4-10-ptu-patch-notes-5'
+    },
+    live: {
+      '4.9.0': 'https://robertsspaceindustries.com/comm-link/Patch-Notes/21245-Star-Citizen-Alpha-49',
+      '4.9':   'https://robertsspaceindustries.com/comm-link/Patch-Notes/21245-Star-Citizen-Alpha-49'
+    }
+  };
+
+  // '4.10.0' -> '4.10'. The banner carries a patch version, the thread slug
+  // carries a release line; they only ever agree at major.minor.
+  function minor(v){ return String(v||'').trim().split('.').slice(0,2).join('.'); }
+
+  function link(tag, href, label, title){
+    var a=document.createElement('a');
+    a.href=href; a.target='_blank'; a.rel='noopener';
+    a.className='cc-ui cc-patchlink';
+    a.title=title;
+    a.appendChild(tag);
+    var s=document.createElement('span');
+    s.className='sc-patch-label';
+    s.textContent=label;
+    a.appendChild(s);
+    return a;
+  }
+
+  function split(){
+    var b=document.querySelector('.sc-banner');
+    if(!b) return false;
+    if(b.getAttribute('data-cc-split')==='1') return true;
+    var liveTag=b.querySelector('.sc-tag.sc-live'),
+        ptuTag =b.querySelector('.sc-tag.sc-ptu');
+    if(!liveTag || !ptuTag) return false;   // page shape changed — leave it alone
+
+    var lvEl=liveTag.querySelector('.sc-ver');
+    var lv=lvEl ? lvEl.textContent.trim() : '';
+    var liveHref=CC_PATCH.live[lv] || CC_PATCH.index;
+
+    var pvEl=ptuTag.querySelector('.sc-ver');
+    var pv=pvEl ? pvEl.textContent.trim() : '';
+
+    // The staleness gate. A direct thread link is only offered while the
+    // banner's PTU line still matches the line it was recorded for.
+    var t=CC_PATCH.ptuThread, fresh = !!(t && t.url && minor(pv) && minor(pv)===minor(t.version));
+    var ptuHref = fresh ? t.url : CC_PATCH.ptu;
+    var ptuTitle = fresh
+      ? ('PTU patch notes for ' + t.version + ' build ' + t.build + ' (' + t.wave + ')')
+      : (t && t.url
+          ? ('Direct link was for ' + t.version + ' and the PTU is now ' + pv
+             + ' — showing the Spectrum channel instead, newest build at the top')
+          : 'PTU patch notes on Spectrum — newest build is the top thread');
+
+    var lc=liveTag.cloneNode(true), pc=ptuTag.cloneNode(true);
+
+    // Remove the old anchors only; anything else on the banner stays.
+    Array.prototype.slice.call(b.querySelectorAll('a')).forEach(function(a){ a.remove(); });
+
+    b.appendChild(link(lc, liveHref, 'Patch Notes ↗',
+      CC_PATCH.live[lv] ? ('Official patch notes for LIVE ' + lv)
+                        : 'Official patch notes (RSI index — LIVE releases)'));
+    b.appendChild(link(pc, ptuHref, 'PTU Notes ↗', ptuTitle));
+
+    // Escape hatch for build-level drift, which the version gate cannot see:
+    // a newer build of the SAME version gets a new thread and the direct link
+    // above stays valid-looking while pointing one build back.
+    var all=document.createElement('a');
+    all.href=CC_PATCH.ptu; all.target='_blank'; all.rel='noopener';
+    all.className='cc-ui cc-patchall';
+    all.textContent = fresh ? ('build ' + t.build + ' · all builds ↗') : 'all builds ↗';
+    all.title='Every PTU build thread for this release, newest first';
+    b.appendChild(all);
+
+    b.setAttribute('data-cc-split','1');
+    b.setAttribute('data-cc-ptu-fresh', fresh ? '1' : '0');
+    return true;
+  }
+
+  if(!split()){ var n=0, iv=setInterval(function(){ if(split()||++n>25) clearInterval(iv); },300); }
+})();
+</script>
+
+<style>
+/* ---- manufacturer drawer: left edge, beside the section rail -------------
+   Jumping to a manufacturer matters most while you are deep in the table,
+   which is exactly when the button under the search box has scrolled away. */
+#cc-mtab{position:fixed;left:46px;top:44%;z-index:100000;
+  background:#0F2E44;color:#7FE8D4;border:0;border-right:1px solid rgba(0,201,167,.45);
+  border-radius:0 8px 8px 0;padding:16px 9px;cursor:pointer;
+  writing-mode:vertical-rl;letter-spacing:.14em;
+  font:700 calc(13px * var(--cc-scale,1))/1 "Segoe UI",sans-serif;
+  box-shadow:3px 0 16px rgba(0,0,0,.5);transition:left .28s ease}
+#cc-mtab:hover{background:#16455f;color:#B4F0E2}
+#cc-mdraw{position:fixed;left:-250px;top:0;bottom:0;width:250px;z-index:99998;
+  background:#0C1A2C;border-right:2px solid #00C9A7;
+  box-shadow:6px 0 40px rgba(0,0,0,.66);
+  display:flex;flex-direction:column;transition:left .28s ease;
+  font:400 calc(14px * var(--cc-scale,1))/1.45 "Segoe UI",-apple-system,sans-serif}
+#cc-mdraw.open{left:46px}
+body.cc-mdraw-open #cc-mtab{left:296px}
+#cc-mdraw .hd{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 14px;background:#12233A;border-bottom:1px solid rgba(0,201,167,.3);
+  flex:0 0 auto}
+#cc-mdraw .hd h5{margin:0;color:#7FE8D4;
+  font:700 calc(15px * var(--cc-scale,1))/1.2 inherit;letter-spacing:.03em}
+#cc-mdraw .hd button{background:none;border:0;color:#A8BECD;font-size:24px;
+  line-height:1;cursor:pointer;padding:0 3px}
+#cc-mdraw .hd button:hover{color:#fff}
+#cc-mdraw .list{flex:1;overflow-y:auto;padding:8px}
+#cc-mdraw .list button{display:block;width:100%;text-align:left;
+  background:none;border:0;border-left:3px solid transparent;
+  color:#CFE0EC;padding:calc(9px * var(--cc-scale,1)) 11px;
+  font:600 calc(13.5px * var(--cc-scale,1))/1.3 inherit;cursor:pointer;
+  border-radius:0 5px 5px 0}
+#cc-mdraw .list button:hover{background:rgba(0,201,167,.16);
+  border-left-color:#00C9A7;color:#EAF6FB}
+#cc-mdraw .list .n{float:right;opacity:.5;font-weight:500;font-size:.85em}
+@media (max-width:900px){
+  #cc-mtab,#cc-mdraw{display:none}          /* the popup under search covers phones */
+}
+/* The drawer sits at z-index 99998, below the ship overlay, so on a ship page
+   the tab was visible, clickable, and opened a drawer behind the page —
+   indistinguishable from a dead button. It has no job here: hide both. */
+body.cc-ship-open #cc-mtab,
+body.cc-ship-open #cc-mdraw{display:none !important}
+@media (max-width:900px){
+  /* keep the phone rule authoritative after the block above */
+  #cc-mtab,#cc-mdraw{display:none}
+}
+</style>
+<script>
+(function(){
+  function build(){
+    var body=document.getElementById('matrix-body');
+    if(!body||!body.querySelector('tr.manu-row')) return false;
+    if(document.getElementById('cc-mtab')) return true;
+
+    var names=[];
+    body.querySelectorAll('tr.manu-row').forEach(function(tr){
+      var c=tr.querySelector('td'); var t=((c?c.textContent:'')||'').trim();
+      if(t) names.push(t);
+    });
+    if(!names.length) return false;
+
+    var counts={};
+    var cur=null;
+    body.querySelectorAll('tr').forEach(function(tr){
+      if(tr.classList.contains('manu-row')){
+        var c=tr.querySelector('td'); cur=((c?c.textContent:'')||'').trim(); counts[cur]=0;
+      } else if(cur){ counts[cur]++; }
+    });
+
+    var tab=document.createElement('button');
+    tab.id='cc-mtab'; tab.className='cc-ui'; tab.type='button';
+    tab.textContent='MANUFACTURERS';
+
+    var dr=document.createElement('div');
+    dr.id='cc-mdraw'; dr.className='cc-ui';
+    dr.innerHTML='<div class="hd"><h5>Jump to manufacturer</h5>'+
+                 '<button type="button" id="cc-mclose" title="Close">&times;</button></div>'+
+                 '<div class="list"></div>';
+    document.body.appendChild(tab); document.body.appendChild(dr);
+
+    var list=dr.querySelector('.list');
+    names.forEach(function(nm){
+      var b=document.createElement('button'); b.type='button';
+      b.innerHTML=nm+'<span class="n">'+(counts[nm]||0)+'</span>';
+      b.onclick=function(){
+        var det=document.getElementById('cc-ship');
+        if(det&&det.classList.contains('open')&&typeof close==='function') close();
+        var box=document.getElementById('shipSearch');
+        if(box&&box.value){ box.value=''; box.dispatchEvent(new Event('input',{bubbles:true})); }
+        setTimeout(function(){
+          /* resolved fresh - the page rebuilds #matrix-body and a node captured
+             at build time reports a zero rect, which scrolls to the top instead
+             of failing visibly */
+          var row=null;
+          document.querySelectorAll('#matrix-body tr.manu-row').forEach(function(tr){
+            var c=tr.querySelector('td');
+            if(c && c.textContent.trim()===nm) row=tr;
+          });
+          if(!row) return;
+          var y=row.getBoundingClientRect().top+(window.pageYOffset||0)-110;
+          window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+        },70);
+      };
+      list.appendChild(b);
+    });
+
+    function setOpen(v){
+      dr.classList.toggle('open',v);
+      document.body.classList.toggle('cc-mdraw-open',v);
+    }
+    /* The ship page needs to force this shut when it opens. Without it the
+       drawer keeps .open and body.cc-mdraw-open while hidden, and the tab
+       comes back 250px offset when the visitor returns to the matrix. */
+    window.ccCloseManuDrawer=function(){ setOpen(false); };
+    tab.onclick=function(e){ e.stopPropagation(); setOpen(!dr.classList.contains('open')); };
+    dr.querySelector('#cc-mclose').onclick=function(){ setOpen(false); };
+    addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
+    document.addEventListener('click',function(e){
+      if(dr.classList.contains('open') && !dr.contains(e.target) && e.target!==tab) setOpen(false);
+    });
+    return true;
+  }
+  if(!build()){ var n=0,iv=setInterval(function(){ if(build()||++n>25) clearInterval(iv); },300); }
+})();
+</script>
+<style>
+/* one door per screen size: the drawer serves desktop, the popup serves phones */
+@media (min-width:901px){ #cc-bman{display:none !important} }
+</style>
+
+<style>
+/* ---- sortable / filterable column headers -------------------------------- */
+#matrix thead th.cc-sortable, #matrix thead th.cc-dealer{cursor:pointer;
+  user-select:none;position:relative}
+#matrix thead th.cc-sortable:hover, #matrix thead th.cc-dealer:hover{
+  background:rgba(var(--cc-accent-rgb,0,201,167),.22)}
+#matrix thead th .cc-ind{opacity:.45;margin-left:6px;font-size:.85em}
+#matrix thead th.cc-on{background:rgba(var(--cc-accent-rgb,0,201,167),.3) !important;
+  color:var(--cc-accent,#00C9A7)}
+#matrix thead th.cc-on .cc-ind{opacity:1}
+
+#cc-state{display:none;align-items:center;gap:12px;flex-wrap:wrap;
+  margin:8px 0 2px;padding:9px 13px;border-radius:7px;
+  background:rgba(var(--cc-accent-rgb,0,201,167),.1);
+  border:1px solid rgba(var(--cc-accent-rgb,0,201,167),.4);
+  font:600 calc(13.5px * var(--cc-scale,1))/1.35 inherit;
+  color:var(--cc-text,#C8D6E5)}
+#cc-state.show{display:flex}
+#cc-state .k{color:var(--cc-accent,#00C9A7)}
+/* Reset sits far left, where the eye already is; the description takes the
+   middle so it is not tucked into a corner. */
+#cc-state button{order:-1;flex:0 0 auto;margin:0 6px 0 0;
+  background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.5);
+  border-radius:6px;color:var(--cc-accent2,#FF6B00);text-decoration:none;
+  cursor:pointer;font:700 calc(13px * var(--cc-scale,1))/1 inherit;
+  padding:calc(7px * var(--cc-scale,1)) calc(14px * var(--cc-scale,1))}
+#cc-state button:hover{background:rgba(255,107,0,.26);color:#FFD2AE}
+#cc-state-txt{flex:1 1 auto;text-align:center}
+@media (max-width:640px){ #cc-state-txt{text-align:left} }
+</style>
+<script>
+(function(){
+  var SORT_COLS = {0:'ship name', 1:'role', 2:'aUEC price', 8:'pledge price'};
+  var state = {col:null, dir:0, dealer:null, budget:null, buyOnly:false};
+  // dir: 1 asc, -1 desc.  budget = max aUEC.  buyOnly = hide pledge-only ships.
+  // A purchasable row is one whose price cell is .num; pledge-only rows get
+  // .price-blank instead, so the class is a structural test, not a guess.
+  function isBuyable(r){ var c=r.cells[2]; return !!c && c.classList.contains('num'); }
+
+  function num(td){
+    if(!td) return null;
+    var t=(td.textContent||'').replace(/[^0-9.]/g,'');
+    if(t==='') return null;
+    var v=parseFloat(t);
+    return isNaN(v)?null:v;
+  }
+  function hasCheck(td){ return !!td && (td.textContent||'').indexOf('\u2714')!==-1; }
+
+  function build(){
+    var tbl=document.querySelector('#matrix table');
+    var body=document.getElementById('matrix-body');
+    if(!tbl||!body||!body.querySelector('tr')) return false;
+    var ths=tbl.querySelectorAll('thead th');
+    if(!ths.length) return false;
+    if(tbl.dataset.ccSort) return true;
+    tbl.dataset.ccSort='1';
+
+    var bb=document.getElementById('cc-browse');
+    if(bb){
+      var extra=document.createElement('span');
+      extra.id='cc-extra';
+      extra.innerHTML=
+        '<label class="cc-budget"><span>I have</span>'+
+        '<input id="cc-budget" type="text" inputmode="numeric" placeholder="e.g. 3,000,000">'+
+        '<span>aUEC</span></label>'+
+        '<label class="cc-buyonly"><input id="cc-buyonly" type="checkbox">'+
+        '<span>Only what I can buy in-game</span></label>';
+      bb.appendChild(extra);
+    }
+
+    var status=document.createElement('div');
+    status.id='cc-state'; status.className='cc-ui';
+    status.innerHTML='<span id="cc-state-txt"></span><button type="button" id="cc-state-clr">Reset</button>';
+    var bar=document.getElementById('cc-browse');
+    (bar?bar.parentNode:tbl.parentNode).insertBefore(status, bar?bar.nextSibling:tbl);
+
+    ths.forEach(function(th,i){
+      var label=(th.textContent||'').trim();
+      if(SORT_COLS[i]!==undefined){
+        th.classList.add('cc-sortable');
+        th.title='Sort by '+SORT_COLS[i];
+        th.insertAdjacentHTML('beforeend',' <span class="cc-ind">\u21c5</span>');
+        th.onclick=function(){
+          if(state.col===i) state.dir = state.dir===1 ? -1 : (state.dir===-1 ? 0 : 1);
+          else { state.col=i; state.dir=1; }
+          if(state.dir===0) state.col=null;
+          apply();
+        };
+      } else if(i>=3 && i<=7){          // the five dealer columns
+        th.classList.add('cc-dealer');
+        th.title='Show only ships sold here';
+        th.onclick=function(){
+          state.dealer = (state.dealer===i) ? null : i;
+          apply();
+        };
+      }
+    });
+
+    /* remember the page's own order so Reset can restore the grouping */
+    function stamp(){
+      var n=0;
+      body.querySelectorAll('tr').forEach(function(tr){
+        if(!tr.hasAttribute('data-cc-ord')) tr.setAttribute('data-cc-ord', n);
+        n++;
+      });
+    }
+
+    function apply(){
+      stamp();
+      var rows=[].slice.call(body.querySelectorAll('tr'));
+      var ships=rows.filter(function(r){ return !r.classList.contains('manu-row'); });
+
+      /* ---- order ---- */
+      if(state.col===null){
+        rows.sort(function(a,b){
+          return (+a.getAttribute('data-cc-ord')) - (+b.getAttribute('data-cc-ord'));
+        });
+        rows.forEach(function(r){ body.appendChild(r); });
+      } else {
+        var c=state.col, d=state.dir;
+        var nameOf=function(r){ return (r.querySelector('td').textContent||'').trim().toLowerCase(); };
+        ships.sort(function(a,b){
+          var av,bv;
+          if(c===0 || c===1){
+            av=(c===0?nameOf(a):(a.getAttribute('data-role')||'').toLowerCase());
+            bv=(c===0?nameOf(b):(b.getAttribute('data-role')||'').toLowerCase());
+            if(av!==bv) return av<bv ? -d : d;
+            /* same role - fall back to ship name so the block reads sensibly
+               instead of in whatever order it happened to be built */
+            if(c===1){ var an=nameOf(a), bn=nameOf(b);
+                       return an<bn ? -1 : (an>bn ? 1 : 0); }
+            return 0;
+          }
+          av=num(a.cells[c]); bv=num(b.cells[c]);
+          if(av===null && bv===null) return 0;
+          if(av===null) return 1;        // blanks always last, both directions
+          if(bv===null) return -1;
+          return (av-bv)*d;
+        });
+        ships.forEach(function(r){ body.appendChild(r); });
+      }
+
+      /* ---- visibility: manufacturer headers only make sense unsorted ---- */
+      body.querySelectorAll('tr.manu-row').forEach(function(r){
+        r.style.display = (state.col===null) ? '' : 'none';
+      });
+
+      refilter();
+      paint();
+    }
+
+    /* dealer filter sits on top of whatever the site's search already did */
+    function refilter(){
+      var box=document.getElementById('shipSearch');
+      var q=(box?box.value:'').toLowerCase().trim();
+      var shown=0, total=0;
+      body.querySelectorAll('tr').forEach(function(r){
+        if(r.classList.contains('manu-row')) return;
+        total++;
+        var name=(r.querySelector('td').textContent||'').toLowerCase();
+        var role=(r.getAttribute('data-role')||'').toLowerCase();
+        var okSearch = q==='' || name.indexOf(q)!==-1 || role.indexOf(q)!==-1;
+        var okDealer = state.dealer===null || hasCheck(r.cells[state.dealer]);
+        var buyable = isBuyable(r);
+        var okBuy = !state.buyOnly || buyable;
+        /* a budget is a question about aUEC, so a ship with no aUEC price
+           cannot answer it and is excluded rather than shown as "free" */
+        var price = buyable ? num(r.cells[2]) : null;
+        var okBudget = state.budget===null || (price!==null && price<=state.budget);
+        var vis = okSearch && okDealer && okBuy && okBudget;
+        r.style.display = vis ? '' : 'none';
+        if(vis) shown++;
+      });
+      if(state.col===null){
+        /* re-hide manufacturer headers that now have nothing under them */
+        var cur=null, any=false;
+        body.querySelectorAll('tr').forEach(function(r){
+          if(r.classList.contains('manu-row')){
+            if(cur) cur.style.display = any ? '' : 'none';
+            cur=r; any=false;
+          } else if(r.style.display!=='none') any=true;
+        });
+        if(cur) cur.style.display = any ? '' : 'none';
+      }
+      var cnt=document.getElementById('searchCount');
+      if(cnt) cnt.textContent = (shown===total)
+        ? total+' ships total'
+        : shown+' of '+total+' ships match';
+    }
+
+    function paint(){
+      ths.forEach(function(th,i){
+        th.classList.toggle('cc-on', i===state.col || i===state.dealer);
+        var ind=th.querySelector('.cc-ind');
+        if(ind) ind.textContent = (i===state.col)
+          ? (state.dir===1?'\u25b2':'\u25bc') : '\u21c5';
+      });
+      var bits=[];
+      if(state.col!==null){
+        /* "low to high" is meaningless for a text column */
+        var isText = (state.col===0 || state.col===1);
+        var dirTxt = isText ? (state.dir===1?'A to Z':'Z to A')
+                            : (state.dir===1?'low to high':'high to low');
+        bits.push('Sorted by <span class="k">'+SORT_COLS[state.col]+'</span>, '+dirTxt+
+                  ' <span class="k">(manufacturer grouping off)</span>');
+      }
+      if(state.budget!==null)
+        bits.push('Within <span class="k">'+state.budget.toLocaleString()+' aUEC</span>');
+      if(state.buyOnly)
+        bits.push('<span class="k">Buyable in-game only</span>');
+      if(state.dealer!==null)
+        bits.push('Showing only ships sold at <span class="k">'+
+                  (ths[state.dealer].textContent||'').replace(/[\u21c5\u25b2\u25bc]/g,'').trim()+'</span>');
+      var st=document.getElementById('cc-state');
+      document.getElementById('cc-state-txt').innerHTML=bits.join(' &nbsp;·&nbsp; ');
+      st.classList.toggle('show', bits.length>0);
+    }
+
+    var bIn=document.getElementById('cc-budget');
+    var bChk=document.getElementById('cc-buyonly');
+    if(bIn){
+      var t=null;
+      bIn.addEventListener('input', function(){
+        clearTimeout(t);
+        t=setTimeout(function(){
+          var raw=bIn.value.replace(/[^0-9]/g,'');
+          state.budget = raw==='' ? null : parseInt(raw,10);
+          if(raw!=='') bIn.value = parseInt(raw,10).toLocaleString();
+          refilter(); paint();
+        }, 250);
+      });
+    }
+    if(bChk) bChk.addEventListener('change', function(){
+      state.buyOnly = bChk.checked; refilter(); paint();
+    });
+
+    document.getElementById('cc-state-clr').onclick=function(){
+      state.col=null; state.dir=0; state.dealer=null;
+      state.budget=null; state.buyOnly=false;
+      if(bIn) bIn.value=''; if(bChk) bChk.checked=false;
+      apply();
+    };
+    var box=document.getElementById('shipSearch');
+    if(box) box.addEventListener('input', function(){ setTimeout(refilter,0); });
+
+    window.ccResetTable = function(){ state.col=null;state.dir=0;state.dealer=null; apply(); };
+    paint();
+    return true;
+  }
+  if(!build()){ var n=0,iv=setInterval(function(){ if(build()||++n>25) clearInterval(iv); },300); }
+})();
+</script>

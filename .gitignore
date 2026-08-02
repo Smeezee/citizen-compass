@@ -40,3 +40,17 @@ citizen-compass.ccpp
 # Scratch holding area for files Claude moved aside instead of deleting
 # (device bridge can't unlink files) - safe for the user to delete manually
 _to_delete/
+
+# Raw external-source snapshots (2026-07-31 external data landing run).
+# Provenance records for these live in data-layer/external-source-manifests/,
+# which IS tracked - the record survives even though the raw data doesn't.
+data-layer/external-sources/
+
+# ---- testing area, 2026-08-01 ----------------------------------------------
+# testing/_layer.html and testing/build.py ARE source and stay tracked.
+# Everything below is a build artifact or a large binary and must never be
+# committed - testing/_deploy alone is 344 MB of compressed ship models.
+testing/index.html
+testing/_deploy/
+testing/_models/
+testing/_tools/
