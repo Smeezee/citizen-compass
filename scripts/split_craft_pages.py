@@ -43,8 +43,13 @@ OUTPUT
 ------
     blueprints/<key>.json          body + summarised source block  1,597 files
     blueprints/<key>.sources.json  full list, fetched on disclosure  724 files
-    items/<id>.json                one item description            5,344 files
     blueprints/_list.json          minimal listing for the index page
+
+item_descriptions.json is NOT split. It is a fragment (description, name,
+source_file, uuid), not a page - it would sit beside the item pages rather than
+replace them, so every item page would cost two requests and 5,344 extra files.
+It is an INPUT, folded into the item page at build time, exactly as the combined
+indexes are inputs here.
 
 Run: venv/Scripts/python.exe scripts/split_craft_pages.py
 """
@@ -80,6 +85,74 @@ def write_json(path, obj):
     # trap that made build_deploy.py emit CRLF on Windows and LF elsewhere.
     with open(path, "w", encoding="utf-8", newline="") as fh:
         json.dump(obj, fh, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+
+
+def summarise_any(r):
+    """A source summary for EVERY source_kind, never None.
+
+    summarise() below is C2's, unchanged, and remains correct for contracts.
+    It was never specified for the other five kinds and returns None for them,
+    which left 48 blueprints - 31 event, 16 direct_reward, 1 other_pool - with
+    a disclosure and nothing above it. That fails WO-3's own criterion that
+    pages render complete.
+
+    The text for the other kinds is WO-3's, not invented here (workorder-craft-01
+    lines 117-127).
+
+    Shape note: for contracts, `sources[]` holds dicts. For every other kind it
+    holds POOL KEY STRINGS. summarise() would raise on those, which is the real
+    reason it guards on kind rather than merely preferring contracts.
+    """
+    kind = r.get("source_kind")
+    s = r.get("sources") or []
+
+    if kind == "contract":
+        block = summarise(r)
+        if block is not None:
+            block["kind"] = "contract"
+            return block
+
+    if kind == "event":
+        tiers, redwind = set(), False
+        for key in s:
+            if "redwind" in str(key).lower():
+                redwind = True
+                continue
+            m = re.search(r"_(\d+)_", str(key))
+            if m:
+                tiers.add(int(m.group(1)))
+        if tiers:
+            t = ", ".join(str(x) for x in sorted(tiers))
+            headline = ("XenoThreat contribution tier %s." % t if len(tiers) == 1
+                        else "XenoThreat contribution tiers %s." % t)
+        elif redwind:
+            headline = "Reward from RedWind Linehaul."
+        else:
+            headline = "Event reward."
+        return {"kind": "event", "total": len(s), "headline": headline,
+                "tiers": sorted(tiers), "redwind": redwind, "pool_keys": list(s)}
+
+    if kind == "direct_reward":
+        return {"kind": "direct_reward", "total": len(s),
+                "headline": "Awarded directly for completing its mission.",
+                "pool_keys": list(s)}
+
+    if kind == "other_pool":
+        return {"kind": "other_pool", "total": len(s),
+                "headline": "Carried by the Microsatellite probe mission item.",
+                "pool_keys": list(s)}
+
+    if kind == "default":
+        return {"kind": "default", "total": len(s),
+                "headline": "Available by default - no reward pool gates it.",
+                "pool_keys": list(s)}
+
+    # 865 blueprints, 54% of the set. WO-3 requires this to read confident.
+    return {"kind": "none", "total": 0,
+            "headline": ("Nothing in the game files says how this blueprint is "
+                         "obtained. It may come from an event, or it may not be "
+                         "available yet."),
+            "pool_keys": []}
 
 
 def summarise(r):
@@ -135,7 +208,6 @@ def main():
         sys.exit("item keys unsafe as filenames: %s" % unsafe_items[:5])
 
     fresh(BP_OUT)
-    fresh(IT_OUT)
 
     listing, n_src = [], 0
     for row in blueprints:
@@ -148,7 +220,7 @@ def main():
         # payload is the one the page does not render until someone asks.
         # summarise() is C2's, reused verbatim rather than reimplemented.
         page = {k: v for k, v in row.items() if k != "sources"}
-        page["source_summary"] = summarise(row)
+        page["source_summary"] = summarise_any(row)
         page["source_count"] = len(sources)
         write_json(os.path.join(BP_OUT, key + ".json"), page)
 
@@ -167,8 +239,18 @@ def main():
     listing.sort(key=lambda r: (r["output_name"] or "", r["blueprint_key"]))
     write_json(os.path.join(BP_OUT, "_list.json"), listing)
 
-    for k, v in items.items():
-        write_json(os.path.join(IT_OUT, str(k) + ".json"), v)
+    # RULING 1 - descriptions are NOT served.
+    #
+    # items/<id>.json was a FRAGMENT (description, name, source_file, uuid), not
+    # a page. It does not replace the 7,728 item pages, it sits beside them - so
+    # a visitor on an item page would make two requests to assemble one page,
+    # and 5,344 files would be spent doing it.
+    #
+    # Descriptions are an INPUT, exactly as the combined indexes are inputs to
+    # the blueprint pages. Whoever builds the item pages folds this in at build
+    # time. item_descriptions.json stays as the build artifact.
+    if os.path.isdir(IT_OUT):
+        shutil.rmtree(IT_OUT)
 
     def sizes_in(d, suffix, exclude=None):
         out = []
@@ -191,25 +273,29 @@ def main():
     pages = sizes_in(BP_OUT, ".json", exclude=".sources.json")
     pages = [s for s in pages]
     srcs = sizes_in(BP_OUT, ".sources.json")
-    itms = sizes_in(IT_OUT, ".json")
 
     n_pages = len(blueprints)
     print("blueprint pages : %5d  (%.2f MB)" % (n_pages, sum(pages) / 1048576))
     print("sources files   : %5d  (%.2f MB)  %d blueprints have none"
           % (n_src, sum(srcs) / 1048576, n_pages - n_src))
-    print("item files      : %5d  (%.2f MB)" % (len(items), sum(itms) / 1048576))
+    print("item descriptions: %4d  folded in at build time, NOT served" % len(items))
     print()
     print("POST-SPLIT DISTRIBUTION (bytes) - p99 is the number that matters")
     for label, v in (("page (fetched always)", pages),
                      ("sources (on disclosure)", srcs),
-                     ("item", itms)):
+                     ):
         if not v:
             continue
         print("   %-24s p50 %7s  p90 %7s  p99 %7s  max %7s   over20KB %d"
               % (label, f"{q(v,50):,}", f"{q(v,90):,}", f"{q(v,99):,}",
                  f"{v[-1]:,}", sum(1 for s in v if s > 20000)))
     print("_list.json      :        (%.1f KB)" % (os.path.getsize(os.path.join(BP_OUT, "_list.json")) / 1024))
-    print("TOTAL FILES     : %5d" % (n_pages + n_src + len(items) + 1))
+    served = n_pages + n_src + 1
+    print()
+    print("SERVED FILES    : %5d  (%d pages + %d sources + _list.json)"
+          % (served, n_pages, n_src))
+    print("                       item descriptions are NOT in this number -")
+    print("                       they are folded into the item pages at build time.")
     return 0
 
 
