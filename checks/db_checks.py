@@ -22,6 +22,7 @@ than folding filesystem access into every checker's signature.
 """
 
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -150,6 +151,54 @@ def registry_sync_check(session: Session, repo_root: Path) -> list[Finding]:
     return findings
 
 
+# An alembic operation tuple opens with ('op_name', at a position that is NOT
+# preceded by an identifier character. That negative lookbehind is what keeps
+# Column('check_name', - which has the identical shape - from being mistaken
+# for an operation.
+_ALEMBIC_OP = re.compile(r"(?<![A-Za-z_])\('([a-z_]+)',")
+_ALEMBIC_TARGET = re.compile(r"(?:Table|Index|Column)\('([^']+)'")
+
+
+def summarise_alembic_ops(raw: str) -> list[str]:
+    """Reduce `alembic check`'s output to a sorted list of "op:target".
+
+    WHY THIS EXISTS - and it is not cosmetic.
+
+    The raw output cannot be used as a finding's `details`, because two things
+    in it change between runs while the drift itself does not:
+
+      1. **Memory addresses.** Every server_default renders as
+         `<sqlalchemy.sql.elements.TextClause object at 0x0000017059E56C10>`.
+         That address is different on every single run. It also survives
+         lifecycle.normalise_condition() untouched - the hex normaliser is
+         anchored with \\b, and there is no word boundary between the `x` and
+         the digits of `0x...`, so it never matches.
+      2. **Operation order**, which autogenerate does not guarantee.
+
+    Either one alone means the same drift hashes to a new finding_key every
+    run. Put that on Part D's schedule and the findings table grows one fresh
+    ghost per run, forever - the exact failure the lifecycle exists to stop,
+    delivered on a timer.
+
+    No normaliser can fix this from the outside, because a memory address is
+    indistinguishable from data at that level. It has to be fixed here, by
+    emitting the condition rather than a dump of it.
+
+    Sorted and de-duplicated, so the same drift produces byte-identical text
+    on every run.
+    """
+    marker = "New upgrade operations detected:"
+    idx = raw.find(marker)
+    payload = raw[idx + len(marker):] if idx != -1 else raw
+
+    ops = []
+    for m in _ALEMBIC_OP.finditer(payload):
+        tail = payload[m.end(): m.end() + 400]
+        target = _ALEMBIC_TARGET.search(tail)
+        ops.append(f"{m.group(1)}:{target.group(1)}" if target else m.group(1))
+    return sorted(set(ops))
+
+
 def schema_drift_check(session: Session, repo_root: Path) -> list[Finding]:
     """Run `alembic check` (Alembic >=1.9) to confirm the live DB schema
     matches what the current model metadata expects - i.e. no model
@@ -171,9 +220,18 @@ def schema_drift_check(session: Session, repo_root: Path) -> list[Finding]:
 
     if result.returncode == 0:
         return [Finding("schema_drift", None, "PASS", "alembic check: no schema drift detected")]
+
+    ops = summarise_alembic_ops(result.stdout + result.stderr)
+    if not ops:
+        # Non-zero exit we could not parse. Say exactly that rather than
+        # inventing a drift description - and keep it stable by not echoing
+        # output we have not understood.
+        return [Finding("schema_drift", None, "WARNING",
+                         f"alembic check exited {result.returncode} but no operations could be "
+                         f"parsed from its output; the drift, if any, is unclassified")]
+
     return [Finding("schema_drift", None, "DEFECT",
-                     f"alembic check reported drift (exit {result.returncode}): "
-                     f"{(result.stdout + result.stderr).strip()[:2000]}")]
+                     f"alembic check reports {len(ops)} drift operation(s): " + ", ".join(ops))]
 
 
 CHECKERS = [

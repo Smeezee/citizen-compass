@@ -46,7 +46,15 @@ REPO_ROOT = Path(__file__).resolve().parent
 
 
 def _run_group(group_name, checkers, repo_root, db_conn):
-    all_findings = []
+    """Run a group and report WHICH checkers completed, not just what they said.
+
+    The second return value is load-bearing. A checker that raised did not
+    look, so its previous findings must go to UNKNOWN rather than CLOSED - and
+    that decision is impossible without knowing which checkers succeeded. This
+    used to return findings alone, which meant a crashed checker was
+    indistinguishable from a clean one that found nothing.
+    """
+    all_findings, ran_ok, errored = [], set(), set()
     for name, fn in checkers:
         try:
             findings = fn(repo_root) if group_name == "file" else fn(db_conn, repo_root)
@@ -54,8 +62,22 @@ def _run_group(group_name, checkers, repo_root, db_conn):
             from checks.framework import Finding
 
             findings = [Finding(name, None, "WARNING", f"checker itself raised an exception: {e!r}")]
+            errored.add(name)
+        else:
+            # A checker that completed vouches for every check_name it owns,
+            # not merely its registered name - see CHECKER_EMITS.
+            ran_ok.update(_emitted_names(name))
         all_findings.extend(findings)
-    return all_findings
+    return all_findings, ran_ok, errored
+
+
+def _emitted_names(registered_name):
+    """Every check_name a given registered checker is allowed to produce."""
+    try:
+        from checks.file_checks import CHECKER_EMITS
+    except Exception:
+        return {registered_name}
+    return CHECKER_EMITS.get(registered_name, {registered_name})
 
 
 def main():
@@ -66,11 +88,18 @@ def main():
     args = parser.parse_args()
 
     all_findings = []
+    ran_ok, errored = set(), set()
+
+    def _collect(triple):
+        findings, ok, bad = triple
+        all_findings.extend(findings)
+        ran_ok.update(ok)
+        errored.update(bad)
 
     if args.group in ("file", "all"):
         from checks.file_checks import CHECKERS as FILE_CHECKERS
 
-        all_findings.extend(_run_group("file", FILE_CHECKERS, REPO_ROOT, None))
+        _collect(_run_group("file", FILE_CHECKERS, REPO_ROOT, None))
 
     if args.group in ("db", "all"):
         try:
@@ -100,14 +129,14 @@ def main():
                 if session is not None:
                     session.close()
                     session = None
-            all_findings.extend(_run_group("db", DB_CHECKERS, REPO_ROOT, session))
+            _collect(_run_group("db", DB_CHECKERS, REPO_ROOT, session))
             if session is not None:
                 session.close()
 
     if args.group in ("network", "all"):
         from checks.network_checks import CHECKERS as NETWORK_CHECKERS
 
-        all_findings.extend(_run_group("file", NETWORK_CHECKERS, REPO_ROOT, None))
+        _collect(_run_group("file", NETWORK_CHECKERS, REPO_ROOT, None))
 
     print(summarize(all_findings))
 
@@ -152,7 +181,53 @@ def main():
                   f"logs/pipeline_check_results_fallback.jsonl - no DB connection available. "
                   f"Run checks_flush_fallback.py once the database is reachable.)")
 
+        _apply_lifecycle(args, all_findings, ran_ok, errored)
+
     return 0 if not any(f.result == "DEFECT" for f in all_findings) else 1
+
+
+def _apply_lifecycle(args, all_findings, ran_ok, errored):
+    """Fold this run's observations into pipeline_findings and record the run.
+
+    Note what is NOT done here: a `--group file` run passes only the file
+    checkers in ran_ok, so db and network findings correctly go to UNKNOWN
+    rather than CLOSED. A partial run must never look like a clean bill of
+    health for the checkers it did not run.
+    """
+    from checks import findings_store as store
+
+    try:
+        conn = store.connect()
+    except Exception as e:
+        print(f"\n(lifecycle not updated - no DB connection: {type(e).__name__}: {e})",
+              file=sys.stderr)
+        return
+
+    run_id = store.new_run_id()
+    try:
+        store.start_run(conn, run_id, groups=args.group, source_process=args.source_process)
+        res = store.apply_run(conn, all_findings, checkers_ran_ok=ran_ok, run_id=run_id)
+        store.finish_run(
+            conn, run_id,
+            attempted=len(ran_ok) + len(errored), ok=len(ran_ok),
+            errored=len(errored), errored_names=errored,
+            opened=res["opened"], closed=res["closed"],
+            unknown=res["unknown"], unchanged=res["unchanged"],
+        )
+        counts = store.status_counts(conn)
+        print(f"\nrun {run_id}")
+        print(f"  checkers: {len(ran_ok)} ok, {len(errored)} errored"
+              + (f" ({', '.join(sorted(errored))})" if errored else ""))
+        print(f"  lifecycle: {res['new']} new, {res['reopened']} reopened, "
+              f"{res['closed']} closed, {res['unknown']} -> unknown, "
+              f"{res['unchanged']} unchanged")
+        print(f"  pipeline_findings now: "
+              + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())))
+        if errored:
+            print("  NOTE: findings belonging to the errored checkers above were sent to "
+                  "UNKNOWN, not CLOSED - nothing looked for them this run.")
+    finally:
+        conn.close()
 
 
 if __name__ == "__main__":

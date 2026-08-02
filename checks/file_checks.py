@@ -198,6 +198,19 @@ def missing_or_corrupt_3d_model_check(repo_root: Path) -> list[Finding]:
         model_path = ship_dir / "model.glb"
         image_path = ship_dir / "image.webp"
 
+        # MODEL_SOURCE.txt records that this ship's model was copied from a
+        # sibling with the same chassis. Read it BEFORE judging the model, so
+        # a borrowed model is reported as the limitation it is.
+        source_path = ship_dir / "MODEL_SOURCE.txt"
+        source_note = None
+        if source_path.exists():
+            try:
+                source_note = " ".join(
+                    source_path.read_text(encoding="utf-8").split()
+                )[:300] or "(MODEL_SOURCE.txt present but empty)"
+            except Exception as e:
+                source_note = f"(MODEL_SOURCE.txt unreadable: {e})"
+
         if not model_path.exists():
             findings.append(Finding(
                 "missing_or_corrupt_3d_model", ship_dir.name, "DEFECT",
@@ -218,6 +231,17 @@ def missing_or_corrupt_3d_model_check(repo_root: Path) -> list[Finding]:
                         f"{model_path.relative_to(repo_root)} does not start with the glTF-binary magic "
                         f"header - likely corrupt or not actually a valid .glb file"
                     ))
+                elif source_note is not None:
+                    # A model copied from a sibling chassis is NOT this ship's
+                    # own art. Reporting PASS here would silently conflate
+                    # "has a model" with "has its own model" - four ships are
+                    # currently in exactly that state, and a plain existence
+                    # check cannot tell the difference.
+                    findings.append(Finding(
+                        "missing_or_corrupt_3d_model", ship_dir.name, "LIMITATION",
+                        f"model.glb is valid but was copied from a sibling chassis, per "
+                        f"MODEL_SOURCE.txt: {source_note}"
+                    ))
                 else:
                     findings.append(Finding(
                         "missing_or_corrupt_3d_model", ship_dir.name, "PASS",
@@ -235,6 +259,138 @@ def missing_or_corrupt_3d_model_check(repo_root: Path) -> list[Finding]:
                 f"{image_path.relative_to(repo_root)} missing (cosmetic, does not block the 3D model)"
             ))
 
+    return findings
+
+
+# --- encoding hygiene ---------------------------------------------------------
+
+# A text-mode open() with no encoding= uses the platform default. On Windows
+# that is cp1252, which cannot represent the characters in real Star Citizen
+# ship names. This has broken this pipeline FOUR separate times:
+#   * ccpp.py, three call sites
+#   * checks/framework.py:72 - the fallback log's own WRITER, which would have
+#     destroyed a finding the moment any subject contained a non-ASCII name.
+#     It survived only because json.dumps escapes to ASCII by default.
+#   * a throwaway diagnostic script, which is why "it's only a quick script"
+#     is not an exemption.
+# `tok.yai` (with a macron) is a shipping product, not an edge case.
+#
+# Uses tokenize rather than a regex, and that choice was forced by evidence.
+#
+# The regex version passed a 16-case rule-12 fixture and then produced false
+# positives the moment it met the real repo: it flagged this function's OWN
+# DOCSTRING (which names the three calls) and every line of
+# _verify_missing_encoding.py's fixture table (where the bad call sites are
+# quoted STRINGS, not code). A linter that cries wolf on its own test data
+# teaches people to skim it, which is precisely the harm this is meant to
+# prevent.
+#
+# tokenize makes the distinction structural instead of textual: strings,
+# docstrings and comments arrive as their own token types and are never
+# mistaken for a call. That is a correctness difference, not a tidiness one.
+_TEXT_CALLS = ("open", "read_text", "write_text")
+_BINARY_MODE = re.compile(r"^[rwxa]\+?b\+?$")
+
+
+def _text_mode_calls(source: str):
+    """Yield (line_no, func_name, arg_tokens) for every open/read_text/
+    write_text CALL in `source`. Occurrences inside strings, docstrings and
+    comments are structurally excluded."""
+    import io
+    import tokenize
+
+    toks = [
+        t for t in tokenize.generate_tokens(io.StringIO(source).readline)
+        if t.type not in (tokenize.NL, tokenize.NEWLINE, tokenize.INDENT,
+                          tokenize.DEDENT, tokenize.COMMENT)
+    ]
+    for i, tok in enumerate(toks):
+        if tok.type != tokenize.NAME or tok.string not in _TEXT_CALLS:
+            continue
+        # A definition is not a call site.
+        if i and toks[i - 1].type == tokenize.NAME and toks[i - 1].string == "def":
+            continue
+        if i + 1 >= len(toks) or toks[i + 1].string != "(":
+            continue
+        depth, args, k = 0, [], i + 1
+        while k < len(toks):
+            t = toks[k]
+            if t.type == tokenize.OP and t.string in "([{":
+                depth += 1
+            elif t.type == tokenize.OP and t.string in ")]}":
+                depth -= 1
+                if depth == 0:
+                    break
+            elif depth >= 1:
+                args.append(t)
+            k += 1
+        yield tok.start[0], tok.string, args
+
+_ENCODING_SKIP_DIRS = {
+    ".git", "__pycache__", "venv", ".venv", "node_modules", "_to_delete",
+    "data-layer", "sc-ships", "testing", "models", "releases", "inbox",
+    "docs", "logs",
+}
+
+
+def missing_encoding_check(repo_root: Path) -> list[Finding]:
+    """Flag every text-mode open()/read_text()/write_text() in this project's
+    own Python that does not state encoding= explicitly.
+
+    Self-enforcing version of the standing rule, so that "specify the
+    encoding" stops being something anyone has to remember."""
+    findings = []
+    scanned = 0
+
+    for py in sorted(repo_root.rglob("*.py")):
+        rel = py.relative_to(repo_root)
+        # Dotfile directories are skipped wholesale. .claude/worktrees/ holds
+        # full copies of the repo, which would otherwise report every finding
+        # twice - and duplicated findings are the thing this whole order is
+        # about removing.
+        if any(part.startswith(".") or part in _ENCODING_SKIP_DIRS
+               for part in rel.parts[:-1]):
+            continue
+        try:
+            text = py.read_text(encoding="utf-8")
+        except Exception as e:
+            findings.append(Finding("missing_encoding", str(rel), "WARNING",
+                                     f"could not read file to scan it: {e}"))
+            continue
+        scanned += 1
+        lines = text.splitlines()
+
+        try:
+            calls = list(_text_mode_calls(text))
+        except Exception as e:
+            # Unparseable source is reported, never silently skipped - a file
+            # this checker could not read is exactly where a bad call would hide.
+            findings.append(Finding("missing_encoding", str(rel), "WARNING",
+                                     f"could not tokenize to scan it: {type(e).__name__}: {e}"))
+            continue
+
+        for line_no, func, args in calls:
+            import tokenize as _tk
+
+            has_encoding = any(
+                t.type == _tk.NAME and t.string == "encoding" for t in args
+            )
+            binary = any(
+                t.type == _tk.STRING and _BINARY_MODE.match(t.string.strip("\"'"))
+                for t in args
+            )
+            if has_encoding or binary:
+                continue
+            src = lines[line_no - 1].strip() if line_no <= len(lines) else ""
+            findings.append(Finding(
+                "missing_encoding", f"{rel}:{line_no}", "DEFECT",
+                f"{func}() with no explicit encoding= - defaults to cp1252 on "
+                f"Windows and will raise on non-ASCII ship names: {src[:120]}"
+            ))
+
+    if not findings:
+        findings.append(Finding("missing_encoding", None, "PASS",
+                                 f"scanned {scanned} Python files, every text open specifies an encoding"))
     return findings
 
 
@@ -442,12 +598,29 @@ def broken_internal_link_check(repo_root: Path) -> list[Finding]:
     return findings
 
 
+# A checker may emit findings under a check_name that is not its registered
+# name. missing_or_corrupt_3d_model_check emits missing_preview_image, and the
+# consequence was real: no registered checker owned that name, so the lifecycle
+# could never conclude anything had looked for it, and those findings were
+# pinned at UNKNOWN permanently. The first lifecycle-aware run surfaced exactly
+# one such finding, which is how this was found.
+#
+# Declaring the extra names statically - rather than inferring them from what a
+# run happened to emit - is deliberate. Inferring would mean a condition that
+# has genuinely gone away stops being emitted, so its name drops out of
+# "what ran", so its old findings go UNKNOWN instead of CLOSED. The names a
+# checker CAN emit must not depend on what it DID emit.
+CHECKER_EMITS = {
+    "missing_or_corrupt_3d_model": {"missing_or_corrupt_3d_model", "missing_preview_image"},
+}
+
 CHECKERS = [
     ("naming_convention_typo", naming_convention_typo_check),
     ("placeholder_null_density", placeholder_null_density_check),
     ("broken_asset_references", broken_asset_references_check),
     ("orphaned_test_fixture", orphaned_test_fixture_check),
     ("missing_or_corrupt_3d_model", missing_or_corrupt_3d_model_check),
+    ("missing_encoding", missing_encoding_check),
     ("log_growth", log_growth_check),
     ("backup_freshness", backup_freshness_check),
     ("scheduled_task_health", scheduled_task_health_check),

@@ -180,6 +180,37 @@ reinforced in conversation more than once.
 
 ---
 
+### 14. Every file open states its encoding.
+
+**Every `open()`, `read_text()` and `write_text()` in this project specifies
+`encoding="utf-8"` explicitly. No exceptions, including in throwaway
+diagnostic scripts** — one of those hit this too.
+
+A text-mode open with no `encoding=` uses the platform default. On Windows
+that is cp1252, which **cannot represent real Star Citizen ship names.**
+`tok.yāi` is a shipping product, not an edge case, and Xi'an and Banu names
+are not exotic in a Star Citizen database.
+
+This has broken the pipeline four separate times:
+
+- `ccpp.py` — three call sites.
+- `checks/framework.py:72` — the fallback log's own *writer*. It would have
+  destroyed a finding the instant any subject contained a non-ASCII name, and
+  survived only because `json.dumps` escapes to ASCII by default.
+- `registry_sync` reported `ship_registry.json` as corrupt. The file was fine;
+  the checker was opening it as cp1252.
+- A one-off diagnostic script, while printing a ship name.
+
+Binary mode (`"rb"`, `"wb"`) takes no encoding and is correct as written.
+
+**This rule is machine-enforced.** The `missing_encoding` checker in
+`checks/file_checks.py` scans for violations and reports each one, so this is
+not something anyone has to remember. It is proven in both directions —
+planted bad call sites are caught, correct ones are not flagged — by
+`checks/_verify_missing_encoding.py`.
+
+---
+
 ## Standing rule: keep LATEST_HANDOFF.md current, always
 
 After completing any meaningful step or phase of work, and any time you stop
