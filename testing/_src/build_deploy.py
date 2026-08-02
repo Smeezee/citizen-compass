@@ -1,24 +1,46 @@
-import base64, json, os, re, glob
+import base64, json, os, re, glob, sys
 
-T='/home/claude/t128/node_modules/three'
+# ---------------------------------------------------------------------------
+# Repo-relative build. This script used to hardcode a cloud-sandbox path, which
+# made testing/_deploy/index.html unreproducible on the project machine - the
+# artifact existed but nothing here could regenerate it. Everything now
+# resolves from this file's location, so it runs anywhere the repo is checked
+# out. Vendored three.js lives beside it so no npm install is required.
+#
+#   run:  python testing/_src/build_deploy.py
+# ---------------------------------------------------------------------------
+SRC  = os.path.dirname(os.path.abspath(__file__))          # testing/_src
+REPO = os.path.dirname(os.path.dirname(SRC))               # repo root
+T    = os.path.join(SRC, 'vendor', 'three')
+OUT  = os.path.join(REPO, 'testing', '_deploy')
+SITE  = os.path.join(REPO, 'releases', 'latest.html')
+LAYER = os.path.join(SRC, '_layer.src.html')
+
 def rd(p, b=False):
+    if not os.path.exists(p):
+        sys.exit("BUILD INPUT MISSING: %s\n"
+                 "This build cannot invent it. Nothing was written." % p)
     return open(p,'rb').read() if b else open(p,encoding='utf-8').read()
 
-three   = rd(f'{T}/build/three.min.js')
-gltf    = rd(f'{T}/examples/js/loaders/GLTFLoader.js')
-orbit   = rd(f'{T}/examples/js/controls/OrbitControls.js')
-draco   = rd(f'{T}/examples/js/loaders/DRACOLoader.js')
-wrapper = rd(f'{T}/examples/js/libs/draco/draco_wasm_wrapper.js')
-wasm_b64= base64.b64encode(rd(f'{T}/examples/js/libs/draco/draco_decoder.wasm', True)).decode()
+three   = rd(os.path.join(T,'build','three.min.js'))
+gltf    = rd(os.path.join(T,'examples','js','loaders','GLTFLoader.js'))
+orbit   = rd(os.path.join(T,'examples','js','controls','OrbitControls.js'))
+draco   = rd(os.path.join(T,'examples','js','loaders','DRACOLoader.js'))
+wrapper = rd(os.path.join(T,'examples','js','libs','draco','draco_wasm_wrapper.js'))
+wasm_b64= base64.b64encode(rd(os.path.join(T,'examples','js','libs','draco','draco_decoder.wasm'), True)).decode()
 
 # ---- embedded models -------------------------------------------------------
 import re as _re
-OUT='/home/claude/full'
 os.makedirs(OUT, exist_ok=True)
-have = set(open('/home/claude/model_files.txt').read().split()) | {'Asgard.glb'}
+_mdir = os.path.join(OUT, 'models')
+have = {os.path.basename(p) for p in glob.glob(os.path.join(_mdir, '*.glb'))}
+if not have:
+    sys.exit("NO MODELS FOUND in %s\n"
+             "Refusing to build a deploy page that would 404 every ship.\n"
+             "Nothing was written." % _mdir)
 safe = lambda n: _re.sub(r'[^A-Za-z0-9._-]+','_',n)
 import json as _json
-_cc = _json.loads(_re.search(r'const CC_MODELS = (\{.*?\});', open('/home/claude/cc-testing-layer.html',encoding='utf-8').read(), _re.S).group(1))
+_cc = _json.loads(_re.search(r'const CC_MODELS = (\{.*?\});', open(LAYER,encoding='utf-8').read(), _re.S).group(1))
 models={}
 missing=[]
 for _id, folder in _cc.items():
@@ -33,8 +55,8 @@ for a,b in ren.items():
     if a in models: models[b]=models.pop(a)
 
 
-site  = rd('/home/claude/latest.html')
-layer = rd('/home/claude/cc-testing-layer.html')
+site  = rd(SITE)
+layer = rd(LAYER)
 
 # ---- 1. strip CDN script tags ---------------------------------------------
 cdn = re.findall(r'<script src="https://cdn\.jsdelivr\.net[^"]*"></script>\s*', layer)
