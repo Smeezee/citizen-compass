@@ -69,7 +69,7 @@ def write_findings(findings: list[Finding], source_process: str, db_conn=None) -
         return
 
     FALLBACK_LOG.parent.mkdir(exist_ok=True)
-    with open(FALLBACK_LOG, "a") as fh:
+    with open(FALLBACK_LOG, "a", encoding="utf-8") as fh:
         for f in findings:
             fh.write(
                 json.dumps(

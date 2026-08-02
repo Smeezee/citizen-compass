@@ -112,11 +112,45 @@ def main():
     print(summarize(all_findings))
 
     if not args.no_write:
-        # write_findings itself degrades to the local fallback log when
-        # db_conn is None - see checks/framework.py.
-        write_findings(all_findings, source_process=args.source_process, db_conn=None)
-        print(f"\n(findings also queued to logs/pipeline_check_results_fallback.jsonl - "
-              f"no live pipeline_check_results DB connection from this environment)")
+        # Fixed 2026-08-02. This previously passed db_conn=None unconditionally,
+        # so EVERY finding this system ever produced went to the fallback log
+        # even when the database was perfectly reachable - 874 of them, across
+        # seven runs, sitting in a file with no path into the table. The session
+        # opened above was used for the checkers and then never used for the
+        # write. The degradation path was doing all the work, permanently.
+        #
+        # write_findings needs a psycopg2-style connection (it uses %s params
+        # and .cursor()/.commit()), not the SQLAlchemy Session above, so open
+        # one here. If that fails, fall through to the fallback log exactly as
+        # before - degrading is still correct, it just must not be the default.
+        write_conn = None
+        try:
+            import os
+
+            import psycopg2
+            from dotenv import load_dotenv
+
+            load_dotenv(REPO_ROOT / ".env")
+            _url = os.environ.get("DATABASE_URL") or os.environ.get("RAILWAY_DATABASE_URL")
+            if _url:
+                write_conn = psycopg2.connect(
+                    _url.replace("postgresql+psycopg2://", "postgresql://"))
+        except Exception as e:
+            print(f"\n(no direct pipeline_check_results connection: "
+                  f"{type(e).__name__}: {e})", file=sys.stderr)
+
+        try:
+            write_findings(all_findings, source_process=args.source_process, db_conn=write_conn)
+        finally:
+            if write_conn is not None:
+                write_conn.close()
+
+        if write_conn is not None:
+            print(f"\n({len(all_findings)} findings written directly to pipeline_check_results)")
+        else:
+            print(f"\n({len(all_findings)} findings queued to "
+                  f"logs/pipeline_check_results_fallback.jsonl - no DB connection available. "
+                  f"Run checks_flush_fallback.py once the database is reachable.)")
 
     return 0 if not any(f.result == "DEFECT" for f in all_findings) else 1
 

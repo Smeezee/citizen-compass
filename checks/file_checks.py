@@ -37,7 +37,7 @@ def naming_convention_typo_check(repo_root: Path) -> list[Finding]:
             )
             continue
         try:
-            data = json.loads(hp_path.read_text())
+            data = json.loads(hp_path.read_text(encoding="utf-8"))
         except Exception as e:
             findings.append(Finding("naming_convention_typo", ship_dir.name, "DEFECT", f"hardpoints.json is not valid JSON: {e}"))
             continue
@@ -74,7 +74,7 @@ def placeholder_null_density_check(repo_root: Path) -> list[Finding]:
         if not hp_path.exists():
             continue
         try:
-            data = json.loads(hp_path.read_text())
+            data = json.loads(hp_path.read_text(encoding="utf-8"))
         except Exception:
             continue
         placeholders = [
@@ -108,7 +108,7 @@ def broken_asset_references_check(repo_root: Path) -> list[Finding]:
 
     for html_file in html_files:
         try:
-            text = html_file.read_text(errors="ignore")
+            text = html_file.read_text(encoding="utf-8", errors="ignore")
         except Exception:
             continue
         for ref in ref_pattern.findall(text):
@@ -159,7 +159,7 @@ def orphaned_test_fixture_check(repo_root: Path) -> list[Finding]:
 
     fixture_slugs = {p.name for p in ships_dir.iterdir() if p.is_dir()}
     try:
-        master = json.loads(master_path.read_text())
+        master = json.loads(master_path.read_text(encoding="utf-8"))
     except Exception as e:
         return [Finding("orphaned_test_fixture", None, "DEFECT", f"ships-master.json is not valid JSON: {e}")]
 
@@ -344,7 +344,7 @@ def secrets_in_repo_check(repo_root: Path) -> list[Finding]:
         if path.suffix not in text_extensions or not path.is_file():
             continue
         try:
-            text = path.read_text(errors="ignore")
+            text = path.read_text(encoding="utf-8", errors="ignore")
         except Exception:
             continue
         for pattern, label in SECRET_PATTERNS:
@@ -393,7 +393,7 @@ def fan_kit_compliance_check(repo_root: Path) -> list[Finding]:
     findings = []
     index_html = repo_root / "static" / "index.html"
     if index_html.exists():
-        text = index_html.read_text(errors="ignore")
+        text = index_html.read_text(encoding="utf-8", errors="ignore")
         if re.search(r"(?i)trademark", text):
             findings.append(Finding("fan_kit_compliance", "static/index.html", "PASS", "trademark disclaimer text present"))
         else:
@@ -418,7 +418,7 @@ def broken_internal_link_check(repo_root: Path) -> list[Finding]:
 
     for html_file in html_files:
         try:
-            text = html_file.read_text(errors="ignore")
+            text = html_file.read_text(encoding="utf-8", errors="ignore")
         except Exception:
             continue
         for ref in link_pattern.findall(text):
