@@ -1,22 +1,69 @@
-$isAdmin = ([Security.Principal.WindowsPrincipal] `
-    [Security.Principal.WindowsIdentity]::GetCurrent() `
-    ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+[CmdletBinding(SupportsShouldProcess = $true)]
+param(
+    [string] $TaskName    = "Citizen Compass Inbox Watcher",
+    [string] $ProjectPath = "C:\Users\david\citizen-compass"
+)
 
-if (-not $isAdmin) {
-    Write-Host "This needs Administrator rights to register the scheduled task." -ForegroundColor Yellow
-    Write-Host "Reopening as Administrator now - a Windows permission popup will appear, click Yes." -ForegroundColor Yellow
-    Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
-    exit
-}
-
-$taskName    = "Citizen Compass Inbox Watcher"
-$projectPath = "C:\Users\david\citizen-compass"
+$taskName    = $TaskName
+$projectPath = $ProjectPath
 $exePath     = "$projectPath\inbox_watcher.exe"
 
 if (-not (Test-Path $exePath)) {
     Write-Host "Could not find inbox_watcher.exe at $exePath." -ForegroundColor Red
-    Read-Host "Press Enter to close"
     exit 1
+}
+
+$isAdmin = ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent() `
+    ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+# ---------------------------------------------------------------------------
+# ELEVATION MUST NOT LAUNDER AWAY -WhatIf.
+#
+# The original line here was:
+#
+#   Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+#
+# It forwarded ONLY -File. Any switch the caller passed - -WhatIf above all -
+# was dropped, so the elevated copy took the real branch and did the real
+# thing. setup_checks_task.ps1 was copied from this file and inherited the
+# flaw; on 2026-08-01 a -WhatIf run of that script registered a scheduled task
+# for real. This is the same defect at its source.
+#
+# It matters MORE here than there. This script runs
+# Unregister-ScheduledTask followed by Register-ScheduledTask against the
+# inbox watcher - the sole writer of LATEST_HANDOFF.md. An accidental real run
+# tears down and rebuilds the live watcher. A dry run of that has to actually
+# stay dry.
+#
+# A dry-run flag that silently does not apply is a check that cannot fail, in
+# the sense of CLAUDE.md hard rule 12: it reports a safety it does not
+# provide. So -WhatIf refuses to elevate, and elevation forwards its arguments.
+# ---------------------------------------------------------------------------
+if (-not $isAdmin) {
+    if ($WhatIfPreference) {
+        Write-Host "-WhatIf requested, and registering a task needs Administrator." -ForegroundColor Yellow
+        Write-Host "NOT elevating: an elevated relaunch would drop -WhatIf and re-register for real." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "Would unregister and re-register:" -ForegroundColor Cyan
+        Write-Host "  Task    : $taskName"
+        Write-Host "  Runs    : $exePath"
+        Write-Host "  Triggers: Daily (repeating every 1 minute) + AtLogOn"
+        Write-Host ""
+        Write-Host "NOTE: the real run tears down and rebuilds the LIVE watcher," -ForegroundColor Yellow
+        Write-Host "      which is the only writer of LATEST_HANDOFF.md." -ForegroundColor Yellow
+        Write-Host "Nothing was changed."
+        exit 0
+    }
+
+    Write-Host "This needs Administrator rights to register the scheduled task." -ForegroundColor Yellow
+    Write-Host "Reopening as Administrator now - a Windows permission popup will appear, click Yes." -ForegroundColor Yellow
+    $fwd = @(
+        '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"",
+        '-TaskName', "`"$taskName`"", '-ProjectPath', "`"$projectPath`""
+    )
+    Start-Process powershell -ArgumentList $fwd -Verb RunAs
+    exit
 }
 
 Write-Host "Using Go binary at: $exePath"
