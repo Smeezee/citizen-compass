@@ -144,6 +144,26 @@ not yet know that it works — say so rather than reporting a pass. A gate whose
 failure path has never executed is an untested gate, no matter how many times it
 has returned success.
 
+**A safety flag that silently does not apply is the same defect.** A dry-run
+switch, a `--no-write`, a `-WhatIf`, a "report-only" mode — each one is a check
+that the destructive path will not run. If the flag can be lost on the way to
+the code it guards, it reports a safety it does not provide, exactly like
+`main()` returning `None` or a gate script returning 0 unconditionally.
+
+This has already happened here, on 2026-08-01:
+
+- `setup_checks_task.ps1` was run with **`-WhatIf`** so it would register
+  nothing. It auto-elevated via `Start-Process -Verb RunAs`, and **that
+  relaunch forwarded only `-File <path>`** — no switches. The elevated copy had
+  never heard of `-WhatIf`, took the real branch, and registered a scheduled
+  task for real. `setup_watcher_task.ps1` has the same elevation flaw, which is
+  where the pattern was copied from.
+
+So: **prove the flag by behaviour, not by reading the code.** Run the dry run
+and then confirm from the outside that nothing changed — no task registered, no
+file written, no row inserted. A dry run whose no-op has never been verified is
+an untested gate wearing a reassuring name.
+
 ---
 
 ### 13. File the handoff before you move on.

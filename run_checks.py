@@ -82,24 +82,28 @@ def _emitted_names(registered_name):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--group", choices=["file", "db", "network", "all"], default="file")
+    parser.add_argument("--group", choices=["file", "db", "network", "sources", "all"],
+                        default="file")
     parser.add_argument("--source-process", default="run_checks.py")
     parser.add_argument("--no-write", action="store_true", help="print findings only, don't call write_findings")
     args = parser.parse_args()
 
     all_findings = []
-    ran_ok, errored = set(), set()
+    ran_ok, errored, scope = set(), set(), set()
 
-    def _collect(triple):
+    def _collect(triple, checkers=()):
         findings, ok, bad = triple
         all_findings.extend(findings)
         ran_ok.update(ok)
         errored.update(bad)
+        # Everything this run was responsible for, whether it succeeded or not.
+        for name, _fn in checkers:
+            scope.update(_emitted_names(name))
 
     if args.group in ("file", "all"):
         from checks.file_checks import CHECKERS as FILE_CHECKERS
 
-        _collect(_run_group("file", FILE_CHECKERS, REPO_ROOT, None))
+        _collect(_run_group("file", FILE_CHECKERS, REPO_ROOT, None), FILE_CHECKERS)
 
     if args.group in ("db", "all"):
         try:
@@ -129,14 +133,24 @@ def main():
                 if session is not None:
                     session.close()
                     session = None
-            _collect(_run_group("db", DB_CHECKERS, REPO_ROOT, session))
+            _collect(_run_group("db", DB_CHECKERS, REPO_ROOT, session), DB_CHECKERS)
             if session is not None:
                 session.close()
+
+    # The Stage 1 source auditors. Their own group rather than part of "file"
+    # because snapshot_integrity re-hashes every sealed snapshot - 4.5 GB
+    # across ~29,000 files for source 1 alone. That is a weekly cost, not a
+    # daily one, and folding it into the daily group would be the surest way
+    # to get the daily group turned off.
+    if args.group in ("sources", "all"):
+        from checks.source_checks import CHECKERS as SOURCE_CHECKERS
+
+        _collect(_run_group("file", SOURCE_CHECKERS, REPO_ROOT, None), SOURCE_CHECKERS)
 
     if args.group in ("network", "all"):
         from checks.network_checks import CHECKERS as NETWORK_CHECKERS
 
-        _collect(_run_group("file", NETWORK_CHECKERS, REPO_ROOT, None))
+        _collect(_run_group("file", NETWORK_CHECKERS, REPO_ROOT, None), NETWORK_CHECKERS)
 
     print(summarize(all_findings))
 
@@ -181,12 +195,12 @@ def main():
                   f"logs/pipeline_check_results_fallback.jsonl - no DB connection available. "
                   f"Run checks_flush_fallback.py once the database is reachable.)")
 
-        _apply_lifecycle(args, all_findings, ran_ok, errored)
+        _apply_lifecycle(args, all_findings, ran_ok, errored, scope)
 
     return 0 if not any(f.result == "DEFECT" for f in all_findings) else 1
 
 
-def _apply_lifecycle(args, all_findings, ran_ok, errored):
+def _apply_lifecycle(args, all_findings, ran_ok, errored, scope):
     """Fold this run's observations into pipeline_findings and record the run.
 
     Note what is NOT done here: a `--group file` run passes only the file
@@ -206,7 +220,8 @@ def _apply_lifecycle(args, all_findings, ran_ok, errored):
     run_id = store.new_run_id()
     try:
         store.start_run(conn, run_id, groups=args.group, source_process=args.source_process)
-        res = store.apply_run(conn, all_findings, checkers_ran_ok=ran_ok, run_id=run_id)
+        res = store.apply_run(conn, all_findings, checkers_ran_ok=ran_ok, run_id=run_id,
+                              scope=scope)
         store.finish_run(
             conn, run_id,
             attempted=len(ran_ok) + len(errored), ok=len(ran_ok),

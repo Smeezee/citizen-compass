@@ -113,12 +113,27 @@ def _index_findings(findings) -> dict:
     return seen
 
 
-def apply_run(conn, findings, checkers_ran_ok, run_id: str) -> dict:
+def apply_run(conn, findings, checkers_ran_ok, run_id: str, scope=None) -> dict:
     """Apply one run's observations to the lifecycle table.
 
     `checkers_ran_ok` is a set of check_names that COMPLETED. It is required.
     A checker that raised, was skipped, or is no longer registered must not be
     in it - that is what sends its findings to UNKNOWN rather than CLOSED.
+
+    `scope` is the set of check_names this run was RESPONSIBLE for - normally
+    every checker registered in the groups being run. Findings outside it are
+    left completely untouched.
+
+    Scope exists because without it, partial runs corrupt each other. The order
+    schedules the file group and the db group as separate daily invocations; a
+    db-only run does not observe any file finding, so an unscoped run would
+    mark all of them UNKNOWN, and the next file run would mark all the db ones
+    UNKNOWN in turn. The two schedules would spend every day undoing each
+    other, and the table would permanently misreport whichever ran second.
+
+    Note what scope does NOT do: it never causes a CLOSE. A checker inside the
+    scope that did not complete still sends its findings to UNKNOWN, exactly as
+    before. Scope only decides what a run is entitled to have an opinion about.
     """
     if checkers_ran_ok is None:
         raise ValueError(
@@ -130,6 +145,9 @@ def apply_run(conn, findings, checkers_ran_ok, run_id: str) -> dict:
     from checks.lifecycle import reconcile
 
     previous = load_previous(conn)
+    if scope is not None:
+        scope = set(scope)
+        previous = {k: v for k, v in previous.items() if v["check_name"] in scope}
     seen_now = _index_findings(findings)
     to_open, to_close, to_unknown, unchanged = reconcile(
         previous, seen_now, checkers_ran_ok, run_id

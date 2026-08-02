@@ -8,6 +8,8 @@ run for real - see LATEST_HANDOFF.md 2026-07-30).
 Each function takes `repo_root: Path` and returns list[Finding].
 """
 
+import csv
+import io
 import json
 import re
 import subprocess
@@ -457,17 +459,112 @@ def scheduled_task_health_check(repo_root: Path) -> list[Finding]:
 
 
 def duplicate_process_check(repo_root: Path) -> list[Finding]:
-    """Same limitation as scheduled_task_health_check - no Windows process
-    list visibility from this environment."""
-    return [
-        Finding(
-            "duplicate_process",
-            "inbox_watcher.exe",
-            "LIMITATION",
-            "cannot enumerate Windows processes from this environment - run 'tasklist | findstr inbox_watcher' "
-            "or Task Manager manually, or from a context with real Windows access.",
-        )
-    ]
+    """Detect duplicate writers - the failure this project has had twice.
+
+    Two handoff generators ran against LATEST_HANDOFF.md for three days, each
+    discarding tens of thousands of characters of the other's output; later,
+    two sessions worked one layer. Both times the only visible symptom was a
+    file that changed size for no apparent reason.
+
+    THIS CHECKER USED TO BE UNCONDITIONAL. It returned the same LIMITATION
+    every time - "cannot enumerate Windows processes from this environment" -
+    which was true in the 2026-07-30 sandbox and has not been true since. It
+    could not have detected a duplicate writer if there had been one, while
+    still appearing in every run as though something had been checked. That is
+    a check that cannot fail, so it now actually looks, and reports LIMITATION
+    only when a command genuinely fails.
+
+    Two writers are watched:
+      * inbox_watcher.exe   - sole writer of LATEST_HANDOFF.md
+      * run_checks          - sole writer of the findings tables
+    """
+    findings = []
+
+    # --- 1. duplicate watcher processes ---
+    try:
+        proc = subprocess.run(["tasklist", "/fo", "csv", "/nh"],
+                              capture_output=True, text=True, timeout=30)
+        listed = proc.stdout or ""
+    except Exception as e:
+        listed = None
+        findings.append(Finding("duplicate_process", "inbox_watcher.exe", "LIMITATION",
+                                 f"could not run tasklist: {type(e).__name__}: {e}"))
+
+    if listed is not None:
+        count = sum(1 for line in listed.splitlines()
+                    if line.lower().startswith('"inbox_watcher'))
+        if count > 1:
+            findings.append(Finding("duplicate_process", "inbox_watcher.exe", "DEFECT",
+                                     f"{count} inbox_watcher processes are running. Two watchers on one "
+                                     f"inbox silently overwrite each other's output - there must be exactly one."))
+        elif count == 0:
+            findings.append(Finding("duplicate_process", "inbox_watcher.exe", "WARNING",
+                                     "no inbox_watcher process is running - the handoff pipeline is not "
+                                     "being written by anything"))
+        else:
+            findings.append(Finding("duplicate_process", "inbox_watcher.exe", "PASS",
+                                     "exactly 1 inbox_watcher process is running"))
+
+    # --- 2. duplicate scheduled writers of the findings tables ---
+    try:
+        proc = subprocess.run(["schtasks", "/query", "/fo", "csv", "/v"],
+                              capture_output=True, text=True, timeout=60)
+        tasks_out = proc.stdout or ""
+    except Exception as e:
+        tasks_out = None
+        findings.append(Finding("duplicate_process", "run_checks-schedule", "LIMITATION",
+                                 f"could not run schtasks: {type(e).__name__}: {e}"))
+
+    if tasks_out is not None:
+        # Parsed as CSV against the named columns, NOT substring-matched.
+        #
+        # The first version filtered rows with `"disabled" not in line.lower()`
+        # and produced a FALSE NEGATIVE against this very machine: the auditor
+        # task's "Scheduled Task State" is "Enabled", but schtasks /v rows carry
+        # the word "Disabled" in unrelated columns ("Idle Time", "Power
+        # Management"), so the row was thrown away and the checker reported that
+        # nothing was scheduled while a task was demonstrably registered and
+        # running. A duplicate-writer detector that cannot see the writers is
+        # worse than none, because it reports "exactly one" forever.
+        writers = []
+        try:
+            rows = list(csv.reader(io.StringIO(tasks_out)))
+            header = rows[0] if rows else []
+            idx_run = next((i for i, h in enumerate(header)
+                            if h.strip().lower() == "task to run"), None)
+            idx_state = next((i for i, h in enumerate(header)
+                              if "scheduled task state" in h.strip().lower()), None)
+            if idx_run is None:
+                raise ValueError("schtasks output has no 'Task To Run' column")
+            for r in rows[1:]:
+                if len(r) <= idx_run:
+                    continue
+                if "run_checks" not in r[idx_run].lower():
+                    continue
+                if idx_state is not None and len(r) > idx_state \
+                        and r[idx_state].strip().lower() != "enabled":
+                    continue
+                writers.append(r[idx_run])
+        except Exception as e:
+            findings.append(Finding("duplicate_process", "run_checks-schedule", "LIMITATION",
+                                     f"could not parse schtasks output: {type(e).__name__}: {e}"))
+            tasks_out = None
+
+    if tasks_out is not None:
+        if len(writers) > 1:
+            findings.append(Finding("duplicate_process", "run_checks-schedule", "DEFECT",
+                                     f"{len(writers)} enabled scheduled tasks invoke run_checks. Two "
+                                     f"schedules writing one findings table is exactly the duplicate-writer "
+                                     f"failure this project has already had twice."))
+        elif not writers:
+            findings.append(Finding("duplicate_process", "run_checks-schedule", "WARNING",
+                                     "no enabled scheduled task invokes run_checks - the auditor layer is "
+                                     "not running unattended, so a quiet findings table proves nothing"))
+        else:
+            findings.append(Finding("duplicate_process", "run_checks-schedule", "PASS",
+                                     "exactly 1 enabled scheduled task invokes run_checks"))
+
+    return findings
 
 
 # --- security/compliance -----------------------------------------------------
