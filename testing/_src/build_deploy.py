@@ -323,6 +323,7 @@ import shutil
 PAGES = [
     ('keybinds.src.html', 'keybinds.html'),
     ('loadout.src.html',  'loadout.html'),
+    ('find.src.html',     'find.html'),
 ]
 _copied, _absent = [], []
 for _src_name, _out_name in PAGES:
