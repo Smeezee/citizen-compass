@@ -1,4 +1,4 @@
-import base64, json, os, re, glob, sys
+import base64, json, os, re, glob, shutil, sys
 
 # ---------------------------------------------------------------------------
 # Repo-relative build. This script used to hardcode a cloud-sandbox path, which
@@ -293,3 +293,31 @@ out = out[:_b] + '\n' + GATE + out[_b:]
 
 open(OUT+'/index.html','w',encoding='utf-8').write(out)
 print('written:', len(out)/1048576, 'MB')
+
+# ---- companion pages the built page actually links to ----------------------
+# keybinds.html is emitted ONLY because index.html links to it. The rule this
+# enforces: nothing exists in _deploy/ because a human once put it there - if
+# the page needs it, the build produces it, so a rebuild can never orphan it.
+#
+# History worth keeping, because this flipped once already. The keybinds tab
+# was briefly a self-contained in-page overlay (id="cc-kb"), which made the
+# standalone page unreachable, and it was removed from _deploy as a 25 KB
+# orphan. The layer has since gone back to linking it. So reachability is
+# checked here on every build rather than assumed either way.
+_kb_src = os.path.join(SRC, 'keybinds.src.html')
+_linked = 'keybinds.html' in out
+
+if _linked:
+    if not os.path.exists(_kb_src):
+        sys.exit("BUILD INPUT MISSING: %s\n"
+                 "index.html links to keybinds.html but the source is gone. Refusing to\n"
+                 "publish a page with a dead link." % _kb_src)
+    shutil.copyfile(_kb_src, os.path.join(OUT, 'keybinds.html'))
+    print('written: keybinds.html (index.html links to it)')
+else:
+    # Not linked - make sure a stale copy from an earlier design cannot linger
+    # and be served as an unreachable orphan.
+    _stale = os.path.join(OUT, 'keybinds.html')
+    if os.path.exists(_stale):
+        os.remove(_stale)
+        print('removed: stale keybinds.html (nothing links to it)')

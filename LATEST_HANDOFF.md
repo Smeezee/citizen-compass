@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #97 — 2026-08-01 9:54 PM
+# LATEST_HANDOFF.md — Update #98 — 2026-08-01 10:21 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-01 21:54:19 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-01 22:21:31 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,123 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 58320 files (10316.44 MB)
 
-**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 550
+**Scripts:** 15  |  **3D models:** 723  |  **Docs:** 551
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-01 22:21:06 — update_build_reproducible_token_placeholder.md
+
+# UPDATE — build made reproducible and verified; deploy still blocked, token not received
+
+`4d07f6b` pushed. Filed per rule 13.
+
+## THE TOKEN — I did not write anything to `.env`, and why
+
+**The value that reached me is the literal string `<TOKEN>`** — a placeholder,
+not a credential. Cloudflare API tokens are ~40 characters of
+alphanumerics/underscores; this is 7 characters of angle-bracketed placeholder.
+Either the transcript redacted it or the paste did not carry.
+
+**I have not written it to `.env`.** Putting a placeholder into a secrets file is
+worse than leaving the key absent: it fails later as a confusing auth error, and
+it sits in the one file on this machine that is supposed to contain only real
+credentials, where a future reader may mistake it for one.
+
+`.env` still holds `DATABASE_URL` and `UEX_API_TOKEN` only, and was confirmed
+**ignored, untracked, and absent from the HEAD tree** — three separate checks —
+before any write was contemplated.
+
+**Recorded as instructed:** Sleven reports the earlier value of this token was
+exposed in a chat transcript and **has been rolled**. No Cloudflare token has
+ever been written to `.env` or used by this session, so there is no risk of the
+exposed value being mistaken for the live one here — nothing was stored either
+way.
+
+**My recommendation, and it is the same problem again:** the previous token was
+burned by appearing in a chat transcript. Pasting the replacement into chat
+exposes the replacement the same way. **Please add it to `.env` directly**:
+
+```
+CLOUDFLARE_API_TOKEN=<the real value>
+```
+
+I never need to see it. `scripts/deploy_testing.ps1` reads it from `.env` and
+hands it to wrangler through the environment only — never a command line, never
+a log, never echoed. Say the word once it is in place and I will deploy.
+
+## THE BUILD IS FIXED AND VERIFIED — this was the real blocker to reproducibility
+
+`build_deploy.py` works. Committed, with `vendor/three` (1.1 MB, six files, no
+npm install needed). `build_full.py` retired to `_to_delete/` — moved, not
+deleted, per rule 1.
+
+**It was authored against an older layer, so a clean exit was not evidence.**
+Rebuilt against the layer actually on disk and compared to the previously
+shipped page:
+
+| | previous | rebuilt |
+|---|---:|---:|
+| bytes | 1,505,359 | **1,513,790** (+8,431) |
+| `id="cc-kb"` | 1 | 1 |
+| `id="cc-kb-tab"` | 1 | 1 |
+| `cc-ship::after` | 1 | 1 |
+| `keybinds.html` | 0 | 0 |
+| `CC_EMBED` | 5 | 5 |
+
+477 files, 235 `.glb` — models untouched. Every marker the order requires is
+present. The +8,431 bytes is the newer layer content being picked up, which is
+the expected direction.
+
+No assert fired. It also reported `unmatched: 6` — 85X, Arrastra, Fury, Mantis,
+Merchantman, PTV. **The same six ships the auditor layer reaches independently.**
+
+## Rule 12 on the build's own guards
+
+A passing run does not show the asserts work. Proven in an **isolated fixture**,
+so the shared `_layer.src.html` was never touched — another session edits that
+file and this project has already had a near-miss there.
+
+| case | result |
+|---|---|
+| control, unperturbed fixture | exit 0, `index.html` written |
+| perturbed — one of the three CDN script tags removed | **AssertionError line 63, exit 1, NO `index.html` written`** |
+
+So it fails loudly and writes nothing when the layer drifts out of step, which is
+exactly what the order required and what a passing run could not establish.
+
+**A near-miss in my own test, worth recording.** The first perturbation attempt
+crashed on a Python 3.11 f-string backslash error, so the layer was never
+modified — and the build then correctly succeeded. My harness printed
+"SILENT SUCCESS, BAD". It was not: the precondition had failed, not the build.
+**A test that fails to set up its own precondition reports the wrong verdict**,
+and the only reason it was caught is that the perturbation step printed its own
+before/after counts instead of assuming it had worked.
+
+## A stale `.git/index.lock` appeared and blocked a commit
+
+0 bytes, created 22:07:26, **12 minutes stale**, with **no `git`, `git-lfs`,
+`gitk` or `git-gui` process running** — verified before touching it. Moved to
+`_to_delete/stale_git_locks/` rather than deleted, per rule 1.
+
+Notable because the original Path C brief predicted exactly this file and it was
+**not** present then. It is now, and it is not mine as far as I can tell — most
+likely a concurrent session's git operation that died. Worth knowing that
+something in this repo is leaving locks behind.
+
+## Still flagged, not fixed
+
+`build_portable.py` retains **5** `/home/claude` references and cannot run on
+this machine either. Outside this order. `build_machine_layer.py` is clean.
+
+## What remains, all of it token-dependent
+
+The deploy, both URLs, the second-deploy URL-stability check, and the served
+verifications — `index.html`, `id="cc-kb"`, `cc-ship::after`, **a real model
+file**, and the password gate from a clean context. Plus `CURRENT-STATE.md`,
+which does not exist anywhere in the repo and which I will create once there is
+a URL to record.
 
 ### 2026-08-01 21:53:54 — update_cloudflare_blocked_on_token.md
 
@@ -1973,123 +2085,7 @@ Both are now hidden under `body.cc-ship-open`, and opening a ship force-closes t
 
 **Do not execute the "restore three lost fixes" order.** There is nothing to restore, and applying those fixes to the source would collide with the build scripts' `assert` guards and break all three builds.
 
-### 2026-08-01 18:26:25 — update_testing_layer_rollback_and_backdrop_2026-08-01.md
-
-# UPDATE — testing layer rolled back; three fixes missing; one new change applied
-
-From Claude-02 (Cowork brainstorming session), 2026-08-01/02. Read-only
-investigation plus one applied edit to `testing/_layer.html`. No commits, no
-pushes. Live site, database and snapshots untouched.
-
-A fuller write-up was delivered to Sleven as a single file and may be pasted to
-whoever picks this up. The essentials are duplicated here so this channel is not
-dependent on that being relayed.
-
-## The blocking problem
-
-`testing/_layer.html` on disk is an older version than the archive record
-describes. Three fixes dated 2026-08-01 are not present.
-
-**1. Temporal-dead-zone crash — this is why nothing works.**
-`apply();` is called at line 628. `let renderer,scene,camera,controls,current,raf,loader;`
-is declared at line 631. `apply()` at line 543 does
-`if(typeof renderer!=='undefined' && renderer) setTimeout(size,80);`.
-`typeof` on a `let` before declaration throws a ReferenceError, so `apply()`
-dies at load and every statement after line 628 never runs — 3D viewer boot,
-`decorate()`, row wiring, all of it. Fix: hoist the declaration above the call.
-
-**2. Row matching reverted to exact string compare.**
-`decorate()` uses `SHIPS.find(s=>s.name===label)`. `grep -c 'CC_NORM\|CC_LOOKUP'`
-returns 0 — the normalised lookup index is gone.
-
-**3. RSI links still in matrix rows.**
-`releases/latest.html` carries 233 `robertsspaceindustries.com` references
-including a per-ship pledge URL per row. `decorate()` wraps `td.innerHTML`
-without stripping anything, so the anchor survives inside the clickable span and
-nothing guards a click landing on it. `CC_RSI` is absent.
-
-Items 2 and 3 as described above are RECONSTRUCTED from the archive entries
-`20260801_115134_update_testing_layer_bugfixes_2026-08-01.md` and
-`20260801_125845_update_models_compressed_and_preview_2026-08-01.md`. Those
-entries are authoritative — read them and prefer their wording over this note.
-Item 1 is exact: line numbers and mechanism verified directly on disk.
-
-**Inference, labelled:** the page has not been run. Reasoning from code, with
-`apply()` throwing, `decorate()` never executes, so rows are never rewritten and
-the original page renders untouched — original RSI links live, names not
-clickable, no viewer. That matches the symptom reported after a rebuild. Strong
-hypothesis, not a confirmed diagnosis.
-
-**How it got rolled back is unknown and was not guessed at.** Two relevant facts:
-`testing/_deploy/` was built from the fixed version and still works, which is why
-the shared link is unaffected; and `_layer.html` was modified at 01:06 UTC
-2026-08-02, about four minutes before this session opened it. Check for a
-concurrent editor before starting.
-
-## A new change is already in that file — do not clobber it
-
-Applied 01:10 UTC 2026-08-02: the ship still image now remains as a dimmed,
-blurred backdrop behind the 3D model instead of fading to zero on model load.
-
-**Restore the three fixes ON TOP of the current file. Do not revert to a backup —
-that silently removes this.**
-
-Six replacements, each verified to match exactly once before applying:
-tuning vars `:root{ --cc-still-bg-opacity:.20; --cc-still-bg-blur:10px; }` above
-the viewer CSS; `#cc-canvas` gains `z-index:1` and `#cc-still` gains `z-index:2`;
-new rule `#cc-still.cc-bg` applying the vars with `object-fit:cover`, `padding:0`,
-`z-index:0` and `transform:scale(1.08)` to stop blur bleeding at the stage edge;
-opening a ship clears `cc-bg` and the `ccBroken` flag; `still.onerror` sets
-`ccBroken`; on model load `cc-bg` is applied unless the image failed.
-
-Layering is explicit rather than DOM-order dependent, so load-time appearance is
-unchanged. Canvas is `alpha:true` with no `scene.background`, so it shows through.
-
-Verified headlessly against CSS extracted from the edited file rather than
-retyped: during load opacity 1 / contain / 24px unchanged; after load 0.2 /
-blur(10px) / cover; `elementFromPoint` at stage centre returns `cc-canvas` in
-both states so the backdrop never intercepts input; no layout shift; missing
-image gives opacity 0, no class, no broken icon; reopening resets cleanly.
-NOT verified: behaviour with a real GLB in a real browser.
-
-## Order of work
-
-1. Check nothing else is editing `testing/_layer.html`.
-2. Restore fix 1. This alone un-breaks the layer.
-3. Restore fixes 2 and 3 from the two archive entries.
-4. Rebuild with `python build.py` from `testing/`.
-5. Verify in a browser on the local server before republishing anything.
-
-HARD RULE 12 applies with force here — these are the exact fixes previously
-reported done that are not present. Do not report them fixed from reading a diff.
-Confirm no error at load, a row click opening the detail panel rather than
-navigating to RSI, and a ship whose rendered name differs from `SHIPS[].name`
-still matching.
-
-## Record, do not act — image provenance
-
-241 `image.webp` files across 241 folders in `sc-ships/`, all dated 2026-07-27,
-with a second copy of all 241 in `testing/_deploy/images`. All local; no external
-URL dependency.
-
-There is no record of where any of them came from — no licence file, no
-attribution, no manifest, no per-image metadata. The only four `MODEL_SOURCE.txt`
-files document models copied between ships sharing a chassis and say nothing
-about images.
-
-Flagged without interpretation: the Fan Kit Agreement prohibits recoloring,
-distorting or outlining CIG assets. The backdrop change applies blur and reduces
-opacity. Whether that constitutes distortion is a question for CIG legal, and it
-cannot be answered until someone establishes what these images are. The blur is
-one line to revert; 241 images of unknown origin already sitting in a
-public-facing package is a standing question regardless.
-
-## Boundaries
-
-`static/preview.html`, `releases/latest.html` and `testing/_deploy/` untouched.
-No commits, no pushes. Only `testing/_layer.html` and inbox notes were written.
-
-*(+60 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+61 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
