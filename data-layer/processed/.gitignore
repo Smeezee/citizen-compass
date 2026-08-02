@@ -13,3 +13,15 @@ blueprint_index.json
 item_descriptions.json
 ingredient_index.json
 blueprint_sources.json
+
+# Per-page split of the above, produced by scripts/split_craft_pages.py.
+# 7,666 files. Derived from the derived files, so doubly reproducible and
+# doubly wrong to commit - and without these rules a single `git add -A`
+# sweeps all 7,666 into one commit.
+#
+# The combined indexes above remain the build artifact the derivation uses.
+# These directories are what a BROWSER fetches, and the split exists because
+# the bundled index is 10.9 MB: a file-count check passed it, a byte check
+# would not have.
+blueprints/
+items/

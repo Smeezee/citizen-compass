@@ -327,6 +327,88 @@ body{padding-top:30px}
 })();
 </script>
 
+<style>
+/* ---- left dock: destination tabs -----------------------------------------
+   DISPLAY and FEEDBACK are page tools and stay on the right. KEYBINDS, FIND
+   and MANUFACTURERS are destinations, and they move here.
+
+   The old right-edge stack positioned each tab at `top: calc(44% + Npx)` and
+   grew downward. With five tabs the fifth started at 1045px on a 1080px-tall
+   viewport - entirely off-screen, and the fourth mostly so. Anything anchored
+   at a percentage and grown in one direction overflows as soon as someone adds
+   one more.
+
+   This dock is CENTRED instead: a flex column pinned to 50% and pulled back by
+   half its own height. Adding a tab makes the stack taller in both directions
+   at once, so it stays reachable until the total genuinely exceeds the window.
+   Order is DOM order - no per-tab offsets to maintain. */
+@media (min-width:901px){
+  #cc-ldock{position:fixed;left:46px;top:50%;transform:translateY(-50%);
+    z-index:100000;display:flex;flex-direction:column;align-items:flex-start;
+    gap:8px;transition:transform .28s ease;pointer-events:none}
+  /* Children keep their own colour and typography and give up only their
+     positioning, so each tab still looks like itself. */
+  #cc-ldock > *{position:static !important;top:auto !important;bottom:auto !important;
+    left:auto !important;right:auto !important;transform:none !important;
+    border-radius:0 7px 7px 0 !important;
+    box-shadow:3px 0 14px rgba(0,0,0,.42) !important;
+    pointer-events:auto;display:block !important}
+  /* The manufacturer drawer opens leftward at 250px wide; the whole dock rides
+     out with it rather than each tab tracking it separately. */
+  body.cc-mdraw-open #cc-ldock{transform:translateY(-50%) translateX(250px)}
+  /* A ship page covers the matrix; the section rail is deliberately raised
+     above it, and these sit beside the rail, so they go with it. */
+  body.cc-ship-open #cc-ldock{display:none}
+}
+/* Below 900px the rail is hidden and the site's own nav returns. One wrapping
+   row above the bottom pills, rather than more pills competing for the corner. */
+@media (max-width:900px){
+  #cc-ldock{position:fixed;left:8px;right:8px;bottom:112px;top:auto;transform:none;
+    z-index:100000;display:flex;flex-direction:row;flex-wrap:wrap;
+    justify-content:center;gap:6px;pointer-events:none}
+  #cc-ldock > *{position:static !important;top:auto !important;bottom:auto !important;
+    left:auto !important;right:auto !important;transform:none !important;
+    writing-mode:horizontal-tb !important;padding:9px 13px !important;
+    border-radius:6px !important;pointer-events:auto;display:block !important}
+  body.cc-ship-open #cc-ldock{display:none}
+  /* The dock's display:block would otherwise resurrect the manufacturer DRAWER
+     tab on mobile, where the drawer itself stays hidden and the popup button
+     (#cc-bman) is the way in. That would be a visible, clickable, dead button -
+     the same defect already fixed on ship pages. One door per screen size. */
+  #cc-ldock > #cc-mtab{display:none !important}
+  body{padding-bottom:118px !important}
+}
+</style>
+<script>
+(function(){
+  /* Order here is the order on screen. Adding a tab is one string. */
+  /* cc-lo-tab was dropped 2026-08-02: the loadout entry point belongs on the
+     ship page, not on a floating tab. Removed from this list rather than left
+     as a dead id - the dock filters missing elements silently, so a stale entry
+     here would never announce itself. */
+  var IDS=['cc-mtab','cc-kb-tab','cc-fi-tab'];
+  function dock(){
+    var found=IDS.map(function(id){return document.getElementById(id);}).filter(Boolean);
+    if(!found.length) return false;
+    var d=document.getElementById('cc-ldock');
+    if(!d){ d=document.createElement('div'); d.id='cc-ldock'; d.className='cc-ui';
+            document.body.appendChild(d); }
+    found.forEach(function(el){ if(el.parentNode!==d) d.appendChild(el); });
+    return found.length;
+  }
+  /* Run the full retry budget rather than stopping on a count.
+     The previous stop condition was `found.length >= 2`, which happened to be
+     true once the two static tabs existed - so the manufacturer tab, which is
+     built by a later script, was never docked and stayed at its own fixed
+     position on top of them. It only worked while a fourth id was in the list
+     padding the count. A threshold is not a condition: it cannot tell "all of
+     them are here" from "enough of them are here". Docking is idempotent, so
+     there is nothing to gain by stopping early. */
+  dock();
+  var n=0, iv=setInterval(function(){ dock(); if(++n>25) clearInterval(iv); },300);
+})();
+</script>
+
 <div id="cc-flag">Testing area &mdash; not the live site</div>
 
 <div id="cc-panel" class="cc-ui">
