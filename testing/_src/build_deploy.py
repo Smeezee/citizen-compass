@@ -81,7 +81,18 @@ new_load = """  const t0=performance.now();
     if(tok!==openTok) return;   // an earlier ship's model must not land here
     clearModel();current=g.scene;
     current.traverse(o=>{if(o.isMesh&&o.material)
-      (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.side=THREE.DoubleSide);});
+      (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{
+        m.side=THREE.DoubleSide;
+        /* The models carry no textures and one material named "Default".
+           glTF's spec default is metalness 1.0 - a mirror - which with no
+           environment reads as a white blob. CC_HULL is declared in
+           _layer.src.html; this block is the one the deploy build uses. */
+        m.color=new THREE.Color(CC_HULL.color);
+        m.metalness=CC_HULL.metalness;
+        m.roughness=CC_HULL.roughness;
+        m.envMapIntensity=1.0;
+        m.needsUpdate=true;
+      });});
     scene.add(current); const i=frame(current);
     still.style.transition=''; still.style.opacity=0;
     status.textContent=dir+' \\u00b7 '+((performance.now()-t0)/1000).toFixed(1)+'s \\u00b7 '+

@@ -760,20 +760,54 @@ let openTok=0;
 /* 1×1 transparent GIF. Assigning '' to img.src makes some browsers re-request
    the document URL, so blanking uses a real image instead. */
 const CC_BLANK='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+/* Ship hull look. The models have no textures at all — not lost in
+   compression, never present; the uncompressed originals are the same. So this
+   is an honest stand-in, not an approximation of a real paint job.
+   Change these four numbers to restyle every ship. */
+const CC_HULL={color:0x5C6570, metalness:.55, roughness:.35, exposure:0.70, key:0.75};
+
+/* A 64x32 gradient standing in for a studio: cool above, dim warm bounce below.
+   Costs nothing to ship and gives reflective surfaces something to return. */
+let _ccEnv=null;
+function ccEnv(renderer){
+  if(_ccEnv) return _ccEnv;
+  const W=64,H=32,data=new Uint8Array(W*H*4);
+  for(let y=0;y<H;y++){
+    const t=y/(H-1);
+    const r=Math.round(150*(1-t)+40*t), g=Math.round(175*(1-t)+38*t), b=Math.round(205*(1-t)+34*t);
+    for(let x=0;x<W;x++){const i=(y*W+x)*4;data[i]=r;data[i+1]=g;data[i+2]=b;data[i+3]=255;}
+  }
+  const tex=new THREE.DataTexture(data,W,H,THREE.RGBAFormat);
+  tex.mapping=THREE.EquirectangularReflectionMapping; tex.needsUpdate=true;
+  const p=new THREE.PMREMGenerator(renderer); p.compileEquirectangularShader();
+  _ccEnv=p.fromEquirectangular(tex).texture; p.dispose(); tex.dispose();
+  return _ccEnv;
+}
+
 function boot(){
   if(renderer) return;
   const cv=$('cc-canvas');
   renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  /* Without tone mapping, anything bright clips straight to pure white and the
+     shape disappears into a silhouette. This is half of the white-blob fix. */
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=CC_HULL.exposure;
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(42,1,.01,10000);
   controls=new THREE.OrbitControls(camera,cv);
   controls.enableDamping=true;controls.dampingFactor=.08;
   controls.autoRotate=true;controls.autoRotateSpeed=.7;
-  scene.add(new THREE.HemisphereLight(0xbfe9ff,0x18324d,1.15));
-  const k=new THREE.DirectionalLight(0xffffff,1.5);k.position.set(4,7,5);scene.add(k);
-  const r=new THREE.DirectionalLight(0x00c9a7,1.1);r.position.set(-6,2,-5);scene.add(r);
-  const f=new THREE.DirectionalLight(0xff6b00,.35);f.position.set(2,-4,-3);scene.add(f);
+  scene.environment=ccEnv(renderer);
+  /* Direct lights pulled well back. The old values were high because a fully
+     metallic surface with no environment reflects almost nothing else — they
+     were compensating for the bug rather than lighting the model. */
+  scene.add(new THREE.HemisphereLight(0xbfe9ff,0x18324d,.30));
+  const k=new THREE.DirectionalLight(0xffffff,CC_HULL.key);k.position.set(4,7,5);scene.add(k);
+  const r=new THREE.DirectionalLight(0x00c9a7,.28);r.position.set(-6,2,-5);scene.add(r);
+  const f=new THREE.DirectionalLight(0xff6b00,.14);f.position.set(2,-4,-3);scene.add(f);
+  const rim=new THREE.DirectionalLight(0xffffff,.55);rim.position.set(-3,1,6);scene.add(rim);
   loader=new THREE.GLTFLoader(); addEventListener('resize',size);
 }
 function size(){const st=$('cc-stage');if(!st||!renderer)return;
@@ -868,7 +902,16 @@ function open(ship){
     if(tok!==openTok) return;
     clearModel();current=g.scene;
     current.traverse(o=>{if(o.isMesh&&o.material)
-      (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.side=THREE.DoubleSide);});
+      (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{
+        m.side=THREE.DoubleSide;
+        /* glTF default is metalness 1.0. Left alone that is a mirror, and with
+           no textures on the file there is nothing else to go on. */
+        m.color=new THREE.Color(CC_HULL.color);
+        m.metalness=CC_HULL.metalness;
+        m.roughness=CC_HULL.roughness;
+        m.envMapIntensity=1.0;
+        m.needsUpdate=true;
+      });});
     scene.add(current); const i=frame(current);
     still.style.transition=''; still.style.opacity=0;
     status.textContent=dir+' · '+((performance.now()-t0)/1000).toFixed(1)+'s · '+
