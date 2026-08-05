@@ -47,6 +47,47 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
   border-radius:7px;padding:8px 15px;cursor:pointer;font:700 13.5px inherit}
 #cc-kb .devs button.on{background:#00C9A7;border-color:#00C9A7;color:#04231D}
 #cc-kb .devs button.todo{opacity:.45}
+#cc-kb .dvhead{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+#cc-kb .dvchip{background:#12233A;border:2px solid #22364F;border-radius:8px;
+  padding:8px 12px;font-size:13px;min-width:180px}
+#cc-kb .dvchip.on{border-color:#00C9A7}
+#cc-kb .dvchip.live{box-shadow:0 0 14px rgba(0,229,192,.25)}
+#cc-kb .dvchip .nm{font-weight:700;color:#EDE3D8;font-size:13.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+#cc-kb .dvchip .id{color:#93A7B6;font-size:11.5px;margin-top:2px;
+  font-family:ui-monospace,Consolas,monospace}
+#cc-kb .dvchip .sl{color:#00C9A7;font-weight:800;font-size:12px;letter-spacing:.06em}
+#cc-kb .dvempty{padding:44px 20px;text-align:center;color:#93A7B6;line-height:1.7}
+#cc-kb .dvempty strong{color:#FF6B00;display:block;font-size:19px;margin-bottom:8px}
+#cc-kb .dvempty kbd{background:#12233A;border:1px solid #22364F;border-radius:4px;
+  padding:2px 7px;font:600 13px ui-monospace,Consolas,monospace;color:#EDE3D8}
+#cc-kb .dvsec{color:#93A7B6;font-size:12.5px;margin:16px 0 7px;
+  text-transform:uppercase;letter-spacing:.08em}
+#cc-kb .btngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:5px}
+#cc-kb .btn{background:#111F33;border:1px solid #2A3F5A;border-radius:5px;
+  padding:6px 7px;min-height:52px;transition:.06s;position:relative}
+#cc-kb .btn.down{background:#00E5C0;border-color:#00E5C0;transform:translateY(1px)}
+#cc-kb .btn.down .sc,#cc-kb .btn.down .nm,#cc-kb .btn.down .va{color:#04231D}
+#cc-kb .btn .sc{font:700 12.5px ui-monospace,Consolas,monospace;color:#EDE3D8}
+#cc-kb .btn .nm{font-size:11px;color:#93A7B6;margin-top:2px;line-height:1.25}
+#cc-kb .btn .va{font-size:10.5px;color:#00C9A7;font-family:ui-monospace,Consolas,monospace}
+#cc-kb .btn.analog{border-color:#FF6B00}
+#cc-kb .axrow{display:grid;grid-template-columns:132px 1fr 78px;gap:9px;
+  align-items:center;margin-bottom:5px}
+#cc-kb .axnm{font:700 12.5px ui-monospace,Consolas,monospace;color:#EDE3D8}
+#cc-kb .axnm small{display:block;font:400 10.5px "Segoe UI",sans-serif;color:#93A7B6}
+#cc-kb .axbar{position:relative;height:20px;background:#0B1524;
+  border:1px solid #2A3F5A;border-radius:4px;overflow:hidden}
+#cc-kb .axbar i{position:absolute;top:0;bottom:0;background:#00C9A7;opacity:.55}
+#cc-kb .axbar u{position:absolute;top:0;bottom:0;width:1px;left:50%;background:#2A3F5A}
+#cc-kb .axbar b{position:absolute;top:0;bottom:0;width:3px;background:#00E5C0;
+  border-radius:2px;transform:translateX(-1px)}
+#cc-kb .axval{font:700 12.5px ui-monospace,Consolas,monospace;color:#93A7B6;text-align:right}
+#cc-kb .axrow.hot .axval{color:#00E5C0}
+#cc-kb .axrow.drift .axval{color:#FF6B00}
+#cc-kb .dvwarn{margin-top:14px;padding:10px 12px;background:#1A1206;
+  border:1px solid #4A3410;border-radius:7px;font-size:13.5px;color:#E8C9A0}
+#cc-kb .dvwarn code{font-family:ui-monospace,Consolas,monospace;color:#FFD9A8}
 #cc-kb .ro{background:#0E1B2E;border:2px solid #22364F;border-radius:10px;
   padding:12px 16px;margin-bottom:12px;min-height:96px;transition:.12s}
 #cc-kb .ro.hot{border-color:#00E5C0;box-shadow:0 0 22px rgba(0,229,192,.18)}
@@ -104,8 +145,10 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
 <div id="cc-kb" class="cc-ui">
   <div class="kbtop">
     <button class="x" id="cc-kb-x">&larr;&nbsp; Back to the site</button>
-    <span class="t">Keybinding Tester &mdash; prototype. Data transcribed from in-game
-    screenshots, not yet verified against game files.</span>
+    <span class="t">Keybinding Tester &mdash; <strong>Keyboard/Mouse</strong> bindings are
+    transcribed from in-game screenshots and not yet verified against game files.
+    <strong>Gamepad</strong> and <strong>Joystick / HOTAS</strong> read your controller
+    live and are accurate now.</span>
   </div>
   <div class="modes" id="cc-kb-modes"></div>
   <div class="devs" id="cc-kb-devs"></div>
@@ -259,7 +302,7 @@ var MODES=[
  {id:"VEHICLE",label:"Vehicle",sub:"ground vehicles, not entered yet",data:null},
  {id:"CAMERA",label:"Camera",sub:"not entered yet",data:null}];
 var DEVS=[{id:"KBM",label:"Keyboard / Mouse",ok:1},
-          {id:"PAD",label:"Gamepad",ok:0},{id:"JOY",label:"Joystick / HOTAS",ok:0}];
+          {id:"PAD",label:"Gamepad",ok:1},{id:"JOY",label:"Joystick / HOTAS",ok:1}];
 var CODE={Escape:"Esc",F1:"F1",F2:"F2",F3:"F3",F4:"F4",F5:"F5",F6:"F6",F7:"F7",F8:"F8",
  F9:"F9",F10:"F10",F11:"F11",F12:"F12",Backquote:"`",Digit1:"1",Digit2:"2",Digit3:"3",
  Digit4:"4",Digit5:"5",Digit6:"6",Digit7:"7",Digit8:"8",Digit9:"9",Digit0:"0",
@@ -301,7 +344,7 @@ var MOUSE=[[["M_Left","Mouse L"],["M_Right","Mouse R"],["M_Mid","Mouse M"],
             ["M_Back","Mouse 4"],["M_Fwd","Mouse 5"]],
            [["M_WhUp","Wheel ↑"],["M_WhDn","Wheel ↓"],["","",""],["","",""],["","",""]]];
 
-var modeIx=0,mod=0,filter="",OPEN=false;
+var modeIx=0,mod=0,filter="",OPEN=false,dev="KBM";
 var down={},lastTap={},held={};
 function $(id){return document.getElementById(id);}
 function K(){return MODES[modeIx].data||{};}
@@ -317,8 +360,16 @@ function drawModes(){
   Array.prototype.forEach.call($('cc-kb-modes').querySelectorAll('button'),function(b){
     b.onclick=function(){modeIx=+b.dataset.i;drawModes();render();legend();};});
   h="";for(i=0;i<DEVS.length;i++)h+='<button data-d="'+DEVS[i].id+'" class="'+
-    (DEVS[i].id==="KBM"?'on':'')+(DEVS[i].ok?'':' todo')+'">'+DEVS[i].label+'</button>';
+    (DEVS[i].id===dev?'on':'')+(DEVS[i].ok?'':' todo')+'">'+DEVS[i].label+'</button>';
   $('cc-kb-devs').innerHTML=h;
+  Array.prototype.forEach.call($('cc-kb-devs').querySelectorAll('button'),function(b){
+    b.onclick=function(){
+      var d=null,j;for(j=0;j<DEVS.length;j++)if(DEVS[j].id===b.dataset.d)d=DEVS[j];
+      if(!d||!d.ok)return;
+      dev=b.dataset.d;drawModes();render();
+      if(dev!=="KBM")startPoll();
+      else if(rafId!==null){cancelAnimationFrame(rafId);rafId=null;}
+    };});
 }
 function legend(){
   $('cc-kb-legend').innerHTML=MODES[modeIx].legend
@@ -344,7 +395,211 @@ function draw(rows,title){
     h+='</div>';});
   return h;
 }
+
+/* ================================================================
+   DEVICE PANEL — gamepad, joystick, HOTAS, pedals, throttle.
+   ES5 port of the standalone page's panel. See keybinds.src.html.
+
+   HONESTY RULE: the browser tells us the truth about INDEX and
+   VALUE. It does not tell us what an axis is called. Star Citizen's
+   names are a convention mapped onto those indices, and on a HOTAS
+   that mapping is a guess. Raw index always shown; guesses marked.
+   ================================================================ */
+var padSlot={},padPrev={},padCenter={},rafId=null,devHeld={};
+var XI_BTN=["A","B","X","Y","Left Bumper","Right Bumper","Left Trigger",
+  "Right Trigger","Back / View","Start / Menu","Left Stick Click","Right Stick Click",
+  "D-Pad Up","D-Pad Down","D-Pad Left","D-Pad Right","Guide"];
+var XI_SC=["xi_a","xi_b","xi_x","xi_y","xi_shoulderl","xi_shoulderr","xi_triggerl_btn",
+  "xi_triggerr_btn","xi_back","xi_start","xi_thumbl","xi_thumbr","xi_dpad_up",
+  "xi_dpad_down","xi_dpad_left","xi_dpad_right","xi_guide"];
+var XI_AX=[["xi_thumblx","Left stick — horizontal"],["xi_thumbly","Left stick — vertical"],
+  ["xi_thumbrx","Right stick — horizontal"],["xi_thumbry","Right stick — vertical"]];
+var JS_AX=["x","y","z","rotx","roty","rotz","slider1","slider2"];
+var DEADZONE=0.12,DRIFT=0.06;
+
+function pads(){
+  var g=navigator.getGamepads?navigator.getGamepads():[],out=[],i;
+  for(i=0;i<g.length;i++) if(g[i]) out.push(g[i]);
+  return out;
+}
+function slotOf(p){
+  if(padSlot[p.index])return padSlot[p.index];
+  var used={},k,n;
+  for(k in padSlot) used[padSlot[k]]=1;
+  for(n=1;n<=8;n++) if(!used[n]){padSlot[p.index]=n;return n;}
+  padSlot[p.index]=1;return 1;
+}
+function isStd(p){return p.mapping==="standard"&&dev==="PAD";}
+function prefix(p){return isStd(p)?"xi":"js"+slotOf(p);}
+function btnName(p,i){
+  if(isStd(p))return [XI_SC[i]||("xi_button"+i), XI_BTN[i]||("Button "+i), false];
+  return [prefix(p)+"_button"+(i+1),
+          "Button "+(i+1)+"  (browser index "+i+")", false];
+}
+function axName(p,i){
+  if(isStd(p)&&XI_AX[i])return [XI_AX[i][0], XI_AX[i][1], false];
+  var nm=JS_AX[i];
+  return [prefix(p)+"_"+(nm||("axis"+i)), "browser axes["+i+"]", true];
+}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+function renderDevice(){
+  var list=pads(),host=$('cc-kb-board'),h,i;
+  $('cc-kb-layer').textContent="Layer: n/a";
+  if(!list.length){
+    host.innerHTML='<div class="dvempty"><strong>No controller detected yet</strong>'+
+      'Plug the stick in, then <b>press a button on it</b>.<br>'+
+      'Browsers deliberately hide controllers until one is used — '+
+      'nothing appears here until you press something.<br><br>'+
+      'Works with anything Windows sees: sticks, throttles, pedals, gamepads, button boxes.<br>'+
+      'Up to eight at once, numbered <kbd>js1</kbd> <kbd>js2</kbd> <kbd>js3</kbd> '+
+      'in the order you press them.</div>';
+    return;
+  }
+  h='<div class="dvhead">';
+  list.forEach(function(p){
+    var live=(padPrev[p.index]&&padPrev[p.index].hot)?' live':'';
+    h+='<div class="dvchip on'+live+'"><div class="sl">'+(isStd(p)?"xi":"js"+slotOf(p))+
+       '</div><div class="nm" title="'+esc(p.id)+'">'+esc(p.id)+'</div>'+
+       '<div class="id">'+p.buttons.length+' buttons · '+p.axes.length+' axes · '+
+       (p.mapping==="standard"?"standard mapping":"raw / no standard mapping")+'</div></div>';
+  });
+  h+='<button class="tg" id="cc-kb-dvcal" title="Take the current stick positions as centre">'+
+     'Set centre</button><button class="tg" id="cc-kb-dvcopy">Copy device report</button></div>';
+
+  list.forEach(function(p){
+    h+='<div class="dvsec">'+esc(p.id)+' — buttons</div><div class="btngrid">';
+    if(!p.buttons.length)h+='<div style="color:#93A7B6;font-size:13px">none reported</div>';
+    p.buttons.forEach(function(b,i){
+      var n=btnName(p,i),on=b.pressed||b.value>0.5,an=(b.value>0.02&&b.value<0.98);
+      h+='<div class="btn'+(on?' down':'')+(an?' analog':'')+'">'+
+         '<div class="sc">'+n[0]+'</div><div class="nm">'+n[1]+'</div>'+
+         (an?'<div class="va">'+b.value.toFixed(2)+'</div>':'')+'</div>';
+    });
+    h+='</div><div class="dvsec">'+esc(p.id)+' — axes</div>';
+    if(!p.axes.length)h+='<div style="color:#93A7B6;font-size:13px">none reported</div>';
+    p.axes.forEach(function(v,i){
+      var n=axName(p,i),c=(padCenter[p.index]||[])[i]||0,adj=v-c,
+          pct=((adj+1)/2)*100,hot=Math.abs(adj)>DEADZONE,
+          dr=!hot&&Math.abs(adj)>DRIFT;
+      h+='<div class="axrow'+(hot?' hot':'')+(dr?' drift':'')+'">'+
+         '<div class="axnm">'+n[0]+(n[2]?' <span style="color:#FF6B00">?</span>':'')+
+         '<small>'+n[1]+'</small></div>'+
+         '<div class="axbar"><u></u><i style="left:'+Math.min(50,pct)+'%;width:'+
+         Math.abs(pct-50)+'%"></i><b style="left:'+pct+'%"></b></div>'+
+         '<div class="axval">'+adj.toFixed(3)+'</div></div>';
+    });
+  });
+  h+='<div class="dvwarn"><strong>Reading this panel.</strong> '+
+     'The <b>name in the left column</b> is what Star Citizen calls that input — '+
+     'type it straight into a binding. The <b>grey line under it</b> is what the browser '+
+     'actually reported, which is the part that cannot be wrong.<br>'+
+     'An orange <span style="color:#FF6B00">?</span> means the axis order is the usual '+
+     'one but <b>not confirmed for your stick</b> — move one axis at a time and check '+
+     'the right row lights up.<br>'+
+     'A value in orange at rest is <b>drift</b>: the axis is not returning to centre. '+
+     'Press <code>Set centre</code> with everything released to zero it here — '+
+     'that only changes this page, not the game.</div>';
+  host.innerHTML=h;
+
+  var cal=$('cc-kb-dvcal');
+  if(cal)cal.onclick=function(){
+    pads().forEach(function(p){padCenter[p.index]=Array.prototype.slice.call(p.axes);});
+    renderDevice();};
+  var cp=$('cc-kb-dvcopy');
+  if(cp)cp.onclick=copyReport;
+}
+
+function copyReport(){
+  var out=[];
+  pads().forEach(function(p){
+    out.push("DEVICE  "+p.id);
+    out.push("  slot "+(isStd(p)?"xi":"js"+slotOf(p))+"   mapping: "+(p.mapping||"none")+
+             "   "+p.buttons.length+" buttons, "+p.axes.length+" axes");
+    p.buttons.forEach(function(b,i){var n=btnName(p,i);
+      out.push("  "+pad18(n[0])+n[1]);});
+    p.axes.forEach(function(v,i){var n=axName(p,i);
+      out.push("  "+pad18(n[0])+n[1]+(n[2]?"   (order not confirmed)":"")+
+               "   resting "+v.toFixed(3));});
+    out.push("");
+  });
+  var txt=out.join("\n")||"no devices",b=$('cc-kb-dvcopy');
+  function done(){if(b){b.textContent="Copied";
+    setTimeout(function(){var x=$('cc-kb-dvcopy');if(x)x.textContent="Copy device report";},1400);}}
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(txt).then(done,function(){fallbackCopy(txt);done();});
+  else {fallbackCopy(txt);done();}
+}
+function pad18(t){t=String(t);while(t.length<18)t+=" ";return t;}
+function fallbackCopy(txt){
+  var ta=document.createElement('textarea');
+  ta.value=txt;ta.style.position='fixed';ta.style.left='-9999px';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+}
+
+function fireDev(p,label,sc,press){
+  var ro=$('cc-kb-ro');
+  ro.classList.add('hot');clearTimeout(fireDev._t);
+  fireDev._t=setTimeout(function(){ro.classList.remove('hot');},450);
+  $('cc-kb-rk').textContent=sc;
+  $('cc-kb-rmeta').textContent=esc(p.id)+" · "+label+" · "+press;
+  $('cc-kb-ract').className="ract";
+  $('cc-kb-ract').textContent="Type "+sc+" into a Star Citizen binding to use this input.";
+  $('cc-kb-rwarn').textContent="";
+  var l=$('cc-kb-log');
+  if(l.dataset.v!=="1"){l.innerHTML="";l.dataset.v="1";}
+  var d=document.createElement('div');
+  d.innerHTML='<strong>'+sc+'</strong> <span class="t">· '+label+' · '+press+
+    '</span><br><span style="color:#93A7B6">'+esc(p.id)+'</span>';
+  l.insertBefore(d,l.firstChild);
+  while(l.children.length>14)l.removeChild(l.lastChild);
+}
+
+function poll(){
+  if(dev==="KBM"||!OPEN){rafId=null;return;}
+  var list=pads(),changed=false,now=Date.now();
+  list.forEach(function(p){
+    var prev=padPrev[p.index]||{b:[],a:[],hot:false},hot=false;
+    p.buttons.forEach(function(b,i){
+      var on=b.pressed||b.value>0.5,was=!!prev.b[i],key,dur,press,n;
+      if(on)hot=true;
+      if(on!==was){
+        changed=true;key=p.index+":b"+i;
+        if(on){devHeld[key]=now;}
+        else{
+          dur=now-(devHeld[key]||now);delete devHeld[key];
+          press=dur>=400?"HOLD":"TAP";
+          if(press==="TAP"&&lastTap[key]&&now-lastTap[key]<320)press="DOUBLE TAP";
+          lastTap[key]=now;n=btnName(p,i);
+          fireDev(p,n[1],n[0],press+" ("+dur+"ms)");
+        }
+      }
+      prev.b[i]=on;
+    });
+    p.axes.forEach(function(v,i){
+      var c=(padCenter[p.index]||[])[i]||0;
+      if(Math.abs(v-c)>DEADZONE)hot=true;
+      if(Math.abs(v-(prev.a[i]===undefined?v:prev.a[i]))>0.015)changed=true;
+      prev.a[i]=v;
+    });
+    prev.hot=hot;padPrev[p.index]=prev;
+  });
+  if(changed||list.length!==(poll._n||0)){poll._n=list.length;renderDevice();}
+  rafId=requestAnimationFrame(poll);
+}
+function startPoll(){if(rafId===null&&dev!=="KBM")rafId=requestAnimationFrame(poll);}
+window.addEventListener('gamepadconnected',function(){
+  if(dev!=="KBM"&&OPEN){renderDevice();startPoll();}});
+window.addEventListener('gamepaddisconnected',function(e){
+  delete padSlot[e.gamepad.index];delete padPrev[e.gamepad.index];
+  delete padCenter[e.gamepad.index];
+  if(dev!=="KBM"&&OPEN)renderDevice();});
+
 function render(){
+  if(dev!=="KBM"){renderDevice();return;}
   if(!MODES[modeIx].data){
     $('cc-kb-board').innerHTML='<div class="blank"><strong>'+MODES[modeIx].label+
       ' not entered yet</strong>This mode exists in the game and in the data. Nobody has '+
@@ -388,7 +643,7 @@ function fire(id,label,press){
   while(l.children.length>14)l.removeChild(l.lastChild);
 }
 function open(){OPEN=true;$('cc-kb').classList.add('open');
-  document.body.style.overflow='hidden';drawModes();legend();render();}
+  document.body.style.overflow='hidden';drawModes();legend();render();if(dev!=="KBM")startPoll();}
 function close(){OPEN=false;$('cc-kb').classList.remove('open');
   document.body.style.overflow='';down={};}
 $('cc-kb-tab').onclick=open;
@@ -398,6 +653,7 @@ document.addEventListener('keydown',function(e){
   if(!OPEN)return;
   if(e.target&&e.target.id==='cc-kb-q')return;
   if(e.key==='Escape'){e.preventDefault();close();return;}
+  if(dev!=="KBM")return;
   if(!MODES[modeIx].data)return;
   var id=CODE[e.code];if(!id)return;
   e.preventDefault();e.stopPropagation();
@@ -407,6 +663,7 @@ document.addEventListener('keydown',function(e){
 document.addEventListener('keyup',function(e){
   if(!OPEN)return;
   if(e.target&&e.target.id==='cc-kb-q')return;
+  if(dev!=="KBM")return;
   if(!MODES[modeIx].data)return;
   var id=CODE[e.code];if(!id)return;
   e.preventDefault();e.stopPropagation();
@@ -423,11 +680,11 @@ document.addEventListener('keyup',function(e){
 var MB={0:["M_Left","Mouse Left"],1:["M_Mid","Mouse Middle"],2:["M_Right","Mouse Right"],
         3:["M_Back","Mouse 4 (back)"],4:["M_Fwd","Mouse 5 (forward)"]};
 $('cc-kb').addEventListener('mousedown',function(e){
-  if(!OPEN||!MODES[modeIx].data)return;var m=MB[e.button];if(!m)return;
+  if(dev!=="KBM")return;if(!OPEN||!MODES[modeIx].data)return;var m=MB[e.button];if(!m)return;
   if(e.target.closest&&e.target.closest('button,input,a'))return;
   e.preventDefault();down[m[0]]=1;held[m[0]]=Date.now();render();});
 $('cc-kb').addEventListener('mouseup',function(e){
-  if(!OPEN||!MODES[modeIx].data)return;var m=MB[e.button];if(!m)return;
+  if(dev!=="KBM")return;if(!OPEN||!MODES[modeIx].data)return;var m=MB[e.button];if(!m)return;
   if(e.target.closest&&e.target.closest('button,input,a'))return;
   e.preventDefault();
   var dur=Date.now()-(held[m[0]]||Date.now());
@@ -435,8 +692,9 @@ $('cc-kb').addEventListener('mouseup',function(e){
   var press=dur>=400?"HOLD":"TAP",now=Date.now();
   if(press==="TAP"&&lastTap[m[0]]&&now-lastTap[m[0]]<320)press="DOUBLE TAP";
   lastTap[m[0]]=now;fire(m[0],m[1],press+" ("+dur+"ms)");render();});
-$('cc-kb').addEventListener('contextmenu',function(e){if(OPEN)e.preventDefault();});
+$('cc-kb').addEventListener('contextmenu',function(e){if(dev!=="KBM")return;if(OPEN)e.preventDefault();});
 $('cc-kb').addEventListener('wheel',function(e){
+  if(dev!=="KBM")return;
   if(!OPEN||!MODES[modeIx].data)return;e.preventDefault();
   var id=e.deltaY<0?"M_WhUp":"M_WhDn";down[id]=1;render();
   fire(id,e.deltaY<0?"Wheel Up":"Wheel Down","TICK");

@@ -86,12 +86,56 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
   border-radius:7px;font-size:13.5px;color:#E8C9A0}
 .blank{padding:40px 20px;text-align:center;color:var(--muted)}
 .blank strong{color:var(--accent);display:block;font-size:18px;margin-bottom:6px}
+
+/* ---------- device panel (gamepad / joystick / HOTAS) ---------- */
+.dvhead{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.dvchip{background:var(--panel2);border:2px solid var(--line);border-radius:8px;
+  padding:8px 12px;font-size:13px;cursor:pointer;min-width:180px}
+.dvchip.on{border-color:var(--accent2)}
+.dvchip .nm{font-weight:700;color:var(--text);font-size:13.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+.dvchip .id{color:var(--muted);font-size:11.5px;margin-top:2px;font-family:ui-monospace,Consolas,monospace}
+.dvchip .sl{color:var(--accent2);font-weight:800;font-size:12px;letter-spacing:.06em}
+.dvchip.live{box-shadow:0 0 14px rgba(0,229,192,.25)}
+.dvempty{padding:44px 20px;text-align:center;color:var(--muted);line-height:1.7}
+.dvempty strong{color:var(--accent);display:block;font-size:19px;margin-bottom:8px}
+.dvempty kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;
+  padding:2px 7px;font:600 13px ui-monospace,Consolas,monospace;color:var(--text)}
+.dvsec{color:var(--muted);font-size:12.5px;margin:16px 0 7px;
+  text-transform:uppercase;letter-spacing:.08em}
+.btngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:5px}
+.btn{background:var(--key);border:1px solid var(--keyline);border-radius:5px;
+  padding:6px 7px;min-height:52px;transition:.06s;position:relative;cursor:pointer}
+.btn.down{background:var(--live);border-color:var(--live);transform:translateY(1px)}
+.btn.down .sc,.btn.down .nm,.btn.down .va{color:#04231D}
+.btn .sc{font:700 12.5px ui-monospace,Consolas,monospace;color:var(--text)}
+.btn .nm{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.25}
+.btn .va{font-size:10.5px;color:var(--accent2);font-family:ui-monospace,Consolas,monospace}
+.btn.analog{border-color:var(--accent)}
+.axrow{display:grid;grid-template-columns:132px 1fr 78px;gap:9px;align-items:center;
+  margin-bottom:5px}
+.axnm{font:700 12.5px ui-monospace,Consolas,monospace;color:var(--text)}
+.axnm small{display:block;font:400 10.5px "Segoe UI",sans-serif;color:var(--muted)}
+.axbar{position:relative;height:20px;background:var(--keydim);
+  border:1px solid var(--keyline);border-radius:4px;overflow:hidden}
+.axbar i{position:absolute;top:0;bottom:0;background:var(--accent2);opacity:.55}
+.axbar u{position:absolute;top:0;bottom:0;width:1px;left:50%;background:var(--keyline)}
+.axbar b{position:absolute;top:0;bottom:0;width:3px;background:var(--live);
+  border-radius:2px;transform:translateX(-1px)}
+.axval{font:700 12.5px ui-monospace,Consolas,monospace;color:var(--muted);text-align:right}
+.axrow.hot .axval{color:var(--live)}
+.axrow.drift .axval{color:var(--accent)}
+.dvwarn{margin-top:14px;padding:10px 12px;background:#1A1206;border:1px solid #4A3410;
+  border-radius:7px;font-size:13.5px;color:#E8C9A0}
+.dvwarn code{font-family:ui-monospace,Consolas,monospace;color:#FFD9A8}
 </style>
 
 <div class="top">
   <a href="index.html">&larr; Back to Citizen Compass</a>
-  <span class="t">Keybinding Tester &mdash; prototype. Data transcribed from in-game
-  screenshots, not yet verified against game files.</span>
+  <span class="t">Keybinding Tester &mdash; <strong>Keyboard/Mouse</strong> bindings are
+  transcribed from in-game screenshots and not yet verified against game files.
+  <strong>Gamepad</strong> and <strong>Joystick / HOTAS</strong> read your controller
+  live and are accurate now.</span>
 </div>
 
 <div class="modes" id="modes"></div>
@@ -246,7 +290,7 @@ const MODES=[
  {id:"CAMERA",label:"Camera",sub:"not entered yet",data:null}
 ];
 const DEVS=[{id:"KBM",label:"Keyboard / Mouse",ok:1},
-            {id:"PAD",label:"Gamepad",ok:0},{id:"JOY",label:"Joystick / HOTAS",ok:0}];
+            {id:"PAD",label:"Gamepad",ok:1},{id:"JOY",label:"Joystick / HOTAS",ok:1}];
 
 const CODE={Escape:"Esc",F1:"F1",F2:"F2",F3:"F3",F4:"F4",F5:"F5",F6:"F6",F7:"F7",F8:"F8",
  F9:"F9",F10:"F10",F11:"F11",F12:"F12",Backquote:"`",Digit1:"1",Digit2:"2",Digit3:"3",
@@ -308,7 +352,9 @@ function drawModes(){
   $('devs').innerHTML=DEVS.map(d=>
     `<button data-d="${d.id}" class="${d.id===dev?'on':''}${d.ok?'':' todo'}">${d.label}</button>`).join("");
   $('devs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-    if(!DEVS.find(x=>x.id===b.dataset.d).ok)return; dev=b.dataset.d;drawModes();render();});
+    if(!DEVS.find(x=>x.id===b.dataset.d).ok)return; dev=b.dataset.d;drawModes();render();
+    if(dev!=="KBM"){startPoll();}
+    else if(rafId!==null){cancelAnimationFrame(rafId);rafId=null;}});
 }
 function draw(rows,title){
   let h=title?`<div style="color:var(--muted);font-size:12.5px;margin:12px 0 5px">${title}</div>`:"";
@@ -327,6 +373,7 @@ function draw(rows,title){
   return h;
 }
 function render(){
+  if(dev!=="KBM"){renderDevice();return;}
   if(!MODES[modeIx].data){
     $('board').innerHTML=`<div class="blank"><strong>${MODES[modeIx].label} not entered yet</strong>
       This mode exists in the game and in the data. Nobody has filled it in here.<br>
@@ -364,10 +411,12 @@ function fire(id,label,press){
   l.prepend(d);while(l.children.length>14)l.lastChild.remove();
 }
 addEventListener('keydown',e=>{
+  if(dev!=="KBM")return;
   if(!capture||!MODES[modeIx].data)return;const id=CODE[e.code];if(!id)return;
   e.preventDefault();if(e.repeat)return;
   down.add(id);held[id]=performance.now();setMods();render();},{capture:true});
 addEventListener('keyup',e=>{
+  if(dev!=="KBM")return;
   if(!capture||!MODES[modeIx].data)return;const id=CODE[e.code];if(!id)return;
   e.preventDefault();
   const dur=performance.now()-(held[id]||performance.now());
@@ -381,18 +430,18 @@ addEventListener('keyup',e=>{
   setMods();render();},{capture:true});
 const MB={0:["M_Left","Mouse Left"],1:["M_Mid","Mouse Middle"],2:["M_Right","Mouse Right"],
           3:["M_Back","Mouse 4 (back)"],4:["M_Fwd","Mouse 5 (forward)"]};
-addEventListener('mousedown',e=>{if(!capture||!MODES[modeIx].data)return;
+addEventListener('mousedown',e=>{if(dev!=="KBM")return;if(!capture||!MODES[modeIx].data)return;
   const m=MB[e.button];if(!m)return;e.preventDefault();
   down.add(m[0]);held[m[0]]=performance.now();render();});
-addEventListener('mouseup',e=>{if(!capture||!MODES[modeIx].data)return;
+addEventListener('mouseup',e=>{if(dev!=="KBM")return;if(!capture||!MODES[modeIx].data)return;
   const m=MB[e.button];if(!m)return;e.preventDefault();
   const dur=performance.now()-(held[m[0]]||performance.now());
   down.delete(m[0]);delete held[m[0]];
   let press=dur>=400?"HOLD":"TAP";const now=performance.now();
   if(press==="TAP"&&lastTap[m[0]]&&now-lastTap[m[0]]<320)press="DOUBLE TAP";
   lastTap[m[0]]=now;fire(m[0],m[1],press+` (${Math.round(dur)}ms)`);render();});
-addEventListener('contextmenu',e=>{if(capture)e.preventDefault();});
-addEventListener('wheel',e=>{if(!capture||!MODES[modeIx].data)return;e.preventDefault();
+addEventListener('contextmenu',e=>{if(dev!=="KBM")return;if(capture)e.preventDefault();});
+addEventListener('wheel',e=>{if(dev!=="KBM")return;if(!capture||!MODES[modeIx].data)return;e.preventDefault();
   const id=e.deltaY<0?"M_WhUp":"M_WhDn";down.add(id);render();
   fire(id,e.deltaY<0?"Wheel Up":"Wheel Down","TICK");
   setTimeout(()=>{down.delete(id);render();},130);},{passive:false});
@@ -402,6 +451,7 @@ $('capture').onclick=()=>{capture=!capture;
 $('q').oninput=e=>{filter=e.target.value.trim().toLowerCase();render();};
 $('q').onkeydown=e=>e.stopPropagation();
 document.addEventListener('click',e=>{
+  if(dev!=="KBM")return;
   const k=e.target.closest('.key[data-id]');if(!k)return;
   const id=k.dataset.id,es=allEnts(id);
   $('rk').textContent=id;
@@ -411,6 +461,242 @@ document.addEventListener('click',e=>{
     return `<span style="color:var(--muted);font-size:14px">${n}:</span> ${x.a}`;}).join("<br>")
     :"Nothing bound to this key in "+MODES[modeIx].label+".";
   $('rwarn').textContent="";});
+
+/* ================================================================
+   DEVICE PANEL — gamepad, joystick, HOTAS, pedals, throttle.
+   Reads the browser Gamepad API. Nothing here needs game files.
+
+   HONESTY RULE, and it drives the whole layout:
+   the browser tells us the truth about INDEX and VALUE. It does not
+   tell us what the axis is called. Star Citizen's own names (js1_x,
+   js1_rotz, xi_triggerr) are a CONVENTION we map onto those indices,
+   and on a HOTAS that mapping is a guess. So the SC name is shown
+   big, the raw browser index is shown underneath it always, and the
+   guessed ones are marked. Never present a guess as a reading.
+   ================================================================ */
+let padSlot={};      /* gamepad.index -> 1|2|3   which jsN it is */
+let padPrev={};      /* gamepad.index -> {b:[],a:[]} last frame  */
+let padCenter={};    /* gamepad.index -> [] axis rest positions  */
+let rafId=null;
+
+/* Standard-mapping gamepad: these names are FACT, the spec fixes them. */
+const XI_BTN=["A","B","X","Y","Left Bumper","Right Bumper","Left Trigger",
+  "Right Trigger","Back / View","Start / Menu","Left Stick Click","Right Stick Click",
+  "D-Pad Up","D-Pad Down","D-Pad Left","D-Pad Right","Guide"];
+const XI_SC=["xi_a","xi_b","xi_x","xi_y","xi_shoulderl","xi_shoulderr","xi_triggerl_btn",
+  "xi_triggerr_btn","xi_back","xi_start","xi_thumbl","xi_thumbr","xi_dpad_up",
+  "xi_dpad_down","xi_dpad_left","xi_dpad_right","xi_guide"];
+const XI_AX=[["xi_thumblx","Left stick — horizontal"],["xi_thumbly","Left stick — vertical"],
+  ["xi_thumbrx","Right stick — horizontal"],["xi_thumbry","Right stick — vertical"]];
+/* HOTAS axis order is device-dependent. This is the COMMON order, not a promise. */
+const JS_AX=["x","y","z","rotx","roty","rotz","slider1","slider2"];
+
+const DEADZONE=0.12;   /* below this counts as centred */
+const DRIFT=0.06;      /* resting offset worth flagging */
+
+function pads(){
+  const g=navigator.getGamepads?navigator.getGamepads():[];
+  const out=[];
+  for(let i=0;i<g.length;i++) if(g[i]) out.push(g[i]);
+  return out;
+}
+function wantJoy(){return dev==="JOY";}
+
+/* assign slots in connection order, first come first served */
+function slotOf(p){
+  if(padSlot[p.index]) return padSlot[p.index];
+  const used=new Set(Object.values(padSlot));
+  for(let n=1;n<=8;n++) if(!used.has(n)){padSlot[p.index]=n;return n;}
+  padSlot[p.index]=1;return 1;
+}
+function prefix(p){
+  return (p.mapping==="standard"&&dev==="PAD")?"xi":"js"+slotOf(p);
+}
+function btnName(p,i){
+  if(p.mapping==="standard"&&dev==="PAD")
+    return [XI_SC[i]||("xi_button"+i), XI_BTN[i]||("Button "+i), false];
+  /* SC numbers joystick buttons from 1; the browser numbers from 0. */
+  return [prefix(p)+"_button"+(i+1), "Button "+(i+1)+"  (browser index "+i+")", false];
+}
+function axName(p,i){
+  if(p.mapping==="standard"&&dev==="PAD"&&XI_AX[i])
+    return [XI_AX[i][0], XI_AX[i][1], false];
+  const nm=JS_AX[i];
+  return [prefix(p)+"_"+(nm||("axis"+i)), "browser axes["+i+"]", true];
+}
+
+function renderDevice(){
+  const list=pads();
+  const host=$('board');
+  $('layerlbl').textContent="Layer: n/a";
+  if(!list.length){
+    host.innerHTML='<div class="dvempty"><strong>No controller detected yet</strong>'+
+      'Plug the stick in, then <b>press a button on it</b>.<br>'+
+      'Browsers deliberately hide controllers until one is used &mdash; '+
+      'nothing appears here until you press something.<br><br>'+
+      'Works with anything Windows sees: sticks, throttles, pedals, gamepads, button boxes.<br>'+
+      'Up to eight at once, numbered <kbd>js1</kbd> <kbd>js2</kbd> <kbd>js3</kbd> in the order you press them.</div>';
+    return;
+  }
+  let h='<div class="dvhead">';
+  list.forEach(p=>{
+    const live=(padPrev[p.index]&&padPrev[p.index].hot)?' live':'';
+    const sl=(p.mapping==="standard"&&dev==="PAD")?"xi":"js"+slotOf(p);
+    h+='<div class="dvchip on'+live+'" data-pi="'+p.index+'">'+
+       '<div class="sl">'+sl+'</div>'+
+       '<div class="nm" title="'+esc(p.id)+'">'+esc(p.id)+'</div>'+
+       '<div class="id">'+p.buttons.length+' buttons · '+p.axes.length+' axes · '+
+       (p.mapping==="standard"?"standard mapping":"raw / no standard mapping")+'</div></div>';
+  });
+  h+='<button class="tg" id="dvcal" title="Take the current stick positions as centre">'+
+     'Set centre</button>';
+  h+='<button class="tg" id="dvcopy">Copy device report</button></div>';
+
+  list.forEach(p=>{
+    h+='<div class="dvsec">'+esc(p.id)+' &mdash; buttons</div><div class="btngrid">';
+    if(!p.buttons.length) h+='<div style="color:var(--muted);font-size:13px">none reported</div>';
+    p.buttons.forEach((b,i)=>{
+      const [sc,nm]=btnName(p,i);
+      const on=b.pressed||b.value>0.5;
+      const analog=(b.value>0.02&&b.value<0.98);
+      h+='<div class="btn'+(on?' down':'')+(analog?' analog':'')+'" data-k="'+p.index+':b'+i+'">'+
+         '<div class="sc">'+sc+'</div><div class="nm">'+nm+'</div>'+
+         (b.value>0.02&&b.value<0.98?'<div class="va">'+b.value.toFixed(2)+'</div>':'')+
+         '</div>';
+    });
+    h+='</div>';
+
+    h+='<div class="dvsec">'+esc(p.id)+' &mdash; axes</div>';
+    if(!p.axes.length) h+='<div style="color:var(--muted);font-size:13px">none reported</div>';
+    p.axes.forEach((v,i)=>{
+      const [sc,nm,guess]=axName(p,i);
+      const c=(padCenter[p.index]||[])[i]||0;
+      const adj=v-c;
+      const pct=((adj+1)/2)*100;
+      const hot=Math.abs(adj)>DEADZONE, drift=!hot&&Math.abs(adj)>DRIFT;
+      h+='<div class="axrow'+(hot?' hot':'')+(drift?' drift':'')+'">'+
+         '<div class="axnm">'+sc+(guess?' <span style="color:var(--accent)">?</span>':'')+
+         '<small>'+nm+'</small></div>'+
+         '<div class="axbar"><u></u><i style="left:'+Math.min(50,pct)+'%;width:'+
+         Math.abs(pct-50)+'%"></i><b style="left:'+pct+'%"></b></div>'+
+         '<div class="axval">'+adj.toFixed(3)+'</div></div>';
+    });
+  });
+
+  h+='<div class="dvwarn"><strong>Reading this panel.</strong> '+
+     'The <b>name in the left column</b> is what Star Citizen calls that input &mdash; '+
+     'type it straight into a binding. The <b>grey line under it</b> is what the browser '+
+     'actually reported, which is the part that cannot be wrong.<br>'+
+     'An orange <span style="color:var(--accent)">?</span> means the axis order is the '+
+     'usual one but <b>not confirmed for your stick</b> &mdash; move one axis at a time '+
+     'and check the right row lights up.<br>'+
+     'A value in orange at rest is <b>drift</b>: the axis is not returning to centre. '+
+     'Press <code>Set centre</code> with everything released to zero it here &mdash; '+
+     'that only changes this page, not the game.</div>';
+  host.innerHTML=h;
+
+  const cal=$('dvcal'); if(cal) cal.onclick=()=>{
+    pads().forEach(p=>padCenter[p.index]=Array.from(p.axes));
+    renderDevice();
+  };
+  const cp=$('dvcopy'); if(cp) cp.onclick=()=>copyReport();
+}
+
+function esc(t){return String(t).replace(/[&<>"]/g,c=>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function copyReport(){
+  let out=[];
+  pads().forEach(p=>{
+    out.push("DEVICE  "+p.id);
+    out.push("  slot "+((p.mapping==="standard"&&dev==="PAD")?"xi":"js"+slotOf(p))+
+             "   mapping: "+(p.mapping||"none")+
+             "   "+p.buttons.length+" buttons, "+p.axes.length+" axes");
+    p.buttons.forEach((b,i)=>{const [sc,nm]=btnName(p,i);
+      out.push("  "+sc.padEnd(18)+nm);});
+    p.axes.forEach((v,i)=>{const [sc,nm,g]=axName(p,i);
+      out.push("  "+sc.padEnd(18)+nm+(g?"   (order not confirmed)":"")+
+               "   resting "+v.toFixed(3));});
+    out.push("");
+  });
+  const txt=out.join("\n")||"no devices";
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(
+      ()=>{$('dvcopy').textContent="Copied";
+           setTimeout(()=>{if($('dvcopy'))$('dvcopy').textContent="Copy device report";},1400);},
+      ()=>fallbackCopy(txt));
+  } else fallbackCopy(txt);
+}
+function fallbackCopy(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt;ta.style.position='fixed';ta.style.left='-9999px';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* fire() for a device input — reuses the same readout and log */
+function fireDev(p,label,sc,press){
+  $('ro').classList.add('hot');clearTimeout(fire._t);
+  fire._t=setTimeout(()=>$('ro').classList.remove('hot'),450);
+  $('rk').textContent=sc;
+  $('rmeta').textContent=esc(p.id)+" · "+label+" · "+press;
+  $('ract').className="ract";
+  $('ract').textContent="Type "+sc+" into a Star Citizen binding to use this input.";
+  $('rwarn').textContent="";
+  const l=$('log');if(l.dataset.v!=="1"){l.innerHTML="";l.dataset.v="1";}
+  const d=document.createElement('div');
+  d.innerHTML='<strong>'+sc+'</strong> <span class="t">· '+label+' · '+press+'</span><br>'+
+    '<span style="color:var(--muted)">'+esc(p.id)+'</span>';
+  l.prepend(d);while(l.children.length>14)l.lastChild.remove();
+}
+
+const devHeld={};
+function poll(){
+  if(dev==="KBM"){rafId=null;return;}
+  const list=pads();
+  let changed=false;
+  const now=performance.now();
+  list.forEach(p=>{
+    const prev=padPrev[p.index]||{b:[],a:[],hot:false};
+    let hot=false;
+    p.buttons.forEach((b,i)=>{
+      const on=b.pressed||b.value>0.5, was=!!prev.b[i];
+      if(on) hot=true;
+      if(on!==was){
+        changed=true;
+        const key=p.index+":b"+i;
+        if(on){devHeld[key]=now;}
+        else if(capture){
+          const dur=now-(devHeld[key]||now);delete devHeld[key];
+          let press=dur>=400?"HOLD":"TAP";
+          if(press==="TAP"&&lastTap[key]&&now-lastTap[key]<320)press="DOUBLE TAP";
+          lastTap[key]=now;
+          const [sc,nm]=btnName(p,i);
+          fireDev(p,nm,sc,press+" ("+Math.round(dur)+"ms)");
+        }
+      }
+      prev.b[i]=on;
+    });
+    p.axes.forEach((v,i)=>{
+      const c=(padCenter[p.index]||[])[i]||0;
+      if(Math.abs(v-c)>DEADZONE) hot=true;
+      if(Math.abs(v-(prev.a[i]===undefined?v:prev.a[i]))>0.015) changed=true;
+      prev.a[i]=v;
+    });
+    prev.hot=hot;
+    padPrev[p.index]=prev;
+  });
+  if(changed||list.length!==(poll._n||0)){poll._n=list.length;renderDevice();}
+  rafId=requestAnimationFrame(poll);
+}
+function startPoll(){if(rafId===null&&dev!=="KBM")rafId=requestAnimationFrame(poll);}
+addEventListener('gamepadconnected',()=>{if(dev!=="KBM"){renderDevice();startPoll();}});
+addEventListener('gamepaddisconnected',e=>{
+  delete padSlot[e.gamepad.index];delete padPrev[e.gamepad.index];
+  delete padCenter[e.gamepad.index];
+  if(dev!=="KBM")renderDevice();});
+
 drawModes();
 $('legend').innerHTML=`<div><strong>*</strong> hold · <strong>**</strong> double tap</div>
   <div style="margin-top:6px;color:var(--accent2)">${MODES[0].legend}</div>`;
