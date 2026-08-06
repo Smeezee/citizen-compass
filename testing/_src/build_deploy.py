@@ -361,3 +361,25 @@ if _absent:
              % ', '.join(_absent))
 print('pages copied:', ', '.join(_copied) if _copied else 'none')
 print('written:', len(out)/1048576, 'MB')
+
+# ---------------------------------------------------------------------------
+# DEPLOY GUARD - last thing before anything can be uploaded.
+#
+# Everything in _deploy is served PUBLICLY. On 2026-08-06 a failed
+# `wrangler pages deploy` run from inside _deploy left a .wrangler/cache/
+# folder behind, and the next deploy published the account id and account name
+# at /.wrangler/cache/wrangler-account.json.
+#
+# _deploy is a directory on disk. Any tool, any half-finished command, any
+# editor swap file can write into it, and whatever is there goes to the
+# internet on the next deploy with nobody looking. So the build refuses to
+# finish while anything unexpected is sitting in it.
+#
+# The allowed FILE list is passed from PAGES above rather than duplicated, so
+# adding a page still means editing exactly one list.
+# ---------------------------------------------------------------------------
+from check_deploy_clean import enforce as _deploy_guard
+_allowed = {'index.html'} | {_o for _s, _o in PAGES}
+if _deploy_guard(OUT, allowed_files=_allowed):
+    sys.exit("BUILD FAILED: refusing to leave _deploy in a state that would "
+             "publish unexpected files. Nothing has been uploaded.")
