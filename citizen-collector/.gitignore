@@ -1,0 +1,18 @@
+# Build outputs - the crew package ships a compiled exe, but it is assembled
+# by the master at generate time, not committed here.
+collector.exe
+collector-master.exe
+
+# Captures are session data. The rev 5 addendum is explicit that no captures\
+# content may ever leave this machine in a crew package; keeping them out of
+# git is the same rule applied to the repo.
+captures/
+
+# --auto runtime artifacts. Both are written NEXT TO THE EXE at run time and
+# belong to whoever is running it, not to the repo:
+#   collector-auto.log      what the unattended loop did, for hours at a time
+#   collector-settings.txt  the user's own interval/poll choices, generated on
+#                           first run. Committing it would push one machine's
+#                           settings onto everyone else's.
+collector-auto.log
+collector-settings.txt

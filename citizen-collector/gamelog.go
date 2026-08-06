@@ -1,0 +1,393 @@
+package main
+
+// gamelog.go - reads patch, build and location out of Star Citizen's Game.log.
+//
+// ------------------------------------------------------------------------
+// HONESTY BOUNDARY - READ THIS BEFORE ADDING A PATTERN
+// ------------------------------------------------------------------------
+// The patterns in this file are split into two groups and the split is load
+// bearing.
+//
+//   VERIFIED   - matched against a real Game.log on this machine
+//                (StarCitizen/LIVE/Game.log, 776 lines, 2026-08-02 session,
+//                FileVersion 4.9.188.23497). Each one is quoted in a comment
+//                with the line it came from.
+//
+//   UNVERIFIED - plausible, not confirmed. The sample log on hand never left
+//                the main menu: every line in it carries gamerules="SC_Frontend"
+//                and the session ends at "Loading screen for Frontend_Main :
+//                SC_Frontend closed". There is therefore NO in-world location
+//                line in it to check an in-world pattern against.
+//
+// Anything UNVERIFIED that matches is reported with Verified=false and the
+// pattern name attached, so a value that came from a guess can never be mistaken
+// downstream for a value that came from a confirmed format.
+//
+// When nothing matches, Location is null and Reason says why. It is never
+// filled with a plausible-looking default. An unknown location is a fact about
+// the log; an invented one is a corrupt record, and this collector's whole
+// output is meant to be evidence.
+//
+// To close the gap: capture once while actually in the PU, then read
+// location_candidates[] in the sidecar JSON - it carries the raw lines this
+// parser thought were interesting but could not confidently parse. That is the
+// intended path from UNVERIFIED to VERIFIED.
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+	"syscall"
+	"unsafe"
+)
+
+// GameLogInfo is what the sidecar JSON carries.
+type GameLogInfo struct {
+	Path     string `json:"path"`
+	Found    bool   `json:"found"`
+	ReadErr  string `json:"read_error,omitempty"`
+
+	Patch      *string `json:"patch"`       // e.g. "4.9.188.23497"
+	PatchSrc   string  `json:"patch_source,omitempty"`
+	Build      *string `json:"build"`       // e.g. "12344265"
+	BuildSrc   string  `json:"build_source,omitempty"`
+	Branch     *string `json:"branch"`      // e.g. "sc-alpha-4.9.0"
+
+	Location     *string `json:"location"`
+	LocationSrc  string  `json:"location_source,omitempty"`
+	LocationOK   bool    `json:"location_pattern_verified"`
+	LocationWhy  string  `json:"location_reason,omitempty"`
+
+	GameRules *string `json:"game_rules"` // "SC_Frontend" = main menu
+	Map       *string `json:"map"`        // "megamap"
+	InGame    *bool   `json:"appears_in_game"`
+
+	// Raw lines that look location-shaped but were not confidently parsed.
+	// This is the bridge from UNVERIFIED to VERIFIED - see the header.
+	LocationCandidates []string `json:"location_candidates,omitempty"`
+
+	LinesRead int `json:"lines_read"`
+}
+
+func sp(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+// --- VERIFIED patterns -----------------------------------------------------
+// Each regex below is followed by the exact line it was checked against.
+
+var (
+	// "<2026-08-02T02:43:28.680Z> FileVersion: 4.9.188.23497"
+	reFileVersion = regexp.MustCompile(`(?m)^.*?\bFileVersion:\s*([0-9]+(?:\.[0-9]+)+)`)
+
+	// "<2026-08-02T02:43:28.680Z> ProductVersion: 4.9.188.23497"
+	reProductVersion = regexp.MustCompile(`(?m)^.*?\bProductVersion:\s*([0-9]+(?:\.[0-9]+)+)`)
+
+	// "<2026-08-02T02:43:29.309Z> Changelist: 12344265"
+	reChangelist = regexp.MustCompile(`(?m)^.*?\bChangelist:\s*([0-9]+)`)
+
+	// "<2026-08-02T02:43:29.313Z> [CIG] build_version[12344265]"
+	reBuildVersion = regexp.MustCompile(`\bbuild_version\[([0-9]+)\]`)
+
+	// `BackupNameAttachment=" Build(12344265) 01 Aug 26 (19 43 20)"`
+	reBackupBuild = regexp.MustCompile(`BackupNameAttachment="\s*Build\(([0-9]+)\)`)
+
+	// "<2026-08-02T02:43:29.309Z> Branch: sc-alpha-4.9.0"
+	reBranch = regexp.MustCompile(`(?m)^.*?\bBranch:\s*(\S+)`)
+
+	// `... map="megamap" gamerules="SC_Frontend" ...`
+	reGameRules = regexp.MustCompile(`gamerules="([^"]+)"`)
+	reMap       = regexp.MustCompile(`\bmap="([^"]+)"`)
+
+	// "Loading screen for Frontend_Main : SC_Frontend closed after 4.58 seconds"
+	reLoadingScreen = regexp.MustCompile(`Loading screen for\s+(\S+)\s*:\s*(\S+)`)
+)
+
+// --- UNVERIFIED patterns ---------------------------------------------------
+// No in-world sample was available to confirm these. Anything they produce is
+// reported with location_pattern_verified=false.
+
+type unverifiedPattern struct {
+	name string
+	re   *regexp.Regexp
+	grp  int
+}
+
+// Each pattern captures a QUOTED value only.
+//
+// An earlier, looser version used the separator class [=:\s"]+ so it would
+// accept `key: value`, `key="value"` and `key value` alike. Run against the real
+// log it matched this:
+//
+//     taskname="ResolveSpawnLocation" state=eCVS_UnstowPlayer(14)
+//
+// The separator class happily consumed the closing quote and the space, walked
+// out of the taskname field and into the NEXT one, and reported the player's
+// location as "state". It was flagged unverified, so it was not passed off as
+// fact - but a confidently-shaped piece of nonsense in a field that downstream
+// code will read is worse than an honest null, and this collector's entire
+// output is meant to be evidence.
+//
+// Requiring ="..." keeps a match inside one field. That is a real constraint,
+// not a cosmetic one: a pattern that cannot cross a field boundary cannot
+// invent a value out of two unrelated fields.
+var unverifiedLocationPatterns = []unverifiedPattern{
+	{"RequestLocationInventory", regexp.MustCompile(`RequestLocationInventory[^\n]*?\bname="([^"]+)"`), 1},
+	{"OnClientSpawned-zone", regexp.MustCompile(`OnClientSpawned[^\n]*?\bzone="([^"]+)"`), 1},
+	{"SpawnLocation-quoted", regexp.MustCompile(`(?i)\bspawn_?location="([^"]+)"`), 1},
+	{"ObjectContainer-quoted", regexp.MustCompile(`(?i)\bobjectcontainer="([^"]+)"`), 1},
+}
+
+// Values that are log structure rather than places. Star Citizen's log is full
+// of key="value" pairs whose values are state-machine tokens, and a pattern that
+// matched the wrong key would otherwise report one of these as a location.
+//
+// This is a backstop, not the primary defence - the quoted-value patterns above
+// are. Two independent guards, because the cost of a wrong value here is a
+// corrupt record that looks perfectly well-formed.
+var rejectedLocationValues = map[string]bool{
+	"state": true, "status": true, "taskname": true, "establisher": true,
+	"message": true, "null": true, "none": true, "true": true, "false": true,
+	"finished": true, "unknown": true, "default": true, "invalid": true,
+	"megamap": true, "sc_frontend": true, "sc_default": true,
+}
+
+func plausibleLocation(v string) bool {
+	t := strings.ToLower(strings.TrimSpace(v))
+	if t == "" || rejectedLocationValues[t] {
+		return false
+	}
+	// eCVS_UnstowPlayer(14), eCVS_ReadyToStream(13) - CryEngine state enums.
+	if strings.HasPrefix(t, "ecvs_") {
+		return false
+	}
+	if len(t) < 2 || len(t) > 120 {
+		return false
+	}
+	return true
+}
+
+// Lines worth showing a human when the location cannot be parsed.
+var reLocationish = regexp.MustCompile(
+	`(?i)\b(zone|location|objectcontainer|spawn|planet|moon|station|stanton|pyro|nyx|terra|crusader|arccorp|microtech|hurston)\b`)
+
+// ---------------------------------------------------------------------------
+// file access
+// ---------------------------------------------------------------------------
+
+// openSharedRead opens a file that another process holds open for writing.
+//
+// Star Citizen keeps Game.log open for the whole session. A plain open can be
+// refused with a sharing violation, and this tool is meant to be used WHILE the
+// game is running - so it asks for the permissive share mode explicitly rather
+// than relying on the default.
+func openSharedRead(path string) (*os.File, error) {
+	p, err := syscall.UTF16PtrFromString(path)
+	if err != nil {
+		return nil, err
+	}
+	h, err := syscall.CreateFile(p,
+		syscall.GENERIC_READ,
+		syscall.FILE_SHARE_READ|syscall.FILE_SHARE_WRITE|syscall.FILE_SHARE_DELETE,
+		nil,
+		syscall.OPEN_EXISTING,
+		syscall.FILE_ATTRIBUTE_NORMAL,
+		0)
+	if err != nil {
+		return nil, err
+	}
+	return os.NewFile(uintptr(h), path), nil
+}
+
+// FindGameLog locates Game.log, preferring the install that the captured window
+// actually belongs to. Deriving it from the running process is what makes this
+// correct on a machine with LIVE, PTU and EPTU installed side by side - a
+// hardcoded LIVE path would silently report the wrong patch.
+func FindGameLog(h HWND) (string, string) {
+	if h != 0 {
+		if exe := processImageName(windowPID(h)); exe != "" {
+			// ...\StarCitizen\LIVE\Bin64\StarCitizen.exe -> ...\LIVE\Game.log
+			dir := filepath.Dir(exe) // Bin64
+			cand := filepath.Join(filepath.Dir(dir), "Game.log")
+			if _, err := os.Stat(cand); err == nil {
+				return cand, "derived from the captured window's process image path"
+			}
+		}
+	}
+
+	var roots []string
+	for _, drive := range []string{"C:", "D:", "E:", "F:"} {
+		roots = append(roots,
+			drive+`\Program Files\Roberts Space Industries\StarCitizen`,
+			drive+`\Roberts Space Industries\StarCitizen`)
+	}
+	for _, r := range roots {
+		for _, ch := range []string{"LIVE", "PTU", "EPTU", "TECH-PREVIEW"} {
+			cand := filepath.Join(r, ch, "Game.log")
+			if _, err := os.Stat(cand); err == nil {
+				return cand, "found by scanning known install locations"
+			}
+		}
+	}
+	return "", "no Game.log found in any known install location"
+}
+
+// ---------------------------------------------------------------------------
+// parsing
+// ---------------------------------------------------------------------------
+
+// ReadGameLog parses the log. It reads the whole file line by line rather than
+// tailing: Game.log is small (the sample is 165 KB) and the version banner is
+// at the TOP while the location is near the BOTTOM, so both ends matter.
+func ReadGameLog(path, how string) GameLogInfo {
+	info := GameLogInfo{Path: path}
+
+	if path == "" {
+		info.ReadErr = how
+		info.LocationWhy = "no Game.log to read"
+		return info
+	}
+
+	f, err := openSharedRead(path)
+	if err != nil {
+		info.ReadErr = fmt.Sprintf("could not open (%v)", err)
+		info.LocationWhy = "Game.log could not be opened"
+		return info
+	}
+	defer f.Close()
+	info.Found = true
+
+	var (
+		patch, patchSrc   string
+		build, buildSrc   string
+		branch            string
+		gameRules, mapName string
+		lastLoadingFor    string
+		candidates        []string
+		locVal, locSrc    string
+		locVerified       bool
+	)
+
+	sc := bufio.NewScanner(f)
+	// Some Game.log lines (the Elastic URL on line 16 of the sample) are very
+	// long. The default 64 KB token limit would truncate and silently corrupt.
+	sc.Buffer(make([]byte, 0, 64*1024), 4*1024*1024)
+
+	for sc.Scan() {
+		line := sc.Text()
+		info.LinesRead++
+
+		if patch == "" {
+			if m := reFileVersion.FindStringSubmatch(line); m != nil {
+				patch, patchSrc = m[1], "FileVersion"
+			} else if m := reProductVersion.FindStringSubmatch(line); m != nil {
+				patch, patchSrc = m[1], "ProductVersion"
+			}
+		}
+		if build == "" {
+			if m := reChangelist.FindStringSubmatch(line); m != nil {
+				build, buildSrc = m[1], "Changelist"
+			} else if m := reBuildVersion.FindStringSubmatch(line); m != nil {
+				build, buildSrc = m[1], "build_version[]"
+			} else if m := reBackupBuild.FindStringSubmatch(line); m != nil {
+				build, buildSrc = m[1], "BackupNameAttachment Build()"
+			}
+		}
+		if branch == "" {
+			if m := reBranch.FindStringSubmatch(line); m != nil {
+				branch = m[1]
+			}
+		}
+
+		// These are last-wins: the newest line describes the current state.
+		if m := reGameRules.FindStringSubmatch(line); m != nil {
+			gameRules = m[1]
+		}
+		if m := reMap.FindStringSubmatch(line); m != nil {
+			mapName = m[1]
+		}
+		if m := reLoadingScreen.FindStringSubmatch(line); m != nil {
+			lastLoadingFor = m[1]
+			if gameRules == "" {
+				gameRules = m[2]
+			}
+		}
+
+		// unverified location attempts, last plausible match wins
+		for _, up := range unverifiedLocationPatterns {
+			if m := up.re.FindStringSubmatch(line); m != nil {
+				v := strings.TrimSpace(m[up.grp])
+				if plausibleLocation(v) {
+					locVal, locSrc, locVerified = v, up.name+" (UNVERIFIED pattern)", false
+				}
+			}
+		}
+
+		if reLocationish.MatchString(line) && len(candidates) < 40 {
+			t := strings.TrimSpace(line)
+			if len(t) > 400 {
+				t = t[:400] + "...[truncated]"
+			}
+			candidates = append(candidates, t)
+		}
+	}
+	if err := sc.Err(); err != nil {
+		info.ReadErr = fmt.Sprintf("read stopped early: %v", err)
+	}
+
+	info.Patch, info.PatchSrc = sp(patch), patchSrc
+	info.Build, info.BuildSrc = sp(build), buildSrc
+	info.Branch = sp(branch)
+	info.GameRules, info.Map = sp(gameRules), sp(mapName)
+
+	// SC_Frontend is the main menu. VERIFIED: every Context Establisher line in
+	// the sample log carries gamerules="SC_Frontend" and the session never
+	// entered the PU.
+	if gameRules != "" {
+		in := !strings.EqualFold(gameRules, "SC_Frontend")
+		info.InGame = &in
+	}
+
+	// ORDER MATTERS: a VERIFIED answer outranks an UNVERIFIED guess.
+	//
+	// This used to be the other way round, and the real log showed why that was
+	// wrong. The session never left the menu - which the verified SC_Frontend
+	// pattern states plainly - but an unverified pattern had scraped the token
+	// "state" out of an unrelated field, and because it was tested first it
+	// overwrote a correct, confirmed answer with a wrong, unconfirmed one.
+	//
+	// A guess may only fill a gap. It may never displace something known.
+	switch {
+	case gameRules != "" && strings.EqualFold(gameRules, "SC_Frontend"):
+		// Verified, and a real answer: the player is in the menu, so there is
+		// no in-world location to report and none should be invented.
+		v := "main menu (not in world)"
+		if lastLoadingFor != "" {
+			v = fmt.Sprintf("main menu (%s, not in world)", lastLoadingFor)
+		}
+		info.Location = sp(v)
+		info.LocationSrc = `gamerules="SC_Frontend" (VERIFIED pattern)`
+		info.LocationOK = true
+
+	case locVal != "":
+		info.Location, info.LocationSrc, info.LocationOK = sp(locVal), locSrc, locVerified
+		info.LocationWhy = "matched an UNVERIFIED pattern - treat as a hint, not a fact"
+
+	default:
+		info.LocationWhy = "no location pattern matched; see location_candidates[] " +
+			"for the raw lines that looked relevant"
+	}
+
+	if len(candidates) > 0 && (info.Location == nil || !info.LocationOK) {
+		info.LocationCandidates = candidates
+	}
+	return info
+}
+
+var _ = unsafe.Pointer(nil)
