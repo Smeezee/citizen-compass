@@ -34,6 +34,28 @@ body{margin:0;background:var(--bg);color:var(--text);
   border-radius:7px;padding:9px 16px;cursor:pointer;font:700 14px inherit}
 .devs button.on{background:var(--accent2);border-color:var(--accent2);color:#04231D}
 .devs button.todo{opacity:.45}
+/* fit the whole board on screen - a reference you scroll is one you hunt */
+.key{min-height:44px;padding:4px 5px 5px;border-radius:6px;min-width:34px}
+.key .cap{font-size:11.5px}
+.key .act{font-size:10px;line-height:1.15;-webkit-line-clamp:2}
+.krow{gap:4px}
+.blk{gap:4px}
+.blk.main .krow:first-child{margin-bottom:8px}
+.kbd{gap:14px}
+.blk.nav{flex:0 0 124px}
+.blk.num{flex:0 0 168px}
+.blk.mouse{flex:0 0 168px}
+.board{padding:14px 12px}
+.blklab{margin-bottom:0}
+.g50{width:16px}
+
+/* the one place the mouse is captured. Bounded on purpose and it says so. */
+.mousepad{border:1px dashed #3E5A7E;border-radius:9px;padding:8px 8px 6px;
+  background:rgba(255,107,0,.045)}
+.mousepad .mplab{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:#C08A46;margin-bottom:6px}
+.mousepad.armed{border-color:#FF6B00;background:rgba(255,107,0,.10)}
+
 /* the board sits recessed, the way a keyboard sits in its tray */
 .board{background:linear-gradient(180deg,#0A1420,#0D1A29);
   border:1px solid #1B2C42;
@@ -238,7 +260,7 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
     <div class="log" id="log"><div style="color:var(--muted)">Nothing yet.</div></div>
     <div class="legend" id="legend"></div>
     <div class="note">
-      <strong>Alt+F4</strong>, <strong>Ctrl+Alt+Del</strong> and the <strong>Windows key</strong>
+      <strong>Mouse buttons and the wheel are only read inside the dashed mouse box.</strong> Everywhere else the page scrolls normally.<br><br><strong>Alt+F4</strong>, <strong>Ctrl+Alt+Del</strong> and the <strong>Windows key</strong>
       can't be caught by any web page &mdash; Windows takes them first.
       <strong>Ctrl+W</strong> / <strong>Ctrl+T</strong> / <strong>Esc</strong> are yours once you press <strong>Capture everything</strong> above &mdash; Chrome and Edge only.
     </div>
@@ -466,9 +488,11 @@ function render(){
       '<div class="blk main">'+draw(ROWS)+'</div>'+
       '<div class="blk nav"><div class="blklab">navigation</div>'+draw(NAV)+'</div>'+
       '<div class="blk num"><div class="blklab">numpad</div>'+draw(NUM)+'</div>'+
+      '<div class="blk mouse"><div class="mousepad" id="mousepad">'+
+        '<div class="mplab">mouse &mdash; only captured here</div>'+
+        draw(MOUSE)+'</div></div>'+
     '</div>'+
-    '<div class="kbd" style="margin-top:16px"><div class="blk main">'+
-      '<div class="blklab">mouse</div>'+draw(MOUSE)+'</div></div>';
+    '';
   $('layerlbl').textContent="Layer: "+{0:"none",1:"M1 (Left Alt)",2:"M2 (Left Shift)",3:"M3 (Right Alt)"}[mod];
 }
 function setMods(){
@@ -519,18 +543,27 @@ addEventListener('keyup',e=>{
   setMods();render();},{capture:true});
 const MB={0:["M_Left","Mouse Left"],1:["M_Mid","Mouse Middle"],2:["M_Right","Mouse Right"],
           3:["M_Back","Mouse 4 (back)"],4:["M_Fwd","Mouse 5 (forward)"]};
-addEventListener('mousedown',e=>{if(dev!=="KBM")return;if(!capture||!MODES[modeIx].data)return;
+
+/* True only when the pointer is inside the mouse pad. Everywhere else the
+   wheel and the buttons belong to the browser, so the page scrolls and links
+   click like anything else. */
+function ccInPad(e){
+  var t=e.target;
+  if(!t||!t.closest) return false;
+  return !!t.closest('.mousepad');
+}
+addEventListener('mousedown',e=>{if(dev!=="KBM"||!ccInPad(e))return;if(!capture||!MODES[modeIx].data)return;
   const m=MB[e.button];if(!m)return;e.preventDefault();
   down.add(m[0]);held[m[0]]=performance.now();render();});
-addEventListener('mouseup',e=>{if(dev!=="KBM")return;if(!capture||!MODES[modeIx].data)return;
+addEventListener('mouseup',e=>{if(dev!=="KBM"||!ccInPad(e))return;if(!capture||!MODES[modeIx].data)return;
   const m=MB[e.button];if(!m)return;e.preventDefault();
   const dur=performance.now()-(held[m[0]]||performance.now());
   down.delete(m[0]);delete held[m[0]];
   let press=dur>=400?"HOLD":"TAP";const now=performance.now();
   if(press==="TAP"&&lastTap[m[0]]&&now-lastTap[m[0]]<320)press="DOUBLE TAP";
   lastTap[m[0]]=now;fire(m[0],m[1],press+` (${Math.round(dur)}ms)`);render();});
-addEventListener('contextmenu',e=>{if(dev!=="KBM")return;if(capture)e.preventDefault();});
-addEventListener('wheel',e=>{if(dev!=="KBM")return;if(!capture||!MODES[modeIx].data)return;e.preventDefault();
+addEventListener('contextmenu',e=>{if(dev!=="KBM"||!ccInPad(e))return;if(capture)e.preventDefault();});
+addEventListener('wheel',e=>{if(dev!=="KBM"||!ccInPad(e))return;if(!capture||!MODES[modeIx].data)return;e.preventDefault();
   const id=e.deltaY<0?"M_WhUp":"M_WhDn";down.add(id);render();
   fire(id,e.deltaY<0?"Wheel Up":"Wheel Down","TICK");
   setTimeout(()=>{down.delete(id);render();},130);},{passive:false});
