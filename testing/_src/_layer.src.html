@@ -1034,6 +1034,79 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
   border-radius:7px;padding:8px 15px;cursor:pointer;font:700 13.5px inherit}
 #cc-kb .devs button.on{background:#00C9A7;border-color:#00C9A7;color:#04231D}
 #cc-kb .devs button.todo{opacity:.45}
+/* the board sits recessed, the way a keyboard sits in its tray */
+#cc-kb .board{background:linear-gradient(180deg,#0A1420,#0D1A29);
+  border:1px solid #1B2C42;
+  box-shadow:inset 0 3px 10px rgba(0,0,0,.55), inset 0 -1px 0 rgba(255,255,255,.03)}
+#cc-kb .kbd{padding:2px}
+
+/* board first, readout underneath - a keyboard needs the whole width */
+#cc-kb .wrap{display:block !important}
+#cc-kb .board{padding:18px 16px}
+#cc-kb .side{margin-top:14px;width:auto}
+#cc-kb .rowset{min-width:0}
+#cc-kb .key{min-height:52px}
+#cc-kb .key .cap{font-size:12.5px}
+#cc-kb .key .act{font-size:10.5px;line-height:1.2;display:-webkit-box;
+  -webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#cc-kb .blk.main{min-width:0}
+@media (min-width:1200px){
+  #cc-kb .side{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  #cc-kb .side h2{grid-column:1/-1}
+}
+/* full-screen capture */
+#cc-kb .fskey{background:#2A1A06;border:1px solid #6A4A12;color:#FFD9A8;
+  border-radius:6px;padding:9px 14px;font:700 13px inherit;cursor:pointer}
+#cc-kb .fskey.on{background:var(--live,#00E5C0);border-color:var(--live,#00E5C0);
+  color:#04231D}
+
+
+/* ---------- keyboard, rebuilt to look like one ---------- */
+#cc-kb .kbd{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+#cc-kb .blk{display:flex;flex-direction:column;gap:6px}
+#cc-kb .blk.main{flex:1 1 620px;min-width:520px}
+#cc-kb .blk.nav{flex:0 0 148px}
+#cc-kb .blk.num{flex:0 0 196px}
+#cc-kb .blklab{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:#5E7692;margin-bottom:1px}
+#cc-kb .krow{display:flex;gap:5px;margin:0}
+#cc-kb .blk.main .krow:first-child{margin-bottom:11px}
+
+/* A keycap: a top surface, a side wall, and a shadow on the deck. */
+#cc-kb .key{
+  position:relative;flex:1 1 0;min-width:40px;min-height:56px;
+  padding:5px 6px 6px;border-radius:7px;cursor:pointer;
+  display:flex;flex-direction:column;gap:2px;overflow:hidden;
+  background:linear-gradient(180deg,#223854 0%,#1A2C43 58%,#152537 100%);
+  border:1px solid #31486A;
+  box-shadow:0 3px 0 0 #0C1828, 0 5px 7px -3px rgba(0,0,0,.55),
+             inset 0 1px 0 rgba(255,255,255,.09);
+  transition:transform .05s ease, box-shadow .05s ease, background .05s ease;
+}
+#cc-kb .key:hover{border-color:var(--accent,#FF6B00)}
+#cc-kb .key.empty{
+  background:linear-gradient(180deg,#14202F,#0F1926);
+  border-color:#1D2C3E;box-shadow:0 2px 0 0 #0A1420;opacity:.6}
+#cc-kb .key.down{
+  transform:translateY(3px);
+  background:linear-gradient(180deg,#00E5C0,#00B295);
+  border-color:#00E5C0;
+  box-shadow:0 0 0 0 #0C1828, inset 0 2px 6px rgba(0,40,32,.45)}
+#cc-kb .key.down .cap,#cc-kb .key.down .act{color:#04231D}
+#cc-kb .key .cap{font-size:12px;font-weight:800;color:#CBD9E6;letter-spacing:.02em}
+#cc-kb .key .act{font-size:11px;line-height:1.22;color:#8CA3B8}
+#cc-kb .key.hit{outline:2px solid var(--accent,#FF6B00);outline-offset:1px}
+#cc-kb .key.mod1{border-color:#FF8A00}
+#cc-kb .key.mod2{border-color:#FF4757}
+#cc-kb .key.mod3{border-color:#FF5FA2}
+#cc-kb .key .q{position:absolute;top:3px;right:5px;color:var(--accent,#FF6B00);
+  font-size:11px;font-weight:800}
+/* physical gaps, not keys */
+#cc-kb .gap{flex:0 0 auto;pointer-events:none;background:none;border:none;
+  box-shadow:none}
+#cc-kb .g50{width:22px}
+#cc-kb .g25{width:11px}
+
 #cc-kb .dvhead{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 #cc-kb .dvchip{background:#12233A;border:2px solid #22364F;border-radius:8px;
   padding:8px 12px;font-size:13px;min-width:180px}
@@ -1161,6 +1234,7 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
     <span class="lamp"><span class="dot m2" id="cc-kb-d2"></span>M2 Left Shift</span>
     <span class="lamp"><span class="dot m3" id="cc-kb-d3"></span>M3 Right Alt</span>
     <span class="lamp" id="cc-kb-layer">Layer: none</span>
+    <button class="fskey" id="cc-kb-fs" title="Capture keys the browser normally takes">Capture everything (full screen)</button>
   </div>
   <div class="wrap">
     <div class="board"><div class="rowset" id="cc-kb-board"></div></div>
@@ -1170,8 +1244,7 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
       <div class="legend" id="cc-kb-legend"></div>
       <div class="note"><strong>Alt+F4</strong>, <strong>Ctrl+Alt+Del</strong> and the
         <strong>Windows key</strong> can't be caught by any web page &mdash; Windows takes
-        them first. <strong>Ctrl+W</strong> / <strong>Ctrl+T</strong> need fullscreen
-        capture, not in this build.</div>
+        them first. <strong>Ctrl+W</strong> / <strong>Ctrl+T</strong> / <strong>Esc</strong> are yours once you press <strong>Capture everything</strong> above &mdash; Chrome and Edge only.</div>
     </div>
   </div>
   <footer class="kbfoot">
@@ -1316,8 +1389,9 @@ var CODE={Escape:"Esc",F1:"F1",F2:"F2",F3:"F3",F4:"F4",F5:"F5",F6:"F6",F7:"F7",F
  Numpad4:"Np4",Numpad5:"Np5",Numpad6:"Np6",Numpad1:"Np1",Numpad2:"Np2",Numpad3:"Np3",
  NumpadEnter:"NpEnt",Numpad0:"Np0",NumpadDecimal:"NpDot"};
 var ROWS=[
- [["Esc","Esc"],["F1","F1"],["F2","F2"],["F3","F3"],["F4","F4"],["F5","F5"],["F6","F6"],
-  ["F7","F7"],["F8","F8"],["F9","F9"],["F10","F10"],["F11","F11"],["F12","F12"]],
+ [["Esc","Esc"],["_g50"],["F1","F1"],["F2","F2"],["F3","F3"],["F4","F4"],
+  ["_g50"],["F5","F5"],["F6","F6"],["F7","F7"],["F8","F8"],
+  ["_g50"],["F9","F9"],["F10","F10"],["F11","F11"],["F12","F12"]],
  [["`","`"],["1","1"],["2","2"],["3","3"],["4","4"],["5","5"],["6","6"],["7","7"],["8","8"],
   ["9","9"],["0","0"],["-","-"],["=","="],["Back","Bksp","w150"]],
  [["Tab","Tab","w150"],["Q","Q"],["W","W"],["E","E"],["R","R"],["T","T"],["Y","Y"],["U","U"],
@@ -1378,6 +1452,9 @@ function draw(rows,title){
   rows.forEach(function(r){h+='<div class="krow">';
     r.forEach(function(k){
       var id=k[0],cap=k[1],w=k[2];
+      if(id&&id.charAt(0)==="_"){
+        /* a physical gap between key groups, not a key */
+        h+='<div class="gap '+id.slice(1)+'"></div>';return;}
       if(!id){h+='<div class="key" style="visibility:hidden"></div>';return;}
       var es=ents(id),c="key "+(w||"");
       if(!es.length)c+=" empty";
@@ -1387,8 +1464,9 @@ function draw(rows,title){
       var q=es.some(function(e){return e.q;})?'<span class="q">?</span>':'';
       var t=es.slice(0,3).map(function(e){
         return (e.c?'<span style="color:#00C9A7">'+e.c+'</span> ':"")+e.a;}).join("<br>");
-      h+='<div class="'+c+'" data-id="'+id+'">'+q+'<div class="cap">'+cap+
-         '</div><div class="act">'+t+'</div></div>';});
+      var full=es.map(function(e){return (e.c?e.c+" ":"")+e.a;}).join(" \u00b7 ");
+      h+='<div class="'+c+'" data-id="'+id+'" title="'+cap+(full?" \u2014 "+full:"")+'">'+q+
+         '<div class="cap">'+cap+'</div><div class="act">'+t+'</div></div>';});
     h+='</div>';});
   return h;
 }
@@ -1799,7 +1877,17 @@ function render(){
       'filled it in here.<br>It arrives automatically once the default profile is '+
       'extracted from the game files.</div>';
     $('cc-kb-layer').textContent="Layer: —";return;}
-  $('cc-kb-board').innerHTML=draw(ROWS)+draw(NAV,"Navigation")+draw(NUM,"Numpad")+draw(MOUSE,"Mouse");
+  /* A real board is one object: main block, navigation cluster and numpad
+     side by side. Stacking them under headings was three tables, not a
+     keyboard, and it is the whole reason it did not read as one. */
+  $('cc-kb-board').innerHTML=
+    '<div class="kbd">'+
+      '<div class="blk main">'+draw(ROWS)+'</div>'+
+      '<div class="blk nav"><div class="blklab">navigation</div>'+draw(NAV)+'</div>'+
+      '<div class="blk num"><div class="blklab">numpad</div>'+draw(NUM)+'</div>'+
+    '</div>'+
+    '<div class="kbd" style="margin-top:16px"><div class="blk main">'+
+      '<div class="blklab">mouse</div>'+draw(MOUSE)+'</div></div>';
   $('cc-kb-layer').textContent="Layer: "+
     ({0:"none",1:"M1 (Left Alt)",2:"M2 (Left Shift)",3:"M3 (Right Alt)"})[mod];
 }
@@ -1841,6 +1929,52 @@ function close(){OPEN=false;$('cc-kb').classList.remove('open');
   document.body.style.overflow='';down={};}
 $('cc-kb-tab').onclick=open;
 $('cc-kb-x').onclick=close;
+
+/* ---------- full-screen capture ----------
+   Chrome and Edge will hand over Ctrl+W, Ctrl+T, Ctrl+N and Escape through
+   the Keyboard Lock API, but only inside full screen and only when the user
+   asks. Firefox has no keyboard lock; full screen still helps a little, and
+   the button says which you got rather than implying success.
+
+   Nothing gets Alt+F4, Ctrl+Alt+Del or the Windows key. Those never reach
+   the browser at all. */
+(function(){
+  var btn=document.getElementById('cc-kb-fs');
+  if(!btn) return;
+  var locked=false;
+  function state(){
+    var fs=!!(document.fullscreenElement||document.webkitFullscreenElement);
+    btn.classList.toggle('on', fs);
+    btn.textContent = !fs ? 'Capture everything (full screen)'
+      : (locked ? 'Capturing everything \u2014 Esc twice to leave'
+                : 'Full screen \u2014 no keyboard lock in this browser');
+  }
+  btn.onclick=function(){
+    var fs=!!(document.fullscreenElement||document.webkitFullscreenElement);
+    if(fs){
+      if(navigator.keyboard&&navigator.keyboard.unlock)navigator.keyboard.unlock();
+      locked=false;
+      (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+      return;
+    }
+    var el=document.documentElement;
+    var req=el.requestFullscreen||el.webkitRequestFullscreen;
+    if(!req){ alert('This browser will not go full screen from a page.'); return; }
+    Promise.resolve(req.call(el)).then(function(){
+      if(navigator.keyboard&&navigator.keyboard.lock){
+        return navigator.keyboard.lock().then(function(){ locked=true; },
+                                              function(){ locked=false; });
+      }
+      locked=false;
+    }).then(state, state);
+  };
+  document.addEventListener('fullscreenchange',function(){
+    if(!(document.fullscreenElement||document.webkitFullscreenElement)) locked=false;
+    state();
+  });
+  state();
+})();
+
 
 document.addEventListener('keydown',function(e){
   if(!OPEN)return;
