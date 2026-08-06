@@ -60,6 +60,10 @@ var HAT_DIRS=[
   [-1.000,"up"],        [-0.714,"up_right"],   [-0.429,"right"],
   [-0.143,"down_right"],[ 0.143,"down"],       [ 0.429,"down_left"],
   [ 0.714,"left"],      [ 1.000,"up_left"]];
+/* Display cap. Sticks report 128 buttons; almost none have 128. A tile
+   above the cap still appears the moment it is pressed - see applyVis. */
+var BTN_SHOWN=40, showAll=false, hideUnused=false;
+var DVCOL_CSS="\n/* Two sticks are a pair, not a list. Side by side on a normal screen,\n   stacked only when there is genuinely no room. */\n.dvcols{display:grid;gap:14px;grid-template-columns:1fr}\n.dvcols.pair{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}\n.dvcol{background:#0B1626;border:1px solid #1B2C42;border-radius:10px;padding:11px 12px}\n.dvcolhd{font:800 13px/1.3 'Segoe UI',system-ui,sans-serif;color:#FF6B00;\n  letter-spacing:.04em;margin-bottom:9px;padding-bottom:7px;\n  border-bottom:1px solid #1B2C42}\n.dvcolhd small{display:block;font:600 11px/1.4 inherit;color:#93A7B6;\n  letter-spacing:.02em;margin-top:2px}\n";
 var HAT_CENTRE=1.2857, HAT_TOL=0.06;
 
 var DEADZONE=0.12, DRIFT=0.06;
@@ -140,9 +144,43 @@ function emptyPanel(){
     '<kbd>js3</kbd> in the order you press them.</div>';
 }
 
+
+/* Total buttons across every connected stick, for an honest button label. */
+function dvMaxBtn(list){
+  var m=0; (list||[]).forEach(function(p){ if(p.buttons.length>m) m=p.buttons.length; });
+  return m;
+}
+function dvAllLabel(list){
+  var m=dvMaxBtn(list);
+  return showAll ? ("Show first "+BTN_SHOWN) : ("Show all "+(m||BTN_SHOWN));
+}
+/* The single rule that decides whether a tile is on screen. Both toggles and
+   the press handler call this - there is no second place that sets display. */
+function applyVis(){
+  if(!devDom) return;
+  var k, d, hiddenAbove=0;
+  for(k in devDom.btn){
+    d=devDom.btn[k];
+    var vis = showAll
+           || d.everPressed
+           || (d.ix < BTN_SHOWN && !(hideUnused && !d.everPressed));
+    if(!vis && d.ix >= BTN_SHOWN) hiddenAbove++;
+    if(d.vis!==vis){ d.vis=vis; d.el.style.display = vis ? '' : 'none'; }
+  }
+  var note=$(ID_+'dvcapnote');
+  if(note) note.textContent = hiddenAbove
+    ? (hiddenAbove+" further buttons hidden - press one and it appears")
+    : "";
+}
+
 /* Build the DOM once. Everything after this is mutation only. */
 function buildDevice(list){
   var host=$(ID_+'board'), h='', i;
+  if(!document.getElementById('cc-dvcol-css')){
+    var st=document.createElement('style');
+    st.id='cc-dvcol-css'; st.textContent=DVCOL_CSS;
+    document.head.appendChild(st);
+  }
   if(!list.length){ host.innerHTML=emptyPanel(); devDom=null; return; }
 
   h='<div class="dvhead">';
@@ -155,18 +193,23 @@ function buildDevice(list){
   });
   h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as centre">'+
      'Set centre</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
-     '<button class="tg" id="'+ID_+'dvhide">Hide unused buttons</button></div>';
+     '<button class="tg" id="'+ID_+'dvhide">Hide unused buttons</button>'+
+     '<button class="tg" id="'+ID_+'dvall">'+dvAllLabel(list)+'</button>'+
+     '<span class="dvcap" id="'+ID_+'dvcapnote"></span></div>';
 
+  h+='<div class="dvcols'+(list.length>1?' pair':'')+'">';
   list.forEach(function(p){
-    h+='<div class="dvsec">'+esc(p.id)+' &mdash; buttons</div><div class="btngrid">';
+    h+='<div class="dvcol"><div class="dvcolhd">'+prefix(p)+' &mdash; '+esc(p.id)+
+       '<small>'+p.buttons.length+' buttons &middot; '+p.axes.length+' axes</small></div>';
+    h+='<div class="dvsec">buttons</div><div class="btngrid">';
     if(!p.buttons.length) h+='<div style="color:#93A7B6;font-size:13px">none reported</div>';
     p.buttons.forEach(function(b,i){
       var n=btnName(p,i);
-      h+='<div class="btn" data-b="'+p.index+':'+i+'">'+
+      h+='<div class="btn'+(i>=BTN_SHOWN?' over':'')+'" data-b="'+p.index+':'+i+'">'+
          '<div class="sc">'+n[0]+'</div><div class="nm">'+n[1]+'</div>'+
          '<div class="va"></div></div>';
     });
-    h+='</div><div class="dvsec">'+esc(p.id)+' &mdash; axes</div>';
+    h+='</div><div class="dvsec">axes and hats</div>';
     if(!p.axes.length) h+='<div style="color:#93A7B6;font-size:13px">none reported</div>';
     p.axes.forEach(function(v,i){
       var n=axName(p,i);
@@ -177,7 +220,9 @@ function buildDevice(list){
          '<div class="axbar"><u></u><i></i><b></b></div>'+
          '<div class="axval">0.000</div></div>';
     });
+    h+='</div>';                      /* .dvcol */
   });
+  h+='</div>';                        /* .dvcols */
 
   h+='<div class="dvwarn"><strong>Reading this panel.</strong> '+
      'The <b>name in the left column</b> is what Star Citizen calls that input — '+
@@ -198,7 +243,8 @@ function buildDevice(list){
   var els=host.querySelectorAll('.btn[data-b]'), j;
   for(j=0;j<els.length;j++)
     devDom.btn[els[j].getAttribute('data-b')]={
-      el:els[j], va:els[j].querySelector('.va'), on:null};
+      el:els[j], va:els[j].querySelector('.va'), on:null,
+      ix:parseInt(els[j].getAttribute('data-b').split(':')[1],10)};
   els=host.querySelectorAll('.axrow[data-a]');
   for(j=0;j<els.length;j++)
     devDom.ax[els[j].getAttribute('data-a')]={
@@ -223,13 +269,17 @@ function buildDevice(list){
   var cp=$(ID_+'dvcopy'); if(cp) cp.onclick=copyReport;
   var hb=$(ID_+'dvhide');
   if(hb) hb.onclick=function(){
-    var hide=this.classList.toggle('on'), k;
-    this.textContent = hide ? "Show all buttons" : "Hide unused buttons";
-    for(k in devDom.btn){
-      var d=devDom.btn[k];
-      d.el.style.display = (hide && !d.everPressed) ? 'none' : '';
-    }
+    hideUnused=this.classList.toggle('on');
+    this.textContent = hideUnused ? "Show unused too" : "Hide unused buttons";
+    applyVis();
   };
+  var ab=$(ID_+'dvall');
+  if(ab) ab.onclick=function(){
+    showAll=this.classList.toggle('on');
+    this.textContent=dvAllLabel(pads());
+    applyVis();
+  };
+  applyVis();
 }
 
 /* Mutation only. Called every frame; must touch nothing structural. */
@@ -241,7 +291,7 @@ function paintDevice(list){
       k=p.index+":"+i; d=devDom.btn[k]; if(!d) continue;
       var b=p.buttons[i], on=b.pressed||b.value>0.5;
       var an=(b.value>0.02&&b.value<0.98);
-      if(on){ d.everPressed=true; }
+      if(on && !d.everPressed){ d.everPressed=true; applyVis(); }
       if(d.on!==on){ d.on=on;
         if(on) d.el.classList.add('down'); else d.el.classList.remove('down'); }
       if(d.an!==an){ d.an=an;

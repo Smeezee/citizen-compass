@@ -330,11 +330,21 @@ open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
 # silent skip, because a silent skip is exactly the defect this block exists
 # to close.
 # ---------------------------------------------------------------------------
+# The device panel has one writer: device_engine.js. Inject it into both hosts
+# BEFORE anything is copied, so a build can never ship a stale copy.
+import subprocess as _sp
+_r=_sp.run([sys.executable, os.path.join(SRC,'inject_engine.py')],
+           capture_output=True, text=True)
+sys.stdout.write(_r.stdout)
+if _r.returncode!=0:
+    sys.exit("ENGINE INJECTION FAILED - refusing to build:\n"+_r.stdout+_r.stderr)
+
 import shutil
 PAGES = [
     ('keybinds.src.html', 'keybinds.html'),
     ('loadout.src.html',  'loadout.html'),
     ('find.src.html',     'find.html'),
+    ('kb_modes.gen.js',  'kb_modes.gen.js'),
 ]
 _copied, _absent = [], []
 for _src_name, _out_name in PAGES:

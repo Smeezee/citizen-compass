@@ -167,7 +167,15 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
 .key .cap{font-size:11.5px;font-weight:700;color:var(--muted)}
 .key .act{font-size:12px;line-height:1.24}
 .key.hit{outline:2px solid var(--accent);outline-offset:1px}
-.key.mod1{border-color:var(--m1)}.key.mod2{border-color:var(--m2)}.key.mod3{border-color:var(--m3)}
+.key.mod1{border-color:var(--m1)}.key.mod2{border-color:var(--m2)}.key.mod3{border-color:var(--m3)}.key.mod4{border-color:#00A8FF}
+.dot.m4{background:#00A8FF}
+/* things the game ships with no key at all - shown, never hidden */
+.nokey{margin-top:16px;padding:12px 14px;background:#0B1626;border:1px solid #22364F;border-radius:9px}
+.nokey h3{margin:0 0 4px;font:800 13px/1.3 inherit;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.nokey p{margin:0 0 9px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.nokey .tags{display:flex;flex-wrap:wrap;gap:5px}
+.nokey .tags span.more{background:#1F3350;border-color:#3E5A7E;color:#FF9A45;cursor:pointer;font-weight:700}
+.nokey .tags span{background:#12233A;border:1px solid #22364F;border-radius:4px;padding:3px 8px;font-size:11.5px;color:#B9C9D6}
 .key .q{position:absolute;top:2px;right:4px;color:var(--accent);font-size:12px;font-weight:700}
 .w125{flex-grow:1.25}.w150{flex-grow:1.5}.w175{flex-grow:1.75}
 .w200{flex-grow:2}.w225{flex-grow:2.25}.w600{flex-grow:6}
@@ -220,6 +228,7 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
 .axval{font:700 12.5px ui-monospace,Consolas,monospace;color:var(--muted);text-align:right}
 .axrow.hot .axval{color:var(--live)}
 .axrow.drift .axval{color:var(--accent)}
+.dvcap{color:#93A7B6;font-size:12px;margin-left:4px;align-self:center}
 .dvwarn{margin-top:14px;padding:10px 12px;background:#1A1206;border:1px solid #4A3410;
   border-radius:7px;font-size:13.5px;color:#E8C9A0}
 .dvwarn code{font-family:ui-monospace,Consolas,monospace;color:#FFD9A8}
@@ -227,12 +236,12 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
 
 <div class="top">
   <a href="index.html">&larr; Back to Citizen Compass</a>
-  <span class="t">Keybinding Tester &mdash; <strong>Keyboard/Mouse</strong> bindings are
-  transcribed from in-game screenshots and not yet verified against game files.
-  <strong>Gamepad</strong> and <strong>Joystick / HOTAS</strong> read your controller
-  live and are accurate now.</span>
+  <span class="t">Keybinding Tester &mdash; <strong>Keyboard/Mouse</strong> bindings are read
+  from the game's own default profile. <strong>Gamepad</strong> and
+  <strong>Joystick / HOTAS</strong> read your controller live.</span>
 </div>
 
+<script src="kb_modes.gen.js"></script>
 <div class="modes" id="modes"></div>
 <div class="devs" id="devs"></div>
 
@@ -249,6 +258,7 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
   <span class="lamp"><span class="dot m1" id="d1"></span>M1 Left Alt</span>
   <span class="lamp"><span class="dot m2" id="d2"></span>M2 Left Shift</span>
   <span class="lamp"><span class="dot m3" id="d3"></span>M3 Right Alt</span>
+  <span class="lamp"><span class="dot m4" id="d4"></span>M4 Right Ctrl</span>
   <span class="lamp" id="layerlbl">Layer: none</span>
   <button class="fskey" id="fs" title="Capture keys the browser normally takes">Capture everything (full screen)</button>
 </div>
@@ -269,121 +279,16 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
 
 <script>
 /* ---------- MODES ---------- */
-const FLIGHT={
- Esc:[{a:"Pause / Options"}],F1:[{a:"mobiGlas"}],F2:[{a:"mobiGlas Map"}],F3:[],
- F4:[{a:"Cycle Camera View"},{a:"Advanced Camera*",c:"AD"}],
- F5:[{a:"Engine Power (-)",q:1}],F6:[{a:"Shield Power (+)",q:1}],
- F7:[{a:"Weapon Power (+)",q:1}],F8:[{a:"Reset Power Distribution"}],
- F9:[{a:"Power (-)"},{a:"Power Min*",m:1}],F10:[{a:"Power (+)"},{a:"Power Max*",m:1}],
- F11:[{a:"Contacts"},{a:"2D UI Cursor",m:1}],F12:[{a:"Toggle Chat Window"}],
- "`":[{a:"Console"}],
- 1:[{a:"Lock Pin 1"},{a:"Set Pin 1",m:1}],2:[{a:"Lock Pin 2"},{a:"Set Pin 2",m:1}],
- 3:[{a:"Lock Pin 3"},{a:"Set Pin 3",m:1}],
- 4:[{a:"Target Next — Attacker"},{a:"Target Rear — Attacker",m:1}],
- 5:[{a:"Target Next — Hostile"},{a:"Target Rear — Hostile",m:1}],
- 6:[{a:"Target Next — Friendly"},{a:"Target Rear — Friendly",m:1}],
- 7:[{a:"Target Next — All"},{a:"Target Rear — All",m:1}],
- 8:[],9:[{a:"Hail Target"}],0:[{a:"Remove All Pinned Targets"}],
- "-":[],"=":[],Back:[{a:"Self-Destruct Toggle*"}],
- Tab:[{a:"Ping"},{a:"PIT Menu",m:1},{a:"Flight Mode Wheel*",m:2}],
- Q:[{a:"Roll Left"},{a:"Mouse Toggle",c:"TU"}],
- W:[{a:"Strafe Forward"},{a:"Fracture",c:"SA",m:1}],
- E:[{a:"Roll Right"},{a:"Gyro Toggle",c:"TU"}],
- R:[{a:"Sub-Target Cycle"},{a:"Reset Sub-Target",m:1},{a:"Flight Ready",m:2}],
- T:[{a:"Target In View / Auto Target"},{a:"Unlock Target",m:1}],
- Y:[{a:"Exit Seat*"},{a:"Eject",m:2}],
- U:[{a:"Power On/Off"},{a:"Emergency Exit Seat",m:2}],
- I:[{a:"Engines On/Off"}],O:[{a:"Shields On/Off"}],P:[{a:"Weapons On/Off"}],
- "[":[{a:"Accept Invite"}],"]":[{a:"Reject Invite / Ignore*"}],"\\":[],Caps:[],
- A:[{a:"Strafe Left"},{a:"Focus Left",c:"SA",m:1},{a:"Fire Left",c:"SA",m:2}],
- S:[{a:"Cycle Position",c:"TU"},{a:"Fracture",c:"SA",m:2}],
- D:[{a:"Strafe Right"},{a:"Focus Right",c:"SA",m:1},{a:"Fire Right",c:"SA",m:2}],
- F:[{a:"Interaction Mode",c:"IM"}],
- G:[{a:"Gimbal Mode"},{a:"Freeze Gimbals",m:3}],
- H:[{a:"CM Decoy (Top)*"},{a:"CM Decoy (-)",m:1},{a:"CM Decoy (+)",m:2}],
- J:[{a:"CM Chaff"},{a:"Jettison Cargo",m:1}],K:[{a:"VTOL Toggle"}],
- L:[{a:"Toggle Lights"},{a:"Toggle Lock Ahead",m:1,q:1}],
- ";":[],"'":[],Enter:[{a:"Activate Chat Box"}],
- LShift:[{a:"Afterburner"},{a:"— Modifier 2 —"}],Z:[{a:"Freelook*"}],
- X:[{a:"Space Brake / Reset Cruise Trim",q:1},{a:"Wipe Visor",m:1}],
- C:[{a:"Decoupled Toggle"},{a:"Cruise Toggle",m:1},{a:"Recenter",c:"TU"}],
- V:[{a:"Scan Mode Toggle",c:"SC"}],
- B:[{a:"Cycle Master Modes*"},{a:"PIT Wheel*",m:1},{a:"Fire Mode",c:"TU"}],
- N:[{a:"Landing Mode Toggle"},{a:"Activated*",c:"LN"},{a:"ATC / Cargo Request",m:1}],
- M:[{a:"Mining / Salvage Mode Toggle",c:"MG"}],
- ",":[{a:"Look Back"}],".":[],"/":[],RShift:[{a:"Lock Ship Rotation"}],
- LCtrl:[{a:"Strafe Down"}],LAlt:[{a:"— Modifier 1 —"}],Space:[{a:"Strafe Up"}],
- RAlt:[{a:"— Modifier 3 —"}],RCtrl:[],
- Ins:[],Home:[{a:"Deflection (-)",c:"AD",q:1}],PgUp:[{a:"Z Offset (+)",c:"AD"}],
- Del:[],End:[{a:"Deflection (-)",c:"AD",q:1}],PgDn:[{a:"Z Offset (-)",c:"AD"}],
- Up:[{a:"Y Offset (+)",c:"AD"}],Left:[{a:"X Offset (-)",c:"AD"}],
- Down:[{a:"Y Offset (-)",c:"AD"}],Right:[{a:"X Offset (+)",c:"AD"}],
- NumLk:[],NpDiv:[],NpMul:[{a:"Reset View",c:"AD"}],NpSub:[{a:"FOV (+)",c:"AD",q:1}],
- Np7:[{a:"Shield Raise — Top"}],Np8:[{a:"Shield Raise — Front"}],
- Np9:[{a:"Shield Raise — Bottom",q:1}],NpAdd:[],
- Np4:[{a:"Shield Raise — Left"}],Np5:[{a:"Shields Reset"}],Np6:[{a:"Shield Raise — Right"}],
- Np1:[{a:"Shield Raise — Back"}],Np2:[{a:"Shield Raise — Bottom",q:1}],Np3:[],
- Np0:[{a:"Clear Current Save*",c:"AD"}],NpDot:[],NpEnt:[],
- M_Left:[{a:"Fire Weapon Group 1"},{a:"Engage Quantum Travel",m:1},{a:"Fire Mining Laser",c:"MG"}],
- M_Right:[{a:"Fire Weapon Group 2"},{a:"Precision Toggle",m:1},{a:"Cycle Missiles Forward",c:"ML"}],
- M_Mid:[{a:"Cycle Operator Mode"}],M_Back:[],M_Fwd:[],
- M_WhUp:[{a:"Speed Limiter (+)"}],M_WhDn:[{a:"Speed Limiter (-)"}]
-};
-const ONFOOT={
- Esc:[{a:"Pause / Options"}],F1:[{a:"mobiGlas"},{a:"Scoreboard",c:"AC"}],
- F2:[{a:"mobiGlas Map"}],F3:[],
- F4:[{a:"Cycle Camera View"},{a:"Advanced Camera Mode*",c:"AD"}],
- F5:[],F6:[],F7:[],F8:[],F9:[],F10:[],F11:[{a:"Contacts"}],F12:[{a:"Chat"}],
- "`":[{a:"Console"}],
- 1:[{a:"Cycle Weapons"},{a:"Weapon Wheel*",m:1,q:1}],
- 2:[{a:"Cycle Weapons"},{a:"Weapon Wheel*",m:1,q:1}],
- 3:[{a:"Sidearm"},{a:"Weapon Wheel*",m:1,q:1}],
- 4:[{a:"Consumables"}],5:[{a:"MedPack / Gadget",q:1}],6:[{a:"Unarmed Melee"}],
- 7:[],8:[],9:[],0:[],"-":[],"=":[],Back:[{a:"Force Re-spawn*"}],
- Tab:[{a:"PIT Menu",c:"IM"}],
- Q:[{a:"Lean Left"},{a:"Roll On Back Left*",m:1}],
- W:[{a:"Move Forwards"}],
- E:[{a:"Lean Right"},{a:"Roll On Back Right*",m:1}],
- R:[{a:"Reload"},{a:"Holster Weapon*"},{a:"Fire Mode",m:2}],
- T:[{a:"Flashlight"}],Y:[],U:[{a:"Use Underbarrel Attachment"}],I:[{a:"Inventory"}],
- O:[],P:[],"[":[{a:"Accept Invite"}],"]":[{a:"Reject Invite / Ignore*"}],"\\":[],Caps:[],
- A:[{a:"Move Left"},{a:"Dodge Left**",c:"UC"}],
- S:[{a:"Move Backwards"},{a:"Dodge Back**",c:"UC"}],
- D:[{a:"Move Right"},{a:"Dodge Right**",c:"UC"}],
- F:[{a:"Quick Interact"},{a:"Interaction Mode*",c:"IM"}],
- G:[{a:"Equip Grenade"}],H:[],J:[{a:"Weapon Customize"}],K:[],L:[],";":[],"'":[],
- Enter:[{a:"Activate Chat"}],
- LShift:[{a:"Sprint*"},{a:"Hold Breath*",c:"ADS"},{a:"— Modifier 2 —"}],
- Z:[{a:"Freelook*"}],X:[{a:"Re-spawn*",c:"AC"},{a:"Wipe Visor",m:1}],
- C:[{a:"Crouch"}],V:[{a:"Equip Knife"}],B:[{a:"Change Fire Mode"}],
- N:[],M:[],",":[],".":[],"/":[],RShift:[],
- LCtrl:[{a:"Prone"}],LAlt:[{a:"— Modifier 1 —"}],Space:[{a:"Jump"}],RAlt:[],RCtrl:[],
- Ins:[],Home:[{a:"Deflection (-)",c:"AD",q:1}],PgUp:[{a:"Z Offset (+)",c:"AD"}],
- Del:[],End:[{a:"Deflection (-)",c:"AD",q:1}],PgDn:[{a:"Z Offset (-)",c:"AD"}],
- Up:[{a:"Y Offset (+)",c:"AD"}],Left:[{a:"X Offset (-)",c:"AD"}],
- Down:[{a:"Y Offset (-)",c:"AD"}],Right:[{a:"X Offset (+)",c:"AD"}],
- NumLk:[],NpDiv:[],NpMul:[{a:"Reset View",c:"AD"}],NpSub:[{a:"FOV (+)",c:"AD",q:1}],
- Np7:[{a:"Load / Save 7*",c:"AD"}],Np8:[{a:"Load / Save 8*",c:"AD"}],
- Np9:[{a:"Load / Save 9*",c:"AD"}],NpAdd:[],
- Np4:[{a:"Load / Save 4*",c:"AD"}],Np5:[{a:"Load / Save 5*",c:"AD"}],
- Np6:[{a:"Load / Save 6*",c:"AD"}],
- Np1:[{a:"Load / Save 1*",c:"AD"}],Np2:[{a:"Load / Save 2*",c:"AD"}],
- Np3:[{a:"Load / Save 3*",c:"AD"}],
- Np0:[{a:"Clear Current Save*",c:"AD"}],NpDot:[],NpEnt:[],
- M_Left:[{a:"Primary Attack"},{a:"Activate / Interact",c:"IM"},{a:"Light Melee Left",c:"UC"}],
- M_Right:[{a:"Aim Down Sight"},{a:"Zoom Out",c:"IM"},{a:"Light Melee Right",c:"UC"}],
- M_Mid:[{a:"Melee Block*",c:"UC",q:1}],M_Back:[],M_Fwd:[],
- M_WhUp:[{a:"Default Move Speed (+)"},{a:"Zoom In",c:"IM"}],
- M_WhDn:[{a:"Default Move Speed (-)"},{a:"Zoom Out",c:"IM"}]
-};
+/* FLIGHT and ONFOOT used to be typed out by hand here. They are now
+   generated from the game's own default profile like every other mode,
+   because two copies of one fact drift and only one of them is checked. */
 const MODES=[
- {id:"FLIGHT",label:"Flight",sub:"in a ship",data:FLIGHT,
-  legend:"SC scan · MG mining · SA salvage · SFH salvage focus · IM interaction<br>LN landing · TU turret · QT quantum · ML missile · AD adv camera · AC arena"},
- {id:"ONFOOT",label:"On Foot",sub:"walking around",data:ONFOOT,
-  legend:"IM interaction · PN prone · ADS aim down sights<br>UC unarmed combat · AD adv camera · AC arena commander"},
- {id:"EVA",label:"E.V.A.",sub:"zero-G, not entered yet",data:null},
- {id:"VEHICLE",label:"Vehicle",sub:"ground vehicles, not entered yet",data:null},
- {id:"CAMERA",label:"Camera",sub:"not entered yet",data:null}
+ {id:"FLIGHT", label:"Flight",  sub:"in a ship",         data:FLIGHT,  unbound:FLIGHT_UNBOUND,  legend:FLIGHT_LEGEND},
+ {id:"ONFOOT", label:"On Foot", sub:"walking around",    data:ONFOOT,  unbound:ONFOOT_UNBOUND,  legend:ONFOOT_LEGEND},
+ {id:"EVA",    label:"E.V.A.",  sub:"zero-G",            data:EVA,     unbound:EVA_UNBOUND,     legend:EVA_LEGEND},
+ {id:"VEHICLE",label:"Vehicle", sub:"ground vehicles",   data:VEHICLE, unbound:VEHICLE_UNBOUND, legend:VEHICLE_LEGEND},
+ {id:"CAMERA", label:"Camera",  sub:"views and free cam",data:CAMERA,  unbound:CAMERA_UNBOUND,  legend:CAMERA_LEGEND},
+ {id:"SOCIAL", label:"Social",  sub:"gestures and emotes",data:SOCIAL, unbound:SOCIAL_UNBOUND,  legend:SOCIAL_LEGEND}
 ];
 const DEVS=[{id:"KBM",label:"Keyboard / Mouse",ok:1},
             {id:"PAD",label:"Gamepad",ok:1},{id:"JOY",label:"Joystick / HOTAS",ok:1}];
@@ -463,7 +368,7 @@ function draw(rows,title){
       if(!id){h+='<div class="key" style="visibility:hidden"></div>';return;}
       const es=ents(id);let c="key "+(w||"");
       if(!es.length)c+=" empty";
-      if(id==="LAlt")c+=" mod1";if(id==="LShift")c+=" mod2";if(id==="RAlt")c+=" mod3";
+      if(id==="LAlt")c+=" mod1";if(id==="LShift")c+=" mod2";if(id==="RAlt")c+=" mod3";if(id==="RCtrl")c+=" mod4";
       if(filter&&es.some(e=>e.a.toLowerCase().includes(filter)))c+=" hit";
       if(down.has(id))c+=" down";
       const q=es.some(e=>e.q)?'<span class="q">?</span>':'';
@@ -472,6 +377,40 @@ function draw(rows,title){
       h+=`<div class="${c}" data-id="${id}" title="${cap}${full?" \u2014 "+full:""}">${q}<div class="cap">${cap}</div><div class="act">${t}</div></div>`;
     });h+='</div>';});
   return h;
+}
+
+/* Every mode has actions the game ships with no key bound. Emotes are the
+   extreme case: 34 of 40. Hiding them would tell a new player they do not
+   exist, so they are listed with how you actually reach them. */
+function ccNoKey(){
+  var u=MODES[modeIx].unbound||[];
+  if(!u.length) return '';
+  var how = MODES[modeIx].id==="SOCIAL"
+    ? 'Type the name into chat, or hold <strong>Left Alt + F</strong> and pick '+
+      'Emotes from the wheel. Chat-command spelling is not in the game files '+
+      'and has not been verified here.'
+    : 'These exist in the game but ship with no key on the keyboard. Bind them '+
+      'yourself in Options &rarr; Keybindings, or reach them through the '+
+      'in-game menus.';
+  /* Flight alone has ~200 of these. Showing all of them buries the board
+     under a wall of grey chips, so the list opens at 24 and says how many
+     it is holding back. Nothing is removed - only folded. */
+  var CAP=24, esc1=function(n){return String(n).replace(/</g,'&lt;');};
+  var head=u.slice(0,CAP), rest=u.slice(CAP);
+  return '<div class="nokey"><h3>'+u.length+' with no default key</h3>'+
+    '<p>'+how+'</p><div class="tags"><span>'+
+    head.map(esc1).join('</span><span>')+'</span>'+
+    (rest.length
+      ? '<span class="more" onclick="this.parentNode.innerHTML+=\'<span>\'+'+
+        'ccRest().join(\'</span><span>\')+\'</span>\';this.remove();">+'+
+        rest.length+' more</span>'
+      : '')+
+    '</div></div>';
+}
+/* The folded remainder, fetched only when asked for. */
+function ccRest(){
+  var u=MODES[modeIx].unbound||[];
+  return u.slice(24).map(function(n){return String(n).replace(/</g,'&lt;');});
 }
 function render(){
   if(dev!=="KBM"){renderDevice();return;}
@@ -492,19 +431,20 @@ function render(){
         '<div class="mplab">mouse &mdash; only captured here</div>'+
         draw(MOUSE)+'</div></div>'+
     '</div>'+
-    '';
-  $('layerlbl').textContent="Layer: "+{0:"none",1:"M1 (Left Alt)",2:"M2 (Left Shift)",3:"M3 (Right Alt)"}[mod];
+    ccNoKey();
+  $('layerlbl').textContent="Layer: "+{0:"none",1:"M1 (Left Alt)",2:"M2 (Left Shift)",3:"M3 (Right Alt)",4:"M4 (Right Ctrl)"}[mod];
 }
 function setMods(){
   let nm=0;
-  if(down.has("RAlt"))nm=3;else if(down.has("LAlt"))nm=1;else if(down.has("LShift"))nm=2;
+  if(down.has("RCtrl"))nm=4;else if(down.has("RAlt"))nm=3;else if(down.has("LAlt"))nm=1;else if(down.has("LShift"))nm=2;
   if(nm!==mod){mod=nm;render();}
   $('d1').classList.toggle('on',down.has("LAlt"));
   $('d2').classList.toggle('on',down.has("LShift"));
   $('d3').classList.toggle('on',down.has("RAlt"));
+  $('d4').classList.toggle('on',down.has("RCtrl"));
 }
 function fire(id,label,press){
-  const es=allEnts(id),ln={0:"no modifier",1:"M1 Left Alt",2:"M2 Left Shift",3:"M3 Right Alt"}[mod];
+  const es=allEnts(id),ln={0:"no modifier",1:"M1 Left Alt",2:"M2 Left Shift",3:"M3 Right Alt",4:"M4 Right Ctrl"}[mod];
   const match=es.find(e=>(e.m||0)===mod);
   $('ro').classList.add('hot');clearTimeout(fire._t);
   fire._t=setTimeout(()=>$('ro').classList.remove('hot'),450);
@@ -693,6 +633,10 @@ var HAT_DIRS=[
   [-1.000,"up"],        [-0.714,"up_right"],   [-0.429,"right"],
   [-0.143,"down_right"],[ 0.143,"down"],       [ 0.429,"down_left"],
   [ 0.714,"left"],      [ 1.000,"up_left"]];
+/* Display cap. Sticks report 128 buttons; almost none have 128. A tile
+   above the cap still appears the moment it is pressed - see applyVis. */
+var BTN_SHOWN=40, showAll=false, hideUnused=false;
+var DVCOL_CSS="\n/* Two sticks are a pair, not a list. Side by side on a normal screen,\n   stacked only when there is genuinely no room. */\n.dvcols{display:grid;gap:14px;grid-template-columns:1fr}\n.dvcols.pair{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}\n.dvcol{background:#0B1626;border:1px solid #1B2C42;border-radius:10px;padding:11px 12px}\n.dvcolhd{font:800 13px/1.3 'Segoe UI',system-ui,sans-serif;color:#FF6B00;\n  letter-spacing:.04em;margin-bottom:9px;padding-bottom:7px;\n  border-bottom:1px solid #1B2C42}\n.dvcolhd small{display:block;font:600 11px/1.4 inherit;color:#93A7B6;\n  letter-spacing:.02em;margin-top:2px}\n";
 var HAT_CENTRE=1.2857, HAT_TOL=0.06;
 
 var DEADZONE=0.12, DRIFT=0.06;
@@ -773,9 +717,43 @@ function emptyPanel(){
     '<kbd>js3</kbd> in the order you press them.</div>';
 }
 
+
+/* Total buttons across every connected stick, for an honest button label. */
+function dvMaxBtn(list){
+  var m=0; (list||[]).forEach(function(p){ if(p.buttons.length>m) m=p.buttons.length; });
+  return m;
+}
+function dvAllLabel(list){
+  var m=dvMaxBtn(list);
+  return showAll ? ("Show first "+BTN_SHOWN) : ("Show all "+(m||BTN_SHOWN));
+}
+/* The single rule that decides whether a tile is on screen. Both toggles and
+   the press handler call this - there is no second place that sets display. */
+function applyVis(){
+  if(!devDom) return;
+  var k, d, hiddenAbove=0;
+  for(k in devDom.btn){
+    d=devDom.btn[k];
+    var vis = showAll
+           || d.everPressed
+           || (d.ix < BTN_SHOWN && !(hideUnused && !d.everPressed));
+    if(!vis && d.ix >= BTN_SHOWN) hiddenAbove++;
+    if(d.vis!==vis){ d.vis=vis; d.el.style.display = vis ? '' : 'none'; }
+  }
+  var note=$(ID_+'dvcapnote');
+  if(note) note.textContent = hiddenAbove
+    ? (hiddenAbove+" further buttons hidden - press one and it appears")
+    : "";
+}
+
 /* Build the DOM once. Everything after this is mutation only. */
 function buildDevice(list){
   var host=$(ID_+'board'), h='', i;
+  if(!document.getElementById('cc-dvcol-css')){
+    var st=document.createElement('style');
+    st.id='cc-dvcol-css'; st.textContent=DVCOL_CSS;
+    document.head.appendChild(st);
+  }
   if(!list.length){ host.innerHTML=emptyPanel(); devDom=null; return; }
 
   h='<div class="dvhead">';
@@ -788,18 +766,23 @@ function buildDevice(list){
   });
   h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as centre">'+
      'Set centre</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
-     '<button class="tg" id="'+ID_+'dvhide">Hide unused buttons</button></div>';
+     '<button class="tg" id="'+ID_+'dvhide">Hide unused buttons</button>'+
+     '<button class="tg" id="'+ID_+'dvall">'+dvAllLabel(list)+'</button>'+
+     '<span class="dvcap" id="'+ID_+'dvcapnote"></span></div>';
 
+  h+='<div class="dvcols'+(list.length>1?' pair':'')+'">';
   list.forEach(function(p){
-    h+='<div class="dvsec">'+esc(p.id)+' &mdash; buttons</div><div class="btngrid">';
+    h+='<div class="dvcol"><div class="dvcolhd">'+prefix(p)+' &mdash; '+esc(p.id)+
+       '<small>'+p.buttons.length+' buttons &middot; '+p.axes.length+' axes</small></div>';
+    h+='<div class="dvsec">buttons</div><div class="btngrid">';
     if(!p.buttons.length) h+='<div style="color:#93A7B6;font-size:13px">none reported</div>';
     p.buttons.forEach(function(b,i){
       var n=btnName(p,i);
-      h+='<div class="btn" data-b="'+p.index+':'+i+'">'+
+      h+='<div class="btn'+(i>=BTN_SHOWN?' over':'')+'" data-b="'+p.index+':'+i+'">'+
          '<div class="sc">'+n[0]+'</div><div class="nm">'+n[1]+'</div>'+
          '<div class="va"></div></div>';
     });
-    h+='</div><div class="dvsec">'+esc(p.id)+' &mdash; axes</div>';
+    h+='</div><div class="dvsec">axes and hats</div>';
     if(!p.axes.length) h+='<div style="color:#93A7B6;font-size:13px">none reported</div>';
     p.axes.forEach(function(v,i){
       var n=axName(p,i);
@@ -810,7 +793,9 @@ function buildDevice(list){
          '<div class="axbar"><u></u><i></i><b></b></div>'+
          '<div class="axval">0.000</div></div>';
     });
+    h+='</div>';                      /* .dvcol */
   });
+  h+='</div>';                        /* .dvcols */
 
   h+='<div class="dvwarn"><strong>Reading this panel.</strong> '+
      'The <b>name in the left column</b> is what Star Citizen calls that input — '+
@@ -831,7 +816,8 @@ function buildDevice(list){
   var els=host.querySelectorAll('.btn[data-b]'), j;
   for(j=0;j<els.length;j++)
     devDom.btn[els[j].getAttribute('data-b')]={
-      el:els[j], va:els[j].querySelector('.va'), on:null};
+      el:els[j], va:els[j].querySelector('.va'), on:null,
+      ix:parseInt(els[j].getAttribute('data-b').split(':')[1],10)};
   els=host.querySelectorAll('.axrow[data-a]');
   for(j=0;j<els.length;j++)
     devDom.ax[els[j].getAttribute('data-a')]={
@@ -856,13 +842,17 @@ function buildDevice(list){
   var cp=$(ID_+'dvcopy'); if(cp) cp.onclick=copyReport;
   var hb=$(ID_+'dvhide');
   if(hb) hb.onclick=function(){
-    var hide=this.classList.toggle('on'), k;
-    this.textContent = hide ? "Show all buttons" : "Hide unused buttons";
-    for(k in devDom.btn){
-      var d=devDom.btn[k];
-      d.el.style.display = (hide && !d.everPressed) ? 'none' : '';
-    }
+    hideUnused=this.classList.toggle('on');
+    this.textContent = hideUnused ? "Show unused too" : "Hide unused buttons";
+    applyVis();
   };
+  var ab=$(ID_+'dvall');
+  if(ab) ab.onclick=function(){
+    showAll=this.classList.toggle('on');
+    this.textContent=dvAllLabel(pads());
+    applyVis();
+  };
+  applyVis();
 }
 
 /* Mutation only. Called every frame; must touch nothing structural. */
@@ -874,7 +864,7 @@ function paintDevice(list){
       k=p.index+":"+i; d=devDom.btn[k]; if(!d) continue;
       var b=p.buttons[i], on=b.pressed||b.value>0.5;
       var an=(b.value>0.02&&b.value<0.98);
-      if(on){ d.everPressed=true; }
+      if(on && !d.everPressed){ d.everPressed=true; applyVis(); }
       if(d.on!==on){ d.on=on;
         if(on) d.el.classList.add('down'); else d.el.classList.remove('down'); }
       if(d.an!==an){ d.an=an;
