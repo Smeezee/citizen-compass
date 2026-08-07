@@ -90,7 +90,7 @@ const (
 // pinBundledRuntime makes the BUNDLED runtime the one that actually loads, by
 // relaunching once with the variable inherited from process creation.
 //
-// WHY A RELAUNCH RATHER THAN JUST os.Setenv
+// # WHY A RELAUNCH RATHER THAN JUST os.Setenv
 //
 // Setting the variable in-process does not work, and this was measured, not
 // assumed. With os.Setenv the log cheerfully reported
@@ -223,8 +223,8 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 		AutoFocus: true,
 		WindowOptions: webview2.WindowOptions{
 			Title:  "Citizen Collector",
-			Width:  460,
-			Height: 520,
+			Width:  480,
+			Height: 660,
 			Center: true,
 		},
 	})
@@ -278,14 +278,16 @@ const uiHTML = `<!DOCTYPE html>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
+  html, body { height: 100%; }
   body {
-    margin: 0; padding: 26px 24px;
+    margin: 0; padding: 22px 22px 18px;
+    overflow: hidden;
     font: 15px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
     background: #14171c; color: #e8ecf2;
     user-select: none; -webkit-user-select: none;
   }
-  h1 { font-size: 13px; font-weight: 600; letter-spacing: .09em;
-       text-transform: uppercase; color: #7e8794; margin: 0 0 22px; }
+  h1 { font-size: 12px; font-weight: 600; letter-spacing: .09em;
+       text-transform: uppercase; color: #7e8794; margin: 0 0 18px; }
   .status { display: flex; align-items: flex-start; gap: 11px; margin-bottom: 4px; }
   .dot { width: 11px; height: 11px; border-radius: 50%; margin-top: 6px; flex: none;
          background: #59606b; transition: background .3s; }
@@ -294,7 +296,7 @@ const uiHTML = `<!DOCTYPE html>
   .headline.on { color: #e8ecf2; }
   .sub { margin: 2px 0 0 22px; color: #8b95a3; font-size: 13.5px; min-height: 20px; }
   button {
-    width: 100%; padding: 13px 16px; margin-top: 18px;
+    width: 100%; padding: 12px 16px; margin-top: 15px;
     font: 600 15px/1 inherit; color: #0d1014; background: #46c17c;
     border: 0; border-radius: 7px; cursor: pointer;
   }
@@ -304,7 +306,7 @@ const uiHTML = `<!DOCTYPE html>
                   border: 1px solid #2d333c; margin-top: 9px; }
   button.ghost:hover { background: #1b1f26; color: #e8ecf2; }
   .note { margin-top: 14px; font-size: 12.5px; color: #6f7885; text-align: center; }
-  .panel { margin-top: 20px; border-top: 1px solid #232830; padding-top: 15px;
+  .panel { margin-top: 16px; border-top: 1px solid #232830; padding-top: 15px;
            font-size: 12.5px; color: #7e8794; }
   .row { display: flex; gap: 10px; margin-bottom: 7px; }
   .row .k { flex: none; width: 78px; color: #626b78; }

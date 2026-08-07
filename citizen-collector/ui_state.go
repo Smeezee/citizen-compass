@@ -205,7 +205,9 @@ func defaultUIDeps(outDir, autoLog string) uiDeps {
 			_, err := findGameWindow(false, "")
 			return err
 		},
-		findLog: func() (string, string) { return FindGameLog(0) },
+		// §6: derived from the RUNNING game every refresh, not from a
+		// startup scan that can only ever answer LIVE.
+		findLog: findLogFromRunningGame,
 		outDir:  outDir,
 		autoLog: autoLog,
 	}

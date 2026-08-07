@@ -498,6 +498,14 @@ func selftest(outDir string) int {
 	runGameLogSelftest(check)
 	runAutoHeartbeatSelftest(check)
 
+	// 6d. THE WINDOW. WO-UI-01 §10 - auto-detect, follows the game, count from
+	//     disk, and the interface carries what §2 requires.
+	fmt.Println("  -- window (WO-UI-01) --")
+	runUIDetectSelftest(check)
+	runUIFollowsGameSelftest(check)
+	runUICountSelftest(check)
+	runUIInterfaceSelftest(check)
+
 	// 7. Game.log discovery - reported, never fatal. The game not being
 	//    installed on a crew member's machine is not a broken collector.
 	fmt.Println("  -- environment --")
@@ -789,7 +797,7 @@ func main() {
 		// is always LIVE on a machine with both - so the reason matters as much
 		// as the path. A session spent watching the wrong install should be
 		// visible here, not deduced later from captures that never happened.
-		if gp, ghow := FindGameLog(0); gp == "" {
+		if gp, ghow := findLogFromRunningGame(); gp == "" {
 			fmt.Printf("watching : NO Game.log - %s\n", ghow)
 		} else {
 			fmt.Printf("watching : %s\n", gp)

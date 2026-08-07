@@ -209,6 +209,39 @@ func openSharedRead(path string) (*os.File, error) {
 // actually belongs to. Deriving it from the running process is what makes this
 // correct on a machine with LIVE, PTU and EPTU installed side by side - a
 // hardcoded LIVE path would silently report the wrong patch.
+// findLogFromRunningGame resolves the log from the game that is running NOW.
+//
+// WO-UI-01 §6 - "detection runs CONTINUOUSLY, not once at startup".
+//
+// # THE BUG THIS FIXES
+//
+// Callers passed 0 as the window handle. FindGameLog only derives the install
+// from the running process image when it HAS a window, so a zero handle skipped
+// the derivation entirely and fell through to the scan - and the scan returns
+// the first of LIVE, PTU, EPTU, TECH-PREVIEW that exists, which is always LIVE
+// on a machine with more than one installed.
+//
+// The loop was NOT stuck and detection was NOT running only once: runAuto calls
+// this every poll. It was asking a question that could only ever have one
+// answer. Sleven launched 4.10 PTU and the collector went on watching a LIVE log
+// that had stopped moving an hour earlier, reporting "0 bytes read since last
+// line" on every heartbeat while the interval timer kept photographing a static
+// screen.
+//
+// Looking the window up here makes the answer track whichever install is
+// actually running, and change when the player switches - which is what
+// "continuously" has to mean to be worth anything.
+func findLogFromRunningGame() (string, string) {
+	if w, err := findGameWindow(false, ""); err == nil {
+		if p, how := FindGameLog(w.H); p != "" {
+			return p, how
+		}
+	}
+	// No game window, or the derivation failed. The scan is still better than
+	// nothing, and FindGameLog reports which of the two answered.
+	return FindGameLog(0)
+}
+
 // gameLogOverride forces the watched log path when --gamelog is given.
 //
 // # WHY AN OVERRIDE IS NEEDED

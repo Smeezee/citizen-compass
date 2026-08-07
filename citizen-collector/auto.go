@@ -589,7 +589,7 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 	}
 	findLog := deps.findLog
 	if findLog == nil {
-		findLog = func() (string, string) { return FindGameLog(0) }
+		findLog = findLogFromRunningGame
 	}
 	runner := newAutoRunner(cfg, now)
 
