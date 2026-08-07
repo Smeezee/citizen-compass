@@ -488,6 +488,7 @@ func selftest(outDir string) int {
 	// VOID keeps the two facts apart, which is the whole point of exit 2.
 	hkVoid := runHotkeySelftest(check)
 	runHotkeyLoopSelftest(check)
+	runHotkeyPressLoggingSelftest(check)
 	if runAutoHotkeyE2ESelftest(check) {
 		hkVoid = true
 	}

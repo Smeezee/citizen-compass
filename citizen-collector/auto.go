@@ -647,8 +647,28 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			// photograph without a game window - but a press that lands with no
 			// window SAYS SO. A hotkey that appears to do nothing is the defect
 			// being fixed here, and "pressed but no window" is information.
+			// LOGGED ON RECEIPT, BEFORE ANYTHING IS ATTEMPTED.
+			//
+			// Without this line the log recorded "hotkey registered" and then
+			// nothing until a capture SUCCEEDED, so these two faults were
+			// indistinguishable:
+			//
+			//   the press never arrived        (nothing reached this process)
+			//   the press arrived and failed   (capture broke downstream)
+			//
+			// They have completely different causes and completely different
+			// fixes, and telling them apart took an evening of guessing. Now it
+			// takes one keystroke: press the key and look. A line means the
+			// press arrived; no line means it did not.
+			//
+			// The leading suspect for a press that never arrives is Star
+			// Citizen in exclusive fullscreen taking the key before any global
+			// hotkey sees it. This line is what makes that diagnosable rather
+			// than suspected.
+			deps.logf("hotkey press received (%s)", deps.hotkeyName)
+
 			if err := deps.gameAlive(); err != nil {
-				deps.logf("hotkey pressed but no game window: %v", err)
+				deps.logf("hotkey press received but no game window: %v", err)
 				continue
 			}
 			t := Trigger{Kind: "hotkey", Note: deps.hotkeyName}

@@ -31,6 +31,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -90,6 +91,87 @@ func runHotkeyLoopSelftest(check func(name string, ok bool, detail string)) {
 
 	close(stop)
 	<-done
+}
+
+// runHotkeyPressLoggingSelftest proves a press is recorded ON ARRIVAL.
+//
+// WHY THIS IS ITS OWN CHECK
+//
+// The log used to record "hotkey registered" and then nothing until a capture
+// SUCCEEDED. So these two produced identical logs:
+//
+//	the press never arrived      - nothing reached the process at all
+//	the press arrived and failed - capture broke somewhere downstream
+//
+// Different causes, different fixes, indistinguishable evidence. This is the
+// heartbeat defect again: a component that cannot tell "nothing happened" from
+// "I am not working".
+//
+// So the capture here is made to FAIL on purpose. That is the case that used to
+// be silent, and it is the one worth proving.
+func runHotkeyPressLoggingSelftest(check func(name string, ok bool, detail string)) {
+	presses := make(chan struct{}, 1)
+	stop := make(chan struct{})
+	sink := &logSink{}
+	attempted := make(chan struct{}, 1)
+
+	deps := autoDeps{
+		logf:       sink.logf,
+		gameAlive:  func() error { return nil },
+		hotkeys:    presses,
+		hotkeyName: "Ctrl+Alt+F9",
+		capture: func(t Trigger) (string, error) {
+			attempted <- struct{}{}
+			return "", fmt.Errorf("capture backend refused (deliberate)")
+		},
+	}
+	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0, IntervalMinutes: 0}
+
+	done := make(chan struct{})
+	go func() { _ = runAuto(cfg, "", deps, stop); close(done) }()
+	defer func() { close(stop); <-done }()
+
+	// NEGATIVE CONTROL: no press, no receipt line. Otherwise a line printed
+	// unconditionally would satisfy the positive check while proving nothing.
+	time.Sleep(300 * time.Millisecond)
+	check("no press means no receipt line", sink.count("hotkey press received") == 0,
+		"nothing logged while no key was pressed")
+
+	presses <- struct{}{}
+
+	select {
+	case <-attempted:
+	case <-time.After(3 * time.Second):
+		check("a press is logged ON RECEIPT", false, "the capture was never even attempted")
+		return
+	}
+
+	ok := waitFor(func() bool { return sink.count("hotkey press received") >= 1 }, 3*time.Second)
+	check("a press is logged ON RECEIPT", ok,
+		"the arrival of the press is recorded, so a silent key can be told from a broken capture")
+
+	// The capture FAILED, and the failure must be recorded with its reason -
+	// not swallowed, and not left looking like the press never came.
+	ok = waitFor(func() bool { return sink.has("capture FAILED") }, 3*time.Second)
+	check("a failed capture states its reason", ok &&
+		sink.hasLineWithBoth("capture FAILED", "deliberate"),
+		"the failure reason reaches the log rather than vanishing")
+
+	// ORDER MATTERS. Receipt must come BEFORE the outcome, otherwise a capture
+	// that hangs forever would still leave no evidence the press arrived -
+	// which is the exact failure being fixed.
+	lines := sink.dump()
+	recvAt, failAt := -1, -1
+	for i, l := range lines {
+		if recvAt < 0 && strings.Contains(l, "hotkey press received") {
+			recvAt = i
+		}
+		if failAt < 0 && strings.Contains(l, "capture FAILED") {
+			failAt = i
+		}
+	}
+	check("receipt is logged BEFORE the outcome", recvAt >= 0 && failAt > recvAt,
+		fmt.Sprintf("receipt at line %d, outcome at line %d", recvAt, failAt))
 }
 
 // probeIsRegistered reports whether spec is currently held by anyone.
