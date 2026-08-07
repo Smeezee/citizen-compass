@@ -66,6 +66,47 @@ if (-not (Test-Path (Join-Path $assetsDir 'index.html'))) {
     Fail "$assetsDir has no index.html - refusing to publish a site with no entry point"
 }
 
+# --- deploy guard: refuse anything that is not a known asset ----------------
+# WHY THIS IS HERE AND NOT ONLY IN THE BUILD
+#
+# build_deploy.py already runs this same check and refuses to finish a build
+# that would leave junk in _deploy. That guard protects the BUILD. It does not
+# protect the DEPLOY, because a deploy does not require a build - and that is
+# exactly the sequence that leaked wrangler-account.json on 2026-08-06:
+#
+#   1. a wrangler run executed from inside _deploy failed, leaving .wrangler/
+#      behind. No build involved.
+#   2. the next deploy uploaded the directory as it stood.
+#
+# Running this script without rebuilding first would have published it again
+# with the build guard never once executing. So the check runs here too, on the
+# actual bytes about to be uploaded, immediately before they go.
+#
+# FAIL CLOSED. If the checker cannot be run at all - python missing, file moved,
+# import error - that is NOT a pass. An unverifiable payload is refused, because
+# "we could not look" must never be recorded as "we looked and it was fine".
+$guard = Join-Path $ProjectPath 'testing\_src\check_deploy_clean.py'
+if (-not (Test-Path $guard)) { Fail "deploy guard missing: $guard - refusing to deploy unverified content" }
+
+$prevEAP = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+$guardOut = & python $guard $assetsDir 2>&1 | ForEach-Object { [string]$_ }
+$guardCode = $LASTEXITCODE
+$ErrorActionPreference = $prevEAP
+
+$guardOut | ForEach-Object { Write-Host "  $_" }
+
+if ($null -eq $guardCode) { Fail "deploy guard did not report an exit code - refusing to deploy unverified content" }
+if ($guardCode -eq 0) {
+    Write-Host "guard   : _deploy contains only known assets" -ForegroundColor Green
+} elseif ($guardCode -eq 1) {
+    Fail "_deploy contains files that are not known assets (see above). Move them out (never delete - hard rule 1), or add them to the allow-list if they genuinely belong."
+} else {
+    # Exit 2 is the checker's own "could not check", and any other code is a
+    # crash. Both mean unverified, and unverified is refused.
+    Fail "deploy guard could not verify $assetsDir (exit $guardCode) - refusing to deploy. This is reported as NOT CHECKED, never as clean."
+}
+
 # --- sanity-check the payload BEFORE uploading ------------------------------
 # A deploy that silently dropped the models folder still serves a page that
 # looks completely correct. Catch it here as well as after.
