@@ -252,10 +252,10 @@ type Sidecar struct {
 	} `json:"capture"`
 
 	Window struct {
-		Title  string `json:"title"`
-		Class  string `json:"class"`
-		Exe    string `json:"exe"`
-		Rect   [4]int `json:"rect_ltrb"`
+		Title    string `json:"title"`
+		Class    string `json:"class"`
+		Exe      string `json:"exe"`
+		Rect     [4]int `json:"rect_ltrb"`
 		HowFound string `json:"how_found"`
 	} `json:"window"`
 
@@ -298,8 +298,8 @@ func nextSequence(dir string) int {
 // having registered the press at all - and the operator is looking at a game,
 // not at this console.
 
-func soundOK()      { beep(1200, 90); beep(1700, 120) }  // rising two-tone
-func soundFail()    { beep(400, 250); beep(300, 350) }   // falling, longer
+func soundOK()      { beep(1200, 90); beep(1700, 120) } // rising two-tone
+func soundFail()    { beep(400, 250); beep(300, 350) }  // falling, longer
 func soundStartup() { beep(900, 80); beep(1200, 80); beep(1500, 120) }
 
 // --- the capture action ----------------------------------------------------
@@ -486,6 +486,11 @@ func selftest(outDir string) int {
 	runHotkeyLoopSelftest(check)
 	runAutoHotkeyE2ESelftest(check)
 
+	// 6c. Which log is watched, and whether the loop says anything while quiet.
+	fmt.Println("  -- game log, heartbeat, staleness --")
+	runGameLogSelftest(check)
+	runAutoHeartbeatSelftest(check)
+
 	// 7. Game.log discovery - reported, never fatal. The game not being
 	//    installed on a crew member's machine is not a broken collector.
 	fmt.Println("  -- environment --")
@@ -530,12 +535,14 @@ func main() {
 	defCfg := defaultAutoConfig()
 
 	var (
-		outDir   = flag.String("out", filepath.Join(exeDir, "captures"), "directory for captures")
-		backend  = flag.String("backend", "", "force one backend: wgc, dxgi or gdi (default: try all in order)")
-		hotkey   = flag.String("hotkey", "ctrl+alt+f9", "capture hotkey")
-		once     = flag.Bool("once", false, "capture once immediately and exit (no hotkey)")
-		list     = flag.Bool("list-windows", false, "list capturable windows and exit")
-		test     = flag.Bool("selftest", false, "run internal checks and exit")
+		outDir  = flag.String("out", filepath.Join(exeDir, "captures"), "directory for captures")
+		backend = flag.String("backend", "", "force one backend: wgc, dxgi or gdi (default: try all in order)")
+		hotkey  = flag.String("hotkey", "ctrl+alt+f9", "capture hotkey")
+		once    = flag.Bool("once", false, "capture once immediately and exit (no hotkey)")
+		list    = flag.Bool("list-windows", false, "list capturable windows and exit")
+		test    = flag.Bool("selftest", false, "run internal checks and exit")
+
+		gamelog = flag.String("gamelog", "", "force the Game.log to watch (default: derive from the game window, else scan LIVE, PTU, EPTU, TECH-PREVIEW in that order)")
 
 		auto     = flag.Bool("auto", false, "capture automatically on Game.log state changes (no hotkey needed)")
 		interval = flag.Int("interval", defCfg.IntervalMinutes, "minutes between fallback captures when nothing changes; 0 = off")
@@ -549,6 +556,10 @@ func main() {
 
 	flag.Parse()
 	allowAny, windowHint := bench()
+
+	// Applied before anything resolves a log path, so --selftest, --once and
+	// --auto all agree about which install is being watched.
+	gameLogOverride = *gamelog
 
 	// --- settings file --------------------------------------------------
 	//
@@ -726,6 +737,18 @@ func main() {
 		fmt.Printf("settings : %s\n", filepath.Join(exeDir, settingsFileName))
 		fmt.Printf("poll %ds, debounce %ds, interval %s\n",
 			*poll, *debounce, intervalDesc(*interval))
+
+		// The watched log, and HOW it was chosen, on every start. The scan
+		// takes the first of LIVE, PTU, EPTU, TECH-PREVIEW that exists, which
+		// is always LIVE on a machine with both - so the reason matters as much
+		// as the path. A session spent watching the wrong install should be
+		// visible here, not deduced later from captures that never happened.
+		if gp, ghow := FindGameLog(0); gp == "" {
+			fmt.Printf("watching : NO Game.log - %s\n", ghow)
+		} else {
+			fmt.Printf("watching : %s\n", gp)
+			fmt.Printf("           (%s)\n", ghow)
+		}
 		logf("---- citizen-collector %s (%s) auto start ----", Version, BuildVariant)
 
 		// THE HOTKEY, REGISTERED IN THE AUTO BRANCH.

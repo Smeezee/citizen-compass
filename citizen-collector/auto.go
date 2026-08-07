@@ -56,12 +56,13 @@ import (
 // Trigger is written into the sidecar as "trigger".
 //
 // Kind is one of:
-//   state_change - a tracked field changed value (gamerules, map, zone, location)
-//   event        - something happened that has no before/after (a loading
-//                  screen, a client spawn)
-//   interval     - nothing changed for long enough that the fallback fired
-//   hotkey       - a human pressed the key
-//   once         - a human ran --once
+//
+//	state_change - a tracked field changed value (gamerules, map, zone, location)
+//	event        - something happened that has no before/after (a loading
+//	               screen, a client spawn)
+//	interval     - nothing changed for long enough that the fallback fired
+//	hotkey       - a human pressed the key
+//	once         - a human ran --once
 type Trigger struct {
 	Kind    string `json:"kind"`
 	Field   string `json:"field,omitempty"`
@@ -498,7 +499,7 @@ func (s *settings) boolVal(key string) (bool, bool) {
 // "No console window. Survives being left running." The proper build for
 // unattended use is
 //
-//     go build -ldflags "-H windowsgui" -o collector.exe .
+//	go build -ldflags "-H windowsgui" -o collector.exe .
 //
 // which has no console at all. But the tool is also started by
 // double-clicking the ordinary build, and that pops a window which the user
@@ -540,7 +541,39 @@ type autoDeps struct {
 	// hotkeyName is the registered key's canonical name, recorded on the frames
 	// it produces so a manual capture is distinguishable afterwards.
 	hotkeyName string
+
+	// findLog resolves the log to watch. Injected so the selftest can drive
+	// discovery, staleness and the heartbeat without a Star Citizen install.
+	// Nil means use the real FindGameLog.
+	findLog func() (path string, how string)
+
+	// now is the clock. Injected so the heartbeat and the staleness warning can
+	// be tested in milliseconds instead of in minutes.
+	now func() time.Time
 }
+
+// heartbeatEvery is how often the auto log says "still alive" during a quiet
+// period.
+//
+// # WHY IT EXISTS
+//
+// collector-auto.log was written ONLY on capture. During a quiet stretch - the
+// game sitting on a landing pad, or the collector silently broken - the file
+// said exactly the same thing in both cases: nothing. A running collector and a
+// dead one were indistinguishable from outside.
+//
+// That is the same shape as a backup reporting exit 0 having copied nothing:
+// silence read as health. So the loop now states its own liveness on a timer,
+// with the numbers that make the statement checkable rather than decorative.
+const heartbeatEvery = 3 * time.Minute
+
+// stalenessAfter is how long a watched log may sit at the same size, WHILE A
+// GAME WINDOW EXISTS, before the loop says so.
+//
+// A game running and writing nothing to the log it is supposedly watching means
+// the wrong file is being watched - the LIVE/PTU mix-up being the obvious
+// cause. Watching a dead file should not look like a quiet game.
+const stalenessAfter = 5 * time.Minute
 
 // runAuto is the unattended loop.
 //
@@ -550,13 +583,50 @@ type autoDeps struct {
 // configuration, because a collector that exits when the game closes is a
 // collector that is never running when the game opens.
 func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}) error {
-	runner := newAutoRunner(cfg, time.Now)
+	now := deps.now
+	if now == nil {
+		now = time.Now
+	}
+	findLog := deps.findLog
+	if findLog == nil {
+		findLog = func() (string, string) { return FindGameLog(0) }
+	}
+	runner := newAutoRunner(cfg, now)
 
 	var tailer *logTailer
 	lastLogPath := ""
 
 	deps.logf("auto mode started: poll %ds, debounce %ds, interval %s",
 		cfg.PollSeconds, cfg.DebounceSeconds, intervalDesc(cfg.IntervalMinutes))
+
+	// WHICH LOG, AND HOW IT WAS CHOSEN - stated at every start.
+	//
+	// In --auto this resolves before any game window exists, so the scan picks
+	// the first of LIVE, PTU, EPTU, TECH-PREVIEW that is installed. That is
+	// always LIVE on a machine that has both. Printing the path AND the reason
+	// means a session spent watching the wrong install is visible in the first
+	// line of the log instead of being inferred later from missing captures.
+	// reportedPath is what the heartbeat names. It is seeded here so that a
+	// heartbeat arriving before the first successful poll does not claim "no
+	// log resolved yet" one line under a startup line that just resolved one.
+	// Two lines contradicting each other is worse than either line alone.
+	reportedPath := ""
+	if p, how := findLog(); p == "" {
+		deps.logf("startup: NO Game.log resolved - %s", how)
+	} else {
+		deps.logf("startup: watching %s (%s)", p, how)
+		reportedPath = p
+	}
+
+	// Heartbeat and staleness bookkeeping.
+	var (
+		lastBeat    = now()
+		bytesAtBeat int64
+		captures    int
+		lastSize    int64 = -1
+		lastGrowth        = now()
+		staleWarned bool
+	)
 
 	ticker := time.NewTicker(time.Duration(cfg.PollSeconds) * time.Second)
 	defer ticker.Stop()
@@ -587,10 +657,29 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 				deps.logf("hotkey capture FAILED: %v", err)
 				continue
 			}
+			captures++
 			deps.logf("captured %s  <- %s (manual)", filepath.Base(out), t.Reason())
 			continue
 
 		case <-ticker.C:
+		}
+
+		// THE HEARTBEAT. Emitted whether or not a game window exists, because
+		// "no game running" is itself a state worth being able to read back.
+		// It is the only line that proves the process is still alive.
+		if t := now(); t.Sub(lastBeat) >= heartbeatEvery {
+			var off int64
+			watching := reportedPath
+			if tailer != nil {
+				off = tailer.off
+			}
+			if watching == "" {
+				watching = "(no log resolved yet)"
+			}
+			deps.logf("alive: watching %s, %d bytes read since last line, %d captures total",
+				watching, off-bytesAtBeat, captures)
+			lastBeat = t
+			bytesAtBeat = off
 		}
 
 		// THE WINDOW GATE. No StarCitizen.exe window means no capture, and it
@@ -598,13 +687,18 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		// allowAny is not a parameter here and cannot be: --allow-any-window is
 		// manual-only by construction, not by convention.
 		if err := deps.gameAlive(); err != nil {
+			// The game is gone, so the log standing still proves nothing. Reset
+			// the staleness clock rather than accusing a file of being dead
+			// when nothing was writing to it in the first place.
+			lastGrowth = now()
+			staleWarned = false
 			continue
 		}
 
 		// The log is looked up each time the game reappears, so a session that
 		// switches between LIVE and PTU is followed rather than pinned to
 		// whichever was running first.
-		p, how := FindGameLog(0)
+		p, how := findLog()
 		if p == "" {
 			deps.logf("no Game.log yet (%s)", how)
 			continue
@@ -613,12 +707,38 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			deps.logf("watching %s (%s)", p, how)
 			tailer = newLogTailer(p)
 			lastLogPath = p
+			reportedPath = p
+			lastSize = -1
+			lastGrowth = now()
+			staleWarned = false
 		}
 
 		triggers, err := tailer.Poll()
 		if err != nil {
 			deps.logf("log read failed, will retry: %v", err)
 			continue
+		}
+
+		// THE STALENESS WARNING.
+		//
+		// A game window exists, so something SHOULD be writing to the log. If
+		// the file has not grown in stalenessAfter, the overwhelmingly likely
+		// cause is that this is the wrong file - LIVE while the session is on
+		// PTU. Watching a dead file looks exactly like a quiet game from in
+		// here, and only saying so distinguishes them.
+		//
+		// Warned once per stall, not every poll: a line every two seconds for
+		// five minutes would bury the log it is trying to make readable.
+		if tailer.off != lastSize {
+			lastSize = tailer.off
+			lastGrowth = now()
+			staleWarned = false
+		} else if !staleWarned && now().Sub(lastGrowth) >= stalenessAfter {
+			deps.logf("WARNING: %s has not grown in %s while a game window is open. "+
+				"This is usually the wrong install - if the session is on PTU or EPTU, "+
+				"start with --gamelog pointing at that Game.log.",
+				lastLogPath, stalenessAfter)
+			staleWarned = true
 		}
 
 		t := runner.decide(triggers)
@@ -631,6 +751,7 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			deps.logf("capture FAILED (%s): %v", t.Reason(), err)
 			continue
 		}
+		captures++
 		deps.logf("captured %s  <- %s", filepath.Base(out), t.Reason())
 	}
 }

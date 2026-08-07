@@ -46,20 +46,20 @@ import (
 
 // GameLogInfo is what the sidecar JSON carries.
 type GameLogInfo struct {
-	Path     string `json:"path"`
-	Found    bool   `json:"found"`
-	ReadErr  string `json:"read_error,omitempty"`
+	Path    string `json:"path"`
+	Found   bool   `json:"found"`
+	ReadErr string `json:"read_error,omitempty"`
 
-	Patch      *string `json:"patch"`       // e.g. "4.9.188.23497"
-	PatchSrc   string  `json:"patch_source,omitempty"`
-	Build      *string `json:"build"`       // e.g. "12344265"
-	BuildSrc   string  `json:"build_source,omitempty"`
-	Branch     *string `json:"branch"`      // e.g. "sc-alpha-4.9.0"
+	Patch    *string `json:"patch"` // e.g. "4.9.188.23497"
+	PatchSrc string  `json:"patch_source,omitempty"`
+	Build    *string `json:"build"` // e.g. "12344265"
+	BuildSrc string  `json:"build_source,omitempty"`
+	Branch   *string `json:"branch"` // e.g. "sc-alpha-4.9.0"
 
-	Location     *string `json:"location"`
-	LocationSrc  string  `json:"location_source,omitempty"`
-	LocationOK   bool    `json:"location_pattern_verified"`
-	LocationWhy  string  `json:"location_reason,omitempty"`
+	Location    *string `json:"location"`
+	LocationSrc string  `json:"location_source,omitempty"`
+	LocationOK  bool    `json:"location_pattern_verified"`
+	LocationWhy string  `json:"location_reason,omitempty"`
 
 	GameRules *string `json:"game_rules"` // "SC_Frontend" = main menu
 	Map       *string `json:"map"`        // "megamap"
@@ -125,7 +125,7 @@ type unverifiedPattern struct {
 // accept `key: value`, `key="value"` and `key value` alike. Run against the real
 // log it matched this:
 //
-//     taskname="ResolveSpawnLocation" state=eCVS_UnstowPlayer(14)
+//	taskname="ResolveSpawnLocation" state=eCVS_UnstowPlayer(14)
 //
 // The separator class happily consumed the closing quote and the space, walked
 // out of the taskname field and into the NEXT one, and reported the player's
@@ -209,7 +209,34 @@ func openSharedRead(path string) (*os.File, error) {
 // actually belongs to. Deriving it from the running process is what makes this
 // correct on a machine with LIVE, PTU and EPTU installed side by side - a
 // hardcoded LIVE path would silently report the wrong patch.
+// gameLogOverride forces the watched log path when --gamelog is given.
+//
+// # WHY AN OVERRIDE IS NEEDED
+//
+// The scan below returns the FIRST channel it finds, in the order LIVE, PTU,
+// EPTU, TECH-PREVIEW. On a machine with LIVE and PTU both installed that is
+// always LIVE. In --auto the log is resolved at startup, before any game window
+// exists, so the window-derived path cannot help - and someone testing a PTU
+// patch would silently watch the wrong file for an entire session.
+var gameLogOverride string
+
 func FindGameLog(h HWND) (string, string) {
+	// THE OVERRIDE FAILS CLOSED.
+	//
+	// If --gamelog names a file that is not readable, this returns nothing and
+	// says why. It deliberately does NOT fall through to the scan: falling back
+	// would quietly resume watching LIVE, which is precisely the failure the
+	// flag exists to prevent, and the operator would see a working collector
+	// pointed at the wrong install.
+	if gameLogOverride != "" {
+		if _, err := os.Stat(gameLogOverride); err == nil {
+			return gameLogOverride, "forced by --gamelog"
+		} else {
+			return "", fmt.Sprintf("--gamelog %s cannot be read (%v) - refusing to fall back to a scan, "+
+				"because that would silently watch a different install", gameLogOverride, err)
+		}
+	}
+
 	if h != 0 {
 		if exe := processImageName(windowPID(h)); exe != "" {
 			// ...\StarCitizen\LIVE\Bin64\StarCitizen.exe -> ...\LIVE\Game.log
@@ -264,14 +291,14 @@ func ReadGameLog(path, how string) GameLogInfo {
 	info.Found = true
 
 	var (
-		patch, patchSrc   string
-		build, buildSrc   string
-		branch            string
+		patch, patchSrc    string
+		build, buildSrc    string
+		branch             string
 		gameRules, mapName string
-		lastLoadingFor    string
-		candidates        []string
-		locVal, locSrc    string
-		locVerified       bool
+		lastLoadingFor     string
+		candidates         []string
+		locVal, locSrc     string
+		locVerified        bool
 	)
 
 	sc := bufio.NewScanner(f)
