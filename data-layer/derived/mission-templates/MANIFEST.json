@@ -1,0 +1,31 @@
+{
+ "generated_by": "C3 (Cowork), 2026-08-07",
+ "purpose": "How many distinct mission TEMPLATES exist (the fixed list Sleven asked about - missions respawn from a determined list, 'all pretty much the same, but different scenery'), split by the two record families the contract snapshot actually contains, since they don't share a schema.",
+ "why_two_families": "5,107 contract records split into two Type values with different shapes: ContractGeneratorHandler_Career/_List (2,943 records) carries a clean built-in template-ID field, GeneratorClass. MissionBrokerEntry (2,165 records) has GeneratorClass always null - confirmed by direct field check on every record, not assumed - so its only template signal is the DebugName string.",
+ "generator_class_family": {
+  "raw_records": 2943,
+  "unique_templates": 106,
+  "compression": "27.8x",
+  "confidence": "HIGH - GeneratorClass is the game's own internal template label, read directly, zero inference."
+ },
+ "mission_broker_entry_family": {
+  "raw_records": 2165,
+  "raw_distinct_debug_names": 2165,
+  "unique_normalized_roots": 861,
+  "compression": "2.51x",
+  "confidence": "MEDIUM - see methodology below. This number is a considered estimate, not a read fact, and should be treated as a lower bound on the true template count, not a final answer.",
+  "methodology": "DebugName split on '_'. Tokens dropped as flavor/variance, not template identity: (1) 'PU'/'TEMPLATE' - constant boilerplate prefix/suffix; (2) system tokens Stanton/Pyro/Nyx with optional trailing digit (Stanton1..4 etc.); (3) faction/threat abbreviations - RR, CFP, XT, HH, CruSec, NorthRock, Vaughn, plus spelled-out RoughAndReady/XenoThreat/HeadHunters - each one VERIFIED, not guessed: cross-checked that records containing the token overwhelmingly carry the matching MissionGiver value (e.g. every 'CFP' record's MissionGiver is 'Citizens for Prosperity' in 60/62 cases), and confirmed each abbreviation corresponds to a real faction file in ../../factions/ (faction_unlawful_roughandready.json, faction_unlawful_xenothreat.json, faction_reputation_unlawful_headhunters.json, faction_reputation_lawful_citizensforprosperity.json - see factions.json in this folder, 74 factions total); (4) difficulty/legality words - Easy, Medium, Hard, VeryEasy, Intro, Standard, Advanced, Extreme, Generic, Danger, Legal, Illegal, Lawful, Unlawful, Local; (5) bare numeric tokens and Rank/S/Difficulty_<n> tokens; (6) 'vs' plus the faction token immediately following it (e.g. '_vs_GenericOutlaw').",
+  "judgment_calls_flagged_for_override": "Some tokens were deliberately LEFT IN as probably-real template distinctions rather than stripped, because stripping them would be a guess this session can't verify: 'Group' (single vs group bounty may be a different mission structure), 'Inhabited' (inhabited vs empty derelict may change mission logic, not just flavor), 'NoNonHostiles', 'CrossStanton', 'DC' (Distribution Center - ambiguous whether location-flavor or a distinct delivery mechanic). If any of these should actually be stripped as flavor, the normalized_root count will drop further - that's a one-line change to STRIP_RE-equivalent sets in the regenerating script, not a data problem.",
+  "raw_vs_normalized": "All 2,165 DebugNames are string-unique (zero exact duplicates) - so 861 is entirely a product of the normalization judgment calls above, not deduped copies. Take the 861 figure as 'at least this many, likely somewhat fewer' rather than exact.",
+  "why_lower_compression_than_generator_class_is_plausible_not_just_algorithm_weakness": "Sampling by MissionType across this family (Mercenary 759, Delivery 342, Bounty Hunter 286, Investigation 121, etc.) shows genuinely different mission verbs sitting side by side even after stripping - 'Steal', 'Assassination', 'RemoveClaimJumpers', 'EliminateSpecific' are not variants of one template, they're different templates. This family plausibly IS more granular than the GeneratorClass family, not just under-normalized. Full type-by-type sample is in templates.json for spot-checking."
+ },
+ "combined": {
+  "raw_records": 5108,
+  "template_estimate_range": "106 (GeneratorClass, exact) + 700-1,051 (MissionBrokerEntry, estimated range depending on how the flagged judgment-call tokens are ultimately treated) = roughly 800-1,150 total distinct mission templates across both families combined.",
+  "recommendation": "Treat GeneratorClass's 106 as settled. Treat MissionBrokerEntry's count as an open question for Sleven/C1 to narrow, not something for this session to force to one number - the judgment_calls_flagged_for_override list above is exactly the input needed to narrow it."
+ },
+ "companion_files": {
+  "templates.json": "Both families' template lists - template/root name, record count, example DebugNames, and (MissionBrokerEntry only) which MissionType values map to that root.",
+  "factions.json": "All 74 faction definitions found in scunpacked-data's factions/ folder (name, UUID, lawful/unlawful type, default reaction) - the data used to verify the faction-abbreviation stripping above, and a real, previously-unused dataset in its own right (mission-giver reputation/standing data)."
+ }
+}

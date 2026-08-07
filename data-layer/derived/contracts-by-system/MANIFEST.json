@@ -1,0 +1,17 @@
+{
+ "generated_by": "C3 (Cowork), 2026-08-07 - supersedes the 2026-08-07 system-only version of this manifest/file",
+ "purpose": "Every contract/mission record from the game-file contract snapshot, tagged with star system (Stanton/Pyro/Nyx), AND (new in this revision) the planet/moon(s) it's available at where that's resolvable, plus release-status flags.",
+ "source_snapshot": "data-layer/external-sources/scunpacked-data/snapshots/20260801T204744Z/contracts/ (5,108 files; 1 failed to parse cleanly and is excluded - 5,107 records in this join)",
+ "files": {
+  "contracts_by_system.json": "PRIOR revision - system-level only. Kept for reference, do not build on it further.",
+  "contracts_full.json": "CURRENT - system + planet/moon detail where available. Build on this one."
+ },
+ "system_resolution": "Joined against starmap.json by walking each location's ParentUUID chain up to its root Star node (Stanton/Pyro/Nyx). Falls back to a direct name-prefix match on RequiredLocations/AvailabilityLocations values, then to a Stanton/Pyro/Nyx substring match on DebugName/GeneratorClass as a last resort. resolution_method on each record says which path was used.",
+ "planet_moon_resolution": "possible_planets_moons comes from AvailabilityLocations[].ResolvedLocations[].Name matched by name against data-layer/derived/location-gazetteer/gazetteer.json. This is WHERE THE MISSION IS AVAILABLE TO PICK UP (jurisdiction/broker-listing level), not the mission's actual objective/site - that finer site (e.g. a specific wreck or outpost room) is generated per-instance at runtime and does not exist as a static value in these files. Every record with this field carries the same caveat in its own 'note' field so it survives being read out of context.",
+ "location_pools_uuid_join_investigated_and_confirmed_absent": "LocationPools[].ResolvedLocations[].UUID looked like it should be the precise per-instance join and was tried first. Confirmed by direct membership check that these UUIDs genuinely do not exist anywhere in the 2,066-entity gazetteer - this is a real gap in the static data (instance-specific site templates live in a namespace this snapshot doesn't expose), not a bug in the join.",
+ "record_count": 5107,
+ "resolved_to_system": 4270,
+ "unresolved_to_system": 837,
+ "has_planet_moon_detail": 1893,
+ "unresolved_note": "Mostly genuinely system-agnostic generator templates (no location baked into the template - generic hauling/time-trial templates, tutorials) rather than a join failure - not fully audited record by record."
+}

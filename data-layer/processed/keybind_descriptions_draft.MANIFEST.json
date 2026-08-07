@@ -1,0 +1,44 @@
+{
+ "generated_by": "C3 (Cowork), 2026-08-07",
+ "purpose": "Plain-language descriptions of what each keybind actually does in-game, for the 238 keyboard-bound actions that have a display name but no real CIG-written description (see docs/finding-keybind-descriptions-closed.md - CIG only wrote 86 usable descriptions out of 1,103 actions, confirmed closed, do not re-chase). This is the drafting half of claude/plan-writing-keybind-descriptions.md - 'draft them from what we already know, then have Sleven correct rather than author.'",
+ "status": "DRAFT. Every row is source: cc_draft - Sleven's own knowledge of the game, not this session's, is what makes these trustworthy. Do not present these to end users as verified until reviewed.",
+ "how_to_review": "confidence:high = standard, unambiguous mechanic, low-risk to publish as-is - either self-evident from the label, or since the 2026-08-07 verification pass below, corroborated by an external fan reference that matches this draft closely. confidence:medium = plausible from the label/group/binding context, and for 9 rows now also corroborated at the category/mechanic level by an external fan reference (not CIG's own words) - worth a skim, not a rewrite. No rows remain at confidence:low as of the 2026-08-07 verification pass - the 5 that were now sit at medium or high; see verification_pass_2026-08-07b below for what changed and why.",
+ "counts": {
+  "total": 238,
+  "high": 171,
+  "medium": 67,
+  "low": 0,
+  "by_category": {
+   "FLIGHT": 86,
+   "ON FOOT": 46,
+   "CAMERA": 31,
+   "UNCATEGORIZED": 20,
+   "Quick Keys, Interactions, and Inner Thought": 15,
+   "Vehicle": 13,
+   "E.V.A.": 11,
+   "Social - General": 8,
+   "VOIP, FOIP and Head Tracking": 5,
+   "Electronic Access - Spectator": 3
+  }
+ },
+ "join_key_warning": "JOIN BY (action, map) TOGETHER, NEVER BY action ALONE. Confirmed this session: v_yaw_left/v_yaw_right mean 'yaw the ship's nose' under the spaceship_movement actionmap but 'turn the ground vehicle' under vehicle_driver - same action name, different meaning. A flat action-name lookup silently picks one and mislabels the other. This file carries both 'action' and 'map' on every row for exactly this reason; the join script that built it explicitly checks for this class of collision (0 others found, 238/238 rows joined, 0 missing) and the check is worth re-running any time this file is regenerated for a new patch.",
+ "specifically_flagged_for_a_look": [
+  "RESOLVED by the 2026-08-07 verification pass, kept here for history: v_power_throttle_down/min/up/max (F9/F10) were flagged as possibly mislabeled - 'Decrease/Increase Throttle' grouped with power-triangle actions rather than flight throttle. An external fan keybind reference (scfocus.org, Alpha 4.8) independently places these same four actions inside its own 'Power Distribution' section, immediately after the weapons/engines/shields triangle controls and 'Reset Assignments' - not inside its separate flight-speed section. Confirms this is a reactor/power control, not ship speed. Exact step-size mechanic is still not confirmed in-game - kept at medium, not high.",
+  "RESOLVED by the 2026-08-07 verification pass, kept here for history: view_switch_to_alternative (Z) vs view_enable_camview_mode (F4) were both labeled identically ('Advanced Camera Controls Modifier (Hold)') with no clear distinction. scfocus.org's dedicated camera-controls page describes Z (HOLD) + mouse movement as orbiting the 3rd-person camera around a fixed focal point, while F4 is the separate modifier that unlocks the full offset/zoom/field-of-view/depth-of-field/preset adjustment set. Both descriptions rewritten to reflect this; confidence raised to medium (not high - still a fan source, not CIG's own words, and worth a glance in-game to confirm)."
+ ],
+ "excluded_by_design": "This file covers only the 238 actions that have BOTH a keyboard default AND a label AND no usable existing description - the same scope Sleven set in plan-writing-keybind-descriptions.md (a keyboard player can't press a joystick-only action, and an action with no display name never appears on CIG's own keybinding screen). It does NOT re-describe the 41 actions that already have a real, non-duplicate CIG description, and does not touch joystick/gamepad-only actions.",
+ "downstream": "C1/Code: join this file to data-layer/processed/keybinds_site.json on (action, map) and wire desc/confidence into the page build (build_keybind_modes.py / kb_modes.gen.js) as the fallback description whenever keybinds_site.json's own 'desc' field is null or a duplicate of the label. Keep confidence and source alongside the text so the page can visually distinguish a CIG-written description from a cc_draft one, and so a future 'Sleven reviewed and approved' pass has something to flip.",
+ "verification_pass_2026-08-07b": {
+  "by": "C3 (Cowork), 2026-08-07, same day as the original draft",
+  "trigger": "Sleven: make sure the information is correct and accurate against what CIG itself has published, correct anything that needs it, on a platform more user-friendly than CIG's own.",
+  "scope": "All 5 confidence:low rows (the two most uncertain camera modifiers and the four power-throttle rows CIG never wrote a description for) plus a structural review of the full confidence:medium set (64 rows) against known game mechanics, looking for anything else genuinely uncertain.",
+  "sources_checked": [
+   "robertsspaceindustries.com/community-hub - CIG's own site, official posts (camera controls tutorial, 3.20 keybind-changes quick-start guide) - both were video-first pages with no usable text description in the fetched content, so yielded nothing usable this pass.",
+   "scfocus.org - actively maintained fan keybind reference, current through Alpha 4.8 - the most useful source this pass. Not CIG-official; treated as corroboration of category/mechanic, not as a source to copy text from.",
+   "starcitizen.tools (fan wiki) and starcitizenhelp.com - checked, did not cover the specific flagged actions (power throttle, camera director-mode modifiers) in enough detail to be useful this pass.",
+   "A 2020-dated third-party camera-controls PDF (hasgaha.com) - used only as a secondary cross-check on the Z vs F4 distinction, not relied on alone since it predates several camera-system reworks; scfocus.org's currently-maintained page was the primary source for that correction."
+  ],
+  "what_changed": "8 rows touched: 4 power-throttle rows and view_switch_to_alternative moved low to medium (category/mechanic now corroborated, exact behavior still not confirmed in-game); view_enable_camview_mode's text tightened to match the corroborated mechanic (confidence held at medium); v_mgv_switch_brake_on_idle and eva_boost moved medium to high (an external fan reference matches this draft's wording closely enough to count as independent corroboration, not just a plausible guess). No row's confidence was lowered - nothing checked out worse than drafted.",
+  "not_resolved": "None of this is CIG's own written text, and none of it is Sleven's own in-game confirmation - it's a second, independent read of the same mechanics from a currently-maintained fan reference site, used to sanity-check the original draft rather than to author from. The review pass called for in plan-writing-keybind-descriptions.md #6 (Sleven corrects rather than authors) still has not happened and these still ship as source: cc_draft, not source: cc / reviewed. The rights-status question flagged in docs/WORKORDER_keybind-descriptions-wire-in.md is unrelated and still open - this pass improved factual accuracy of original text, it did not touch or resolve whether that text can ship."
+ }
+}

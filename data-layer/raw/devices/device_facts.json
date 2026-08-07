@@ -1,0 +1,1679 @@
+{
+ "generated_by": "C3 (Cowork), 2026-08-07",
+ "purpose": "Sourced fact file for flight sticks per claude/workorder-device-facts.md, so the keybind page's device panel can (a) recognise a stick from its browser gamepad id, (b) name each control correctly, and (c) draw it in the right place - feeding both the existing telemetry panel and the still-unbuilt D5 guided mapping wizard.",
+ "status": "RESEARCH PASS 1 of an expected several. No field was guessed - every fact carries a source URL; anything unconfirmed is null with a reason in that device's missing_summary. Button-numbering (B) and geometry (E) are the weakest categories across all 7 devices - vendor control-layout diagrams are consistently published as images/PDFs that could not be read by the tools available this pass, and several vendor support/forum domains were blocked at the sandbox network level on every fetch attempt (vkb-sim.pro, support.virpil.com). Re-running B and E with direct (non-sandboxed) browser access is the highest-value next step.",
+ "devices": {
+  "vkb_gladiator_nxt_evo": {
+   "device_key": "vkb_gladiator_nxt_evo",
+   "display_name": "VKB Gladiator NXT EVO",
+   "variants_covered": [
+    "Standard grip (right/left hand)",
+    "Space Combat Edition (SCE) Standard grip",
+    "Space Combat Edition (SCE) Premium grip",
+    "Omni Throttle (ships with SCG Premium grip)",
+    "Premium grip (right/left hand)",
+    "GNX EVO base only"
+   ],
+   "confidence": "documented",
+   "priority": 1,
+   "sleven_owns_hardware": true,
+   "usb_identity": [
+    {
+     "variant": "Right hand grip, combined/native HID mode",
+     "vid": "0x231D",
+     "pid": "0x0200",
+     "gamepad_id_strings": [],
+     "source": "https://linux-hardware.org/?id=usb:231d-0200 ; https://github.com/EDCD/EliteCustomButtonNames ; https://github.com/ValveSoftware/wine/pull/197 ; https://github.com/ValveSoftware/Proton/issues/8589"
+    },
+    {
+     "variant": "Left hand grip, combined/native HID mode",
+     "vid": "0x231D",
+     "pid": "0x0201",
+     "gamepad_id_strings": [],
+     "source": "https://linux-hardware.org/?id=usb:231d-0201 ; https://github.com/EDCD/EliteCustomButtonNames ; https://github.com/ValveSoftware/Proton/issues/7908 ; https://github.com/ValveSoftware/Proton/issues/8589"
+    },
+    {
+     "variant": "Right hand grip + OTA (Omni Throttle Adapter) module attached",
+     "vid": "0x231D",
+     "pid": "0x3200",
+     "gamepad_id_strings": [],
+     "source": "https://github.com/EDCD/EliteCustomButtonNames (entry 'VKB-Gladiator-NXT-Premium-Right-OTA', Supported IDs ['231D3200'])"
+    },
+    {
+     "variant": "Left hand grip + OTA (Omni Throttle Adapter) module attached",
+     "vid": "0x231D",
+     "pid": "0x3201",
+     "gamepad_id_strings": [],
+     "source": "https://github.com/EDCD/EliteCustomButtonNames (entry 'VKB-Gladiator-NXT-Premium-Left-OTA', Supported IDs ['231D3201'])"
+    },
+    {
+     "variant": "Split / game compatibility mode: firmware exposes only 32 buttons across up to 4 virtual USB devices instead of the native ~128-button/16-axis/4-hat descriptor",
+     "vid": null,
+     "pid": null,
+     "gamepad_id_strings": [],
+     "source": "https://github.com/ValveSoftware/wine/pull/197 - exact per-virtual-device VID/PID not found in any source reachable"
+    }
+   ],
+   "button_numbering": {
+    "basis": "ambiguous",
+    "notes": "No VKB-published table assigns a fixed factory-default HID button index to each physical control. VKB's own materials refer to controls exclusively by physical label (A1, A2, A3, A4, B1, C1, D1, Main Trigger, Rapid Fire Trigger, F1/F2/F3, Sw1, En1) because the device is fully user-remappable in VKBDevCfg. Native firmware mode reports up to 128 buttons/16 axes/4 hats; VKBDevCfg can reduce this to 32 buttons/4 virtual devices for game compatibility - so a numeric index depends on firmware mode and profile, not a single fixed numbering. The vkb-sim.pro forum, most likely to hold a raw-number reference table, was unreachable (blocked at the sandboxed egress-proxy level on every fetch path tried).",
+    "mapping": [
+     {
+      "physical": "A1 Ministick",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "A2 Red Button",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "A3 Center Hat",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "A4 Top Right/Left Hat",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "B1 Side Button",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "C1 (hat or button, grip-dependent)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "D1 Pinky Button",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Main Trigger stage 1 (analog)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Main Trigger stage 2 (detent button)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Rapid Fire Trigger up",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Rapid Fire Trigger down",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "F1",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "F2",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "F3",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Sw1 up",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Sw1 down",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "En1 (rotary encoder pulses)",
+      "hid_index": null,
+      "source": null
+     }
+    ],
+    "missing": [
+     "No VKB-published default button-number table found for any variant/profile.",
+     "The VKB forum (forum.vkb-sim.pro) - most likely home of a raw-button-number table - was completely unreachable (blocked at sandboxed egress-proxy level; 403/404 through every fetch path tried).",
+     "A Falcon BMS forum post referenced an external pastebin key file with concrete DirectInput button numbers; the pastebin link was not retrievable."
+    ]
+   },
+   "axis_order": [
+    {
+     "axis": "x",
+     "meaning": "Base gimbal X (roll/left-right)",
+     "source": "https://vkbsimcontrollers.com/products/gladiator-nxt-evo-space-combat-edition-right-hand-us ; official Gladiator template PDF"
+    },
+    {
+     "axis": "y",
+     "meaning": "Base gimbal Y (pitch/forward-back)",
+     "source": "https://vkbsimcontrollers.com/products/gladiator-nxt-evo-space-combat-edition-right-hand-us ; official Gladiator template PDF"
+    },
+    {
+     "axis": "twist (Rz)",
+     "meaning": "Grip twist/yaw axis at top of grip, contactless MaRS sensor, lockable via a physical adapter ring",
+     "source": "official Gladiator template PDF, labelled 'twist'"
+    },
+    {
+     "axis": "throttle",
+     "meaning": "Base throttle wheel, separate physical rotary wheel on the base, not the grip",
+     "source": "official Gladiator template PDF, labelled 'throttle'"
+    },
+    {
+     "axis": "ministick x (A1(x))",
+     "meaning": "A1 Ministick horizontal axis, only present when A1 is in Analog Mode (Premium grip only)",
+     "source": "official Gladiator template PDF, section 'A1 Ministick Axes (Analog Mode)'"
+    },
+    {
+     "axis": "ministick y (A1(y))",
+     "meaning": "A1 Ministick vertical axis, Analog Mode only",
+     "source": "same as above"
+    }
+   ],
+   "hat_switch_reporting": "Native/full HID mode reports hats as genuine HID Hat Switch usages (up to 4 hats, usually 8-way) - a single discrete direction value per hat, not 4 independent buttons at the USB/HID level. Whether a given browser then exposes that as an axes[] entry or unpacks it into buttons[] is backend/OS-dependent and not confirmed for this device specifically.",
+   "control_inventory": [
+    {
+     "vendor_name": "A1 Ministick",
+     "physical_type": "8-way analog mini-joystick with center push; VKBDevCfg-selectable between analog x/y axis mode and 4-way POV/hat mode; Premium grip only, swappable module",
+     "face": "grip head, top",
+     "position_desc": "top of grip, roughly centered left-right",
+     "plain_desc": "A small joystick built into the top of the handle you nudge with your thumb; can act like a tiny analog stick or a 4-direction hat.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "A2 Red Button",
+     "physical_type": "single momentary pushbutton (red)",
+     "face": "grip head, upper right",
+     "position_desc": "upper-right area of grip head, near ministick",
+     "plain_desc": "A single red button on top of the handle you press with your thumb.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "A3 Center Hat",
+     "physical_type": "4-way hat switch with center push",
+     "face": "grip head, middle-right",
+     "position_desc": "middle-right section, below/right of A2",
+     "plain_desc": "A small 4-direction rocker pad you flick with your thumb; pressing straight down also clicks as a button.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "A4 (Top Right Hat RH / Top Left Hat LH)",
+     "physical_type": "4-way hat switch with center push",
+     "face": "grip head, upper right (RH) / upper left (LH)",
+     "position_desc": "right side upper portion; mirrored on LH",
+     "plain_desc": "Another 4-direction rocker pad near the top edge, on the side away from the thumb-hats.",
+     "source": "official Gladiator template PDF, naming difference confirmed between RH/LH variant PDFs"
+    },
+    {
+     "vendor_name": "B1 Side Button",
+     "physical_type": "single momentary pushbutton",
+     "face": "grip side (index-finger side)",
+     "position_desc": "left side of grip in RH template",
+     "plain_desc": "A button on the side of the handle you can press with your index finger without leaving the trigger.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "C1 (Thumb Hat, or button module)",
+     "physical_type": "4-way hat switch with center push (official spec); Premium grip includes an alternate plain button module for this position",
+     "face": "grip head, lower right / thumb area",
+     "position_desc": "lower-right area of grip head",
+     "plain_desc": "A 4-direction thumb pad near the bottom of the grip head, or a plain button if the swappable module is installed instead.",
+     "source": "https://vkbsimcontrollers.com/products/gladiator-nxt-evo-space-combat-edition-right-hand-us ; official Gladiator template PDF - conflicts with one community review, official store spec treated as higher confidence"
+    },
+    {
+     "vendor_name": "D1 Pinky Button",
+     "physical_type": "single momentary pushbutton",
+     "face": "grip head, bottom",
+     "position_desc": "bottom-left section (RH); mirrored LH",
+     "plain_desc": "A small button near the bottom of the handle, reachable with your pinky.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "Main Trigger (\"Dual Action Trigger\" on Standard grip)",
+     "physical_type": "two-stage trigger: stage 1 light analog pull, stage 2 harder pull past a detent registering as a discrete button",
+     "face": "grip front, trigger guard",
+     "position_desc": "center-left, most prominent front control",
+     "plain_desc": "The main trigger under your index finger; a light squeeze is one action, squeezing through a detent is a second, separate action.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "Rapid Fire Trigger",
+     "physical_type": "small secondary trigger/rocker directly above main trigger, up/down",
+     "face": "grip front, above main trigger",
+     "position_desc": "just above/behind main trigger",
+     "plain_desc": "A small extra lever above the main trigger that rocks up or down under your middle finger.",
+     "source": "official Gladiator template PDF; SCG Premium grip only per store copy"
+    },
+    {
+     "vendor_name": "F1, F2, F3 (Base Buttons)",
+     "physical_type": "three programmable momentary pushbuttons",
+     "face": "base, top surface",
+     "position_desc": "clustered on top of base unit",
+     "plain_desc": "Three separate buttons on top of the base, within reach without moving your hand off the grip.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "Sw1 (Base Left Side)",
+     "physical_type": "auto-centering 3-position rocker switch, spring-returns to center",
+     "face": "base, left side",
+     "position_desc": "lower-left edge of base",
+     "plain_desc": "A small rocker switch on the left side of the base that springs back to center when released.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "En1 (Base Right Side)",
+     "physical_type": "detented rotary encoder wheel, generates repeated increment/decrement pulses, not absolute position",
+     "face": "base, right side",
+     "position_desc": "lower-right edge of base",
+     "plain_desc": "A small knurled wheel on the right side of the base you spin with your finger; each notch sends a separate pulse.",
+     "source": "official Gladiator template PDF"
+    },
+    {
+     "vendor_name": "Throttle Wheel",
+     "physical_type": "rotary wheel, continuous analog axis",
+     "face": "base, front/side",
+     "position_desc": "front area of base, separate from En1",
+     "plain_desc": "A wheel on the base you roll with your thumb to set a throttle-style axis value.",
+     "source": "official Gladiator template PDF"
+    }
+   ],
+   "geometry": [
+    {
+     "control": "A1 Ministick",
+     "face": "grip head",
+     "x_frac": 0.5,
+     "y_frac": 0.1,
+     "source": "approximate grid-bucket estimate from official template PDF - not a measured coordinate"
+    },
+    {
+     "control": "A2 Red Button",
+     "face": "grip head",
+     "x_frac": 0.83,
+     "y_frac": 0.17,
+     "source": "approximate estimate"
+    },
+    {
+     "control": "A3 Center Hat",
+     "face": "grip head",
+     "x_frac": 0.75,
+     "y_frac": 0.4,
+     "source": "approximate estimate"
+    },
+    {
+     "control": "A4 Top Right/Left Hat",
+     "face": "grip head",
+     "x_frac": 0.83,
+     "y_frac": 0.2,
+     "source": "approximate estimate; mirrored to x=0.17 on LH"
+    },
+    {
+     "control": "B1 Side Button",
+     "face": "grip side",
+     "x_frac": 0.15,
+     "y_frac": 0.5,
+     "source": "approximate estimate"
+    },
+    {
+     "control": "C1",
+     "face": "grip head",
+     "x_frac": 0.75,
+     "y_frac": 0.65,
+     "source": "approximate estimate"
+    },
+    {
+     "control": "D1 Pinky Button",
+     "face": "grip head",
+     "x_frac": 0.2,
+     "y_frac": 0.83,
+     "source": "approximate estimate"
+    },
+    {
+     "control": "Main Trigger",
+     "face": "grip front",
+     "x_frac": 0.25,
+     "y_frac": 0.45,
+     "source": "approximate estimate"
+    },
+    {
+     "control": "Rapid Fire Trigger",
+     "face": "grip front",
+     "x_frac": 0.25,
+     "y_frac": 0.35,
+     "source": "approximate estimate"
+    },
+    {
+     "control": "F1/F2/F3",
+     "face": "base top",
+     "x_frac": 0.5,
+     "y_frac": 0.9,
+     "source": "approximate estimate, individual sub-positions not distinguished"
+    },
+    {
+     "control": "Sw1",
+     "face": "base left",
+     "x_frac": 0.1,
+     "y_frac": 0.9,
+     "source": "approximate estimate"
+    },
+    {
+     "control": "En1",
+     "face": "base right",
+     "x_frac": 0.9,
+     "y_frac": 0.9,
+     "source": "approximate estimate"
+    }
+   ],
+   "sources_checked": [
+    "https://linux-hardware.org/?id=usb:231d-0200",
+    "https://linux-hardware.org/?id=usb:231d-0201",
+    "https://github.com/EDCD/EliteCustomButtonNames",
+    "https://github.com/ValveSoftware/wine/pull/197",
+    "https://github.com/ValveSoftware/Proton/issues/7908",
+    "https://github.com/ValveSoftware/Proton/issues/8589",
+    "https://www.vkbcontrollers.com/products/gladiator-nxt-evo-space-combat-edition-right-hand",
+    "https://vkbsimcontrollers.com/products/gladiator-nxt-evo-space-combat-edition-right-hand-us",
+    "https://vkbsimcontrollers.com/products/gladiator-nxt-evo-omni-throttle-right-hand-us",
+    "https://subliminal.gg/blog/vkb-gladiator-nxt-evo-review",
+    "https://forum.falcon-bms.com/topic/24585/vkb-gladiator-nxt-sem-evo-and-gladiator-nxt-evo-omni-throttle"
+   ],
+   "missing_summary": "The vkb-sim.pro forum (VKB's own official support forum, most likely home of a raw button-number table) was unreachable through every fetch path available. No literal navigator.getGamepads() id string found anywhere despite VID/PID being independently corroborated by 3 sources. Exact numeric axis index order not sourced, only axis existence/naming. Geometry fractions are honest grid-bucket approximations, not measurements - the PDF-reading tool available lost vector/pixel coordinates. No confirmed distinct USB ID separating Standard/SCE/Premium grip tiers."
+  },
+  "virpil_constellation_alpha_prime": {
+   "device_key": "virpil_constellation_alpha_prime",
+   "display_name": "VIRPIL Constellation ALPHA Prime",
+   "variants_covered": [
+    "ALPHA Prime [L] (left-hand grip)",
+    "ALPHA Prime [R] (right-hand grip)"
+   ],
+   "confidence": "community",
+   "priority": 2,
+   "sleven_owns_hardware": false,
+   "usb_identity": [
+    {
+     "variant": "Grip on VPC WarBRD-D base (community rig)",
+     "vid": "0x3344",
+     "pid": "0x43f5",
+     "gamepad_id_strings": [],
+     "source": "https://github.com/LunaBaloona/Virpil_devices_on_Linux/blob/main/Linux_config_and_gaming.md"
+    },
+    {
+     "variant": "Constellation Alpha Prime Stick (base model unspecified)",
+     "vid": "0x3344",
+     "pid": "0x0391",
+     "gamepad_id_strings": [],
+     "source": "https://mattmoore.io/posts/virpil-controls-linux-steam/"
+    },
+    {
+     "variant": "VIRPIL vendor ID (general, all VIRPIL devices)",
+     "vid": "0x3344",
+     "pid": null,
+     "gamepad_id_strings": [],
+     "source": "https://the-sz.com/products/usbid/?v=0x3344"
+    }
+   ],
+   "button_numbering": {
+    "basis": "ambiguous",
+    "notes": "The grip has no factory-published button-numbering document on virpil.com/support.virpil.com - their Configurator 2.0 layout pages are image/PDF only and could not be fetched. Mapping below comes from a community Star Citizen keybind repo's 'exported' (unmodified) profile for an ALPHA Prime on a WarBRD-D base - indicative only, not VIRPIL-published, confirm per-unit before shipping a wizard against it.",
+    "mapping": [
+     {
+      "physical": "Main trigger, stage 1",
+      "hid_index": 1,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Main trigger, stage 2",
+      "hid_index": 2,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Flip trigger (UP position)",
+      "hid_index": 3,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Hat 1: up/right/down/left",
+      "hid_index": null,
+      "source": "buttons 4-7, not itemized per-direction"
+     },
+     {
+      "physical": "Hat 1: center push",
+      "hid_index": 8,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Hat 2: up/right/down/left",
+      "hid_index": null,
+      "source": "buttons 9-12"
+     },
+     {
+      "physical": "Hat 2: center push",
+      "hid_index": 13,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Hat 3: up/right/down/left",
+      "hid_index": null,
+      "source": "buttons 14-17"
+     },
+     {
+      "physical": "Hat 3: center push",
+      "hid_index": 18,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Hat 4 (2-way): up/down",
+      "hid_index": null,
+      "source": "buttons 19-20"
+     },
+     {
+      "physical": "Hat 4: center push",
+      "hid_index": 21,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Momentary buttons 1-3 (side)",
+      "hid_index": null,
+      "source": "buttons 22-24"
+     },
+     {
+      "physical": "Brake lever (momentary contact)",
+      "hid_index": 25,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Brake button",
+      "hid_index": 26,
+      "source": "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md"
+     },
+     {
+      "physical": "Scroll encoder push L/R",
+      "hid_index": null,
+      "source": "buttons 27-28"
+     },
+     {
+      "physical": "Scroll encoder rotate CW/CCW",
+      "hid_index": null,
+      "source": "buttons 29-30"
+     },
+     {
+      "physical": "Mini analog stick push/directional",
+      "hid_index": null,
+      "source": "buttons 31-32"
+     }
+    ],
+    "missing": [
+     "No VIRPIL-published factory numbering table found - support articles are image/PDF only and blocked from direct fetch.",
+     "Exact HID index per hat direction not itemized.",
+     "Whether factory firmware order matches this community profile is unconfirmed."
+    ]
+   },
+   "axis_order": [
+    {
+     "axis": "Mini analog thumbstick X",
+     "meaning": "Left/right tilt of the thumb-operated analog stick",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "axis": "Mini analog thumbstick Y",
+     "meaning": "Forward/back tilt of the same thumbstick",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "axis": "Brake lever axis",
+     "meaning": "Analog travel of the metal brake lever, VPC contactless sensor",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-l.html"
+    },
+    {
+     "axis": "Lockable twist axis",
+     "meaning": "VPC contactless sensor, adjustable/lockable via H2 hex key. Not confirmed whether this lives in the grip or is the base's yaw sensor.",
+     "source": "https://support.virpil.com/en/support/solutions/articles/47001228835-constellation-alpha-prime-grip-user-manual"
+    }
+   ],
+   "control_inventory": [
+    {
+     "vendor_name": "Dual-Stage Trigger",
+     "physical_type": "two-stage pull trigger",
+     "face": "front, primary index-finger position",
+     "position_desc": "front face, standard trigger location",
+     "plain_desc": "The main trigger under your index finger; light squeeze registers stage one, further squeeze stage two.",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "vendor_name": "Dual-Position Flip Trigger",
+     "physical_type": "metal flip-up trigger blade, tactile switch plus separate UP-position button",
+     "face": "front, ahead of main trigger",
+     "position_desc": "front face, ahead of main trigger",
+     "plain_desc": "A second metal trigger blade in front of the main trigger, squeezable and also switched when flipped up.",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "vendor_name": "Brake Lever",
+     "physical_type": "metal lever, VPC contactless analog sensor plus momentary button",
+     "face": "front/lower, near trigger",
+     "position_desc": "lower front, adjacent to trigger group",
+     "plain_desc": "A metal lever pulled with your finger that reads smoothly and clicks a separate button when pulled far enough.",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-l.html"
+    },
+    {
+     "vendor_name": "Analogue Stick (+ Push)",
+     "physical_type": "small thumb-operated analog ministick with click/push function",
+     "face": "top, thumb position",
+     "position_desc": "top of grip, natural thumb rest",
+     "plain_desc": "A tiny joystick under your thumb, nudge any direction, click straight down for a button.",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "vendor_name": "4-way Hat x3 (each + Push)",
+     "physical_type": "4-direction digital hat, 5 microswitches (4 directions + center), reports as separate discrete buttons not a single HID hat/POV axis",
+     "face": "top and side of grip (three hats)",
+     "position_desc": "one side-mounted, two on top - exact positions not officially diagrammed",
+     "plain_desc": "A small 4-way rocker nudged up/down/left/right, also pressable straight down for a fifth function.",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "vendor_name": "2-way Hat (+ Push)",
+     "physical_type": "2-direction digital rocker (up/down) with center push",
+     "face": "outer side of grip",
+     "position_desc": "outer side, near index-finger area",
+     "plain_desc": "A small rocker that only tips two ways, also clicks in for a third function.",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "vendor_name": "Momentary buttons x3",
+     "physical_type": "simple push buttons",
+     "face": "side and top",
+     "position_desc": "one hard-to-reach 'pinky button' on side, two more on top",
+     "plain_desc": "Three plain push-buttons scattered around the grip body.",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "vendor_name": "Scroll Encoder (+ Dual Push)",
+     "physical_type": "detented rotary encoder, two distinct press actions",
+     "face": "top/side of grip",
+     "position_desc": "not officially diagrammed, described as awkward to reach",
+     "plain_desc": "A notched wheel you roll like a mouse scroll wheel, with two separate click actions.",
+     "source": "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html"
+    },
+    {
+     "vendor_name": "Twist Axis (lockable)",
+     "physical_type": "rotational analog sensor with mechanical lock, H2 hex key adjustable",
+     "face": "unclear, not confirmed",
+     "position_desc": "not established",
+     "plain_desc": "A twisting motion the grip senses, mechanically lockable if unwanted.",
+     "source": "https://support.virpil.com/en/support/solutions/articles/47001228835-constellation-alpha-prime-grip-user-manual"
+    }
+   ],
+   "geometry": [
+    {
+     "control": "all controls",
+     "face": "n/a",
+     "x_frac": null,
+     "y_frac": null,
+     "source": "VIRPIL's official layout diagram is image/PDF only on an S3/Freshdesk host blocked to this session; WebFetch also cannot process image content"
+    }
+   ],
+   "sources_checked": [
+    "https://virpil-controls.us.com/vpc-constellation-alpha-prime-l.html",
+    "https://virpil-controls.us.com/vpc-constellation-alpha-prime-r.html",
+    "https://support.virpil.com/en/support/solutions/articles/47001228835-constellation-alpha-prime-grip-user-manual",
+    "https://the-sz.com/products/usbid/?v=0x3344",
+    "https://github.com/RavenX8/open-vpc",
+    "https://github.com/WayneKennedy/star-citizen-virpil-controls/blob/master/ALPHA_Prime_Reference.md",
+    "https://captaincollins.tv/review/virpil-constellation-alpha-prime/",
+    "https://forum.dcs.world/topic/273377-virpil-hat-switch-triggers-wrong-buttons-or-virpil-hat-switch-design-limitations/"
+   ],
+   "missing_summary": "Geometry: VIRPIL's own template exists only as image/PDF on a blocked host, and WebFetch cannot process images - all fields null, not estimated. USB identity: the grip has no USB connector of its own (mounts on a base), so 'VID/PID' really means whatever base it's plugged into - two conflicting community pairs found, no getGamepads() id string found anywhere. Button numbering sourced only to one community repo's default export, not any VIRPIL-published table."
+  },
+  "virpil_cdt_aeromax": {
+   "device_key": "virpil_cdt_aeromax",
+   "display_name": "VIRPIL CDT-AEROMAX",
+   "variants_covered": [
+    "CDT-AEROMAX-R",
+    "CDT-AEROMAX-L",
+    "CDT-AEROMAX-RZ (bundled w/ OmniThrottle)",
+    "CDT-AEROMAX-LZ (bundled w/ OmniThrottle)"
+   ],
+   "confidence": "community",
+   "priority": 3,
+   "sleven_owns_hardware": false,
+   "usb_identity": [
+    {
+     "variant": "all CDT-AEROMAX variants (VIRPIL vendor ID, not variant-specific)",
+     "vid": "0x3344",
+     "pid": null,
+     "gamepad_id_strings": [],
+     "source": "https://the-sz.com/products/usbid/?v=0x3344"
+    }
+   ],
+   "button_numbering": {
+    "basis": "ambiguous",
+    "notes": "VIRPIL publishes an official Button Mapping FAQ page and a Configurator 2.0 control-layout page with attached PDFs on support.virpil.com, but both render numbering as image/PDF - not text-extractable through available tools, and support.virpil.com was blocked by this environment's outbound proxy policy on direct access. No community source states explicit numeric indices inline.",
+    "mapping": [
+     {
+      "physical": "Primary trigger (stage 1)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Primary trigger (stage 2)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Secondary/flip-down trigger (stage 1)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Secondary/flip-down trigger (stage 2)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Hat switch center press(es)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Top button 1",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Top button 2",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Side button",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Paddle switch",
+      "hid_index": null,
+      "source": null
+     }
+    ],
+    "missing": [
+     "A vendor-published control-to-index table - image/PDF only, unreadable by available tools.",
+     "1-based vs 0-based confirmation.",
+     "gamepad-tester.com posts for this exact device - none found."
+    ]
+   },
+   "axis_order": [
+    {
+     "axis": "x",
+     "meaning": "Grip lateral tilt (roll) - existence confirmed, HID index order not confirmed",
+     "source": "https://virpil-controls.us.com/cdt-aeromax-r-flightstick.html"
+    },
+    {
+     "axis": "y",
+     "meaning": "Grip fore-aft tilt (pitch) - existence confirmed, HID index order not confirmed",
+     "source": "https://virpil-controls.us.com/cdt-aeromax-r-flightstick.html"
+    },
+    {
+     "axis": "rz",
+     "meaning": "Grip twist (yaw), 'Lockable Twist Axis' - existence confirmed, index order not confirmed",
+     "source": "https://support.virpil.com/en/support/solutions/articles/47001275968-cdt-aeromax-r-flightstick-user-manual"
+    },
+    {
+     "axis": "slider/brake",
+     "meaning": "A separate analog brake-lever axis and a two-way slider both described in launch copy; which is which HID index, or whether one or two axes, not confirmed",
+     "source": "https://msfsaddons.com/2025/04/22/virpil-launches-cdt-aeromax-flightstick-now-available-for-pre-order/"
+    }
+   ],
+   "control_inventory": [
+    {
+     "vendor_name": "Two-stage trigger",
+     "physical_type": "two-stage pull trigger with discernible click on each stage",
+     "face": "grip front",
+     "position_desc": "front of grip, primary firing position",
+     "plain_desc": "The main trigger; a light first pull, then a harder second click for a second action.",
+     "source": "https://stormbirds.blog/2025/12/23/new-king-of-the-mid-level-joysticks-full-review-of-virpils-new-cdt-aeromax-r-flightstick/"
+    },
+    {
+     "vendor_name": "Secondary (flip) trigger",
+     "physical_type": "two-stage trigger that flips down from behind the primary",
+     "face": "grip front",
+     "position_desc": "directly behind/below primary trigger",
+     "plain_desc": "A second trigger that folds down for use, also with two click stages.",
+     "source": "https://stormbirds.blog/2025/12/23/new-king-of-the-mid-level-joysticks-full-review-of-virpils-new-cdt-aeromax-r-flightstick/"
+    },
+    {
+     "vendor_name": "4-way hat switch(es) with push",
+     "physical_type": "4-way directional hat with center push - sources disagree on quantity (2 vs 3, plus a separate analog hat/ministick), unresolved",
+     "face": "grip top",
+     "position_desc": "top of grip, thumb area",
+     "plain_desc": "A thumb-operated 4-direction hat, also pressable straight down.",
+     "source": "https://stormbirds.blog/2025/12/23/new-king-of-the-mid-level-joysticks-full-review-of-virpils-new-cdt-aeromax-r-flightstick/"
+    },
+    {
+     "vendor_name": "Analog ministick / analog hat",
+     "physical_type": "analog, spring-centered mini-joystick",
+     "face": "grip top",
+     "position_desc": "top of grip, thumb area",
+     "plain_desc": "A small analog stick under the thumb, separate from the 4-way hats.",
+     "source": "https://msfsaddons.com/2025/04/22/virpil-launches-cdt-aeromax-flightstick-now-available-for-pre-order/"
+    },
+    {
+     "vendor_name": "Top buttons x2",
+     "physical_type": "momentary push buttons",
+     "face": "grip top",
+     "position_desc": "top of grip",
+     "plain_desc": "Two plain push buttons on top of the grip.",
+     "source": "https://stormbirds.blog/2025/12/23/new-king-of-the-mid-level-joysticks-full-review-of-virpils-new-cdt-aeromax-r-flightstick/"
+    },
+    {
+     "vendor_name": "Side button",
+     "physical_type": "momentary push button",
+     "face": "grip side",
+     "position_desc": "side of grip",
+     "plain_desc": "A single push button on the side of the grip.",
+     "source": "https://stormbirds.blog/2025/12/23/new-king-of-the-mid-level-joysticks-full-review-of-virpils-new-cdt-aeromax-r-flightstick/"
+    },
+    {
+     "vendor_name": "Paddle switch",
+     "physical_type": "rocker/paddle switch",
+     "face": "grip side",
+     "position_desc": "side of grip, reviewer notes it's awkward to reach",
+     "plain_desc": "A small paddle-style switch on the side of the grip.",
+     "source": "https://stormbirds.blog/2025/12/23/new-king-of-the-mid-level-joysticks-full-review-of-virpils-new-cdt-aeromax-r-flightstick/"
+    },
+    {
+     "vendor_name": "Brake lever axis",
+     "physical_type": "analog lever axis",
+     "face": "grip/base area",
+     "position_desc": "reachable from grip",
+     "plain_desc": "A lever pulled for analog braking input.",
+     "source": "https://stormbirds.blog/2025/12/23/new-king-of-the-mid-level-joysticks-full-review-of-virpils-new-cdt-aeromax-r-flightstick/"
+    },
+    {
+     "vendor_name": "Two-way slider",
+     "physical_type": "analog slider",
+     "face": "grip",
+     "position_desc": "not described precisely",
+     "plain_desc": "A slider control moved up/down for an analog input.",
+     "source": "https://msfsaddons.com/2025/04/22/virpil-launches-cdt-aeromax-flightstick-now-available-for-pre-order/"
+    },
+    {
+     "vendor_name": "Lockable twist axis (yaw)",
+     "physical_type": "rotational axis on grip/base with H2-hex-key-adjustable lock",
+     "face": "grip base",
+     "position_desc": "whole grip rotates",
+     "plain_desc": "Twisting the whole grip left/right gives a yaw/rudder input, lockable.",
+     "source": "https://support.virpil.com/en/support/solutions/articles/47001275968-cdt-aeromax-r-flightstick-user-manual"
+    },
+    {
+     "vendor_name": "Optional throttle module axis",
+     "physical_type": "analog lever, separately-sold plug-in add-on",
+     "face": "left, right, or both sides (symmetrical mount)",
+     "position_desc": "attaches to grip base",
+     "plain_desc": "An optional clip-on throttle lever not present unless purchased and installed.",
+     "source": "https://virpil-controls.us.com/cdt-aeromax-throttle-module.html"
+    }
+   ],
+   "geometry": [
+    {
+     "control": "all controls",
+     "face": "n/a",
+     "x_frac": null,
+     "y_frac": null,
+     "source": "vendor control-layout page exists (support.virpil.com/.../47001285228) but content unreadable by available tools"
+    }
+   ],
+   "sources_checked": [
+    "https://virpil-controls.us.com/cdt-aeromax-r-flightstick.html",
+    "https://virpil-controls.us.com/cdt-aeromax-throttle-module.html",
+    "https://support.virpil.com/en/support/solutions/articles/47001275968-cdt-aeromax-r-flightstick-user-manual",
+    "https://the-sz.com/products/usbid/?v=0x3344",
+    "https://stormbirds.blog/2025/12/23/new-king-of-the-mid-level-joysticks-full-review-of-virpils-new-cdt-aeromax-r-flightstick/",
+    "https://msfsaddons.com/2025/04/22/virpil-launches-cdt-aeromax-flightstick-now-available-for-pre-order/",
+    "https://subliminalstv.gumroad.com/l/Enhanced_Virpil_VMAX_Aeromax-R"
+   ],
+   "missing_summary": "USB PID, exact button numbering, exact axis index order, hat-switch encoding, and geometry could not be sourced. VIRPIL's own Button Mapping FAQ and Configurator 2.0 pages exist and should answer most of this but render as image/PDF, unreadable by available tools, and support.virpil.com was blocked for direct access. Control inventory is reasonably corroborated between VIRPIL's own copy and two independent reviews, except hat-switch count, which conflicts between sources (flagged, not resolved). Recommend someone with direct browser access transcribe the two support.virpil.com pages by hand, or use gamepad-tester.com against a physical unit."
+  },
+  "thrustmaster_t16000m": {
+   "device_key": "thrustmaster_t16000m",
+   "display_name": "Thrustmaster T.16000M",
+   "variants_covered": [
+    "T.16000M (standalone)",
+    "T.16000M FCS",
+    "T.16000M FCS HOTAS (bundle w/ TWCS Throttle)",
+    "T.16000M FCS Flight Pack (bundle w/ TWCS Throttle + TFRP rudder pedals)"
+   ],
+   "confidence": "documented",
+   "priority": 4,
+   "sleven_owns_hardware": false,
+   "usb_identity": [
+    {
+     "variant": "T.16000M Joystick (all packaging variants, same physical stick; TWCS throttle in FCS packs is a separate device, PID 0xB687)",
+     "vid": "0x044F",
+     "pid": "0xB10A",
+     "gamepad_id_strings": [],
+     "source": "https://devicehunt.com/view/type/usb/vendor/044F/device/B10A ; https://linux-hardware.org/index.php?id=usb%3A044f-b10a ; https://www.the-sz.com/products/usbid/index.php?v=044f"
+    }
+   ],
+   "button_numbering": {
+    "basis": "ambiguous",
+    "notes": "Every human-facing source (manual structure, flyawaysimulation.com, a Falcon BMS DirectInput script) describes the 16 buttons using 1-based numbering (Button 1 = trigger). No source confirms whether the raw HID report descriptor or the browser Gamepad API indexes this 0-based or 1-based.",
+    "mapping": [
+     {
+      "physical": "Trigger (index finger, front of grip)",
+      "hid_index": 1,
+      "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf (legend item 1) ; https://flyawaysimulation.com/ask/answers/thrustmaster-t16000m-button-layout-mapping/"
+     },
+     {
+      "physical": "3 grip buttons (individual identity not confirmed)",
+      "hid_index": null,
+      "source": "buttons 2-4, https://flyawaysimulation.com/ask/answers/thrustmaster-t16000m-button-layout-mapping/"
+     },
+     {
+      "physical": "12 base buttons in two 6-button clusters",
+      "hid_index": null,
+      "source": "buttons 5-16, https://flyawaysimulation.com/ask/answers/thrustmaster-t16000m-button-layout-mapping/ and manual legend item 6"
+     },
+     {
+      "physical": "POV hat switch",
+      "hid_index": null,
+      "source": "https://www.thrustmaster.com/en-us/products/t-16000m-fcs/ - reported as a hat, not among the 16 numbered buttons"
+     }
+    ],
+    "missing": [
+     "Exact physical position of individual grip buttons 2-4 and base buttons 5-16.",
+     "PDF diagram callouts extracted as garbled/unverifiable digit strings, discarded rather than used.",
+     "0-based vs 1-based confirmation at raw HID/browser level."
+    ]
+   },
+   "axis_order": [
+    {
+     "axis": "X",
+     "meaning": "Stick left/right tilt (roll/aileron)",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+     "axis": "Y",
+     "meaning": "Stick forward/back tilt (pitch/elevator)",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+     "axis": "RZ",
+     "meaning": "Handle twist rotation (rudder/yaw)",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf ; https://www.thrustmaster.com/en-us/products/t-16000m-fcs/"
+    },
+    {
+     "axis": "Slider0",
+     "meaning": "Throttle wheel/lever on the base",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf (named 'Slider0 Axis')"
+    },
+    {
+     "axis": "hat (POV)",
+     "meaning": "8-way point-of-view hat, single hat-switch element (two synthetic axes ABS_HAT0X/Y under Linux joydev), NOT four separate buttons",
+     "source": "https://www.thrustmaster.com/en-us/products/t-16000m-fcs/ ; https://www.kernel.org/doc/Documentation/input/joystick-api.txt"
+    }
+   ],
+   "control_inventory": [
+    {
+     "vendor_name": "Digital trigger",
+     "physical_type": "trigger",
+     "face": "front of grip/handle",
+     "position_desc": "under the index finger",
+     "plain_desc": "A two-stage digital trigger under the index finger, the primary fire button (Button 1).",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+     "vendor_name": "Point of View hat switch",
+     "physical_type": "8-way POV hat",
+     "face": "top of grip",
+     "position_desc": "top of grip, under the thumb",
+     "plain_desc": "An 8-directional hat under the thumb, commonly used for view/camera control.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+     "vendor_name": "3 grip buttons",
+     "physical_type": "pushbuttons",
+     "face": "grip/handle",
+     "position_desc": "near trigger/hat, individual placement not documented",
+     "plain_desc": "Three additional pushbuttons on the grip (Buttons 2-4) for secondary functions.",
+     "source": "https://flyawaysimulation.com/ask/answers/thrustmaster-t16000m-button-layout-mapping/"
+    },
+    {
+     "vendor_name": "Rudder via rotating handle",
+     "physical_type": "twist axis",
+     "face": "stick shaft",
+     "position_desc": "entire shaft rotates left/right",
+     "plain_desc": "Twisting the whole handle left or right acts as rudder/yaw (RZ), with an adjustable hand rest.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+     "vendor_name": "Throttle",
+     "physical_type": "lever/wheel slider",
+     "face": "base",
+     "position_desc": "on base, separate from stick shaft",
+     "plain_desc": "A throttle lever on the base, reported as Slider0.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+     "vendor_name": "12 base buttons",
+     "physical_type": "pushbuttons",
+     "face": "base, two 6-button clusters",
+     "position_desc": "two hexagonal/circular clusters flanking the stick shaft",
+     "plain_desc": "Twelve base-mounted pushbuttons (Buttons 5-16).",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf (legend item 6)"
+    },
+    {
+     "vendor_name": "Hand rest rotation screw",
+     "physical_type": "adjustment screw, not an input",
+     "face": "base, near stick shaft",
+     "position_desc": "repositions hand rest for handedness",
+     "plain_desc": "A screw that lets the hand rest be reoriented for right- or left-handed grip.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+     "vendor_name": "Right/left thumb rest inserts",
+     "physical_type": "removable ergonomic pieces, not an input",
+     "face": "base, beside stick shaft",
+     "position_desc": "swappable for handedness",
+     "plain_desc": "Two interchangeable thumb-rest inserts for right- or left-handed use.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+     "vendor_name": "Buttons selector switch",
+     "physical_type": "physical toggle switch, not an input signal",
+     "face": "base underside",
+     "position_desc": "reconfigures button behavior for handedness",
+     "plain_desc": "A selector switch adapting base button behavior for ambidextrous operation.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    }
+   ],
+   "geometry": [
+    {
+     "control": "all controls",
+     "face": "n/a",
+     "x_frac": null,
+     "y_frac": null,
+     "source": "Thrustmaster's manual diagram is image-only; not described/reproduced per task rules, and PDF text extraction of numbered callouts returned garbled/unverifiable digits, discarded"
+    }
+   ],
+   "sources_checked": [
+    "https://devicehunt.com/view/type/usb/vendor/044F/device/B10A",
+    "https://linux-hardware.org/index.php?id=usb%3A044f-b10a",
+    "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf",
+    "https://www.thrustmaster.com/en-us/products/t-16000m-fcs/",
+    "https://flyawaysimulation.com/ask/answers/thrustmaster-t16000m-button-layout-mapping/",
+    "https://forum.falcon-bms.com/topic/16607/t16000m-fcs-flight-pack-thrustmaster-full-hotas-hands-on-script",
+    "https://github.com/KelpME/ThrustyARMA",
+    "https://www.kernel.org/doc/Documentation/input/joystick-api.txt"
+   ],
+   "missing_summary": "No real-world navigator.getGamepads() id string found anywhere. No precise per-button geometry exists as published numeric data - only an illustrated diagram (image), not described/reproduced per task rules; a PDF text-extraction pass returned unverifiable garbled digits, discarded rather than used. Exact physical identity of each individual numbered button within the 3-button grip cluster and 12-button base clusters is not documented beyond zone-level agreement (trigger=1, grip=2-4, base=5-16). 0-based vs 1-based HID/Gamepad-API indexing not confirmed by any source."
+  },
+  "thrustmaster_sol_r2": {
+   "device_key": "thrustmaster_sol_r2",
+   "display_name": "Thrustmaster SOL-R 2 HOSAS (Space Sim Duo)",
+   "product_exists_confirmed": true,
+   "variants_covered": [
+    "SOL-R 2 HOSAS (dual-stick set, product #2960939)"
+   ],
+   "confidence": "documented",
+   "priority": 5,
+   "sleven_owns_hardware": false,
+   "name_note": "Confirmed real - Thrustmaster's own eshop/support URLs use 'sol-r-2-hosas'. Part of a modular 'SOL-R' family launched April 2025 (SOL-R 1 single stick, SOL-R 2 HOSAS dual sticks, SOL-R 4 HOTAS, SOL-R 5 base only, SOL-R 6 throttle only) sharing a common grip/base design. This is a dual-stick HOSAS pair, not a single joystick - matters for wizard UI.",
+   "usb_identity": [
+    {
+     "variant": "SOL-R flightstick grip (vendor interface; variant not confirmed as specifically SOL-R 1 vs 2 vs 4)",
+     "vid": "0x044F",
+     "pid": "0x0422",
+     "gamepad_id_strings": [],
+     "source": "https://treexy.com/products/driver-fusion/database/human-interface-devices/thrustmaster/sol-r-r-flightstick-vendor/ - single weak source, uncorroborated"
+    }
+   ],
+   "button_numbering": {
+    "basis": "ambiguous",
+    "notes": "No Thrustmaster document publishes a button-to-HID-index table for this device. Community binding projects reference button labels inconsistently without a clear canonical index scheme.",
+    "mapping": [],
+    "missing": [
+     "A vendor-published control-to-index table - searched instruction manual, full user manual, T.A.R.G.E.T. software pages (not deeply reviewed), support KB.",
+     "1-based vs 0-based confirmation.",
+     "An internally consistent community index table - none found complete enough.",
+     "gamepad-tester.com posts - none found."
+    ]
+   },
+   "axis_order": [
+    {
+     "axis": "x",
+     "meaning": "Stick X (roll/lateral tilt), range 0-65535",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_Flightstick_Instruction_manual_5081188.pdf"
+    },
+    {
+     "axis": "y",
+     "meaning": "Stick Y (pitch/fore-aft tilt), range 0-65535",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_Flightstick_Instruction_manual_5081188.pdf"
+    },
+    {
+     "axis": "rz",
+     "meaning": "Rudder/yaw via rotating (twist) the grip, range 0-65535",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_Flightstick_Instruction_manual_5081188.pdf"
+    },
+    {
+     "axis": "slider0",
+     "meaning": "Throttle slider, range 0-255",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_Flightstick_Instruction_manual_5081188.pdf"
+    }
+   ],
+   "control_inventory": [
+    {
+     "vendor_name": "Analog mini-stick",
+     "physical_type": "2-axis analog thumbstick",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "A small analog thumbstick for auxiliary two-axis input.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    },
+    {
+     "vendor_name": "8-way POV hat switch(es)",
+     "physical_type": "POV hat - product page states 2 hats per stick; single HID hat-axis vs 4 buttons unconfirmed",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "Multidirectional POV hat(s) for view/look or secondary directional control.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    },
+    {
+     "vendor_name": "Action buttons",
+     "physical_type": "push buttons, count unspecified",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "General-purpose programmable push buttons.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    },
+    {
+     "vendor_name": "Scroll wheel (thumbwheel)",
+     "physical_type": "rotary thumbwheel",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "A thumb-operated scroll/rotary wheel.",
+     "source": "https://www.thrustmaster.com/en-us/products/sol-r-2-hosas-space-sim-duo/"
+    },
+    {
+     "vendor_name": "Rudder via rotating grip (lockable)",
+     "physical_type": "twist-axis, whole grip rotates, lockable",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "Twisting the entire grip provides rudder/yaw input; can be locked off.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    },
+    {
+     "vendor_name": "Triggers (incl. one dual-position)",
+     "physical_type": "one standard, one dual-stage/two-position trigger",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "Two triggers, one with two detectable press positions.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    },
+    {
+     "vendor_name": "Toggle switches (2-position)",
+     "physical_type": "2-position toggle switch(es)",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "On/off style toggle switch(es).",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    },
+    {
+     "vendor_name": "Encoder",
+     "physical_type": "rotary encoder",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "A rotary encoder dial for stepped or continuous input.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    },
+    {
+     "vendor_name": "Throttle with indicator lights",
+     "physical_type": "slider axis with LED indicators",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "A throttle slider with built-in position/status lighting.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    },
+    {
+     "vendor_name": "Rotary selector (4 positions)",
+     "physical_type": "4-position rotary switch",
+     "face": null,
+     "position_desc": null,
+     "plain_desc": "A rotary switch offering four discrete positions.",
+     "source": "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf"
+    }
+   ],
+   "geometry": [
+    {
+     "control": "all controls",
+     "face": "n/a",
+     "x_frac": null,
+     "y_frac": null,
+     "source": "Vendor control-layout diagrams (manual PDF and a Star-Citizen-specific mapping PNG) exist but are image-only, unreadable by available tools"
+    }
+   ],
+   "sources_checked": [
+    "https://www.thrustmaster.com/en-us/products/sol-r-2-hosas-space-sim-duo/",
+    "https://eshop.thrustmaster.com/en_us/sol-r-2-hosas.html",
+    "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_Flightstick_Instruction_manual_5081188.pdf",
+    "https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf",
+    "https://ts.thrustmaster.com/download/pictures/PCMAC/Sol-R/Mapping-Sol-R2_StarCitizen.png",
+    "https://treexy.com/products/driver-fusion/database/human-interface-devices/thrustmaster/sol-r-r-flightstick-vendor/"
+   ],
+   "missing_summary": "Product confirmed real and current. Axis order and 19 named physical controls are solidly sourced from Thrustmaster's own manuals. Could not source: a reliable corroborated USB VID/PID (only one weak third-party source, unconfirmed for this specific variant); any button-to-HID-index table (marked ambiguous, not guessed); exact face/position and hat-switch encoding for each control - the vendor's own diagrams (including a Star-Citizen-specific mapping image) exist but are image-only and unreadable by available tools, so left null rather than inferred from typical HOTAS convention."
+  },
+  "turtle_beach_velocityone_flightstick_ii": {
+   "device_key": "turtle_beach_velocityone_flightstick_ii",
+   "display_name": "Turtle Beach VelocityOne Flightstick II",
+   "product_exists_confirmed": true,
+   "variants_covered": [
+    "VelocityOne Flightstick II (Xbox Series X|S + Windows 10/11 PC)",
+    "VelocityOne Flightstick II (Windows PC-only)"
+   ],
+   "confidence": "documented",
+   "priority": 6,
+   "sleven_owns_hardware": false,
+   "name_note": "Real, officially-announced product (~2026-07-23), distinct from the 2022 gen-1 VelocityOne Flightstick (27 buttons vs II's 38 inputs). PRE-ORDER ONLY as of 2026-08-07 - Turtle Beach's own page states 'anticipated to ship 09-21-2026.' No unit exists outside Turtle Beach yet, so several fact categories genuinely do not exist anywhere, not a search failure.",
+   "usb_identity": [],
+   "button_numbering": {
+    "basis": "ambiguous",
+    "notes": "No technical manual, driver INF, or hands-on report exists for this device yet - it has not shipped. Cannot state 1-based vs 0-based because there is no mapping at all to have a basis.",
+    "mapping": [
+     {
+      "physical": "Main flight stick (X/Y)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Twist rudder",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Lever 1 (throttle/flap)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Lever 2 (throttle/flap)",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Precision thumbstick",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Multi-function wheel",
+      "hid_index": null,
+      "source": null
+     },
+     {
+      "physical": "Tri-Mode Autopilot / Cockpit Control Dial",
+      "hid_index": null,
+      "source": null
+     }
+    ],
+    "missing": [
+     "USB VID/PID and getGamepads() id string - none found, device is pre-order only.",
+     "Physical control to HID button index mapping - not published yet.",
+     "Turtle Beach's own official technical-specifications support article exists at a known URL but was blocked at proxy/robots level - same block pattern hit other vendors' support domains too, looks environmental. Worth a direct unproxied pull before concluding the data doesn't exist."
+    ]
+   },
+   "axis_order": [
+    {
+     "axis": "stick_x",
+     "meaning": "Main flight stick, lateral (roll), 16-bit Hall-effect, part of stated 8-axis total. HID index not published.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "axis": "stick_y",
+     "meaning": "Main flight stick, fore-aft (pitch), 16-bit Hall-effect. HID index not published.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "axis": "twist_rudder",
+     "meaning": "Integrated twist at stick base for yaw, lockable to disable when using dedicated rudder pedals. HID index not published.",
+     "source": "https://gstylemag.com/2026/07/27/turtle-beach-reveals-velocityone-flightstick-ii-velocityone-dual-throttle-velocityone-h-o-t-a-s-for-xbox-and-pc/"
+    },
+    {
+     "axis": "lever_1",
+     "meaning": "First of two 10-bit Hall-effect levers, usable for throttle or flaps. HID index not published.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "axis": "lever_2",
+     "meaning": "Second of two 10-bit Hall-effect levers. HID index not published.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "axis": "thumbstick_x",
+     "meaning": "Precision analog thumbstick axis, for camera or thruster input. HID index not published.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "axis": "thumbstick_y",
+     "meaning": "Precision analog thumbstick, second axis. HID index not published.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "axis": "wheel",
+     "meaning": "Multi-function wheel - vendor states it 'operates as either an axis or programmable inputs', default behavior unconfirmed. HID index not published.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    }
+   ],
+   "control_inventory": [
+    {
+     "vendor_name": "Main flight control stick",
+     "physical_type": "Hall-effect two-axis analog stick, three adjustable spring-tension settings",
+     "face": "top/primary grip",
+     "position_desc": "primary handgrip, no numeric coordinates given",
+     "plain_desc": "The main handle you grip and tilt for pitch and roll, with three tension settings.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "vendor_name": "Rudder twist (lockable)",
+     "physical_type": "twist-action rotary input with a physical lock",
+     "face": "stick base/shaft",
+     "position_desc": "integrated into base of main stick",
+     "plain_desc": "Twist the whole stick left/right for yaw; lockable off if using separate rudder pedals.",
+     "source": "https://gstylemag.com/2026/07/27/turtle-beach-reveals-velocityone-flightstick-ii-velocityone-dual-throttle-velocityone-h-o-t-a-s-for-xbox-and-pc/"
+    },
+    {
+     "vendor_name": "Dual levers",
+     "physical_type": "two independent 10-bit Hall-effect levers",
+     "face": "base",
+     "position_desc": "not specified beyond base",
+     "plain_desc": "Two separate lever controls, for throttle or flaps.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "vendor_name": "Precision thumbstick",
+     "physical_type": "small two-axis analog thumbstick",
+     "face": "stick grip, thumb area",
+     "position_desc": "not given with coordinates",
+     "plain_desc": "A small secondary stick worked with the thumb, for camera look or thruster/translation input.",
+     "source": "https://gstylemag.com/2026/07/27/turtle-beach-reveals-velocityone-flightstick-ii-velocityone-dual-throttle-velocityone-h-o-t-a-s-for-xbox-and-pc/"
+    },
+    {
+     "vendor_name": "Multi-function wheel",
+     "physical_type": "rotary wheel, switchable analog axis mode vs digital programmable inputs",
+     "face": "not specified",
+     "position_desc": "not specified",
+     "plain_desc": "A wheel configurable as either a smooth analog control or separate button-like inputs.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "vendor_name": "Tri-Mode Autopilot Dial (Cockpit Control Dial)",
+     "physical_type": "dual-encoder dial with a tri-position mode switch",
+     "face": "base",
+     "position_desc": "not specified beyond base/cockpit-control area",
+     "plain_desc": "A dial with a 3-position mode switch and two encoders, up to nine programmable inputs, for autopilot/navigation.",
+     "source": "https://gstylemag.com/2026/07/27/turtle-beach-reveals-velocityone-flightstick-ii-velocityone-dual-throttle-velocityone-h-o-t-a-s-for-xbox-and-pc/"
+    },
+    {
+     "vendor_name": "Wrist and thumb rests",
+     "physical_type": "adjustable ambidextrous rests, swappable inserts, not an input",
+     "face": "base, both sides",
+     "position_desc": "not given with coordinates",
+     "plain_desc": "Ergonomic rests for wrist and thumb, adjustable/swappable for handedness.",
+     "source": "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii"
+    },
+    {
+     "vendor_name": "Flight Management Display",
+     "physical_type": "built-in full-color screen, display only, not an input",
+     "face": "base, front-facing",
+     "position_desc": "not given with coordinates",
+     "plain_desc": "A small built-in color screen showing real-time flight telemetry and system status.",
+     "source": "https://gstylemag.com/2026/07/27/turtle-beach-reveals-velocityone-flightstick-ii-velocityone-dual-throttle-velocityone-h-o-t-a-s-for-xbox-and-pc/"
+    }
+   ],
+   "geometry": [
+    {
+     "control": "all controls",
+     "face": "n/a",
+     "x_frac": null,
+     "y_frac": null,
+     "source": "No dimensioned control-layout diagram has been published for this pre-order device"
+    }
+   ],
+   "sources_checked": [
+    "https://www.turtlebeach.com/products/velocity-one-flight-stick-ii",
+    "https://gstylemag.com/2026/07/27/turtle-beach-reveals-velocityone-flightstick-ii-velocityone-dual-throttle-velocityone-h-o-t-a-s-for-xbox-and-pc/",
+    "https://corp.turtlebeach.com/news/news-details/2026/TURTLE-BEACHS-ALL-NEW-H-O-T-A-S--FLIGHT-STICK-II-AND-DUAL-THROTTLE-FLIGHT-PERIPHERALS/default.aspx",
+    "https://support.turtlebeach.com/s/article/velocityone-flightstick-ii-technical-specifications?language=en_US"
+   ],
+   "missing_summary": "USB identity, mapping, axis index order, and hat presence/absence do not exist anywhere because the device hasn't shipped (anticipated 2026-09-21). Control inventory and axis/button totals are well and consistently sourced from Turtle Beach's own product page and press material quoting the same materials. No hat/POV switch is mentioned anywhere - flagged as unconfirmed-absent, not assumed present or absent. Geometry entirely unsourced, no diagram published. One unresolved lead: Turtle Beach's own technical-specifications support article exists at a known URL but was blocked at proxy/robots level in this environment - same pattern hit other vendors, looks environmental. Recommend a direct pull from outside this sandbox, and re-running this device after the ship date."
+  },
+  "winctrl_ursa_minor": {
+   "device_key": "winctrl_ursa_minor",
+   "display_name": "WinWing / WINCTRL Ursa Minor Fighter (Space) Joystick",
+   "product_exists_confirmed": true,
+   "name_ambiguity_notes": "The brand is NOT a mis-transcription: WINCTRL is the current storefront/rebrand name of WinWing (Chengdu Winwing Technology Co., Ltd.) - directly confirmed by a review stating 'URSA Minor Airline Joystick from WINCTRL, formerly known as WinWing.' However 'Ursa Minor' is a PRODUCT LINE with three distinct devices: (1) Ursa Minor Airline Joystick L/R (civil-aviation grip), (2) Ursa Minor Fighter / Space Joystick L/R (combat/space-sim grip - the one discussed on RSI Spectrum for Star Citizen HOSAS use), (3) Ursa Minor 32 Throttle L/R (paired throttle). This file covers the Fighter/Space Joystick variant as the best-fit guess for Star Citizen relevance - that variant choice is a GUESS, not confirmed user intent.",
+   "variants_covered": [
+    "Ursa Minor Fighter/Space Joystick L",
+    "Ursa Minor Fighter/Space Joystick R"
+   ],
+   "confidence": "community",
+   "priority": 7,
+   "sleven_owns_hardware": false,
+   "usb_identity": [
+    {
+     "variant": "All Ursa Minor / WinWing devices (vendor ID)",
+     "vid": "0x4098",
+     "pid": null,
+     "gamepad_id_strings": [],
+     "source": "https://www.khepu.com/posts/2024-08-25"
+    },
+    {
+     "variant": "Ursa Minor Fighter/Space Joystick L",
+     "vid": "0x4098",
+     "pid": "0xbc2a",
+     "gamepad_id_strings": [],
+     "source": "https://raw.githubusercontent.com/rswilem/winwing-xplane-plugin/main/README.md"
+    },
+    {
+     "variant": "Ursa Minor Fighter/Space Joystick R",
+     "vid": "0x4098",
+     "pid": "0xbc29",
+     "gamepad_id_strings": [],
+     "source": "https://raw.githubusercontent.com/rswilem/winwing-xplane-plugin/main/README.md - CONFLICTS with a Steam guide claiming bc2a=R not L; unresolved, reported both, do not treat as settled"
+    },
+    {
+     "variant": "Ursa Minor Airline Joystick L",
+     "vid": "0x4098",
+     "pid": "0xbc27",
+     "gamepad_id_strings": [],
+     "source": "https://raw.githubusercontent.com/rswilem/winwing-xplane-plugin/main/README.md"
+    },
+    {
+     "variant": "Ursa Minor Airline Joystick R",
+     "vid": "0x4098",
+     "pid": "0xbc28",
+     "gamepad_id_strings": [],
+     "source": "https://raw.githubusercontent.com/rswilem/winwing-xplane-plugin/main/README.md"
+    },
+    {
+     "variant": "Throttle Ursa Minor L",
+     "vid": "0x4098",
+     "pid": "0xb920",
+     "gamepad_id_strings": [],
+     "source": "https://raw.githubusercontent.com/rswilem/winwing-xplane-plugin/main/README.md"
+    },
+    {
+     "variant": "Throttle Ursa Minor R",
+     "vid": "0x4098",
+     "pid": "0xb930",
+     "gamepad_id_strings": [],
+     "source": "https://raw.githubusercontent.com/rswilem/winwing-xplane-plugin/main/README.md"
+    }
+   ],
+   "button_numbering": {
+    "basis": "ambiguous",
+    "notes": "Community configs (AC7 Input.ini, a Steam guide) reference button numbers 2-44, consistent with 1-based Windows-style numbering, but raw HID 0-based indexing not independently verified. Vendor manual's own diagram (automated extraction) shows numbers in the 20-51 range plus a labeled HAT, consistent with but not a byte-for-byte confirmation of the community numbering.",
+    "mapping": [
+     {
+      "physical": "Pause button",
+      "hid_index": 2,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Change view button",
+      "hid_index": 5,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Autopilot button",
+      "hid_index": 6,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Switch radar map button",
+      "hid_index": 7,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Target button",
+      "hid_index": 20,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Speed button",
+      "hid_index": 22,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Fire Flare button",
+      "hid_index": 28,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Fire missile/weapon (trigger)",
+      "hid_index": 35,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Fire machine gun button",
+      "hid_index": 37,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     },
+     {
+      "physical": "Change weapon button",
+      "hid_index": 39,
+      "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+     }
+    ],
+    "missing": [
+     "Buttons 1,3,4,8-19,21,23-27,29-34,36,38,40-44 have no confirmed function/label sourced (only 10 of 44 buttons labeled).",
+     "No confirmed 0-based raw HID offsets.",
+     "No confirmed full 1-44 button-to-physical-position table."
+    ]
+   },
+   "axis_order": [
+    {
+     "axis": "X",
+     "meaning": "Primary joystick roll",
+     "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+    },
+    {
+     "axis": "Y",
+     "meaning": "Primary joystick pitch",
+     "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+    },
+    {
+     "axis": "Z",
+     "meaning": "Twist-grip yaw/rudder, +/-20 degrees, lockable, range 0-65535",
+     "source": "https://www.manualslib.com/manual/3600039/Winwing-Ursa-Minor-Space-Joystick-L.html (automated extraction)"
+    },
+    {
+     "axis": "Rx",
+     "meaning": "Mini joystick/thumbstick lateral, range 0-4095",
+     "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+    },
+    {
+     "axis": "Ry",
+     "meaning": "Mini joystick/thumbstick vertical, range 0-4095",
+     "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+    },
+    {
+     "axis": "Slider",
+     "meaning": "Throttle/friction slider on grip, 38mm travel, range 0-4095",
+     "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+    }
+   ],
+   "control_inventory": [
+    {
+     "vendor_name": "Primary joystick",
+     "physical_type": "self-centering analog stick with adjustable damper, +/-15 degrees, ~6N force",
+     "face": "top",
+     "position_desc": "main handle",
+     "plain_desc": "The main stick grip used for roll/pitch.",
+     "source": "https://www.manualslib.com/manual/3600039/Winwing-Ursa-Minor-Space-Joystick-L.html (automated extraction)"
+    },
+    {
+     "vendor_name": "Twist axis",
+     "physical_type": "rotational (twist-grip) axis, lockable, ~4kgf-cm torque",
+     "face": "base of handle",
+     "position_desc": "+/-20 degree rotation",
+     "plain_desc": "Twist the stick body for yaw/rudder.",
+     "source": "https://www.manualslib.com/manual/3600039/Winwing-Ursa-Minor-Space-Joystick-L.html (automated extraction)"
+    },
+    {
+     "vendor_name": "Mini joystick / thumbstick",
+     "physical_type": "small secondary analog stick",
+     "face": "top of grip, thumb-reachable",
+     "position_desc": "used for camera/view control per community configs",
+     "plain_desc": "A small thumbstick for looking around or secondary axis input.",
+     "source": "https://github.com/clemthi/ac7-ursa-minor (raw README.md)"
+    },
+    {
+     "vendor_name": "Slider",
+     "physical_type": "linear potentiometer slider, 38mm travel",
+     "face": "side of grip",
+     "position_desc": "not further specified",
+     "plain_desc": "A throttle-style slider control on the stick itself.",
+     "source": "https://www.manualslib.com/manual/3600039/Winwing-Ursa-Minor-Space-Joystick-L.html (automated extraction)"
+    },
+    {
+     "vendor_name": "HAT / POV",
+     "physical_type": "8-way (4-direction confirmed) hat switch",
+     "face": "top of grip",
+     "position_desc": "labeled HAT in manual diagram",
+     "plain_desc": "A directional view/POV hat.",
+     "source": "https://www.manualslib.com/manual/3600039/Winwing-Ursa-Minor-Space-Joystick-L.html (automated extraction)"
+    },
+    {
+     "vendor_name": "Buttons (44 total)",
+     "physical_type": "momentary pushbuttons, press force 250gf, travel 0.25mm",
+     "face": "grip and base",
+     "position_desc": "spread across trigger, base, and grip",
+     "plain_desc": "44 programmable buttons across the stick.",
+     "source": "https://steamcommunity.com/sharedfiles/filedetails/?id=3379788413"
+    },
+    {
+     "vendor_name": "Vibration motor",
+     "physical_type": "haptic feedback motor, adjustable 0-255 intensity",
+     "face": "internal to grip",
+     "position_desc": "internal",
+     "plain_desc": "Built-in rumble/vibration feedback.",
+     "source": "https://www.manualslib.com/manual/3600039/Winwing-Ursa-Minor-Space-Joystick-L.html (automated extraction)"
+    },
+    {
+     "vendor_name": "Status LED",
+     "physical_type": "indicator light",
+     "face": "base",
+     "position_desc": "not further specified",
+     "plain_desc": "A status indicator light on the base.",
+     "source": "https://www.manualslib.com/manual/3600039/Winwing-Ursa-Minor-Space-Joystick-L.html (automated extraction)"
+    }
+   ],
+   "geometry": [],
+   "sources_checked": [
+    "https://www.thresholdx.net/review/thrursamnr",
+    "https://winctrl.com/",
+    "https://us.winwingsim.com/mobileview/goods-details.html?id=555",
+    "https://www.manualslib.com/manual/3600039/Winwing-Ursa-Minor-Space-Joystick-L.html",
+    "https://robertsspaceindustries.com/spectrum/community/SC/forum/50174/thread/winwing-ursa-minor-hosas-keybindings-3-24-2",
+    "https://steamcommunity.com/sharedfiles/filedetails/?id=3379788413",
+    "https://www.khepu.com/posts/2024-08-25",
+    "https://raw.githubusercontent.com/rswilem/winwing-xplane-plugin/main/README.md",
+    "https://github.com/clemthi/ac7-ursa-minor"
+   ],
+   "missing_summary": "Brand name confirmed (WINCTRL = rebranded WinWing), but the exact product variant within the 'Ursa Minor' line is a guess (Fighter/Space Joystick chosen for Star Citizen relevance, not confirmed intent). VID solidly cross-confirmed from two independent sources. PIDs come from a single reverse-engineered udev file, conflicting on one point with a second independent source (bc2a claimed as both Fighter L and Fighter R) - unresolved. Axis ranges and control details come from the vendor's own PDF manual but extracted via automated webpage-summarization rather than a direct raw-PDF read, so numeric values carry real transcription-error risk and should be re-verified before being treated as authoritative. No vendor face-fraction geometry template found anywhere - entire geometry category unsourced. Only 10 of 44 buttons have a sourced function label."
+  }
+ },
+ "priority_order": [
+  "vkb_gladiator_nxt_evo",
+  "virpil_constellation_alpha_prime",
+  "virpil_cdt_aeromax",
+  "thrustmaster_t16000m",
+  "thrustmaster_sol_r2",
+  "turtle_beach_velocityone_flightstick_ii",
+  "winctrl_ursa_minor"
+ ],
+ "network_access_notes": "Several vendor support/forum domains that most likely hold the missing button-numbering and geometry data were unreachable from this sandboxed session on every fetch path tried (direct fetch, web-fetch tool, and in one case a third-party text-extraction proxy): forum.vkb-sim.pro, support.virpil.com. This reads as an environment-level block (the same pattern hit multiple unrelated vendor domains), not evidence the data doesn't exist. Turtle Beach's own technical-specifications article for the VelocityOne Flightstick II hit the same block. Recommend a follow-up pass from the Windows machine directly (outside this sandbox) targeting specifically: forum.vkb-sim.pro threads on VID/PID and button numbering, support.virpil.com's Button Mapping FAQ + Configurator 2.0 pages for both VIRPIL devices, and support.turtlebeach.com's VelocityOne Flightstick II technical-specifications article.",
+ "summary_table": [
+  {
+   "device": "VKB Gladiator NXT EVO",
+   "confidence": "documented",
+   "controls_listed": 17,
+   "button_index_sourced": 0,
+   "button_index_blank": 17,
+   "geometry_rows": 12,
+   "geometry_sourced": 12,
+   "control_inventory_rows": 13
+  },
+  {
+   "device": "VIRPIL Constellation ALPHA Prime",
+   "confidence": "community",
+   "controls_listed": 17,
+   "button_index_sourced": 9,
+   "button_index_blank": 8,
+   "geometry_rows": 1,
+   "geometry_sourced": 0,
+   "control_inventory_rows": 9
+  },
+  {
+   "device": "VIRPIL CDT-AEROMAX",
+   "confidence": "community",
+   "controls_listed": 9,
+   "button_index_sourced": 0,
+   "button_index_blank": 9,
+   "geometry_rows": 1,
+   "geometry_sourced": 0,
+   "control_inventory_rows": 11
+  },
+  {
+   "device": "Thrustmaster T.16000M",
+   "confidence": "documented",
+   "controls_listed": 4,
+   "button_index_sourced": 1,
+   "button_index_blank": 3,
+   "geometry_rows": 1,
+   "geometry_sourced": 0,
+   "control_inventory_rows": 9
+  },
+  {
+   "device": "Thrustmaster SOL-R 2 HOSAS (Space Sim Duo)",
+   "confidence": "documented",
+   "controls_listed": 0,
+   "button_index_sourced": 0,
+   "button_index_blank": 0,
+   "geometry_rows": 1,
+   "geometry_sourced": 0,
+   "control_inventory_rows": 10
+  },
+  {
+   "device": "Turtle Beach VelocityOne Flightstick II",
+   "confidence": "documented",
+   "controls_listed": 7,
+   "button_index_sourced": 0,
+   "button_index_blank": 7,
+   "geometry_rows": 1,
+   "geometry_sourced": 0,
+   "control_inventory_rows": 8
+  },
+  {
+   "device": "WinWing / WINCTRL Ursa Minor Fighter (Space) Joystick",
+   "confidence": "community",
+   "controls_listed": 10,
+   "button_index_sourced": 10,
+   "button_index_blank": 0,
+   "geometry_rows": 0,
+   "geometry_sourced": 0,
+   "control_inventory_rows": 8
+  }
+ ]
+}
