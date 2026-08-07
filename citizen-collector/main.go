@@ -486,6 +486,7 @@ func selftest(outDir string) int {
 	// legitimately holds a global hotkey, and reporting that as FAIL would make
 	// the packager's "assert exit 0" fail for a reason unrelated to the package.
 	// VOID keeps the two facts apart, which is the whole point of exit 2.
+	runHotkeyDefaultSelftest(check)
 	hkVoid := runHotkeySelftest(check)
 	runHotkeyLoopSelftest(check)
 	runHotkeyPressLoggingSelftest(check)
@@ -561,7 +562,7 @@ func main() {
 	var (
 		outDir  = flag.String("out", filepath.Join(exeDir, "captures"), "directory for captures")
 		backend = flag.String("backend", "", "force one backend: wgc, dxgi or gdi (default: try all in order)")
-		hotkey  = flag.String("hotkey", "ctrl+alt+f9", "capture hotkey")
+		hotkey  = flag.String("hotkey", defaultHotkey, "capture hotkey")
 		once    = flag.Bool("once", false, "capture once immediately and exit (no hotkey)")
 		list    = flag.Bool("list-windows", false, "list capturable windows and exit")
 		test    = flag.Bool("selftest", false, "run internal checks and exit")
@@ -835,6 +836,7 @@ func main() {
 					"Another program probably owns that combination - pick another with --hotkey.\n",
 				*hotkey, err)
 			logf("WARNING: hotkey %q NOT REGISTERED: %v - automatic capture still active, manual capture unavailable", *hotkey, err)
+			logf("         Try --hotkey %s, which appears nowhere in the game's bindings.", fallbackHotkey)
 		} else {
 			hotkeyPresses = hl.Presses
 			hotkeyName = hl.Pretty

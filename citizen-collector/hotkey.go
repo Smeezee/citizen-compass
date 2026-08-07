@@ -1,12 +1,45 @@
 package main
 
-// hotkey.go - parsing "ctrl+alt+f9" into RegisterHotKey arguments.
+// hotkey.go - parsing "alt+f3" into RegisterHotKey arguments.
 
 import (
 	"fmt"
 	"runtime"
 	"strings"
 	"time"
+)
+
+// defaultHotkey and fallbackHotkey - chosen from the game's own bindings, not
+// from guesswork.
+//
+// THE RULE THAT MATTERS IS NOT "IS THIS KEY FREE"
+//
+// The useful question is: DOES THE GAME REFUSE THIS KEY WHEN A MODIFIER IS
+// HELD? Star Citizen's defaultProfile answers it directly, because a binding
+// carrying noModifiers="1" is refused by the game the moment any modifier is
+// down. Alt+<that key> is therefore unclaimed no matter what the bare key does.
+//
+// F3's only bare binding is:
+//
+//	<action name="flymode" onPress="1" noModifiers="1" keyboard="f3"/>
+//
+// Verified against data-layer/processed/defaultProfile.plain.xml (1,106
+// actions): f3 has exactly one bare binding, it carries noModifiers="1", and
+// there is no lalt+f3 combination anywhere. F3 is the ONLY F key of which all
+// of that is true - f5, f6 and f7 each have two bare bindings with no
+// noModifiers flag AND two lalt combinations, so Alt+F5/F6/F7 are all claimed.
+//
+// So Alt+F3 cannot collide: holding Alt makes the game refuse flymode, and
+// nothing else in the profile wants that combination.
+//
+// FALLBACK. On a keyboard where Alt+F3 will not register - some laptops give
+// the F row to media keys, and some vendor utilities take Alt+F combinations
+// before any application sees them - alt+insert is the alternative. "insert"
+// appears NOWHERE in any of the 1,106 actions, so it cannot conflict with the
+// game at all.
+const (
+	defaultHotkey  = "alt+f3"
+	fallbackHotkey = "alt+insert"
 )
 
 // hotkeyListener owns one registered global hotkey and the OS thread that
@@ -24,7 +57,7 @@ import (
 // only job is to register the key and pump for it, handing presses back on a
 // channel that a select can wait on.
 type hotkeyListener struct {
-	// Pretty is the canonical name ("Ctrl+Alt+F9"), for logs and for telling
+	// Pretty is the canonical name ("Alt+F3"), for logs and for telling
 	// the operator which key is actually live.
 	Pretty string
 	// Presses fires once per press.
@@ -127,6 +160,21 @@ func startHotkeyListener(id int, spec string) (*hotkeyListener, error) {
 	}, nil
 }
 
+// prettyKeyName renders a key the way a person writes it: F3, not f3, and
+// Insert rather than INSERT. It is shown in the window and in the log, so
+// shouting at the reader is a small thing done needlessly.
+func prettyKeyName(p string) string {
+	if len(p) >= 2 && p[0] == 'f' {
+		if _, isFKey := vkNames[p]; isFKey && p[1] >= '0' && p[1] <= '9' {
+			return strings.ToUpper(p)
+		}
+	}
+	if len(p) == 1 {
+		return strings.ToUpper(p)
+	}
+	return strings.ToUpper(p[:1]) + p[1:]
+}
+
 var vkNames = map[string]uint32{
 	"f1": 0x70, "f2": 0x71, "f3": 0x72, "f4": 0x73,
 	"f5": 0x74, "f6": 0x75, "f7": 0x76, "f8": 0x77,
@@ -138,10 +186,10 @@ var vkNames = map[string]uint32{
 	"space": 0x20, "tab": 0x09, "`": 0xC0, "grave": 0xC0,
 }
 
-// parseHotkey turns "ctrl+alt+f9" into (modifiers, virtual-key, pretty name).
+// parseHotkey turns "alt+f3" into (modifiers, virtual-key, pretty name).
 //
 // Rejects a bare key with no modifier on purpose. RegisterHotKey is global: a
-// modifier-less F9 would be swallowed system-wide, including inside the game,
+// modifier-less F3 would be swallowed system-wide, including inside the game,
 // which would break the very thing the operator is trying to photograph.
 func parseHotkey(s string) (mods uint32, vk uint32, pretty string, err error) {
 	parts := strings.Split(strings.ToLower(strings.TrimSpace(s)), "+")
@@ -187,7 +235,7 @@ func parseHotkey(s string) (mods uint32, vk uint32, pretty string, err error) {
 				return 0, 0, "", fmt.Errorf("unrecognised key %q in hotkey %q", p, s)
 			}
 			keySet = true
-			prettyParts = append(prettyParts, strings.ToUpper(p))
+			prettyParts = append(prettyParts, prettyKeyName(p))
 		}
 	}
 
@@ -197,7 +245,7 @@ func parseHotkey(s string) (mods uint32, vk uint32, pretty string, err error) {
 	if mods == 0 {
 		return 0, 0, "", fmt.Errorf(
 			"hotkey %q has no modifier. A bare key would be captured globally and "+
-				"stop working inside the game - use something like ctrl+alt+f9", s)
+				"stop working inside the game - use something like "+defaultHotkey, s)
 	}
 	return mods, vk, strings.Join(prettyParts, "+"), nil
 }

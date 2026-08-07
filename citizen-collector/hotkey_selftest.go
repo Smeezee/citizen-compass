@@ -95,7 +95,7 @@ func runHotkeyLoopSelftest(check func(name string, ok bool, detail string)) {
 
 // runHotkeyPressLoggingSelftest proves a press is recorded ON ARRIVAL.
 //
-// WHY THIS IS ITS OWN CHECK
+// # WHY THIS IS ITS OWN CHECK
 //
 // The log used to record "hotkey registered" and then nothing until a capture
 // SUCCEEDED. So these two produced identical logs:
@@ -209,6 +209,36 @@ const hotkeyProbeID = 4711
 //
 // This combination is registered and released inside the test only.
 const testHotkeySpec = "ctrl+alt+shift+f12"
+
+// runHotkeyDefaultSelftest checks the SHIPPED default and its fallback.
+//
+// These are the two strings a crew member will actually press, and they were
+// chosen from the game's own defaultProfile rather than guessed - so a typo or
+// a well-meaning edit that broke either one would otherwise be discovered by a
+// person pressing a key that does nothing.
+func runHotkeyDefaultSelftest(check func(name string, ok bool, detail string)) {
+	_, _, pretty, err := parseHotkey(defaultHotkey)
+	check("the default hotkey parses", err == nil,
+		fmt.Sprintf("%q -> %q (%v)", defaultHotkey, pretty, err))
+	check("the default is alt+f3", defaultHotkey == "alt+f3",
+		"F3's only bare binding carries noModifiers=1, so the game refuses it "+
+			"while Alt is held and the combination cannot collide")
+
+	_, _, fbPretty, fbErr := parseHotkey(fallbackHotkey)
+	check("the fallback hotkey parses", fbErr == nil,
+		fmt.Sprintf("%q -> %q (%v)", fallbackHotkey, fbPretty, fbErr))
+
+	// They must be genuinely different, or the fallback is not one.
+	check("the fallback differs from the default", defaultHotkey != fallbackHotkey,
+		fmt.Sprintf("default %q, fallback %q", defaultHotkey, fallbackHotkey))
+
+	// Both must carry a modifier. parseHotkey rejects a bare key on purpose - a
+	// modifier-less F3 would be swallowed system-wide and would break flymode
+	// inside the game, which is the very thing being avoided.
+	_, _, _, bareErr := parseHotkey("f3")
+	check("a bare f3 is still REFUSED", bareErr != nil,
+		fmt.Sprintf("parseHotkey(\"f3\") -> %v", bareErr))
+}
 
 // runHotkeySelftest proves the auto-mode hotkey wiring by behaviour.
 //

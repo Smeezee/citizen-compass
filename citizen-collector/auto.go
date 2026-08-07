@@ -707,6 +707,14 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			lastSize = -1
 			lastGrowth = now()
 			staleWarned = false
+
+			// The byte counter is per FILE. Without this the next heartbeat
+			// subtracts the new file's offset from the old file's, and reports
+			// something like "-560917 bytes read since last line" - a number
+			// that describes nothing and undermines every other figure on the
+			// line. Observed live when the game closed and detection fell back
+			// from PTU to LIVE.
+			bytesAtBeat = 0
 		}
 		if p != "" {
 			reportedPath = p

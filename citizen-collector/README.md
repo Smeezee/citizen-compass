@@ -49,7 +49,7 @@ no installer", and it is why there is no `go.sum`.
 ## Use
 
 ```
-collector.exe                          hotkey mode, default Ctrl+Alt+F9
+collector.exe                          hotkey mode, default Alt+F3
 collector.exe --hotkey ctrl+alt+f10    different hotkey
 collector.exe --once                   capture once and exit
 collector.exe --list-windows           show what is capturable
