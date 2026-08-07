@@ -1,0 +1,173 @@
+[
+ {
+  "uuid": "9328b87c-7722-4924-a7ab-ac314488dd5d",
+  "name": "Nyx - Castra Jump Point",
+  "type": "Anomaly",
+  "positioned": true,
+  "distances_available": true,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "63105afc-38df-48cc-b570-8eba703a57d7",
+  "name": "Nyx - Pyro Jump Point",
+  "type": "Anomaly",
+  "positioned": true,
+  "distances_available": true,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "80bac534-3e84-4a2d-97c2-3edefa2d5bef",
+  "name": "Pyro - Nyx Jump Point",
+  "type": "Anomaly",
+  "positioned": true,
+  "distances_available": true,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "5de4be76-7d6c-47e3-ab7b-9d344d27f506",
+  "name": "Pyro-Stanton Jump Point",
+  "type": "Anomaly",
+  "positioned": true,
+  "distances_available": true,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "1aacc387-4c9a-41d4-bba3-8a728eae07c6",
+  "name": "Stanton - Magnus Jump Point",
+  "type": "JumpPoint",
+  "positioned": true,
+  "distances_available": true,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "3d909735-063a-46a5-995e-83421908e905",
+  "name": "Stanton - Terra Jump Point",
+  "type": "JumpPoint",
+  "positioned": true,
+  "distances_available": true,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "f497eb74-7875-42e6-9694-632cb4a76f8c",
+  "name": "Stanton-Pyro Jump Point",
+  "type": "Anomaly",
+  "positioned": true,
+  "distances_available": true,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "7d1f6c36-52f3-4802-85fb-c00a0c8eb228",
+  "name": "Stanton-Pyro Jump Point Wreck Site",
+  "type": "Anomaly",
+  "positioned": true,
+  "distances_available": true,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "ce5ccd01-5b2e-4637-9be3-058ee4432682",
+  "name": "Hurston - MicroTech Jump Point",
+  "type": "PointOfInterest",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "67062dae-186c-4594-906d-79cadca76481",
+  "name": "Jump Point Pyro Castra",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "fb326e84-1885-4cb0-bbaf-8c79229f63a0",
+  "name": "MicroTech - Hurston Jump Point",
+  "type": "PointOfInterest",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "55d962ba-2cb4-4894-a8cd-24fb76dd8f5c",
+  "name": "Nyx - Bremen Jump Point",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "eda164e7-44be-47b5-937f-8e8a12e3a96a",
+  "name": "Nyx - Odin Jump Point",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "9c8bc8f8-f869-4017-bc82-228f2bbfc102",
+  "name": "Nyx - Tohil Jump Point",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "53300788-13cd-41cd-93bd-eb92d36d28ff",
+  "name": "Nyx - Virgil Jump Point",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "15c0678a-5240-4866-9e67-52c8e2baa74c",
+  "name": "Pyro - Cano Jump Point",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "a9b95fff-73aa-4907-8b82-efc1baa4014b",
+  "name": "Pyro - Hadrian Jump Point",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "56e49a2a-fa5d-45b1-b154-a1e738818a15",
+  "name": "Pyro - Oso Jump Point",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ },
+ {
+  "uuid": "f428a522-c653-4738-adf0-f0f97b2f3311",
+  "name": "Pyro - Terra Jump Point",
+  "type": "Anomaly",
+  "positioned": false,
+  "distances_available": false,
+  "snapshot": "20260801T204744Z",
+  "patch": "4.9.188.23497"
+ }
+]

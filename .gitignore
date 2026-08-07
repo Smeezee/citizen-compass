@@ -54,3 +54,10 @@ testing/index.html
 testing/_deploy/
 testing/_models/
 testing/_tools/
+
+# Generated route/pair shards (WO-COLLECT-01 rev 5 §1.5). Same separation the
+# external-sources rule uses: the bulk output is regenerable and stays out, the
+# provenance record and the small tables stay tracked. Emitting every system
+# keyed by drive measures 4.7 GB; keyed by ship, 19.0 GB.
+data-layer/derived/**/pairs/
+data-layer/derived/**/routes/
