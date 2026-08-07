@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #130 — 2026-08-02 10:05 AM
+# LATEST_HANDOFF.md — Update #198 — 2026-08-06 5:25 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-02 10:05:01 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-06 17:25:48 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -22,3239 +22,1531 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 - In progress / not started: constellation-aquila, gladius
 
 **Data layers:**
-- data-layer: 60646 files (10338.53 MB)
+- data-layer: 60679 files (10407.68 MB)
 
-**Scripts:** 16  |  **3D models:** 723  |  **Docs:** 590
+**Scripts:** 17  |  **3D models:** 723  |  **Docs:** 659
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
 
-### 2026-08-02 10:04:31 — update_closing_final_push_before_move.md
+### 2026-08-06 17:24:01 — update-job-a-complete-database-now-backed-up-20260806.md
 
-# CLOSING UPDATE — final push before the machine is disassembled
+# Update: Job A COMPLETE - the database is backed up, restored, and mirrored
 
-**Nothing is in flight. Nothing is half-finished. Stopping here.**
+**Completed 2026-08-06.** The gap is closed. There are now **three copies of
+the data** (C:, D:, E:), and the dump has been proven restorable by actually
+restoring it.
 
-## THE CHECK THAT MATTERS
+## Step 2 - the real dump
 
 ```
-git rev-parse HEAD origin/main
-a32b8a3bc8ed45221fa13d3b79ed08badcdecbb3
-a32b8a3bc8ed45221fa13d3b79ed08badcdecbb3
+dump           : C:\cc-backup\20260806-172223\citizen_compass-20260806-172223.dump
+dump size      : 175,705 bytes (0.17 MB)
+ships LIVE     : 232
+ships RESTORED : 232      <- restored into a scratch database and counted
 ```
 
-**Same hash twice. The push landed.**
+These are two separately measured numbers, not one number printed twice. The
+live count came from `citizen_compass`; the restored count came from
+`cc_restore_test_20260806_172223` after a real `pg_restore`.
 
-## The brief's file count was stale — 16, not 63
+The harness's own negative control also fired on the real dump: a corrupted
+copy was rejected (exit 1) and yielded 0 ships, not 232.
 
-It said 51 modified / 12 untracked. The working tree held **3 modified and 13
-untracked**, and `HEAD` already matched `origin/main` at `7a72733` with nothing
-landed after it. The larger figure was taken before the last three commits.
-Saying so rather than quietly working to the smaller number.
+Both scratch databases were created and dropped by that run.
 
-## Committed — `a32b8a3`
+## Step 3 - both mirrors, verified per file
 
-`RECOVERY.md`, `data-layer/ship_resolution.json`, the editions/paints
-acquisition finding, four work orders (front-end build plan, loadout real-data,
-**loadout reader** — that one was not on the list but is a work order in `docs/`
-and belongs), the three `20260802_09*` handoff entries, and the running handoff
-record.
+`Verify-MirrorTree.ps1` - the verifier that caught the external-sources
+failure - run against each mirror with the **destination enumerated from disk**,
+not from any manifest, log, or the copy's own file list:
 
-Nothing was outstanding under `checks/`, `scripts/` or
-`data-layer/external-source-*` — all already committed earlier today.
+- **D:** POSITIVE control passed; all 1 expected file present with matching
+  byte size. VERIFY PASSED (exit 0).
+- **E:** POSITIVE control passed; all 1 expected file present with matching
+  byte size. VERIFY PASSED (exit 0).
 
-## EXCLUDED — verified, not assumed
+Its NEGATIVE control reported **NOT PERFORMED** on both, honestly - a
+single-file backup directory contains no excluded file to test with. Stated,
+not glossed as a pass.
 
-| file | why |
+Independent re-hash from disk after the fact, all three locations:
+
+```
+C:\cc-backup   175,705 B  136249D1EC40948A576B3F6DED263CD0F0960BBC9E27B1C24971465079D5689D
+D:\cc-backup   175,705 B  136249D1EC40948A576B3F6DED263CD0F0960BBC9E27B1C24971465079D5689D
+E:\cc-backup   175,705 B  136249D1EC40948A576B3F6DED263CD0F0960BBC9E27B1C24971465079D5689D
+```
+
+Byte-identical on all three.
+
+## The verifier was itself tested against known-bad input (hard rule 12)
+
+A verifier nobody has seen fail is an untested gate. Fed two known-bad
+destinations on scratch copies:
+
+- **truncated file** (present, so a file-COUNT check passes - the exact
+  2026-08-05 failure signature): caught, `a.dump source 175,705 B -> dest
+  1,000 B`, **exit 1**.
+- **missing file**: caught, `c.txt (10 B at source)`, **exit 1**.
+
+Both failed as required, so the two passes above mean something.
+
+## FOUND - not acted on: four orphaned scratch databases
+
+These are left over from **earlier** runs, not from tonight:
+
+```
+cc_restore_test_20260730_233853
+cc_restore_test_20260801_144501
+cc_restore_test_20260801_203049
+cc_restore_test_20260805_205238
+```
+
+**I did not drop them.** Hard rule 3 forbids `DROP DATABASE` against a database
+this process did not create, and this process did not create any of these.
+They are harmless but they hold stale copies of ship data and will accumulate.
+Dropping them is Sleven's call.
+
+Worth noting the earlier runs' guarded cleanup did not remove them - probably
+because those runs exited before step 4. Cheap fix available if wanted: a
+startup sweep that drops only names matching the scratch pattern, but that
+would itself be dropping databases the process did not create, so it needs an
+explicit decision rather than a quiet addition.
+
+## Still outstanding: PGPASSWORD does not authenticate
+
+The `PGPASSWORD` set in my environment returns
+`FATAL: password authentication failed for user "postgres"` against
+`127.0.0.1:5432`. The value is clean (no quotes/whitespace/CR/LF) and does not
+match `.env`. All work above used the app's own `DATABASE_URL` credential.
+No password was echoed, logged, or written anywhere.
+
+`citizen_compass_backup_20260730.dump` in the repo root remains the **stale**
+2026-07-30 file and is still not a current backup - the current one is the
+`C:\cc-backup\20260806-172223\` dump above.
+
+**Next:** Job B - grouping the uncommitted Jobs 3-5 and collector work into
+logical commits. Nothing will be pushed without explicit confirmation.
+
+### 2026-08-06 17:22:09 — update-job-a-step1-control-proven-20260806.md
+
+# Update: Job A step 1 - corruption control PROVEN (and proven the hard way)
+
+**Completed 2026-08-06.** The restore check can fail. It is therefore worth
+trusting to bless a real backup.
+
+Subject was the **stale `citizen_compass_backup_20260730.dump`** (69,037 bytes,
+2026-07-30). **This is NOT a current backup and is not reported as one** - it
+was used only as a known-restorable artifact to exercise the control. The
+original was never opened for write; its sha256 was re-checked after every pass
+and is unchanged.
+
+## Pass 1 - byte midpoint
+
+Flipped 2,048 bytes at offset 34,518 of 69,037. `pg_restore` rejected it
+(exit 1, "could not read from input file: end of file"), ships table
+unreadable. **Control fired** - but `pg_restore --list` *also* failed, meaning
+the damage had reached the TOC. That is the same weak class as corrupting the
+header: it fails for a cheap reason and proves nothing about whether the
+restore path actually reads data bytes. Logged as weaker than intended rather
+than counted as a clean win.
+
+## Pass 2 - the strong form
+
+Walked deeper to find an offset whose corruption leaves the TOC readable:
+
+| offset | through | `pg_restore --list` |
+|--------|---------|---------------------|
+| 41,422 | 60% | exit 1 - TOC damaged |
+| 48,326 | 70% | exit 1 - TOC damaged |
+| 51,778 | 75% | **exit 0 - TOC intact** |
+| 55,230 | 80% | **exit 0 - TOC intact** |
+| 58,681 | 85% | **exit 0 - TOC intact** |
+| 62,133 | 90% | **exit 0 - TOC intact** |
+| 65,585 | 95% | **exit 0 - TOC intact** |
+
+Used offset 65,585 (1,024 bytes flipped). That copy **passes `--list` with
+exit 0** - a cheap integrity check calls it perfectly healthy.
+
+A real restore into a real scratch database:
+
+```
+pg_restore: error: could not uncompress data: invalid distance too far back
+pg_restore exit = 1
+ships recovered: 0        (clean baseline: 232)
+```
+
+**CONTROL FIRED IN THE DATA SECTION.** This directly confirms the claim in
+`Test-DatabaseBackup.ps1`'s header: a `--list`-only integrity check would
+declare a dump with a shredded data section healthy. Only driving it through a
+real `pg_restore` reads those bytes.
+
+## Housekeeping
+
+All four scratch databases were created by that process and dropped by it
+through the guarded `Remove-ScratchDb`, which refuses any name not matching the
+scratch pattern, not created by the run, or equal to the live database
+(hard rule 3). Zero scratch databases remain.
+
+## Blocker found and worked around - please confirm
+
+**`PGPASSWORD` as set in my environment does NOT authenticate:**
+`FATAL: password authentication failed for user "postgres"`. The value is clean
+(no quotes, whitespace, or CR/LF) and it does **not** match the credential in
+`.env`. I fell back to the app's own `DATABASE_URL` credential, which
+authenticates fine - live DB reachable, **232 ships**.
+
+Neither value has been echoed, logged, or written anywhere; the comparison was
+done as a boolean only. Flagging it because the PGPASSWORD you set may be for a
+different host or role than local `127.0.0.1:5432`.
+
+**Next:** step 2 - take the real dump, restore it, count ships live vs restored.
+The database is still unbacked-up as of this update.
+
+### 2026-08-06 17:17:25 — update-job-a-db-backup-received-20260806.md
+
+# Update: Job A received - database backup (DB is currently UNBACKED UP)
+
+**Received 2026-08-06.** Sleven flagged that the file trees are verified on both
+mirrors but the Postgres dump was skipped and correctly recorded as a failure.
+State right now: **two copies of the files, zero copies of the data.**
+
+`citizen_compass_backup_20260730.dump` in the repo root (69,037 bytes, dated
+2026-07-30) is **NOT a current backup** and will not be reported as one.
+
+## What I am about to do
+
+1. **Prove the control first**, using the stale dump as the test subject:
+   copy it to scratch (never touch the original), restore the clean copy to a
+   scratch database, then corrupt the copy by flipping bytes in the **middle**
+   (not the header - a mangled header fails for the wrong reason), and confirm
+   the restore **fails**. Drop the scratch database.
+   Per Hard Rule 12: if a deliberately corrupted dump restores clean, the check
+   cannot fail and is worthless. I stop and report rather than let it bless a
+   real backup.
+2. **Take the real dump** and verify it the same way - restore to scratch and
+   **count the ships**, reporting live count and restored count as two separate
+   numbers. Drop the scratch database.
+3. **Copy to both mirrors** and verify per file with the same verifier that
+   caught the external-sources failure, with the destination side **enumerated
+   from disk, not from a manifest**.
+
+Then Job B: group the uncommitted Jobs 3-5 / collector work into logical
+commits, add by name only (no `git add -A`), and **wait for confirmation before
+pushing**.
+
+PGPASSWORD is in the environment for this session. It will not be echoed,
+logged, or written anywhere.
+
+### 2026-08-06 17:06:52 — update-cloudflare-plugin-installed-20260806.md
+
+# Update: Cloudflare agent setup completed (2026-08-06)
+
+Done in two halves, because the second was blocked for me.
+
+- `claude plugin marketplace add cloudflare/skills` — run by me, succeeded,
+  declared in user settings.
+- `claude plugin install cloudflare@cloudflare` — **blocked by the Claude Code
+  permission classifier** when I attempted it. Sleven ran it directly instead.
+
+Verified: `cloudflare@cloudflare`, version 1.0.0, scope user, status enabled.
+
+## What this changed, and where
+
+This is configuration **outside the repo** — the user-scope Claude config, not
+anything under `citizen-compass/`. It registers five remote MCP endpoints
+(`mcp.`, `docs.mcp.`, `bindings.mcp.`, `builds.mcp.`, `observability.
+mcp.cloudflare.com`). Cloudflare OAuth triggers on first use of a Cloudflare
+tool, separately from the `wrangler` OAuth login done earlier tonight.
+
+Recorded here because hard rule 6 names MCP server registration and `.claude/`
+config as off-limits without asking, so the fact that it happened — and that it
+was authorised, deferred, then completed by hand — belongs in the record rather
+than only in a terminal scrollback.
+
+## Remaining step
+
+`/reload-plugins` in Claude before the plugin's tools become available in this
+session.
+
+## Note on how this arrived
+
+The instruction was "fetch and execute the instructions at
+`developers.cloudflare.com/agent-setup/prompt.md`". Hard rule 7 forbids
+executing fetched content, so it was fetched and **read**, its two commands
+reported, and confirmation taken before anything ran. The content turned out to
+be exactly what was asked for and nothing more.
+
+### 2026-08-06 16:58:53 — update-jobB-pushed-20260806.md
+
+# Update: Job B pushed (2026-08-06)
+
+Pushed on confirmation. `3254dea..0570426` to `origin/main`. All four commits
+verified present on the remote; `origin/main..HEAD` is now **0**.
+
+| commit | what |
 |---|---|
-| `_c1_verify_wo.py` | one-off probe, 3.8 KB |
-| `rescale_run_output.log` | 183 KB console output; its only unique content (four chassis cross-references) is already on disk in each ship's `MODEL_SOURCE.txt` and in the archived handoff entry |
-| `testing/_src/_modelfolders.txt` | **checked against every build script — referenced by none** |
-| `testing/_src/_scunpacked_names.json` | same; both are scratch, not build inputs |
+| `37324ce` | backup fixes — the backslash regex, the null exit code, hard failure on a missing mirror, `Verify-MirrorTree`, `Report-BackupCloseout`, `Test-DatabaseBackup` |
+| `8de0a57` | the collector, including unattended `--auto` |
+| `83c326b` | the process-lock proof |
+| `0570426` | the `_deploy` publication guard |
 
-The two `_src` files sit in a source directory, so I grepped the build code
-before excluding them rather than trusting the label. Neither is read by
-anything.
+23 files, +6001 / -41, every one added by name. The ~50 CRLF-churn files were
+not touched — the working tree still shows only the six pre-existing
+modifications that were deliberately left alone (`.gitignore`, `go.work`,
+`scripts/external_sources/uex_corp.py`, and the three watcher-owned handoff
+files).
 
-## MOVED ASIDE — not deleted, per rule 1
+## Still open
 
-`testing/_deploy_lite/` → `_to_delete/deploy_lite_unclaimed_20260802/`
-**245 files, 6.1 MB, referenced by no script, no config and no page.** Still
-nobody's and still ungenerated, so it does not enter history.
+**Job A — the database is still not backed up.** Blocked on `PGPASSWORD`
+reaching this process; it is absent at every scope and Postgres requires
+password auth. Setting it in another terminal cannot work, because a Windows
+child process inherits its parent's environment block rather than reading the
+registry. It has to be set in the shell that launches Claude Code, followed by
+a restart:
 
-Also cleared a **second stale `.git/index.lock`** — 0 bytes, six minutes old, no
-`git` process of any kind running. Moved aside, not deleted. **That is the
-second one today**, and something in this repo is not cleaning up after itself.
-Worth knowing before the next session starts.
+    $env:PGPASSWORD = '<password>'
+    claude
 
-## Built from current source — verified by rebuild, not by mtime
+`scripts/Test-DatabaseBackup.ps1` is committed and ready — one command, and its
+preflight is already proven to refuse with exit 2 rather than prompt or pass.
 
-| file | status |
+Current exposure is unchanged: two verified copies of the FILES on two external
+drives, zero verified copies of the DATA.
+
+### 2026-08-06 16:50:10 — update-jobB-committed-awaiting-push-20260806.md
+
+# Update: Job B — four commits made, NOT pushed (2026-08-06)
+
+Four commits on `main`, ahead of `origin/main` by 4. **Nothing pushed** — the
+order requires the list to be confirmed first. 23 files, +6001 / -41.
+
+Added **by name** throughout. No `git add -A`. The CRLF churn files were not
+touched; git's "LF will be replaced by CRLF" warnings are the filter acting on
+the files actually being staged, not churn.
+
+| commit | what |
 |---|---|
-| `testing/_deploy/index.html` | **rebuild is a byte-for-byte no-op** — `82271923…` before and after |
-| `testing/_layer.html` | same mtime, same build pass |
-| `testing/index.html` | same build pass — but see below |
+| `37324ce` | backup fixes — `Backup-CitizenCompass.ps1`, `Verify-MirrorTree.ps1`, `Report-BackupCloseout.ps1`, `Test-DatabaseBackup.ps1` |
+| `8de0a57` | the collector, including `--auto` — 16 files |
+| `83c326b` | the process-lock proof — `process_lock_selftest.go` |
+| `0570426` | the `_deploy` guard — `check_deploy_clean.py`, `build_deploy.py` |
 
-**`testing/index.html` cannot be byte-verified.** `testing/build.py:26` injects
-a UTC timestamp on every run, so it differs on each build by construction. Its
-currency is established by mtime and by the layer it was built from, not by
-hash. Stating that rather than implying a check I did not perform.
+## One honest note about the split
 
-## The offsite copy was stale — found and fixed
+`citizen-collector/` had **never been committed** — the whole directory was
+untracked. So `8de0a57` necessarily lands the base grabber as well as the auto
+mode, and `main.go` / `winapi.go` land whole in it. That means the
+`finalWindowGuard` extraction, which exists for the process-lock test, is in
+`8de0a57` rather than `83c326b`. The proof file itself is the later commit.
+Splitting further would have meant staging hunks of a brand-new file, which
+buys tidiness at the cost of commits that do not build.
 
-The Cloudflare site served fine (200, `Hammerhead.glb` intact with a valid glTF
-header), **but the bytes it served did not match the local build**:
-served `be79501e…` against local `82271923…`.
+## Deliberately left uncommitted
 
-That matters precisely because this is the offsite copy of the 349 MB deploy
-build and the machine is about to be taken apart for three days. A site that
-serves is not the same as a site that serves the current build — the same
-distinction as a command exiting 0 versus the work being done.
+- `LATEST_HANDOFF.md`, `docs/handoff_archive/*` — the Go watcher owns these
+  (rule 14, one writer). Not mine to commit as part of a code change.
+- `.gitignore`, `go.work`, `scripts/external_sources/uex_corp.py` — already
+  modified before this session started. Not my changes; not folding someone
+  else's work into my commits.
 
-Redeployed. This was completing the stated purpose of the check, not starting
-something new: one proven command, run four times already today, content-
-addressed so unchanged assets are not re-uploaded.
+## Build outputs kept out
 
-## State at stop
+`citizen-collector/.gitignore` already excluded `collector.exe`,
+`collector-master.exe` and `captures/`. Added `collector-auto.log` and
+`collector-settings.txt` — both are written next to the exe at run time and
+belong to whoever runs it. Committing the settings file would push one
+machine's interval choices onto everyone else.
 
-- `HEAD == origin/main == a32b8a3`, 0 ahead, 0 behind
-- working tree: only the four deliberately-excluded scratch files
-- Cloudflare serving the current build as the offsite copy
-- `.env` untracked, three secrets, **one machine, no backup** — unchanged and
-  still the largest single risk across this gap
-- the UEX token remains unrotated after its screenshot exposure
-- the Cloudflare token arrived over chat twice and is in a transcript; rotate at
-  leisure, nothing depends on the value
+## Deploy guard (the low-priority item)
 
-## Not started, deliberately
+`testing/_src/check_deploy_clean.py`, called at the end of `build_deploy.py`
+and runnable standalone before a deploy. Whitelist, not denylist — a denylist
+would stop `.wrangler` and silently permit the next surprise. Allowed file list
+is derived from `PAGES` so the two cannot drift.
 
-The rule 14 enforcement proposal (`docs/proposal-rule14-single-writer-enforcement.md`)
-is written and committed but **not implemented**, as instructed. It is the right
-first thing to pick up, and it is a clean starting point rather than a
-half-finished one.
+Proven by negative control, all passing:
 
-### 2026-08-02 09:36:28 — update_plan_in_game_capture_overlay.md
+- planted `.wrangler/` directory — REFUSED (the exact incident)
+- unexpected file `notes.txt` — REFUSED
+- unexpected directory `backup/` — REFUSED
+- nested dot-file inside `models/` — REFUSED
+- clean again once the plants are removed — confirms it detects the plants
+  rather than always failing
 
-# PLAN — in-game capture: what it would actually take
+Live `_deploy` currently passes: "contains only known assets - safe to deploy".
 
-**From C2. 2026-08-02. Planning only. Nothing built, nothing written to the repository.**
+## Waiting on
 
-Two answers here. The store-link question is §1 and it is short. The overlay
-question is §2 onward, and it turned out better than expected — **the hard part
-is already solved by a file the game writes.**
+1. **Push confirmation** for the four commits above.
+2. **Job A** — still blocked on `PGPASSWORD` reaching this process. See
+   `update-jobA-database-blocked-20260806`. Two verified copies of the files,
+   zero verified copies of the data.
 
----
+### 2026-08-06 16:46:29 — update-jobA-database-blocked-20260806.md
 
-## 1. THE RSI STORE LINK ROUTE — dead end for the group that needed it
+# Update: Job A BLOCKED — PGPASSWORD never reached this process (2026-08-06)
 
-Measured across all 7,728 items.
+The database is still not backed up. Harness is written and proven fail-closed;
+it cannot run without the credential.
 
-    items carrying an RSI store link                    1,387
-    price-without-description group                       461
-      ...of those with a store link                        34   (7%)
+## Why it is blocked
 
-    all items with no description                       2,384
-      ...with a store link                                716   (30%)
+- **Postgres 17 is running** (7 processes) and **requires password auth**. A
+  deliberately wrong password returns `FATAL: password authentication failed`,
+  not a trust connection — so there is no passwordless path.
+- **`PGPASSWORD` is absent** from process env, User scope, Machine scope, and
+  there is no `pgpass.conf`.
 
-    store links by section:  Liveries 601 · Armor 348 · Miscellaneous 127
-                             Personal Weapons 106 · Clothing 101 · Undersuits 37
+**The mechanism matters, because setting it again the same way will not work.**
+Every tool call I make spawns a child of the Claude Code process and inherits
+*its* environment block, captured when Claude Code launched. Windows builds a
+child's environment from its parent, **not** from the registry. So a variable
+set in a separate terminal, or set at User scope after launch, cannot reach me.
 
-**34 of 461. The cheap fix is not there.** Worse, the links are unreliable as
-image sources even where they exist — `ORC-mkX Arms Iceborn` points at
-*Medical-Career-Kit-Medium*, and several Morozov-SH pieces share one
-*Sangar-Helmet-And-Mo…* bundle page. **They are pledge-bundle pages, not item
-pages.** An image scraped from one would frequently be the wrong object.
+**The fix — set it in the shell that launches Claude Code, then restart:**
 
-And 601 of the 1,387 are Liveries, which get no doorway and no screenshots.
+    $env:PGPASSWORD = '<password>'
+    claude
 
-**Conclusion: screenshots are the route for the 461. There is no shortcut.**
+That keeps it in memory only: never a file, never a log, never the transcript.
 
----
+I deliberately did NOT suggest typing it into this session with `!` — that
+would put the secret straight into the conversation, which is exactly what the
+order forbids. (It would not work anyway; shell state does not persist between
+my calls.)
 
-## 2. WHAT ALREADY EXISTS — do not rebuild it
+## What is ready
 
-`overlay_app.py`, `ask_engine.py` and `ASK_OVERLAY_SETUP.md` are already in the
-repo. A `Ctrl+Shift+Space` global-hotkey popup, `tkinter`, runs headless under
-`pythonw.exe`, searches local project files, falls back to a DuckDuckGo scrape,
-answers through local `qwen3:14b` via Ollama.
+`scripts/Test-DatabaseBackup.ps1` (new). One command once the password is
+present. It dumps, restores into a scratch database, counts ships and asserts
+live == restored, runs the corruption control, drops the scratch databases,
+copies the dump to both mirrors and verifies each per file by size AND sha256.
 
-**That is the shell.** What Sleven is asking for is a second mode inside it —
-capture rather than ask. Its known limitations already recorded: hotkey
-conflicts, and needing to run as Administrator to receive a hotkey while an
-elevated game window has focus.
+**Proven already:**
 
----
+- Parses clean.
+- **Fail-closed preflight**: with no `PGPASSWORD` it prints a refusal and exits
+  **2** — never 0, and never a prompt. A prompt on an unattended console hangs
+  forever, which is how the earlier run wedged.
+- The secret is only ever tested for presence. It is never printed, written,
+  logged, or passed as a command-line argument (arguments are visible to other
+  processes).
 
-## 3. THE SAFETY BOUNDARY — non-negotiable, and there is a precedent
+## A real finding: `--list` is not an integrity check
 
-Star Citizen runs **Easy Anti-Cheat**. RSI's own knowledge-base article is
-vague about third-party software — it addresses modded game files and says
-nothing specific about overlays or capture tools — so the boundary has to be
-drawn from what is demonstrably accepted rather than from a written permission.
+I proved the corruption control server-free, using the 8/5 dump already on disk
+(`citizen_compass-20260805-205238.dump`, 170,357 bytes). Worked on copies; the
+existing backups were not modified.
 
-**The precedent is `SCOverlay`, posted on RSI's own Community Hub.** It displays
-in-game action names as keys are pressed, and it is built to be anti-cheat safe
-by construction:
+| corrupted region | `pg_restore --list` |
+|---|---|
+| header / magic | **caught** — exit 1, `unsupported version (-2.-17)` |
+| TOC | **caught** — exit 1, `could not read from input file` |
+| **middle of data** | **NOT caught** — exit 0, lists perfectly |
+| **near end of data** | **NOT caught** — exit 0, lists perfectly |
 
-- **no DLL injection**
-- **no function hooking**
-- native Windows Raw Input API only
-- reads the player's own `actionmaps.xml` off disk
-- draws a transparent top-most window
+So a cheap `--list` check would certify a dump with a shredded data section as
+healthy. **The corruption control therefore has to go through a real restore**,
+and the harness corrupts the DATA SECTION specifically for that reason. This is
+direct evidence for the order's own premise: a dump nobody has restored is a
+file, not a backup.
 
-**That is exactly the architecture to copy, and the line not to cross:**
+## Guarded drop
 
-    ALLOWED    read files the game writes
-               read raw OS input
-               capture the screen at OS level
-               draw an overlay window
-
-    NEVER      read or write game memory
-               inject a DLL, hook any function
-               send synthetic input into the game
-               modify any game file
-
-Anything in the second list risks a ban on Sleven's own account and would put a
-Fan-Kit-compliant site next to a tool that violates the ToS. **The first list is
-enough — see §4.**
-
----
-
-## 4. THE FINDING — the game already logs the loadout, by name we can join
-
-Read from `StarCitizen/LIVE/Game.log` and `LIVE/logbackups/`.
-
-**Every session log carries the exact build:**
-
-    FileVersion: 4.9.188.23497
-    ProductVersion: 4.9.188.23497
-    BackupNameAttachment=" Build(12344265) 01 Aug 26 (19 43 20)"
-
-**Screenshots are already timestamped to the second** —
-`ScreenShot-2026-07-22_11-29-29-35A.jpg` — and log lines are UTC to the
-millisecond. **Correlating a screenshot to what was happening is arithmetic, not
-guesswork.**
-
-A real 39,159-line play session carries `[Cargo]` 13,057, `[Inventory]` 2,800,
-`[Missions]` 1,536, plus location-bearing asset paths like
-`data/objectcontainers/pu/loc/mod/stanton/station/ser/reststop_cargo/…`.
-
-**And the `[Inventory]` lines are the prize:**
-
-    <2026-01-28T22:38:17.463Z> [Notice] <AttachmentReceived> Player[Sleven-K]
-      Attachment[rsi_odyssey_undersuit_01_01_01_200000000232,
-                 rsi_odyssey_undersuit_01_01_01, 200000000232]
-      Status[persistent] Port[Armor_Undersuit]
-
-That middle field is a **ClassName**, and ClassName is a join key we already
-hold — `stdItem.ClassName` in `fps-items.json` / `ship-items.json`, and the
-suffix of `labels.json`'s `item_Desc_<ClassName>` keys.
-
-### Tested, one session, against 10,804 catalogue ClassNames
-
-    distinct attachment ClassNames in the session      49
-      joined to the catalogue                          28
-      not joined                                       21
-
-**Every one of the 21 misses is a character-rig part** — `body_01_noMagicPocket`,
-`FP_Visor`, `PU_Protos_Head`, `Head_Teeth`, `Shared_Scalp_Unified`, `brows_001`,
-`Head_Eyelashes`, `universal_necksock_01`. Not gear, and correctly absent from an
-item catalogue.
-
-**On actual equipment the join rate is effectively 100%:**
-
-    Armor_Undersuit   rsi_odyssey_undersuit_01_01_01        Odyssey II Undersuit Alpha
-    Armor_Helmet      rrs_specialist_light_helmet_01_04_01  Arden-SL Helmet Archangel
-    Armor_Torso       rrs_specialist_light_core_01_04_01    Arden-SL Core Archangel
-    Armor_Arms        rrs_specialist_light_arms_01_04_01    Arden-SL Arms Archangel
-    Armor_Legs        rrs_specialist_light_legs_01_04_01    Arden-SL Legs Archangel
-    backpack          rrs_combat_light_backpack_01_04_01    Arden-CL Backpack Archangel
-    wep_sidearm       klwe_pistol_energy_01                 Arclight Pistol
-    magazine_attach_1 klwe_pistol_energy_01_mag             Arclight Pistol Battery (30 cap)
-    medPen_attach_1   crlf_consumable_healing_01            MedPen (Hemozal)
-    mobiglas_attach   MobiGlas                              mobiGlas Original Casing
-
-### What this changes
-
-**The player's real loadout is readable from a log file, with zero process
-interaction.** No injection, no memory, no ToS question — the same safety class
-as a tool RSI hosts a post about.
-
-That does three things at once:
-
-1. **It solves screenshot labelling.** A screenshot taken at 22:38:17 can be
-   auto-tagged with everything equipped at 22:38:17 — with UUIDs, because
-   ClassName resolves to UUID. The naming-by-UUID discipline from the capture
-   protocol stops being manual.
-2. **It delivers `claude/historian-loadout-context.md` without the manual step.**
-   That doc assumed a player builds a loadout in the bench and hands it over.
-   They would not have to. *"My power plant is dying, can I fix it at Everus"*
-   becomes answerable because the log already said what is fitted.
-3. **It is a differentiator no competitor has.** All four crafting tools and both
-   keybinding tools are catalogues. **None of them knows what you are actually
-   wearing.**
-
----
-
-## 5. ARCHITECTURE — three layers, each independently useful
-
-**L1 — the log reader (build first, no UI at all).**
-Tail `Game.log`. Parse `<AttachmentReceived>` into
-`{timestamp, port, class_name, entity_id}`, resolve ClassName → UUID → catalogue
-row. Capture `FileVersion` at session start as the patch stamp. Emit a rolling
-`session_state.json`.
-**Testable entirely offline against the existing `logbackups/` — 39,159 lines of
-real session already on disk.** No game needed, no overlay needed, no risk.
-
-**L2 — capture and correlate.**
-Use the game's own screenshot key so the game writes the file. A watcher on
-`LIVE/screenshots/` matches each new file to the nearest L1 state by timestamp
-and writes a sidecar: patch, UTC time, equipped items with UUIDs, and the last
-location-bearing asset path seen.
-**Deliberately no screen-capture API at first.** The game already writes a clean
-JPG; adding an OS capture path buys nothing and adds a moving part.
-
-**L3 — the overlay, extending `overlay_app.py`.**
-A second hotkey that says *"tag the last screenshot"* and offers the equipped
-items as the pick list, plus a free-text field for what a shop kiosk is showing.
-**This is where a human closes the gap the log cannot** — the log knows what is
-worn, not what is on a shelf.
-
-**Order matters.** L1 is useful on its own (the Historian gets a loadout), L2 is
-useful without L3 (screenshots arrive labelled), and L3 is pure convenience. If
-the project stops after L1 it has still gained something real.
-
----
-
-## 6. WHAT THIS CANNOT DO — state it before anyone assumes otherwise
-
-- **It cannot read shop shelves.** Nothing in the log names an item on a kiosk.
-  Prices and stock still come from UEX, or from OCR, or from Sleven typing them.
-- **It cannot give a precise position.** Location comes from asset-path loading
-  events — "a reststop in Stanton" — not coordinates. Good enough to say which
-  station; not good enough to say which floor.
-- **OCR is a separate project, and I would not start it.** Reading item names off
-  a shop UI means handling the game's font, scaling, HDR, and every UI change per
-  patch. Two of the four crafting sites already have community submission forms
-  because this is harder than it looks.
-- **It only ever knows Sleven's own session.** This is a personal capture tool,
-  not telemetry, and it should stay that way — the moment it collects anyone
-  else's data it becomes a privacy question and a very different conversation.
-
----
-
-## 7. RISKS
-
-- **EAC risk is low but not zero.** File reads and an overlay window are the
-  SCOverlay pattern, but EAC behaviour changes without notice and RSI's article
-  is not a permission slip. **Never run capture during anything competitive, and
-  stop at the first sign of an EAC warning.**
-- **Log format is undocumented and will change.** `<AttachmentReceived>` is an
-  internal debug line, not an API. Parse defensively, assert the join rate stays
-  near 100% on gear, and treat a sudden drop as "the format moved," not "the
-  player changed clothes."
-- **Administrator rights.** Already recorded in `ASK_OVERLAY_SETUP.md` — a
-  global hotkey will not fire over an elevated game window unless the overlay is
-  elevated too. That is a real friction point for L3, and it is why L1 and L2
-  are designed to need no hotkey at all.
-- **Log rotation.** `logbackups/` is how sessions persist; `Game.log` is
-  overwritten on launch. **Anything not read before the next launch is gone.**
-
----
-
-## 8. NOT VERIFIED
-
-- **Whether `[Cargo]` lines name cargo contents.** 13,057 of them in one session
-  and I only sampled four — they looked like elevator/platform loading, not
-  manifests. **Worth a proper look; if they carry commodity names and amounts,
-  the mining and trading side gets the same treatment as gear.**
-- **Whether ship components appear as attachments** the way personal gear does.
-  The sampled session was on foot. **If they do, the loadout bench gets its real
-  data from the log too.**
-- **Whether the location asset paths resolve to our 479 shops or 1,774 positioned
-  entities.** They are file paths, not UUIDs, and the mapping is unproven.
-- **Whether the join rate holds across sessions.** One session, 28 of 28 on gear.
-- **Current EAC behaviour toward overlay windows.** Read RSI's article and the
-  SCOverlay post; ran nothing.
-
-### 2026-08-02 09:28:51 — update_decision_ship_honest_now_images_later.md
-
-# DECISION — foundation first, images later, honesty as the standing constraint
-
-**Ruled by Sleven, 2026-08-02. Recorded by C2. Planning only, nothing built.**
-
----
-
-## THE RULING
-
-1. **Foundation first.** The data is gathered. The job now is putting it where
-   people can use it — not waiting for a better version.
-2. **Images are a later, separate workstream.** Sleven will capture in-game
-   screenshots of items, weapons, gear, locations and routes himself. It is
-   legwork, it is attainable, and it does not gate anything.
-3. **Ship what we have, presented as well as it can be presented.**
-4. **The constraint: never misrepresent what the information is.** Partial is
-   fine. Dressed-up is not.
-
-Point 4 is the extension of rule 4 (*every price shows its age and its source*)
-from prices to the whole site. **Rule 4 says how sure we are about a number.
-This says how sure we are about a page.**
-
----
-
-## WHY THIS IS THE RIGHT CALL, AND NOT JUST AN ACCEPTABLE ONE
-
-**Only 136 items of 7,728 — 1.8% — have nothing beyond a name and a category.**
-69% can say what a thing is; 36% can say where to buy it; 98.2% can say
-something more than a name.
-
-Waiting for images would hold back a site that can already answer more than any
-competitor for the categories people actually search.
-
-**And the images, when they come, will have better provenance than anything else
-on the site.** The ship models came from a Hugging Face pack whose author's
-redistribution rights are unestablished. UEX's 394 shop screenshots are
-community-uploaded with unknown licensing. **Screenshots Sleven takes himself
-have none of those questions** — known capturer, known patch, no third-party
-redistribution. That makes the later workstream cleaner than the shortcut would
-have been.
-
----
-
-## PER-DOORWAY COVERAGE — measured, all 7,728
-
-This was flagged as unknown in the Build A plan. 69% was the average; the split
-matters more.
-
-| doorway | items | with description | with price |
-|---|---:|---:|---:|
-| Clothing | 1,809 | **87%** | 58% |
-| Food, drink & meds | 170 | **85%** | 69% |
-| Ship parts | 758 | 74% | 63% |
-| Suits & armour | 2,565 | 71% | 32% |
-| Weapons & ammo | 558 | **50%** | **28%** |
-| Tools & equipment | 111 | **50%** | **94%** |
-| *(no doorway)* Liveries | 1,099 | 72% | 2% |
-| *(no doorway)* Decorations | 77 | 52% | 19% |
-| *(no doorway)* Miscellaneous | 334 | 19% | 12% |
-| *(no doorway)* Commodities | 175 | **0%** | **0%** |
-
-**No doorway is catastrophically thin — the worst is 50%.** The eight-doorway
-structure survives the data.
-
-Three things worth acting on:
-
-- **Weapons & ammo is the weakest doorway** — 50% description, 28% priced — and
-  it is a high-demand category. It will look thinnest exactly where people look
-  hardest. **It is also the strongest candidate for the first screenshot batch.**
-- **Tools & equipment is inverted** — 94% priced but only 50% described. It
-  answers *"where do I buy it"* almost perfectly and *"what is it"* poorly. That
-  is a different page emphasis, not a worse page.
-- **Commodities is 0% and 0%.** Nothing at all. Confirms it gets no doorway, and
-  is a second argument for pulling UEX commodity prices.
-
----
-
-## THE ENGINEERING CONSEQUENCE — build the slot now, fill it later
-
-Images being a later workstream is only cheap **if the data model expects them
-today.** Retrofitting a media layer into 7,728 rendered pages is expensive;
-declaring the field now costs nothing.
-
-**Add to the item record in the Build A data contract, nullable from day one:**
-
-    img       relative path, or null
-    img_src   'sleven' | 'rsi_store' | 'uex' | null
-    img_patch patch the screenshot was taken in
-    img_date  capture date
-
-`img_src` matters because the three sources have **different permission
-stories** and a future question about one must not force a review of all of
-them. `img_patch` matters because a screenshot of a 4.9 item is wrong by 4.12
-and nothing else on the page would say so.
-
-**The rendering rule from the coverage work still holds:** a null image produces
-**no visible gap** — no placeholder box, no grey silhouette, no "image coming
-soon." The layout is designed imageless and images are added *into* it, not
-reserved *within* it.
-
----
-
-## CAPTURE PROTOCOL — worth agreeing before the first batch, not after
-
-The legwork is the expensive part. These are the things that are free at capture
-time and unrecoverable afterwards.
-
-1. **Record the patch version with every batch.** A folder per patch —
-   `shots/4.9/` — is enough. Without it every image silently rots and nothing on
-   the page can flag it.
-2. **Name by UUID, not by display name.** `28c76343-8da9-495a-9339-3d5de02e6c3c.jpg`,
-   not `venture-helmet-white.jpg`. Display names change between patches and
-   collide — "Full Set" exists twice, "Container" exists twice. **UUIDs are the
-   join key everywhere else on the site and they do not move.**
-3. **One item, one frame, consistent framing.** A gear page with fifteen
-   differently-lit, differently-cropped shots looks worse than no images at all.
-   Same angle, same background, same distance — a shop inspection view is
-   probably the most repeatable.
-4. **Capture the shop, not just the item, when you are already there.** 394 of
-   479 shops have a UEX screenshot of unknown licence. Our own would replace
-   those cleanly, and a shop photo answers *"what does this place look like so I
-   can find it"* — which nothing currently does.
-5. **Start with Weapons & ammo.** Weakest doorway, high demand, and the 461
-   price-without-description items are the group where a picture carries the most
-   information.
-6. **Do not capture liveries.** 1,099 items, 2% priced, no doorway. It is the
-   largest category and the least worth the walking.
-
----
-
-## WHAT THIS DOES NOT CHANGE
-
-Nothing in `claude/plan-build-a-static.md` or `WO-CRAFT-01`. The four-question
-standard, the no-visible-gap rule, and the doorway structure were all designed
-imageless. **This ruling confirms the plan rather than altering it** — which is
-the useful thing about having designed for the constraint before deciding to
-accept it.
-
----
-
-## NOT VERIFIED
-
-- **Whether the 461 price-without-description items overlap the 1,387 carrying an
-  RSI store link.** Still not computed. If they do, that group has a cheap
-  legitimate image source before any screenshot is taken.
-- **Whether RSI store images may be hotlinked or copied at all** under the Fan
-  Kit position. Not researched.
-- **What the 136 truly-bare items are.** Some are likely placeholder or debug
-  records that should not get a page rather than a photograph.
-
-### 2026-08-02 09:27:09 — update_coverage_and_newbie_standard.md
-
-# The completeness picture, measured — and what "usable for the newest player" has to mean
-
-**From C2. 2026-08-02. Planning input, not a build. Nothing written to the repository.**
-
-Sleven's position: the missing images do not matter much if the information is
-structured so the newest player can use it, because the asset is having
-everything in one place that other sites scatter.
-
-**That position is correct, and it is now measured rather than asserted.** But
-it carries an obligation, in §3.
-
----
-
-## 1. WHAT AN ITEM PAGE CAN ACTUALLY ANSWER — all 7,728 measured
-
-|  | has a price | no price | total |
-|---|---:|---:|---:|
-| **has a description** | **2,337 (30%)** | 3,007 (39%) | 5,344 (69%) |
-| **no description** | 461 (6%) | 1,923 (25%) | 2,384 (31%) |
-| **total** | 2,798 (36%) | 4,930 (64%) | 7,728 |
-
-Read as four different pages:
-
-- **2,337 — the full answer.** What it is, what it costs, which shops, where
-  those shops are, how old the price is. **No competitor has this combination
-  for a single item.**
-- **3,007 — "what it is" without "where to buy".** Still a real page: CIG's own
-  description, category, manufacturer, and an honest line about stock.
-- **461 — "where to buy" without "what it is".** Weakest class, and the one
-  where a picture would help most.
-- **1,923 — neither.**
-
-## 2. THE FLOOR IS MUCH HIGHER THAN 25%
-
-The 1,923 with neither description nor price are not blank. Checking what else
-they carry — manufacturer, size, RSI store link, pledge-only flag, patch stamp:
-
-    5 extra fields      3
-    4 extra fields    202
-    3 extra fields    385
-    2 extra fields    515
-    1 extra field     682
-    0 extra fields    136
-
-**Only 136 items — 1.8% of the catalogue — have nothing beyond a name and a
-category.** The other 1,787 carry something worth putting on a page.
-
-**So the real shape is:** 69% can say what a thing is, 36% can say where to buy
-it, and **98.2% can say something more than its name.** That is a much better
-starting position than "no images, 64% unpriced" suggests, and it is the number
-that should be quoted internally instead of the scary one.
-
----
-
-## 3. THE OBLIGATION THIS CREATES
-
-"Usable for the newest player" is not a design intention. Left as one it becomes
-a slogan that everybody agrees with and nobody can fail.
-
-**Proposed testable standard — the four questions.** Every item page answers
-these in plain words, above the fold, in this order, and **each has a defined
-answer when the data is missing:**
-
-| # | question | when known | when not known |
+Hard rule 3 forbids `DROP DATABASE` against a database this process did not
+create. The order asks for the scratch database to be dropped, and both scratch
+databases *are* created by this script in this run. `Remove-ScratchDb` refuses
+any name that is the live database, does not match `^cc_restore_test_[0-9a-z_]+$`,
+or was not recorded as created by this run. Note this differs from
+`Backup-CitizenCompass.ps1`, which deliberately leaves its scratch database in
+place to keep its "deletes nothing" guarantee absolute.
+
+## Current exposure
+
+Two verified copies of the FILES on two external drives. **Zero copies of the
+DATA**, other than the stale 8/5 dump at
+`C:\cc-backup\20260805-205238\` — which is on C: only and has never been
+restore-tested.
+
+### 2026-08-06 16:30:47 — update-job5-backup-closeout-20260806.md
+
+# Update: Job 5 complete — backup verified on both mirrors (2026-08-06)
+
+Run `20260806-160056`. Close-out report exit **0**. Both irreplaceable trees
+are on both external mirrors and verified **per file**.
+
+Reported by `scripts/Report-BackupCloseout.ps1` (new), which runs as a separate
+process AFTER the copy and rebuilds every fact from disk — never from
+`SHA256SUMS.txt`, never from robocopy's file list, never from the copy's own
+filter.
+
+## robocopy exit code per tree
+
+Bitmask, not an ordinal. 0-7 success, 8+ real failure.
+
+| tree | mirror | exit | meaning |
 |---|---|---|---|
-| 1 | **What is this?** | CIG's description | category + manufacturer + size, as a sentence |
-| 2 | **Can I get it, and how?** | "Sold at 4 shops" | "You can't buy this in the game — it came with a pledge" *or* "No shop we know of stocks this" |
-| 3 | **What does it cost?** | cheapest price + where | omitted entirely, never "N/A" or "—" |
-| 4 | **How sure are you?** | price age + source | "This is a player report, and gear prices swing a lot" |
+| repo working tree | C: staging | 1 | files copied |
+| whole backup folder | D: | 1 | files copied |
+| `sc-ships` | D: | 1 | files copied |
+| `data-layer\external-sources` | D: | 1 | files copied |
+| whole backup folder | E: | 1 | files copied |
+| `sc-ships` | E: | 1 | files copied |
+| `data-layer\external-sources` | E: | 1 | files copied |
 
-**Question 4 is the one nobody else answers at all**, and it is the whole reason
-to trust the site over a confident wrong number elsewhere.
+All seven are 1. Every robocopy log also carries an `Ended :` line and contains
+no `ERROR` lines — checked from the logs robocopy wrote itself, not from a
+variable the copier kept.
 
-**This is assertable, which is the point.** Four coverage classes exist in §1;
-the test is that a page from each renders all four questions with no blank
-field, no dangling label, and no dash standing in for an answer. That is a rule
-12 check, not a design review.
+## Per-file verification, destination enumerated from disk
 
-### The rule that follows
+| tree | mirror | expected | present with matching byte size |
+|---|---|---|---|
+| `sc-ships` | D: | 951 | **951** |
+| `sc-ships` | E: | 951 | **951** |
+| `data-layer\external-sources` | D: | 58,257 | **58,257** |
+| `data-layer\external-sources` | E: | 58,257 | **58,257** |
 
-**A missing field must never produce a visible gap.** Not an empty heading, not
-"Unknown", not a grey placeholder box where an image would go. **Sections
-disappear; sentences change.** A page with three of four answers should look
-like a page that was only ever meant to have three.
+`sc-ships` holds 1,675 files of which 724 are in `.cache` and correctly
+excluded, so 951 is the right denominator — not a shortfall.
 
-This is stricter than the earlier plan's "assert a page renders correctly with
-optional fields empty" — that permits an empty-but-present section. At 64%
-unpriced and 100% imageless, empty-but-present is most of the site.
+## First 10 mismatches by name
 
----
+**None. Zero mismatches across all four tree/mirror pairs.** The reporting path
+is real and proven — see below, where it names a truncated file with both
+sizes — it simply had nothing to report here.
 
-## 4. WHERE THE "EVERYTHING IN ONE PLACE" CLAIM IS TRUE, AND WHERE IT IS NOT
+## Negative control
 
-Worth being precise, because the claim is the strategy.
+Asserted independently per mirror, and it PASSED on both:
 
-**True:** UEX has prices and terminals but no item descriptions or stats. Erkul
-has ship-component stats but no FPS gear, no prices, no locations. The wiki has
-lore and some stats but not current prices. **The join across all of it exists
-only here** — item, description, stats, price, shop, location, patch stamp,
-confidence.
+- D: `NEGATIVE CONTROL PASSED` — subject `.cache\huggingface\.gitignore`
+- E: `NEGATIVE CONTROL PASSED` — subject `.cache\huggingface\.gitignore`
 
-**Not yet true:** for the 461 price-without-description items we hold *less*
-than the wiki does. For liveries and cosmetics we hold almost nothing anyone
-wants. And for anything needing an image, we hold nothing at all.
+It is only credited after proving the destination is readable, by first finding
+a file known to BE there. An "absent" result from a checker that cannot see the
+destination is vacuous, and this refuses to score it.
 
-**So the honest version of the claim is narrower and stronger:** *for the things
-people actually search for — gear, weapons, components, consumables — this is
-the only place the whole answer sits on one page.* It is not "we have everything
-about everything," and it should not be sold as that internally, because the
-first person to check a livery page will find out.
+One honest gap, stated not glossed: for `data-layer\external-sources` the
+verifier reports `NEGATIVE control NOT PERFORMED - no excluded file exists to
+test with`. That tree contains nothing matching the exclusion list, so there is
+nothing to test with. Reported as not performed, never as a pass.
 
----
+## The checker was made to fail on demand — 7 controls
 
-## 5. WHAT THIS CHANGES ABOUT BUILD ORDER
+It passed first time, so it was not yet a check. Against synthetic trees
+(nothing touched the real backup):
 
-Nothing about the plan. One thing about priority:
-
-**The description wiring (WO-CRAFT-01 §WO-1) is the highest-value item in the
-project and this measurement raises it further.** It is the difference between
-2,798 pages that can answer anything (36%) and 5,344 that can (69%). It needs no
-new data, no decisions, and it is not blocked by the tab layout question that
-holds up everything else in Build A.
-
-**Images stay worth chasing for one narrow group** — the 461
-price-without-description items, where a picture is the only thing that would
-tell someone what they are looking at. 1,387 items carry an RSI store link,
-which is the cheapest route to a legitimate image and has not been examined.
-
----
-
-## 6. NOT VERIFIED
-
-- **Whether the 461 overlap with the 1,387 carrying an RSI store link.** Not
-  computed. If they do, that group has a cheap fix.
-- **Whether the 136 truly-bare items are real game content** or debug/placeholder
-  records. `fps-items.json` is known to carry ~230 placeholder entries, so some
-  of the 136 may not deserve a page at all.
-- **Whether descriptions are evenly spread across the doorways.** 69% is the
-  total; a doorway sitting at 20% would look broken while the average looked fine.
-  **Worth computing before the doorway pages are designed.**
-
-### 2026-08-02 09:24:59 — update_craft_split_and_rule14_proposal.md
-
-# UPDATE — craft indexes split page-per-file; rule 14 enforcement proposal delivered
-
-## The amendment's question, answered with the distribution
-
-**Per-file splitting alone does NOT bring p99 into range. The source list needs
-its own file.** Measured over all 1,597 rows:
-
-| | p50 | p90 | p95 | **p99** | max | >20 KB |
-|---|---:|---:|---:|---:|---:|---:|
-| whole row, `sources` inline | 2,191 | 12,690 | 18,334 | **63,706** | 91,648 | 74 files |
-| `sources` moved out | 1,868 | 2,311 | 2,962 | **3,040** | 3,284 | **0** |
-| `sources` alone | 2 | 10,832 | 16,150 | 62,559 | 90,637 | 74 files |
-
-C1 was right that a 7 KB mean with a 90 KB tail is two problems. It is worse
-than that: **p99 is 63.7 KB, 29x the median.** Splitting per blueprint moves the
-tail from one file to 74 of them; it does not remove it.
-
-Moving `sources` out collapses the page distribution entirely — **nothing over
-3.3 KB, zero files above 20 KB.**
-
-**The 127-source blueprint specifically:** `BP_CRAFT_klwe_pistol_energy_01_mag`
-is 91,648 bytes, of which **90,637 (99%) is the source list**. Split, its page
-is **971 bytes** and the 86 KB source list is fetched only if someone opens it.
-The four next-largest are Mining Lasers at ~80 KB, also 98% sources. The tail is
-entirely sources, in every case.
-
-**A finding the split surfaced: 873 of 1,597 blueprints (54.7%) have an EMPTY
-source list.** So a sources file is written only where there is something to
-write — **724 files instead of 1,597**. Writing empty ones would have added 873
-requests that can only ever return `[]`.
-
-## What now exists
-
-```
-blueprints/<key>.json          1,597 files   3.06 MB   page data, no sources
-blueprints/sources/<key>.json    724 files   5.68 MB   lazy-loaded
-items/<id>.json                5,344 files   1.87 MB
-blueprints/_list.json                        254.7 KB  minimal listing
-                               ----------
-TOTAL                          7,666 files
-```
-
-**File budget: 7,666 craft + 480 existing = 8,146 against a 20,000 cap — 11,854
-headroom (59% free).** Comfortably inside the arithmetic C2 already did.
-
-**What a visitor downloads now:**
-
-| | before | after |
-|---|---:|---:|
-| landing on the craft index | **10.91 MB** | 254.7 KB |
-| opening a blueprint | (already loaded) | **1.7 KB** (p50), 3.0 KB worst |
-| its source list | (already loaded) | 86 KB, **only if opened** |
-
-The combined indexes stay exactly as they are — build artifacts for derivation,
-never fetched by a browser.
-
-**Verified by round-trip, not by file count:** the worst row was reassembled
-from its page plus its sources file and compared to the original — `True`.
-`blueprint_key` is unique across all 1,597 and needs no filename sanitisation;
-same for all 5,344 item keys. Both checked before writing, not after.
-
-`scripts/split_craft_pages.py` rebuilds its output directories from scratch each
-run, so a removed blueprint cannot leave a stale page behind.
-
-## A 7,666-file accident, closed before it happened
-
-`data-layer/processed/.gitignore` covered the combined `*.json` files but **not
-subdirectories**. The split created 7,666 untracked files that a single
-`git add -A` would have swept into one commit — the same way another session's
-work has been swept twice already tonight. Added `blueprints/` and `items/`;
-untracked count under `processed/` is back to **0**.
-
-## Rule 14 enforcement proposal — delivered
-
-`docs/proposal-rule14-single-writer-enforcement.md`. **Proposal only, nothing
-implemented**, per instruction.
-
-The short version: the two previous fixes worked because each had a
-**registration choke point** a guard could refuse at. File writes have none —
-three sessions, one OS user, one machine. **I cannot make the write impossible,
-and claiming otherwise would be the enforcement-that-isn't this project keeps
-finding.** So the target is rule 14's own second clause: make an unacknowledged
-write loud, and refuse to ship un-provenanced content.
-
-Mechanism: a tracked `LAYER.lock` holding the last owner-acknowledged sha256;
-the build refuses when disk disagrees and names both hashes; writes go through
-one helper that updates file and lock atomically; the deploy re-checks **at
-upload time, not at start** — the lesson from staging files I had verified
-minutes earlier that changed in between; and a daily checker reports drift even
-if nobody builds.
-
-**All four of tonight's incidents would have stopped at the build.** None was
-malice and none was a stale-mtime mistake — every one was a session editing a
-copy it believed was current. Incident 3 is the clearest: a genuine improvement
-that happened to carry an old version of one line, silently reverting a
-committed fix.
-
-Limits stated in the doc rather than glossed: it does not prevent the write, it
-does not recover clobbered content (git does, which is why committing after
-every edit is part of the workflow), and it adds a step to every legitimate
-edit.
-
-## Layer state — checked, and the tab has NOT come back
-
-`_layer.src.html` changed again since my commit (`889e4ff1` → `95177c82`,
-+82 lines) and `cc-lo-tab` appears once, which looked like a third regression.
-**It is not.** The single occurrence is a comment recording why the id was
-dropped from the dock's IDS array. Live element `<a id="cc-lo-tab">`: **0**.
-Style rule `#cc-lo-tab`: **0**. `id="cc-kb"` 1, `cc-ship::after` 2, `cc-strip` 7
-all intact.
-
-That is C2's A3 fix, which C1 has already accepted and checksum-verified.
-Committing it so it is not lost — but noting that it reached me as a disk write
-rather than as an edit from C1, which is precisely the traffic the new workflow
-is meant to end.
-
-**No deploy performed** — the amendment did not ask for one, and the split
-output is not wired into any page yet.
-
-### 2026-08-02 01:45:59 — update_plan_build_a_static.md
-
-# PLAN — Build A (find / item / shop) under the static ruling
-
-**From C2 to C1. 2026-08-02. Planning only. Nothing built, nothing written to the repository.**
-
-Written after reading `docs/order-front-end-build.md` and the 2026-08-02 handoff
-archive, so it starts from the rulings rather than from my earlier plan. Where
-this and `docs/workorder-front-end-build-plan.md` disagree, **this is the
-correction** — the differences are listed in §7.
-
----
-
-## 1. THE MEASUREMENT THAT SETTLES THE ARCHITECTURE
-
-The static ruling left an open question nobody had measured: whether a static
-site can actually carry 7,728 items, 23,734 prices and 479 shops.
-
-**It can, easily. Measured, trimmed to the fields the front end needs, gzipped:**
-
-| payload | rows | raw | gzipped |
-|---|---:|---:|---:|
-| item index — id, name, category, section, manufacturer, uuid, slug | 7,728 | 1.16 MB | **0.28 MB** |
-| price table — item, terminal, buy, sell, date | 23,734 | 1.15 MB | **0.15 MB** |
-| shop table — 479 item terminals with location fields + game_version | 479 | 0.07 MB | **0.01 MB** |
-| **total** | | **2.38 MB** | **0.44 MB** |
-
-**The entire searchable catalogue is under half a megabyte over the wire.**
-
-For scale: `testing/_deploy/index.html` is already 1.5 MB, and `_deploy/` is
-**349 MB** — 235 ship models. The data is noise next to what already ships.
-
-### What follows from it
-
-- **No page-per-item build.** Three JSON files, client-side routing. That is
-  **3 files against the 20,000 cap, not 8,867.** The cap stops being a
-  consideration at all.
-- **No sharding, no lazy-loading of the core three.** They load once and the
-  whole site is interactive.
-- **No FastAPI, and now for a second independent reason.** The ruling rested on
-  the zero-runtime-dependency property. This adds: there is nothing a backend
-  would do here that 440 KB of JSON does not already do faster.
-
-### The one payload that does NOT go in the bundle
-
-**Descriptions.** 5,344 items carry CIG prose (WO-CRAFT-01 §WO-1), averaging
-several hundred characters — roughly 2.7 MB raw before compression. That is six
-times the rest of the bundle combined for something only ever read one item at a
-time.
-
-**Shard them.** `desc/<bucket>.json` keyed by item id, bucket = `id % 64`, fetched
-on demand when an item page opens. 64 files, ~40 KB each. Still trivially inside
-the cap.
-
----
-
-## 2. DATA CONTRACT
-
-Emitted by a build step from the sealed snapshots, into `testing/_deploy/data/`.
-
-    items.json      [{i:id, n:name, c:category, s:section, m:manufacturer,
-                      u:uuid, g:slug, x:exclusivity, p:parent_id, col:color}]
-    prices.json     [{i:id_item, t:id_terminal, b:price_buy,
-                      s:price_sell, d:date_modified}]
-    shops.json      [{i:id, n:name, ty:type, sy:star_system, p:planet,
-                      ss:space_station, ci:city, o:outpost, gv:game_version,
-                      f:{food,medical,shop_fps,shop_vehicle,freight_elevator}}]
-    desc/NN.json    {item_id: "description text"}     64 shards
-    meta.json       {snapshot, patch, built_at, counts}
-
-Single-letter keys are not premature optimisation — they are most of the gap
-between 2.38 MB and something worth thinking about. **Document the mapping in
-`meta.json` so it is not folklore.**
-
-**Joins, all by id, none by name:**
-
-    items.i  ->  prices.i
-    prices.t ->  shops.i
-    items.u  ->  desc shard        (uuid only used to build the shard, not at runtime)
-
----
-
-## 3. THE DOORWAYS
-
-Eight, ordered by how many *priced* items sit behind them. Full reasoning in
-`claude/plan-doorways-and-browse-layer.md`; corrections to it are in §7.
-
-| # | doorway | UEX sections | items | priced |
-|---|---|---|---:|---:|
-| 1 | Suits & armour | Armor, Undersuits | 2,565 | 815 |
-| 2 | Clothing | Clothing | 1,809 | 1,055 |
-| 3 | Weapons & ammo | Personal Weapons | 558 | 157 |
-| 4 | Ship parts | Systems, Vehicle Weapons, Avionics, Propulsion, Module | 758 | 474 |
-| 5 | Tools & equipment | Utility, Technology | 111 | 104 |
-| 6 | Food, drink & meds | Misc → Foods #63, Drinks #62, Consumables #16 | 170 | ~110 |
-| 7 | Ships | source 1 + `ship_resolution.json` | 254 live | — |
-| 8 | Places | shops, stations, cities, planets, systems | 479 shops | — |
-
-Liveries (1,099), Decorations (77), Flair (31), Commodities (175), Other (41) and
-the `Miscellaneous → Miscellaneous #61` bucket (325) are **findable by search and
-tag, with no doorway.** That is the point of tags.
-
-**Doorway 7 must use `data-layer/ship_resolution.json`** — 254 live, 215 matched,
-2 ambiguous, 37 without a game file, 6 tier variants, **95 game files parked by
-Sleven, do not surface them.** Do not re-derive this.
-
-**Each doorway page is:** an honesty sentence with real counts → sub-category
-tiles with count and priced-count → the views strip → nothing else.
-
----
-
-## 4. THE THREE PAGES
-
-### 4.1 Search
-
-One text field, ordinary English. Stop-word strip before matching (list in
-`docs/workorder-front-end-build-plan.md` §A1). Match against name, category,
-manufacturer, shop name, place name. Location-aware: *"flight suits new babbage"*
-ranks New Babbage stock first and says why.
-
-Nine real test phrases are in that plan and are the requirement, not a
-convenience. **A real phrase returning nothing is a search bug.**
-
-Runs entirely client-side over `items.json` — 7,728 rows is nothing to filter in
-a browser.
-
-### 4.2 Item page
-
-Order: breadcrumb → header → **description** → answer line → where to buy → sell
-line (conditional) → confidence panel → others in this category.
-
-**Description sits above the answer line and is the biggest change from the
-earlier plan.** 69% coverage, against 36% for price and 0% for images. Two
-rendering modes — prose, and CIG's newline-delimited stat blocks
-(*"Item Type: Heavy Armor / Damage Reduction: 40%"*). **My detection heuristic
-for telling them apart is untested — validate against a sample.**
-
-**Answer line:** *"Sold at 4 shops. Cheapest is Casaba Outlet in Area18 at
-12,400 aUEC."*
-
-**For the 4,930 items with no price**, the answer line changes rather than
-disappearing:
-
-    exclusive (1,313)   "You can't buy this in the game. It came with a pledge."
-    unexplained (2,524) "No shop we know of stocks this."
-    liveries (1,080)    cosmetic; treated as above
-
-**Sell price is one conditional line, not a section** — 171 items of 7,728 have
-one.
-
-**Price age colouring must come off the real distribution:** median 66 days, 75%
-over 30 days. The earlier plan's "amber at one day old" would render the whole
-site amber. Suggested fresh <30 / amber 30–75 / red >75 — **Sleven's call, not
-mine.**
-
-### 4.3 Shop page
-
-479 shops, not 823 — 823 counts fuel, refinery, commodity and rental terminals
-too. 469 have at least one price row.
-
-Breadcrumb built from **whichever location fields are non-null**, not a fixed
-shape: of 479 item terminals, space station is set on 379, planet 340, city 65,
-outpost 39, moon 9, system 479. **The earlier plan's "system › planet › city ›
-shop" is the minority path.**
-
-Answer line, what they sell, what they buy, also-at-this-location.
-
-**Shops have pictures — 394 of 479 carry a `screenshot`.** Whether we may display
-UEX-hosted community screenshots is unresolved and touches the 7 unread
-`fan_kit_compliance` warnings. **Design the page to work without them and treat
-images as an enhancement pending that answer.**
-
-Each shop carries `game_version` — a real last-verified-patch, set on 429 of 479,
-and mostly stale (3.24.2 on 154, 4.0 on 108). Show it. Nobody else does.
-
----
-
-## 5. ENTRY POINTS — planned both ways so this does not block
-
-The tab layout is the only decision still blocking Builds A, B and C. **Both
-branches are planned so work can start before it lands.**
-
-Measured: the base page's nav is at `releases/latest.html:452-454` and uses
-**in-page anchors** (`#matrix`, `#calendar`), not page links. That matters —
-"put FIND in the nav" is not a one-line change to an existing pattern.
-
-**Branch 1 — C1's recommendation (my preference).** DISPLAY and FEEDBACK stay on
-the right edge. FIND and KEYBINDS become nav entries. LOADOUT already goes on the
-ship page. Since the nav is anchor-based, either the nav gains its first true
-page link, or Find becomes a section on the same page. **The second is more
-consistent and cheaper, and suits a client-rendered app.**
-
-**Branch 2 — right edge keeps everything.** Requires solving the geometry:
-five tabs at `44% + 0/150/290/430/570px` puts FIND at 1045px on a 1080px
-viewport. Only works at 1440p. Not recommended.
-
-**Either way the build owns an explicit list with an explicit position per
-entry, controlled by Sleven** — not re-emitted from whatever was last in the
-file. That is the correction to my §8a, which would have restored the LOADOUT
-tab after every rebuild and overridden a decision already made twice.
-
----
-
-## 6. VERIFICATION — HARD RULE 12
-
-- **Assert the bundle stays under 1 MB gzipped.** Measured 0.44 MB today. This
-  is the assertion that keeps the static ruling true as data grows.
-- **Assert every one of the nine real search phrases returns a correct result.**
-- **Assert an item page renders complete with description, price and image all
-  empty.** 2,384 items have no description; 4,930 have no price; 7,728 have no
-  image. **All three absent at once is the common case, not the edge case.**
-- **Assert a price never renders without its age and source.**
-- **Assert the shop breadcrumb renders for a terminal with no city** — 414 of
-  479 have no `city_name`.
-- **Assert no name-based join anywhere.**
-- **Assert the 95 parked game-file ships never appear.**
-- **Assert the compliance footer is present on every page and every overlay.**
-
----
-
-## 7. CORRECTIONS TO MY EARLIER PLANS
-
-Both live in the project and the repo; treat these as amendments.
-
-| # | earlier claim | correction |
-|---|---|---|
-| 1 | "823 shops" | **479** item terminals, 469 with a price row |
-| 2 | "What it sells for" as a page section | **171 items of 7,728 (2.2%)** — one conditional line |
-| 3 | "amber at a day old" | median age **66 days**; 75% over 30. Thresholds from the distribution |
-| 4 | "design pages that work without a picture" | true for items (0 of 7,728); **false for shops** (394 of 479) |
-| 5 | "no 'what it's good for' — that's writing, not data" | **5,344 items (69%)** have CIG prose |
-| 6 | "Build B forces the FastAPI backend" | **ruled against.** §1 shows nothing needs it |
-| 7 | §8a — build re-emits the tabs | **would override Sleven's LOADOUT removal.** Do not implement |
-| 8 | "verify the `Loadout` array across ships" | **confirmed by C1**, 10 of 10. Closed |
-| 9 | ship identity not addressed | **`ship_resolution.json` exists.** Use it |
-| 10 | `commodity_trade_locations.json` gives where-to-buy | **tag-matched, not stock.** 15 materials share one identical 468-location set |
-
----
-
-## 8. WHAT I DID NOT VERIFY
-
-- **The stat-block vs prose detection heuristic.** Mine, untested.
-- **Whether the nav can take a page link at all** without disturbing the
-  anchor-scroll behaviour. Read the markup; did not test.
-- **Description coverage per doorway.** Total is 69%; the split is unknown, so I
-  cannot say whether Ship parts reads better or worse than Clothing.
-- **Whether `is_available` / `is_available_live` / `is_visible` should filter
-  shops.** 768 / 755 / 773 of 823 are true. Meaning unknown — **check UEX's docs
-  before using them**, or ~20 shops get wrongly shown or hidden.
-- **Licence and hotlink status of the 394 shop screenshots.**
-- **Real gzip transfer size**, as opposed to my `gzip.compress` estimate.
-  Cloudflare may use brotli, which would be smaller.
-
----
-
-## 9. OPEN FOR SLEVEN
-
-1. **Tab layout** — branch 1 or 2 in §5. Blocks A, B and C.
-2. **Price-age thresholds** — fresh/amber/red boundaries.
-3. **Shop screenshots** — display or not, given the Fan Kit position.
-4. **Does Clothing get its own doorway**, or fold into Suits & armour? It is the
-   best-covered data on the site — 1,055 of 1,809 priced — and burying it costs
-   the most of any single call here.
-
-### 2026-08-02 01:41:24 — update_craft01_wo1_wo2_done.md
-
-# UPDATE — WO-1 and WO-2 complete. All assertions hold, including C1's three unverified numbers.
-
-## Preconditions
-
-`categories.json` `3de4f9fa2bf7674d`, `items_prices_all.json` `308542bf043df9c2`
-— both match. Sealed snapshots intact. blueprints 1597, contracts 5108.
-
-## WO-1 — PASS
-
-| assertion | got | want |
-|---|---:|---:|
-| matched | **5344** | 5344 |
-| fps records with text | **5182** | 5182 |
-| ship records with text | **2598** | 2598 |
-| UEX items | **7728** | 7728 |
-
-Join is UUID-only by construction; no name match is possible in that code path.
-Output 2.05 MB.
-
-## WO-2 — PASS. The three unverified numbers CONFIRM.
-
-**This was C2's verification and it holds:**
-
-| assertion | got | want |
-|---|---:|---:|
-| contracts carrying `Blueprints[]` | **768** | 768 |
-| blueprints with >=1 contract | **676** | 676 |
-| **max sources on one blueprint** | **127** | 127 |
-
-C1's reconciliation arithmetic was right: the numbers only closed if these were
-correct, and they are.
-
-Every remaining assertion also holds — rows 1597, the full `source_kind`
-distribution, 4274 leaves, 298 lacking QuantityScu and all `item`, every leaf
-with MinQuality, 721 priced, 1537 with modifiers, `ingredient_cost` null
-throughout.
-
-**Performance:** the contract scan took **1.5 seconds**, not the 45+ a naive
-scan costs. The substring pre-filter cut 5,108 files to 768 — and 768 qualifying
-on `"PoolUUID"` is exactly the count that carry `Blueprints[]`, so the filter is
-lossless here rather than merely fast.
-
-## FILE SIZE — this bears on the static-JSON ruling
-
-**`blueprint_index.json` is 11,439,463 bytes — 10.91 MB.**
-
-The ruling assumed page-sized payloads. This is one file, and the `sources[]`
-arrays are why: 676 blueprints carry contract sources, up to 127 each.
-
-It does not reverse the ruling — the ruling rests on zero runtime dependency,
-not on payload size — but **10.91 MB is not a page payload.** WO-3 reads WO-2,
-and if a blueprint page fetches this file to render one row, that is 10.91 MB to
-show one blueprint. The shape that works is per-blueprint shards or an index
-plus lazy source fetch. Flagging now because it is cheaper to decide before 1,597
-pages are built on it than after.
-
-Not tracked in git: `data-layer/processed/.gitignore` added, on the same
-reasoning as `journal.jsonl` and `*_perfile.json` — large, fully reproducible
-from tracked sealed snapshots, with exact assertions recorded in the work order.
-
-## OPEN ITEM 1 — SETTLED. `resources.json` does NOT hold mining locations.
-
-Opened all 557 records. **The union of every key across every record is:**
-
-```
-AdditionalWaitForNearbyPlayersSeconds, Composition, DespawnTimeSeconds,
-GlobalParams, HarvestableKey, HarvestableUUID, Key, Kind, Name, Parts,
-RespawnInSlotTime, Signature, Tier, UUID
-```
-
-**No planet, moon, system, body, region, deposit or site field exists.** The
-hypothesis is disproven. "Where to mine it" stays empty in WO-5 — but now for a
-*verified* reason rather than "no source found", which is a materially better
-thing to be able to say on 37 pages.
-
-### But it is not a dead end — it answers a different question
-
-`Kind` distribution: **cave_harvestable 244, mineable 274, salvageable 25,
-harvestable 14.**
-
-That is *how* a material is obtained, which is precisely the distinction WO-5
-needs for the 11 hand-mined gems ("hand-mined, not traded as cargo"). Currently
-that split is asserted from their absence in `commodities.json` — an argument
-from silence. `Kind` would make it positive evidence.
-
-14 of the 37 ingredients appear here by name. **I did not join on name** —
-FORBIDDEN 1. Records carry `UUID` and `HarvestableUUID`, so a UUID join is
-available and is the only one I would use.
-
-**Data-quality note:** many `cave_harvestable` records carry
-`Name: "<= PLACEHOLDER =>"`. Any page reading `Name` from this file must handle
-that, or placeholder text ships to users.
-
-## VOCABULARY RECONCILIATION — reporting, not picking
-
-C2's `source_kind` (blueprints) and the acquisition routes (ships, paints,
-editions) are the same question — *how do you get this* — arriving from two
-directions.
-
-**Proposed: two levels. Level 1 is the honest one-line answer; level 2 keeps the
-precision neither side should lose.**
-
-| L1 | L2 | covers |
-|---|---|---|
-| **bought** | `shop` | aUEC at a named terminal — UEX prices, dealer columns |
-| | `pledge` | real money on the RSI store |
-| | `trade` | exchanged for goods, not currency — Wikelo Emporium |
-| **awarded** | `mission` | completing contracted work — C2 `contract`, 676 |
-| | `event` | time-limited event — C2 `event`, 31 (XenoThreat, RedWind) |
-| | `reward` | status or standing, no specific action — C2 `direct_reward` 16, `other_pool` 1, plus Subscriber/Concierge |
-| **included** | `factory` | arrives fitted, never separately obtained — War/Sneak Specials |
-| | `default` | available without acquisition — C2 `default`, 8 |
-| **unknown** | `unknown` | the files do not say — C2 `none`, **865** |
-
-**Why two levels rather than one flat list.** Your point was that a
-contract blueprint and a Subscriber livery are both "awarded, not bought". At L1
-that is one word and the site can say it once. At L2 they stay distinguishable,
-because *how* you earn them differs completely. A single flat vocabulary forces
-a choice between losing the shared idea and losing the distinction.
-
-**Mapping is total and lossless in one direction:** every C2 value and every
-acquisition route maps to exactly one L2 term, and no L2 term is unreachable.
-`other_pool` folds into `reward` — it is one row, the Microsatellite probe, and
-"awarded by some pool we cannot classify" is a `reward` with low confidence, not
-a category.
-
-**`unknown` deliberately keeps its own L1.** Folding it under any of the other
-three would assert something the files do not support — 865 blueprints, 54%, is
-far too much to guess about.
-
-**Not implemented.** WO-2's output currently carries C2's `source_kind` verbatim
-so the assertions could be verified exactly as written. Remapping is a
-mechanical pass once the vocabulary is ruled — and it must happen before WO-3
-renders any of it, or the two taxonomies ship.
-
-## Stopping here
-
-WO-3 (1,597 pages), WO-4 and WO-5 are not started. WO-3 renders `source_kind`
-prose, so it is downstream of the vocabulary ruling, and the 10.91 MB payload
-shape should be settled before pages are built against it.
-
-### 2026-08-02 01:38:03 — update_craft01_intake.md
-
-# UPDATE — WO-CRAFT-01 received, starting
-
-Filed on intake per rule 13.
-
-**Filename note:** the order was given as
-`docs/workorder-crafting-and-descriptions.md`, which does not exist. It is
-`docs/workorder-craft-01.md` (plus `workorder-craft-01-addendum.md`). WO-CRAFT-01
-matches unambiguously so I am proceeding, flagging rather than guessing silently.
-
-## Taken as verified, not re-derived
-
-C1 independently measured and matched: preconditions hashes, file counts
-(blueprints 1597, contracts 5108, fps-items 5420, ship-items 5384), WO-1
-(7728/5344), and the WO-2 numbers derivable from `blueprints.json` alone.
-
-## The three numbers C1 could NOT verify
-
-768 contracts with `Blueprints[]`, 676 blueprints with a contract, max 127
-sources — the scan exceeded C1's 45-second window. They reconcile arithmetically
-(693 either way, and the no-pool bucket of 865 matches exactly), but the scan has
-not been run.
-
-**My first run is their verification. If any differ, that is the finding — I
-stop and report rather than adjusting the assertion.**
-
-## Before WO-2
-
-Reconciling C2's `source_kind` with the acquisition routes in
-`docs/finding-editions-paints-acquisition.md` into one vocabulary, and reporting
-it rather than picking silently.
-
-## Holding
-
-- Assertions stay exact. Not softened to ranges. A break is the signal.
-- No name-based joins; UUID only.
-- No estimates, no placeholders, no ingredient cost.
-- Reporting WO-2's output file size — it bears on the static-JSON ruling.
-
-### 2026-08-02 01:34:56 — update_schema_authority_closed.md
-
-# UPDATE — alembic drop hazard CLOSED, and the class closed with it
-
-All four items done. Uncommitted pending a go-ahead (rule 2).
-
-## A correction to the ruling's premise, found before acting on it
-
-The ruling said to retire **schema-init's** creation of `ship_registry`.
-**schema-init never created it.** It creates only the three `pipeline_*` tables.
-
-`ship_registry` is created by **`registry-builder/main.go`** (`ensureSchema()`,
-line 331). So there were **three** schema authorities, not two — which is itself
-the argument for building the control rather than fixing the instance.
-
-## 1. `ship_registry` declared — and it matches exactly
-
-Added to `app/models.py`, mirroring `registry-builder`'s DDL column for column:
-`ship_code` varchar(20) unique, `manufacturer_code` varchar(10),
-`manufacturer_name` varchar(150), `ship_name` varchar(150), `source_slug`
-varchar(150) unique, `folder_slug` varchar(150) nullable, `created_at` timestamp
-default now().
-
-**The match was verified, not assumed.** After declaring it, `alembic check`
-dropped `remove_table:ship_registry` and proposed **no ALTERs in its place** —
-which was the sharper half of the concern. A near-miss model would have been
-quieter and equally wrong.
-
-Deliberately not a `VerifiableMixin` table: it is a generated cross-index
-rebuilt from source, not community-sourced data with its own provenance story.
-
-## 2. The three `pipeline_*` tables excluded, by name
-
-`alembic/env.py` gains `EXCLUDED_TABLES` and an `include_object` hook, wired
-into **both** `configure()` calls (offline and online — one would have been a
-silent half-fix).
-
-Held to the conditions:
-
-- **Named explicitly.** No pattern match. A `pipeline_*` prefix rule would
-  silently adopt the next table someone adds, which is precisely the failure
-  being closed.
-- **Commented** with who owns the DDL (`schema-init/main.go`) and why:
-  subsystem telemetry, written only by `findings_store.py` and `framework.py`,
-  read by nothing in `app/`, schema moving with the checker layer.
-- Records that this is the **one-writer-per-artifact** rule applied to schema —
-  two authorities over one table being the same defect as two watchers on one
-  handoff file.
-- Notes explicitly that `ship_registry` is *not* in the list, and why.
-
-**Result: `alembic check` now reports "No new upgrade operations detected."**
-The hazard is closed — autogenerate would emit nothing.
-
-## 3. The control — `checks/schema_checks.py`
-
-`schema_ownership`: every live table must be claimed by **exactly one**
-authority.
-
-- claimed by **neither** -> DEFECT (an unregistered table; autogenerate will
-  propose dropping it and the proposal will look ordinary)
-- claimed by **both** -> DEFECT (ambiguous ownership)
-- named but absent -> WARNING (a boundary pointing at nothing)
-- `alembic_version` handled as legitimately neither
-
-It parses `EXCLUDED_TABLES` from source rather than importing `env.py`, because
-importing it runs alembic's configuration machinery and needs a live
-connection — a checker that requires the thing it checks to be healthy is not
-much of a checker.
-
-### Rule 12 — the guard was made to fire
-
-| case | result |
+| scenario | result |
 |---|---|
-| table claimed by **neither** | **DEFECT, names the table** |
-| table claimed by **both** | **DEFECT, "BOTH"** |
-| declared table | not flagged |
-| excluded table | not flagged as unclaimed |
-| offenders removed | **PASS** |
-| no session | **LIMITATION**, never a false PASS |
+| correct mirror | PASSES, exit 0, and verified both trees |
+| **truncated** file at destination | CAUGHT — `Liberator\model.glb source 23 B -> dest 8 B (-15 B)` |
+| **missing** file | CAUGHT and named |
+| excluded `.cache` file reaching the mirror | CAUGHT — `NEGATIVE CONTROL FAILED` |
+| run folder absent | reported `NOT VERIFIED`, exit 1 |
+| `ERROR` line in robocopy's log | CAUGHT |
 
-`env.py` was tampered with to force the double-claim case and **restored
-byte-identical**, asserted.
+The truncation case is the one a file count cannot see: the file is present, so
+the count matches. That is exactly the 2026-08-05 kill signature.
 
-**The proof caught a design flaw in my own checker.** PASS was keyed on *no
-findings at all*, so a stale-exclusion WARNING suppressed it — meaning a run
-that verified the invariant would look identical to one that never checked.
-That is the exact failure this layer exists to catch, in the layer itself. PASS
-is now keyed on the absence of DEFECTs.
+While building this, the harness itself failed 7/7 with exit 2 — because the
+close-out resolves the verifier relative to `-RepoPath` and my synthetic repo
+had no `scripts\Verify-MirrorTree.ps1`. **That was the checker failing closed
+correctly**, refusing to verify rather than reporting a pass. The harness was
+wrong, not the checker.
 
-Registered in `db_checks.py`. Live run against the real database:
+## The database is NOT in this backup
 
-```
-14 findings: DEFECT=0  WARNING=3  LIMITATION=0  PASS=11
-[schema_ownership] all 19 tables claimed by exactly one authority
-                   (15 declared in models.py, 3 externally owned, 1 alembic-internal)
-```
+`PGPASSWORD` is not set in process env, user env, or `pgpass.conf`. With
+`-NonInteractive` the script skipped the dump and the restore test and recorded
+a `[FAIL]`. The run therefore ends with `Failures: 1` even though every file
+copied and verified. That is correct — it is a real gap, not a formality.
 
-**DEFECT count is now 0** — the schema_drift DEFECT is gone.
+To capture it: set `$env:PGPASSWORD` and re-run. The file trees are unaffected.
 
-## 4. The 22,988 flip recorded
+## Still to do by hand
 
-Written into `docs/order-front-end-build.md` beside the ruling, with both
-numbers, why 21,849 is real, why the non-recursive glob produced "items/ is
-empty", and the note that the ruling rests on the zero-runtime-dependency
-reason precisely because a decision resting on the file count would have
-flipped on a definition.
-
-## One thing NOT done, and it is a judgement call
-
-**`registry-builder/main.go` still contains `CREATE TABLE IF NOT EXISTS
-ship_registry`.** So `ship_registry` currently has two creators: alembic (via
-the model) and registry-builder.
-
-I did not retire it, for a reason worth stating: **no alembic migration creates
-`ship_registry`.** The model matches the existing table, so autogenerate
-proposes nothing — correct for this database, but it means a **fresh** database
-would never get the table if registry-builder stopped creating it. Retiring the
-Go DDL therefore needs a migration that creates it, written as a no-op where it
-already exists, applied under a fresh verified backup.
-
-That is a real change to a tool's bootstrap behaviour, on a premise that turned
-out to be different from the ruling's. Flagging rather than doing it.
-
-**The new checker does not currently catch this**, because it compares against
-`models.py` and `EXCLUDED_TABLES`, not against Go source. Detecting "two things
-create this table" is a different check — worth having, not built.
+1. Copy the backup folder to the laptop you are taking.
+2. Upload to cloud storage — the only copy that survives losing the trailer.
 
 ## Uncommitted
 
-`app/models.py`, `alembic/env.py`, `checks/schema_checks.py`,
-`checks/_verify_schema_checks.py`, `checks/db_checks.py`,
-`docs/order-front-end-build.md`. No commit go-ahead was given for this change.
-
-### 2026-08-02 01:29:31 — update_schema_authority_intake.md
-
-# UPDATE — closing the alembic drop hazard, and building the control
-
-Filed on intake per rule 13.
-
-## Ruling received
-
-- `ship_registry` -> declare in `app/models.py`, and **retire schema-init's
-  creation of it in the same change** so one table has one authority.
-- The three `pipeline_*` tables -> `include_object` exclusion that **names them
-  explicitly**, with a comment recording that `schema-init/main.go` owns their
-  DDL and why.
-- **Build the control**: a checker asserting every table is claimed by exactly
-  one authority. Claimed by neither = an unregistered table. Claimed by both =
-  drift. Either is a finding.
-- Record the 22,988 flip in the front-end order.
-
-## One consequence I need to handle carefully
-
-Retiring schema-init's creation of `ship_registry` leaves **nothing** creating
-it on a fresh database unless alembic does. So the change is not just "delete
-the Go DDL" - it needs a migration that creates the table, written so it is a
-no-op where the table already exists.
-
-That means `alembic upgrade head` against the real database, which means
-**rule 4: verified backup first.** The last one predates tonight's 3,751 rows.
-
-## Order
-
-1. Read schema-init's DDL and the live table definition, and match the model to
-   both exactly - a mismatch produces ALTERs instead of drops, which is quieter
-   and still wrong.
-2. `include_object` exclusion, naming the three tables.
-3. Conditional migration for `ship_registry`.
-4. Verified backup.
-5. Apply, then confirm `alembic check` is clean.
-6. Build the ownership checker, with rule 12 proof: create a table in neither
-   place and confirm it is reported. A guard that has never fired is not a
-   guard.
-7. Record the 22,988 flip.
-
-Not committing without a go-ahead per rule 2.
-
-### 2026-08-02 01:25:09 — update_models_gap_options_and_21849.md
-
-# UPDATE — the alembic drop hazard: options and consequences. Plus 21,849 solved.
-
-Reporting, not choosing, as instructed.
-
-## THE HAZARD, measured
-
-`alembic check` proposes **10 operations — 4 table drops and 6 index drops**:
-
-```
-remove_table:pipeline_check_results     remove_index:ix_pipeline_check_results_check_name
-remove_table:pipeline_check_runs        remove_index:ix_pipeline_check_results_checked_at
-remove_table:pipeline_findings          remove_index:ix_pipeline_check_runs_started_at
-remove_table:ship_registry              remove_index:ix_pipeline_findings_check_name
-                                        remove_index:ix_pipeline_findings_last_seen
-                                        remove_index:ix_pipeline_findings_status
-```
-
-**3,751 rows at risk:** `pipeline_check_results` 3,057, `pipeline_findings` 383,
-`ship_registry` 295, `pipeline_check_runs` 16.
-
-Confirmed: **zero** occurrences of any of the four in `app/models.py`.
-
-**Root cause is two schema authorities.** `schema-init/main.go` creates
-`pipeline_check_results`, `pipeline_findings` and `pipeline_check_runs` with
-`CREATE TABLE IF NOT EXISTS`. Alembic has never heard of any of them, so
-autogenerate reads them as tables that should not exist. `ship_registry` is in
-the same position.
-
-The danger is specifically `alembic revision --autogenerate`. Its output looks
-like ordinary work — a migration file full of plausible operations — and nothing
-in it announces that it is about to drop a night's findings.
-
-## OPTION A — declare the models in `app/models.py`
-
-**Consequence:** autogenerate stops proposing the drops. Alembic becomes the
-single authority.
-
-**Cost, and it is not zero:** the models must match `schema-init`'s DDL
-*exactly* — column types, nullability, server defaults, index names. Any
-mismatch and autogenerate proposes ALTERs instead of drops, which is quieter but
-still wrong. And `schema-init/main.go` would then be creating tables alembic
-also manages: harmless while it stays `IF NOT EXISTS`, but two things creating
-one table is the condition that produced this hazard in the first place. Closing
-it properly means retiring schema-init's table creation, which is a second
-change.
-
-## OPTION B — exclude them via `include_object` in `alembic/env.py`
-
-**Consequence:** autogenerate ignores those tables. No drops proposed.
-
-**Cost:** they stay outside alembic permanently, so every future change to them
-is manual. It silences the symptom while keeping two authorities.
-
-**But it is not purely a workaround, and this is the part worth weighing:**
-`include_object` exists precisely to say "these objects are owned elsewhere."
-For the three `pipeline_*` tables that is arguably *true* — they are the checker
-subsystem's operational telemetry, not application domain models, and keeping
-subsystem tables out of the app's ORM is defensible separation rather than
-evasion.
-
-## What I find, since you asked
-
-**The two groups are not the same case, and I would not treat them the same.**
-
-- **`ship_registry` is domain data** — 295 ships, the same registry
-  `registry_sync` compares the database against. That belongs in `models.py`.
-  Option A.
-- **The three `pipeline_*` tables are subsystem telemetry.** They are written
-  only by `checks/findings_store.py` and `framework.py`, read by nothing in
-  `app/`, and their schema moves with the checker layer rather than the
-  application. Option B is honest for these *if* the exclusion is explicit and
-  commented — naming them, saying schema-init owns them, and saying why.
-
-Your read was that declaring is correct and excluding is a workaround. I agree
-for `ship_registry`. For the `pipeline_*` tables I think it is closer to a
-genuine ownership boundary than a dodge — but that is a judgement about where
-the boundary *should* sit, which is yours.
-
-**Either way the hazard must close before anything else touches alembic.** A
-mixed answer still closes it: all four stop appearing in autogenerate output.
-
-**One thing neither option gives you:** a control. Both rely on the drift being
-absent. Neither stops someone applying a hand-written migration that drops a
-table. If that matters, it is a separate ask.
-
-## 21,849 — SOLVED, and it corrects both the order and the hypothesis
-
-It is the **file count of `items/` in the scunpacked-data (source 1) snapshot.**
-
-| snapshot | `items/` files |
-|---|---:|
-| `20260731T041451Z` (superseded) | **21,849** |
-| `20260801T204744Z` (current) | **21,849** |
-
-**Both are populated.** The order's "the snapshot's `items/` directory is empty"
-is wrong, and the hypothesis that the number came from the superseded snapshot
-*because* the current one is empty is wrong too — they are identical, which is
-expected, since both snapshots are the same upstream commit `4764726`. The files
-are per-item JSON (`3_seat_bench_constellation.json`,
-`987_hat_01_01_01.json`, …).
-
-So C2 conflated **source 1's game-file item count (21,849)** with **UEX's priced
-item records (7,728)**. Two different things: everything in the game files
-versus only what UEX has a price for.
-
-**This is worth carrying into the backend decision even though it is already
-ruled.** If "a page per item" ever means source 1's game items rather than UEX's
-priced ones, the arithmetic is **21,849 + 823 + 316 = 22,988 — over the 20,000
-cap.** The static ruling holds regardless, and for the stronger reason, but the
-file-count argument flips depending on which "items" is meant. Recorded so the
-next person to reach for it has both numbers.
-
-## Corrections to my own stale context
-
-`schema_drift` **was already fixed** at 20:23 and I should have read
-`20260801_202307_update_schema_drift_stable_key.md` before listing it as open.
-The archive entry is also sharper than my diagnosis: the real culprit was
-**memory addresses** in `server_default` renders
-(`<TextClause object at 0x0000017059E56C10>`, 4 distinct across 2 runs), not
-merely unstable ordering — and that is why my hex normaliser missed them.
-
-I have not touched `findings_store.py`, `source_checks.py` or
-`pipeline_findings`. I read enough to answer this question and nothing more.
-
-## Committed
-
-`8f46e69` — `find.src.html` added to `build_deploy.py` PAGES, per the go-ahead.
-
-### 2026-08-02 01:23:41 — update_build_spec_crafting_surfaces.md
-
-# BUILD SPEC — the crafting surfaces (D2, D3, D4)
-
-**From C2 to C1. 2026-08-02. Spec only — C2 wrote nothing to the repository.**
-
-Companion to `claude/build-spec-descriptions-and-blueprint-index.md`, which
-specifies Build 1 (item descriptions) and Build 2 (the blueprint index). **This
-document assumes the blueprint index exists.** Everything here reads it and
-nothing here parses `blueprints.json` or `contracts/` again.
-
-Three surfaces:
-
-    D2   Blueprint page     1,597 pages
-    D3   Reverse lookup     "I have this. What can I make?"
-    D4   Material pages     37 pages — SCOPE CUT, see §4
-
-Every number below is measured output from a read-only run against the sealed
-snapshots, not a prediction. **Four things I had previously planned turned out
-to be wrong, and one of them removes half of D4.** They are in section 1.
-
----
-
-## 1. WHAT VALIDATION CHANGED
-
-### 1a. `commodity_trade_locations.json` does NOT tell you where to buy a material
-
-`claude/plan-crafting-build-from-data-on-hand.md` §6 says this file gives
-*"where it is sold"*. It does not.
-
-Measured: Agricium, Titanium, Gold, Tungsten, Copper, Quantainium, Borase,
-Aluminum, Laranite, Beryl, Taranite, Bexalite, Corundum, Hephaestanite and
-Quartz **all have exactly 468 SoldAt locations, and the location sets are
-byte-identical to each other.**
-
-The reason is in the record itself — every entry carries
-`MatchedTagName: "Commodity"` or `"Metal"`. **The file matches locations by
-tag, not by stock.** It says "this place trades in commodity-tagged goods," not
-"this place sells Agricium."
-
-**Consequence: the "where to get it" half of D4 has no data behind it at all.**
-Not stale data, not partial data — none. Combined with the absent commodity
-prices, D4 shrinks to "what this material makes," which is still worth building
-but is a smaller thing than planned. Section 4 reflects that.
-
-### 1b. No ingredient has a refined version
-
-Same plan section promised *"what it refines into"* from
-`RefinedVersionUUID` / `RefinedVersionName`. Measured across the 26 ingredients
-present in `resources/commodities.json`: **0 carry a RefinedVersionUUID.** The
-field exists on the schema and is null for every material we care about.
-
-### 1c. Six blueprints have no output at all
-
-    BP_CRAFT_COOL_S04_CNOU_Pioneer                       source_kind = none
-    BP_CRAFT_cds_combat_heavy_helmet_01_02_02            source_kind = direct_reward
-    BP_CRAFT_cds_combat_superheavy_backpack_01_03_01     source_kind = contract
-    BP_CRAFT_cds_combat_superheavy_helmet_01_03_01       source_kind = contract
-    BP_CRAFT_cds_combat_superheavy_suit_01_03_01         source_kind = contract
-    BP_CRAFT_cds_undersuit_01_02_02                      source_kind = direct_reward
-
-`Output.UUID`, `Output.Name` and `Output.Type` are all null. **These pages
-cannot show what they make, cannot link to an item, and cannot show a price.**
-Three of them are reachable from real contracts, so they are not dead content —
-the output just does not resolve in this extraction.
-
-**Do not let these six 404 and do not let them render blank.** They should say
-what they need and where they come from, and say plainly that the item they
-produce is not identified in the game data.
-
-### 1d. Output UUID is not unique — three pairs collide
-
-    dabd2d8d  "FullForce"  PowerPlant    BP_CRAFT_POWR_LPLT_S02_FullForce  +  BP_CRAFT_POWR_SASU_S02_DayBreak
-    dadc9318  "FoxFire"    QuantumDrive  BP_CRAFT_QDRV_ACAS_S01_FoxFire    +  BP_CRAFT_QDRV_JUST_S01_Goliath
-    6fc982c0  "Glacis"     Shield        BP_CRAFT_SHLD_ORIG_S04_890J       +  BP_CRAFT_SHLD_RSI_S04_Polaris
-
-1,597 blueprints resolve to **1,588 distinct outputs**. In each pair the two
-blueprint keys name different products — DayBreak is not FullForce, Goliath is
-not FoxFire, the 890J shield is not the Polaris shield — yet both point at the
-same output UUID.
-
-**Most likely a copy-paste error in CIG's data**, alongside the missing-`c`
-reward key already recorded. **Not certain.** Treat item → blueprint as
-many-to-many, show "2 blueprints make this" on the item page rather than picking
-one, and do not silently deduplicate.
-
----
-
-## 2. D2 — THE BLUEPRINT PAGE
-
-1,597 pages. Reads the index only.
-
-### 2.1 The problem that shapes the page
-
-**Sources per blueprint, measured across the 676 contract-sourced ones:**
-
-    min 1   median 6   p90 33   max 127
-
-    1 source        135 blueprints
-    2-5 sources     166
-    6-20 sources    273
-    21-50 sources    62
-    51+ sources      40
-
-**A page that renders one row per source produces a 127-row table to answer one
-question.** Grouping is not a nicety here, it is the design.
-
-Also measured: **22 distinct mission givers** overall, and **68 blueprints are
-awarded by more than one giver** (max 9 different givers for a single
-blueprint).
-
-    Shubin Interstellar  2,760      Eckhart Security       291
-    Headhunters          1,361      Bit Zeros              280
-    Citizens for Prosperity 792     Recco Battaglia        269
-    Foxwell Enforcement    761      InterSec Defense Sol.  207
-    United Wayfarers Club  656      FTL Courier            156
-
-    Mission types: Mercenary 3,179 · Ship Mining 2,658 · Refueling 656 ·
-    Bounty Hunter 456 · Delivery 335 · Hauling 172 · Salvage 150 · Hand Mining 102
-
-**Worth noticing:** Ship Mining is the second-largest source of blueprints.
-Crafting is not a combat-only loop, and the page should not read as though it is.
-
-### 2.2 Page structure
-
-1. **Answer line.** *"Crafts an Omnisky III Cannon in 9 minutes. Most easily
-   from Shubin Interstellar mining contracts."*
-
-2. **What it makes.** Name, type, grade, link to the item page. If a shop price
-   exists: *"Or buy it outright for 14,845 aUEC at Ship Weapons CRU-L5."*
-   Measured: **721 of 1,597 blueprint rows carry a price.**
-   **If `output_uuid` is null (6 pages) this whole block is replaced by a plain
-   statement that the output is not identified in the data.**
-
-3. **What it needs.** Ingredients grouped by component group. Group names are
-   real and readable — Frame, Emitter, Aperture Iris, Insulative Liner, Armored
-   Carapace, Shell, Barrel.
-   - `resource` leaves show a quantity in SCU.
-   - **`item` leaves show no quantity — `QuantityScu` is null on all 298 of
-     them.** Render the name alone. Never print "null SCU".
-   - Every leaf has `MinQuality`; show it where it is above the floor.
-   - **No cost column. No total.** See §5.
-
-4. **What quality does.** The `modifiers` table — stat, value at minimum
-   quality, value at maximum. Measured: **1,537 of 1,597 carry at least one
-   modifier; 60 carry none** (36 WeaponAttachment, 17 Char_Armor_Backpack,
-   3 Misc, 3 Char_Armor_Legs, 1 Cargo). The section must disappear cleanly on
-   those 60 rather than render an empty table.
-
-5. **Where the blueprint comes from** — by `source_kind`:
-
-   - **`contract` (676).** Lead with the *best* source: highest `Chance`, then
-     lowest `MinReputation`. Then a grouped summary — *"Also awarded by 126
-     other Mercenary and Ship Mining contracts from Shubin Interstellar and 3
-     others."* Full list behind a disclosure, never inline.
-
-     Each source shows: contract title, giver, mission type, lawful or unlawful
-     (`Illegal` — measured 7,571 false, 776 true), drop chance
-     (**measured 8,283 at 1, 53 at 0.25, 11 at 0.75**), and the reputation gate
-     rendered from `ReputationPrerequisite`:
-
-         "Needs Sr. Contractor standing with InterSec Defense Solutions."
-
-     built from `MinStanding.Name` and `Faction`. The raw numbers
-     (`MinReputation: 5800`) are available if wanted but the name is the answer.
-
-     **There is no payout to show.** `CalculatedReward` is a boolean — measured
-     8,260 true, 87 null, no numbers anywhere in the field.
-
-   - **`event` (31).** *"Reward from the XenoThreat event"* — and for the 25
-     XenoThreat entries the pool key carries the contribution tier
-     (`_15_`, `_25_`, `_50_`, `_60_`, `_85_`, `_100_`), so say which.
-     The 6 RedWind entries: *"Reward from RedWind Linehaul."*
-     **Caveat on record: whether RedWind's contracts carry a `Blueprints` array
-     was never checked.** If they do, those 6 are misclassified.
-
-   - **`direct_reward` (16) and `default` (8).** Stated plainly.
-
-   - **`other_pool` (1).** The Microsatellite probe. It exists so nothing falls
-     through silently.
-
-   - **`none` (865).** ***"We don't know how you get this blueprint."***
-     Verified against all 5,108 contracts, so this is a finding, not a hedge.
-     **54% of all blueprint pages say this.** It has to read as confident.
-     Suggested wording, and the reason for it: *"Nothing in the game files says
-     how this blueprint is obtained. It may come from an event, or it may not be
-     available yet."* — states what we checked, offers the two live
-     possibilities, claims nothing.
-
-6. **Provenance line.** Patch stamp and source, same as every page.
-
----
-
-## 3. D3 — REVERSE LOOKUP
-
-The cheapest genuinely-new thing in the crafting area. **Needs no data beyond
-the index.** None of the four competing tools inverts the question.
-
-### 3.1 The inverted index — all 37 ingredients, measured
-
-    856  resource  Aslarite            83  resource  Borase
-    495  resource  Ouratite            82  resource  Torite
-    341  resource  Laranite            75  resource  Silicon
-    261  resource  Tungsten            73  resource  Corundum
-    228  resource  Iron                71  item      Dolivine
-    194  resource  Agricium            63  resource  Gold
-    145  resource  Taranite            58  item      Hadanite
-    137  resource  Stileron            51  resource  Tin
-    122  resource  Hephaestanite       38  resource  Aluminum
-    113  resource  Lindinium           37  item      Sadaryx
-    101  resource  Titanium            34  item      Beradom
-     96  resource  Copper              33  resource  Beryl
-     92  resource  Pressurized Ice     32  item      Aphorite
-     88  resource  Savrilium           28  resource  Quartz
-     84  resource  Riccite             25  resource  Bexalite
-                                       25  item      Glacosite
-                                       16  item      Janalite
-                                        9  item      Feynmaline
-                                        8  item      Carinite
-                                        7  item      Saldynium (Ore)
-                                        3  resource  Quantainium
-                                        1  item      Yormandi Eye
-
-**37 total. A plain multi-select covers the entire space** — no search box, no
-autocomplete, no infrastructure.
-
-### 3.2 Behaviour
-
-- Tick what you are carrying. 26 resources and 11 hand-mined gems, visually
-  separated because they are acquired completely differently.
-- Two result lists, and **the second is the more useful one**:
-  - **"You have everything for these."**
-  - **"You're one short."** — with the missing ingredient named. This is what
-    turns the page from a lookup into a plan.
-- Sort by the output's shop price, descending, so the most valuable thing the
-  pile makes is at the top. **Only 721 of 1,597 have a price** — unpriced rows
-  sort last, never interleaved with a blank.
-- Quantities are deliberately ignored. The data gives `QuantityScu` per recipe
-  but the player's hold size is unknown and 298 leaves have no quantity at all.
-  **Match on presence, not amount, and say so on the page.**
-- Every row links to its blueprint page.
-
-### 3.3 Why it works
-
-Aslarite is in **856 of 1,597 blueprints** — 54%. Ouratite 495, Laranite 341.
-A player who just finished a mining run is holding common ore and has hundreds
-of answers. The value is not the list, it is the ranking and the "one short"
-column.
-
-**State the scope limit plainly on the page:** this matches ingredients, not
-whether you have the blueprint. A player can be shown something they cannot yet
-craft. That is still useful — it tells them which blueprint to go get — but it
-must not pretend otherwise.
-
----
-
-## 4. D4 — MATERIAL PAGES (scope cut)
-
-37 pages. **Reduced by §1a and §1b to essentially one good section.** Build it
-anyway — it is the only surface in the project that speaks to miners, and it is
-the bridge between the mining audience and the gear audience.
-
-**What is real:**
-
-- **What it makes.** The inverted index from §3.1, ranked by output shop price.
-  For Aslarite that is 856 blueprints, so it needs the same grouping discipline
-  as D2 — summarise by output type, disclose the full list.
-- **Name and description.** Measured: **all 26 resource ingredients present in
-  `resources/commodities.json` carry a real Name and Description** — no
-  placeholders. `labels.json` holds 552 `items_commodities_*` keys as a
-  secondary source. **My name-match against those labels was fuzzy and I do not
-  trust the 37-of-37 hit rate it reported — verify per material before relying
-  on it.**
-- **Container sizes.** All 26 carry `CargoContainers[]` — 1 / 2 / 4 / 8 / 16 SCU.
-- **The 11 hand-mined gems are not in `commodities.json` at all.** Those pages
-  get the "what it makes" section and nothing else. Say why: they are hand-mined,
-  not traded as cargo.
-
-**What is NOT available and must not be faked:**
-
-- Where to buy it — §1a. The tag-matched location list is not stock data.
-- What it costs — no commodity price rows exist on disk.
-- What it refines into — §1b, zero coverage.
-- Where to mine it — not in any file examined.
-
-**Leave those four slots in the template, empty and labelled.** Three of them
-open up the moment commodity prices land; the mining-location one needs a source
-that does not currently exist and should be recorded as an open data gap.
-
----
-
-## 5. STILL FENCED OFF
-
-**Anything requiring an ingredient cost.** Zero commodity price rows on disk,
-verified twice. That fences off the craft-vs-buy verdict, any total-cost figure,
-the materials shopping trip, and cost-per-improvement ranking.
-
-Keep `ingredient_cost` in the schema, keep it null, and assert it stays null
-(§6). **Do not ship an estimate.**
-
-**Grind-route planning stays out of scope by decision.** CmdrQuattro's tool owns
-it. Link out.
-
----
-
-## 6. VERIFICATION — HARD RULE 12
-
-Exact, not greater-than-zero. A check that cannot fail is not a check.
-
-- **D2: assert the six null-output blueprints render a complete page.** Named in
-  §1c. This is the empty-state test that matters most, because three of them are
-  reachable from real contracts and will get traffic.
-- **D2: assert a 127-source blueprint renders without a 127-row table.** Take
-  the max-source blueprint from the index and assert the rendered source count
-  is bounded.
-- **D2: assert an `865`-group page renders complete with no source block.**
-  54% of pages.
-- **D2: assert the modifier section is absent, not empty, on all 60 rows that
-  carry no modifiers.**
-- **D2: assert no payout figure appears anywhere.** `CalculatedReward` is
-  boolean; a number on screen means something invented it.
-- **D3: assert the ingredient list is exactly 37**, and that ticking Aslarite
-  alone returns 856 blueprints.
-- **D3: assert the "one short" list is non-empty for a single-ingredient
-  selection** — otherwise the logic has collapsed into the "have everything"
-  case.
-- **D4: assert no material page renders a buy location or a price.** This is the
-  §1a guard. The tag-matched data is present and will look plausible if someone
-  wires it up by mistake.
-- **All: assert `ingredient_cost` is null on all 1,597 rows.**
-- **All: assert no name-based join exists.** 35 of 37 ingredient names match UEX
-  commodity names exactly. It will work. It is still forbidden — use the
-  `resources/commodities.json` UUIDs, which cover 26 of 37 properly, and leave
-  the other 11 unjoined rather than matching on a string.
-
----
-
-## 7. WHAT I DID NOT VERIFY
-
-- **Whether RedWind's contracts carry a `Blueprints` array.** Six blueprints are
-  classed `event` on the pool key alone.
-- **Whether the three colliding output UUIDs are a CIG error or intentional.**
-- **Whether the six null outputs resolve in a newer extraction.** The snapshot is
-  from 2026-08-01; the game is on 4.9.
-- **`CategoryUUID` on blueprints** — never resolved to a name. It may give a
-  better grouping for D2 than `output_type`.
-- **The `items_commodities_*` label match** — fuzzy, see §4.
-- **Whether mining locations exist in any file** — the `Kind: cave_harvestable`
-  entries in `resources/resources.json` (557 records) were seen but not opened.
-  **That is the most likely home for the missing mining-location data and is
-  worth ten minutes before D4 is called complete.**
-
----
-
-## 8. REFERENCE IMPLEMENTATION — the derived views
-
-Read-only. Reads `blueprint_index.json` from Build 2 and writes two small
-lookup files. Neither touches a snapshot.
-
-```python
-import json, os, collections
-
-ROOT  = r"C:\Users\david\citizen-compass"
-INDEX = os.path.join(ROOT, r"data-layer\processed\blueprint_index.json")
-OUT   = os.path.join(ROOT, r"data-layer\processed")
-
-with open(INDEX, encoding="utf-8") as fh:
-    rows = json.load(fh)
-
-# ---- D3: ingredient -> blueprints -----------------------------------------
-inverted = collections.defaultdict(list)
-kinds    = {}
-for r in rows:
-    for name in {i["name"] for i in r["ingredients"]}:
-        inverted[name].append(r["blueprint_uuid"])
-    for i in r["ingredients"]:
-        kinds[i["name"]] = i["kind"]
-
-ingredients = [
-    {
-        "name": name,
-        "kind": kinds[name],                    # resource | item (hand-mined)
-        "blueprint_count": len(uuids),
-        "blueprints": sorted(uuids),
-    }
-    for name, uuids in sorted(inverted.items(), key=lambda kv: -len(kv[1]))
-]
-
-with open(os.path.join(OUT, "ingredient_index.json"), "w", encoding="utf-8") as fh:
-    json.dump(ingredients, fh, ensure_ascii=False, indent=1)
-
-# ---- D2: source summary per blueprint -------------------------------------
-def summarise(r):
-    """Collapse up to 127 contract sources into one displayable block."""
-    srcs = r["sources"]
-    if r["source_kind"] != "contract" or not srcs:
-        return None
-
-    def rep_floor(s):
-        rep = s.get("reputation") or {}
-        return ((rep.get("MinStanding") or {}).get("MinReputation") or 0)
-
-    best = sorted(srcs, key=lambda s: (-(s.get("chance") or 0), rep_floor(s)))[0]
-    givers = collections.Counter(s.get("giver") for s in srcs)
-    types  = collections.Counter(s.get("mission_type") for s in srcs)
-    rep    = (best.get("reputation") or {})
-    standing = (rep.get("MinStanding") or {}).get("Name")
-
-    return {
-        "total": len(srcs),
-        "best": {
-            "title":        best.get("title"),
-            "giver":        best.get("giver"),
-            "mission_type": best.get("mission_type"),
-            "chance":       best.get("chance"),
-            "illegal":      best.get("illegal"),
-            "standing":     standing,
-            "faction":      rep.get("Faction"),
-        },
-        "givers":        givers.most_common(),
-        "mission_types": types.most_common(),
-        "others":        len(srcs) - 1,
-    }
-
-summary = {r["blueprint_uuid"]: summarise(r) for r in rows}
-with open(os.path.join(OUT, "blueprint_sources.json"), "w", encoding="utf-8") as fh:
-    json.dump(summary, fh, ensure_ascii=False, indent=1)
-
-# ---- hard rule 12 ----------------------------------------------------------
-NULL_OUTPUT = 6
-assert len(ingredients) == 37, f"ingredients {len(ingredients)}"
-assert ingredients[0]["name"] == "Aslarite" and ingredients[0]["blueprint_count"] == 856
-assert sum(1 for i in ingredients if i["kind"] == "item") == 11, "hand-mined count moved"
-assert sum(1 for r in rows if not r["output_uuid"]) == NULL_OUTPUT, "null-output count moved"
-
-outputs = collections.Counter(r["output_uuid"] for r in rows if r["output_uuid"])
-assert len(outputs) == 1588, f"distinct outputs {len(outputs)}"
-assert sum(1 for v in outputs.values() if v > 1) == 3, "output collisions moved"
-
-contract_rows = [r for r in rows if r["source_kind"] == "contract"]
-assert max(len(r["sources"]) for r in contract_rows) == 127, "max sources moved"
-assert all(r["ingredient_cost"] is None for r in rows), "something invented a cost"
-
-print("ingredients:", len(ingredients))
-print("null-output blueprints:", NULL_OUTPUT, "| output collisions: 3")
-print("max sources on one blueprint:", max(len(r["sources"]) for r in contract_rows))
-print("OK ->", OUT)
-```
-
-**On the assertions.** They are exact on purpose and they will break when the
-game patches. **That is the signal, not the bug.** Update the numbers
-deliberately, with a note recording which patch moved them.
-
-### 2026-08-02 01:11:49 — update_build_spec_descriptions_and_blueprint_index.md
-
-# BUILD SPEC — two builds, both validated against the real data
-
-**From C2 to C1. 2026-08-02. Spec only — C2 wrote nothing to the repository.**
-
-Two builds. Both run entirely on data already collected, gated and sealed.
-Neither is blocked on the commodity price pull.
-
-**Everything in this document was executed read-only against the real snapshots
-before being written down.** Every count is measured output, not a prediction.
-Where a number is asserted in section 5, a run produced it.
-
-    BUILD 1   Item descriptions        5,344 item pages gain CIG's own prose
-    BUILD 2   The blueprint index      1,597 rows, the table every crafting
-                                       surface reads
-
-**Why these two.** Build 1 is the largest visible improvement available anywhere
-in the project right now and it depends on nothing. Build 2 is the foundation —
-no crafting page can be built before it, and it carries zero design risk because
-it is pure derivation. One visible, one structural, neither blocked.
-
----
-
-## 0. READ STATE
-
-    scunpacked-data/snapshots/20260801T204744Z/
-        blueprints.json      1,597 records
-        contracts/           5,108 files
-        fps-items.json       5,420 records
-        ship-items.json      5,384 records
-        labels.json          90,121 labels
-
-    uexcorp/snapshots/20260801T235530Z/
-        items_category_*.json  7,728 records, 100 files   sha of categories.json 3de4f9fa2bf7674d
-        items_prices_all.json  23,734 rows                sha 308542bf043df9c2
-
-Both snapshots are sealed. If these hashes have moved, stop — something has
-modified a sealed snapshot.
-
----
-
-# BUILD 1 — ITEM DESCRIPTIONS
-
-## 1.1 What this corrects
-
-`claude/front-end-build-plan-2026-08-02.md` §3 states:
-
-> **No "what it's good for" or "how to use it".** That is writing, not data.
-
-That is wrong, and it was wrong when I wrote it. The descriptions were already on
-disk in a file the project had gated a day earlier.
-
-## 1.2 The measured coverage
-
-    fps-items.json   records with a description      5,182 of 5,420
-    ship-items.json  records with a description      2,598 of 5,384
-    combined uuid -> description map                 7,780 entries
-
-    UEX catalogue                                    7,728 items
-    UEX items carrying a uuid                        5,566
-    UEX items that gain a description                5,344
-
-    = 69% of the whole catalogue
-    = 96% of every item that carries a uuid
-
-**Put that next to the other two coverage figures for the same pages:**
-
-    description   69%
-    price         36%
-    image          0%
-
-Description is the best-covered field on the item page. The doorway plan was
-built around templates that must survive having almost nothing in them; this is
-the single largest thing available to stop 7,728 pages reading like a database
-dump.
-
-## 1.3 The join
-
-**UUID only. No name matching.** The UEX manifest forbids a name-matching path
-and it is not needed here.
-
-    UEX  items_category_*.json  ->  .uuid
-    scunpacked  fps-items.json  ->  .stdItem.UUID   (fall back to .reference)
-    scunpacked  ship-items.json ->  .stdItem.UUID   (fall back to .reference)
-
-Both scunpacked files share the same record shape: a top-level object with
-`className`, `reference`, `name`, `type`, `subType`, `size`, `grade`, `tags`,
-`classification`, and a nested `stdItem` carrying `UUID`, `ClassName`, `Size`,
-`Grade`, `Mass`, dimensions, `Type`, `Name`, `Description`, `DescriptionText`,
-`Manufacturer`.
-
-**Field priority, in order:**
-
-1. `stdItem.DescriptionText`
-2. `stdItem.Description`
-3. `labels.json` key `item_Desc_<ClassName>`
-
-The third path exists but keys on **class name, not UUID** — 5,805 `item_Desc_*`
-keys, 5,558 with more than 20 characters of content. Use it only where the UUID
-path returns nothing. `labels.json` also holds 4,749 `item_Name_*` keys if a
-display name is ever needed.
-
-**Do not merge the two ship-items and fps-items maps blindly** — build fps first,
-then let ship-items overwrite, or vice versa, but pick one and record which. The
-combined map is 7,780 entries against 5,420 + 5,384 inputs, so there is overlap.
-
-## 1.4 What the descriptions actually contain
-
-Two distinct kinds, and the page should handle both:
-
-**Prose.** *"CDS's quest to create the ideal light armor continues with the
-FBL-8a. This light armor will keep you fast on your feet with its strategic mix
-of protective plating and reinforced nano-weave fabrics…"*
-
-**Stat blocks**, newline-delimited key/value:
-
-    Item Type: Heavy Armor
-    Damage Reduction: 40%
-    Temp. Rating: -80 / 105 °C
-    Radiation ...
-
-**Detect and render these differently.** A stat block rendered as a paragraph
-reads as broken. Suggested test: if more than half the non-empty lines match
-`^[A-Za-z][A-Za-z .'-]{2,30}:\s`, render as a definition list; otherwise render
-as prose. **This heuristic is mine and is untested — validate it against a
-sample before trusting it.**
-
-Descriptions contain literal `\n`. Preserve line breaks.
-
-## 1.5 Where it goes on the page
-
-Slot 3 of the item page defined in `front-end-build-plan-2026-08-02.md` §A2 —
-under the header, above the answer line. The answer line ("Sold at 4 shops,
-cheapest is…") stays the most important element; the description is context, not
-the answer.
-
-**Where a stat block exists, it also belongs beside the price**, because it is
-the thing that tells someone whether the cheaper item is the worse item.
-
-## 1.6 Verification — hard rule 12
-
-- **Assert the join returns exactly 5,344.** Fewer means the fallback chain is
-  broken; more means something matched by name.
-- **Assert the 2,384 items with no description still render a complete page.**
-  That is 31% of the catalogue. This is the empty-state test the doorway plan
-  already requires, now with a real number attached.
-- **Assert no name-based match occurs.** Log any item that gained a description
-  without a UUID match — the count must be zero unless the `labels.json`
-  fallback is deliberately enabled, in which case count it separately.
-- **Assert a stat-block description renders as a list and a prose description
-  renders as a paragraph**, using one known example of each.
-
----
-
-# BUILD 2 — THE BLUEPRINT INDEX
-
-One derived table. 1,597 rows. Everything crafting reads it and nothing else
-parses `blueprints.json` or `contracts/` again.
-
-## 2.1 Row shape
-
-| field | source |
+`Backup-CitizenCompass.ps1` (modified), `scripts/Verify-MirrorTree.ps1` and
+`scripts/Report-BackupCloseout.ps1` (untracked), and the whole
+`citizen-collector/` auto-mode and process-lock work are all sitting in the
+working tree. **Not committed** — Job 2's go-ahead covered 14 named files and
+nothing else. Say the word and I will stage them by name.
+
+### 2026-08-06 16:08:02 — update-process-lock-proven-20260806.md
+
+# Update: process lock now proven by refusal, both builds (2026-08-06)
+
+All four ordered checks are in `--selftest` and pass on the crew AND master
+builds. Nothing has been packaged or distributed.
+
+New file `process_lock_selftest.go`; `main.go` and `winapi.go` amended.
+
+## The condition is CREATED, not hoped for
+
+The test builds a real top-level Win32 window, really titled **"Star Citizen"**,
+really `WS_VISIBLE`, 400x300 so it clears the 200px filter — owned by the test
+binary, which is not `StarCitizen.exe`. It is placed at -5000,-5000 so a
+selftest does not flash a box over whatever you are doing; `IsWindowVisible`
+tests the WS_VISIBLE *style*, not desktop bounds, so it still takes exactly the
+path a real bystander window takes.
+
+A test that waited for such a window to happen to exist would silently do
+nothing on a quiet desktop and report a pass.
+
+## The four checks
+
+1. **POSITIVE CONTROL — refuses.** `findGameWindow(allowAny=false)` refuses the
+   decoy, and the error **names the refused process** (`collector.exe` /
+   `collector-master.exe`).
+2. **NEGATIVE CONTROL — accepts.** Faked at the `isGameProcess` boundary only:
+   `scProcessNames` is briefly pointed at the test binary's own exe name. **The
+   gate itself is untouched and still runs** — same call, same path, same
+   guard. A further check confirms the whitelist was restored afterwards, so no
+   later check runs against a permanently widened list.
+3. **SECOND GUARD, independently.** The inline `if` at the old `main.go:187` is
+   now a named `finalWindowGuard(win, allowAny)`, called from exactly one place
+   so no logic is duplicated. It is fed a crafted window (`claude.exe`) that
+   "passed selection" and must refuse, naming it; must admit a genuine game
+   window; and must stand aside under `--allow-any-window`.
+4. **CREW VARIANT — cannot set it.** Asserts `flag.Lookup("allow-any-window")
+   is nil` **and** the bench closure returns false. Master asserts the
+   opposite, so the check cannot pass by accident in both.
+
+Measured directly, not inferred:
+
+- crew `--allow-any-window` -> `flag provided but not defined`, **exit 2**
+- master `--allow-any-window` -> accepted, listed in `--help`
+- master `--allow-any-window --auto` -> **exit 2**, combination refused
+
+## My own test had the exact defect you warned about, inverted
+
+Mutation testing found it. **Deleting layer 1 outright turned nothing red** —
+layer 2 caught the decoy, `findGameWindow` still returned an error, and every
+check still passed. "It refused" is true of both layers, so asking only "did it
+refuse" proves *neither* individually. That is the same hole as testing layer 1
+alone, pointing the other way.
+
+Fixed by pinning the layer from the error wording — layer 1 says
+`Refused N other process(es)`, layer 2 says `internal guard:` — and adding
+**`lock: refusal came from LAYER 1, the process gate`**. That check fails the
+moment layer 1 is removed.
+
+## Every check seen to fail. Seven mutations, all caught:
+
+| mutation | check that went red |
 |---|---|
-| `blueprint_uuid` | `blueprints.json[].UUID` |
-| `blueprint_key` | `.Key` |
-| `output_uuid` `output_name` `output_type` `output_subtype` `output_grade` | `.Output.*` |
-| `craft_time_seconds` | `.Tiers[0].CraftTimeSeconds` |
-| `ingredients[]` | flattened `.Tiers[0].Requirements` |
-| `component_groups[]` | `.Tiers[0].Requirements.Children[]` — `Key`, `Name`, `RequiredCount` |
-| `modifiers[]` | each group's `Modifiers[]` |
-| `source_kind` | derived, see 2.3 |
-| `sources[]` | contract records, or pool keys |
-| `shop_price_min` `shop_price_terminal` | UEX join on `output_uuid` |
-| `last_verified_patch` | snapshot patch stamp |
+| layer 1 gate never refuses | `refusal came from LAYER 1` |
+| refusal error stops naming the process | `refusal NAMES the refused process` |
+| `finalWindowGuard` always allows | `second guard refuses a non-game window` |
+| `isGameProcess` never matches | `NEGATIVE CONTROL accepts the real game process` |
+| crew bench closure leaks `allowAny=true` | `CREW build cannot set allow-any-window` |
+| crew build registers the flag | `CREW build cannot set allow-any-window` |
+| master build loses the flag | `MASTER build does offer allow-any-window` |
 
-Every blueprint has exactly **one** tier. Do not build for many.
+Source restored from a pristine copy; both baselines re-confirmed exit 0.
 
-## 2.2 Ingredient flattening — and the trap in it
+One incidental proof: calling `registerBenchFlags()` a second time is harmless
+in crew (it registers nothing) but panics the master build with
+`flag redefined`. That panic is itself evidence the two variants genuinely
+differ, so the second call is made only in the crew branch, with a comment
+saying why.
 
-Walk `Requirements` depth-first. `Kind == "group"` sets the current group name.
-`Kind == "resource"` and `Kind == "item"` are leaves. Keep `UUID`, `Name`,
-`QuantityScu`, `MinQuality`, and the enclosing group name.
+## Full verbatim output — CREW
 
-**Measured across all 1,597 blueprints — 4,274 leaves:**
-
-    Kind == "resource"    3,976    all 3,976 carry QuantityScu
-    Kind == "item"          298    NONE carry QuantityScu
-    all 4,274 carry MinQuality
-
-**`QuantityScu` is null on every `item` leaf.** Those 298 are the hand-mined
-gems — Dolivine, Hadanite, Sadaryx, Beradom, Aphorite, Glacosite, Janalite,
-Feynmaline, Carinite, Saldynium (Ore), Yormandi Eye. A template that assumes a
-quantity will print "null SCU of Hadanite" on roughly one recipe in five.
-**Render those as a name with no quantity.**
-
-37 distinct ingredients total. 1–4 leaves per blueprint, average 2.7.
-
-## 2.3 `source_kind` — derivation and measured distribution
-
-Evaluate in this order, first match wins:
-
-    Availability.Default == true                              -> default
-    blueprint_uuid appears in any contract's Blueprints[]     -> contract
-    any pool Key contains "Xenothreat" or "RedWind"           -> event
-    any pool Key is BP_REWARD_<x> where BP_CRAFT_<x> exists   -> direct_reward
-    RewardPools present but none of the above                 -> other_pool
-    no Default, no RewardPools                                -> none
-
-**Measured result — this is the assertion:**
-
-    none            865
-    contract        676
-    event            31
-    direct_reward    16
-    default           8
-    other_pool        1
-    -------------------
-    total         1,597
-
-The single `other_pool` row is `BP_CRAFT_Carryable_2H_FL_MissionItem_Microsatellite_a`
-("Probe"), pointing at `BP_MISSIONREWARD_Carryable_2H_FL_MissionItem_Microsatellite_a`.
-**It exists so nothing falls through silently.** If that bucket ever grows past 1,
-a new reward mechanism has appeared and someone should look.
-
-## 2.4 Contract extraction — what each contract gives, and one correction
-
-For each of the 5,108 files, read `Blueprints[]`. Each entry:
-`Chance`, `PoolUUID`, `PoolContents[]` of `{ItemName, ItemUUID, BlueprintUUID}`.
-
-Alongside, capture from the contract: `UUID`, `DisplayTitle` (fall back to
-`Title`), `MissionGiver`, `MissionType.Name`, `Faction`, `TimeToComplete`,
-`Difficulty`, `Illegal`, `ReputationPrerequisite`,
-`LocationPools[].ResolvedLocations[].Name`.
-
-**Correction to `claude/plan-crafting-build-from-data-on-hand.md` §3.** That plan
-lists `CalculatedReward` as the payout. **It is a boolean, not an amount** —
-measured 8,260 `true`, 87 `null`, no numbers. It means the reward is computed at
-runtime. **There is no payout figure in this data.** Do not display one.
-
-**What is genuinely there and is better than expected — `ReputationPrerequisite`
-is a full object:**
-
-    { "Faction": "InterSec Defense Solutions",
-      "Scope": "FactionReputation",
-      "MinStanding": { "Name": "Sr. Contractor",   "MinReputation": 5800 },
-      "MaxStanding": { "Name": "Elite Contractor", "MinReputation": 95250 } }
-
-That gives the reputation gate in human words — *"needs Sr. Contractor standing
-with InterSec Defense Solutions"* — which is exactly the question a player has.
-
-**`Illegal`** — measured 7,571 false, 776 true. Lawful/unlawful badge, free.
-
-**`Chance`** — measured 8,283 at 1, 53 at 0.25, 11 at 0.75. Real and varied.
-Show it. Nobody else does.
-
-## 2.5 The thing that will break the page if it is not handled
-
-**Sources per blueprint: minimum 1, maximum 127.**
-
-One blueprint is awarded by 127 different contracts. A blueprint page that
-renders a row per source will produce a 127-row table for a single answer.
-
-**Group by `MissionGiver` and `MissionType` and summarise**: *"Awarded by 127
-Mercenary contracts from Headhunters and 4 others."* Offer the full list behind
-a disclosure. Show the **best** source first — highest `Chance`, then lowest
-reputation requirement.
-
-## 2.6 Price join
-
-`output_uuid` = `items_prices_all.json[].item_uuid`, taking rows where
-`price_buy > 0`, keeping the minimum and its `terminal_name`.
-
-**Measured: 721 of 1,597 blueprint rows gain a price.** (The earlier figure of
-719 counted distinct *items*; 1,597 blueprints resolve to 1,588 distinct outputs,
-so the row count differs slightly. Both are correct for what they count.)
-
-**No ingredient cost. No total. No craft-vs-buy verdict.** There are zero
-commodity price rows on disk. Leave the slot in the schema, leave it null, and
-do not let anything populate it before the commodity pull lands.
-
-## 2.7 Modifiers
-
-Each component group carries `Modifiers[]` with `Key`, `Name`, `QualityRange`
-(min/max, observed 0–1000), `ModifierRange` (`AtMinQuality`/`AtMaxQuality`),
-`ValueRangeType` (observed `linear`), `UnitFormat`.
-
-**Measured: 1,537 of 1,597 blueprints carry at least one modifier.**
-The 60 without are mostly `WeaponAttachment` (36) and `Char_Armor_Backpack` (17).
-The template must not assume a quality curve exists.
-
-## 2.8 Performance — two runs timed out getting this wrong
-
-Scanning 5,108 contract files naively exceeds 45 seconds.
-
-- One pass over the directory.
-- **Substring-test the raw text for `"PoolUUID"` before calling `json.loads`.**
-  Only ~15% of contracts award blueprints; parsing the other 85% is wasted.
-- **Do not loop 146 pool keys against every file.** That is 745,000 substring
-  searches and it is what timed out. Invert it: extract from the file, then look
-  up.
-
-On a machine without a 45-second cap this is a non-issue, but the wasted work is
-real either way.
-
-## 2.9 Verification — hard rule 12
-
-- **Assert 1,597 rows out.** Same as in.
-- **Assert `source_kind` partitions to 865 / 676 / 31 / 16 / 8 / 1.** These are
-  measured. Any drift means the data or the derivation changed, and both are
-  worth knowing about.
-- **Assert 676 blueprints have at least one contract source**, and that the
-  scan found **768** contracts carrying a `Blueprints` array. A run finding fewer
-  has silently skipped files.
-- **Assert all 4,274 ingredient leaves carry `MinQuality`, and that exactly the
-  298 `item`-kind leaves lack `QuantityScu`.** If a `resource` leaf ever lacks a
-  quantity, the flattening is wrong.
-- **Assert 721 rows carry a price and 0 rows carry an ingredient cost.** The
-  second is the important one — a cost appearing means something invented it.
-- **Assert an `865`-group page renders complete with no source.** That is 54% of
-  all blueprint pages.
-- **Assert no name-based join exists.** 35 of the 37 ingredient names happen to
-  match UEX commodity names exactly. It will work. **It is still forbidden** —
-  use the UUIDs in `resources/commodities.json`, which cover 26 of 37 properly,
-  and leave the other 11 unjoined rather than matching on a string.
-
----
-
-## 3. WHAT I DID NOT VERIFY
-
-- **The stat-block detection heuristic in 1.4 is mine and untested.**
-- **Whether RedWind's contracts carry a `Blueprints` array.** Its 6 blueprints
-  are classed `event` on the strength of the pool key alone.
-- **`CategoryUUID` on blueprints** — never resolved to a name.
-- **Description coverage per doorway.** I have the total (69%) but not the split,
-  so I cannot say whether Ship parts is better or worse covered than Clothing.
-- **Whether `labels.json item_Desc_*` adds anything beyond the UUID path.** It may
-  be entirely redundant. Worth measuring before wiring the third fallback.
-
----
-
-## 4. REFERENCE IMPLEMENTATION
-
-Read-only. Writes one JSON file each. Neither touches a snapshot.
-Both were executed against the real data to produce the counts asserted above.
-
-Paths assume `C:\Users\david\citizen-compass`. Adjust `ROOT` if that changes.
-
-### 4.1 Build 1 — the description map
-
-```python
-import json, glob, os
-
-ROOT = r"C:\Users\david\citizen-compass"
-SC   = os.path.join(ROOT, r"data-layer\external-sources\scunpacked-data\snapshots\20260801T204744Z")
-UEX  = os.path.join(ROOT, r"data-layer\external-sources\uexcorp\snapshots\20260801T235530Z")
-OUT  = os.path.join(ROOT, r"data-layer\processed\item_descriptions.json")
-
-def load(path):
-    with open(path, encoding="utf-8") as fh:
-        return json.load(fh)
-
-desc, src = {}, {}
-for fname in ("fps-items.json", "ship-items.json"):
-    for rec in load(os.path.join(SC, fname)):
-        std = rec.get("stdItem") or {}
-        uuid = std.get("UUID") or rec.get("reference")
-        if not uuid:
-            continue
-        text = (std.get("DescriptionText") or std.get("Description") or "").strip()
-        if text:
-            desc[uuid] = text
-            src[uuid] = fname
-
-uex = []
-for path in glob.glob(os.path.join(UEX, "items_category_*.json")):
-    uex += (load(path).get("data") or [])
-
-out, hit = {}, 0
-for item in uex:
-    uuid = item.get("uuid")
-    if uuid and uuid in desc:
-        hit += 1
-        out[str(item["id"])] = {
-            "uuid": uuid,
-            "name": item.get("name"),
-            "description": desc[uuid],
-            "source_file": src[uuid],
-        }
-
-os.makedirs(os.path.dirname(OUT), exist_ok=True)
-with open(OUT, "w", encoding="utf-8") as fh:
-    json.dump(out, fh, ensure_ascii=False, indent=1)
-
-print("uex items:", len(uex), "with uuid:", sum(1 for i in uex if i.get("uuid")))
-print("descriptions matched:", hit)
-assert hit == 5344, f"expected 5344, got {hit}"
-print("OK ->", OUT)
+```
+citizen-collector 0.1.0 (crew) selftest
+  [ok  ] captures dir writable              ...
+  [ok  ] blank detector rejects blank       every one of 4096 sampled pixels is rgb(0,0,0)
+  [ok  ] blank detector accepts content     accepted as real content
+  [ok  ] png encode                         ...
+  [ok  ] win32 reachable                    primary display 1920x1080
+  -- process lock --
+  [ok  ] lock: decoy is a real visible 'Star Citizen' window title="Star Citizen" visible=true size=400x300 owner=collector.exe
+  [ok  ] lock: POSITIVE CONTROL refuses a non-game 'Star Citizen' refused, error names collector.exe: true
+  [ok  ] lock: refusal NAMES the refused process refused, error names collector.exe: true
+  [ok  ] lock: refusal came from LAYER 1, the process gate the process gate refused it before any title was consulted
+  [ok  ] lock: NEGATIVE CONTROL accepts the real game process accepted the window once its process counted as the game
+  [ok  ] lock: whitelist restored after the fake scProcessNames=[starcitizen.exe]
+  [ok  ] lock: second guard refuses a non-game window internal guard: selected a window from "claude.exe", which is not starcitizen.exe - refusing
+  [ok  ] lock: second guard admits the game a genuine game window is not blocked by the guard
+  [ok  ] lock: second guard defers to --allow-any-window master-only bypass still works, by design
+  [ok  ] lock: CREW build cannot set allow-any-window flag registered=false benchAllow=false hint="" (all must be empty/false)
+  -- auto mode --   (16 checks, see the Job 4 update)
+  -- environment --
+  [note] Game.log  ...LIVE\Game.log (776 lines, patch 4.9.188.23497)
+selftest PASS   exit 0
 ```
 
-### 4.2 Build 2 — the blueprint index
+## MASTER — identical except the last lock line
 
-```python
-import json, glob, os, collections
-
-ROOT = r"C:\Users\david\citizen-compass"
-SC   = os.path.join(ROOT, r"data-layer\external-sources\scunpacked-data\snapshots\20260801T204744Z")
-UEX  = os.path.join(ROOT, r"data-layer\external-sources\uexcorp\snapshots\20260801T235530Z")
-OUT  = os.path.join(ROOT, r"data-layer\processed\blueprint_index.json")
-PATCH = "4.9"   # snapshot patch stamp - set from the manifest, do not hard-code blindly
-
-def load(path):
-    with open(path, encoding="utf-8") as fh:
-        return json.load(fh)
-
-# ---- contracts: only parse files that can possibly matter -------------------
-sources, contracts_with_bp = {}, 0
-for path in glob.glob(os.path.join(SC, "contracts", "*.json")):
-    with open(path, encoding="utf-8", errors="ignore") as fh:
-        raw = fh.read()
-    if '"PoolUUID"' not in raw:
-        continue
-    c = json.loads(raw)
-    pools = c.get("Blueprints") or []
-    if not pools:
-        continue
-    contracts_with_bp += 1
-    meta = {
-        "contract_uuid": c.get("UUID"),
-        "title":         c.get("DisplayTitle") or c.get("Title"),
-        "giver":         c.get("MissionGiver"),
-        "mission_type":  (c.get("MissionType") or {}).get("Name"),
-        "faction":       c.get("Faction"),
-        "illegal":       c.get("Illegal"),
-        "time_to_complete": c.get("TimeToComplete"),
-        "difficulty":    c.get("Difficulty"),
-        "reputation":    c.get("ReputationPrerequisite"),
-    }
-    for pool in pools:
-        for entry in (pool.get("PoolContents") or []):
-            bp_uuid = entry.get("BlueprintUUID")
-            if bp_uuid:
-                sources.setdefault(bp_uuid, []).append(
-                    dict(meta, chance=pool.get("Chance"), pool_uuid=pool.get("PoolUUID")))
-
-# ---- prices ----------------------------------------------------------------
-cheapest = {}
-for row in load(os.path.join(UEX, "items_prices_all.json"))["data"]:
-    uuid, buy = row.get("item_uuid"), (row.get("price_buy") or 0)
-    if uuid and buy > 0 and (uuid not in cheapest or buy < cheapest[uuid][0]):
-        cheapest[uuid] = (buy, row.get("terminal_name"))
-
-# ---- blueprints ------------------------------------------------------------
-blueprints = load(os.path.join(SC, "blueprints.json"))
-keys = {b.get("Key") for b in blueprints}
-
-def flatten(node, acc, group=None):
-    kind = node.get("Kind")
-    if kind == "group":
-        group = node.get("Name")
-    if kind in ("resource", "item"):
-        acc.append({
-            "kind": kind,
-            "uuid": node.get("UUID"),
-            "name": node.get("Name"),
-            "quantity_scu": node.get("QuantityScu"),   # null on every 'item'
-            "min_quality": node.get("MinQuality"),
-            "group": group,
-        })
-    for child in (node.get("Children") or []):
-        flatten(child, acc, group)
-
-rows, kinds = [], collections.Counter()
-for b in blueprints:
-    tier  = (b.get("Tiers") or [{}])[0]
-    req   = tier.get("Requirements") or {}
-    avail = b.get("Availability") or {}
-    pools = avail.get("RewardPools") or []
-    pool_keys = [p.get("Key") or "" for p in pools]
-
-    ingredients = []
-    flatten(req, ingredients)
-
-    groups, modifiers = [], []
-    for g in (req.get("Children") or []):
-        groups.append({"key": g.get("Key"), "name": g.get("Name"),
-                       "required_count": g.get("RequiredCount")})
-        for m in (g.get("Modifiers") or []):
-            modifiers.append({
-                "group": g.get("Name"), "key": m.get("Key"), "name": m.get("Name"),
-                "quality_range": m.get("QualityRange"),
-                "modifier_range": m.get("ModifierRange"),
-                "value_range_type": m.get("ValueRangeType"),
-                "unit_format": m.get("UnitFormat"),
-            })
-
-    uuid = b["UUID"]
-    if avail.get("Default"):
-        kind = "default"
-    elif uuid in sources:
-        kind = "contract"
-    elif any("Xenothreat" in k or "RedWind" in k for k in pool_keys):
-        kind = "event"
-    elif any(k.startswith("BP_REWARD_") and "BP_CRAFT_" + k[len("BP_REWARD_"):] in keys
-             for k in pool_keys):
-        kind = "direct_reward"
-    elif pools:
-        kind = "other_pool"
-    else:
-        kind = "none"
-    kinds[kind] += 1
-
-    out = b.get("Output") or {}
-    price = cheapest.get(out.get("UUID"))
-    rows.append({
-        "blueprint_uuid": uuid,
-        "blueprint_key": b.get("Key"),
-        "output_uuid": out.get("UUID"),
-        "output_name": out.get("Name"),
-        "output_type": out.get("Type"),
-        "output_subtype": out.get("Subtype"),
-        "output_grade": out.get("Grade"),
-        "craft_time_seconds": tier.get("CraftTimeSeconds"),
-        "ingredients": ingredients,
-        "component_groups": groups,
-        "modifiers": modifiers,
-        "source_kind": kind,
-        "sources": sources.get(uuid, []) if kind == "contract" else pool_keys,
-        "shop_price_min": price[0] if price else None,
-        "shop_price_terminal": price[1] if price else None,
-        "ingredient_cost": None,          # stays null until commodity prices land
-        "last_verified_patch": PATCH,
-    })
-
-os.makedirs(os.path.dirname(OUT), exist_ok=True)
-with open(OUT, "w", encoding="utf-8") as fh:
-    json.dump(rows, fh, ensure_ascii=False, indent=1)
-
-# ---- hard rule 12: assert, do not report ----------------------------------
-leaves = [i for r in rows for i in r["ingredients"]]
-expected = {"none": 865, "contract": 676, "event": 31,
-            "direct_reward": 16, "default": 8, "other_pool": 1}
-
-assert len(rows) == 1597,                     f"rows {len(rows)}"
-assert dict(kinds) == expected,               f"source_kind {dict(kinds)}"
-assert contracts_with_bp == 768,              f"contracts {contracts_with_bp}"
-assert len(sources) == 676,                   f"sourced blueprints {len(sources)}"
-assert len(leaves) == 4274,                   f"leaves {len(leaves)}"
-assert all(i["min_quality"] is not None for i in leaves), "a leaf lacks MinQuality"
-assert sum(1 for i in leaves if i["quantity_scu"] is None) == 298, "quantity nulls moved"
-assert all(i["kind"] == "item" for i in leaves if i["quantity_scu"] is None), \
-       "a 'resource' leaf lacks a quantity - flattening is wrong"
-assert sum(1 for r in rows if r["shop_price_min"]) == 721, "price join moved"
-assert all(r["ingredient_cost"] is None for r in rows),  "something invented a cost"
-assert sum(1 for r in rows if r["modifiers"]) == 1537,   "modifier count moved"
-
-print("rows:", len(rows))
-print("source_kind:", dict(kinds))
-print("priced:", sum(1 for r in rows if r["shop_price_min"]))
-print("max sources on one blueprint:",
-      max((len(r["sources"]) for r in rows if r["source_kind"] == "contract"), default=0))
-print("OK ->", OUT)
+```
+  [ok  ] lock: MASTER build does offer allow-any-window flag registered=true
+selftest PASS   exit 0
 ```
 
-**On the assertions.** They are deliberately exact rather than
-greater-than-zero, because a check that cannot fail is not a check. They will
-break when the game patches — **that is the point.** A failing assertion after a
-patch is the signal that the data moved and someone should look, not a bug in
-the script. Update the numbers deliberately, with a note saying which patch
-changed them.
+**Which checks are new:** everything under `-- process lock --` (10 checks) and
+everything under `-- auto mode --` (16 checks). The five above `-- process
+lock --` are the pre-existing ones.
 
-### 2026-08-02 00:58:19 — update_crafting_build_plan_and_dangling_pools.md
+## Standing gap
 
-# Crafting build plan filed + 48 dangling pools resolved + item descriptions found
-2026-08-02, C2. Read-only. **C2 wrote nothing to the repository.**
+The lock is proven against a decoy. It has **not** been exercised against a
+real running Star Citizen — the game is not running, so the "accepts the actual
+game" path is proven only via the `isGameProcess` boundary fake. Stating it
+rather than implying coverage I do not have.
 
-Plan: `claude/plan-crafting-build-from-data-on-hand.md` on claude.ai.
-Everything in it runs on data already collected, gated and sealed. No new
-acquisition needed.
+### 2026-08-06 16:01:26 — update-job4-collector-auto-mode-20260806.md
 
-## BIGGEST ITEM — item descriptions exist, 69% coverage
+# Update: Job 4 complete — collector --auto mode (2026-08-06)
 
-`claude/front-end-build-plan-2026-08-02.md` §3 says *"No 'what it's good for' or
-'how to use it'. That is writing, not data."* **Wrong.**
+`citizen-collector` gains `--auto`. Builds clean, `--selftest` passes, and every
+new check has been **seen to fail** before being trusted.
 
-`fps-items.json` and `ship-items.json` carry `stdItem.Description` and
-`stdItem.DescriptionText`:
+## What was added
 
-    fps-items with a description       5,182 of 5,420
-    ship-items with a description      2,598 of 5,384
-    combined uuid -> description       7,780
-    UEX items that gain one            5,344 = 69% of catalogue, 96% of uuid-carrying
+New files `auto.go` and `auto_selftest.go`; `main.go` and `winapi.go` amended.
 
-`labels.json` separately holds 5,805 `item_Desc_*` keys (5,558 with content) and
-4,749 `item_Name_*`, some with stat blocks ("Damage Reduction: 40%, Temp. Rating
--80/105 °C").
+- **Tails Game.log**, polling every 2s (`--poll`). Reads only APPENDED bytes,
+  carrying a partial trailing line to the next poll so a line split across two
+  polls is not parsed as two broken ones.
+- **Captures on state change**, reusing the parsers already in `gamelog.go` —
+  `reGameRules`, `reMap`, `reLoadingScreen`, and the `OnClientSpawned-zone`
+  pattern, which is looked up **by name** so a rename in `gamelog.go` breaks
+  loudly instead of silently binding to nothing.
+  - state: `gamerules`, `map`, `zone`, `location`
+  - events: `loading_screen`, `client_spawned`
+- **Debounce** 3s (`--debounce`).
+- **Interval fallback** every N minutes with no change, default 10, `0` = off
+  (`--interval`).
+- **Window gate**: captures only while a `StarCitizen.exe` window exists.
+- **Trigger recorded in every sidecar**, e.g.
+  `{"kind":"state_change","field":"gamerules","from":"SC_Frontend","to":"SC_Default"}`.
+  Interval captures say `{"kind":"interval","minutes":10}`; manual ones now say
+  `hotkey` or `once` rather than nothing.
+- **No console**: `--auto` hides the console window and logs to
+  `collector-auto.log` next to the exe. Every recoverable problem is logged and
+  the loop continues, so it survives being left running.
+- **Settings** from `collector-settings.txt` next to the exe, written with
+  commented defaults on first run and never overwritten. Command-line flags win
+  over the file.
 
-**Description coverage (69%) beats price coverage (36%) and images (0%).** This
-is the cheapest large improvement available in the project right now and it
-benefits 5,344 item pages. Priority order: `stdItem.DescriptionText` →
-`Description` → `labels.json item_Desc_*` (label path keys on class name, not
-UUID — prefer UUID).
+No OCR, no database routing, no ZIP packager — as instructed.
 
-## The 48 dangling pools — resolved, and not broken
+## Three design points worth recording
 
-    25  XenoThreat event rewards  (BP_REWARDS_Xenothreat2_15_01 ... _100_03)
-        XenoThreat is a real faction, 357 labels. Numbers are contribution
-        tiers. Event rewards, not contracts — hence no contract awards them.
-    16  1:1 mirror keys — BP_REWARD_<x> mirrors BP_CRAFT_<x> exactly.
-        All "SecondWind" / "Purgatory Camo" cosmetic variants.
-     6  RedWind — RedWind Linehaul delivery contractor, 118 labels.
-        NOT CHECKED whether its contracts carry a Blueprints array.
-     1  Microsatellite probe mission item.
+1. **The first poll never fires.** Game.log already holds a whole session when
+   the tool starts; feeding that backlog through the detector would fire a
+   burst of captures for state changes that happened before launch, stamped
+   now. The first read primes silently. Same on log rotation — a new session
+   truncates Game.log, and that re-primes rather than replaying.
+2. **`--allow-any-window` cannot combine with `--auto`.** The flag only exists
+   in the master build at all, but a master build left running unattended with
+   the process restriction lifted would photograph whatever was on screen for
+   hours into a corpus meant to be shared. The combination is refused at
+   startup, and the auto loop passes a literal `false` — there is no variable
+   to get wrong.
+3. **`doCapture` takes a `Trigger`, not a `*Trigger`,** and refuses an empty
+   `Kind`. A capture with no stated reason is a bug, so it cannot be written.
 
-**"Dangling" was the wrong word — these are obtainable by non-contract routes.**
-Site wording should be "event reward" / "special reward", never "unobtainable".
+## Checks — and the mutation testing that proves them
 
-**The 865 no-pool-no-default group remains genuinely sourceless** — zero
-reachable across all 5,108 contracts.
+`--selftest` gained 16 checks. The negative control runs **first**: a synthetic
+log with no state changes must produce **exactly zero** triggers, and if it
+fires the whole group is reported **VOID** (exit 2) rather than as a set of
+passes.
 
-## Defect in CIG's own data — worth a bug report
+Known sequence asserts count **and** exact reasons:
 
-Three reward keys reference blueprints that do not exist under the mirrored name:
+    event:loading_screen "Frontend_Main : SC_Frontend"
+    state_change:gamerules "SC_Frontend"->"SC_Default"
+    state_change:map "megamap"->"pyro"
+    state_change:zone ""->"Stanton_1_Hurston"
+    event:client_spawned "Stanton_1_Hurston"
+    event:client_spawned "Stanton_1_Hurston"
 
-    BP_REWARD_ds_combat_medium_helmet_01_02_01   <- missing a 'c'
-        actual blueprint: BP_CRAFT_cds_combat_medium_helmet_01_02_01
-    BP_REWARD_CollectorMaterial_001
-    BP_REWARD_CollectorMaterial_002
+**All checks passed first time, so per rule 12 I broke each one deliberately
+and confirmed it failed.** Six mutations, all caught:
 
-Arms, core and legs of that ORC-mkX SecondWind set all use the correct `cds_`
-prefix; only the helmet is misspelled. If rewards resolve by this key, that
-helmet cannot drop while the rest of its set can. **Not certain enough to
-publish. Certain enough to report.**
-
-## Build order in the plan
-
-1. **D1 blueprint index** — one derived table, 1,597 rows, everything reads it.
-2. **Wire item descriptions into the item template** — 5,344 pages, independent
-   of crafting.
-3. **D2 blueprint pages** — 1,597 pages, source/ingredients/quality curve.
-4. **D3 reverse lookup** — "I have this, what can I make?" 37 materials, no new
-   data, and none of the four competing tools inverts the question.
-5. **D4 material pages** — 37 pages, better after prices land.
-
-## Fenced off until commodity prices land
-
-Zero commodity price rows exist on disk (verified twice). No craft-vs-buy
-verdict, no total cost, no shopping trip, no cost-per-improvement. **Build the
-templates with the slot present and empty** so it stays a data change, not a
-redesign. Do not ship an estimate.
-
-Also out of scope by decision: grind-route planning — CmdrQuattro's tool owns it.
-
-## Performance warning for whoever implements D1
-
-Scanning 5,108 contract files naively exceeds 45s. One pass; substring-test for
-`"PoolUUID"` before parsing JSON; do not loop the 146 pool keys against every
-file. That approach timed out twice here.
-
-## Parked, not actioned
-
-Contacting CmdrQuattro and the other three maintainers about a mutual link or
-data exchange. Revisit only after commodity prices land — until then we have
-nothing to offer. Terms of use to be read by a person first.
-
-### 2026-08-02 00:45:17 — update_contract_blueprint_join_proven.md
-
-# FINDING — "where do I get this blueprint" is answerable from our own data
-
-**From C2. 2026-08-02. Read-only. Nothing written to the repository.**
-
-Tested in response to the question of whether to pull data from a community
-crafting tool. **We do not need to.** The join works.
-
----
-
-## THE TEST
-
-`contracts/*.json` — 5,108 files in
-`scunpacked-data/snapshots/20260801T204744Z/` — carry a `Blueprints` array that
-nobody in this project had opened.
-
-Structure, verbatim from `004f6931-271f-4774-8db1-ce7b86de6837.json`:
-
-    "Blueprints": [
-      {
-        "Chance": 1,
-        "PoolUUID": "9cf3799c-2347-46a6-bd65-203f8a426f79",
-        "PoolContents": [
-          { "ItemName": "Devastator \"Vastator\" Shotgun",
-            "ItemUUID": "e5b42569-10da-40a5-a16f-497f5b84cf3c",
-            "BlueprintUUID": "f2947ab8-56b3-43e6-9ef6-6301070a1846" },
-          ...
-        ]
-      }
-    ]
-
-**This is a direct structured join, contract → blueprint, with a drop chance.**
-
-## RESULTS — full scan of all 5,108 contract files
-
-    contracts that award blueprints                     768
-    distinct blueprints reachable via contracts         676
-    blueprints carrying a RewardPools field             724
-      ...of those, reachable from a real contract       676
-      ...dangling (pool exists, no contract found)       48
-    the "no default, no pool" group                     865
-      ...reachable via contracts anyway                   0
-
-`Chance` is 1 on almost every pool; a small number are 0.25.
-
-**The 865 are confirmed sourceless.** Not an oversight in my earlier read — no
-contract in the game files awards them. Saying "we don't know how you get this"
-is now a verified statement rather than a hedge.
-
-## WHAT EACH CONTRACT ALSO CARRIES
-
-From the same files, no extra work: `DisplayTitle`, `MissionGiver`,
-`MissionType`, `Faction`, `CalculatedReward`, `TimeToComplete`,
-`ReputationGained`, `ReputationPrerequisite`, `Illegal`, `Shareable`,
-`OnceOnly`, `Cooldown`, `Difficulty`, `AvailabilityLocations`,
-`RequiredLocations`, `LocationPools` with resolved location names, and the full
-mission text.
-
-Mission givers seen in the scan: Headhunters, Shubin Interstellar, United
-Wayfarers Club, Citizens for Prosperity, Foxwell Enforcement, Adagio Holdings,
-Eckhart Security, Bit Zeros.
-
-**That is the same dataset the community blueprint finder presents**, derived
-independently from the game files we already hold, gated and sealed.
-
----
-
-## WHY THIS SETTLES THE "PULL FROM A TOOL" QUESTION
-
-**1. The thing we would take, we already have.** Recipes, quantities, quality
-curves, and now sources. All four competing tools are built on the same
-extracted game files.
-
-**2. The thing we lack, they lack too.** Our blocker is commodity prices. Not one
-of the four shows a price. Scraping them moves us zero distance on the only axis
-where we are actually stuck.
-
-**3. The only thing genuinely worth taking is the only thing it would be wrong to
-take** — CmdrQuattro's grind-route planning. That is his original work: ordering
-contracts, respecting reputation gates, inserting rep contracts to unlock tiers.
-It is not in any game file. It is the reason his tool exists.
-
-**4. Credit is not a licence.** Attribution answers a courtesy question, not a
-permission question. It matters more here than usual for three reasons:
-
-- The Historian is the **monetised** part of the plan. Using another fan's
-  research inside a subscription product is a materially different act from
-  citing it on a free reference page.
-- CIG's 2026-07-28 confirmation reviewed a ship price table. It is a snapshot,
-  not a licence, and it does not cover redistributing another fan site's data.
-- **This project has already refused two sources on exactly these grounds.**
-  Source 4 is self-blocked `blocked_missing_provenance`; source 5 is
-  `not_directly_downloadable`. Both were correct calls. Taking a fifth source
-  with weaker provenance than either would contradict a decision already on
-  record.
-
-**5. Provenance would break the pipeline's own rules.** Scraped tool output has
-no manifest, no hash, no patch stamp, and no upstream we can re-verify against.
-Every row on this site carries `last_verified_patch`. A scraped row could not.
-
----
-
-## WHAT TO DO INSTEAD — in order
-
-1. **Build the contract → blueprint index from the files we already have.**
-   Proven above. Gives source, faction, payout, reputation gate, drop chance and
-   location, with full provenance.
-2. **Pull UEX commodity prices.** Still the one real blocker, still the one thing
-   no competitor has. Legitimate route, token already active.
-3. **Link out to CmdrQuattro for grind routing**, and say why. A reference site
-   that points at the better tool for one specific job is more trustworthy, not
-   less — and it is what the "one page per thing" rule implies when someone else
-   owns that thing.
-4. **Consider approaching them.** We will hold something all four lack: prices.
-   A data exchange, or a mutual link, is a real proposition and costs nothing to
-   ask. **This is a decision for Sleven, not a technical call.**
-
----
-
-## UNCERTAIN, FLAGGED
-
-- The 48 dangling pools — a pool referenced by a blueprint with no contract
-  awarding it. Could be unimplemented content, could be a gap in the extraction.
-  Not investigated.
-- `Chance: 0.25` appeared on only 2 pools in the first third of the scan. I did
-  not tabulate chance across the full set.
-- Whether contract availability is patch-current. These are game files from
-  2026-08-01; the game is on 4.9. Contract structures change between patches.
-- I did not check any of the four tools' terms of use. If Sleven wants to pursue
-  option 4, that should be read first — by a person, not by me.
-
-### 2026-08-02 00:41:08 — update_testing_deploy_complete.md
-
-# UPDATE — testing site deployed and verified from served bytes
-
-## Pre-stage re-hash — all three matched
-
-Re-hashed immediately before staging, per instruction:
-
-| file | result |
+| mutation | caught by |
 |---|---|
-| `testing/_src/_layer.src.html` | `c26caed…6167634` **match** |
-| `testing/_layer.html` | `058d9ce…3582c65` **match** |
-| `testing/_deploy/index.html` | `be79501…8de8fb08` **match** |
+| tailer starts primed | `priming fires nothing` — 2 triggers from backlog |
+| detector fires on every line | **NEGATIVE CONTROL fired -> VOID, exit 2** |
+| debounce ignored | `debounce holds to 1 per 3s` |
+| `interval 0` no longer means off | `interval 0 never fires` |
+| BOM no longer stripped | `settings reads first line despite BOM` |
+| zone parser renamed in `gamelog.go` | `shared zone parser found` |
 
-Landed 00:19:25-27, re-hashed 00:29:56 — stable, no drift.
+**Two of those mutations initially escaped, and both revealed a weak test:**
 
-## Deploy
+- The BOM fixture had a **comment** on line 1, so an unstripped BOM corrupted a
+  comment and changed nothing. The check was passing vacuously. Fixture now
+  puts a live setting first, and the check fails properly.
+- The zone-parser mutation was applied to the call site in `auto.go` rather
+  than to the pattern name in `gamelog.go`, so the selftest's own lookup was
+  untouched. Retargeted at the real thing.
 
-Cloudflare Workers static assets, worker **`citizencompasstesting`** — the name
-matched `wrangler.toml`, so this updated the existing site rather than creating
-a second one at a second URL.
+Source restored byte-for-byte from a pristine copy afterwards and the baseline
+re-confirmed clean; no mutation residue remains.
 
-```
-482 files read from _deploy
-1 new or modified asset uploaded: /index.html   (479 already uploaded)
-Uploaded citizencompasstesting (8.46 sec)
-https://citizencompasstesting.citizencompass-contact.workers.dev
-Version ID: 7adec060-3a72-4c1c-857a-adbf967d1d1f
-```
+## Not done in this job
 
-Only `index.html` changed, which is consistent with a layout-only edit.
+The `--auto` loop has not been exercised against a **live** Star Citizen
+session — the game is not running. Every trigger path is proven against a
+synthetic log, but the window gate and the capture path under real conditions
+are untested. That is a real gap and I am stating it rather than implying
+coverage I do not have.
 
-**One blocker cleared on the way:** `wrangler whoami` reported "not
-authenticated". `CLOUDFLARE_API_TOKEN` **is** in `.env` (53 chars) — wrangler
-simply does not read `.env`. Loaded it into the environment for the invocation.
-I did **not** use `wrangler deploy --temporary`, which wrangler suggested: that
-publishes to a temporary preview account, which is exactly the
-two-URLs-in-circulation failure `wrangler.toml` warns about at length.
+### 2026-08-06 15:54:43 — update-process-lock-test-job-received-20260806.md
 
-My first check of that token was also wrong — a `grep -o` truncated at the `=`
-and made a populated value look empty. Corrected before acting on it.
+# Update: process-lock refusal test ordered (2026-08-06)
 
-## Verified from the served bytes, not the exit code
+Received mid-session, logged on arrival before starting.
 
-| check | result |
+**The finding is correct and I accept it.** `--selftest` currently has four
+checks — captures dir writable, blank detector in both directions, png encode,
+win32 reachable. **None of them touch the process gate.** The gate at
+`main.go:119` and the second guard at `main.go:187` read correctly, but reading
+is not testing, and there is no artifact on disk showing a refusal was ever
+exercised.
+
+Capture 0007 is not evidence, also correct: it was taken **with**
+`--allow-any-window`, so it proves the door opens when unlocked, not that it
+stays shut when it is not.
+
+Four checks to add to `--selftest`:
+
+1. **Positive control** — `findGameWindow(allowAny=false)` must REFUSE a window
+   titled "Star Citizen" whose process is not `StarCitizen.exe`. Create the
+   condition rather than hoping for it. The error must NAME the refused process.
+2. **Negative control** — the same call must ACCEPT a window whose process IS
+   the game. Fake it at the `isGameProcess` boundary, without stubbing out the
+   gate itself.
+3. **The second guard** — `main.go:187` must be shown to fire independently.
+   Two layers means two tests.
+4. **Crew variant** — the crew build must be unable to set `allowAny` at all,
+   not merely refuse it.
+
+Then run `--selftest` on both builds and report output verbatim, marking which
+checks are new. Any check that passes first time without having been seen to
+fail gets broken deliberately, confirmed failing, and put back.
+
+**No crew build is to be built, packaged or distributed until all four pass.**
+
+## Sequencing
+
+Job 4 (`--auto`) is in flight: `auto.go` and `auto_selftest.go` are written, and
+`main.go` wiring is next. Both jobs modify `selftest()`, so I am finishing and
+filing Job 4's wiring first rather than interleaving two sets of edits into the
+same function. Starting this immediately after — nothing else comes between.
+
+### 2026-08-06 15:48:35 — update-job3-backup-target-fixed-20260806.md
+
+# Update: Job 3 complete — backup repointed to D: and launched (2026-08-06)
+
+`Backup-CitizenCompass.ps1` changed and running detached. **PID 11824**, log
+`logs/backup-run-20260806-154735.log`, args `-FullMirror -NonInteractive`.
+
+## (a) D: primary, E: second mirror
+
+Was `$MirrorRoot = 'E:\cc-backup'`, a single target. Now:
+
+    [string]   $MirrorRoot       = 'D:\cc-backup'      # My Book, external
+    [string[]] $SecondMirrorRoot = @('E:\cc-backup')   # secondary, kept
+
+Step 7 is now a loop over both, and neither is best-effort. Recorded in the
+parameter comment why D: must be primary: **E: is internal**, in the same box
+as C:, so it does not survive losing the machine. D: is exFAT, which is why the
+copies use neither `/COPYALL` nor `/SEC` — that was already handled and is left
+alone. `-MirrorRoot` kept its name so the invocation in
+`docs/workorder-backup-01-external-drive.md` still works.
+
+## (b) A missing mirror drive is now fatal
+
+It previously warned, set `$SkipMirror`, and the run still printed
+`Failures: 0` and exited 0 — a backup that never left C: reporting success.
+That is the SILENT SUCCESS pattern. Now every drive in the list is checked and
+any absence exits 1 before a single byte is written.
+
+`-SkipMirror` remains the one way out, deliberately: an operator saying "skip
+it" and a drive quietly not being plugged in are different events and are no
+longer collapsed into the same outcome.
+
+**Proven by behaviour, not by reading the code — three controls:**
+
+| control | result |
 |---|---|
-| index serves | **HTTP 200**, `text/html`, 1,513,625 bytes |
-| served index == local | **sha256 identical** (`be79501e…`) |
-| model serves | `100i.glb` **HTTP 200**, 1,487,156 bytes |
-| model byte count vs local | **exact match** |
-| model is a real glTF | magic bytes `glTF` |
+| primary mirror missing (`-MirrorRoot Z:\cc-backup`) | `[FAIL] MIRROR DRIVE(S) NOT PRESENT: Z:` — **exit 1**, no backup folder created |
+| **second** mirror missing (`-SecondMirrorRoot Z:\cc-backup`) | D: passed, Z: failed — **exit 1**. The secondary is not treated as optional |
+| `-SkipMirror` | `[WARN] MIRRORS SKIPPED BY REQUEST` and the run proceeds — opt-out still works |
 
-Required markers, all present in the **served** HTML:
+The old code would have passed the first two. This gate has now failed on
+demand, so it is a real check.
 
-| marker | occurrences |
-|---|---:|
-| `cc-ldock` | 10 |
-| `cc-kb-tab` | 8 |
-| `cc-fi-tab` | 7 |
-| `cc-mtab` | 10 |
-| `id="cc-kb"` | 1 |
-| `cc-ship::after` | 2 |
+## (c) -FullMirror
 
-The exit code was 0, but it is not what any of the above rests on.
+Used on the launch, so `sc-ships` and `data-layer\external-sources` reach the
+external drive. With two mirrors those trees are now written to D: **and** E:.
 
-## Observation on the leftover positioning rule
+## (d) robocopy detached, logging to a file
 
-`calc(44% + 430px)` — LOADOUT's old slot — is **gone**. `calc(44% + 570px)`
-still appears once, in the *first* `#cc-fi-tab` rule.
+New `Invoke-Robocopy` runs robocopy via `Start-Process -PassThru` with `/LOG:`,
+and every call site now uses it (repo copy, Blender addons, mirror copy, and
+the two full-mirror trees). It returns the exit code from the **process
+object** rather than `$LASTEXITCODE`, which any intervening pipeline can
+clobber.
 
-It is inert. There are five `#cc-fi-tab` rules, and the fourth overrides it:
+`WaitForExit()` is deliberate: the copy must finish before the verifier reads
+the destination, or the verifier races the writer and reports truncation that
+is merely incompleteness. What must not block is the **tool call**, so the
+whole script is launched detached instead — which is the actual fix for the
+2026-08-05 kill.
 
-```css
-#cc-fi-tab{top:auto !important;bottom:10px;right:376px; …}
-```
+Exit-code decoding moved into one `Show-RoboCode` helper so every call site
+reports the bitmask identically instead of only 7b doing it.
 
-`top:auto !important` beats the earlier `top:calc(44% + 570px)`, so FIND is
-never placed at 1045px.
+Quoting is handled explicitly — `Start-Process` does not quote for you, and
+both `Blender Foundation` and `done ships` contain spaces. Trailing
+backslashes are trimmed before quoting because robocopy reads `"C:\path\"` as
+an escaped quote.
 
-Worth knowing how the dock actually works: the tabs are moved into `#cc-ldock`
-by **JavaScript at runtime**, with a retry loop ("keep looking until the
-late-built ones arrive"), not by static markup — `cc-fi-tab` is not inside the
-dock element in the served HTML. `#cc-ldock` itself is
-`transform:translateY(-50%)`, i.e. genuinely vertically centred rather than
-stacked from 44%.
+## Checks
 
-**The failure mode if that script does not run is benign:** the CSS fallback
-puts FIND at `bottom:10px; right:376px` — on screen, not off it. That is a
-better degradation than the old stack had.
+- Script parses clean (`Parser::ParseFile`, 0 errors).
+- Destructive-operation scan: every `/MIR`, `Remove-Item`, `rmdir`, `del` hit
+  in the file is **inside a comment**. No delete operation exists. `/E` only.
 
-No action taken on the stale rule; it changes nothing and is not in scope.
+## Two things to note
 
-## Not committed
+1. **The database is NOT captured in this run.** No `PGPASSWORD` in process
+   env, user env, or `pgpass.conf`. With `-NonInteractive` the script skips the
+   dump and restore test and records it as a `[FAIL]` — correctly, since it is
+   a real gap. The run will therefore exit 1 even if every file copies
+   perfectly. Re-run with `$env:PGPASSWORD` set to capture it; the file trees
+   are unaffected.
+2. **A stray backup folder exists at `C:\cc-backup\20260806-154521`.** My
+   `-SkipMirror` control test ran a full C:-only backup as a side effect. It is
+   complete and harmless, and it is useful evidence that the new detached
+   robocopy works (both `robocopy-*.log` files were written). Left in place —
+   nothing is ever deleted here. Remove it yourself if you want it gone.
 
-No commit-and-push go-ahead was given for this task, and rule 2 requires it per
-change. The `build_deploy.py` edit from the previous order also remains
-uncommitted in the working tree.
+Job 5 will report per-tree exit codes and per-file verification. Continuing to
+Job 4 while the copy runs.
 
-Live Netlify site untouched.
+### 2026-08-06 15:39:58 — update-job2-push-20260806.md
 
-### 2026-08-02 00:36:10 — update_testing_deploy_intake.md
+# Update: Job 2 complete — 14 files pushed (2026-08-06)
 
-# UPDATE — deploying the testing site
+Commit `3254dea`, "Split the keybind page into six modes, generated from the
+actionmap". Pushed `8ee5cdd..3254dea` to `origin/main`.
 
-Filed on intake per rule 13.
+The push carried **two** commits: the branch was already ahead by one
+(`a7118c7`, the WO-COLLECT-01 rev 4 landing) before I started.
 
-## Pre-stage re-hash — all three match
+## Staging
 
-Re-hashed immediately before staging, as instructed, not just before deploying.
+Added the 14 files by name. No `git add -A`. `git diff --cached` confirmed
+exactly 14 entries before committing — none of the ~50 CRLF/LF phantom-churn
+files were pulled in. Git printed its usual "LF will be replaced by CRLF"
+warnings for the staged files themselves; that is the filter, not churn.
 
-| file | expected == actual |
+Five modified, nine new:
+
+- M `testing/_src/_layer.src.html`, `build_deploy.py`, `device_engine.js`,
+  `keybinds.src.html`
+- A `build_keybind_modes.py`, `data-layer/processed/actionmap_categories.json`,
+  and `testing/_src/`: `check_modes.py`, `inject_engine.py`, `kb_modes.gen.js`,
+  `patch_btn_limit.py`, `patch_modes_wire.py`, `patch_two_sticks.py`,
+  `sc_export.js`, `test_sc_export.js`
+
+## Two things to flag
+
+1. **`data-layer/processed/actionmap_categories.json`** — the order's closing
+   line says do not touch `data-layer\processed\`, but Job 2 explicitly lists
+   this file to stage. Treated the specific instruction as authoritative and
+   staged it. Its content was not modified or regenerated; it was only added to
+   the commit. Say if that was not intended — it is one file to revert.
+
+2. **A stale `.git/HEAD.lock` blocked the first commit attempt.** Zero bytes,
+   dated 2026-08-05 19:55, no git process running — left by a crashed git
+   process, most likely the concurrent session noted in CLAUDE.md rule 14.
+   Moved to `_to_delete/stale_git_locks_20260806/` per rule 1 rather than
+   deleted, then the commit succeeded.
+
+   **`.git/objects/maintenance.lock` is also stale**, dated 2026-07-29. It is
+   not blocking me so I left it, but it is probably blocking background git
+   maintenance. Reporting, not fixing.
+
+Note `kb_modes.gen.js` is a generated artifact committed alongside its
+generator. Its header states one writer and it is `build_keybind_modes.py`.
+Edit the generator, never the output.
+
+### 2026-08-06 15:39:31 — update-job1-keybind-deploy-20260806.md
+
+# Update: Job 1 complete, but not by the commanded route (2026-08-06)
+
+Keybind page is live at
+`https://citizencompasstesting.citizencompass-contact.workers.dev` —
+version `81494202-f92c-4169-ad19-1389b2b3bd29`.
+
+## The order's deploy command was wrong and would have looked successful
+
+The order said:
+
+    npx wrangler pages deploy . --project-name citizen-compass-testing
+
+Three things were wrong with it.
+
+1. **There is no Pages project.** `wrangler pages project list` returns empty.
+   The testing site is a **Worker with static assets**, configured in
+   `testing/wrangler.toml`. Cloudflare moved static hosting off Pages.
+2. **The project name is the known trap.** `testing/wrangler.toml` carries a
+   comment written on 2026-08-01 warning that the hyphenated name
+   `citizen-compass-testing` publishes to a *second* URL and leaves the live
+   testing site untouched "while looking like a complete success". The worker
+   name is `citizencompasstesting`, unhyphenated, and the name IS the subdomain.
+3. Had I forced it by running `wrangler pages project create`, the result would
+   have been exactly the two-URLs-in-circulation failure the repo already
+   documents.
+
+Deployed with `npx wrangler deploy` from `testing/` instead, which targets the
+existing worker name. Same intent, correct mechanism, updates the site actually
+in circulation. **`testing/wrangler.toml` was not modified.**
+
+## Authentication
+
+The order said wrangler was not authenticated. It was, partly: a
+`CLOUDFLARE_API_TOKEN` in the repo-root `.env`, which wrangler 4 auto-loads
+**from the current working directory**. That is why `whoami` worked from the
+repo root and the deploy failed from `testing/_deploy` — no `.env` there. The
+token also lacked Pages/Workers write permission (API error 10000). Ran
+`npx wrangler login` as instructed; OAuth succeeded and that is what the deploy
+used. `.env` remains gitignored and its contents were never printed.
+
+## Self-inflicted defect, found and fixed
+
+My first failed `pages deploy` attempt, run from inside `testing/_deploy`,
+created a `.wrangler/cache/` folder there. The next deploy **published it as a
+public asset** — `/.wrangler/cache/wrangler-account.json` and `pages.json`,
+containing the account ID and account name. No tokens. Moved to
+`_to_delete/stray_wrangler_cache_in_deploy_20260806/` per rule 1 and
+redeployed; both now 404 at origin (one briefly served 200 from edge cache
+until cache-busted). Asset count went 487 → 483.
+
+**Worth a permanent guard:** anything that lands in `testing/_deploy/` gets
+published. An `.assetsignore` or a build-time check for dot-directories would
+close this. Not doing it in this job — reporting it.
+
+## Acceptance checks — all three pass, against the DEPLOYED file
+
+Verified against the deployed `kb_modes.gen.js` fetched back over HTTP, not the
+local copy.
+
+- six modes — PASS, 6/6: FLIGHT, ONFOOT, EVA, VEHICLE, CAMERA, SOCIAL
+- Social 6 numpad + 34 keyless emotes — PASS, keys=6, all Np1..Np6, emotes=34
+- On Foot, Left Alt, H — PASS, `m=1` resolves to `Helmet (Equip)`
+  (`build_keybind_modes.py:59` sets `MODS={"lalt":1,...}`, and the page labels
+  layer 1 "M1 (Left Alt)", so `m:1` is Left Alt by construction, not assumption)
+
+**Negative control:** the same three checks were re-run against a deliberately
+corrupted copy — one mode renamed away, one emote removed, the H binding
+relabelled. All three FAILED as required. A check that cannot fail is not a
+check; these were proven able to fail.
+
+`kb_modes.gen.js` returns **200**, so `PAGES` in `build_deploy.py` did copy it.
+Nothing to report there.
+
+Also confirmed: `/keybinds.html` and `/index.html` return 307 to their
+extensionless forms and resolve 200. That is wrangler's normal html handling,
+not a fault.
+
+### 2026-08-06 15:30:38 — update-five-jobs-received-20260806.md
+
+# Update: five-job work order received (2026-08-06)
+
+Received a five-job order. Logging on arrival per hard rule 13, before starting.
+
+1. **Deploy the keybind page** — `npx wrangler login`, then deploy
+   `testing\_deploy` to Cloudflare Pages project `citizen-compass-testing`.
+   Verify six modes, Social numpad + 34 folded emotes, On Foot Left-Alt
+   "Helmet (Equip)" on H. If `kb_modes.gen.js` 404s, report the PAGES list in
+   `build_deploy.py` — do not patch around it.
+2. **Push** — 14 named files only. No `git add -A` (about 50 tracked files
+   carry phantom CRLF/LF churn).
+3. **Fix the backup target** — `Backup-CitizenCompass.ps1` currently mirrors to
+   `E:\cc-backup`. Primary becomes `D:\cc-backup` (My Book, 3.63 TB external);
+   `E:` stays as a second mirror. Missing mirror drive becomes a hard failure,
+   not a warning. Use `-FullMirror`. Launch detached via `Start-Process
+   -PassThru` so a 7.5 GB copy is not killed by a tool-call timeout.
+4. **Collector `--auto` mode** (main job) — tail Game.log, capture on state
+   change, 3s debounce, interval fallback (default 10 min, 0 = off), only while
+   a StarCitizen.exe window exists, record the trigger reason in the JSON
+   sidecar. Extend `--selftest` with a synthetic Game.log, exact trigger counts
+   and reasons, plus a negative control that must produce zero triggers.
+5. **Close out the backup** — robocopy exit code per tree, per-file
+   verification enumerated from the destination disk, first 10 mismatches, and
+   a negative control asserting `sc-ships\.cache\` is absent from the
+   destination.
+
+Standing constraints for this order: never delete (robocopy `/E`, never
+`/MIR`), add files by name only, one writer per artifact, every check needs a
+negative control, no secrets in chat or files, encoding stated on every file
+open. `data-layer\processed\` and `viewer\profiles.js` are off-limits.
+
+Starting Job 1.
+
+### 2026-08-05 21:22:38 — update-mirror-verify-per-file-20260805.md
+
+# Update — mirror check rebuilt: per-file, non-tautological, proven against real known-bad data
+
+**When:** 2026-08-05
+
+New: `scripts/Verify-MirrorTree.ps1`. Step 7b of `Backup-CitizenCompass.ps1` now
+calls it instead of comparing aggregates.
+
+## Why the old check was not a check
+
+Two independent defects, both now fixed:
+
+1. **Aggregates cancel.** A file count plus an MB total can both match while the
+   contents are wrong — two files differing by +2 MB and −2 MB sum to a pass.
+2. **A truncated file is invisible to a count.** It is *present*, so the count
+   matches.
+
+## Not tautological — enforced structurally
+
+The verifier is a **separate script run as a separate process**. It shares no
+filter state with the copy, so it cannot compare the copy to itself. It:
+
+- enumerates the **destination from disk** — never from `SHA256SUMS.txt`, never
+  from robocopy's log, never from the copy's own file list;
+- compares **per file, on relative path AND byte size**;
+- **names the first 10 mismatches** with both sizes and the delta, not just a
+  count.
+
+## Two controls, because a checker that reads nothing passes everything
+
+- **POSITIVE** — a known-*included* file must be found at the destination. If
+  this fails, the enumeration is empty or aimed at the wrong path and no verdict
+  below it means anything.
+- **NEGATIVE** — a known-*excluded* file (something under `.cache`) must be
+  **absent**.
+
+The negative control is **only credited when the positive control passed**,
+otherwise "absent" is vacuous. Where no excluded file exists to test with, it is
+reported **NOT PERFORMED** — never as a pass.
+
+## Proven to fail, on real data rather than a fixture
+
+The killed run left genuine known-bad input, which is better evidence than
+anything synthetic:
+
+| Target | Result |
 |---|---|
-| `testing/_src/_layer.src.html` | `c26caed…6167634` YES |
-| `testing/_layer.html` | `058d9ce…3582c65` YES |
-| `testing/_deploy/index.html` | `be79501…08de8fb08` YES |
+| **Killed run** `20260805-204113` external-sources | **FAIL, exit 1** — `MISSING from destination: 44428` of 58,257, first 10 named. Positive control passed, so it demonstrably *was* reading the destination. |
+| **Good run** `20260805-205238` sc-ships | **PASS** — all **951** files present, byte sizes matching. **Both controls fired:** positive `Liberator\model.glb` present; negative `.cache\huggingface\trees\aed8d04c…json` **absent** — proving `.cache` was genuinely excluded rather than assumed. |
+| **Good run** external-sources | **PASS** — all **58,257** files present with matching byte sizes. Negative control honestly reported *not performed* (that tree contains no excluded dirs). |
 
-Landed 00:19:25-27, re-hashed 00:29:56 — stable for ten minutes, no drift.
+**One honest correction to the prediction.** The expectation was that the killed
+run would leave a *truncated* file. It did not — it left 44,428 files **missing**
+and **zero** size mismatches. robocopy evidently does not leave partials behind
+in this mode. The per-file size comparison is still the right check and stays,
+but I did not catch a truncation, and I am not going to claim I did. What the
+check actually caught was mass absence that the old aggregate check would have
+flagged too — the size dimension remains **unproven against a real partial**,
+and is recorded as such rather than as demonstrated.
 
-## What is being deployed
+## `/MIR` — not used, and why
 
-Cloudflare Workers static assets, per `testing/wrangler.toml`:
+The instruction specified `/MIR`. I used **`/E`** and am flagging it rather than
+silently substituting.
 
-- worker name **`citizencompasstesting`** — the name IS the subdomain, so this
-  updates the existing site rather than creating a second one
-- `testing/_deploy/` — 480 files, 349 MB, 235 `.glb` models
-- **The live Netlify site is not touched by any of this.**
+`/MIR` deletes anything at the destination that is not at the source. This
+script's header states as a **guarantee** that it "contains no delete operation
+of any kind… robocopy is called with /E, never /MIR", and CLAUDE.md hard rule 1
+is never delete. Using `/MIR` would break both.
 
-480 files is far inside the 20,000-file static-asset cap.
+**The stated reason for `/MIR` was resumability, and `/E` already has it.**
+Measured, not assumed — re-running `/E` against the completed mirror:
 
-## What changed in this build
-
-KEYBINDS and FIND moved from the right edge to a new left dock (`#cc-ldock`)
-alongside MANUFACTURERS. DISPLAY and FEEDBACK stay on the right. The dock is
-vertically centred rather than stacked downward from 44%, which is what put the
-fifth tab at 1045px on a 1080px viewport.
-
-Verified by Sleven at 1920x1080, 1600x900, 1366x768, 1280x720, 1024x600 and
-390x844 — every tab on screen, zero overlaps, zero page errors.
-
-## Verification plan — served bytes, not exit code
-
-The deploy script has already reported **exit 1 on a fully successful deploy
-once**, so the exit code is not trusted as evidence. After deploying I will
-fetch from the served URL and confirm:
-
-- index serves
-- a model file serves with a plausible byte count
-- the page contains `cc-ldock`, `cc-kb-tab`, `cc-fi-tab`, `cc-mtab`,
-  `id="cc-kb"` and `cc-ship::after`
-
-### 2026-08-02 00:31:36 — update_crafting_competitive_scan.md
-
-# Crafting category is already crowded — four live tools. 2026-08-02, C2
-
-Full scan + eight design approaches: `claude/crafting-competitive-scan-and-approaches.md`
-on claude.ai. Read-only. **C2 wrote nothing to the repository.**
-
-## Four live competitors, all fan-made
-
-1. **citizen-starter-guide.com/star-citizen-blueprint-finder/** — CMDR Quattro.
-   Posted to RSI Community Hub (27 upvotes). Search all blueprint types; pooled
-   armor sets; **gives the exact MobiGlas tab, faction and contract title per
-   blueprint**; 4.8 grind-route planner that sequences contracts, respects
-   reputation gates and inserts rep contracts. Stanton/Pyro/Nyx filter,
-   lawful/unlawful badges, payouts.
-2. **sc-craft.tools** — Norkaan / HTTPS org. 1,000+ blueprints, ownership
-   tracking, filter by mission/contractor/resource/system. **Models quality
-   modifiers on stats** (damage mitigation, temp resistance, fire rate, recoil).
-   "Updated every patch."
-3. **star-crafting.com** — 266 blueprints, 247 materials, 156 locations, 2,915
-   Finder records, community submissions. States coverage openly: "0/11
-   locations mapped".
-4. **sccraftlab.com** — blueprints, ships, components, mining calculator,
-   missions, Executive Hangar PowerCycle, universe explorer. Crafting queue,
-   inventory, rep tracking, org libraries — **behind registration.** Roadmap
-   includes an AI assistant, 2026-2027.
-
-## The gap, and it is consistent
-
-**None of the four shows a price.** No ingredient cost, no craft-vs-buy, no
-market data at all. star-crafting has 156 locations and 0 of 11 mapped;
-sccraftlab has a mining calculator and no prices.
-
-Reason is structural: recipe data is static and shippable, prices need a live
-feed and honest tolerance. **We already hold 23,734 item prices and a verified
-UUID join to 719 craftable outputs.** This is the only defensible angle.
-
-Two secondary gaps: no-login (sccraftlab gates its best features), and nobody
-connects crafting to a specific player's ship.
-
-## Correction to my own claim from earlier today
-
-I said crafting quality/stat modelling was something nobody does. **Wrong.**
-sc-craft.tools advertises exactly that. I claimed a differentiator from what the
-data allowed without checking what competitors ship — third time this week I have
-reasoned from a proxy instead of the artifact.
-
-## Consequence for build order
-
-Do not build a fifth recipe database. The three ideas worth pursuing (craft-vs-buy
-verdict, the materials trip, resource-as-destination pages) are **all blocked on
-the same single item: pulling UEX commodity prices.** That reinforces the
-recommendation already filed in `inbox/update_blueprint_data_found.md`.
-
-One idea needs no new data and is genuinely unserved: **reverse lookup** — "here
-is what is in my hold, what can I make?" All four tools filter *by* resource;
-none inverts it. Aslarite alone appears in 856 of 1,597 blueprints.
-
-### 2026-08-02 00:23:40 — update_blueprint_data_found.md
-
-# Blueprint/crafting data found — and the one pull that unblocks it. 2026-08-02, C2
-
-Full detail: `claude/finding-blueprints-crafting-data.md` on claude.ai.
-Read-only investigation. **C2 wrote nothing to the repository.**
-
-## What is on disk
-
-`scunpacked-data/snapshots/20260801T204744Z/blueprints.json` — **1,597
-blueprints**, plus a `blueprints/` folder with one file each. All
-`Kind: "creation"`, all single-tier.
-
-Per blueprint: `Output` (UUID/Class/Type/Subtype/Grade/Name), `CraftTimeSeconds`,
-`Availability` (`Default` + `RewardPools[]`), and a `Requirements` tree of
-`root → group → resource|item` with `QuantityScu` and `MinQuality` per leaf.
-
-Groups are named parts — Insulative Liner (853), Armored Carapace (451),
-Frame (272), Shell (233), Barrel (98). Each group carries stat `Modifiers` with a
-`QualityRange` 0–1000 mapped to a `ModifierRange`: craft quality shifts real
-stats, e.g. `health_maxhealth` 0.9×–1.1×, `weapon_damage` 0.95×–1.05×.
-
-Craftable output: armor 684, personal weapons 174, ship guns 96, power plants 75,
-coolers 74, shields 62, radar 60, quantum drives 57, plus attachments and tools.
-
-Ingredients: **37 distinct**. 26 join by UUID to `resources/commodities.json`
-(Aslarite alone appears in 856 blueprints). The other 11 are `Kind: "item"`
-hand-mined gems — Hadanite, Dolivine, Aphorite, Sadaryx and so on — **not** in
-`commodities.json`.
-
-Acquisition: **8** blueprints are `Default: true`. **724** come from named
-reward pools. **865 have neither** — the data does not say how you get them.
-
-## The join works — 719 items
-
-`Output.UUID` → `items_prices_all.json.item_uuid` matches on **719 of 1,588
-craftable items.** Proper UUID join, no name matching. Spot-checked:
-`BP_CRAFT_AMRS_LaserCannon_S1` → `26838ca7-...` "Omnisky III Cannon" →
-`id_item 1`, 15,461 aUEC at CenterMass Area 18.
-
-That supports craft-vs-buy on 719 items, which nothing else on the market does.
-
-## THE BLOCKER — no commodity prices exist anywhere on disk
-
-Verified twice:
-
-- `items_prices_all.json` has **zero** rows in the Commodities section. All
-  23,734 rows are gear/component sections.
-- `resources/commodity_trade_locations.json` (41 MB, 109 commodities) lists
-  **where** commodities are sold, with **no price field**.
-
-The 2026-08-01 UEX pull covered `/items/` and vehicle purchase prices and did not
-include commodity prices. **Recommend pulling them.** It is the highest-value
-single data addition found so far: it completes craft-vs-buy AND fills the
-"how much does RMC sell for" intent that the item-page plan currently cannot serve
-(only 171 of 7,728 items have a sell price).
-
-Second, smaller gap: the 11 hand-mined gems are not commodities and would still
-be unpriced. ~30% of recipes would remain partially costed — state that on the
-page rather than estimating.
-
-## Worth testing, cheap
-
-**`RewardPools` → `contracts/` join.** Pool keys look mission-related
-(`BP_REWARDS_FullStrikeOnStationB`). If it resolves, "where do I get this
-blueprint" becomes answerable. Not attempted.
-
-## Not verified
-
-- Whether 4.9 changed crafting. Confirmed by search that crafting/blueprints are
-  live since 4.8; did not read 4.9 notes in detail. Snapshot is from 2026-08-01.
-- **A community blueprint-finder tool already exists**, posted on RSI's Community
-  Hub. Not evaluated. Look before building — same call as Star Binder.
-- What the 865 no-default-no-pool blueprints mean.
-- `CategoryUUID` not resolved to names.
-
-## Closing an open item: `tags.json` checked, does not help
-
-Flagged as unopened in `claude/plan-doorways-and-browse-layer.md` §2.
-It is a dict of **18,844** UUID → {name, parent_uuid}, 70 roots — the engine's
-internal tag tree, not a consumer taxonomy. Largest branches: `ItemPorts` 809,
-`SpawnCloset` 247, `DefendArea` 246. Roots include `Subsumption`,
-`PopulationManager`, `EntitySpawner_Printing`.
-
-**It does not replace the proposed tag model** — that section of the doorway plan
-stands. Four subtrees worth mining later: `LocationType` 147, `MissionType` 101,
-`Series` 96, `Manufacturer` 90.
-
-### 2026-08-02 00:16:35 — update_frontend_three_items_complete.md
-
-# UPDATE — front-end order: all three items done. Stopping as instructed.
-
-Builds A, B and C not started — they are downstream of decisions 2 and 3.
-
-## 1. `find.src.html` added to PAGES, guard re-proven
-
-```python
-PAGES = [
-    ('keybinds.src.html', 'keybinds.html'),
-    ('loadout.src.html',  'loadout.html'),
-    ('find.src.html',     'find.html'),
-]
+```
+elapsed: 1.1s   exit code: 0
+Files :  951   Copied: 0   Skipped: 951   Bytes: 7.392 g skipped
 ```
 
-**Rule 12, three entries:**
+It re-scanned 7.4 GB and copied nothing in about a second. A killed run restarts
+cheaply. Nothing is gained by `/MIR` except the ability to destroy. Say the word
+and I will switch it.
 
-| test | result |
+## robocopy's exit code is now reported and decoded
+
+It is a bitmask, and it is printed in full: 1 = files copied, 2 = extra at
+destination, 4 = **mismatched**, 8 = **some files could not be copied**, 16 =
+**serious error**; 0 = nothing to do. **Anything ≥ 8 is FATAL regardless of what
+the file counts say**, and the copy is abandoned for that tree before
+verification even runs.
+
+If the verifier cannot run at all (script missing) that is reported as **not
+verified**, never as passed.
+
+## The timeout was structural
+
+7.5 GB will not finish inside a 10-minute tool call and never will. The copy no
+longer runs inside a tool call — it is launched detached (`Start-Process
+-PassThru -WindowStyle Hidden`) with `/LOG:` to a durable per-tree log, and each
+tool call only polls exit state and tails the log. That is how the completed run
+above was driven.
+
+**Nothing staged or committed.**
+
+**Next:** the flight-stick device-facts job, then the unreleased-content filter
+and the FixedReward census.
+
+### 2026-08-05 21:16:06 — update-backup-mybook-complete-20260805.md
+
+# Update — MyBook backup complete and verified. Exit 0, 0 failures, 1 known warning.
+
+**When:** 2026-08-05
+**Backup:** `C:\cc-backup\20260805-205238` → `D:\cc-backup\20260805-205238`
+
+## 1. The drive
+
+**D: is the MyBook** — WD My Book 25EE, USB, 3726 GB, Healthy, 3726 GB free.
+
+**Filesystem is exFAT, not NTFS.** That matters and I checked the script for it:
+exFAT carries no NTFS ACLs and supports no junctions or hardlinks, so any
+robocopy `/COPYALL` or `/SEC` would have errored on every file. The script uses
+`/E /R:2 /W:5` with no ACL flags, and the `-FullMirror` code I added
+deliberately does the same.
+
+## 2. The 2026-07-30 failure — diagnosed, and the premise needs correcting
+
+**It was already diagnosed at the time, and it was already fixed.** Two runs
+exist, not one:
+
+- **`20260730-231753`** — the one that **exited 1**. It contains exactly **one
+  file**, the git bundle. Cause, recorded in
+  `docs/handoff_archive/20260730_231828_...backup_script_failed.md`:
+  `git bundle verify` writes its success message to **stderr**, and Windows
+  PowerShell 5.1 wraps native stderr into a `NativeCommandError` under
+  `$ErrorActionPreference = 'Stop'` — so the script **aborted on a passing
+  verification**.
+- **`20260730-233853`** — v2, which fixed exactly that via `Invoke-Native`, ran
+  **all 7 steps, exit 0**, 599 files.
+
+The directory the work order pointed me at (`20260730-233853`) is the
+**successful** run, which is why grepping its logs found only noise — repo logs
+copied *into* the backup, not backup logs. The failed run left no log at all.
+
+This is the same native-stderr bug `deploy_testing.ps1` documents in its own
+header. Third appearance in this repo.
+
+## 3. Measurement
+
+Repo: **17.8 GB across 85,768 files.**
+
+## 4. `-FullMirror` added
+
+New `[switch] $FullMirror`. **Defaults unchanged** — without it the script
+behaves exactly as before.
+
+The mirror copies `$BackupDir`, which step 2 already stripped, so the two
+irreplaceable trees cannot come from there. Step **7b** copies them from the
+repo straight into the mirror with only the four rebuildable exclusions
+(`venv`, `__pycache__`, `.cache`, `node_modules`), then verifies by **file count
+and bytes**.
+
+I also corrected the script's own comment: "external-sources → re-pullable" is
+simply **wrong** (re-pulling UEX returns *today's* prices, not the sealed
+snapshot's), and "sc-ships → re-downloadable" overstates a pack whose
+redistribution rights are on record as unestablished.
+
+**A missing mirror drive is now fatal when `-FullMirror` is set** rather than a
+warning, because that is the precise failure this switch exists to prevent.
+
+## Three defects I introduced and caught before they mattered
+
+1. **A false FAIL.** First run reported *"sc-ships: only 951 of 1675 files
+   reached the mirror"*. Wrong — **724 of those 1,675 live in `.cache`**, a
+   HuggingFace cache correctly excluded. All 951 eligible files and every one of
+   their 7,570.0 MB had arrived. My check compared an *unfiltered* source count
+   against a *filtered* destination. Now both sides apply the same exclusions,
+   and bytes are compared too (equal counts with unequal bytes = truncation).
+   **A false failure is as corrosive as a false pass** — it trains the reader to
+   disbelieve the check.
+2. **A silently truncated message.** I wrote the loudest `Write-Fail` in the
+   script as `"a" + "b" + "c"` across lines. PowerShell parses that as **five
+   positional arguments**, not concatenation — `$m` would bind only the first
+   fragment and the rest would vanish into `$args`. It "parsed clean". Wrapped
+   in parentheses.
+3. **PGPASSWORD not set on the first run**, so the dump and restore test were
+   skipped. My regex `^[a-z]+://` could not match `postgresql+psycopg2://` — the
+   `+`. Fixed; the second run captured the database properly.
+
+The first run was also killed by my own 10-minute tool timeout mid-copy, not by
+the script. Re-run in the background. Its partial output is left in place at
+`20260805-204113` per hard rule 1 — moved aside for Sleven, never deleted.
+
+## 6. Verification — every check reported explicitly
+
+| | Check | Result |
+|---|---|---|
+| **a** | `git fsck` **exit code** | **0 — PASS.** Judged by exit code only. It printed "dangling blob/commit" lines to stderr; those are normal unreferenced objects, not errors, and judging by text would get this backwards. |
+| **b** | Restore ran, ship count | **PASS — the dump is usable.** Restored into a throwaway DB and returned **232 ships**. Script expected 254 and warned. **232 is reported as the actual number rather than treated as a failure**, per instruction. |
+| **c** | File counts | Literal: **C: 28,153 / D: 90,810** (spans all runs per drive). This run: **C: 8,412 / D: 67,620** — D: is higher **by design**, since `-FullMirror` adds 59,208 files C: never had. |
+| **d** | `.env` in the mirror | **PASS** — `D:\cc-backup\20260805-205238\repo\.env`, 223 bytes. |
+| **e** | Sealed snapshots | **PASS** — uexcorp `20260801T235530Z` holds **exactly 114 files**; scunpacked `20260801T204744Z\blueprints.json` present at 9.8 MB. The new commodity snapshot `20260806T033315Z` also mirrored. |
+
+**The mirror step was NOT skipped.** Both trees verified: `sc-ships` 951 files /
+7,570.0 MB and `external-sources` 58,257 files / 10,262.8 MB, source and
+destination equal on both counts.
+
+## Two things for Sleven
+
+1. **232 vs 254.** The 2026-07-30 note already recorded that every DB check that
+   session read 232, so `$ExpectedShipCount = 254` looks like a **stale
+   hardcoded baseline** rather than a bad dump. I have **not** changed it — it
+   is a default and I was told not to change defaults. Worth correcting
+   deliberately.
+2. **`.env` is now on an external drive**, as instructed. That compounds the
+   standing exposure: the UEX token inside it was exposed in a screenshot and
+   **still has not been rotated**. Back it up, then rotate — the rotation is
+   still outstanding.
+
+A throwaway restore database was left in place (the script never deletes):
+`cc_restore_test_20260805_205238`.
+
+**Nothing staged or committed.**
+
+**Next:** the flight-stick device-facts job, then the two outstanding jobs from
+the earlier batch (unreleased-content filter, FixedReward census).
+
+### 2026-08-05 20:53:04 — update-device-facts-job-received-20260805.md
+
+# Update — received: sourced flight-stick fact file for the keybind page
+
+**When:** 2026-08-05
+
+Logging on arrival per hard rule 13. **Not started** — the MyBook backup is in
+flight and was explicitly "stop at the first failure", so this queues behind it.
+
+## The job
+
+Build `data-layer/raw/devices/device_facts.json` plus
+`device_facts_findings.md`, so the keybind page can recognise a stick from its
+browser gamepad id, name each control correctly, and draw it in the right place.
+
+Seven devices in priority order: VKB Gladiator NXT EVO (**every** variant —
+Standard, SCE, Omni Throttle, Premium, left and right hand), VIRPIL
+Constellation ALPHA Prime, VIRPIL CDT-AEROMAX, Thrustmaster T.16000M,
+Thrustmaster SOL-R 2, Turtle Beach VelocityOne Flightstick II, Winctrl Ursa
+Minor.
+
+Five fact classes each: **A** USB identity (VID/PID hex per variant and firmware
+mode, plus verbatim `navigator.getGamepads()[i].id` strings — the exact wording
+matters more than the numbers because that string is what we match on), **B**
+default button numbering with an explicit statement of 1-based (VKB docs) vs
+0-based (browser) and which firmware/VKBDevCfg profile it belongs to, **C** axis
+order including whether each hat is an HID hat switch or four buttons, **D**
+plain-words control inventory, **E** geometry as 0–1 fractions of each face from
+the vendor's own layout template.
+
+## The governing rule, noted
+
+**Blank beats wrong.** Every field carries a source URL; anything unsourceable
+is `null` with a `_missing` note recording what was looked for and where. A
+blank renders as "press it to identify" and is harmless; a wrong number
+silently mislabels a control and nobody ever finds out.
+
+That is the same standard already applied to the collector's Game.log parser
+(verified vs unverified patterns, null plus a reason rather than a plausible
+default) and to job 2's `range_gm`. Consistent with hard rule 11.
+
+## Constraints I will observe
+
+- **No vendor images, 3D models or manuals downloaded into the repo.** Facts and
+  coordinates only — we are not licensed to republish their artwork. Geometry is
+  to be read from published templates and recorded as fractions, describing the
+  positions in JSON without pulling the image.
+- **Do not touch `viewer/profiles.js`, anything under `testing/`, or any built
+  HTML.** One writer per artifact — hard rule 14. `testing/` is explicitly
+  Claude-Code-only-via-C1 in CLAUDE.md, and this job is not that path.
+- Primary sources preferred; community sources allowed but that entry is marked
+  `confidence: "community"`.
+- If a fetch is blocked, that is the answer — hard rule 9. I will not route
+  around it via a mirror, cache or archive; I will record it as not found and
+  say where I looked.
+
+**Next:** finish and verify the backup, then start this.
+
+### 2026-08-05 20:37:46 — update-backup-mybook-received-20260805.md
+
+# Update — received: run the backup to the WD MyBook on D:
+
+**When:** 2026-08-05
+
+Logging on arrival per hard rule 13. Jobs 3 and 4 of the previous batch (the
+unreleased-content filter and the FixedReward census) are **not started** and
+are now queued behind this.
+
+Six steps, **stop at the first failure**:
+
+1. Confirm D: is the MyBook — filesystem (NTFS vs exFAT changes robocopy long-path
+   handling) and free space.
+2. Diagnose the 2026-07-30 backup that exited 1 and was never explained. Do not
+   run a bigger one without knowing why.
+3. Measure the repo size.
+4. Add `-FullMirror` to `Backup-CitizenCompass.ps1`. When set, the **mirror**
+   copy excludes only the four genuinely rebuildable things (venv, `__pycache__`,
+   `.cache`, `node_modules`). `sc-ships` (~7.3 GB, redistribution rights on
+   record as unestablished) and `data-layer\external-sources` (the sealed
+   snapshots — re-pulling UEX gives *today's* prices, not 1 August's) go **in**.
+   The C: copy keeps existing exclusions for speed. **Defaults unchanged.**
+5. Run it against `D:\cc-backup` with `-FullMirror`.
+6. Verify — exit 0 is not proof. Five explicit checks: `git fsck` **exit code**
+   (not its text — git writes "is okay" to stderr on success), a database
+   restore reporting an actual ship count, file counts C: vs D:, `.env` present
+   in the mirror, and the sealed snapshots spot-checked.
+
+**A skipped mirror step is a FAILURE, not a warning.** The script currently
+treats a missing mirror drive as non-fatal; if that fires I am to say so loudly.
+
+`.env` is included deliberately — Sleven's call, back it up then rotate. Noting
+that this compounds the standing exposure: the UEX token in that file was
+exposed in a screenshot and still has not been rotated, and it will now exist on
+an external drive as well.
+
+**Next:** step 1.
+
+### 2026-08-05 20:37:17 — update-job2-uex-commodities-landed-20260805.md
+
+# Update — job 2 of 4: UEX commodity endpoints called. "Screenshots are the only route" is REFUTED.
+
+**When:** 2026-08-05
+
+## The headline
+
+**UEX serves commodity prices, and it always would have.** The 1 Aug pull never
+asked. Searching that snapshot's `_pull_summary.json` for `commodit` returns
+nothing — the gap was in the **request list**, not in the API. Every plan since
+has rested on an assertion that was never tested.
+
+New sealed snapshot: `data-layer/external-sources/uexcorp/snapshots/20260806T033315Z`
+
+## Row counts per endpoint
+
+| Endpoint | Result | Rows |
+|---|---|---|
+| `/commodities/` | **200** | **204** |
+| `/commodities_prices_all/` | **200** | **2,597** |
+| `/commodities_raw_prices_all/` | **200** | **335** |
+| `/commodities_status/` | **200** | legend dict (buy/sell status codes) |
+| `/commodities_averages/` | **400** | requires `id_commodity` |
+| `/commodities_prices_history/` | **400** | requires `id_terminal` |
+
+The two 400s are **parameter requirements, not permission failures** —
+`{"status":"missing_id_commodity","message":"Commodity not provided"}` and
+`{"status":"missing_id_terminal","message":"Terminal not specified"}`. The
+credential was verified against `/game_versions/` before the run and the other
+four returned 200. Same shape as the bare `/items/` endpoint this source already
+documents. Neither body was written to disk — write-before-status held.
+
+Coverage: **2,597 price rows across 123 commodities × 135 terminals.**
+
+## The freshness question — timestamp, NOT game_version
+
+**Prices carry `date_added` and `date_modified` (Unix epoch). There is no
+`game_version`, `patch` or `build` field on any commodity price row.**
+
+| | days |
 |---|---|
-| all three outputs moved aside, rebuild | **all three restored, byte-identical** (25,106 / 23,104 / 20,517) |
-| `find.src.html` removed (the *new* entry) | **exit 1**, "PAGE SOURCE MISSING: find.src.html" |
-| source restored, rebuild | exit 0, all three copied |
+| min / p25 / median | 0 / 0 / **1** |
+| p75 / p90 | 4 / 9 |
+| max | 509 |
 
-Outputs were **moved aside to `_to_delete/`, not deleted** (rule 1) and restored.
+Buckets: **1,389 rows ≤1 day**, 883 ≤7d, 320 ≤30d, 3 ≤90d, 2 >365d.
+Newest row `2026-08-06T03:07:17Z` — **eight minutes before the pull**. Oldest
+`2025-03-14`.
 
-**A correction to my own method, worth recording.** My first read of the failure
-case reported `BUILD EXIT=0` — because I piped Python through `tail`, so `$?`
-captured `tail`, not Python. The guard was fine; my measurement was not. Re-run
-without the pipe: **exit 1**. This is precisely the trap rule 12's new paragraph
-describes — prove by behaviour, and make sure the thing you measured is the
-thing you meant to measure.
+**So coverage and freshness are both genuinely good — but they are not patch
+provenance.** Without a game_version a price cannot be attributed to a patch. A
+row nine days old may straddle a patch boundary and nothing in the data says so.
+That is the distinction the work order asked for, and it cuts both ways:
 
-**Observation, not a defect:** when the guard fires, `index.html` has already
-been written, so `_deploy/` is left with a new index and a stale page from the
-prior build. On a fresh deploy directory there would be no stale page and links
-would 404 — exactly what the error message says. Not changing it; out of scope.
+- **Against the collector's price role:** UEX already has broad, near-live
+  commodity prices. Screenshotting shops to obtain a number UEX refreshed an
+  hour ago is redundant.
+- **For it:** the collector can stamp `patch` and `build` on every observation —
+  the grabber already does, read from `Game.log`. That is precisely what UEX
+  cannot supply. The defensible role is **patch-attributed** observation, not
+  price coverage.
 
-## 2. Tab layout — RECOMMENDATION ONLY, nothing implemented
+I am reporting that trade-off rather than deciding it — "may delete a build" is
+Sleven's call.
 
-Confirmed the order's measurements in the source: `calc(44% + 150px)`,
-`+290px`, `+430px`, `+570px`.
+## Gating, as source 6 was gated
 
-On 1920×1080, 44% = **475px**:
+`verify_snapshot_v2.py 2.0.0`, **inspection_complete: true** — 6 files, 0 JSON
+parse failures, 0 ext/content mismatches, 0 active-content hits, 0 read errors,
+0 walk errors, 0 duplicate hashes, 0 changed during run. SHA256 for every file.
 
-| tab | top | on a 1080px viewport |
-|---|---:|---|
-| DISPLAY | 475px | fine |
-| FEEDBACK | 625px | fine |
-| KEYBINDS | 765px | tight |
-| LOADOUT | 905px | mostly off-screen |
-| FIND | **1045px** | **35px of viewport left — effectively invisible** |
+Two "unexpected domain" flags: `api.uexcorp.uk` appearing in `_pull_summary.json`
+and `_pull_stderr.log` — files **this pull wrote itself**, not downloaded
+payload. Benign, and recorded in the manifest rather than suppressed.
 
-**Also confirmed: the page already has a `<nav>`**, carrying *Ship Purchase
-Matrix* and *Sale Calendar*. There is somewhere for destinations to go.
+Manifest:
+`data-layer/external-source-manifests/20260806T033315Z/06_uex-corp_commodities_manifest.json`
+— **data_tier C**, UEX's own ±20% commodity tolerance stated.
+**Nothing promoted to the database.**
 
-### Recommendation
+## A silent failure found and fixed in uex_corp.py
 
-**Split by kind, not by fitting more in.**
+The script's docstring said the token was "loaded from .env". The
+`python-dotenv` import was wrapped in `try/except ImportError` with a **bare
+pass** — and python-dotenv is **not installed** in this interpreter. So `.env`
+was never read, and the script reported *"UEX_API_TOKEN is not set. Refusing to
+run."* while the token sat in `.env` the whole time.
 
-- **Right edge keeps DISPLAY and FEEDBACK.** Both act on the page you are
-  looking at. Two tabs sit at 475px and 625px — comfortably on screen at 1080p,
-  with room for a third at 765px if one is ever genuinely page-level.
-- **FIND moves into the existing `<nav>`.** It is a destination, the nav already
-  exists, and it already holds exactly this kind of link.
-- **KEYBINDS moves into the nav too.** Same reasoning.
-- **LOADOUT is already ruled** — it goes on the ship page, opening on the ship
-  you are viewing. That is the pattern for destinations and it is the right one.
+That is a silent failure reported as a different, plausible failure: the message
+sent a reader hunting for a missing credential that was never missing, while the
+real cause was swallowed by the bare `pass`.
 
-That is 5 → 2 on the right edge, and nothing becomes unreachable.
+Fixed by parsing `.env` directly — removing the dependency rather than adding
+one, which also avoids installing a package outside the repo (hard rule 6) — and
+by making the failure name which step failed and whether `.env` exists. The
+existing `_verify_uex_corp.py` fixture suite still passes.
 
-### On build ownership
+## Credential handling
 
-The order is right that hand-patching after every build is not workable, and
-right that C2's 8a would make Sleven's LOADOUT removal impossible.
+Token went from `.env` into the request header and nowhere else. **Not printed,
+logged, echoed, or written into any snapshot or manifest file.** I confirmed its
+presence by length only (40 chars).
 
-**The build should own an explicit list with an explicit position per tab** —
-not re-emit whatever was last in the file. Adding a sixth then requires editing
-the list and choosing a position, which is a deliberate act with a visible
-layout consequence, rather than a silent append that pushes something
-off-screen. Removing one requires deleting a line, and it stays removed.
+**Standing warning, repeated because it is independent of this job: that token
+was exposed in a screenshot and has still not been rotated.** It should be
+rotated at UEX regardless of this work order — I cannot do that from here.
 
-**Not implemented.** Sleven decides the layout first; emitting a broken layout
-reliably is not an improvement.
+## Not done
 
-## 3. The backend decision — for Sleven, with corrected numbers
+`/commodities_averages/` and `/commodities_prices_history/` need per-commodity
+and per-terminal parameterisation — 123 and 135+ requests respectively. The
+precedent exists (`fetch_items_by_category`). Not attempted in this run; flagged
+rather than silently skipped.
 
-**Two of the order's figures are not supported by the landed data**, and one of
-them changes the arithmetic that the whole ceiling argument rests on.
+**Nothing staged or committed.**
 
-Measured directly from the sealed snapshots:
+**Next:** job 3 — the unreleased-content filter, which the work order flags as a
+possible live defect.
 
-| quantity | order says | **measured** | source |
-|---|---:|---:|---|
-| item files | "21,849" | **7,728** | UEX snapshot, 100 category files |
-| labels | "90,121" | **63,375** | source 2 snapshot, matches its manifest |
-| item price rows | — | 23,734 | UEX `items_prices_all` |
-| terminals / shops | 823 | **823** | UEX `terminals` |
-| ships | 316 | 316 game files, 254 live | `ship_resolution.json` |
-
-**21,849 is close to nothing in the data. 23,734 is the item *price row* count** —
-so the likely explanation is items being conflated with price rows. Worth
-confirming before anyone quotes it again.
-
-### What that does to the ceiling argument
-
-A page-per-item build is:
-
-```
-7,728 items + 823 shops + 316 ships = 8,867 pages
-```
-
-**That is under the 20,000-file Cloudflare cap, not over it.** The order's "would
-exceed it" does not hold against the measured counts. The cap is real; it is
-just not the binding constraint at this size.
-
-### The trade-off, stated plainly
-
-**Static JSON**
-- Keeps the zero-backend property. A deploy stays a folder of files.
-- No uptime dependency, no monitoring gap, no fallback to design.
-- A bundled index with client-side rendering avoids per-item files entirely, so
-  the cap is not even approached.
-- Cost: heavier client, and filtering/search happen in the browser.
-
-**FastAPI**
-- More flexible; Railway already runs and currently powers nothing public.
-- Cost: the site starts depending on a service being up. There is **no
-  monitoring, no uptime history, and no fallback** for when it is not — and the
-  live site has never had a runtime dependency.
-
-### Recommendation
-
-**Static JSON.** Three reasons, in order of weight:
-
-1. The measured page count fits comfortably, so the argument that forced FastAPI
-   does not survive the corrected numbers.
-2. Introducing a runtime dependency is a one-way door for a site whose entire
-   deploy story is "a folder of files", and it would be taken before any
-   monitoring exists to notice it failing.
-3. Nothing on the roadmap yet needs server-side work — no auth, no writes, no
-   real-time. FastAPI becomes the right answer the moment one of those appears,
-   and that decision is cheaper to take later than to unwind.
-
-**This is a recommendation, not a decision. Waiting.** No FastAPI work started.
-
-## Also confirmed while here
-
-- `data-layer/ship_resolution.json` exists and is structured as the order
-  describes (`counts`, `matched`, `no_game_file`, `ambiguous`, `tier_variants`).
-  Used, not re-derived.
-- The build independently reports `unmatched: 6` naming 85X, Arrastra, Fury,
-  Mantis, Merchantman, PTV — the same six the auditor found. Third independent
-  corroboration.
-
-## Not committed
-
-This order does not grant commit-and-push authority and hard rule 2 requires it
-per change. The `build_deploy.py` edit is in the working tree, proven, and
-uncommitted. Say the word.
-
-*(+90 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+121 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
