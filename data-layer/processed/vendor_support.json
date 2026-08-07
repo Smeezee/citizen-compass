@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "purpose": "When we cannot solve a user's problem, hand them to the people who made the hardware. Matched by USB vendor ID, which the device panel already reads from the browser Gamepad API.",
+  "match_note": "Match on usb_vid alone, not on product ID. A vendor's support site covers their whole range, and matching on vendor means a stick we have never heard of still routes correctly.",
+  "links_checked": "2026-08-07",
+  "maintenance": "Vendor URLs rot. Re-check these on a schedule and treat a 404 as a defect, not a cosmetic issue - a dead support link is worse than no link, because it reads as us not caring.",
+
+  "vendors": {
+
+    "vkb": {
+      "display_name": "VKB-Sim",
+      "usb_vid": "0x231D",
+      "vid_source": "linux-hardware.org usb:231d-0200, via data-layer/raw/devices/device_facts.json",
+      "say_to_user": "VKB's own forum is where their engineers actually answer. It is not a slick support portal and that is fine - the people replying are the ones who built the stick.",
+      "known_gotcha": "VKB sticks are documented by physical label rather than button number, and what number a control reports is decided by what you set in VKB's own configuration software. Set the stick up in VKBDevCfg first and leave it alone. If you change it later, Star Citizen will see different numbers and your bindings will look broken.",
+      "links": [
+        { "label": "VKB official forum", "url": "http://forum.vkb-sim.pro/", "what_it_is": "The manufacturer's own forum. Best place to ask a real question." },
+        { "label": "Latest firmware and software", "url": "http://forum.vkb-sim.pro/viewtopic.php?t=2918", "what_it_is": "Current firmware and the VKBDevCfg configuration tool." },
+        { "label": "How to update firmware", "url": "http://forum.vkb-sim.pro/viewtopic.php?t=6115", "what_it_is": "Step by step, from VKB." },
+        { "label": "VKBDevCfg user guide (English)", "url": "http://forum.vkb-sim.pro/viewtopic.php?t=2986", "what_it_is": "The official manual for the configuration software. Read this before changing button assignments." },
+        { "label": "VKB downloads", "url": "https://www.vkbgaming.com/downloads/", "what_it_is": "Alternate download mirror." }
+      ]
+    },
+
+    "virpil": {
+      "display_name": "VIRPIL Controls",
+      "usb_vid": "0x3344",
+      "vid_source": "the-sz.com USB ID registry and community Linux device notes, via device_facts.json",
+      "say_to_user": "VIRPIL run a proper ticketed support centre with their own documentation.",
+      "known_gotcha": "VIRPIL's configuration tool programs the stick itself, including shift layers. That happens at the hardware level, before Star Citizen ever sees the device - so if a button reports the wrong thing, fix it there rather than fighting it in the game.",
+      "links": [
+        { "label": "VIRPIL support centre", "url": "https://support.virpil.com/en/", "what_it_is": "Official support, articles and tickets." },
+        { "label": "Downloads", "url": "https://support.virpil.com/en/support/solutions/47000010107", "what_it_is": "Firmware and the VPC software suite." },
+        { "label": "VPC software quick start", "url": "https://support.virpil.com/en/support/solutions/articles/47000029808-vpc-software-quick-start-guide", "what_it_is": "Start here if you have never opened their configurator." },
+        { "label": "Software downloads", "url": "https://software.virpil.com/", "what_it_is": "Direct software index." }
+      ]
+    },
+
+    "thrustmaster": {
+      "display_name": "Thrustmaster",
+      "usb_vid": "0x044F",
+      "vid_source": "device_facts.json, documented confidence",
+      "say_to_user": "Thrustmaster's support site is organised per product, so find your exact model first.",
+      "known_gotcha": "TARGET is Thrustmaster's own software and it is not Star Citizen aware. You do not need it to fly. Star Citizen also ships an official T.16000M dual-stick profile that CIG made with Thrustmaster - that is worth trying before you build anything by hand.",
+      "links": [
+        { "label": "Thrustmaster technical support", "url": "https://support.thrustmaster.com/en/", "what_it_is": "Support home. Pick your product from here." },
+        { "label": "T.16000M support", "url": "https://support.thrustmaster.com/en/product/t-16000m-en/", "what_it_is": "Drivers and manuals for the T.16000M." },
+        { "label": "T.16000M FCS support", "url": "https://support.thrustmaster.com/en/product/t16000mfcs-en/", "what_it_is": "For the FCS packaging and bundles." },
+        { "label": "TARGET: import and run a profile", "url": "https://support.thrustmaster.com/en/kb/1854-en/", "what_it_is": "Only needed if you have chosen to use TARGET." }
+      ]
+    },
+
+    "winwing": {
+      "display_name": "WINWING / WINCTRL",
+      "usb_vid": "0x4098",
+      "vid_source": "community source via device_facts.json - confidence is community, not documented",
+      "say_to_user": "WINWING and WINCTRL are the same hardware under two brand names depending on where you bought it. Either support site should be able to help.",
+      "known_gotcha": "SimApp Pro is WINWING's own device software. It configures the hardware, not Star Citizen. You do not need it in order to bind controls in game.",
+      "links": [
+        { "label": "WINWING downloads", "url": "https://en.winwing.cn/en/download", "what_it_is": "Firmware and SimApp Pro." },
+        { "label": "SimApp Pro", "url": "https://winctrl.com/view/simapppro.html", "what_it_is": "The configuration software and what it does." },
+        { "label": "WINCTRL FAQ", "url": "https://winctrl.com/view/help.html", "what_it_is": "Common hardware questions." }
+      ]
+    },
+
+    "turtle_beach": {
+      "display_name": "Turtle Beach",
+      "usb_vid": null,
+      "vid_source": "NOT KNOWN. device_facts.json has an empty usb_identity for this device because the Flightstick II had not shipped at the time of research. This vendor cannot be auto-detected yet - offer it manually until a real USB ID is captured.",
+      "say_to_user": "Turtle Beach publish a Star Citizen setup guide of their own, which is rarer than it should be.",
+      "known_gotcha": "Their sticks have PC Legacy Modes, and which mode the hardware is in changes which physical controls even exist. Mode 1 and Mode 2 expose different sets of levers. If a control is missing entirely rather than misbehaving, check the hardware mode before anything else.",
+      "links": [
+        { "label": "Turtle Beach support", "url": "https://support.turtlebeach.com/", "what_it_is": "Support home." },
+        { "label": "Star Citizen control configuration guide", "url": "https://support.turtlebeach.com/s/article/VelocityOne-Flight-Control-Configuration-Guide-For-Star-Citizen-On-PC", "what_it_is": "Turtle Beach's own step by step guide for Star Citizen, including where the binding file goes." }
+      ]
+    }
+  },
+
+  "not_yet_covered": {
+    "note": "Vendors we have no verified USB vendor ID for. Do NOT guess an ID to make the join work - an unmatched device should fall through to the generic message, not to the wrong manufacturer's support page.",
+    "generic_fallback": {
+      "say_to_user": "We don't recognise your device yet. Your best route is the manufacturer's own support site, and it is worth telling us what you have so we can add it.",
+      "action": "Show the feedback link, and ask for the device name exactly as the browser reports it."
+    }
+  }
+}

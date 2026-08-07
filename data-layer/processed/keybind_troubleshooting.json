@@ -1,0 +1,250 @@
+{
+  "version": 2,
+  "note_to_maintainers": "Branching diagnostic. Every node is either a question (yes/no), a choice (pick your symptom), or a fix (terminal, with steps). Fixes route back to a retest node so the user is never left at a dead end. Confidence is on the fixes, not the questions.",
+  "start": "q_stick_listed",
+
+  "nodes": {
+
+    "q_stick_listed": {
+      "type": "question",
+      "ask": "Does the game see your stick at all?",
+      "how_to_check": "In game, open Options, then Keybindings. Look at the bottom right of that screen for the device selector. Is your stick offered as one of the choices?",
+      "yes": "q_selector_setting",
+      "no": "fix_not_detected"
+    },
+
+    "q_selector_setting": {
+      "type": "question",
+      "ask": "Is that selector actually set to Joystick / HOTAS right now?",
+      "how_to_check": "Look at what it currently says, not what you can change it to. It usually opens on Keyboard / Mouse.",
+      "yes": "q_button_registers",
+      "no": "fix_wrong_device_selected"
+    },
+
+    "q_button_registers": {
+      "type": "question",
+      "ask": "Press a button on your stick while the game is waiting for input. Does it get picked up?",
+      "how_to_check": "Open Advanced Controls Customization, left-click any action, then double-click it to start listening. Now press a button on the stick.",
+      "yes": "q_axis_registers",
+      "no": "fix_two_sticks_wrong_one"
+    },
+
+    "q_axis_registers": {
+      "type": "question",
+      "ask": "Now move the stick itself, firmly, through its full range. Does the movement get picked up?",
+      "how_to_check": "Try this on an entry named Pitch, Yaw or Roll, not on a button entry. A small nudge is sometimes not enough.",
+      "yes": "c_flying_problem",
+      "no": "fix_axis_vs_button"
+    },
+
+    "c_flying_problem": {
+      "type": "choice",
+      "ask": "Your stick is being detected properly, so binding is working. What's actually going wrong?",
+      "note_to_user": "Pick whichever is closest. You can come back and try another.",
+      "options": [
+        { "label": "The throttle only nudges the ship forward and then stops", "goto": "fix_throttle_axis" },
+        { "label": "An axis is backwards - I pull back and go down", "goto": "fix_inversion" },
+        { "label": "My bindings ended up on the wrong stick", "goto": "fix_device_index" },
+        { "label": "I saved a profile but the game doesn't list it", "goto": "fix_profile_missing" },
+        { "label": "I have a bindings file and don't know where to put it", "goto": "fix_where_file_goes" },
+        { "label": "Everything I set up vanished after a game update", "goto": "fix_patch_wipe" },
+        { "label": "People keep telling me I need extra software", "goto": "fix_extra_software" },
+        { "label": "Something else", "goto": "end_not_covered" }
+      ]
+    },
+
+    "fix_wrong_device_selected": {
+      "type": "fix",
+      "rank": 1,
+      "title": "The game isn't listening to your stick yet",
+      "what_is_happening": "The binding screen opens set to Keyboard and Mouse and stays there until you change it. While it is on that setting the game ignores your stick completely. Your stick is not broken and it is not badly installed. Nothing is listening to it.",
+      "steps": [
+        "On the Keybindings screen, find the device selector at the bottom right.",
+        "Change it from Keyboard / Mouse to Joystick / HOTAS.",
+        "Try binding again."
+      ],
+      "note": "This is the most common reason a new stick owner believes their hardware is faulty. Check it before anything else, and check it again every time you come back to this screen.",
+      "then": "q_button_registers",
+      "source": "RSI support 360000134267 (observed); corroborated by multiple community reports",
+      "confidence": "high"
+    },
+
+    "fix_not_detected": {
+      "type": "fix",
+      "rank": 6,
+      "title": "The game never saw your stick",
+      "what_is_happening": "Star Citizen only looks for controllers once, when it starts. Anything plugged in after that is invisible to it for the rest of the session.",
+      "steps": [
+        "Fully close the game and the launcher.",
+        "Plug the stick in and make sure Windows sees it.",
+        "Start the launcher, then the game.",
+        "Check the device selector again."
+      ],
+      "note": "If Windows can see the stick but the game still cannot after a clean restart, that is a different problem worth asking about.",
+      "then": "q_stick_listed",
+      "source": "Community report, r/starcitizen (claim, widely repeated)",
+      "confidence": "medium"
+    },
+
+    "fix_two_sticks_wrong_one": {
+      "type": "fix",
+      "rank": 5,
+      "title": "It may be listening to a different device",
+      "what_is_happening": "If you have more than one stick, or a throttle as well, the game may be listening to the other one. It identifies devices by the order Windows hands them over, not by what they are.",
+      "steps": [
+        "If you have more than one device, try the selector on each in turn and press a button on the one you are holding.",
+        "To see what the game thinks your devices are, open the console with the ~ key and type: i_DumpDeviceInformation",
+        "If they are in the wrong order, type: pp_resortdevices joystick 1 2"
+      ],
+      "note": "If you only have one stick and nothing registers at all, the stick may not be reaching Windows properly. Check it in Windows' own game controller settings first.",
+      "then": "q_button_registers",
+      "source": "RSI support and starcitizen.tools console reference (observed); community reports on index behaviour",
+      "confidence": "medium"
+    },
+
+    "fix_axis_vs_button": {
+      "type": "fix",
+      "rank": 2,
+      "title": "You're binding movement to a press",
+      "what_is_happening": "An axis is the stick physically moving. A button is a press. The game treats them as completely different, and movement will never register on an entry that only accepts a press.",
+      "steps": [
+        "Find an entry named Pitch, Yaw, Roll or Throttle Axis rather than a button entry.",
+        "Start it listening, then move the stick firmly through its full travel.",
+        "If it still does nothing, go back and confirm the device selector is on Joystick / HOTAS."
+      ],
+      "note": "Buttons working while movement does nothing is a very strong sign the selector slipped back to Keyboard and Mouse.",
+      "then": "q_axis_registers",
+      "source": "Community reports, r/starcitizen (observed quotes)",
+      "confidence": "high"
+    },
+
+    "fix_throttle_axis": {
+      "type": "fix",
+      "rank": 3,
+      "title": "You bound a push instead of an axis",
+      "what_is_happening": "There are separate bindings called Forward, Backward, and Forward / Backward. The first two are a shove, like tapping a key. The third is a real axis that reads where your throttle physically sits. Bound to Forward, the game gives you one nudge and nothing more.",
+      "steps": [
+        "Find the binding named Forward / Backward, not Forward on its own.",
+        "Bind your throttle axis to that one.",
+        "If the ship now flies backwards when you push forward, that is inversion - see the next fix."
+      ],
+      "note": "Almost everyone hits this once. It is not you.",
+      "then": "c_flying_problem",
+      "source": "Community reports, r/starcitizen (observed quotes)",
+      "confidence": "high"
+    },
+
+    "fix_inversion": {
+      "type": "fix",
+      "rank": 4,
+      "title": "Inversion isn't on the keybinding screen",
+      "what_is_happening": "Inversion lives on a different settings tab entirely. This is why people hunt for it on the binding page and never find it.",
+      "steps": [
+        "Leave the keybindings screen.",
+        "Go to the Controls settings and look at the bottom right of that screen.",
+        "Set inversion for the axis you want flipped there."
+      ],
+      "note": "Inversion is widely reported not to survive a game patch. Expect to redo it after major updates. That is the game's behaviour, not something you did wrong.",
+      "then": "c_flying_problem",
+      "source": "Community reports, r/starcitizen (observed quotes)",
+      "confidence": "medium"
+    },
+
+    "fix_device_index": {
+      "type": "fix",
+      "rank": 5,
+      "title": "Your bindings followed the slot, not the stick",
+      "what_is_happening": "Star Citizen identifies sticks by the order Windows hands them over. If that order changes between sessions, your bindings stay with the slot and not with the device.",
+      "steps": [
+        "Plug your sticks into the same USB ports, in the same order, every time. This alone prevents most of it.",
+        "If it has already happened, open the console with the ~ key and type: pp_resortdevices joystick 1 2",
+        "That swaps which stick is device 1 and which is device 2."
+      ],
+      "note": "This is a known quirk of how the game assigns devices, not a fault in your hardware.",
+      "then": "c_flying_problem",
+      "source": "RSI support and starcitizen.tools console reference (observed); community reports",
+      "confidence": "medium"
+    },
+
+    "fix_profile_missing": {
+      "type": "fix",
+      "rank": 8,
+      "title": "The in-game profile list is full",
+      "what_is_happening": "The Control Profiles list only holds a limited number of entries. Your file can be sitting in exactly the right folder and still not appear.",
+      "steps": [
+        "Open the console with the ~ key.",
+        "Type: pp_RebindKeys yourfilename",
+        "Leave the .xml off the end of the name."
+      ],
+      "note": "CIG's own documentation points at this command for exactly this reason.",
+      "then": "c_flying_problem",
+      "source": "RSI support 360000183328 (observed)",
+      "confidence": "high"
+    },
+
+    "fix_where_file_goes": {
+      "type": "fix",
+      "rank": 9,
+      "title": "Where the game looks for bindings files",
+      "what_is_happening": "The game reads binding files from one specific folder, and it only looks when it starts.",
+      "steps": [
+        "Put the .xml file here, adjusting the drive to wherever you installed the game:",
+        "Program Files\\Roberts Space Industries\\StarCitizen\\LIVE\\USER\\Client\\0\\Controls\\Mappings",
+        "Put it there before you launch the game.",
+        "In game: Options, Keybindings, set the device to Joystick / HOTAS, Advanced Controls Customization, Control Profiles, then pick your profile."
+      ],
+      "note": "If you play on PTU rather than LIVE, swap LIVE for PTU in that path.",
+      "then": "c_flying_problem",
+      "source": "RSI support 360000183328 (observed); path independently confirmed by Turtle Beach's own setup guide",
+      "confidence": "high"
+    },
+
+    "fix_patch_wipe": {
+      "type": "fix",
+      "rank": 7,
+      "title": "Patches clear bindings, and it isn't your fault",
+      "what_is_happening": "Some game updates clear or rename bindings. This is a known, recurring thing.",
+      "steps": [
+        "Export your bindings any time you have them working.",
+        "Keep a copy somewhere outside the game folder, where a patch or a reinstall cannot touch it.",
+        "After an update, load your saved file back in rather than rebuilding by hand."
+      ],
+      "note": "This is why exporting matters even if you never intend to share your setup. It is your undo button.",
+      "then": "c_flying_problem",
+      "source": "Community reports, r/starcitizen (observed quotes)",
+      "confidence": "high"
+    },
+
+    "fix_extra_software": {
+      "type": "fix",
+      "rank": 10,
+      "title": "No, you don't need four extra programs",
+      "what_is_happening": "Tools like JoyToKey, Joystick Gremlin and HidHide exist to do things the game genuinely cannot, such as chained commands and macros. Many ready-made binding sets happen to be built on top of them, which is why they get recommended to newcomers who only wanted to fly.",
+      "steps": [
+        "Get your stick working with the game's own bindings first.",
+        "Only add extra software later, if you find a specific thing you want that the game will not do.",
+        "If a downloaded binding set requires extra software, that is a property of that set, not a requirement of the game."
+      ],
+      "note": "Being told to install three or four programs on day one is where a lot of people give up. You do not have to.",
+      "then": "c_flying_problem",
+      "source": "Community reports, r/starcitizen (observed quotes); reasoning is Citizen Compass's own",
+      "confidence": "high"
+    },
+
+    "end_not_covered": {
+      "type": "fix",
+      "rank": 99,
+      "title": "We haven't got an answer for that one yet",
+      "what_is_happening": "This walkthrough covers the problems that stop most people. Yours isn't one of them, which means it is worth telling us about.",
+      "steps": [
+        "Note what you were doing and what happened.",
+        "Send it through the feedback link.",
+        "If we can reproduce it, it gets added here."
+      ],
+      "note": "Saying nothing is the wrong answer here. An honest dead end beats a made-up fix.",
+      "then": null,
+      "source": "Citizen Compass",
+      "confidence": "high"
+    }
+  }
+}

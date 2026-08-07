@@ -1245,6 +1245,7 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
   </div>
   <div class="modes" id="cc-kb-modes"></div>
   <div class="devs" id="cc-kb-devs"></div>
+  <div class="cc-kb-hint"><button type="button" id="cc-kb-hinthelp">Not detecting your stick? Check the device selector first.</button></div>
   <div class="ro" id="cc-kb-ro">
     <div class="rk" id="cc-kb-rk">&mdash; press something &mdash;</div>
     <div class="rmeta" id="cc-kb-rmeta">nothing yet</div>
@@ -3017,5 +3018,364 @@ body.cc-ship-open #cc-mdraw{display:none !important}
     return true;
   }
   if(!build()){ var n=0,iv=setInterval(function(){ if(build()||++n>25) clearInterval(iv); },300); }
+})();
+</script>
+
+<!-- =========================================================================
+     HELP drawer — branching keybind walkthrough + vendor support hand-off.
+
+     WHY THIS IS NOT A REUSE OF THE EXISTING DRAWERS.
+     Every other drawer on this site OVERLAYS the page:
+       #cc-panel  position:fixed right:-380px  z-index:100001
+       #cc-mdraw  position:fixed left:-250px   z-index:99998
+       #cc-fb     position:fixed inset:0       (full-screen modal scrim)
+       #cc-kb     position:fixed inset:0 0 0 46px
+     The translateX(-380px) rules on #cc-fb-tab / #cc-kb-tab / #cc-fi-tab move
+     TAB FURNITURE ONLY, so the tabs are not buried under the panel that just
+     slid over them. Nothing anywhere resizes a content region.
+
+     This drawer has to do the opposite. Somebody following "look at the bottom
+     right of that screen for the device selector" has to be able to SEE the
+     selector while they read the instruction. So the content region shrinks:
+     #cc-kb's right edge moves in by the drawer width and the board reflows
+     into what is left. That is why this uses its own body class
+     (cc-help-open) instead of the shared cc-drawer-open — that class already
+     means "tabs, get out of the way" to three other tabs, and overloading it
+     would make DISPLAY and FEEDBACK start reflowing the page too.
+
+     DATA: both JSON payloads are substituted in by build_deploy.py from
+     data-layer/processed/. The placeholders below are deliberately invalid as
+     content, the build asserts on them, and the renderer refuses to draw if it
+     ever sees one survive — so a missed substitution is loud, never a drawer
+     that quietly renders nothing. Rule 14: data-layer is the only writer.
+     ========================================================================= -->
+<style>
+#cc-help-tab{position:fixed;top:calc(44% + 430px);right:0;z-index:100004;
+  background:#7FE8D4;color:#04231D;border:0;border-radius:7px 0 0 7px;
+  padding:16px 9px;font:700 13px/1 system-ui,sans-serif;letter-spacing:.16em;
+  writing-mode:vertical-rl;cursor:pointer;box-shadow:-3px 0 14px rgba(0,0,0,.42);
+  transition:transform .28s ease;display:block}
+#cc-help-tab:hover{background:#A9F2E4}
+
+/* ---- the shrink. This is the whole point of the drawer. ----------------- */
+:root{--cc-help-w:420px}
+#cc-kb{transition:right .28s ease}
+body{transition:padding-right .28s ease}
+body.cc-help-open #cc-kb{right:var(--cc-help-w)}
+body.cc-help-open{padding-right:var(--cc-help-w)}
+/* the other tabs still have to clear the panel, same as they do for DISPLAY */
+body.cc-help-open #cc-fb-tab,
+body.cc-help-open #cc-kb-tab,
+body.cc-help-open #cc-fi-tab,
+body.cc-help-open #cc-help-tab{transform:translateX(calc(-1 * var(--cc-help-w)))}
+
+#cc-help{position:fixed;top:0;bottom:0;right:calc(-1 * var(--cc-help-w));
+  width:var(--cc-help-w);z-index:100005;
+  background:#0B1626;border-left:2px solid #7FE8D4;
+  box-shadow:-8px 0 44px rgba(0,0,0,.66);
+  display:flex;flex-direction:column;transition:right .28s ease;
+  font:400 15px/1.55 "Segoe UI",system-ui,sans-serif;color:#EDE3D8}
+#cc-help.open{right:0}
+#cc-help *{box-sizing:border-box}
+#cc-help .hd{display:flex;align-items:center;gap:10px;padding:13px 16px;
+  background:#12233A;border-bottom:1px solid rgba(127,232,212,.3);flex:0 0 auto}
+#cc-help .hd h4{margin:0;font:700 16px/1.2 inherit;color:#7FE8D4;letter-spacing:.03em}
+#cc-help .hd .x{margin-left:auto;background:none;border:0;color:#A8BECD;
+  font-size:26px;line-height:1;cursor:pointer;padding:0 4px}
+#cc-help .hd .x:hover{color:#fff}
+#cc-help .bk{background:#0E1B2E;border:1px solid #22364F;color:#93A7B6;
+  border-radius:6px;padding:6px 11px;font:600 12.5px/1 inherit;cursor:pointer}
+#cc-help .bk:hover{border-color:#7FE8D4;color:#EDE3D8}
+#cc-help .bk[disabled]{opacity:.35;cursor:default}
+#cc-help .bd{flex:1 1 auto;overflow-y:auto;padding:16px}
+#cc-help h5{margin:0 0 8px;font:700 17px/1.35 inherit;color:#EDE3D8}
+#cc-help .chk{margin:0 0 15px;padding:10px 12px;border-radius:7px;
+  background:rgba(0,201,167,.08);border-left:3px solid #00C9A7;
+  color:#B9CEDC;font-size:14px}
+#cc-help .chk b{color:#7FE8D4;display:block;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:3px}
+#cc-help .ans{display:flex;gap:9px;margin-top:4px}
+#cc-help .ans button{flex:1;background:#12233A;color:#EDE3D8;border:2px solid #22364F;
+  border-radius:8px;padding:12px;font:800 15px/1 inherit;cursor:pointer;
+  letter-spacing:.05em;text-transform:uppercase}
+#cc-help .ans button:hover{border-color:#00C9A7;color:#fff}
+#cc-help .opts button{display:block;width:100%;text-align:left;margin-bottom:7px;
+  background:#0E1B2E;color:#CFE0EC;border:1px solid #22364F;border-radius:7px;
+  padding:11px 13px;font:600 14px/1.35 inherit;cursor:pointer}
+#cc-help .opts button:hover{border-color:#00C9A7;background:#12233A;color:#fff}
+#cc-help .fixhd{font:700 11px/1 inherit;letter-spacing:.12em;text-transform:uppercase;
+  color:#FF9E4D;margin-bottom:6px}
+#cc-help .what{color:#B9CEDC;font-size:14.5px;margin:0 0 13px}
+#cc-help ol{margin:0 0 13px;padding-left:22px}
+#cc-help ol li{margin-bottom:7px;color:#EDE3D8;font-size:14.5px}
+#cc-help .note{padding:10px 12px;border-radius:7px;background:rgba(255,107,0,.09);
+  border-left:3px solid #FF6B00;color:#E2C6AE;font-size:13.5px;margin-bottom:14px}
+#cc-help .then{width:100%;background:#00C9A7;color:#04231D;border:0;border-radius:8px;
+  padding:13px;font:800 14px/1.3 inherit;cursor:pointer;text-align:left}
+#cc-help .then:hover{background:#33D9BE}
+#cc-help .then small{display:block;font:600 12.5px/1.35 inherit;opacity:.8;margin-top:4px;
+  text-transform:none;letter-spacing:0}
+#cc-help .deadend{padding:11px 13px;border-radius:7px;background:rgba(255,71,87,.10);
+  border-left:3px solid #FF4757;color:#F0C4C8;font-size:13.5px;margin-bottom:14px}
+
+/* ---- vendor hand-off --------------------------------------------------- */
+#cc-help .vend{margin-top:18px;padding-top:15px;border-top:1px solid #22364F}
+#cc-help .vend .vh{font:700 11px/1 inherit;letter-spacing:.12em;text-transform:uppercase;
+  color:#93A7B6;margin-bottom:9px}
+#cc-help .vend .vname{font:800 16px/1.25 inherit;color:#7FE8D4;margin-bottom:4px}
+#cc-help .vend .vdev{font:400 12px/1.4 inherit;color:#6B8091;margin-bottom:10px;
+  word-break:break-word}
+#cc-help .gotcha{padding:12px 13px;border-radius:7px;background:rgba(255,194,77,.11);
+  border:1px solid rgba(255,194,77,.42);color:#FFE0AB;font-size:14px;margin-bottom:12px}
+#cc-help .gotcha b{display:block;font:700 11px/1 inherit;letter-spacing:.11em;
+  text-transform:uppercase;color:#FFC24D;margin-bottom:5px}
+#cc-help .say{color:#B9CEDC;font-size:13.5px;margin-bottom:10px}
+#cc-help .vend a{display:block;color:#7FE8D4;text-decoration:none;padding:8px 10px;
+  border:1px solid #22364F;border-radius:6px;margin-bottom:6px;font-size:13.5px;font-weight:600}
+#cc-help .vend a:hover{border-color:#7FE8D4;background:#0E1B2E}
+#cc-help .vend a small{display:block;color:#8FA6B7;font-weight:400;font-size:12.5px;margin-top:2px}
+#cc-help .ft{flex:0 0 auto;padding:9px 16px;background:#0E1B2E;
+  border-top:1px solid #22364F;color:#6B8091;font-size:11.5px}
+#cc-help .broken{padding:14px;border-radius:7px;background:rgba(255,71,87,.16);
+  border:1px solid #FF4757;color:#FFD5D9;font-size:14px}
+
+/* the one line on the binding screen itself */
+#cc-kb .cc-kb-hint{margin:-4px 0 12px}
+#cc-kb .cc-kb-hint button{background:none;border:0;padding:0;cursor:pointer;
+  color:#FFC24D;font:600 13.5px/1.4 inherit;text-align:left;
+  border-bottom:1px dotted rgba(255,194,77,.55)}
+#cc-kb .cc-kb-hint button:hover{color:#FFE0AB;border-bottom-style:solid}
+
+@media (max-width:900px){
+  /* No room to shrink on a phone, so it does not pretend to. */
+  #cc-help{width:100%;right:-100%;--cc-help-w:100%}
+  body.cc-help-open #cc-kb{right:0}
+  body.cc-help-open{padding-right:0}
+  body.cc-help-open #cc-fb-tab,
+  body.cc-help-open #cc-kb-tab,
+  body.cc-help-open #cc-fi-tab,
+  body.cc-help-open #cc-help-tab{transform:none}
+  #cc-help-tab{top:auto !important;bottom:10px;right:250px;
+    writing-mode:horizontal-tb;padding:11px 14px;border-radius:7px}
+}
+</style>
+
+<button id="cc-help-tab" class="cc-ui" title="Keybinding help and troubleshooting">HELP</button>
+
+<div id="cc-help" class="cc-ui" role="dialog" aria-label="Keybinding help">
+  <div class="hd">
+    <h4>HELP</h4>
+    <button class="bk" id="cc-help-back" type="button">&larr; Back a step</button>
+    <button class="x" id="cc-help-x" type="button" title="Close">&times;</button>
+  </div>
+  <div class="bd" id="cc-help-bd"></div>
+  <div class="ft" id="cc-help-ft"></div>
+</div>
+
+<script type="application/json" id="cc-help-data">{"__BUILD_INJECTS__":"keybind_troubleshooting.json"}</script>
+<script type="application/json" id="cc-vendor-data">{"__BUILD_INJECTS__":"vendor_support.json"}</script>
+
+<script>
+(function(){
+  var $  = function(id){ return document.getElementById(id); };
+  var esc = function(s){ return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;'); };
+
+  var G=null, V=null, BROKEN=null;
+  try{
+    G = JSON.parse($('cc-help-data').textContent);
+    V = JSON.parse($('cc-vendor-data').textContent);
+  }catch(e){ BROKEN = 'help data did not parse: ' + e.message; }
+
+  /* A missed build substitution must be loud. Silently rendering an empty
+     drawer is exactly the failure this project calls SILENT SUCCESS. */
+  if(!BROKEN && (!G || G.__BUILD_INJECTS__ || !G.nodes || !G.start))
+    BROKEN = 'keybind_troubleshooting.json was never substituted into this page '
+           + 'by build_deploy.py. The walkthrough cannot be shown.';
+  if(!BROKEN && (!V || V.__BUILD_INJECTS__ || !V.vendors))
+    BROKEN = 'vendor_support.json was never substituted into this page '
+           + 'by build_deploy.py. The vendor links cannot be shown.';
+
+  /* ---- vendor matching -------------------------------------------------
+     usb_vid ALONE. Never the product id: a VKB stick we have never heard of
+     still has to route to VKB. A vendor with usb_vid null (turtle_beach) can
+     never match — an unrecognised device falls through to the generic
+     fallback, never to the wrong manufacturer's support desk. */
+  function ccHelpVid(idStr){
+    if(!idStr) return null;
+    var m = /vendor:\s*([0-9a-f]{4})/i.exec(idStr);          /* Chrome, Edge */
+    if(m) return '0x' + m[1].toUpperCase();
+    m = /^\s*([0-9a-f]{4})-([0-9a-f]{4})-/i.exec(idStr);      /* Firefox */
+    if(m) return '0x' + m[1].toUpperCase();
+    return null;
+  }
+  function ccHelpVendor(vid){
+    if(!vid || !V || !V.vendors) return null;
+    var want = String(vid).toUpperCase();
+    if(want.indexOf('0X')!==0) want = '0X' + want.replace(/^0x/i,'');
+    for(var k in V.vendors){
+      if(!Object.prototype.hasOwnProperty.call(V.vendors,k)) continue;
+      var v = V.vendors[k];
+      if(!v.usb_vid) continue;                 /* never auto-match a null VID */
+      if(String(v.usb_vid).toUpperCase() === want) return {key:k, vendor:v};
+    }
+    return null;
+  }
+  function ccHelpPad(){
+    var gp = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(var i=0;i<gp.length;i++) if(gp[i]) return gp[i];
+    return null;
+  }
+  /* exported so the tests can drive the matcher without a real stick */
+  window.ccHelpVid = ccHelpVid;
+  window.ccHelpVendor = ccHelpVendor;
+
+  function vendorHtml(){
+    var pad = ccHelpPad();
+    var idStr = window.__ccHelpFakeId != null ? window.__ccHelpFakeId : (pad ? pad.id : null);
+    var vid = ccHelpVid(idStr);
+    var hit = ccHelpVendor(vid);
+    var h = '<div class="vend"><div class="vh">Straight to the people who built it</div>';
+    if(hit){
+      var v = hit.vendor;
+      h += '<div class="vname">' + esc(v.display_name) + '</div>';
+      h += '<div class="vdev">Matched on USB vendor ' + esc(v.usb_vid) +
+           ' &middot; ' + esc(idStr) + '</div>';
+      if(v.known_gotcha)
+        h += '<div class="gotcha"><b>Known catch with ' + esc(v.display_name) +
+             '</b>' + esc(v.known_gotcha) + '</div>';
+      if(v.say_to_user) h += '<div class="say">' + esc(v.say_to_user) + '</div>';
+      (v.links||[]).forEach(function(l){
+        h += '<a href="' + esc(l.url) + '" target="_blank" rel="noopener">' +
+             esc(l.label) + '<small>' + esc(l.what_it_is) + '</small></a>';
+      });
+    }else{
+      var fb = (V.not_yet_covered && V.not_yet_covered.generic_fallback) || {};
+      h += '<div class="vname">We don\'t recognise your device yet</div>';
+      h += '<div class="vdev">' + (idStr
+             ? 'Browser reports: ' + esc(idStr) + (vid ? ' (vendor ' + esc(vid) + ')' : ' (no USB vendor id in that string)')
+             : 'No controller is being reported by the browser right now.') + '</div>';
+      if(fb.say_to_user) h += '<div class="say">' + esc(fb.say_to_user) + '</div>';
+      h += '<a href="#" id="cc-help-fb" role="button">Tell us what you have' +
+           '<small>Send the device name exactly as shown above, so we can add it.</small></a>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  /* ---- the graph -------------------------------------------------------- */
+  var cur = null, hist = [];
+
+  function nodeHtml(id){
+    var n = G.nodes[id];
+    if(!n) return '<div class="broken">This walkthrough points at a step named "'
+                + esc(id) + '" that does not exist.</div>';
+    var h = '';
+    if(n.type === 'question'){
+      h += '<h5>' + esc(n.ask) + '</h5>';
+      /* how_to_check is not decoration. "Is the selector set to Joystick" is
+         useless to somebody who does not know where the selector is. */
+      if(n.how_to_check)
+        h += '<div class="chk"><b>How to check</b>' + esc(n.how_to_check) + '</div>';
+      h += '<div class="ans">' +
+           '<button type="button" data-go="' + esc(n.yes) + '">Yes</button>' +
+           '<button type="button" data-go="' + esc(n.no)  + '">No</button></div>';
+    }else if(n.type === 'choice'){
+      h += '<h5>' + esc(n.ask) + '</h5>';
+      if(n.note_to_user) h += '<div class="chk">' + esc(n.note_to_user) + '</div>';
+      h += '<div class="opts">';
+      (n.options||[]).forEach(function(o){
+        h += '<button type="button" data-go="' + esc(o.goto) + '">' + esc(o.label) + '</button>';
+      });
+      h += '</div>';
+    }else{
+      h += '<div class="fixhd">' + (n.then === null ? 'Dead end, honestly' : 'What to do') + '</div>';
+      h += '<h5>' + esc(n.title) + '</h5>';
+      if(n.what_is_happening) h += '<p class="what">' + esc(n.what_is_happening) + '</p>';
+      if(n.steps && n.steps.length){
+        h += '<ol>';
+        n.steps.forEach(function(s){ h += '<li>' + esc(s) + '</li>'; });
+        h += '</ol>';
+      }
+      if(n.note) h += '<div class="note">' + esc(n.note) + '</div>';
+      if(n.then){
+        /* Every fix routes back to a retest. Nobody is left holding a fix with
+           no idea whether it worked. */
+        var t = G.nodes[n.then];
+        h += '<button class="then" type="button" data-go="' + esc(n.then) + '">' +
+             'I\'ve done that &mdash; check whether it worked' +
+             (t && t.ask ? '<small>Next: ' + esc(t.ask) + '</small>' : '') +
+             '</button>';
+      }else{
+        h += '<div class="deadend">There is no next step from here, and we are not '
+           + 'going to invent one.</div>';
+        h += vendorHtml();
+      }
+    }
+    /* The vendor hand-off is also offered on the "not detected" fix, because
+       that is the other place where the hardware maker is the right answer. */
+    if(n.type==='fix' && n.then && id==='fix_not_detected') h += vendorHtml();
+    return h;
+  }
+
+  function render(){
+    var bd = $('cc-help-bd'), ft = $('cc-help-ft');
+    if(BROKEN){ bd.innerHTML = '<div class="broken">' + esc(BROKEN) + '</div>';
+                ft.textContent = ''; $('cc-help-back').disabled = true; return; }
+    bd.innerHTML = nodeHtml(cur);
+    bd.scrollTop = 0;
+    $('cc-help-back').disabled = !hist.length;
+    var n = G.nodes[cur];
+    ft.textContent = (n && n.type==='fix' && n.source)
+      ? 'Source: ' + n.source + (n.confidence ? ' · confidence ' + n.confidence : '')
+      : 'Vendor links checked ' + (V.links_checked || 'unknown');
+    Array.prototype.forEach.call(bd.querySelectorAll('[data-go]'), function(b){
+      b.onclick = function(){ go(b.getAttribute('data-go')); };
+    });
+    var fbl = $('cc-help-fb');
+    if(fbl) fbl.onclick = function(e){
+      e.preventDefault();
+      var t = $('cc-fb-tab'); if(t) t.click();
+    };
+  }
+
+  function go(id){ if(cur!==null) hist.push(cur); cur = id; render(); }
+  function back(){ if(hist.length){ cur = hist.pop(); render(); } }
+
+  function open(at){
+    cur = at || cur || (G && G.start) || null;
+    if(at) hist = [];
+    $('cc-help').classList.add('open');
+    document.body.classList.add('cc-help-open');
+    render();
+  }
+  function close(){
+    $('cc-help').classList.remove('open');
+    document.body.classList.remove('cc-help-open');
+  }
+  function toggle(){
+    if($('cc-help').classList.contains('open')) close();
+    else open(cur ? null : (G && G.start));
+  }
+
+  $('cc-help-tab').onclick = toggle;
+  $('cc-help-x').onclick   = close;
+  $('cc-help-back').onclick = back;
+  addEventListener('keydown', function(e){
+    if(e.key==='Escape' && $('cc-help').classList.contains('open')) close();
+  });
+
+  /* The one line on the binding screen. The person hitting the most common
+     failure believes their hardware is broken, so they never reach for a help
+     tab — they do not believe help exists. This is the door for them. */
+  var hint = $('cc-kb-hinthelp');
+  if(hint) hint.onclick = function(){ open('q_selector_setting'); };
+
+  /* Never auto-opens. Nothing is forced on anybody. */
+  window.ccHelpOpen = open;
+  window.ccHelpClose = close;
+  window.ccHelpNode = function(){ return cur; };
+  window.ccHelpGraph = function(){ return G; };
 })();
 </script>

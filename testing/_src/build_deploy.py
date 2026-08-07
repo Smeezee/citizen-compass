@@ -194,6 +194,47 @@ badge_css = """<style>
 """
 layer = badge_css + layer
 
+# ---- 2e. HELP drawer data ---------------------------------------------------
+# The walkthrough graph and the vendor table have exactly one writer:
+# data-layer/processed/. They are substituted in here rather than pasted into
+# _layer.src.html, so the page can never drift from the data files.
+#
+# These asserts are the point. A missed substitution would ship a HELP drawer
+# that opens, looks fine, and contains nothing - a silent success. The renderer
+# in the layer also refuses to draw if it ever sees a placeholder survive, so
+# the failure is caught at build time AND at run time.
+_HELP_DATA = [
+    ('cc-help-data',   'keybind_troubleshooting.json'),
+    ('cc-vendor-data', 'vendor_support.json'),
+]
+for _el, _fn in _HELP_DATA:
+    _path = os.path.join(REPO, 'data-layer', 'processed', _fn)
+    _raw = rd(_path)
+    try:
+        _obj = json.loads(_raw)
+    except ValueError as _e:
+        sys.exit("%s is not valid JSON (%s). Refusing to build a HELP drawer "
+                 "around data that will not parse in the browser." % (_fn, _e))
+    # ensure_ascii keeps the payload 7-bit; escaping '<' means a future data
+    # edit can never close the <script> tag it is sitting inside.
+    _js = json.dumps(_obj, ensure_ascii=True, separators=(',', ':')).replace('<', r'\u003c')
+    _old = '<script type="application/json" id="%s">{"__BUILD_INJECTS__":"%s"}</script>' % (_el, _fn)
+    if _old not in layer:
+        sys.exit("HELP DATA PLACEHOLDER MISSING for %s. _layer.src.html no longer "
+                 "carries the exact placeholder this build substitutes, so the "
+                 "drawer would ship empty. Nothing was written." % _el)
+    layer = layer.replace(
+        _old, '<script type="application/json" id="%s">%s</script>' % (_el, _js), 1)
+    print('help data injected: %s (%d bytes)' % (_fn, len(_js)))
+
+# The placeholder must not survive anywhere in the page.
+# The runtime guard inside the layer names this token too, so match the
+# placeholder SHAPE rather than the bare word - otherwise this check fires
+# on its own tripwire and no build can ever pass.
+if '{"__BUILD_INJECTS__"' in layer:
+    sys.exit("A __BUILD_INJECTS__ placeholder survived substitution. Refusing to "
+             "ship a HELP drawer that would render nothing.")
+
 # ---- 3. build the inlined library block ------------------------------------
 libs = f"""<script>{three}</script>
 <script>{orbit}</script>
