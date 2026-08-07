@@ -554,6 +554,7 @@ func main() {
 		once    = flag.Bool("once", false, "capture once immediately and exit (no hotkey)")
 		list    = flag.Bool("list-windows", false, "list capturable windows and exit")
 		test    = flag.Bool("selftest", false, "run internal checks and exit")
+		ui      = flag.Bool("ui", false, "open the window (this is also what happens with no arguments at all)")
 
 		gamelog = flag.String("gamelog", "", "force the Game.log to watch (default: derive from the game window, else scan LIVE, PTU, EPTU, TECH-PREVIEW in that order)")
 
@@ -640,6 +641,31 @@ func main() {
 		fmt.Fprintf(os.Stderr, "unknown argument %q\n", args[0])
 		flag.Usage()
 		os.Exit(2)
+	}
+
+	// WO-UI-01 §4.1 - NO ARGUMENTS = THE WINDOW OPENS.
+	//
+	// "Do not rely on the desktop shortcut carrying a flag. Shortcuts get
+	// deleted, moved and copied. The default behaviour of the program is the
+	// program."
+	//
+	// So this is keyed on there being no arguments AT ALL, not on a --ui flag
+	// being passed. --ui exists too, for automation and for testing, but it is
+	// never required and never the documented way to do anything.
+	if *ui || flag.NFlag() == 0 && flag.NArg() == 0 {
+		logPath := filepath.Join(exeDir, "collector-auto.log")
+		cfg := autoConfig{
+			PollSeconds:     *poll,
+			DebounceSeconds: *debounce,
+			IntervalMinutes: *interval,
+		}
+		if err := runUI(cfg, *outDir, exeDir, logPath, *hotkey); err != nil {
+			// No console to print to. Windows' own message box is the only
+			// place a person will ever see this.
+			showErrorBox("Citizen Collector", err.Error())
+			os.Exit(1)
+		}
+		return
 	}
 
 	if *test {

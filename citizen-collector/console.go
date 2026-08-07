@@ -22,7 +22,9 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"syscall"
 	"time"
+	"unsafe"
 )
 
 const attachParentProcess = ^uintptr(0) // (DWORD)-1
@@ -30,7 +32,10 @@ const attachParentProcess = ^uintptr(0) // (DWORD)-1
 // GetConsoleWindow is already declared in winapi.go as procGetConsoleWindow -
 // reused rather than declared again here, so there is one binding per Win32
 // entry point and no chance of the two drifting.
-var procAttachConsole = modKernel32.NewProc("AttachConsole")
+var (
+	procAttachConsole       = modKernel32.NewProc("AttachConsole")
+	procGetDiskFreeSpaceExW = modKernel32.NewProc("GetDiskFreeSpaceExW")
+)
 
 // attachParentConsole hooks this process up to the console of whatever launched
 // it, if there is one.
@@ -63,6 +68,28 @@ func attachParentConsole() bool {
 func hasConsole() bool {
 	h, _, _ := procGetConsoleWindow.Call()
 	return h != 0
+}
+
+// freeSpaceBytes reports free space on the volume holding dir.
+//
+// Used for the "captures folder is nearly full" sentence in the window. A
+// collector that quietly stops saving because the disk filled would be another
+// component looking healthy while doing nothing.
+func freeSpaceBytes(dir string) (uint64, error) {
+	p, err := syscall.UTF16PtrFromString(dir)
+	if err != nil {
+		return 0, err
+	}
+	var freeToCaller, total, totalFree uint64
+	r, _, e := procGetDiskFreeSpaceExW.Call(
+		uintptr(unsafe.Pointer(p)),
+		uintptr(unsafe.Pointer(&freeToCaller)),
+		uintptr(unsafe.Pointer(&total)),
+		uintptr(unsafe.Pointer(&totalFree)))
+	if r == 0 {
+		return 0, e
+	}
+	return freeToCaller, nil
 }
 
 // selftestResultsName is the file the packager reads. Fixed name, next to the
@@ -147,4 +174,17 @@ func writeSelftestResults(dir string, code int, transcript string) string {
 	// why §5 requires both and not either.
 	_ = os.WriteFile(path, b.Bytes(), 0o644)
 	return path
+}
+
+// showErrorBox is the only way to tell a person something went wrong when there
+// is no console and the window itself could not be created.
+//
+// WO-UI-01 §9: plain sentences, no error codes, no stack traces. This is the
+// last resort, used when even the window failed.
+func showErrorBox(title, msg string) {
+	procMessageBoxW := modUser32.NewProc("MessageBoxW")
+	const mbIconError = 0x00000010
+	t, _ := syscall.UTF16PtrFromString(title)
+	m, _ := syscall.UTF16PtrFromString(msg)
+	procMessageBoxW.Call(0, uintptr(unsafe.Pointer(m)), uintptr(unsafe.Pointer(t)), mbIconError)
 }
