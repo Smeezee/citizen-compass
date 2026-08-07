@@ -137,6 +137,22 @@ body{margin:0;background:var(--bg);color:var(--text);
 .rmeta{color:var(--muted);font-size:14px;margin-top:2px}
 .ract{font-size:20px;margin-top:7px;color:var(--live);font-weight:600}
 .ract.none{color:var(--muted);font-weight:400;font-size:16px}
+/* Descriptions. A cc_draft description has NOT been reviewed by Sleven, so it
+   never carries the same visual weight as CIG's own text - it is dimmer and it
+   is tagged. Presenting a draft as though it were verified would be the same
+   class of mistake as inventing data. */
+/* Explicit colour and weight. An earlier version used var(--fg), which is
+   not defined on this page - so it fell through to .ract's bright teal and
+   font-weight 600, and body text rendered as though it were a heading. An
+   undefined custom property fails silently to inheritance, which is why it
+   looked deliberate. */
+.rdesc{font-size:15px;margin-top:6px;color:#CFD8E3;font-weight:400;
+       line-height:1.45;max-width:62ch}
+.rdesc:empty{display:none}
+.rdesc.draft{color:var(--muted)}
+.dtag{display:inline-block;margin-right:7px;padding:1px 6px;border-radius:4px;
+      font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+      color:#0d1014;background:var(--accent2);vertical-align:1px}
 .rwarn{color:var(--accent);font-size:14px;margin-top:5px}
 
 .bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
@@ -249,6 +265,7 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
   <div class="rk" id="rk">&mdash; press something &mdash;</div>
   <div class="rmeta" id="rmeta">nothing yet</div>
   <div class="ract none" id="ract">Click anywhere on the page first so it can hear your keys.</div>
+  <div class="rdesc" id="rdesc"></div>
   <div class="rwarn" id="rwarn"></div>
 </div>
 
@@ -443,6 +460,34 @@ function setMods(){
   $('d3').classList.toggle('on',down.has("RAlt"));
   $('d4').classList.toggle('on',down.has("RCtrl"));
 }
+
+// showDesc - render an action's description, or nothing at all.
+//
+// WO §4/§5: a cc_draft description is dimmed and tagged; a CIG-written one is
+// shown plainly; an action with neither shows NOTHING - no placeholder, no
+// "description pending". The project does not invent data and does not pretend
+// to have it.
+
+// descHTML - the description as an inline block, for the multi-layer readout.
+// Same rules as showDesc: drafts dimmed and tagged, CIG text plain, nothing at
+// all when there is no description.
+function descHTML(e){
+  if(!e||!e.d) return "";
+  const draft = e.s && e.s!=="cig";
+  return `<div class="rdesc${draft?' draft':''}" style="margin:3px 0 8px 0">`
+       + (draft?'<span class="dtag" title="Written by Citizen Compass from the action name, label and actionmap. Not yet reviewed.">draft</span>':"")
+       + esc(e.d) + `</div>`;
+}
+function showDesc(e){
+  const el=$('rdesc');
+  if(!el) return;
+  if(!e||!e.d){ el.textContent=""; el.className="rdesc"; return; }
+  const draft = e.s && e.s!=="cig";
+  el.className = "rdesc" + (draft?" draft":"");
+  el.innerHTML = (draft?'<span class="dtag" title="Written by Citizen Compass from the action name, label and actionmap. Not yet reviewed.">draft</span>':"")
+               + esc(e.d);
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fire(id,label,press){
   const es=allEnts(id),ln={0:"no modifier",1:"M1 Left Alt",2:"M2 Left Shift",3:"M3 Right Alt",4:"M4 Right Ctrl"}[mod];
   const match=es.find(e=>(e.m||0)===mod);
@@ -452,10 +497,12 @@ function fire(id,label,press){
   $('rmeta').textContent=`${MODES[modeIx].label} · ${ln} · registered as ${press}`;
   if(match){$('ract').className="ract";
     $('ract').textContent=(match.c?match.c+" — ":"")+match.a;
+    showDesc(match);
     $('rwarn').textContent=match.a.includes("*")&&!press.startsWith("HOLD")
       ?"This one is a HOLD in game — try holding it longer.":"";
   }else{$('ract').className="ract none";
     $('ract').textContent="Nothing bound on this layer.";
+    showDesc(null);
     $('rwarn').textContent=es.length?"But it does something on another modifier layer.":"";}
   const l=$('log');if(l.dataset.v!=="1"){l.innerHTML="";l.dataset.v="1";}
   const d=document.createElement('div');
@@ -565,9 +612,16 @@ document.addEventListener('click',e=>{
   $('rk').textContent=id;
   $('rmeta').textContent=MODES[modeIx].label+" · "+es.length+" binding(s) across all layers";
   $('ract').className=es.length?"ract":"ract none";
+  // Each layer gets its action AND its description, because clicking a cap is
+  // how most people will read this page - the key-press path is not the only
+  // one that has to show the text. Wiring only fire() left the JS carrying 256
+  // descriptions that never appeared on screen, which is exactly the failure
+  // "present in the file" hides.
   $('ract').innerHTML=es.length?es.map(x=>{const n={0:"base",1:"M1",2:"M2",3:"M3"}[x.m||0];
-    return `<span style="color:var(--muted);font-size:14px">${n}:</span> ${x.a}`;}).join("<br>")
+    return `<span style="color:var(--muted);font-size:14px">${n}:</span> ${x.a}`
+         + descHTML(x);}).join("<br>")
     :"Nothing bound to this key in "+MODES[modeIx].label+".";
+  $('rdesc').textContent="";$('rdesc').className="rdesc";
   $('rwarn').textContent="";});
 
 var ID_ = "";
