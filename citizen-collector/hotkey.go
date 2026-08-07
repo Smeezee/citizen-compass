@@ -4,8 +4,128 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"strings"
+	"time"
 )
+
+// hotkeyListener owns one registered global hotkey and the OS thread that
+// pumps its messages.
+//
+// # WHY IT OWNS A THREAD
+//
+// RegisterHotKey called with a NULL window delivers WM_HOTKEY to the message
+// queue of the THREAD THAT REGISTERED IT. Nobody else can receive it. Manual
+// mode gets away with registering on the main goroutine because main() calls
+// runtime.LockOSThread and then sits in a GetMessage loop forever.
+//
+// --auto cannot do that: its main goroutine is inside runAuto's select, so
+// there is no one draining the queue. Hence a dedicated locked thread whose
+// only job is to register the key and pump for it, handing presses back on a
+// channel that a select can wait on.
+type hotkeyListener struct {
+	// Pretty is the canonical name ("Ctrl+Alt+F9"), for logs and for telling
+	// the operator which key is actually live.
+	Pretty string
+	// Presses fires once per press.
+	Presses <-chan struct{}
+
+	// threadID is the thread that holds the registration. Only that thread can
+	// release it, so Close has to reach this specific one.
+	threadID uint32
+	// done closes once the pump has exited and the key is genuinely given back.
+	done chan struct{}
+}
+
+// Close releases the hotkey and stops the pump.
+//
+// It posts WM_QUIT to the listener's own thread, which makes GetMessage return
+// false so the deferred UnregisterHotKey runs THERE. Calling UnregisterHotKey
+// from here would be a no-op with a success-shaped return: the registration
+// belongs to the other thread.
+//
+// Close waits for the pump to actually exit. Returning before the key was
+// released would let a caller observe it as still registered and conclude the
+// wrong thing - which is precisely what the selftest is measuring.
+func (h *hotkeyListener) Close() {
+	if h == nil || h.done == nil {
+		return
+	}
+	select {
+	case <-h.done:
+		return // already closed
+	default:
+	}
+	PostThreadMessage(h.threadID, WM_QUIT, 0, 0)
+	select {
+	case <-h.done:
+	case <-time.After(2 * time.Second):
+		// The pump did not acknowledge. Say nothing reassuring - the caller's
+		// own probe is the authority on whether the key is free.
+	}
+}
+
+// startHotkeyListener parses spec, registers it, and starts pumping.
+//
+// Registration is reported SYNCHRONOUSLY - the call does not return until
+// Windows has accepted or refused the key. A listener that reported success
+// before the OS had agreed would be exactly the defect this is fixing, moved
+// one layer down.
+func startHotkeyListener(id int, spec string) (*hotkeyListener, error) {
+	mods, vk, pretty, err := parseHotkey(spec)
+	if err != nil {
+		return nil, err
+	}
+
+	presses := make(chan struct{}, 1)
+	registered := make(chan error, 1)
+	tid := make(chan uint32, 1)
+	done := make(chan struct{})
+
+	go func() {
+		// The registration and the GetMessage loop MUST be the same thread.
+		// Without this the Go scheduler is free to move the goroutine and the
+		// queue being pumped would no longer be the queue being posted to.
+		runtime.LockOSThread()
+		defer runtime.UnlockOSThread()
+		defer close(done)
+
+		tid <- GetCurrentThreadId()
+
+		if err := RegisterHotKey(id, mods|ModNoRepeat, vk); err != nil {
+			registered <- err
+			return
+		}
+		registered <- nil
+		defer UnregisterHotKey(id)
+
+		var msg MSG
+		for GetMessage(&msg) {
+			if msg.Message != WM_HOTKEY {
+				continue
+			}
+			select {
+			case presses <- struct{}{}:
+			default:
+				// A press arriving while the previous one is still being
+				// serviced is dropped rather than queued. Holding the key down
+				// should not build a backlog of captures that fire minutes
+				// later; ModNoRepeat already suppresses auto-repeat.
+			}
+		}
+	}()
+
+	threadID := <-tid
+	if err := <-registered; err != nil {
+		return nil, err
+	}
+	return &hotkeyListener{
+		Pretty:   pretty,
+		Presses:  presses,
+		threadID: threadID,
+		done:     done,
+	}, nil
+}
 
 var vkNames = map[string]uint32{
 	"f1": 0x70, "f2": 0x71, "f3": 0x72, "f4": 0x73,

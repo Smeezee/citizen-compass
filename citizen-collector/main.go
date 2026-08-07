@@ -477,6 +477,15 @@ func selftest(outDir string) int {
 		return 2
 	}
 
+	// 6b. THE HOTKEY IN AUTO MODE. Registration is asked of Windows, not of a
+	//     variable, and the press path is exercised through runAuto itself.
+	//     This group exists because --auto shipped with the hotkey unreachable
+	//     and every existing check still passed.
+	fmt.Println("  -- hotkey (auto mode) --")
+	runHotkeySelftest(check)
+	runHotkeyLoopSelftest(check)
+	runAutoHotkeyE2ESelftest(check)
+
 	// 7. Game.log discovery - reported, never fatal. The game not being
 	//    installed on a crew member's machine is not a broken collector.
 	fmt.Println("  -- environment --")
@@ -717,14 +726,54 @@ func main() {
 		fmt.Printf("settings : %s\n", filepath.Join(exeDir, settingsFileName))
 		fmt.Printf("poll %ds, debounce %ds, interval %s\n",
 			*poll, *debounce, intervalDesc(*interval))
-		fmt.Println("This window will now hide. Close it from Task Manager to stop.")
 		logf("---- citizen-collector %s (%s) auto start ----", Version, BuildVariant)
+
+		// THE HOTKEY, REGISTERED IN THE AUTO BRANCH.
+		//
+		// This used to live after the `return` at the bottom of this branch, so
+		// in --auto RegisterHotKey was never reached. Ctrl+Alt+F9 did nothing,
+		// logged nothing, and gave no sign it was dead - found only when the key
+		// was pressed repeatedly at a shop terminal during a live session.
+		//
+		// It has to be here, before the poll loop, because auto mode triggers on
+		// state change and standing still is not a state change. At a shop, a
+		// mission board or an inventory screen the log does not move, so the
+		// hotkey is the ONLY way to capture those screens.
+		//
+		// Registration failure is reported on stdout AND in collector-auto.log.
+		// A hotkey that silently fails to register is the same defect in a
+		// different place, and the console is hidden moments from now - so the
+		// log line is the only record that will still exist.
+		var (
+			hotkeyPresses <-chan struct{}
+			hotkeyName    string
+		)
+		if hl, err := startHotkeyListener(hotkeyID, *hotkey); err != nil {
+			fmt.Fprintf(os.Stderr,
+				"WARNING: hotkey %q NOT registered: %v\n"+
+					"Automatic captures still work. Manual capture does not.\n"+
+					"Another program probably owns that combination - pick another with --hotkey.\n",
+				*hotkey, err)
+			logf("WARNING: hotkey %q NOT REGISTERED: %v - automatic capture still active, manual capture unavailable", *hotkey, err)
+		} else {
+			hotkeyPresses = hl.Presses
+			hotkeyName = hl.Pretty
+			fmt.Printf("hotkey   : %s (manual capture)\n", hl.Pretty)
+			logf("hotkey registered: %s", hl.Pretty)
+		}
+
+		// Auto mode continues even with no hotkey. Losing manual capture is bad;
+		// losing unattended capture as well, because of it, would be worse.
+
+		fmt.Println("This window will now hide. Close it from Task Manager to stop.")
 
 		soundStartup()
 		hideConsole()
 
 		deps := autoDeps{
-			logf: logf,
+			logf:       logf,
+			hotkeys:    hotkeyPresses,
+			hotkeyName: hotkeyName,
 			// The window gate. allowAny is LITERALLY false here - not a
 			// variable that happens to be false.
 			gameAlive: func() error {

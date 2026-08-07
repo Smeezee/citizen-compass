@@ -524,6 +524,22 @@ type autoDeps struct {
 	capture   func(t Trigger) (string, error)
 	gameAlive func() error
 	logf      func(format string, args ...interface{})
+
+	// hotkeys delivers manual capture requests while auto mode is running.
+	//
+	// Auto mode fires on STATE CHANGE, and standing still is not a state
+	// change. At a shop terminal, a mission board or an inventory screen -
+	// precisely the screens worth photographing - nothing is written to
+	// Game.log, so nothing triggers. The hotkey is the only way to say
+	// "capture THIS", which is why it has to reach this loop.
+	//
+	// A nil channel is valid and simply never fires: select on a nil channel
+	// blocks forever, so callers that have no hotkey need no special case.
+	hotkeys <-chan struct{}
+
+	// hotkeyName is the registered key's canonical name, recorded on the frames
+	// it produces so a manual capture is distinguishable afterwards.
+	hotkeyName string
 }
 
 // runAuto is the unattended loop.
@@ -550,6 +566,30 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		case <-stop:
 			deps.logf("auto mode stopping")
 			return nil
+
+		case <-deps.hotkeys:
+			// A human asked for THIS frame. It deliberately bypasses the
+			// debounce and the interval bookkeeping: those exist to stop the
+			// automatic triggers from flooding the folder, and an explicit
+			// press is not one of them.
+			//
+			// The window gate still applies, because there is nothing to
+			// photograph without a game window - but a press that lands with no
+			// window SAYS SO. A hotkey that appears to do nothing is the defect
+			// being fixed here, and "pressed but no window" is information.
+			if err := deps.gameAlive(); err != nil {
+				deps.logf("hotkey pressed but no game window: %v", err)
+				continue
+			}
+			t := Trigger{Kind: "hotkey", Note: deps.hotkeyName}
+			out, err := deps.capture(t)
+			if err != nil {
+				deps.logf("hotkey capture FAILED: %v", err)
+				continue
+			}
+			deps.logf("captured %s  <- %s (manual)", filepath.Base(out), t.Reason())
+			continue
+
 		case <-ticker.C:
 		}
 

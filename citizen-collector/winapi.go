@@ -40,6 +40,8 @@ var (
 	procRegisterHotKey     = modUser32.NewProc("RegisterHotKey")
 	procUnregisterHotKey   = modUser32.NewProc("UnregisterHotKey")
 	procGetMessageW        = modUser32.NewProc("GetMessageW")
+	procPostThreadMessageW = modUser32.NewProc("PostThreadMessageW")
+	procGetCurrentThreadId = modKernel32.NewProc("GetCurrentThreadId")
 	procPeekMessageW       = modUser32.NewProc("PeekMessageW")
 	procTranslateMessage   = modUser32.NewProc("TranslateMessage")
 	procDispatchMessageW   = modUser32.NewProc("DispatchMessageW")
@@ -322,6 +324,27 @@ func UnregisterHotKey(id int) {
 func GetMessage(m *MSG) bool {
 	r, _, _ := syscall.SyscallN(procGetMessageW.Addr(), uintptr(unsafe.Pointer(m)), 0, 0, 0)
 	return int32(r) > 0
+}
+
+// GetCurrentThreadId identifies the thread a hotkey was registered on.
+//
+// RegisterHotKey and UnregisterHotKey are both thread-affine: only the thread
+// that took a hotkey can give it back. So releasing one means reaching that
+// specific thread, which means knowing its id.
+func GetCurrentThreadId() uint32 {
+	r, _, _ := syscall.SyscallN(procGetCurrentThreadId.Addr())
+	return uint32(r)
+}
+
+// PostThreadMessage posts to a thread's queue without needing a window.
+//
+// Used to send WM_QUIT to a hotkey listener's private thread so its GetMessage
+// loop returns false and its deferred UnregisterHotKey runs on the same thread
+// that registered - the only thread allowed to.
+func PostThreadMessage(threadID uint32, msg uint32, wParam, lParam uintptr) bool {
+	r, _, _ := syscall.SyscallN(procPostThreadMessageW.Addr(),
+		uintptr(threadID), uintptr(msg), wParam, lParam)
+	return r != 0
 }
 
 // ---------------------------------------------------------------------------
