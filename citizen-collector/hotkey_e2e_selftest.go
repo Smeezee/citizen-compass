@@ -82,8 +82,10 @@ func copyExeToTemp() (exePath string, dir string, err error) {
 }
 
 // runAutoHotkeyE2ESelftest is the end-to-end registration proof.
-func runAutoHotkeyE2ESelftest(check func(name string, ok bool, detail string)) {
-	const spec = "ctrl+alt+f9"
+// Returns notPerformed=true when the key was unavailable, so a live capture
+// session holding it produces VOID rather than FAIL.
+func runAutoHotkeyE2ESelftest(check func(name string, ok bool, detail string)) (notPerformed bool) {
+	const spec = testHotkeySpec
 
 	exePath, dir, err := copyExeToTemp()
 	if dir != "" {
@@ -95,9 +97,9 @@ func runAutoHotkeyE2ESelftest(check func(name string, ok bool, detail string)) {
 	}
 
 	if held, err := probeIsRegistered(hotkeyProbeID, spec); err != nil || held {
-		check("auto-mode e2e runnable", false,
+		fmt.Printf("  [note] %-34s %s\n", "auto-mode e2e runnable",
 			spec+" is already held before the test starts - e2e registration check NOT PERFORMED")
-		return
+		return true
 	}
 	check("auto-mode e2e runnable", true, "staged a test binary and "+spec+" is free")
 
@@ -161,4 +163,7 @@ func runAutoHotkeyE2ESelftest(check func(name string, ok bool, detail string)) {
 	check("e2e probe distinguishes the two runs", heldGood != heldBad,
 		fmt.Sprintf("invalid-hotkey run=%v, valid-hotkey run=%v - opposite results, so the check is measuring registration",
 			heldBad, heldGood))
+
+	// Reached only when the key was available and the run really happened.
+	return false
 }

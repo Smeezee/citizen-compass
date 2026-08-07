@@ -482,9 +482,15 @@ func selftest(outDir string) int {
 	//     This group exists because --auto shipped with the hotkey unreachable
 	//     and every existing check still passed.
 	fmt.Println("  -- hotkey (auto mode) --")
-	runHotkeySelftest(check)
+	// "Could not be performed" is NOT failure. A live capture session
+	// legitimately holds a global hotkey, and reporting that as FAIL would make
+	// the packager's "assert exit 0" fail for a reason unrelated to the package.
+	// VOID keeps the two facts apart, which is the whole point of exit 2.
+	hkVoid := runHotkeySelftest(check)
 	runHotkeyLoopSelftest(check)
-	runAutoHotkeyE2ESelftest(check)
+	if runAutoHotkeyE2ESelftest(check) {
+		hkVoid = true
+	}
 
 	// 6c. Which log is watched, and whether the loop says anything while quiet.
 	fmt.Println("  -- game log, heartbeat, staleness --")
@@ -506,12 +512,18 @@ func selftest(outDir string) int {
 		fmt.Printf("  [note] %-34s %s)\n", "Game.log", d)
 	}
 
-	if fail == 0 {
-		fmt.Println("selftest PASS")
-		return 0
+	if fail > 0 {
+		fmt.Printf("selftest FAIL (%d checks failed)\n", fail)
+		return 1
 	}
-	fmt.Printf("selftest FAIL (%d checks failed)\n", fail)
-	return 1
+	if hkVoid {
+		fmt.Println("selftest VOID - the hotkey registration checks could not be performed")
+		fmt.Println("  (something already holds the test key - a live capture session will do this)")
+		fmt.Println("  Reported as NOT PERFORMED, never as a pass.")
+		return 2
+	}
+	fmt.Println("selftest PASS")
+	return 0
 }
 
 // --- main ------------------------------------------------------------------
@@ -630,7 +642,14 @@ func main() {
 	}
 
 	if *test {
-		os.Exit(selftest(*outDir))
+		// WO-UI-01 §5, all three parts. The console attach is what makes a
+		// -H=windowsgui build still print when a human ran it from a shell; the
+		// results file is what automation reads; the exit code is the contract.
+		attachParentConsole()
+		code, transcript := runTeed(func() int { return selftest(*outDir) })
+		p := writeSelftestResults(exeDir, code, transcript)
+		fmt.Printf("results written to %s\n", p)
+		os.Exit(code)
 	}
 
 	if *list {

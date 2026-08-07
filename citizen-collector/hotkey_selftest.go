@@ -117,9 +117,25 @@ func probeIsRegistered(probeID int, spec string) (registered bool, err error) {
 
 const hotkeyProbeID = 4711
 
+// testHotkeySpec is DELIBERATELY not the product default.
+//
+// The selftest used ctrl+alt+f9, which is exactly the key a running collector
+// holds. During a live capture session every registration check reported
+// "already held - NOT PERFORMED" and the run exited 1, so the packager's
+// "assert exit 0" would have failed for a reason that had nothing to do with
+// the package. A test must not collide with the thing it is testing.
+//
+// This combination is registered and released inside the test only.
+const testHotkeySpec = "ctrl+alt+shift+f12"
+
 // runHotkeySelftest proves the auto-mode hotkey wiring by behaviour.
-func runHotkeySelftest(check func(name string, ok bool, detail string)) {
-	const spec = "ctrl+alt+f9"
+//
+// Returns notPerformed=true when the precondition could not be met. That is NOT
+// a failure and must not be counted as one: a check that could not run is a
+// different fact from a check that ran and failed, and the exit code has to
+// keep them apart (WO-UI-01 §5 - the packager asserts on that code).
+func runHotkeySelftest(check func(name string, ok bool, detail string)) (notPerformed bool) {
+	const spec = testHotkeySpec
 
 	// ---------------------------------------------------------------------
 	// PRECONDITION. If the combination is already taken - a real collector is
@@ -127,13 +143,14 @@ func runHotkeySelftest(check func(name string, ok bool, detail string)) {
 	// anything, and saying so is the only honest option.
 	// ---------------------------------------------------------------------
 	if held, err := probeIsRegistered(hotkeyProbeID, spec); err != nil {
-		check("hotkey probe usable", false, fmt.Sprintf("probe itself failed: %v", err))
-		return
+		fmt.Printf("  [note] %-34s %s\n", "hotkey probe usable",
+			fmt.Sprintf("probe itself failed: %v - registration checks NOT PERFORMED", err))
+		return true
 	} else if held {
-		check("hotkey probe usable", false,
-			spec+" is ALREADY held by something else (a running collector?) - "+
-				"registration checks NOT PERFORMED, and not reported as passed")
-		return
+		fmt.Printf("  [note] %-34s %s\n", "hotkey probe usable",
+			spec+" is ALREADY held by something else - registration checks NOT PERFORMED, "+
+				"and not reported as passed")
+		return true
 	}
 	check("hotkey probe usable", true, spec+" is free, so the probe can tell taken from free")
 
@@ -165,8 +182,13 @@ func runHotkeySelftest(check func(name string, ok bool, detail string)) {
 		check("auto-mode hotkey REGISTERS", false, fmt.Sprintf("startHotkeyListener(%q) -> %v", spec, err))
 		return
 	}
-	check("auto-mode hotkey REGISTERS", good != nil && good.Pretty == "Ctrl+Alt+F9",
-		fmt.Sprintf("listener reports %q", good.Pretty))
+	// Expected name is derived from the spec, not written out again here. A
+	// hardcoded "Ctrl+Alt+F9" silently became wrong the moment the test key
+	// changed, and an assertion that has to be edited whenever the input
+	// changes is one that will eventually be edited to match a bug.
+	_, _, wantPretty, _ := parseHotkey(spec)
+	check("auto-mode hotkey REGISTERS", good != nil && good.Pretty == wantPretty,
+		fmt.Sprintf("listener reports %q, expected %q", good.Pretty, wantPretty))
 
 	heldAfterGood, err := probeIsRegistered(hotkeyProbeID, spec)
 	if err != nil {
@@ -214,4 +236,7 @@ func runHotkeySelftest(check func(name string, ok bool, detail string)) {
 	}
 	check("hotkey is RELEASED on Close", !stillHeld,
 		"probe re-acquired "+spec+" after Close, so the registration really was handed back")
+
+	// Reached only when the precondition held and every check above ran.
+	return false
 }
