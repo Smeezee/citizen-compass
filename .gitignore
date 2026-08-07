@@ -55,6 +55,20 @@ testing/_deploy/
 testing/_models/
 testing/_tools/
 
+# ---- wrangler local state, 2026-08-06 --------------------------------------
+# wrangler writes an account cache containing the Cloudflare account id and the
+# account NAME, which is the contact email address. That file has already been
+# published once: a failed wrangler run inside testing/_deploy/ left it there
+# and the next deploy served it at /.wrangler/cache/wrangler-account.json.
+# It has since reappeared at the repo root.
+#
+# These patterns carry NO leading or embedded slash, so git matches them at ANY
+# depth rather than at one known location. That is deliberate. Both sightings so
+# far were in places nobody predicted, and anchoring to testing/_deploy/ or to
+# the root would only ignore where it landed the last two times.
+.wrangler/
+wrangler-account.json
+
 # Generated route/pair shards (WO-COLLECT-01 rev 5 §1.5). Same separation the
 # external-sources rule uses: the bulk output is regenerable and stays out, the
 # provenance record and the small tables stay tracked. Emitting every system
