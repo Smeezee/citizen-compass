@@ -37,28 +37,28 @@ var (
 	modCombase  = syscall.NewLazyDLL("combase.dll")
 	modOle32    = syscall.NewLazyDLL("ole32.dll")
 
-	procRegisterHotKey     = modUser32.NewProc("RegisterHotKey")
-	procUnregisterHotKey   = modUser32.NewProc("UnregisterHotKey")
-	procGetMessageW        = modUser32.NewProc("GetMessageW")
-	procPostThreadMessageW = modUser32.NewProc("PostThreadMessageW")
-	procGetCurrentThreadId = modKernel32.NewProc("GetCurrentThreadId")
-	procPeekMessageW       = modUser32.NewProc("PeekMessageW")
-	procTranslateMessage   = modUser32.NewProc("TranslateMessage")
-	procDispatchMessageW   = modUser32.NewProc("DispatchMessageW")
-	procFindWindowW        = modUser32.NewProc("FindWindowW")
-	procEnumWindows        = modUser32.NewProc("EnumWindows")
-	procGetWindowTextW     = modUser32.NewProc("GetWindowTextW")
-	procGetClassNameW      = modUser32.NewProc("GetClassNameW")
-	procIsWindowVisible    = modUser32.NewProc("IsWindowVisible")
-	procGetWindowRect      = modUser32.NewProc("GetWindowRect")
-	procGetClientRect      = modUser32.NewProc("GetClientRect")
-	procGetWindowDC        = modUser32.NewProc("GetWindowDC")
-	procGetDC              = modUser32.NewProc("GetDC")
-	procReleaseDC          = modUser32.NewProc("ReleaseDC")
-	procPrintWindow        = modUser32.NewProc("PrintWindow")
+	procRegisterHotKey      = modUser32.NewProc("RegisterHotKey")
+	procUnregisterHotKey    = modUser32.NewProc("UnregisterHotKey")
+	procGetMessageW         = modUser32.NewProc("GetMessageW")
+	procPostThreadMessageW  = modUser32.NewProc("PostThreadMessageW")
+	procGetCurrentThreadId  = modKernel32.NewProc("GetCurrentThreadId")
+	procPeekMessageW        = modUser32.NewProc("PeekMessageW")
+	procTranslateMessage    = modUser32.NewProc("TranslateMessage")
+	procDispatchMessageW    = modUser32.NewProc("DispatchMessageW")
+	procFindWindowW         = modUser32.NewProc("FindWindowW")
+	procEnumWindows         = modUser32.NewProc("EnumWindows")
+	procGetWindowTextW      = modUser32.NewProc("GetWindowTextW")
+	procGetClassNameW       = modUser32.NewProc("GetClassNameW")
+	procIsWindowVisible     = modUser32.NewProc("IsWindowVisible")
+	procGetWindowRect       = modUser32.NewProc("GetWindowRect")
+	procGetClientRect       = modUser32.NewProc("GetClientRect")
+	procGetWindowDC         = modUser32.NewProc("GetWindowDC")
+	procGetDC               = modUser32.NewProc("GetDC")
+	procReleaseDC           = modUser32.NewProc("ReleaseDC")
+	procPrintWindow         = modUser32.NewProc("PrintWindow")
 	procGetForegroundWindow = modUser32.NewProc("GetForegroundWindow")
-	procGetWindowThreadPID = modUser32.NewProc("GetWindowThreadProcessId")
-	procSetProcessDPIAware = modUser32.NewProc("SetProcessDPIAware")
+	procGetWindowThreadPID  = modUser32.NewProc("GetWindowThreadProcessId")
+	procSetProcessDPIAware  = modUser32.NewProc("SetProcessDPIAware")
 
 	// Used by --auto to hide the console it was launched from. See
 	// hideConsole() in auto.go for why hidden and not freed.
@@ -70,11 +70,11 @@ var (
 	procCreateWindowExW = modUser32.NewProc("CreateWindowExW")
 	procDestroyWindow   = modUser32.NewProc("DestroyWindow")
 
-	procBeep            = modKernel32.NewProc("Beep")
+	procBeep                       = modKernel32.NewProc("Beep")
 	procQueryFullProcessImageNameW = modKernel32.NewProc("QueryFullProcessImageNameW")
-	procOpenProcess     = modKernel32.NewProc("OpenProcess")
-	procCloseHandle     = modKernel32.NewProc("CloseHandle")
-	procGetConsoleWindow = modKernel32.NewProc("GetConsoleWindow")
+	procOpenProcess                = modKernel32.NewProc("OpenProcess")
+	procCloseHandle                = modKernel32.NewProc("CloseHandle")
+	procGetConsoleWindow           = modKernel32.NewProc("GetConsoleWindow")
 
 	procCreateCompatibleDC     = modGdi32.NewProc("CreateCompatibleDC")
 	procCreateCompatibleBitmap = modGdi32.NewProc("CreateCompatibleBitmap")
@@ -84,13 +84,13 @@ var (
 	procBitBlt                 = modGdi32.NewProc("BitBlt")
 	procGetDIBits              = modGdi32.NewProc("GetDIBits")
 
-	procD3D11CreateDevice = modD3D11.NewProc("D3D11CreateDevice")
+	procD3D11CreateDevice                    = modD3D11.NewProc("D3D11CreateDevice")
 	procCreateDirect3D11DeviceFromDXGIDevice = modD3D11.NewProc("CreateDirect3D11DeviceFromDXGIDevice")
 
-	procRoInitialize            = modCombase.NewProc("RoInitialize")
-	procRoGetActivationFactory  = modCombase.NewProc("RoGetActivationFactory")
-	procWindowsCreateString     = modCombase.NewProc("WindowsCreateString")
-	procWindowsDeleteString     = modCombase.NewProc("WindowsDeleteString")
+	procRoInitialize           = modCombase.NewProc("RoInitialize")
+	procRoGetActivationFactory = modCombase.NewProc("RoGetActivationFactory")
+	procWindowsCreateString    = modCombase.NewProc("WindowsCreateString")
+	procWindowsDeleteString    = modCombase.NewProc("WindowsDeleteString")
 
 	procCoInitializeEx = modOle32.NewProc("CoInitializeEx")
 )
@@ -355,7 +355,7 @@ const (
 	RO_INIT_SINGLETHREADED = 0
 	RO_INIT_MULTITHREADED  = 1
 
-	COINIT_MULTITHREADED = 0x0
+	COINIT_MULTITHREADED     = 0x0
 	COINIT_APARTMENTTHREADED = 0x2
 )
 

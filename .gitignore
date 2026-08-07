@@ -16,6 +16,10 @@ logs/
 pipeline_log.txt
 # Built binaries (build from source instead)
 *.exe
+# Go leaves a ~ backup when it cannot replace a RUNNING exe - rebuilding while a
+# collector session is live produces one. It is the old binary the running
+# process still has mapped, so it is left alone rather than removed.
+*.exe~
 # Database backup dumps - not source, can be large
 *.dump
 # Local Claude Code settings - machine-specific paths, not portable
@@ -54,6 +58,14 @@ testing/index.html
 testing/_deploy/
 testing/_models/
 testing/_tools/
+
+# ---- bundled WebView2 runtime, 2026-08-07 ----------------------------------
+# 502 MB of Microsoft browser engine, bundled so the UI cannot fail with a
+# missing runtime on a stranger's machine (WO-UI-01 §3). Regenerable from the
+# recorded source, so the payload stays out and the PROVENANCE RECORD stays
+# tracked - the same separation data-layer/external-sources uses.
+# See citizen-collector/WEBVIEW2_RUNTIME_PROVENANCE.md, which IS committed.
+citizen-collector/webview2-runtime/
 
 # ---- wrangler local state, 2026-08-06 --------------------------------------
 # wrangler writes an account cache containing the Cloudflare account id and the
