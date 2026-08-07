@@ -1,0 +1,149 @@
+{
+ "manifest_schema_version": "1.0",
+ "run_id": "20260806T033315Z",
+ "source_number": 6,
+ "source_name": "UEX Corp API - commodities",
+ "source_type": "REST API (Bearer auth, JSON envelope {status, data})",
+ "canonical_source_url": "https://api.uexcorp.uk/2.0/",
+ "previous_snapshot_run_id": "20260801T235530Z",
+ "run_context": "Commodity endpoints, pulled for the first time. The 1 Aug snapshot's _pull_summary.json contains no commodity endpoint at all - searching it for 'commodit' returns nothing - so these were never requested. Every plan since has asserted that screenshots are the only route to commodity prices; that assertion was inferred from a gap in the REQUEST LIST and was never tested against the API. It is now refuted.",
+ "data_tier": "C",
+ "tier_c_statement": "TIER C. UEX is community-reported and crowdsourced. UEX states its own tolerance as +/-20% on commodities. Never auto-promoted. Nothing from this snapshot has been promoted to the database.",
+ "endpoints_landed": [
+  {
+   "endpoint": "/commodities/",
+   "bytes": 133114,
+   "sha256": "6c8414cb0badf2d8cd3f7de3c7bc5516ff6ea931d5067aa84e9673c6fb57b2ce",
+   "rows": 204
+  },
+  {
+   "endpoint": "/commodities_prices_all/",
+   "bytes": 1074764,
+   "sha256": "aa255c0dccdaa60288094759f6db71ac3b44f28ee7dab409dbe5cb1b7f5bca46",
+   "rows": 2597
+  },
+  {
+   "endpoint": "/commodities_raw_prices_all/",
+   "bytes": 76609,
+   "sha256": "fac6ca9308c6e50f097448b3c21404ee5c40a136547029abfad524ab6a671b93",
+   "rows": 335
+  },
+  {
+   "endpoint": "/commodities_status/",
+   "bytes": 2308,
+   "sha256": "56968956d00e155339c1e687f5d24c271dcdbe4fd737a23f6b0b3633570b6c8c",
+   "rows": null
+  }
+ ],
+ "endpoints_attempted_and_refused": [
+  {
+   "endpoint": "/commodities_averages/",
+   "http_status": 400,
+   "api_status": "missing_id_commodity",
+   "api_message": "Commodity not provided",
+   "interpretation": "Requires an id_commodity parameter. Same shape as the bare /items/ endpoint already documented in this source. NOT a permission or quota failure - the credential was verified against /game_versions/ before the run and the four unparameterised commodity endpoints all returned 200.",
+   "body_saved": false,
+   "note": "Body was NOT written to disk - write-before-status discipline held."
+  },
+  {
+   "endpoint": "/commodities_prices_history/",
+   "http_status": 400,
+   "api_status": "missing_id_terminal",
+   "api_message": "Terminal not specified",
+   "interpretation": "Requires an id_terminal parameter. A full history pull is 135+ requests, one per terminal present in commodities_prices_all. Not attempted in this run.",
+   "body_saved": false
+  }
+ ],
+ "record_counts": {
+  "commodities.json": 204,
+  "commodities_prices_all.json": 2597,
+  "commodities_raw_prices_all.json": 335
+ },
+ "freshness_finding": {
+  "question_asked": "Do prices carry a timestamp or a game_version?",
+  "answer": "TIMESTAMP ONLY. No game_version, patch or build field exists on any commodity price row.",
+  "fields_present": [
+   "date_added",
+   "date_modified"
+  ],
+  "format": "Unix epoch seconds",
+  "date_modified_age_days": {
+   "min": 0,
+   "p25": 0,
+   "median": 1,
+   "p75": 4,
+   "p90": 9,
+   "max": 509
+  },
+  "buckets": {
+   "<=1d": 1389,
+   "<=7d": 883,
+   "<=30d": 320,
+   "<=90d": 3,
+   ">365d": 2
+  },
+  "newest_row_utc": "2026-08-06T03:07:17+00:00",
+  "oldest_row_utc": "2025-03-14T12:52:05+00:00",
+  "coverage": {
+   "price_rows": 2597,
+   "distinct_commodities": 123,
+   "distinct_terminals": 135,
+   "catalogue_rows": 204
+  },
+  "why_this_matters": "Coverage and freshness are both good - a majority of price rows were touched within a day, and the newest predates this pull by 8 minutes. But WITHOUT a game_version a price cannot be attributed to a patch. A row 9 days old may straddle a patch boundary and nothing in the data says so. Timestamp freshness is not patch provenance."
+ },
+ "integrity_scan": {
+  "scanner": "verify_snapshot_v2.py 2.0.0",
+  "inspection_complete": true,
+  "files": 6,
+  "json_parse_failures": 0,
+  "ext_content_mismatches": 0,
+  "active_content_hits": 0,
+  "read_errors": 0,
+  "walk_errors": 0,
+  "duplicate_hash_groups": 0,
+  "changed_during_run": 0,
+  "unexpected_domains": {
+   "hits": "api.uexcorp.uk in _pull_summary.json and _pull_stderr.log",
+   "assessment": "Benign. That is the source's own API host, appearing in files this pull wrote itself, not in any downloaded payload. Recorded rather than suppressed."
+  },
+  "not_a_malware_scan": "A real AV pass is still required before quarantine release."
+ },
+ "file_inventory": {
+  "_pull_stderr.log": {
+   "bytes": 815,
+   "sha256": "3fc9884f58c81715df007a581b293f9fdbd3ca8c727c37d5483d83290ea7c141"
+  },
+  "_pull_summary.json": {
+   "bytes": 4916,
+   "sha256": "5f9e8a36faffb2b4b93f02f9f631f0a77dd63d3c04e3b5049c3ee598c22ebc29"
+  },
+  "commodities.json": {
+   "bytes": 133114,
+   "sha256": "6c8414cb0badf2d8cd3f7de3c7bc5516ff6ea931d5067aa84e9673c6fb57b2ce"
+  },
+  "commodities_prices_all.json": {
+   "bytes": 1074764,
+   "sha256": "aa255c0dccdaa60288094759f6db71ac3b44f28ee7dab409dbe5cb1b7f5bca46"
+  },
+  "commodities_raw_prices_all.json": {
+   "bytes": 76609,
+   "sha256": "fac6ca9308c6e50f097448b3c21404ee5c40a136547029abfad524ab6a671b93"
+  },
+  "commodities_status.json": {
+   "bytes": 2308,
+   "sha256": "56968956d00e155339c1e687f5d24c271dcdbe4fd737a23f6b0b3633570b6c8c"
+  }
+ },
+ "retrieval_script": {
+  "path": "scripts/external_sources/uex_corp.py",
+  "change": "Six commodity endpoints added to ENDPOINTS; --only= filter added so a subset can be pulled without re-pulling the other twelve.",
+  "defect_fixed_during_this_run": "The script's docstring said the token was 'loaded from .env', but the python-dotenv import was wrapped in a try/except ImportError whose handler was a bare pass. python-dotenv is NOT installed in this interpreter, so that handler fired silently, .env was never read, and the script then reported 'UEX_API_TOKEN is not set. Refusing to run.' The token was present in .env the whole time. This is a silent failure reported as a different and entirely plausible failure: the message named a missing credential, sending a reader to hunt for something that was never missing, while the real cause - a missing library - was swallowed by the bare pass. Fixed by parsing .env directly (removing the dependency rather than adding one, which also avoids installing a package outside the repo per hard rule 6) and by making the failure message state which step failed and whether .env exists."
+ },
+ "credential_handling": "Token read from .env into the request header only. It was never printed, logged, echoed to a console, or written to any file in this snapshot or manifest.",
+ "credential_warning": "SEPARATE FROM THIS JOB: this UEX token was exposed in a screenshot and has never been rotated. It should be rotated at UEX regardless of this work order.",
+ "no_promotion_note": "Stage 1 only: collect and seal. NOTHING has been promoted to the database.",
+ "snapshot_status": "complete",
+ "snapshot_path": "data-layer/external-sources/uexcorp/snapshots/20260806T033315Z",
+ "generated_utc": "2026-08-06T03:36:14Z"
+}

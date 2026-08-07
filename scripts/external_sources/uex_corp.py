@@ -54,14 +54,73 @@ from pathlib import Path
 
 import requests
 
+ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
+
+# How .env actually got loaded, so a failure can say which step let us down
+# instead of only reporting the symptom.
+_ENV_LOAD_NOTE = "not attempted"
+
+
+def _load_env_fallback(path):
+    """Minimal .env reader for when python-dotenv is not installed.
+
+    WHY THIS EXISTS
+      The original code was:
+
+          try:
+              from dotenv import load_dotenv
+              load_dotenv(...)
+          except ImportError:
+              pass
+
+      python-dotenv is NOT installed in this interpreter, so that except branch
+      fired silently and the script then announced "UEX_API_TOKEN is not set.
+      Refusing to run." The token was present in .env the whole time. The
+      message named the wrong cause, and the real one - a missing library -
+      was swallowed by a bare pass.
+
+      That is the silent-success shape inverted: a silent FAILURE reported as a
+      different, plausible failure. Someone reading that message would go
+      looking for a missing credential that was never missing.
+
+      Parsing .env directly removes the dependency rather than adding one, which
+      also avoids installing a package outside the repo (hard rule 6).
+
+    Deliberately conservative: KEY=VALUE, optional surrounding quotes, '#'
+    comments, blank lines. It does not implement export syntax, interpolation or
+    multi-line values. Anything it cannot parse it leaves alone rather than
+    guessing.
+    """
+    if not path.is_file():
+        return f".env not found at {path}"
+    loaded = 0
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        key = key.strip()
+        if not key or not key.replace("_", "").isalnum():
+            continue
+        val = val.strip()
+        if len(val) >= 2 and val[0] == val[-1] and val[0] in ("'", '"'):
+            val = val[1:-1]
+        # Never override something already exported - an explicit environment
+        # variable outranks a file.
+        os.environ.setdefault(key, val)
+        loaded += 1
+    return f"parsed {loaded} entries from {path.name} without python-dotenv"
+
+
 try:
     from dotenv import load_dotenv
-    # The token lives in .env, which is gitignored and untracked. Without this
-    # the script's own docstring ("loaded from .env") would be a lie and it
-    # would refuse to run for a token that is actually present.
-    load_dotenv(Path(__file__).resolve().parents[2] / ".env")
-except ImportError:  # dotenv is optional; a pre-exported env var still works
-    pass
+    # The token lives in .env, which is gitignored and untracked.
+    load_dotenv(ENV_PATH)
+    _ENV_LOAD_NOTE = "loaded via python-dotenv"
+except ImportError:
+    _ENV_LOAD_NOTE = _load_env_fallback(ENV_PATH)
 
 BASE = "https://api.uexcorp.uk/2.0"
 
@@ -83,6 +142,30 @@ ENDPOINTS = [
     ("cities", "/cities/"),
     ("outposts", "/outposts/"),
     ("space_stations", "/space_stations/"),
+
+    # --- commodities -------------------------------------------------------
+    # Added 2026-08-05. These were NEVER pulled: the 1 Aug snapshot's
+    # _pull_summary.json contains no commodity endpoint at all, which is
+    # verifiable by searching it for the string "commodit" and getting nothing.
+    #
+    # That absence matters more than it looks. Every plan since has said
+    # "screenshots are the only route to commodity prices", and that claim was
+    # never established - it was inferred from a gap in a snapshot, and the gap
+    # was in the request list, not in the API.
+    ("commodities", "/commodities/"),
+    ("commodities_prices_all", "/commodities_prices_all/"),
+    ("commodities_averages", "/commodities_averages/"),
+    ("commodities_prices_history", "/commodities_prices_history/"),
+    ("commodities_raw_prices_all", "/commodities_raw_prices_all/"),
+    ("commodities_status", "/commodities_status/"),
+]
+
+# The six above, by name, so a commodity-only pull can be requested without
+# re-pulling the other twelve and without touching a sealed snapshot.
+COMMODITY_ENDPOINT_NAMES = [
+    "commodities", "commodities_prices_all", "commodities_averages",
+    "commodities_prices_history", "commodities_raw_prices_all",
+    "commodities_status",
 ]
 
 USER_AGENT = "citizen-compass-data-landing/1.0 (+https://github.com/Smeezee/citizen-compass)"
@@ -424,12 +507,34 @@ def main():
 
     token = os.environ.get("UEX_API_TOKEN")
     if not token:
+        # Say which step failed. The previous message named only the symptom and
+        # sent a reader hunting for a credential that was present all along.
         print("UEX_API_TOKEN is not set. Refusing to run - a pull on an "
               "unverified credential is not attempted.", file=sys.stderr)
+        print(f"  .env handling: {_ENV_LOAD_NOTE}", file=sys.stderr)
+        print(f"  .env path    : {ENV_PATH} (exists={ENV_PATH.is_file()})", file=sys.stderr)
         return EXIT_FAILED
 
     out_dir = Path(sys.argv[1])
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # --only <names|commodities> restricts the pull. Filtering here rather than
+    # editing ENDPOINTS keeps one canonical list of what this source consists
+    # of - a second list that drifts from the first is how an endpoint gets
+    # quietly dropped from future pulls.
+    selected = ENDPOINTS
+    for arg in sys.argv[2:]:
+        if arg.startswith("--only="):
+            want = arg.split("=", 1)[1]
+            names = (COMMODITY_ENDPOINT_NAMES if want == "commodities"
+                     else [n.strip() for n in want.split(",") if n.strip()])
+            unknown = [n for n in names if n not in {e[0] for e in ENDPOINTS}]
+            if unknown:
+                print(f"--only names not in ENDPOINTS: {unknown}", file=sys.stderr)
+                return EXIT_USAGE
+            selected = [e for e in ENDPOINTS if e[0] in names]
+            print(f"--only: pulling {len(selected)} of {len(ENDPOINTS)} endpoints",
+                  file=sys.stderr)
 
     print("Verifying credential with a single request before pulling ...", file=sys.stderr)
     ok, detail = verify_credential(token)
@@ -439,7 +544,7 @@ def main():
         return EXIT_FAILED
 
     results = []
-    for index, (name, path) in enumerate(ENDPOINTS):
+    for index, (name, path) in enumerate(selected):
         if index:
             time.sleep(REQUEST_DELAY_SECONDS)
         print(f"Fetching {name} from {BASE}{path} ...", file=sys.stderr)

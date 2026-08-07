@@ -1,0 +1,74 @@
+{
+  "schema": "citizen-compass/snapshot-verification/2.0",
+  "scanner_version": "2.0.0",
+  "config_fingerprint": "27f538c731f4a762256bae6e0a0f9c087b315f1a01bf2e2c208030d753cbb473",
+  "generated_utc": "2026-08-06T03:35:02Z",
+  "snapshot_path": "C:\\Users\\david\\citizen-compass\\data-layer\\external-sources\\uexcorp\\snapshots\\20260806T033315Z",
+  "read_only": true,
+  "what_this_is_not": "NOT a malware scan. No AV signatures, no archive unpacking, no binary analysis, no sandboxing. A real AV pass is still required before releasing a snapshot from quarantine.",
+  "coverage": {
+    "inspection_complete": true,
+    "incomplete_reasons": [],
+    "files_enumerated": 6,
+    "files_inspected": 6,
+    "files_unreadable": 0,
+    "files_without_hash": 0,
+    "json_files_found": 5,
+    "json_parsed_strictly": 5,
+    "json_structural_only": 0,
+    "json_parse_failed": 0,
+    "json_without_verdict": 0,
+    "symlinks_or_reparse_points_refused": 0,
+    "files_changed_during_run": 0,
+    "files_appeared_during_run": 0,
+    "files_vanished_during_run": 0,
+    "stale_journal_records_excluded": 0
+  },
+  "findings": {
+    "read_errors": 0,
+    "json_parse_failures": 0,
+    "extension_content_mismatch": 0,
+    "files_with_active_content_indicators": 0,
+    "files_with_unexpected_domains": 2,
+    "duplicate_hash_groups": 0,
+    "walk_errors": 0,
+    "link_like_entries": 0
+  },
+  "indicator_totals": {},
+  "unexpected_domain_totals": {
+    "api.uexcorp.uk": 12
+  },
+  "detail": {
+    "read_errors": [],
+    "json_parse_failures": [],
+    "extension_content_mismatch": [],
+    "files_with_active_content_indicators": [],
+    "files_with_unexpected_domains": [
+      {
+        "path": "_pull_stderr.log",
+        "domains": {
+          "api.uexcorp.uk": {
+            "count": 6,
+            "sample": "https://api.uexcorp.uk/2.0/commodities/"
+          }
+        }
+      },
+      {
+        "path": "_pull_summary.json",
+        "domains": {
+          "api.uexcorp.uk": {
+            "count": 6,
+            "sample": "https://api.uexcorp.uk/2.0/commodities/"
+          }
+        }
+      }
+    ],
+    "link_like_entries": [],
+    "files_changed_during_run": [],
+    "files_appeared_during_run": [],
+    "files_vanished_during_run": [],
+    "stale_journal_records": [],
+    "walk_errors": []
+  },
+  "truncation_note": "Detail lists cap at 200 entries. journal.jsonl beside this file holds every record untruncated - nothing was silently dropped."
+}

@@ -1,0 +1,26 @@
+[2026-08-06T03:35:02Z] ========================================================================
+[2026-08-06T03:35:02Z] verify_snapshot_v2.py 2.0.0 - READ-ONLY. Not antivirus.
+[2026-08-06T03:35:02Z] snapshot: C:\Users\david\citizen-compass\data-layer\external-sources\uexcorp\snapshots\20260806T033315Z
+[2026-08-06T03:35:02Z] output:   C:\Users\david\citizen-compass\data-layer\external-source-manifests\20260806T033315Z\_integrity_scan.json
+[2026-08-06T03:35:02Z] enumerating...
+[2026-08-06T03:35:02Z] found 6 file(s); 0 walk error(s); 0 link-like director(y/ies) skipped
+[2026-08-06T03:35:02Z] 6 file(s) to inspect this run
+[2026-08-06T03:35:02Z] inspection pass complete; re-enumerating to detect drift...
+[2026-08-06T03:35:02Z] ------------------------------------------------------------------------
+[2026-08-06T03:35:02Z] files enumerated ....... 6
+[2026-08-06T03:35:02Z] files inspected ........ 6
+[2026-08-06T03:35:02Z] json parsed strictly ... 5
+[2026-08-06T03:35:02Z] json structural only ... 0
+[2026-08-06T03:35:02Z] json parse FAILURES .... 0
+[2026-08-06T03:35:02Z] ext/content MISMATCH ... 0
+[2026-08-06T03:35:02Z] active-content hits .... 0 file(s)
+[2026-08-06T03:35:02Z] unexpected domains ..... 2 file(s)
+[2026-08-06T03:35:02Z] duplicate hash groups .. 0
+[2026-08-06T03:35:02Z] read errors ............ 0
+[2026-08-06T03:35:02Z] links/reparse refused .. 0
+[2026-08-06T03:35:02Z] changed during run ..... 0
+[2026-08-06T03:35:02Z] walk errors ............ 0
+[2026-08-06T03:35:02Z] ------------------------------------------------------------------------
+[2026-08-06T03:35:02Z] INSPECTION COMPLETE: True
+[2026-08-06T03:35:02Z] Reminder: this is NOT a malware scan. A real AV pass is still required before quarantine release.
+[2026-08-06T03:35:02Z] DONE. Nothing in the snapshot was modified.
