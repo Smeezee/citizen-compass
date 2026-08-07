@@ -223,17 +223,17 @@ func runAutoHeartbeatSelftest(check func(name string, ok bool, detail string)) {
 	// NEGATIVE CONTROL: before the clock moves, there must be NO heartbeat.
 	// Without this, a heartbeat printed unconditionally on every poll would
 	// pass the positive check below while measuring nothing.
-	beatsBefore := sink.count("alive: watching")
+	beatsBefore := sink.count("alive:")
 	check("no heartbeat before its interval elapses", beatsBefore == 0,
 		fmt.Sprintf("%d heartbeat lines after startup with the clock held still", beatsBefore))
 
 	// Now let time pass.
 	clock.Advance(heartbeatEvery + time.Second)
-	ok = waitFor(func() bool { return sink.count("alive: watching") >= 1 }, 4*time.Second)
+	ok = waitFor(func() bool { return sink.count("alive:") >= 1 }, 4*time.Second)
 	check("heartbeat appears once the interval passes", ok,
-		fmt.Sprintf("%d heartbeat line(s) after advancing %s", sink.count("alive: watching"), heartbeatEvery))
+		fmt.Sprintf("%d heartbeat line(s) after advancing %s", sink.count("alive:"), heartbeatEvery))
 	check("heartbeat names the file and the counters",
-		sink.has("alive: watching "+logPath) && sink.has("bytes read since last line") && sink.has("captures total"),
+		sink.hasLineWithBoth("alive:", logPath) && sink.has("bytes read since last line") && sink.has("captures total"),
 		"the line carries path, bytes read and capture count - checkable, not decorative")
 
 	// STALENESS. The file has not grown and a window is present, so after

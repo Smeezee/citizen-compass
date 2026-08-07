@@ -176,6 +176,18 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 		fmt.Fprintf(lf, "[%s] %s\n", time.Now().Format("2006-01-02 15:04:05"),
 			fmt.Sprintf(format, args...))
 	}
+	// ONE COLLECTOR. Checked AFTER the runtime relaunch, deliberately: the
+	// parent that re-executes must not hold the mutex, or the child it just
+	// started would see it and mistake itself for a duplicate. The process that
+	// actually opens the window is the one that claims the instance.
+	//
+	// Checked after the log is open so a duplicate launch leaves a record. A
+	// second launch that vanished silently would be indistinguishable from one
+	// that crashed on startup.
+	if yieldToExistingInstance(logf) {
+		return nil
+	}
+
 	logf("---- citizen-collector %s (%s) UI start ----", Version, BuildVariant)
 	// Reported from what will ACTUALLY be used, not from what was intended.
 	logf("webview2 runtime: %s", verifiedRuntimeNote(exeDir))
@@ -188,7 +200,14 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 	var hotkeyPresses <-chan struct{}
 	hotkeyName := ""
 	if hl, err := startHotkeyListener(hotkeyID, hotkeySpec); err != nil {
-		logf("WARNING: hotkey %q NOT REGISTERED: %v - the button in the window still works", hotkeySpec, err)
+		// SAY WHAT IT ACTUALLY MEANS. "Hot key is already registered" reads as
+		// "your hotkey is broken" and sends the reader hunting for a keyboard
+		// conflict. The overwhelmingly common cause is another collector still
+		// running - which is now prevented, so if this appears at all it is
+		// worth naming the likely culprit rather than quoting the API.
+		logf("NOTE: could not register %s (%v).", hotkeySpec, err)
+		logf("      This almost always means another collector is still running - " +
+			"check Task Manager for collector-master.exe. The button in the window works regardless.")
 	} else {
 		hotkeyPresses = hl.Presses
 		hotkeyName = hl.Pretty

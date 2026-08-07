@@ -151,6 +151,39 @@ func runUICountSelftest(check func(name string, ok bool, detail string)) {
 	check("sidecars are not counted as pictures", got == 2, fmt.Sprintf("counted %d", got))
 }
 
+// runSingleInstanceSelftest proves the guard by using it.
+//
+// NEGATIVE CONTROL FIRST: with nothing holding the mutex, alreadyRunning() must
+// report false. If it reported true unconditionally the program would refuse to
+// start at all, and the positive check below would pass while the guard was
+// broken in the worst possible direction.
+func runSingleInstanceSelftest(check func(name string, ok bool, detail string)) {
+	// A name of this test's own, so a real collector running in another window
+	// cannot make these checks fail for an unrelated reason.
+	testMutex := fmt.Sprintf(`Local\CitizenCollector.SelfTest.%d`, os.Getpid())
+
+	// NEGATIVE CONTROL. Nothing has claimed this name yet.
+	first := alreadyRunningNamed(testMutex)
+	check("nothing running -> instance is free", !first,
+		"the guard does not report a duplicate when there is none")
+
+	// The call above created and now holds the mutex, exactly as a real first
+	// instance would. A second ask must see it.
+	second := alreadyRunningNamed(testMutex)
+	check("a claimed instance is DETECTED", second,
+		"a second attempt sees the mutex the first one took")
+
+	// The pair must disagree, or the check is measuring nothing.
+	check("the guard distinguishes the two states", first != second,
+		fmt.Sprintf("before=%v, after=%v", first, second))
+
+	// The window search must never match on title alone. There is no other
+	// collector running during a selftest, so it must find nothing - and
+	// finding something here would mean it was matching too loosely.
+	check("no existing window is invented", findExistingWindow() == 0,
+		"the search matches on process identity, so it finds nothing when nothing is running")
+}
+
 // runUIInterfaceSelftest asserts the window carries what §2 requires, without
 // opening a window on a build machine.
 func runUIInterfaceSelftest(check func(name string, ok bool, detail string)) {

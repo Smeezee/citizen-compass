@@ -684,9 +684,42 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		case <-ticker.C:
 		}
 
+		// DETECTION RUNS FIRST, AND UNCONDITIONALLY (WO-UI-01 §6).
+		//
+		// This used to sit BELOW the window gate. When the game window was not
+		// detected the loop hit `continue` and never re-resolved, so the watched
+		// path stayed whatever the startup scan had picked - LIVE - and the
+		// heartbeat went on reporting it as though it were current. Detection
+		// could not re-run at exactly the moment it mattered most, and an hour
+		// of "0 bytes read since last line" looked like a quiet game rather than
+		// a collector pointed at the wrong install.
+		//
+		// Resolving before the gate means the answer tracks reality whether or
+		// not the game is currently visible, which is what "continuously" has to
+		// mean to be worth anything.
+		gameErr := deps.gameAlive()
+
+		p, how := findLog()
+		if p != "" && p != lastLogPath {
+			deps.logf("watching %s (%s)", p, how)
+			tailer = newLogTailer(p)
+			lastLogPath = p
+			lastSize = -1
+			lastGrowth = now()
+			staleWarned = false
+		}
+		if p != "" {
+			reportedPath = p
+		}
+
 		// THE HEARTBEAT. Emitted whether or not a game window exists, because
 		// "no game running" is itself a state worth being able to read back.
 		// It is the only line that proves the process is still alive.
+		//
+		// It now states whether the game is actually there. Saying "watching X"
+		// while no game is running invited exactly the wrong conclusion - that
+		// the file was being followed and had gone quiet, rather than that
+		// nothing was being followed at all.
 		if t := now(); t.Sub(lastBeat) >= heartbeatEvery {
 			var off int64
 			watching := reportedPath
@@ -696,8 +729,12 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			if watching == "" {
 				watching = "(no log resolved yet)"
 			}
-			deps.logf("alive: watching %s, %d bytes read since last line, %d captures total",
-				watching, off-bytesAtBeat, captures)
+			presence := "game running"
+			if gameErr != nil {
+				presence = "NO game window - not capturing"
+			}
+			deps.logf("alive: %s, watching %s, %d bytes read since last line, %d captures total",
+				presence, watching, off-bytesAtBeat, captures)
 			lastBeat = t
 			bytesAtBeat = off
 		}
@@ -706,7 +743,7 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		// also means the log is not moving, so there is nothing to miss.
 		// allowAny is not a parameter here and cannot be: --allow-any-window is
 		// manual-only by construction, not by convention.
-		if err := deps.gameAlive(); err != nil {
+		if gameErr != nil {
 			// The game is gone, so the log standing still proves nothing. Reset
 			// the staleness clock rather than accusing a file of being dead
 			// when nothing was writing to it in the first place.
@@ -715,22 +752,9 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			continue
 		}
 
-		// The log is looked up each time the game reappears, so a session that
-		// switches between LIVE and PTU is followed rather than pinned to
-		// whichever was running first.
-		p, how := findLog()
 		if p == "" {
 			deps.logf("no Game.log yet (%s)", how)
 			continue
-		}
-		if p != lastLogPath {
-			deps.logf("watching %s (%s)", p, how)
-			tailer = newLogTailer(p)
-			lastLogPath = p
-			reportedPath = p
-			lastSize = -1
-			lastGrowth = now()
-			staleWarned = false
 		}
 
 		triggers, err := tailer.Poll()
