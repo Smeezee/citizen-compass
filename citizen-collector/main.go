@@ -505,6 +505,8 @@ func selftest(outDir string) int {
 	runUIFollowsGameSelftest(check)
 	runUICountSelftest(check)
 	runSingleInstanceSelftest(check)
+	runLifecycleSelftest(check)
+	runPanicLoggingSelftest(check)
 	runUIInterfaceSelftest(check)
 
 	// 7. Game.log discovery - reported, never fatal. The game not being

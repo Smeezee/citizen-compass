@@ -85,6 +85,8 @@ const (
 	// reexecGuard stops the relaunch below from recursing. Without it a failure
 	// to apply the variable would fork forever.
 	reexecGuard = "CITIZEN_COLLECTOR_RUNTIME_PINNED"
+	// superviseGuard marks the child, so it never tries to supervise itself.
+	superviseGuard = "CITIZEN_COLLECTOR_SUPERVISED"
 )
 
 // pinBundledRuntime makes the BUNDLED runtime the one that actually loads, by
@@ -132,13 +134,83 @@ func pinBundledRuntime(exeDir string) bool {
 		uiRuntimeNote = "bundled runtime found but could not relaunch to use it: " + err.Error()
 		return false
 	}
-	cmd := exec.Command(exe, os.Args[1:]...)
-	cmd.Env = append(os.Environ(), runtimeEnvVar+"="+dir, reexecGuard+"=1")
-	if err := cmd.Start(); err != nil {
-		uiRuntimeNote = "bundled runtime found but relaunch failed: " + err.Error()
-		return false
-	}
+	superviseChild(exe, dir, exeDir)
 	return true
+}
+
+// superviseChild runs the window in a child process and RESTARTS it if it dies.
+//
+// # WHY THE PARENT STAYS
+//
+// The relaunch for the bundled runtime already created a parent/child pair, and
+// the parent had nothing left to do but exit. Keeping it costs almost nothing
+// and buys the thing WO-UI-01's audience actually needs: a person who starts
+// this in the morning still has it running in the evening without checking.
+//
+// The supervisor is deliberately tiny. It owns no window, no WebView, no
+// capture backend and no hotkey - the components that can crash are all in the
+// child. A supervisor that shared their failure modes would be pointless.
+//
+// It restarts on ANY unexpected exit, and stops for the one case that means the
+// person is finished: the child exiting 0, which is what closing the window
+// does.
+func superviseChild(exe, runtimeDir, exeDir string) {
+	logPath := filepath.Join(exeDir, "collector-auto.log")
+
+	say := func(format string, args ...interface{}) {
+		f, err := openAutoLog(logPath)
+		if err != nil {
+			return
+		}
+		defer f.Close()
+		fmt.Fprintf(f, "[%s] supervisor: %s\n",
+			time.Now().Format("2006-01-02 15:04:05"), fmt.Sprintf(format, args...))
+	}
+
+	// Backoff so a child that fails instantly and repeatedly - a missing
+	// runtime, a corrupt install - cannot become a spin loop that fills the
+	// disk with log lines.
+	backoff := 2 * time.Second
+	const maxBackoff = 60 * time.Second
+
+	for {
+		started := time.Now()
+
+		cmd := exec.Command(exe, os.Args[1:]...)
+		cmd.Env = append(os.Environ(),
+			runtimeEnvVar+"="+runtimeDir,
+			reexecGuard+"=1",
+			superviseGuard+"=1")
+		if err := cmd.Start(); err != nil {
+			say("could not start the collector: %v - giving up", err)
+			return
+		}
+
+		err := cmd.Wait()
+		ran := time.Since(started)
+
+		// Closing the window is a clean exit and means the person is done.
+		if err == nil {
+			say("collector exited normally after %s - not restarting", ran.Round(time.Second))
+			return
+		}
+
+		say("collector STOPPED UNEXPECTEDLY after %s (%v) - restarting in %s",
+			ran.Round(time.Second), err, backoff)
+
+		time.Sleep(backoff)
+
+		// A child that survived a decent while was healthy; reset the backoff so
+		// one bad night does not leave the delay pinned at a minute forever.
+		if ran > 2*time.Minute {
+			backoff = 2 * time.Second
+		} else if backoff < maxBackoff {
+			backoff *= 2
+			if backoff > maxBackoff {
+				backoff = maxBackoff
+			}
+		}
+	}
 }
 
 // verifiedRuntimeNote reports the runtime this process will ACTUALLY use.
@@ -188,7 +260,19 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 		return nil
 	}
 
+	// A panic in ANY goroutine now lands in the log instead of a dead stderr.
+	// On a -H windowsgui build there is no console, so this is the difference
+	// between a stack trace and total silence.
+	redirectStderrToLog(lf)
+	defer logPanic(logf, exeDir, "the window process")
+
 	logf("---- citizen-collector %s (%s) UI start ----", Version, BuildVariant)
+
+	// Did the LAST run end through a path of its own? A leftover marker means
+	// it did not - killed or crashed - which is the one thing an exit handler
+	// can never report about itself.
+	checkPreviousRun(exeDir, logf)
+
 	// Reported from what will ACTUALLY be used, not from what was intended.
 	logf("webview2 runtime: %s", verifiedRuntimeNote(exeDir))
 
@@ -232,7 +316,10 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 	}
 
 	stop := make(chan struct{})
-	go func() { _ = runAuto(cfg, autoLogPath, deps, stop) }()
+	go func() {
+		defer logPanic(logf, exeDir, "the capture loop")
+		_ = runAuto(cfg, autoLogPath, deps, stop)
+	}()
 	defer close(stop)
 
 	uid := defaultUIDeps(outDir, autoLogPath)
@@ -282,6 +369,10 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 
 	w.SetHtml(uiHTML)
 	w.Run()
+
+	// w.Run returns when the window is closed. That is the one exit that means
+	// the person is finished, and the supervisor treats it as final.
+	logExit(logf, exeDir, "window closed")
 	return nil
 }
 
