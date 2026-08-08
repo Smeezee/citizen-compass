@@ -45,6 +45,7 @@ from sqlalchemy import select  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
 from app.database import engine  # noqa: E402
+from app.preservation import install_never_delete_guard  # noqa: E402
 from app.models import (  # noqa: E402
     Component,
     ComponentType,
@@ -301,6 +302,13 @@ def upsert_detail(session: Session, component: Component, details: dict) -> None
 def run(dry_run: bool = False) -> int:
     created_count = 0
     updated_count = 0
+
+    # Preservation: importers create and update, never delete. Installed here
+    # rather than trusted to every future edit of this file - an entity absent
+    # from a patch is MARKED absent, not dropped. Proven by
+    # checks/_verify_never_delete_guard.py, which removes the guard and confirms
+    # the row then disappears.
+    install_never_delete_guard(engine)
 
     with Session(engine) as session:
         for spec in ARROW_COMPONENTS:

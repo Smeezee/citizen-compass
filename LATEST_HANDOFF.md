@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #198 — 2026-08-06 5:25 PM
+# LATEST_HANDOFF.md — Update #264 — 2026-08-08 4:54 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-06 17:25:48 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-08 16:54:39 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -22,1658 +22,1554 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 - In progress / not started: constellation-aquila, gladius
 
 **Data layers:**
-- data-layer: 60679 files (10407.68 MB)
+- data-layer: 60703 files (10414.22 MB)
 
-**Scripts:** 17  |  **3D models:** 723  |  **Docs:** 659
+**Scripts:** 17  |  **3D models:** 723  |  **Docs:** 724
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
 
-### 2026-08-06 17:24:01 — update-job-a-complete-database-now-backed-up-20260806.md
+### 2026-08-08 16:53:43 — update-never-delete-guard-done-20260808.md
 
-# Update: Job A COMPLETE - the database is backed up, restored, and mirrored
+# Update — never-delete guard is in and proven; record gap closed (2026-08-08)
 
-**Completed 2026-08-06.** The gap is closed. There are now **three copies of
-the data** (C:, D:, E:), and the dump has been proven restorable by actually
-restoring it.
+Two things: the preservation rule from
+`WORKORDER_preservation-model-and-never-delete-rule.md` §3 is implemented, and
+this closes a ~3.5 hour gap in the handoff record.
 
-## Step 2 - the real dump
+## The rule is enforced by construction
 
-```
-dump           : C:\cc-backup\20260806-172223\citizen_compass-20260806-172223.dump
-dump size      : 175,705 bytes (0.17 MB)
-ships LIVE     : 232
-ships RESTORED : 232      <- restored into a scratch database and counted
-```
+`app/preservation.py` blocks row removal on 15 preserved tables at **two**
+layers, because blocking one is worth nothing:
 
-These are two separately measured numbers, not one number printed twice. The
-live count came from `citizen_compass`; the restored count came from
-`cc_restore_test_20260806_172223` after a real `pg_restore`.
+- Core/SQL — `DELETE`, `DELETE ... WHERE`, `TRUNCATE`, including raw text and
+  lowercase
+- ORM — `session.delete()` and cascade deletes at flush
 
-The harness's own negative control also fired on the real dump: a corrupted
-copy was rejected (exit 1) and yielded 0 ships, not 232.
+A wholesale "replace" is DELETE-then-INSERT, so blocking DELETE catches the
+loader shape §3 warns about.
 
-Both scratch databases were created and dropped by that run.
+**Installed at engine creation in `app/database.py`, not in each importer.**
+Wiring it per-importer works right up until somebody writes a new one. Every
+consumer of that engine now inherits it, including code that does not know the
+rule exists. `import_ship_components.py` also installs it explicitly, so the
+intent is visible at the point of use.
 
-## Step 3 - both mirrors, verified per file
+`pipeline_check_results` is deliberately NOT preserved — it is an append-only
+observation log that is meant to be flushed and archived, and guarding it would
+break `checks_flush_fallback.py`.
 
-`Verify-MirrorTree.ps1` - the verifier that caught the external-sources
-failure - run against each mirror with the **destination enumerated from disk**,
-not from any manifest, log, or the copy's own file list:
+## Rule 12 — 15 assertions, every case run twice
 
-- **D:** POSITIVE control passed; all 1 expected file present with matching
-  byte size. VERIFY PASSED (exit 0).
-- **E:** POSITIVE control passed; all 1 expected file present with matching
-  byte size. VERIFY PASSED (exit 0).
-
-Its NEGATIVE control reported **NOT PERFORMED** on both, honestly - a
-single-file backup directory contains no excluded file to test with. Stated,
-not glossed as a pass.
-
-Independent re-hash from disk after the fact, all three locations:
+`checks/_verify_never_delete_guard.py`. The guard's claim is "a preserved row
+cannot be removed", so a refused delete proves nothing on its own — it might
+have failed for an unrelated reason. Every case runs **with the guard and
+without it**:
 
 ```
-C:\cc-backup   175,705 B  136249D1EC40948A576B3F6DED263CD0F0960BBC9E27B1C24971465079D5689D
-D:\cc-backup   175,705 B  136249D1EC40948A576B3F6DED263CD0F0960BBC9E27B1C24971465079D5689D
-E:\cc-backup   175,705 B  136249D1EC40948A576B3F6DED263CD0F0960BBC9E27B1C24971465079D5689D
+guard installed  DELETE / DELETE WHERE / TRUNCATE / lowercase  -> all refused, row survives
+guard removed    the same DELETE                               -> row GONE
 ```
 
-Byte-identical on all three.
+That second line is the proof. Plus: a non-preserved table still deletes
+normally (the guard is targeted, not a blanket ban), **DDL is untouched** so
+alembic and the e2e harness still work, and `app.database.engine` is confirmed
+guarded on import — checked by behaviour, because an import that silently
+no-ops looks identical to one that worked.
 
-## The verifier was itself tested against known-bad input (hard rule 12)
+Runs against TEMP tables shadowing the real ones; `public.ships` row count
+asserted unchanged throughout. No destructive statement reached a real table.
 
-A verifier nobody has seen fail is an untested gate. Fed two known-bad
-destinations on scratch copies:
+## Two defects found in my own guard while proving it
 
-- **truncated file** (present, so a file-COUNT check passes - the exact
-  2026-08-05 failure signature): caught, `a.dump source 175,705 B -> dest
-  1,000 B`, **exit 1**.
-- **missing file**: caught, `c.txt (10 B at source)`, **exit 1**.
+**1. Half a guard, installed silently.** `before_flush` is a Session event and
+does not exist on an Engine. The first version registered it on the target and
+swallowed the failure with a bare `except`, so passing an Engine installed the
+Core half only — the ORM path stayed open while the code read as covered. The
+ORM test caught it. It now binds to the Session class explicitly.
 
-Both failed as required, so the two passes above mean something.
+**2. A test helper that disarmed production.** `remove_never_delete_guard()`
+removed every listener process-wide. The verification called it to disarm its
+own throwaway engine and silently disarmed `app.database.engine` too — a test
+that turns off the live guard is worse than the defect the guard prevents. It
+is now target-scoped.
 
-## FOUND - not acted on: four orphaned scratch databases
+Both are the same shape as the six silent-success cases already on record, and
+neither would have shown up without the negative control.
 
-These are left over from **earlier** runs, not from tonight:
+## What this does NOT do
+
+It makes the loss impossible; it does not yet make the absence **visible**.
+`status`, `last_seen_patch`, `first_seen_patch`, `successor_id`,
+`removal_note` and `evidence_tier` (§4) are a schema migration against the real
+database — that needs a verified backup under hard rule 4 and an explicit
+go-ahead, so it is not done here.
+
+That ordering is deliberate: **a row that is still there can be marked later; a
+row that is gone cannot be recovered.** The deadline was on the deletion half.
+
+So §3 acceptance is met in part — the row survives — and the `status=retired`
+half waits on the migration.
+
+## Record gap this closes
+
+`LATEST_HANDOFF.md`'s newest entry was **13:04** while nine documents were
+created between **14:18 and 16:37** — holoviewer, fankit, hologram,
+preservation, importer-audit and commlink prompts and findings, none of them
+mentioned in it.
+
+Not a pipeline fault: the watcher is healthy (PID 8856, update #260 at 16:38)
+and correctly classified those as docs rather than updates. No update was
+filed. Recording it here so the next session does not read 13:04 as current, as
+I nearly did.
+
+## State
+
+- Nothing committed or pushed — no go-ahead given for either work order.
+- Working tree: guard + verification are new; `citizen-collector/` untouched
+  per the sole-writer note.
+- Auditor after the change: 14 findings, **0 DEFECT**.
+- Queued next: `docs/prompt-code-holoviewer-all-ships.md`.
+
+### 2026-08-08 16:43:46 — update-preservation-rule-intake-20260808.md
+
+# Update — never-delete importer rule: intake (2026-08-08)
+
+Filed on intake per rule 13, before any work.
+
+Received from Sleven: implement `WORKORDER_preservation-model-and-never-delete-rule.md`
+§3 first, then file a handoff update closing the record gap.
+
+**Why this jumped the queue:** it is the only outstanding item with a deadline.
+The rule must land *before the next snapshot import*; after that the loss is
+silent and unrecoverable. Port Olisar is already gone — 2,066 gazetteer
+entities and it is not one of them — and the Aurora Mk I survives only because
+a snapshot caught it by luck.
+
+Also noting a record gap I will close afterwards: `LATEST_HANDOFF.md`'s newest
+entry is 13:04, while nine documents were created 14:18–16:37. The watcher is
+healthy (PID 8856, update #260 at 16:38) and correctly filed those as docs, not
+updates — the gap is that no update was filed, not a pipeline fault.
+
+Holding off on `docs/prompt-code-holoviewer-all-ships.md` until this lands.
+
+### 2026-08-08 13:04:07 — update-wo-c3-aggregation-rules-received-20260808.md
+
+# Update — C3 aggregation-rules work order received (2026-08-08)
+
+Received from C1: reverse-engineer the real aggregation rules for
+`ShieldsTotal`, `Power`, `Cooling`, `Emission` (EM and IR), `Distortion.Pool`
+and DPS, by testing candidate formulae against CIG's own computed aggregates in
+`ships.json` across all 316 ships. Then spec (not build) the temporary loadout
+page.
+
+**Routing flag.** The order is addressed `for C3 (Cowork research session)`, not
+Claude Code. Sleven handed it to this session. Proceeding, with the reasoning
+stated so it can be overridden cheaply: the core of this job is a full
+computation across 316 ships joined against `ship-items.json`, and a full scan
+of that kind is already on record as having **timed out through the Cowork
+bridge** (C2's open item 10, "run it locally"). That part is structurally
+better placed here. If C3 is already on it, this stops.
+
+**The method, restated so it is not lost:** `ships.json` carries CIG's own
+computed aggregates for each ship's stock loadout, and `ship-items.json` carries
+the components. That is 316 worked examples with the answers in the back of the
+book — every rule gets tested against labelled data rather than guessed at.
+
+**What I owe, per aggregate:** a candidate rule as actual arithmetic, run across
+all 316, reported as a **residual** — exact matches, near misses, misses, and
+what the misses have in common. "Works on 300 of 316" is the finding. "Verified"
+is not. Anything I cannot derive gets marked **unshippable** rather than
+approximated.
+
+**The discriminating case for shields:** the Zeus Mk II CL shows N-1 (three
+7200 generators, `ShieldsTotal.Hp` 14,400). One example is not a rule. A ship
+fitted with two *different* generators separates N-1 from capacity-weighted
+fast, and finding one is the first thing to do.
+
+**Constraints:** research and a proposal only, do not build. Stay off
+`citizen-collector/` entirely — C1 is the sole writer and is actively in it.
+Verify against files on disk, not planning docs. Every check gets a case that
+could have failed it.
+
+### 2026-08-07 21:27:19 — update-items-8-9-committed-not-pushed-20260807.md
+
+# Update — items 8 and 9 committed, not pushed (2026-08-07)
+
+Commit `8f27c8f` on `main`, 5 files, 664 insertions:
+
+- `checks/source_checks.py` — `snapshot_shape_check` + registration
+- `checks/file_checks.py` — `unreleased_content_check` + registration
+- `checks/_verify_snapshot_shape.py` — 14 assertions, both directions
+- `checks/_verify_unreleased_content.py` — 19 assertions, both directions
+- `scripts/publication_filter.py` — the single definition of "may this be
+  published"
+
+**Staged by name, one path at a time.** `git add -A` was deliberately not used —
+the ~50-file CRLF/LF churn would have buried 664 lines of new work in a diff
+nobody could read. The staged diff was checked before committing: 5 files, no
+churn swept in.
+
+**Not pushed.** Hard rule 2 — the go-ahead I have covers the commit. A push is a
+separate action and needs its own.
+
+## Left alone deliberately
+
+- The five malformed / zero-byte snapshot artifacts. Findings-only auditors, and
+  rule 1 — moving or deleting them is Sleven's.
+- `.uex_snap_name`, still untracked at the repo root from the 03:32 run.
+- `data-layer/derived/**` and the other untracked working-tree content, none of
+  which is mine.
+
+## Open, and worth a decision
+
+1. **The zero-byte fsck log** — `scunpacked-data/snapshots/20260731T041451Z.partial.fsck_output.log`.
+   That integrity run's result is unrecoverable. The snapshot it was checking is
+   still there; whether it gets re-fsck'd or marked unverified is a call, not a
+   defect I can close.
+2. **`keybinds.src.html`** — still a second standalone copy of the keybind
+   tester with no HELP drawer, from this morning's work.
+3. **Playwright lives in the scratchpad**, so `testing/_src/test_help_drawer.js`
+   is committed but not runnable from a fresh checkout without
+   `npm i playwright` on `NODE_PATH`.
+
+### 2026-08-07 21:00:11 — update-item-9-unreleased-content-done-20260807.md
+
+# Update — item 9 done: unreleased-content filter and guard (2026-08-07)
+
+## The correction: this is NOT a live leak
+
+C2's list says *"Contract-derived pages may be advertising unreleased missions
+right now."* **They are not, and I checked before building anything.**
+
+Nothing published reads the contract tables. The only file in the repo that
+touches contract fields is `scripts/split_craft_pages.py`, which uses
+`mission_type` and writes to `data-layer/processed/` — never to `releases/`,
+`static/` or `testing/_deploy/`. The flagged records sit in `data-layer/derived/`,
+which is not served.
+
+So the exposure is **prospective, not live**. Saying otherwise would have been
+easy and wrong. What is true is that this is the cheap moment to fix it — before
+the first contract page ships rather than after.
+
+## The size of it, measured
+
+    contracts_full.json        5,107 records   958 not_for_release   22 work_in_progress
+    contracts_by_system.json   5,108 records   959 not_for_release   22 work_in_progress
+
+**959 of 5,107 — 18.8%, nearly one in five.** Both flags are real Python bools
+in the current data, sampled across 2,000 records.
+
+Note the derived tables are **correct** to carry these flags. They are a
+faithful record of what is in the game files, and stripping them at derivation
+time would destroy the evidence that a record is unreleased. The filtering
+belongs at publication time, which is where it now is.
+
+## What was built
+
+**`scripts/publication_filter.py`** — the single definition of "may this be
+published", per rule 14. `is_publishable`, `unreleased_reasons`, and
+`filter_publishable`, which returns **both** halves on purpose: "we withheld 959
+records" is a number a publisher should log and a reviewer should be able to
+check. A filter that silently drops rows is indistinguishable from a filter that
+never ran.
+
+**`unreleased_content_check`** in `checks/file_checks.py`, registered in
+`CHECKERS`. Scans `releases/`, `static/` and `testing/_deploy/` for any record
+carrying the flags, walking nested structures rather than assuming a flat array.
+
+**The important design decision:** when it finds no contract corpus, it reports
+**LIMITATION, not PASS.** A checker that scans published output, finds no
+contract records because none are published, and calls that a pass is reporting
+clean for a corpus it never had — the same shape as `integrity_scan` globbing
+`*.json` and passing over files it never opened. Run against the repo right now
+it says, correctly:
+
+> scanned 0 published .json file(s) … but also no contract-shaped corpus to
+> examine at all. This is reported as NOT PERFORMED rather than PASS.
+
+## Proven before trusted — `checks/_verify_unreleased_content.py`, 19 checks
+
+Highlights of the negative controls:
+
+- **The truthiness trap.** `bool("false")` is `True` in Python. The test first
+  proves the trap is real, then proves the filter does not fall for it — a plain
+  truthiness check would have withheld a publishable record, or with the flags
+  inverted, published a withheld one.
+- A flagged record in a published file → **DEFECT**, and the finding **names**
+  the record.
+- The same corpus run through the filter → no DEFECT.
+- A flagged record nested three levels deep → still caught.
+- An unparseable file mentioning the flags → **WARNING**, never a pass.
+- No corpus → **LIMITATION**, and never PASS.
+
+## Verification
+
+- Both new checkers registered: 19 checkers across the file and source groups.
+- Existing suite unaffected — `_verify_missing_encoding.py` still passes 19/19.
+- Rule 15: `missing_encoding_check` reports **zero** violations in any file I
+  added.
+
+Nothing committed, nothing pushed, nothing moved or deleted.
+
+### 2026-08-07 20:56:21 — update-item-8-snapshot-shape-checker-done-20260807.md
+
+# Update — item 8 done: `snapshot_shape` checker, and the count was wrong (2026-08-07)
+
+## The correction that matters: there is no code to fix
+
+C2's `URGENT_path-join-bug-is-live-fired-tonight.md` treats this as a
+path-construction bug in the pipeline. **It is not, and I could not find any
+committed code carrying it.**
+
+`uex_corp.py` does not write `_pull_summary.json` or `_pull_stderr.log` at all.
+It documents `python uex_corp.py <output-dir>`, prints the summary to **stdout**
+and diagnostics to **stderr**. The redirect into those filenames is done by the
+**caller** — and there is no runner script anywhere in this repo. Searched for
+one across `.py`, `.ps1`, `.sh`, `.bat`, `.cmd`, `.go`: the only references to
+`uex_corp.py` are its own docstring, its verifier, and a manifest builder
+recording which script produced a snapshot.
+
+So the malformed names came from a hand-typed shell redirect. **There is no
+patch that prevents a recurrence**, which is exactly why this needed a check
+rather than a fix. I did not invent a runner script to have something to correct
+— per rule 11, an honest gap beats a fabricated cause.
+
+## Five occurrences across three sources, not four across one
+
+The checker found one C2's sweep never reached:
+
+    uexcorp/snapshots/
+      20260806T033217Z.pullstderr.log          98 bytes   loose
+      20260806T033217Z.pullsummary.json         0 bytes   loose AND empty
+    api.star-citizen.wiki/snapshots/
+      20260731T031754Z.partial/_fetch_metadata.json       0 bytes   correct path
+      20260801T015346Z.partial.aborted__pagesize50/
+                              _pull_summary.json          0 bytes   correct path
+    scunpacked-data/snapshots/
+      20260731T041451Z.partial.fsck_output.log  0 bytes   loose AND empty   <- NEW
+
+The new one is the worst of the set. `20260731T041451Z.partial.fsck_output.log`
+should have been `20260731T041451Z.partial/fsck_output.log` — same shape, the
+separator replaced by a `.`. And it is **an fsck output log that is zero bytes**.
+An integrity check whose output is empty is indistinguishable from an integrity
+check that found nothing wrong.
+
+The shape is consistent across all three sources: the path separator became a
+literal `.`.
+
+## What was built
+
+`snapshot_shape_check` in `checks/source_checks.py`, registered in `CHECKERS` so
+`run_checks.py` picks it up with the rest of the source group. Findings-only —
+it never moves or deletes anything, so the cleanup of the five files above stays
+Sleven's call under rule 1.
+
+It reports **two deliberately separate defects**, because fixing one leaves the
+other standing:
+
+1. **Loose files directly inside `snapshots/`** — that directory holds sealed
+   snapshot *directories* only. C2's point stands: a snapshot directory that can
+   contain loose files is one bad glob away from a gate enumerating a file where
+   it expected a snapshot.
+2. **Zero-byte files anywhere in the tree** — two of the five sit at entirely
+   *correct* paths. Fixing the path join would leave them exactly as they are,
+   just filed more tidily.
+
+## Proven before trusted — `checks/_verify_snapshot_shape.py`, 14 checks
+
+Both directions, on synthetic trees, per hard rule 12:
+
+- a clean tree produces **no** DEFECT (no false positive)
+- the real 2026-08-06 malformed filename planted → caught, and the finding
+  **names** the file
+- a zero-byte file at a **correct** path → still caught, proving the two defects
+  are independently detectable
+- a non-empty loose file does **not** trip the zero-byte check, and vice versa
+- absent root / no `*/snapshots` → **LIMITATION**, never PASS
+- the file cap degrades to a LIMITATION naming partial coverage, never to a
+  silent pass
+
+Nothing committed. Nothing moved or deleted. Next: item 9.
+
+### 2026-08-07 20:50:27 — update-items-8-9-started-20260807.md
+
+# Update — starting items 8 and 9 from C2's open list (2026-08-07)
+
+Sleven's go-ahead: take 8 and 9. Both are clear of `citizen-collector/`, which
+the other session still owns.
+
+## 8. The path-join bug — and a second defect tangled with it
+
+C2's `docs/URGENT_path-join-bug-is-live-fired-tonight.md` names one defect. A
+zero-byte sweep of `snapshots/` found **three** empty artifacts across **two**
+sources, which separates into two distinct problems:
+
+    api.star-citizen.wiki/snapshots/20260731T031754Z.partial/_fetch_metadata.json    0 bytes
+    api.star-citizen.wiki/snapshots/20260801T015346Z.partial.aborted__pagesize50/
+                                                          _pull_summary.json          0 bytes
+    uexcorp/snapshots/20260806T033217Z.pullsummary.json                               0 bytes
+
+1. **Path join** — separator and leading underscore both stripped, so the
+   artifact lands as a *sibling* of the snapshot directories instead of inside
+   one. That is the uexcorp file, and the same shape as the three malformed
+   top-level `data-layerexports` style directories.
+2. **Aborted runs write zero-byte summaries** — the two star-citizen.wiki files
+   are at *correct* paths inside properly named `.partial` / `.aborted`
+   directories and are still empty. Fixing the path join alone leaves this one
+   intact, just filed more tidily.
+
+The second is the more serious by this project's own standard: an artifact that
+exists, is readable, parses as nothing, and reports no failure is the
+silent-success shape hard rule 12 exists for.
+
+## 9. `NotForRelease` / `WorkInProgress` filter
+
+Verified before starting: the only hits anywhere in the tree are vendored
+`litellm` and swagger bundles under `venv/`. **No project code filters on these
+flags at all.** Contract-derived output may be presenting unreleased missions as
+though they were live.
+
+## Second-writer check, run first
+
+Per rule 14 and what caught CF-01 ninety minutes ago: checked mtimes and `HEAD`
+state on the files I am about to touch before writing anything. Recording the
+result in the completion update rather than asserting it here.
+
+**Constraints:** no commit, no push without a fresh go-ahead. No `git add -A` —
+the ~50-file CRLF churn. Every gate proven against known-bad input before it is
+trusted.
+
+### 2026-08-07 17:54:57 — update-cf-01-stood-down-20260807.md
+
+# Update — CF-01: stood down, other session owns it (2026-08-07)
+
+Sleven's call: **stand down.** The other session finishes CF-01. I am staying
+off `citizen-collector/` entirely.
+
+**Nothing was written, committed, or pushed by me on this work order.** The only
+artefacts from my side are three `inbox/` updates: the order arriving, the
+second-writer block, and this one.
+
+## Handover note for whoever owns CF-01
+
+State as I read it at 17:49, so the owning session can confirm rather than
+rediscover:
+
+- **job 1 (crash)** and **job 2 (interval)** are in the working tree and look
+  complete, with their selftests registered in `main.go`.
+- **hotkey §2b** (polling, edge detect, dedup, `via <mechanism>` tag) is in and
+  registered.
+- **hotkey §2a** — log the renderer from `Game.log`, the window style/rect/
+  topmost flags, and elevation of both processes — was **not** present.
+- **job 4, the tray icon** — no `Shell_NotifyIcon` anywhere — was **not**
+  present.
+
+Two things from the order worth not losing, since they are easy to drop at the
+end of a long job:
+
+1. **§2 cannot be closed by unit tests.** C1 is explicit: the real acceptance is
+   a live PTU session on **Vulkan** with a `via polling` line in the log. It has
+   to be handed back saying that plainly rather than implied settled.
+2. **Do not `git add -A`** — ~50 files carry pure CRLF/LF churn. Stage by name.
+
+## Note on how this was caught
+
+The tell was file mtimes, not a conflict: eight collector sources written in one
+batch at 17:48:44–17:48:45, ten seconds before I logged that I was starting, and
+`tasklist` showing nine `claude.exe` processes. Worth doing that check before
+starting any job in a shared area of this repo — a second writer is invisible
+until it has already cost something.
+
+Idle and available for other work.
+
+### 2026-08-07 17:50:58 — update-cf-01-BLOCKED-second-writer-detected-20260807.md
+
+# Update — CF-01 STOPPED before writing: a second session is already on it (2026-08-07)
+
+**I have written nothing to `citizen-collector/`. Stopping and asking, per hard
+rule 14 and the "if you are unsure, it does apply" clause.**
+
+## What I found
+
+I read the work order, then went to start job 1 (the crash). The fix was already
+there.
+
+`citizen-collector/winapi.go` at `HEAD` still carries the broken shape — a fresh
+`syscall.NewCallback` per call. The **working tree** carries the corrected
+one-callback-per-process version, uncommitted, with a comment block quoting the
+same 14m2s/14m4s/14m4s/14m0s field evidence the work order does.
+
+Eight source files were written in a single batch at **17:48:44–17:48:45**. I
+filed my "work order received" update at 17:48:56. So that write landed roughly
+ten seconds before I logged that I was starting, and I did not do it —
+everything I touched this session was under `testing/` and `data-layer/`.
+
+`tasklist` shows **nine `claude.exe` processes running.**
+
+## State of the four jobs as it currently stands in the working tree
+
+| job | state | evidence |
+|---|---|---|
+| 1. crash — `too many callback functions` | **done** | one package-level `enumCallback`, mutex-guarded `enumFn`, `runCallbackLeakSelftest` registered in `main.go` |
+| 2. interval — 60s, unit change | **done** | `IntervalSeconds`, `defaultIntervalSeconds = 60`, `resolveIntervalSeconds` handles legacy `interval_minutes` and logs the conversion, `interval:%ds` tag, two selftests registered |
+| 3. hotkey §2b — polling, edge-detect, dedup, tagging | **done** | `pollHotkey`, `GetAsyncKeyState` wired in `winapi.go`, `hotkey press received (%s, via %s)`, `runHotkeyEdgeSelftest` + `runHotkeyDedupSelftest` registered |
+| 3. hotkey §2a — log renderer / window flags / elevation | **not built** | no `Game.log` renderer parse, no elevation check, no window style/rect/topmost logging anywhere |
+| 4. tray indicator (option A) | **not built** | no `Shell_NotifyIcon` / `NOTIFYICONDATA` anywhere |
+
+So the other session appears to be working the list in C1's stated order and is
+somewhere around §2a / job 4 right now.
+
+## Why I stopped instead of picking up §2a and the tray
+
+Rule 14 names this exact defect, and its two prior instances both cost real
+work — including a concurrent session rewriting `_layer.src.html` mid-verification
+twice in one evening, once silently deleting a keybinds overlay and a compliance
+strip.
+
+§2a lands in `hotkey.go` / `auto.go` / `main.go` / `winapi.go`. Those are four of
+the eight files the other session wrote ninety seconds ago. Two writers on those
+files is not a merge conflict I would see — it is a last-write-wins clobber of
+work that is not committed anywhere and therefore cannot be recovered.
+
+The tray icon (job 4) is genuinely independent and would be safe in a new file,
+**but** it still needs a wire-in point in `main.go`, which is contended.
+
+## What I need from Sleven
+
+One of:
+
+1. **Stand down** — the other session finishes CF-01, and I stay off
+   `citizen-collector/` entirely.
+2. **Take over** — the other session is stopped first, and I verify what is
+   there (build + full selftest run, including the required negative controls)
+   then finish §2a and job 4.
+3. **Split on a hard boundary** — I take job 4 only, in new files, and hand back
+   the one-line `main.go` wire-in for whoever owns that file to apply.
+
+Not proceeding on a guess. Nothing committed, nothing pushed, nothing written.
+
+### 2026-08-07 17:48:56 — update-wo-cf-01-rev3-received-20260807.md
+
+# Update — WO CF-01 rev 3 received, four collector fixes (2026-08-07)
+
+Received from C1: `docs/prompt-collector-fixes-CF-01.md`, rev 3. The header
+arrived in conversation without the body; found the full document on disk and
+read it before starting anything.
+
+**Approved by Sleven 2026-08-07:** "I 100% am down with making it 60secs and I
+do want to get the bugs fixed and the hotkey fixed as well."
+
+Rev 3 supersedes revs 1 and 2 **in place** — no addendum, per rule 14. The
+headline: the hotkey is solved. Sleven ran a one-variable experiment (DX11 vs
+Vulkan, everything else identical). Hotkey works on DX11, not on Vulkan.
+Capture is proven fine on Vulkan; only the input path fails.
+
+## The four jobs, in the order C1 specified
+
+1. **The crash** — `too many callback functions`, 28 occurrences, dying at a
+   dead-fixed 14m0s–14m4s. Cause confirmed in source: `winapi.go:261`
+   `EnumTopWindows` calls `syscall.NewCallback` on every 2-second poll tick, and
+   that table is process-lifetime and never freed. One callback for the life of
+   the process instead. First, because everything else is measured inside a
+   process that currently dies every fourteen minutes.
+2. **The interval** — 60 seconds, and the unit changes from minutes to seconds
+   properly. `interval_minutes` still read and converted, with the conversion
+   logged, because silently ignoring a setting sitting on his disk is the same
+   shape as everything else in this document.
+3. **The hotkey** — §2a log the renderer/window/elevation once per session,
+   §2b `GetAsyncKeyState` polling promoted to primary alongside `RegisterHotKey`,
+   edge-detected, deduplicated, and **tagged by which mechanism delivered it**.
+4. **The tray indicator** — system tray icon (A). The overlay pip (B) is dropped.
+   The status panel (C) comes after A.
+
+## Constraints I am working under
+
+- **Do not commit or push.** Nothing into git without Sleven's explicit
+  go-ahead — and note that is a per-change go-ahead, so the HELP drawer push
+  earlier today does not carry over.
+- **Do not `git add -A`.** ~50 files carry pure CRLF/LF churn (191,317
+  insertions and deletions, verified byte-identical after stripping CR). Stage
+  by name only.
+- Hard rule 12 is called out explicitly in three of the four sections: every
+  acceptance test has a required negative control, and a positive test that
+  cannot fail is to be reported as measuring nothing rather than shipped.
+- §2 cannot be proven finished without a live Vulkan session. That gets handed
+  back plainly, not implied to be settled by unit tests.
+
+**Next:** job 1, the crash.
+
+### 2026-08-07 16:04:51 — update-help-drawer-pushed-20260807.md
+
+# Update — HELP drawer pushed to origin/main (2026-08-07)
+
+Pushed on Sleven's explicit go-ahead. `cce3d3e..ba25d9c  main -> main`.
+
+Two commits went, not one:
+
+- `ba25d9c` — HELP drawer on the keybind screen (this session's work)
+- `fe62c09` — "Show what each key actually does, and mark what has not been
+  reviewed", which was **already committed and unpushed when this session
+  started**. It is an ancestor of `ba25d9c`, so it could not be pushed
+  separately without rewriting history. Flagged before pushing; Sleven chose to
+  send both.
+
+`git log origin/main..HEAD` is now empty — nothing left unpushed on `main`.
+
+## State after this
+
+- Testing site live and verified:
+  https://citizencompasstesting.citizencompass-contact.workers.dev
+- 38 tests pass against the **deployed** page, negative controls included.
+  Re-runnable: `node testing/_src/test_help_drawer.js <url>` (needs playwright;
+  it was installed to a scratch dir, not the repo, so a fresh run needs
+  `npm i playwright` somewhere on NODE_PATH).
+- Netlify and the live site untouched.
+
+## Still open, not acted on
+
+`keybinds.src.html` is a second standalone copy of the same keybind tester,
+copied to `keybinds.html` on every deploy. Nothing links to it, so it is not
+user-reachable, and it did **not** get the HELP drawer — the work order named
+one page. If that page is meant to ship, it is now the tester without the help,
+and the two copies will keep diverging. Sleven's call.
+
+Working tree still carries the unrelated pre-existing modifications
+(`citizen-collector/*`, `LATEST_HANDOFF.md`, the untracked `testing/_src`
+scratch files). None of them were touched or committed by this work.
+
+### 2026-08-07 13:40:29 — update-help-drawer-committed-not-pushed-20260807.md
+
+# Update — HELP drawer committed, not pushed (2026-08-07)
+
+Commit `ba25d9c` on `main`, 6 files, 1042 insertions:
+
+- `testing/_src/_layer.src.html` — the drawer, the reflow, the hint line
+- `testing/_src/build_deploy.py` — build-time JSON substitution + its guards
+- `data-layer/processed/keybind_troubleshooting.json` (now tracked)
+- `data-layer/processed/vendor_support.json` (now tracked)
+- `testing/_src/test_help_drawer.js` — 38 tests with negative controls
+- `testing/_src/shot_help_drawer.js` — screenshot harness
+
+**Not pushed.** Hard rule 2 — no go-ahead given for this change. The work is
+committed locally and waiting.
+
+Deliberately left out of the commit: `testing/_src/_modelfolders.txt` and
+`testing/_src/_scunpacked_names.json`, which were already untracked before this
+work and are nothing to do with it.
+
+## Open item for Sleven, not acted on
+
+`keybinds.src.html` is a **second, standalone copy** of the same keybind tester,
+built and copied to `keybinds.html` on every deploy. Nothing on the site links
+to it, so it is not user-reachable today, and the work order named one page — so
+it did **not** get the HELP drawer. If it is meant to stay a shipped page, it is
+currently the tester without the help, and that divergence will only widen. Two
+copies of one screen is the shape rule 14 exists about. Flagging it rather than
+expanding scope unasked.
+
+### 2026-08-07 13:39:44 — update-help-drawer-deployed-verified-20260807.md
+
+# Update — HELP drawer deployed to testing and verified on the deployed page (2026-08-07)
+
+**Testing URL:** https://citizencompasstesting.citizencompass-contact.workers.dev
+
+Deployed with `scripts/deploy_testing.ps1` (Workers static assets, not Pages).
+Netlify and live untouched.
+
+## The trap fired, and it was worth checking
+
+The first run of the test suite against the **deployed** URL reported the HELP
+tab missing — exactly the failure mode the work order warned about, and exactly
+why the instruction was "open the deployed page to confirm, not the source."
+
+It was **not** a missed substitution. Checked rather than assumed:
+
+- deployed `index.html` is 1,584,562 bytes, byte-for-byte the local build's size
+- deployed page contains `cc-help-tab` (7 occurrences) and `cc-kb-hinthelp`
+- the only `__BUILD_INJECTS__` occurrences left are the renderer's own tripwire
+  references, which is correct
+
+The real cause was in my test: a fixed 300ms sleep after the password gate.
+That is fine on a `file://` build and a race over the network on a 1.5MB page
+whose drawer script sits near the end of it. Replaced with an explicit
+`waitForFunction` on the drawer announcing itself. A fixed sleep standing in for
+a readiness check is the same species of defect as a gate that cannot fail —
+it passes for a reason unrelated to what it claims to prove.
+
+## Verified on the deployed page
+
+**38 passed, 0 failed** against the live testing URL, including every negative
+control.
+
+Measured content width, `#cc-kb`, at 1920x1080, on the deployed page:
+
+| state | width |
+|---|---|
+| drawer closed | **1874px** |
+| drawer open | **1454px** |
+| delta | **420px** — the drawer width |
+
+The keyboard board genuinely re-lays-out into the narrower region: keys narrow,
+the mouse block moves in, the device selector and the mode/device rows all stay
+visible and clickable. Nothing sits behind the panel.
+
+Read on screen at 1920x1080 across four node types — question (with HOW TO
+CHECK), fix (steps, note, and the continue button naming the retest it leads
+to), choice, and the dead end with the VKB hand-off and its KNOWN CATCH callout.
+
+## Committed
+
+Committed to `main`. **Not pushed** — no go-ahead given, per hard rule 2.
+
+### 2026-08-07 13:36:50 — update-help-drawer-built-tests-pass-20260807.md
+
+# Update — HELP drawer built, 38 tests pass with negative controls (2026-08-07)
+
+Built into `testing/_src/_layer.src.html` (the `#cc-kb` keybind overlay, which
+is what the KEYBINDS tab opens and what ships as `index.html`). Not
+`keybinds.src.html` — nothing on the site links to `keybinds.html`, and the
+DISPLAY / FEEDBACK tab stack the order places HELP alongside exists only in the
+layer.
+
+## The shrink is new behaviour, and it works
+
+Every pre-existing drawer overlays. This one reflows, measured on the built page
+at 1920x1080:
+
+    #cc-kb width   closed = 1874px    open = 1454px    delta = 420px
+
+The keyboard board genuinely re-lays-out into the narrower region — keys narrow,
+the mouse block moves in, nothing is hidden behind the panel. It uses its own
+`body.cc-help-open` class rather than the shared `cc-drawer-open`, which already
+means "tabs, get out of the way" to three other tabs.
+
+## What went in
+
+- `#cc-help-tab` — right edge, `z-index:100004` so it stays clickable above the
+  keybind overlay (`#cc-kb` is 100003; the other tabs at 100002 are covered by
+  it). Persistent, never auto-opens.
+- Graph renderer walking `keybind_troubleshooting.json` as a graph: questions
+  with `how_to_check` always rendered, the choice node, fixes with steps + note
+  + a continue button that follows `then` and names the retest it leads to.
+  `end_not_covered` renders as a dead end with no invented route out.
+- Back-a-step history — a wrong answer costs one click.
+- Vendor matching on `usb_vid` **alone**, parsing the VID out of the Gamepad
+  API's `id` string (Chrome `(Vendor: 231d …)` and Firefox `231d-0200-…` forms).
+  `known_gotcha` gets its own callout. A vendor with `usb_vid: null`
+  (turtle_beach) is skipped by construction, so it can never be auto-matched.
+- The one line on the binding screen, under the device selector row, opening the
+  drawer at `q_selector_setting`.
+
+## The trap
+
+`keybinds.src.html` is copied verbatim, so the model/thumbnail substitution list
+was never the risk here. Two things were:
+
+1. `inject_engine.py` overwrites everything between the DEVICE PANEL boundary
+   markers on every build. The drawer is appended well outside that region.
+2. `check_deploy_clean.enforce` allows only `index.html` plus the `PAGES`
+   outputs, so a sidecar JSON would have failed the deploy guard.
+
+So both JSON payloads are substituted into the page by `build_deploy.py` from
+`data-layer/processed/` — one writer, no pasted copy to drift. The build asserts
+the placeholder exists, asserts none survives, and the renderer refuses to draw
+if it ever sees one. **That guard fired for real on the first build** (the
+runtime check named the token itself and tripped its own tripwire), which is
+incidental proof the check can fail.
+
+## Tests — 38 pass, every one seen to fail first
+
+`testing/_src/test_help_drawer.js` (playwright/chromium, 1920x1080).
+
+- **Shrink.** Negative control neutralises *only* the reflow rules, leaving the
+  drawer opening and visible — i.e. exactly an overlay drawer — and asserts the
+  width assertion then fails. A test that only checked "the drawer appeared"
+  would pass in that state; this one does not.
+- **Graph.** All 17 nodes reachable from start, every link resolves. Negative
+  control plants a dangling link, confirms both the break and the node it
+  orphans are reported, then confirms removing it returns clean.
+- **Fix routing.** All 11 `then`-carrying fixes clicked through the real UI and
+  asserted to land on their retest node. `end_not_covered` asserted to offer no
+  continue button.
+- **Vendor.** 231d → VKB, 3344 → VIRPIL, Firefox-form id resolves too. Unknown
+  VID → generic fallback and asserted *not* to name any wrong manufacturer. A
+  VKB VID planted as a **product** id asserted not to match. turtle_beach
+  asserted unmatchable.
+- **Read on screen** at 1920x1080 — question, fix, choice and dead-end nodes.
+
+Screenshots are regenerable via `testing/_src/shot_help_drawer.js`; they were
+kept out of the repo deliberately.
+
+`testing/_src/cc_help.inc.html` was the authoring copy and is now spliced into
+the layer. Moved to `_to_delete/help_drawer_inc_spliced_20260807/` rather than
+deleted (rule 1), so there is exactly one copy of the block.
+
+**Next:** deploy to testing via `scripts/deploy_testing.ps1` and re-run the
+tests against the deployed URL, not the local build. Nothing committed yet.
+
+### 2026-08-07 13:24:43 — update-wo-help-drawer-received-20260807.md
+
+# Update — HELP drawer work order received (2026-08-07)
+
+**Received:** build the HELP drawer on the keybind page, driven by
+`data-layer/processed/keybind_troubleshooting.json` (17-node branching graph)
+and `data-layer/processed/vendor_support.json` (5 vendors, matched on USB
+vendor ID alone).
+
+**First question answered before building — existing drawer behaviour:**
+
+Every existing drawer in `testing/_src/_layer.src.html` **overlays**. None of
+them reflow page content. Evidence:
+
+- `#cc-panel` (DISPLAY) — `position:fixed; right:-380px; width:380px; z-index:100001`
+- `#cc-mdraw` (manufacturer) — `position:fixed; left:-250px; width:250px; z-index:99998`
+- `#cc-fb` (FEEDBACK) — `position:fixed; inset:0`, a full-screen modal scrim
+- `#cc-kb` (KEYBINDS) — `position:fixed; inset:0 0 0 46px`, a full-screen takeover
+
+The `translateX(-380px)` rules Sleven found on `#cc-fb-tab` / `#cc-kb-tab` /
+`#cc-fi-tab`, and `left:296px` on `#cc-mtab`, move **tab furniture only** — so
+the tabs are not buried under the panel that just slid over them. A grep for
+any content-region resize (`margin-right`, `padding-right:380`,
+`width:calc(100% - …)` under `body.cc-drawer-open`) returns nothing.
+
+**So: shrink-the-page is NEW behaviour, not reuse.** Bolting a reflow onto the
+existing `body.cc-drawer-open` class would fight the pattern — that class is
+currently understood by three tabs to mean "get out of the way", and repurposing
+it to also mean "resize content" would make the DISPLAY and FEEDBACK drawers
+start reflowing the page too. The HELP drawer gets its own class and its own
+mechanism, and the existing drawers are left alone.
+
+**Trap noted before building:** `keybinds.src.html` is *copied verbatim* to
+`keybinds.html` by `build_deploy.py` (it is in `PAGES`), so the model/thumbnail
+substitution list does not apply to it. The trap that *does* apply is
+`inject_engine.py`, which overwrites everything between the DEVICE PANEL rev 2
+boundary markers in that file on every build. Any vendor-ID code placed inside
+that region would be silently discarded. Also: `check_deploy_clean.enforce`
+allows only `index.html` plus the `PAGES` outputs, so new sidecar files would
+fail the deploy guard — the JSON will be inlined rather than fetched.
+
+**Next:** build it, then verify against the deployed page, not the source.
+
+### 2026-08-06 20:21:38 — update-webview2-bundling-provenance-question-20260807.md
+
+# Update: three commits pushed. WebView2 bundling hit a provenance fork.
+
+**2026-08-07.** Pushed `1eadf97..d314540` - `8594ed3`, `c6a74a2`, `d314540`.
+Level with origin, nothing matching `wrangler`/`.env`/`password`/`secret`/`.dump`
+in any of the three diffs.
+
+## Correction to a number I gave
+
+I said the fixed-version runtime was **~130 MB**. Microsoft's own distribution
+doc says **"The Fixed Version binaries are over 250 MB."** My figure was wrong.
+It does not change Sleven's ruling - the reasoning was that size is irrelevant
+against a 100 GB game - but the number should be right in the record.
+
+## The official download cannot be fetched headlessly
+
+`developer.microsoft.com/microsoft-edge/webview2` builds the fixed-version link
+**client-side from a version/architecture picker**. There is no `fwlink` for it
+(unlike the Evergreen bootstrapper, 2124701, and the Evergreen standalone
+installer, which do have stable links). Fetching the page returns the picker UI,
+not a URL.
+
+I will not guess a CDN URL and present it as official - an invented link that
+happens to 404 wastes an hour, and one that happens to *work* is worse, because
+nobody would check what it actually served.
+
+## A programmatic source exists, but it is NOT Microsoft
+
+NuGet carries `WebView2.Runtime.X64` **151.0.4129.59** - exactly the version
+this machine runs - described as "Webview2 runtime for Fixed Version
+distribution". 1.18 M downloads.
+
+**It is published by a third-party account (`ProKn1fe`), not Microsoft.**
+
+That is a supply-chain decision, not a technical one, so it is Sleven's:
+
+- **what it is:** a repackage of a 250 MB browser engine
+- **where it goes:** shipped inside every crew copy, run on other people's
+  machines, on a build that is **deliberately unsigned**
+- **what it defeats:** the whole point of bundling is removing an
+  install-time failure. Trading a rare missing-runtime error for an
+  un-provenanced browser binary is a different bargain than the one ruled on.
+
+The project's standard is that unverifiable provenance is stated, not assumed.
+Same rule that keeps `data-layer/external-source-manifests/` tracked.
+
+## Two distribution landmines found in the docs - both affect §8
+
+1. **Windows 10 + Fixed Version 120 or later, unpackaged Win32 app** requires
+   these to be run on the *user's* machine or the runtime will not start:
+
+   ```
+   icacls {path} /grant *S-1-15-2-2:(OI)(CI)(RX)
+   icacls {path} /grant *S-1-15-2-1:(OI)(CI)(RX)
+   ```
+
+   Sleven is on Windows 11, where this does not apply - **so this failure cannot
+   occur on the machine where it will be tested, and will land on the first crew
+   member running Windows 10.** That is precisely the trap Sleven identified
+   about the installed runtime, in a second place.
+
+2. **Fixed Version cannot run from a network location or UNC path.** A crew
+   member who unzips to a mapped drive gets a program that does not start.
+
+Both need handling inside the packager and a plain-English error, not discovery
+in the field.
+
+3. Extraction must be `expand {cab} -F:* {dest}` - Microsoft explicitly warns
+   that File Explorer produces the wrong folder structure.
+
+## Not blocked on this
+
+The runtime is a drop-in payload. I am proceeding with §6 (continuous detection)
+and §7 (follow-the-game) now, and building the runtime resolution - env var
+`WEBVIEW2_BROWSER_EXECUTABLE_FOLDER` / `browserExecutableFolder`, presence
+check, plain-English failure - so the CAB drops in whenever its provenance is
+settled.
+
+### 2026-08-06 20:17:39 — update-hotkey-press-logging-restart-needed-20260807.md
+
+# Update: hotkey press now logged on arrival - SLEVEN MUST RESTART TO GET IT
+
+**2026-08-07.** Committed `d314540`. Binaries rebuilt.
+
+## ACTION NEEDED: the running session cannot see this fix
+
+**PID 5000 is still running the binary loaded at 22:03:41.** A running process
+executes the code already in memory; rebuilding the exe on disk does not change
+it. **The new log line only exists after the collector is restarted.**
+
+Since the whole point is diagnosing tonight's silent Ctrl+Alt+F9, the diagnosis
+needs a restart before the next press is meaningful. Not done unasked - stopping
+a live capture session is Sleven's call.
+
+## What changed
+
+One line, logged the instant a press is received, before the window gate and
+before any capture is attempted:
 
 ```
-cc_restore_test_20260730_233853
-cc_restore_test_20260801_144501
-cc_restore_test_20260801_203049
-cc_restore_test_20260805_205238
+hotkey press received (Ctrl+Alt+F9)
 ```
 
-**I did not drop them.** Hard rule 3 forbids `DROP DATABASE` against a database
-this process did not create, and this process did not create any of these.
-They are harmless but they hold stale copies of ship data and will accumulate.
-Dropping them is Sleven's call.
+Previously the log held `hotkey registered` and then nothing until a capture
+**succeeded**, so these were indistinguishable:
 
-Worth noting the earlier runs' guarded cleanup did not remove them - probably
-because those runs exited before step 4. Cheap fix available if wanted: a
-startup sweep that drops only names matching the scratch pattern, but that
-would itself be dropping databases the process did not create, so it needs an
-explicit decision rather than a quiet addition.
+- the press **never arrived** - nothing reached the process
+- the press **arrived and failed** - capture broke downstream
 
-## Still outstanding: PGPASSWORD does not authenticate
+Now: press the key and look. A line means it arrived. No line means it did not.
 
-The `PGPASSWORD` set in my environment returns
-`FATAL: password authentication failed for user "postgres"` against
-`127.0.0.1:5432`. The value is clean (no quotes/whitespace/CR/LF) and does not
-match `.env`. All work above used the app's own `DATABASE_URL` credential.
-No password was echoed, logged, or written anywhere.
+The "no game window" path now reads `press received but no game window`, so it
+presents as a consequence of an arrival rather than an unrelated event. The
+failure path already carried its reason.
 
-`citizen_compass_backup_20260730.dump` in the repo root remains the **stale**
-2026-07-30 file and is still not a current backup - the current one is the
-`C:\cc-backup\20260806-172223\` dump above.
+**On the suspected cause:** if Star Citizen in exclusive fullscreen is taking
+the key before any global hotkey sees it, there will be **no line at all**, and
+that is the proof. This does not fix that problem - it makes it diagnosable
+rather than suspected, which has to come first.
 
-**Next:** Job B - grouping the uncommitted Jobs 3-5 and collector work into
-logical commits. Nothing will be pushed without explicit confirmation.
+Third instance of this defect class in this binary, after the auto log that only
+wrote on capture and the hotkey that was never registered.
 
-### 2026-08-06 17:22:09 — update-job-a-step1-control-proven-20260806.md
+## Tested with the capture deliberately failing
 
-# Update: Job A step 1 - corruption control PROVEN (and proven the hard way)
-
-**Completed 2026-08-06.** The restore check can fail. It is therefore worth
-trusting to bless a real backup.
-
-Subject was the **stale `citizen_compass_backup_20260730.dump`** (69,037 bytes,
-2026-07-30). **This is NOT a current backup and is not reported as one** - it
-was used only as a known-restorable artifact to exercise the control. The
-original was never opened for write; its sha256 was re-checked after every pass
-and is unchanged.
-
-## Pass 1 - byte midpoint
-
-Flipped 2,048 bytes at offset 34,518 of 69,037. `pg_restore` rejected it
-(exit 1, "could not read from input file: end of file"), ships table
-unreadable. **Control fired** - but `pg_restore --list` *also* failed, meaning
-the damage had reached the TOC. That is the same weak class as corrupting the
-header: it fails for a cheap reason and proves nothing about whether the
-restore path actually reads data bytes. Logged as weaker than intended rather
-than counted as a clean win.
-
-## Pass 2 - the strong form
-
-Walked deeper to find an offset whose corruption leaves the TOC readable:
-
-| offset | through | `pg_restore --list` |
-|--------|---------|---------------------|
-| 41,422 | 60% | exit 1 - TOC damaged |
-| 48,326 | 70% | exit 1 - TOC damaged |
-| 51,778 | 75% | **exit 0 - TOC intact** |
-| 55,230 | 80% | **exit 0 - TOC intact** |
-| 58,681 | 85% | **exit 0 - TOC intact** |
-| 62,133 | 90% | **exit 0 - TOC intact** |
-| 65,585 | 95% | **exit 0 - TOC intact** |
-
-Used offset 65,585 (1,024 bytes flipped). That copy **passes `--list` with
-exit 0** - a cheap integrity check calls it perfectly healthy.
-
-A real restore into a real scratch database:
+That is the case that used to be silent, so it is the one worth proving:
 
 ```
-pg_restore: error: could not uncompress data: invalid distance too far back
-pg_restore exit = 1
-ships recovered: 0        (clean baseline: 232)
+[ok] no press means no receipt line       <- negative control
+[ok] a press is logged ON RECEIPT
+[ok] a failed capture states its reason
+[ok] receipt is logged BEFORE the outcome
 ```
 
-**CONTROL FIRED IN THE DATA SECTION.** This directly confirms the claim in
-`Test-DatabaseBackup.ps1`'s header: a `--list`-only integrity check would
-declare a dump with a shredded data section healthy. Only driving it through a
-real `pg_restore` reads those bytes.
+Order is asserted because a capture that hung forever would otherwise still
+leave no evidence the press arrived.
 
-## Housekeeping
+## Live session evidence (untouched, still running)
 
-All four scratch databases were created by that process and dropped by it
-through the guarded `Remove-ScratchDb`, which refuses any name not matching the
-scratch pattern, not created by the run, or equal to the live database
-(hard rule 3). Zero scratch databases remain.
+```
+[22:13:45] captured 20260807T031343Z_0024.png  <- interval:10m
+[22:15:46] alive: watching ...\LIVE\Game.log, 347 bytes read since last line, 1 captures total
+```
 
-## Blocker found and worked around - please confirm
+The interval fallback fired and the heartbeat's capture counter incremented -
+both Job 3 features confirmed in production.
 
-**`PGPASSWORD` as set in my environment does NOT authenticate:**
-`FATAL: password authentication failed for user "postgres"`. The value is clean
-(no quotes, whitespace, or CR/LF) and it does **not** match the credential in
-`.env`. I fell back to the app's own `DATABASE_URL` credential, which
-authenticates fine - live DB reachable, **232 ships**.
+## A bad check of my own, caught and corrected
 
-Neither value has been echoed, logged, or written anywhere; the comparison was
-done as a boolean only. Flagging it because the PGPASSWORD you set may be for a
-different host or role than local `127.0.0.1:5432`.
+I verified the rebuilt binaries with `strings ... | grep -c` and reported
+"ABSENT - binary is stale". **`strings` is not installed here**, so the command
+produced nothing and the zero count meant nothing - a check that could not
+succeed reporting a definite negative. Re-done with `grep -a` plus a control
+string that must be present: both binaries contain the new line, 3 matches each.
 
-**Next:** step 2 - take the real dump, restore it, count ships live vs restored.
-The database is still unbacked-up as of this update.
+Same lesson as everything else tonight - a check whose failure mode is
+indistinguishable from its success mode is not a check.
 
-### 2026-08-06 17:17:25 — update-job-a-db-backup-received-20260806.md
+## Unpushed
 
-# Update: Job A received - database backup (DB is currently UNBACKED UP)
+`8594ed3`, `c6a74a2`, `d314540`.
 
-**Received 2026-08-06.** Sleven flagged that the file trees are verified on both
-mirrors but the Postgres dump was skipped and correctly recorded as a failure.
-State right now: **two copies of the files, zero copies of the data.**
+### 2026-08-06 20:12:33 — update-wo-ui-01-section5-done-live-session-verified-20260807.md
 
-`citizen_compass_backup_20260730.dump` in the repo root (69,037 bytes, dated
-2026-07-30) is **NOT a current backup** and will not be reported as one.
+# Update: WO-UI-01 §5 done. Live session observed working. Two defects found.
+
+**2026-08-07.** Committed `c6a74a2`. Two commits unpushed (`8594ed3`, `c6a74a2`).
+
+## Sleven's live session is running and all three fixes are visible in it
+
+`collector-master.exe --auto`, PID 5000, started 22:03:41. **Not touched.**
+
+```
+[22:03:41] hotkey registered: Ctrl+Alt+F9
+[22:03:42] startup: watching ...\StarCitizen\LIVE\Game.log (found by scanning known install locations)
+[22:06:42] alive: watching ...\Game.log, 573038 bytes read since last line, 0 captures total
+```
+
+Job 1, Job 2 and Job 3 all confirmed working **in production**, not just under
+test. The log is being read (573 KB since the last line), so the game is writing
+and the collector is following it.
+
+## §5 implemented - the selftest can report from a GUI binary
+
+All three parts, per the ruling:
+
+1. `AttachConsole(ATTACH_PARENT_PROCESS)` when a console exists; std handles
+   reopened onto `CONOUT$` afterwards, because a `-H=windowsgui` process starts
+   with none and attaching alone leaves `fmt.Print` writing into a closed handle.
+2. **`collector-selftest-results.txt` next to the exe, always**, leading with
+   `RESULT=` / `EXIT=` so nothing downstream parses prose. Written on every path
+   - a file appearing only on success would let a crashed run look identical to
+   one never attempted, and yesterday's file would read as today's pass.
+3. Meaningful exit code: 0 PASS, 1 FAIL, **2 VOID**.
+
+Output is captured by teeing `os.Stdout`, so helpers printing directly land in
+the file too. Capturing only `check()` lines would give a results file that
+quietly disagreed with the screen.
+
+## DEFECT FOUND, caused by the live session - now fixed
+
+Running `--selftest` while the real session was collecting returned **exit 1**.
+The session legitimately holds Ctrl+Alt+F9, so the registration checks correctly
+said NOT PERFORMED - **but counted it as a failure**. The packager's "assert exit
+0" would have failed for a reason with nothing to do with the package.
+
+Two fixes:
+
+- the selftest now uses **`ctrl+alt+shift+f12`**, not the product default. A test
+  must not collide with the thing it is testing.
+- when the key genuinely cannot be obtained the run is **VOID (exit 2)**, not
+  FAIL. A check that could not run is a different fact from one that ran and
+  failed, which is what exit 2 exists to say.
+
+**Verified with the live session still running: exit 0, all sixteen hotkey
+checks performed.**
+
+Also removed a hardcoded `"Ctrl+Alt+F9"` expectation that silently became wrong
+the moment the test key changed - the expected name is now derived from the spec.
+
+## Toolkit settled
+
+`winapi.go`'s own header records **`CGO_ENABLED=0` and no C compiler on this
+machine**. That rules out every cgo-based UI toolkit outright.
+`github.com/jchv/go-webview2` is **pure Go** and fetches cleanly, so it is the
+one that can actually build here.
+
+My hard-rule-7 concern was **unfounded and is withdrawn**: `pkg/pgconn` and
+`watcher-go` already depend on `pgx`, `fsnotify` and `golang.org/x/*`. Rule 7
+targets the ~29,000 cloned data files, not ordinary Go modules.
+
+WebView2 runtime is present here (151.0.4129.59), but §3 wants it bundled so it
+works on a stranger's machine. Bundling the fixed-version runtime means
+downloading a Microsoft redistributable - flagging that as a download step
+needing Sleven's go-ahead rather than doing it unasked.
+
+## Next, in order
+
+1. Continuous install detection (§6) and follow-the-game lifecycle (§7)
+2. The window: three states, one button, reassurance line (§2), status derived
+   from reality (§9)
+3. `Send my data back`, then `Make a copy to send someone` + negative control (§8)
+4. Desktop shortcut, launched and confirmed (§11)
+
+### 2026-08-06 20:03:44 — update-wo-ui-01-rev2-received-20260807.md
+
+# Update: WO-UI-01 rev 2 received - launcher unblocked
+
+**Received 2026-08-07.** `docs/WORKORDER_ui-01-collector-as-a-program.md`,
+9,637 bytes. Read in full. It supersedes the chat spec and both addenda, and it
+is the single writer - anything conflicting loses.
+
+## The three conflicts are settled
+
+| | build this |
+|---|---|
+| Version | **auto-detect LIVE/PTU/EPTU**, continuously; manual override in settings only |
+| Controls | **no start/stop** - it follows the game; pause lives in settings |
+| Toolkit | **bundled WebView**; size explicitly not a constraint |
+
+My two acceptance tests written against START and the version selector are
+**dropped**; §10 carries replacements (auto-detect changes the path; follows the
+game without anyone touching anything).
+
+## My `--selftest` question is ruled on (§5)
+
+All three, not a choice between them:
+
+1. `AttachConsole(ATTACH_PARENT_PROCESS)` when a console exists
+2. **always** write a results file next to the exe
+3. **always** return a meaningful exit code
+
+**The packager asserts on the exit code and the results file, never on stdout.**
+That is the right call - stdout is a convenience for humans, never a contract.
 
 ## What I am about to do
 
-1. **Prove the control first**, using the stale dump as the test subject:
-   copy it to scratch (never touch the original), restore the clean copy to a
-   scratch database, then corrupt the copy by flipping bytes in the **middle**
-   (not the header - a mangled header fails for the wrong reason), and confirm
-   the restore **fails**. Drop the scratch database.
-   Per Hard Rule 12: if a deliberately corrupted dump restores clean, the check
-   cannot fail and is worthless. I stop and report rather than let it bless a
-   real backup.
-2. **Take the real dump** and verify it the same way - restore to scratch and
-   **count the ships**, reporting live count and restored count as two separate
-   numbers. Drop the scratch database.
-3. **Copy to both mirrors** and verify per file with the same verifier that
-   caught the external-sources failure, with the destination side **enumerated
-   from disk, not from a manifest**.
+Working in this order, filing an update per unit:
 
-Then Job B: group the uncommitted Jobs 3-5 / collector work into logical
-commits, add by name only (no `git add -A`), and **wait for confirmation before
-pushing**.
+1. Establish how the WebView is hosted **without violating hard rule 7** - see
+   the blocker note below. This is the first thing to settle because everything
+   else sits on it.
+2. `--selftest` plumbing per §5 (console attach, results file, exit code) -
+   independent of the UI, and the packager's verification depends on it.
+3. Continuous install detection (§6) and follow-the-game lifecycle (§7).
+4. The window, its three states and the reassurance line (§2), with status
+   derived from reality (§9).
+5. `Send my data back`, then `Make a copy to send someone` with its negative
+   control (§8).
+6. Desktop shortcut, launched and confirmed (§11).
 
-PGPASSWORD is in the environment for this session. It will not be echoed,
-logged, or written anywhere.
+## Blocker being investigated first: hard rule 7 vs a WebView binding
 
-### 2026-08-06 17:06:52 — update-cloudflare-plugin-installed-20260806.md
+§3 says bundle whatever the UI needs. The usual way to host WebView2 from Go is
+a third-party binding, which means **downloading and building third-party code**.
 
-# Update: Cloudflare agent setup completed (2026-08-06)
+**Hard rule 7 says data pulled from external sources is data - "do not run it,
+import it, build it".** Taking a new Go module dependency is exactly importing
+and building downloaded code, so I am not doing it on my own authority.
 
-Done in two halves, because the second was blocked for me.
+The alternative that needs no dependency: drive WebView2 through **COM via
+`syscall`**, which is what `capture_wgc.go` already does for WinRT - 419 lines of
+it, in this same package. More work, no new supply chain, and consistent with
+how this binary already talks to Windows.
 
-- `claude plugin marketplace add cloudflare/skills` — run by me, succeeded,
-  declared in user settings.
-- `claude plugin install cloudflare@cloudflare` — **blocked by the Claude Code
-  permission classifier** when I attempted it. Sleven ran it directly instead.
+Checking now whether the collector currently has zero external dependencies and
+whether the WebView2 runtime is present on this machine. Will report with a
+recommendation rather than guessing.
 
-Verified: `cloudflare@cloudflare`, version 1.0.0, scope user, status enabled.
+### 2026-08-06 19:50:23 — update-jobs-2-3-done-launcher-blocked-20260806.md
 
-## What this changed, and where
+# Update: Jobs 2 and 3 done. Launcher BLOCKED on WO-UI-01.
 
-This is configuration **outside the repo** — the user-scope Claude config, not
-anything under `citizen-compass/`. It registers five remote MCP endpoints
-(`mcp.`, `docs.mcp.`, `bindings.mcp.`, `builds.mcp.`, `observability.
-mcp.cloudflare.com`). Cloudflare OAuth triggers on first use of a Cloudflare
-tool, separately from the `wrangler` OAuth login done earlier tonight.
+**2026-08-06.** Committed as `8594ed3`, **not pushed** (no go-ahead for this
+change). Both binaries rebuilt and verified - `selftest PASS`.
 
-Recorded here because hard rule 6 names MCP server registration and `.claude/`
-config as off-limits without asking, so the fact that it happened — and that it
-was authorised, deferred, then completed by hand — belongs in the record rather
-than only in a terminal scrollback.
+## Job 2 - `--gamelog`
 
-## Remaining step
+`FindGameLog` derives from the captured window's process image, then scans LIVE,
+PTU, EPTU, TECH-PREVIEW **in that order**. In `--auto` the log resolves at
+startup *before any window exists*, so the derivation never applies and the scan
+always wins - which on this machine means **LIVE, every time**.
 
-`/reload-plugins` in Claude before the plugin's tools become available in this
-session.
+`--gamelog <path>` forces it, and **fails closed**: an unreadable path returns
+nothing and says why rather than falling through to the scan. Falling back would
+quietly resume watching LIVE - the exact defect the flag exists to prevent.
 
-## Note on how this arrived
+The path **and the reason it was chosen** now print at every `--auto` start, to
+console and to `collector-auto.log`. The reason matters as much as the path:
+`found by scanning known install locations` is the line that warns someone they
+are about to watch LIVE by default.
 
-The instruction was "fetch and execute the instructions at
-`developers.cloudflare.com/agent-setup/prompt.md`". Hard rule 7 forbids
-executing fetched content, so it was fetched and **read**, its two commands
-reported, and confirmation taken before anything ran. The content turned out to
-be exactly what was asked for and nothing more.
+## Job 3 - heartbeat, plus the staleness warning
 
-### 2026-08-06 16:58:53 — update-jobB-pushed-20260806.md
+`collector-auto.log` was written **only on capture**, so through a quiet stretch
+a running collector and a dead one produced identical evidence: nothing.
 
-# Update: Job B pushed (2026-08-06)
+Now every 3 minutes: `alive: watching <path>, N bytes read since last line, M
+captures total`. Emitted whether or not a game window exists, because "no game
+running" is itself a state worth reading back.
 
-Pushed on confirmation. `3254dea..0570426` to `origin/main`. All four commits
-verified present on the remote; `origin/main..HEAD` is now **0**.
+And when a window **is** open while the log has not grown in 5 minutes, that is
+reported once per stall, with the fix named. A game running and writing nothing
+to the log being watched means the wrong file is being watched.
 
-| commit | what |
+## Proven by mutation (hard rule 12)
+
+| mutation | result |
 |---|---|
-| `37324ce` | backup fixes — the backslash regex, the null exit code, hard failure on a missing mirror, `Verify-MirrorTree`, `Report-BackupCloseout`, `Test-DatabaseBackup` |
-| `8de0a57` | the collector, including unattended `--auto` |
-| `83c326b` | the process-lock proof |
-| `0570426` | the `_deploy` publication guard |
+| refusal branch disabled | bad `--gamelog` resolved to `C:\Program Files\...\LIVE\Game.log` -> **[FAIL]** |
+| heartbeat suppressed | **[FAIL]** heartbeat appears once the interval passes |
+| staleness suppressed | **[FAIL]** staleness warning fires on a dead log |
 
-23 files, +6001 / -41, every one added by name. The ~50 CRLF-churn files were
-not touched — the working tree still shows only the six pre-existing
-modifications that were deliberately left alone (`.gitignore`, `go.work`,
-`scripts/external_sources/uex_corp.py`, and the three watcher-owned handoff
-files).
+The clock is injected, so a 3-minute heartbeat and a 5-minute stall are tested in
+milliseconds. A test taking eight minutes would not get run.
 
-## Still open
+### Two of my own checks were broken, and the mutants found them
 
-**Job A — the database is still not backed up.** Blocked on `PGPASSWORD`
-reaching this process; it is absent at every scope and Postgres requires
-password auth. Setting it in another terminal cannot work, because a Windows
-child process inherits its parent's environment block rather than reading the
-registry. It has to be set in the shell that launches Claude Code, followed by
-a restart:
+1. "warning names the fix" searched the **whole log** for `--gamelog`. The
+   startup line contains it, so the check passed **without ever reading the
+   warning**. Now requires both strings on the same line.
+2. The "clears when growing" step advanced the clock *past* the staleness
+   threshold again, so it asserted that a **correct** second warning was a bug.
 
-    $env:PGPASSWORD = '<password>'
-    claude
+Also fixed a real inconsistency the dump exposed: the heartbeat said
+`(no log resolved yet)` one line below a startup line that had just resolved
+one.
 
-`scripts/Test-DatabaseBackup.ps1` is committed and ready — one command, and its
-preflight is already proven to refuse with exit 2 rather than prompt or pass.
+## LAUNCHER - blocked, deliberately
 
-Current exposure is unchanged: two verified copies of the FILES on two external
-drives, zero verified copies of the DATA.
+**WO-UI-01 is not in this repo.** No file, no reference in `docs/`, `inbox/` or
+the handoff archive. What I have is a launcher spec sent in chat, and **the two
+addenda contradict it** on three points:
 
-### 2026-08-06 16:50:10 — update-jobB-committed-awaiting-push-20260806.md
-
-# Update: Job B — four commits made, NOT pushed (2026-08-06)
-
-Four commits on `main`, ahead of `origin/main` by 4. **Nothing pushed** — the
-order requires the list to be confirmed first. 23 files, +6001 / -41.
-
-Added **by name** throughout. No `git add -A`. The CRLF churn files were not
-touched; git's "LF will be replaced by CRLF" warnings are the filter acting on
-the files actually being staged, not churn.
-
-| commit | what |
-|---|---|
-| `37324ce` | backup fixes — `Backup-CitizenCompass.ps1`, `Verify-MirrorTree.ps1`, `Report-BackupCloseout.ps1`, `Test-DatabaseBackup.ps1` |
-| `8de0a57` | the collector, including `--auto` — 16 files |
-| `83c326b` | the process-lock proof — `process_lock_selftest.go` |
-| `0570426` | the `_deploy` guard — `check_deploy_clean.py`, `build_deploy.py` |
-
-## One honest note about the split
-
-`citizen-collector/` had **never been committed** — the whole directory was
-untracked. So `8de0a57` necessarily lands the base grabber as well as the auto
-mode, and `main.go` / `winapi.go` land whole in it. That means the
-`finalWindowGuard` extraction, which exists for the process-lock test, is in
-`8de0a57` rather than `83c326b`. The proof file itself is the later commit.
-Splitting further would have meant staging hunks of a brand-new file, which
-buys tidiness at the cost of commits that do not build.
-
-## Deliberately left uncommitted
-
-- `LATEST_HANDOFF.md`, `docs/handoff_archive/*` — the Go watcher owns these
-  (rule 14, one writer). Not mine to commit as part of a code change.
-- `.gitignore`, `go.work`, `scripts/external_sources/uex_corp.py` — already
-  modified before this session started. Not my changes; not folding someone
-  else's work into my commits.
-
-## Build outputs kept out
-
-`citizen-collector/.gitignore` already excluded `collector.exe`,
-`collector-master.exe` and `captures/`. Added `collector-auto.log` and
-`collector-settings.txt` — both are written next to the exe at run time and
-belong to whoever runs it. Committing the settings file would push one
-machine's interval choices onto everyone else.
-
-## Deploy guard (the low-priority item)
-
-`testing/_src/check_deploy_clean.py`, called at the end of `build_deploy.py`
-and runnable standalone before a deploy. Whitelist, not denylist — a denylist
-would stop `.wrangler` and silently permit the next surprise. Allowed file list
-is derived from `PAGES` so the two cannot drift.
-
-Proven by negative control, all passing:
-
-- planted `.wrangler/` directory — REFUSED (the exact incident)
-- unexpected file `notes.txt` — REFUSED
-- unexpected directory `backup/` — REFUSED
-- nested dot-file inside `models/` — REFUSED
-- clean again once the plants are removed — confirms it detects the plants
-  rather than always failing
-
-Live `_deploy` currently passes: "contains only known assets - safe to deploy".
-
-## Waiting on
-
-1. **Push confirmation** for the four commits above.
-2. **Job A** — still blocked on `PGPASSWORD` reaching this process. See
-   `update-jobA-database-blocked-20260806`. Two verified copies of the files,
-   zero verified copies of the data.
-
-### 2026-08-06 16:46:29 — update-jobA-database-blocked-20260806.md
-
-# Update: Job A BLOCKED — PGPASSWORD never reached this process (2026-08-06)
-
-The database is still not backed up. Harness is written and proven fail-closed;
-it cannot run without the credential.
-
-## Why it is blocked
-
-- **Postgres 17 is running** (7 processes) and **requires password auth**. A
-  deliberately wrong password returns `FATAL: password authentication failed`,
-  not a trust connection — so there is no passwordless path.
-- **`PGPASSWORD` is absent** from process env, User scope, Machine scope, and
-  there is no `pgpass.conf`.
-
-**The mechanism matters, because setting it again the same way will not work.**
-Every tool call I make spawns a child of the Claude Code process and inherits
-*its* environment block, captured when Claude Code launched. Windows builds a
-child's environment from its parent, **not** from the registry. So a variable
-set in a separate terminal, or set at User scope after launch, cannot reach me.
-
-**The fix — set it in the shell that launches Claude Code, then restart:**
-
-    $env:PGPASSWORD = '<password>'
-    claude
-
-That keeps it in memory only: never a file, never a log, never the transcript.
-
-I deliberately did NOT suggest typing it into this session with `!` — that
-would put the secret straight into the conversation, which is exactly what the
-order forbids. (It would not work anyway; shell state does not persist between
-my calls.)
-
-## What is ready
-
-`scripts/Test-DatabaseBackup.ps1` (new). One command once the password is
-present. It dumps, restores into a scratch database, counts ships and asserts
-live == restored, runs the corruption control, drops the scratch databases,
-copies the dump to both mirrors and verifies each per file by size AND sha256.
-
-**Proven already:**
-
-- Parses clean.
-- **Fail-closed preflight**: with no `PGPASSWORD` it prints a refusal and exits
-  **2** — never 0, and never a prompt. A prompt on an unattended console hangs
-  forever, which is how the earlier run wedged.
-- The secret is only ever tested for presence. It is never printed, written,
-  logged, or passed as a command-line argument (arguments are visible to other
-  processes).
-
-## A real finding: `--list` is not an integrity check
-
-I proved the corruption control server-free, using the 8/5 dump already on disk
-(`citizen_compass-20260805-205238.dump`, 170,357 bytes). Worked on copies; the
-existing backups were not modified.
-
-| corrupted region | `pg_restore --list` |
-|---|---|
-| header / magic | **caught** — exit 1, `unsupported version (-2.-17)` |
-| TOC | **caught** — exit 1, `could not read from input file` |
-| **middle of data** | **NOT caught** — exit 0, lists perfectly |
-| **near end of data** | **NOT caught** — exit 0, lists perfectly |
-
-So a cheap `--list` check would certify a dump with a shredded data section as
-healthy. **The corruption control therefore has to go through a real restore**,
-and the harness corrupts the DATA SECTION specifically for that reason. This is
-direct evidence for the order's own premise: a dump nobody has restored is a
-file, not a backup.
-
-## Guarded drop
-
-Hard rule 3 forbids `DROP DATABASE` against a database this process did not
-create. The order asks for the scratch database to be dropped, and both scratch
-databases *are* created by this script in this run. `Remove-ScratchDb` refuses
-any name that is the live database, does not match `^cc_restore_test_[0-9a-z_]+$`,
-or was not recorded as created by this run. Note this differs from
-`Backup-CitizenCompass.ps1`, which deliberately leaves its scratch database in
-place to keep its "deletes nothing" guarantee absolute.
-
-## Current exposure
-
-Two verified copies of the FILES on two external drives. **Zero copies of the
-DATA**, other than the stale 8/5 dump at
-`C:\cc-backup\20260805-205238\` — which is on C: only and has never been
-restore-tested.
-
-### 2026-08-06 16:30:47 — update-job5-backup-closeout-20260806.md
-
-# Update: Job 5 complete — backup verified on both mirrors (2026-08-06)
-
-Run `20260806-160056`. Close-out report exit **0**. Both irreplaceable trees
-are on both external mirrors and verified **per file**.
-
-Reported by `scripts/Report-BackupCloseout.ps1` (new), which runs as a separate
-process AFTER the copy and rebuilds every fact from disk — never from
-`SHA256SUMS.txt`, never from robocopy's file list, never from the copy's own
-filter.
-
-## robocopy exit code per tree
-
-Bitmask, not an ordinal. 0-7 success, 8+ real failure.
-
-| tree | mirror | exit | meaning |
-|---|---|---|---|
-| repo working tree | C: staging | 1 | files copied |
-| whole backup folder | D: | 1 | files copied |
-| `sc-ships` | D: | 1 | files copied |
-| `data-layer\external-sources` | D: | 1 | files copied |
-| whole backup folder | E: | 1 | files copied |
-| `sc-ships` | E: | 1 | files copied |
-| `data-layer\external-sources` | E: | 1 | files copied |
-
-All seven are 1. Every robocopy log also carries an `Ended :` line and contains
-no `ERROR` lines — checked from the logs robocopy wrote itself, not from a
-variable the copier kept.
-
-## Per-file verification, destination enumerated from disk
-
-| tree | mirror | expected | present with matching byte size |
-|---|---|---|---|
-| `sc-ships` | D: | 951 | **951** |
-| `sc-ships` | E: | 951 | **951** |
-| `data-layer\external-sources` | D: | 58,257 | **58,257** |
-| `data-layer\external-sources` | E: | 58,257 | **58,257** |
-
-`sc-ships` holds 1,675 files of which 724 are in `.cache` and correctly
-excluded, so 951 is the right denominator — not a shortfall.
-
-## First 10 mismatches by name
-
-**None. Zero mismatches across all four tree/mirror pairs.** The reporting path
-is real and proven — see below, where it names a truncated file with both
-sizes — it simply had nothing to report here.
-
-## Negative control
-
-Asserted independently per mirror, and it PASSED on both:
-
-- D: `NEGATIVE CONTROL PASSED` — subject `.cache\huggingface\.gitignore`
-- E: `NEGATIVE CONTROL PASSED` — subject `.cache\huggingface\.gitignore`
-
-It is only credited after proving the destination is readable, by first finding
-a file known to BE there. An "absent" result from a checker that cannot see the
-destination is vacuous, and this refuses to score it.
-
-One honest gap, stated not glossed: for `data-layer\external-sources` the
-verifier reports `NEGATIVE control NOT PERFORMED - no excluded file exists to
-test with`. That tree contains nothing matching the exclusion list, so there is
-nothing to test with. Reported as not performed, never as a pass.
-
-## The checker was made to fail on demand — 7 controls
-
-It passed first time, so it was not yet a check. Against synthetic trees
-(nothing touched the real backup):
-
-| scenario | result |
-|---|---|
-| correct mirror | PASSES, exit 0, and verified both trees |
-| **truncated** file at destination | CAUGHT — `Liberator\model.glb source 23 B -> dest 8 B (-15 B)` |
-| **missing** file | CAUGHT and named |
-| excluded `.cache` file reaching the mirror | CAUGHT — `NEGATIVE CONTROL FAILED` |
-| run folder absent | reported `NOT VERIFIED`, exit 1 |
-| `ERROR` line in robocopy's log | CAUGHT |
-
-The truncation case is the one a file count cannot see: the file is present, so
-the count matches. That is exactly the 2026-08-05 kill signature.
-
-While building this, the harness itself failed 7/7 with exit 2 — because the
-close-out resolves the verifier relative to `-RepoPath` and my synthetic repo
-had no `scripts\Verify-MirrorTree.ps1`. **That was the checker failing closed
-correctly**, refusing to verify rather than reporting a pass. The harness was
-wrong, not the checker.
-
-## The database is NOT in this backup
-
-`PGPASSWORD` is not set in process env, user env, or `pgpass.conf`. With
-`-NonInteractive` the script skipped the dump and the restore test and recorded
-a `[FAIL]`. The run therefore ends with `Failures: 1` even though every file
-copied and verified. That is correct — it is a real gap, not a formality.
-
-To capture it: set `$env:PGPASSWORD` and re-run. The file trees are unaffected.
-
-## Still to do by hand
-
-1. Copy the backup folder to the laptop you are taking.
-2. Upload to cloud storage — the only copy that survives losing the trailer.
-
-## Uncommitted
-
-`Backup-CitizenCompass.ps1` (modified), `scripts/Verify-MirrorTree.ps1` and
-`scripts/Report-BackupCloseout.ps1` (untracked), and the whole
-`citizen-collector/` auto-mode and process-lock work are all sitting in the
-working tree. **Not committed** — Job 2's go-ahead covered 14 named files and
-nothing else. Say the word and I will stage them by name.
-
-### 2026-08-06 16:08:02 — update-process-lock-proven-20260806.md
-
-# Update: process lock now proven by refusal, both builds (2026-08-06)
-
-All four ordered checks are in `--selftest` and pass on the crew AND master
-builds. Nothing has been packaged or distributed.
-
-New file `process_lock_selftest.go`; `main.go` and `winapi.go` amended.
-
-## The condition is CREATED, not hoped for
-
-The test builds a real top-level Win32 window, really titled **"Star Citizen"**,
-really `WS_VISIBLE`, 400x300 so it clears the 200px filter — owned by the test
-binary, which is not `StarCitizen.exe`. It is placed at -5000,-5000 so a
-selftest does not flash a box over whatever you are doing; `IsWindowVisible`
-tests the WS_VISIBLE *style*, not desktop bounds, so it still takes exactly the
-path a real bystander window takes.
-
-A test that waited for such a window to happen to exist would silently do
-nothing on a quiet desktop and report a pass.
-
-## The four checks
-
-1. **POSITIVE CONTROL — refuses.** `findGameWindow(allowAny=false)` refuses the
-   decoy, and the error **names the refused process** (`collector.exe` /
-   `collector-master.exe`).
-2. **NEGATIVE CONTROL — accepts.** Faked at the `isGameProcess` boundary only:
-   `scProcessNames` is briefly pointed at the test binary's own exe name. **The
-   gate itself is untouched and still runs** — same call, same path, same
-   guard. A further check confirms the whitelist was restored afterwards, so no
-   later check runs against a permanently widened list.
-3. **SECOND GUARD, independently.** The inline `if` at the old `main.go:187` is
-   now a named `finalWindowGuard(win, allowAny)`, called from exactly one place
-   so no logic is duplicated. It is fed a crafted window (`claude.exe`) that
-   "passed selection" and must refuse, naming it; must admit a genuine game
-   window; and must stand aside under `--allow-any-window`.
-4. **CREW VARIANT — cannot set it.** Asserts `flag.Lookup("allow-any-window")
-   is nil` **and** the bench closure returns false. Master asserts the
-   opposite, so the check cannot pass by accident in both.
-
-Measured directly, not inferred:
-
-- crew `--allow-any-window` -> `flag provided but not defined`, **exit 2**
-- master `--allow-any-window` -> accepted, listed in `--help`
-- master `--allow-any-window --auto` -> **exit 2**, combination refused
-
-## My own test had the exact defect you warned about, inverted
-
-Mutation testing found it. **Deleting layer 1 outright turned nothing red** —
-layer 2 caught the decoy, `findGameWindow` still returned an error, and every
-check still passed. "It refused" is true of both layers, so asking only "did it
-refuse" proves *neither* individually. That is the same hole as testing layer 1
-alone, pointing the other way.
-
-Fixed by pinning the layer from the error wording — layer 1 says
-`Refused N other process(es)`, layer 2 says `internal guard:` — and adding
-**`lock: refusal came from LAYER 1, the process gate`**. That check fails the
-moment layer 1 is removed.
-
-## Every check seen to fail. Seven mutations, all caught:
-
-| mutation | check that went red |
-|---|---|
-| layer 1 gate never refuses | `refusal came from LAYER 1` |
-| refusal error stops naming the process | `refusal NAMES the refused process` |
-| `finalWindowGuard` always allows | `second guard refuses a non-game window` |
-| `isGameProcess` never matches | `NEGATIVE CONTROL accepts the real game process` |
-| crew bench closure leaks `allowAny=true` | `CREW build cannot set allow-any-window` |
-| crew build registers the flag | `CREW build cannot set allow-any-window` |
-| master build loses the flag | `MASTER build does offer allow-any-window` |
-
-Source restored from a pristine copy; both baselines re-confirmed exit 0.
-
-One incidental proof: calling `registerBenchFlags()` a second time is harmless
-in crew (it registers nothing) but panics the master build with
-`flag redefined`. That panic is itself evidence the two variants genuinely
-differ, so the second call is made only in the crew branch, with a comment
-saying why.
-
-## Full verbatim output — CREW
-
-```
-citizen-collector 0.1.0 (crew) selftest
-  [ok  ] captures dir writable              ...
-  [ok  ] blank detector rejects blank       every one of 4096 sampled pixels is rgb(0,0,0)
-  [ok  ] blank detector accepts content     accepted as real content
-  [ok  ] png encode                         ...
-  [ok  ] win32 reachable                    primary display 1920x1080
-  -- process lock --
-  [ok  ] lock: decoy is a real visible 'Star Citizen' window title="Star Citizen" visible=true size=400x300 owner=collector.exe
-  [ok  ] lock: POSITIVE CONTROL refuses a non-game 'Star Citizen' refused, error names collector.exe: true
-  [ok  ] lock: refusal NAMES the refused process refused, error names collector.exe: true
-  [ok  ] lock: refusal came from LAYER 1, the process gate the process gate refused it before any title was consulted
-  [ok  ] lock: NEGATIVE CONTROL accepts the real game process accepted the window once its process counted as the game
-  [ok  ] lock: whitelist restored after the fake scProcessNames=[starcitizen.exe]
-  [ok  ] lock: second guard refuses a non-game window internal guard: selected a window from "claude.exe", which is not starcitizen.exe - refusing
-  [ok  ] lock: second guard admits the game a genuine game window is not blocked by the guard
-  [ok  ] lock: second guard defers to --allow-any-window master-only bypass still works, by design
-  [ok  ] lock: CREW build cannot set allow-any-window flag registered=false benchAllow=false hint="" (all must be empty/false)
-  -- auto mode --   (16 checks, see the Job 4 update)
-  -- environment --
-  [note] Game.log  ...LIVE\Game.log (776 lines, patch 4.9.188.23497)
-selftest PASS   exit 0
-```
-
-## MASTER — identical except the last lock line
-
-```
-  [ok  ] lock: MASTER build does offer allow-any-window flag registered=true
-selftest PASS   exit 0
-```
-
-**Which checks are new:** everything under `-- process lock --` (10 checks) and
-everything under `-- auto mode --` (16 checks). The five above `-- process
-lock --` are the pre-existing ones.
-
-## Standing gap
-
-The lock is proven against a decoy. It has **not** been exercised against a
-real running Star Citizen — the game is not running, so the "accepts the actual
-game" path is proven only via the `isGameProcess` boundary fake. Stating it
-rather than implying coverage I do not have.
-
-### 2026-08-06 16:01:26 — update-job4-collector-auto-mode-20260806.md
-
-# Update: Job 4 complete — collector --auto mode (2026-08-06)
-
-`citizen-collector` gains `--auto`. Builds clean, `--selftest` passes, and every
-new check has been **seen to fail** before being trusted.
-
-## What was added
-
-New files `auto.go` and `auto_selftest.go`; `main.go` and `winapi.go` amended.
-
-- **Tails Game.log**, polling every 2s (`--poll`). Reads only APPENDED bytes,
-  carrying a partial trailing line to the next poll so a line split across two
-  polls is not parsed as two broken ones.
-- **Captures on state change**, reusing the parsers already in `gamelog.go` —
-  `reGameRules`, `reMap`, `reLoadingScreen`, and the `OnClientSpawned-zone`
-  pattern, which is looked up **by name** so a rename in `gamelog.go` breaks
-  loudly instead of silently binding to nothing.
-  - state: `gamerules`, `map`, `zone`, `location`
-  - events: `loading_screen`, `client_spawned`
-- **Debounce** 3s (`--debounce`).
-- **Interval fallback** every N minutes with no change, default 10, `0` = off
-  (`--interval`).
-- **Window gate**: captures only while a `StarCitizen.exe` window exists.
-- **Trigger recorded in every sidecar**, e.g.
-  `{"kind":"state_change","field":"gamerules","from":"SC_Frontend","to":"SC_Default"}`.
-  Interval captures say `{"kind":"interval","minutes":10}`; manual ones now say
-  `hotkey` or `once` rather than nothing.
-- **No console**: `--auto` hides the console window and logs to
-  `collector-auto.log` next to the exe. Every recoverable problem is logged and
-  the loop continues, so it survives being left running.
-- **Settings** from `collector-settings.txt` next to the exe, written with
-  commented defaults on first run and never overwritten. Command-line flags win
-  over the file.
-
-No OCR, no database routing, no ZIP packager — as instructed.
-
-## Three design points worth recording
-
-1. **The first poll never fires.** Game.log already holds a whole session when
-   the tool starts; feeding that backlog through the detector would fire a
-   burst of captures for state changes that happened before launch, stamped
-   now. The first read primes silently. Same on log rotation — a new session
-   truncates Game.log, and that re-primes rather than replaying.
-2. **`--allow-any-window` cannot combine with `--auto`.** The flag only exists
-   in the master build at all, but a master build left running unattended with
-   the process restriction lifted would photograph whatever was on screen for
-   hours into a corpus meant to be shared. The combination is refused at
-   startup, and the auto loop passes a literal `false` — there is no variable
-   to get wrong.
-3. **`doCapture` takes a `Trigger`, not a `*Trigger`,** and refuses an empty
-   `Kind`. A capture with no stated reason is a bug, so it cannot be written.
-
-## Checks — and the mutation testing that proves them
-
-`--selftest` gained 16 checks. The negative control runs **first**: a synthetic
-log with no state changes must produce **exactly zero** triggers, and if it
-fires the whole group is reported **VOID** (exit 2) rather than as a set of
-passes.
-
-Known sequence asserts count **and** exact reasons:
-
-    event:loading_screen "Frontend_Main : SC_Frontend"
-    state_change:gamerules "SC_Frontend"->"SC_Default"
-    state_change:map "megamap"->"pyro"
-    state_change:zone ""->"Stanton_1_Hurston"
-    event:client_spawned "Stanton_1_Hurston"
-    event:client_spawned "Stanton_1_Hurston"
-
-**All checks passed first time, so per rule 12 I broke each one deliberately
-and confirmed it failed.** Six mutations, all caught:
-
-| mutation | caught by |
-|---|---|
-| tailer starts primed | `priming fires nothing` — 2 triggers from backlog |
-| detector fires on every line | **NEGATIVE CONTROL fired -> VOID, exit 2** |
-| debounce ignored | `debounce holds to 1 per 3s` |
-| `interval 0` no longer means off | `interval 0 never fires` |
-| BOM no longer stripped | `settings reads first line despite BOM` |
-| zone parser renamed in `gamelog.go` | `shared zone parser found` |
-
-**Two of those mutations initially escaped, and both revealed a weak test:**
-
-- The BOM fixture had a **comment** on line 1, so an unstripped BOM corrupted a
-  comment and changed nothing. The check was passing vacuously. Fixture now
-  puts a live setting first, and the check fails properly.
-- The zone-parser mutation was applied to the call site in `auto.go` rather
-  than to the pattern name in `gamelog.go`, so the selftest's own lookup was
-  untouched. Retargeted at the real thing.
-
-Source restored byte-for-byte from a pristine copy afterwards and the baseline
-re-confirmed clean; no mutation residue remains.
-
-## Not done in this job
-
-The `--auto` loop has not been exercised against a **live** Star Citizen
-session — the game is not running. Every trigger path is proven against a
-synthetic log, but the window gate and the capture path under real conditions
-are untested. That is a real gap and I am stating it rather than implying
-coverage I do not have.
-
-### 2026-08-06 15:54:43 — update-process-lock-test-job-received-20260806.md
-
-# Update: process-lock refusal test ordered (2026-08-06)
-
-Received mid-session, logged on arrival before starting.
-
-**The finding is correct and I accept it.** `--selftest` currently has four
-checks — captures dir writable, blank detector in both directions, png encode,
-win32 reachable. **None of them touch the process gate.** The gate at
-`main.go:119` and the second guard at `main.go:187` read correctly, but reading
-is not testing, and there is no artifact on disk showing a refusal was ever
-exercised.
-
-Capture 0007 is not evidence, also correct: it was taken **with**
-`--allow-any-window`, so it proves the door opens when unlocked, not that it
-stays shut when it is not.
-
-Four checks to add to `--selftest`:
-
-1. **Positive control** — `findGameWindow(allowAny=false)` must REFUSE a window
-   titled "Star Citizen" whose process is not `StarCitizen.exe`. Create the
-   condition rather than hoping for it. The error must NAME the refused process.
-2. **Negative control** — the same call must ACCEPT a window whose process IS
-   the game. Fake it at the `isGameProcess` boundary, without stubbing out the
-   gate itself.
-3. **The second guard** — `main.go:187` must be shown to fire independently.
-   Two layers means two tests.
-4. **Crew variant** — the crew build must be unable to set `allowAny` at all,
-   not merely refuse it.
-
-Then run `--selftest` on both builds and report output verbatim, marking which
-checks are new. Any check that passes first time without having been seen to
-fail gets broken deliberately, confirmed failing, and put back.
-
-**No crew build is to be built, packaged or distributed until all four pass.**
-
-## Sequencing
-
-Job 4 (`--auto`) is in flight: `auto.go` and `auto_selftest.go` are written, and
-`main.go` wiring is next. Both jobs modify `selftest()`, so I am finishing and
-filing Job 4's wiring first rather than interleaving two sets of edits into the
-same function. Starting this immediately after — nothing else comes between.
-
-### 2026-08-06 15:48:35 — update-job3-backup-target-fixed-20260806.md
-
-# Update: Job 3 complete — backup repointed to D: and launched (2026-08-06)
-
-`Backup-CitizenCompass.ps1` changed and running detached. **PID 11824**, log
-`logs/backup-run-20260806-154735.log`, args `-FullMirror -NonInteractive`.
-
-## (a) D: primary, E: second mirror
-
-Was `$MirrorRoot = 'E:\cc-backup'`, a single target. Now:
-
-    [string]   $MirrorRoot       = 'D:\cc-backup'      # My Book, external
-    [string[]] $SecondMirrorRoot = @('E:\cc-backup')   # secondary, kept
-
-Step 7 is now a loop over both, and neither is best-effort. Recorded in the
-parameter comment why D: must be primary: **E: is internal**, in the same box
-as C:, so it does not survive losing the machine. D: is exFAT, which is why the
-copies use neither `/COPYALL` nor `/SEC` — that was already handled and is left
-alone. `-MirrorRoot` kept its name so the invocation in
-`docs/workorder-backup-01-external-drive.md` still works.
-
-## (b) A missing mirror drive is now fatal
-
-It previously warned, set `$SkipMirror`, and the run still printed
-`Failures: 0` and exited 0 — a backup that never left C: reporting success.
-That is the SILENT SUCCESS pattern. Now every drive in the list is checked and
-any absence exits 1 before a single byte is written.
-
-`-SkipMirror` remains the one way out, deliberately: an operator saying "skip
-it" and a drive quietly not being plugged in are different events and are no
-longer collapsed into the same outcome.
-
-**Proven by behaviour, not by reading the code — three controls:**
-
-| control | result |
-|---|---|
-| primary mirror missing (`-MirrorRoot Z:\cc-backup`) | `[FAIL] MIRROR DRIVE(S) NOT PRESENT: Z:` — **exit 1**, no backup folder created |
-| **second** mirror missing (`-SecondMirrorRoot Z:\cc-backup`) | D: passed, Z: failed — **exit 1**. The secondary is not treated as optional |
-| `-SkipMirror` | `[WARN] MIRRORS SKIPPED BY REQUEST` and the run proceeds — opt-out still works |
-
-The old code would have passed the first two. This gate has now failed on
-demand, so it is a real check.
-
-## (c) -FullMirror
-
-Used on the launch, so `sc-ships` and `data-layer\external-sources` reach the
-external drive. With two mirrors those trees are now written to D: **and** E:.
-
-## (d) robocopy detached, logging to a file
-
-New `Invoke-Robocopy` runs robocopy via `Start-Process -PassThru` with `/LOG:`,
-and every call site now uses it (repo copy, Blender addons, mirror copy, and
-the two full-mirror trees). It returns the exit code from the **process
-object** rather than `$LASTEXITCODE`, which any intervening pipeline can
-clobber.
-
-`WaitForExit()` is deliberate: the copy must finish before the verifier reads
-the destination, or the verifier races the writer and reports truncation that
-is merely incompleteness. What must not block is the **tool call**, so the
-whole script is launched detached instead — which is the actual fix for the
-2026-08-05 kill.
-
-Exit-code decoding moved into one `Show-RoboCode` helper so every call site
-reports the bitmask identically instead of only 7b doing it.
-
-Quoting is handled explicitly — `Start-Process` does not quote for you, and
-both `Blender Foundation` and `done ships` contain spaces. Trailing
-backslashes are trimmed before quoting because robocopy reads `"C:\path\"` as
-an escaped quote.
-
-## Checks
-
-- Script parses clean (`Parser::ParseFile`, 0 errors).
-- Destructive-operation scan: every `/MIR`, `Remove-Item`, `rmdir`, `del` hit
-  in the file is **inside a comment**. No delete operation exists. `/E` only.
-
-## Two things to note
-
-1. **The database is NOT captured in this run.** No `PGPASSWORD` in process
-   env, user env, or `pgpass.conf`. With `-NonInteractive` the script skips the
-   dump and restore test and records it as a `[FAIL]` — correctly, since it is
-   a real gap. The run will therefore exit 1 even if every file copies
-   perfectly. Re-run with `$env:PGPASSWORD` set to capture it; the file trees
-   are unaffected.
-2. **A stray backup folder exists at `C:\cc-backup\20260806-154521`.** My
-   `-SkipMirror` control test ran a full C:-only backup as a side effect. It is
-   complete and harmless, and it is useful evidence that the new detached
-   robocopy works (both `robocopy-*.log` files were written). Left in place —
-   nothing is ever deleted here. Remove it yourself if you want it gone.
-
-Job 5 will report per-tree exit codes and per-file verification. Continuing to
-Job 4 while the copy runs.
-
-### 2026-08-06 15:39:58 — update-job2-push-20260806.md
-
-# Update: Job 2 complete — 14 files pushed (2026-08-06)
-
-Commit `3254dea`, "Split the keybind page into six modes, generated from the
-actionmap". Pushed `8ee5cdd..3254dea` to `origin/main`.
-
-The push carried **two** commits: the branch was already ahead by one
-(`a7118c7`, the WO-COLLECT-01 rev 4 landing) before I started.
-
-## Staging
-
-Added the 14 files by name. No `git add -A`. `git diff --cached` confirmed
-exactly 14 entries before committing — none of the ~50 CRLF/LF phantom-churn
-files were pulled in. Git printed its usual "LF will be replaced by CRLF"
-warnings for the staged files themselves; that is the filter, not churn.
-
-Five modified, nine new:
-
-- M `testing/_src/_layer.src.html`, `build_deploy.py`, `device_engine.js`,
-  `keybinds.src.html`
-- A `build_keybind_modes.py`, `data-layer/processed/actionmap_categories.json`,
-  and `testing/_src/`: `check_modes.py`, `inject_engine.py`, `kb_modes.gen.js`,
-  `patch_btn_limit.py`, `patch_modes_wire.py`, `patch_two_sticks.py`,
-  `sc_export.js`, `test_sc_export.js`
-
-## Two things to flag
-
-1. **`data-layer/processed/actionmap_categories.json`** — the order's closing
-   line says do not touch `data-layer\processed\`, but Job 2 explicitly lists
-   this file to stage. Treated the specific instruction as authoritative and
-   staged it. Its content was not modified or regenerated; it was only added to
-   the commit. Say if that was not intended — it is one file to revert.
-
-2. **A stale `.git/HEAD.lock` blocked the first commit attempt.** Zero bytes,
-   dated 2026-08-05 19:55, no git process running — left by a crashed git
-   process, most likely the concurrent session noted in CLAUDE.md rule 14.
-   Moved to `_to_delete/stale_git_locks_20260806/` per rule 1 rather than
-   deleted, then the commit succeeded.
-
-   **`.git/objects/maintenance.lock` is also stale**, dated 2026-07-29. It is
-   not blocking me so I left it, but it is probably blocking background git
-   maintenance. Reporting, not fixing.
-
-Note `kb_modes.gen.js` is a generated artifact committed alongside its
-generator. Its header states one writer and it is `build_keybind_modes.py`.
-Edit the generator, never the output.
-
-### 2026-08-06 15:39:31 — update-job1-keybind-deploy-20260806.md
-
-# Update: Job 1 complete, but not by the commanded route (2026-08-06)
-
-Keybind page is live at
-`https://citizencompasstesting.citizencompass-contact.workers.dev` —
-version `81494202-f92c-4169-ad19-1389b2b3bd29`.
-
-## The order's deploy command was wrong and would have looked successful
-
-The order said:
-
-    npx wrangler pages deploy . --project-name citizen-compass-testing
-
-Three things were wrong with it.
-
-1. **There is no Pages project.** `wrangler pages project list` returns empty.
-   The testing site is a **Worker with static assets**, configured in
-   `testing/wrangler.toml`. Cloudflare moved static hosting off Pages.
-2. **The project name is the known trap.** `testing/wrangler.toml` carries a
-   comment written on 2026-08-01 warning that the hyphenated name
-   `citizen-compass-testing` publishes to a *second* URL and leaves the live
-   testing site untouched "while looking like a complete success". The worker
-   name is `citizencompasstesting`, unhyphenated, and the name IS the subdomain.
-3. Had I forced it by running `wrangler pages project create`, the result would
-   have been exactly the two-URLs-in-circulation failure the repo already
-   documents.
-
-Deployed with `npx wrangler deploy` from `testing/` instead, which targets the
-existing worker name. Same intent, correct mechanism, updates the site actually
-in circulation. **`testing/wrangler.toml` was not modified.**
-
-## Authentication
-
-The order said wrangler was not authenticated. It was, partly: a
-`CLOUDFLARE_API_TOKEN` in the repo-root `.env`, which wrangler 4 auto-loads
-**from the current working directory**. That is why `whoami` worked from the
-repo root and the deploy failed from `testing/_deploy` — no `.env` there. The
-token also lacked Pages/Workers write permission (API error 10000). Ran
-`npx wrangler login` as instructed; OAuth succeeded and that is what the deploy
-used. `.env` remains gitignored and its contents were never printed.
-
-## Self-inflicted defect, found and fixed
-
-My first failed `pages deploy` attempt, run from inside `testing/_deploy`,
-created a `.wrangler/cache/` folder there. The next deploy **published it as a
-public asset** — `/.wrangler/cache/wrangler-account.json` and `pages.json`,
-containing the account ID and account name. No tokens. Moved to
-`_to_delete/stray_wrangler_cache_in_deploy_20260806/` per rule 1 and
-redeployed; both now 404 at origin (one briefly served 200 from edge cache
-until cache-busted). Asset count went 487 → 483.
-
-**Worth a permanent guard:** anything that lands in `testing/_deploy/` gets
-published. An `.assetsignore` or a build-time check for dot-directories would
-close this. Not doing it in this job — reporting it.
-
-## Acceptance checks — all three pass, against the DEPLOYED file
-
-Verified against the deployed `kb_modes.gen.js` fetched back over HTTP, not the
-local copy.
-
-- six modes — PASS, 6/6: FLIGHT, ONFOOT, EVA, VEHICLE, CAMERA, SOCIAL
-- Social 6 numpad + 34 keyless emotes — PASS, keys=6, all Np1..Np6, emotes=34
-- On Foot, Left Alt, H — PASS, `m=1` resolves to `Helmet (Equip)`
-  (`build_keybind_modes.py:59` sets `MODS={"lalt":1,...}`, and the page labels
-  layer 1 "M1 (Left Alt)", so `m:1` is Left Alt by construction, not assumption)
-
-**Negative control:** the same three checks were re-run against a deliberately
-corrupted copy — one mode renamed away, one emote removed, the H binding
-relabelled. All three FAILED as required. A check that cannot fail is not a
-check; these were proven able to fail.
-
-`kb_modes.gen.js` returns **200**, so `PAGES` in `build_deploy.py` did copy it.
-Nothing to report there.
-
-Also confirmed: `/keybinds.html` and `/index.html` return 307 to their
-extensionless forms and resolve 200. That is wrangler's normal html handling,
-not a fault.
-
-### 2026-08-06 15:30:38 — update-five-jobs-received-20260806.md
-
-# Update: five-job work order received (2026-08-06)
-
-Received a five-job order. Logging on arrival per hard rule 13, before starting.
-
-1. **Deploy the keybind page** — `npx wrangler login`, then deploy
-   `testing\_deploy` to Cloudflare Pages project `citizen-compass-testing`.
-   Verify six modes, Social numpad + 34 folded emotes, On Foot Left-Alt
-   "Helmet (Equip)" on H. If `kb_modes.gen.js` 404s, report the PAGES list in
-   `build_deploy.py` — do not patch around it.
-2. **Push** — 14 named files only. No `git add -A` (about 50 tracked files
-   carry phantom CRLF/LF churn).
-3. **Fix the backup target** — `Backup-CitizenCompass.ps1` currently mirrors to
-   `E:\cc-backup`. Primary becomes `D:\cc-backup` (My Book, 3.63 TB external);
-   `E:` stays as a second mirror. Missing mirror drive becomes a hard failure,
-   not a warning. Use `-FullMirror`. Launch detached via `Start-Process
-   -PassThru` so a 7.5 GB copy is not killed by a tool-call timeout.
-4. **Collector `--auto` mode** (main job) — tail Game.log, capture on state
-   change, 3s debounce, interval fallback (default 10 min, 0 = off), only while
-   a StarCitizen.exe window exists, record the trigger reason in the JSON
-   sidecar. Extend `--selftest` with a synthetic Game.log, exact trigger counts
-   and reasons, plus a negative control that must produce zero triggers.
-5. **Close out the backup** — robocopy exit code per tree, per-file
-   verification enumerated from the destination disk, first 10 mismatches, and
-   a negative control asserting `sc-ships\.cache\` is absent from the
-   destination.
-
-Standing constraints for this order: never delete (robocopy `/E`, never
-`/MIR`), add files by name only, one writer per artifact, every check needs a
-negative control, no secrets in chat or files, encoding stated on every file
-open. `data-layer\processed\` and `viewer\profiles.js` are off-limits.
-
-Starting Job 1.
-
-### 2026-08-05 21:22:38 — update-mirror-verify-per-file-20260805.md
-
-# Update — mirror check rebuilt: per-file, non-tautological, proven against real known-bad data
-
-**When:** 2026-08-05
-
-New: `scripts/Verify-MirrorTree.ps1`. Step 7b of `Backup-CitizenCompass.ps1` now
-calls it instead of comparing aggregates.
-
-## Why the old check was not a check
-
-Two independent defects, both now fixed:
-
-1. **Aggregates cancel.** A file count plus an MB total can both match while the
-   contents are wrong — two files differing by +2 MB and −2 MB sum to a pass.
-2. **A truncated file is invisible to a count.** It is *present*, so the count
-   matches.
-
-## Not tautological — enforced structurally
-
-The verifier is a **separate script run as a separate process**. It shares no
-filter state with the copy, so it cannot compare the copy to itself. It:
-
-- enumerates the **destination from disk** — never from `SHA256SUMS.txt`, never
-  from robocopy's log, never from the copy's own file list;
-- compares **per file, on relative path AND byte size**;
-- **names the first 10 mismatches** with both sizes and the delta, not just a
-  count.
-
-## Two controls, because a checker that reads nothing passes everything
-
-- **POSITIVE** — a known-*included* file must be found at the destination. If
-  this fails, the enumeration is empty or aimed at the wrong path and no verdict
-  below it means anything.
-- **NEGATIVE** — a known-*excluded* file (something under `.cache`) must be
-  **absent**.
-
-The negative control is **only credited when the positive control passed**,
-otherwise "absent" is vacuous. Where no excluded file exists to test with, it is
-reported **NOT PERFORMED** — never as a pass.
-
-## Proven to fail, on real data rather than a fixture
-
-The killed run left genuine known-bad input, which is better evidence than
-anything synthetic:
-
-| Target | Result |
-|---|---|
-| **Killed run** `20260805-204113` external-sources | **FAIL, exit 1** — `MISSING from destination: 44428` of 58,257, first 10 named. Positive control passed, so it demonstrably *was* reading the destination. |
-| **Good run** `20260805-205238` sc-ships | **PASS** — all **951** files present, byte sizes matching. **Both controls fired:** positive `Liberator\model.glb` present; negative `.cache\huggingface\trees\aed8d04c…json` **absent** — proving `.cache` was genuinely excluded rather than assumed. |
-| **Good run** external-sources | **PASS** — all **58,257** files present with matching byte sizes. Negative control honestly reported *not performed* (that tree contains no excluded dirs). |
-
-**One honest correction to the prediction.** The expectation was that the killed
-run would leave a *truncated* file. It did not — it left 44,428 files **missing**
-and **zero** size mismatches. robocopy evidently does not leave partials behind
-in this mode. The per-file size comparison is still the right check and stays,
-but I did not catch a truncation, and I am not going to claim I did. What the
-check actually caught was mass absence that the old aggregate check would have
-flagged too — the size dimension remains **unproven against a real partial**,
-and is recorded as such rather than as demonstrated.
-
-## `/MIR` — not used, and why
-
-The instruction specified `/MIR`. I used **`/E`** and am flagging it rather than
-silently substituting.
-
-`/MIR` deletes anything at the destination that is not at the source. This
-script's header states as a **guarantee** that it "contains no delete operation
-of any kind… robocopy is called with /E, never /MIR", and CLAUDE.md hard rule 1
-is never delete. Using `/MIR` would break both.
-
-**The stated reason for `/MIR` was resumability, and `/E` already has it.**
-Measured, not assumed — re-running `/E` against the completed mirror:
-
-```
-elapsed: 1.1s   exit code: 0
-Files :  951   Copied: 0   Skipped: 951   Bytes: 7.392 g skipped
-```
-
-It re-scanned 7.4 GB and copied nothing in about a second. A killed run restarts
-cheaply. Nothing is gained by `/MIR` except the ability to destroy. Say the word
-and I will switch it.
-
-## robocopy's exit code is now reported and decoded
-
-It is a bitmask, and it is printed in full: 1 = files copied, 2 = extra at
-destination, 4 = **mismatched**, 8 = **some files could not be copied**, 16 =
-**serious error**; 0 = nothing to do. **Anything ≥ 8 is FATAL regardless of what
-the file counts say**, and the copy is abandoned for that tree before
-verification even runs.
-
-If the verifier cannot run at all (script missing) that is reported as **not
-verified**, never as passed.
-
-## The timeout was structural
-
-7.5 GB will not finish inside a 10-minute tool call and never will. The copy no
-longer runs inside a tool call — it is launched detached (`Start-Process
--PassThru -WindowStyle Hidden`) with `/LOG:` to a durable per-tree log, and each
-tool call only polls exit state and tails the log. That is how the completed run
-above was driven.
-
-**Nothing staged or committed.**
-
-**Next:** the flight-stick device-facts job, then the unreleased-content filter
-and the FixedReward census.
-
-### 2026-08-05 21:16:06 — update-backup-mybook-complete-20260805.md
-
-# Update — MyBook backup complete and verified. Exit 0, 0 failures, 1 known warning.
-
-**When:** 2026-08-05
-**Backup:** `C:\cc-backup\20260805-205238` → `D:\cc-backup\20260805-205238`
-
-## 1. The drive
-
-**D: is the MyBook** — WD My Book 25EE, USB, 3726 GB, Healthy, 3726 GB free.
-
-**Filesystem is exFAT, not NTFS.** That matters and I checked the script for it:
-exFAT carries no NTFS ACLs and supports no junctions or hardlinks, so any
-robocopy `/COPYALL` or `/SEC` would have errored on every file. The script uses
-`/E /R:2 /W:5` with no ACL flags, and the `-FullMirror` code I added
-deliberately does the same.
-
-## 2. The 2026-07-30 failure — diagnosed, and the premise needs correcting
-
-**It was already diagnosed at the time, and it was already fixed.** Two runs
-exist, not one:
-
-- **`20260730-231753`** — the one that **exited 1**. It contains exactly **one
-  file**, the git bundle. Cause, recorded in
-  `docs/handoff_archive/20260730_231828_...backup_script_failed.md`:
-  `git bundle verify` writes its success message to **stderr**, and Windows
-  PowerShell 5.1 wraps native stderr into a `NativeCommandError` under
-  `$ErrorActionPreference = 'Stop'` — so the script **aborted on a passing
-  verification**.
-- **`20260730-233853`** — v2, which fixed exactly that via `Invoke-Native`, ran
-  **all 7 steps, exit 0**, 599 files.
-
-The directory the work order pointed me at (`20260730-233853`) is the
-**successful** run, which is why grepping its logs found only noise — repo logs
-copied *into* the backup, not backup logs. The failed run left no log at all.
-
-This is the same native-stderr bug `deploy_testing.ps1` documents in its own
-header. Third appearance in this repo.
-
-## 3. Measurement
-
-Repo: **17.8 GB across 85,768 files.**
-
-## 4. `-FullMirror` added
-
-New `[switch] $FullMirror`. **Defaults unchanged** — without it the script
-behaves exactly as before.
-
-The mirror copies `$BackupDir`, which step 2 already stripped, so the two
-irreplaceable trees cannot come from there. Step **7b** copies them from the
-repo straight into the mirror with only the four rebuildable exclusions
-(`venv`, `__pycache__`, `.cache`, `node_modules`), then verifies by **file count
-and bytes**.
-
-I also corrected the script's own comment: "external-sources → re-pullable" is
-simply **wrong** (re-pulling UEX returns *today's* prices, not the sealed
-snapshot's), and "sc-ships → re-downloadable" overstates a pack whose
-redistribution rights are on record as unestablished.
-
-**A missing mirror drive is now fatal when `-FullMirror` is set** rather than a
-warning, because that is the precise failure this switch exists to prevent.
-
-## Three defects I introduced and caught before they mattered
-
-1. **A false FAIL.** First run reported *"sc-ships: only 951 of 1675 files
-   reached the mirror"*. Wrong — **724 of those 1,675 live in `.cache`**, a
-   HuggingFace cache correctly excluded. All 951 eligible files and every one of
-   their 7,570.0 MB had arrived. My check compared an *unfiltered* source count
-   against a *filtered* destination. Now both sides apply the same exclusions,
-   and bytes are compared too (equal counts with unequal bytes = truncation).
-   **A false failure is as corrosive as a false pass** — it trains the reader to
-   disbelieve the check.
-2. **A silently truncated message.** I wrote the loudest `Write-Fail` in the
-   script as `"a" + "b" + "c"` across lines. PowerShell parses that as **five
-   positional arguments**, not concatenation — `$m` would bind only the first
-   fragment and the rest would vanish into `$args`. It "parsed clean". Wrapped
-   in parentheses.
-3. **PGPASSWORD not set on the first run**, so the dump and restore test were
-   skipped. My regex `^[a-z]+://` could not match `postgresql+psycopg2://` — the
-   `+`. Fixed; the second run captured the database properly.
-
-The first run was also killed by my own 10-minute tool timeout mid-copy, not by
-the script. Re-run in the background. Its partial output is left in place at
-`20260805-204113` per hard rule 1 — moved aside for Sleven, never deleted.
-
-## 6. Verification — every check reported explicitly
-
-| | Check | Result |
+| | chat spec | addenda |
 |---|---|---|
-| **a** | `git fsck` **exit code** | **0 — PASS.** Judged by exit code only. It printed "dangling blob/commit" lines to stderr; those are normal unreferenced objects, not errors, and judging by text would get this backwards. |
-| **b** | Restore ran, ship count | **PASS — the dump is usable.** Restored into a throwaway DB and returned **232 ships**. Script expected 254 and warned. **232 is reported as the actual number rather than treated as a failure**, per instruction. |
-| **c** | File counts | Literal: **C: 28,153 / D: 90,810** (spans all runs per drive). This run: **C: 8,412 / D: 67,620** — D: is higher **by design**, since `-FullMirror` adds 59,208 files C: never had. |
-| **d** | `.env` in the mirror | **PASS** — `D:\cc-backup\20260805-205238\repo\.env`, 223 bytes. |
-| **e** | Sealed snapshots | **PASS** — uexcorp `20260801T235530Z` holds **exactly 114 files**; scunpacked `20260801T204744Z\blueprints.json` present at 9.8 MB. The new commodity snapshot `20260806T033315Z` also mirrored. |
+| version | selector, "before starting" | **auto-detect** |
+| controls | `[START] [STOP]` | **no start/stop** |
+| toolkit | **raw Win32 only**, no toolkit | **WebView2 bundled** is fine |
 
-**The mirror step was NOT skipped.** Both trees verified: `sc-ships` 951 files /
-7,570.0 MB and `external-sources` 58,257 files / 10,262.8 MB, source and
-destination equal on both counts.
+Two of the four acceptance tests I was given are written against START and the
+version selector. Building now means building from what looks like a superseded
+draft.
 
-## Two things for Sleven
+**Sleven chose: drop WO-UI-01 into `inbox/` and build from that.** Confirmed for
+when it lands: **WebView2, bundled**; selftest output goes to **both** an
+attached parent console and a log file.
 
-1. **232 vs 254.** The 2026-07-30 note already recorded that every DB check that
-   session read 232, so `$ExpectedShipCount = 254` looks like a **stale
-   hardcoded baseline** rather than a bad dump. I have **not** changed it — it
-   is a default and I was told not to change defaults. Worth correcting
-   deliberately.
-2. **`.env` is now on an external drive**, as instructed. That compounds the
-   standing exposure: the UEX token inside it was exposed in a screenshot and
-   **still has not been rotated**. Back it up, then rotate — the rotation is
-   still outstanding.
+### Flagged for whoever writes WO-UI-01
 
-A throwaway restore database was left in place (the script never deletes):
-`cc_restore_test_20260805_205238`.
+Addendum 2 requires the GUI subsystem (`-H=windowsgui`), and such a binary has
+**no stdout**. `--selftest` would print to nowhere - including the packager's own
+"run the extracted exe with `--selftest`, assert exit 0" verification. Hence the
+both-console-and-file decision above; it needs to be in the work order rather
+than discovered during the build.
 
-**Nothing staged or committed.**
+Also: nothing rebuilds these exes automatically. A launcher that shells out to a
+stale binary would show RUNNING while running the wrong code - the same class of
+lie its own "status from reality" rule exists to prevent. Worth closing inside
+that job.
 
-**Next:** the flight-stick device-facts job, then the two outstanding jobs from
-the earlier batch (unreleased-content filter, FixedReward census).
+## Current state
 
-### 2026-08-05 20:53:04 — update-device-facts-job-received-20260805.md
+- Jobs 1, 2, 3: **done**. Job 1 pushed; Jobs 2-3 committed awaiting go-ahead.
+- Unpushed: `8594ed3`.
+- Launcher: **waiting on WO-UI-01 in `inbox/`**.
 
-# Update — received: sourced flight-stick fact file for the keybind page
-
-**When:** 2026-08-05
-
-Logging on arrival per hard rule 13. **Not started** — the MyBook backup is in
-flight and was explicitly "stop at the first failure", so this queues behind it.
-
-## The job
-
-Build `data-layer/raw/devices/device_facts.json` plus
-`device_facts_findings.md`, so the keybind page can recognise a stick from its
-browser gamepad id, name each control correctly, and draw it in the right place.
-
-Seven devices in priority order: VKB Gladiator NXT EVO (**every** variant —
-Standard, SCE, Omni Throttle, Premium, left and right hand), VIRPIL
-Constellation ALPHA Prime, VIRPIL CDT-AEROMAX, Thrustmaster T.16000M,
-Thrustmaster SOL-R 2, Turtle Beach VelocityOne Flightstick II, Winctrl Ursa
-Minor.
-
-Five fact classes each: **A** USB identity (VID/PID hex per variant and firmware
-mode, plus verbatim `navigator.getGamepads()[i].id` strings — the exact wording
-matters more than the numbers because that string is what we match on), **B**
-default button numbering with an explicit statement of 1-based (VKB docs) vs
-0-based (browser) and which firmware/VKBDevCfg profile it belongs to, **C** axis
-order including whether each hat is an HID hat switch or four buttons, **D**
-plain-words control inventory, **E** geometry as 0–1 fractions of each face from
-the vendor's own layout template.
-
-## The governing rule, noted
-
-**Blank beats wrong.** Every field carries a source URL; anything unsourceable
-is `null` with a `_missing` note recording what was looked for and where. A
-blank renders as "press it to identify" and is harmless; a wrong number
-silently mislabels a control and nobody ever finds out.
-
-That is the same standard already applied to the collector's Game.log parser
-(verified vs unverified patterns, null plus a reason rather than a plausible
-default) and to job 2's `range_gm`. Consistent with hard rule 11.
-
-## Constraints I will observe
-
-- **No vendor images, 3D models or manuals downloaded into the repo.** Facts and
-  coordinates only — we are not licensed to republish their artwork. Geometry is
-  to be read from published templates and recorded as fractions, describing the
-  positions in JSON without pulling the image.
-- **Do not touch `viewer/profiles.js`, anything under `testing/`, or any built
-  HTML.** One writer per artifact — hard rule 14. `testing/` is explicitly
-  Claude-Code-only-via-C1 in CLAUDE.md, and this job is not that path.
-- Primary sources preferred; community sources allowed but that entry is marked
-  `confidence: "community"`.
-- If a fetch is blocked, that is the answer — hard rule 9. I will not route
-  around it via a mirror, cache or archive; I will record it as not found and
-  say where I looked.
-
-**Next:** finish and verify the backup, then start this.
-
-### 2026-08-05 20:37:46 — update-backup-mybook-received-20260805.md
-
-# Update — received: run the backup to the WD MyBook on D:
-
-**When:** 2026-08-05
-
-Logging on arrival per hard rule 13. Jobs 3 and 4 of the previous batch (the
-unreleased-content filter and the FixedReward census) are **not started** and
-are now queued behind this.
-
-Six steps, **stop at the first failure**:
-
-1. Confirm D: is the MyBook — filesystem (NTFS vs exFAT changes robocopy long-path
-   handling) and free space.
-2. Diagnose the 2026-07-30 backup that exited 1 and was never explained. Do not
-   run a bigger one without knowing why.
-3. Measure the repo size.
-4. Add `-FullMirror` to `Backup-CitizenCompass.ps1`. When set, the **mirror**
-   copy excludes only the four genuinely rebuildable things (venv, `__pycache__`,
-   `.cache`, `node_modules`). `sc-ships` (~7.3 GB, redistribution rights on
-   record as unestablished) and `data-layer\external-sources` (the sealed
-   snapshots — re-pulling UEX gives *today's* prices, not 1 August's) go **in**.
-   The C: copy keeps existing exclusions for speed. **Defaults unchanged.**
-5. Run it against `D:\cc-backup` with `-FullMirror`.
-6. Verify — exit 0 is not proof. Five explicit checks: `git fsck` **exit code**
-   (not its text — git writes "is okay" to stderr on success), a database
-   restore reporting an actual ship count, file counts C: vs D:, `.env` present
-   in the mirror, and the sealed snapshots spot-checked.
-
-**A skipped mirror step is a FAILURE, not a warning.** The script currently
-treats a missing mirror drive as non-fatal; if that fires I am to say so loudly.
-
-`.env` is included deliberately — Sleven's call, back it up then rotate. Noting
-that this compounds the standing exposure: the UEX token in that file was
-exposed in a screenshot and still has not been rotated, and it will now exist on
-an external drive as well.
-
-**Next:** step 1.
-
-### 2026-08-05 20:37:17 — update-job2-uex-commodities-landed-20260805.md
-
-# Update — job 2 of 4: UEX commodity endpoints called. "Screenshots are the only route" is REFUTED.
-
-**When:** 2026-08-05
-
-## The headline
-
-**UEX serves commodity prices, and it always would have.** The 1 Aug pull never
-asked. Searching that snapshot's `_pull_summary.json` for `commodit` returns
-nothing — the gap was in the **request list**, not in the API. Every plan since
-has rested on an assertion that was never tested.
-
-New sealed snapshot: `data-layer/external-sources/uexcorp/snapshots/20260806T033315Z`
-
-## Row counts per endpoint
-
-| Endpoint | Result | Rows |
-|---|---|---|
-| `/commodities/` | **200** | **204** |
-| `/commodities_prices_all/` | **200** | **2,597** |
-| `/commodities_raw_prices_all/` | **200** | **335** |
-| `/commodities_status/` | **200** | legend dict (buy/sell status codes) |
-| `/commodities_averages/` | **400** | requires `id_commodity` |
-| `/commodities_prices_history/` | **400** | requires `id_terminal` |
-
-The two 400s are **parameter requirements, not permission failures** —
-`{"status":"missing_id_commodity","message":"Commodity not provided"}` and
-`{"status":"missing_id_terminal","message":"Terminal not specified"}`. The
-credential was verified against `/game_versions/` before the run and the other
-four returned 200. Same shape as the bare `/items/` endpoint this source already
-documents. Neither body was written to disk — write-before-status held.
-
-Coverage: **2,597 price rows across 123 commodities × 135 terminals.**
-
-## The freshness question — timestamp, NOT game_version
-
-**Prices carry `date_added` and `date_modified` (Unix epoch). There is no
-`game_version`, `patch` or `build` field on any commodity price row.**
-
-| | days |
-|---|---|
-| min / p25 / median | 0 / 0 / **1** |
-| p75 / p90 | 4 / 9 |
-| max | 509 |
-
-Buckets: **1,389 rows ≤1 day**, 883 ≤7d, 320 ≤30d, 3 ≤90d, 2 >365d.
-Newest row `2026-08-06T03:07:17Z` — **eight minutes before the pull**. Oldest
-`2025-03-14`.
-
-**So coverage and freshness are both genuinely good — but they are not patch
-provenance.** Without a game_version a price cannot be attributed to a patch. A
-row nine days old may straddle a patch boundary and nothing in the data says so.
-That is the distinction the work order asked for, and it cuts both ways:
-
-- **Against the collector's price role:** UEX already has broad, near-live
-  commodity prices. Screenshotting shops to obtain a number UEX refreshed an
-  hour ago is redundant.
-- **For it:** the collector can stamp `patch` and `build` on every observation —
-  the grabber already does, read from `Game.log`. That is precisely what UEX
-  cannot supply. The defensible role is **patch-attributed** observation, not
-  price coverage.
-
-I am reporting that trade-off rather than deciding it — "may delete a build" is
-Sleven's call.
-
-## Gating, as source 6 was gated
-
-`verify_snapshot_v2.py 2.0.0`, **inspection_complete: true** — 6 files, 0 JSON
-parse failures, 0 ext/content mismatches, 0 active-content hits, 0 read errors,
-0 walk errors, 0 duplicate hashes, 0 changed during run. SHA256 for every file.
-
-Two "unexpected domain" flags: `api.uexcorp.uk` appearing in `_pull_summary.json`
-and `_pull_stderr.log` — files **this pull wrote itself**, not downloaded
-payload. Benign, and recorded in the manifest rather than suppressed.
-
-Manifest:
-`data-layer/external-source-manifests/20260806T033315Z/06_uex-corp_commodities_manifest.json`
-— **data_tier C**, UEX's own ±20% commodity tolerance stated.
-**Nothing promoted to the database.**
-
-## A silent failure found and fixed in uex_corp.py
-
-The script's docstring said the token was "loaded from .env". The
-`python-dotenv` import was wrapped in `try/except ImportError` with a **bare
-pass** — and python-dotenv is **not installed** in this interpreter. So `.env`
-was never read, and the script reported *"UEX_API_TOKEN is not set. Refusing to
-run."* while the token sat in `.env` the whole time.
-
-That is a silent failure reported as a different, plausible failure: the message
-sent a reader hunting for a missing credential that was never missing, while the
-real cause was swallowed by the bare `pass`.
-
-Fixed by parsing `.env` directly — removing the dependency rather than adding
-one, which also avoids installing a package outside the repo (hard rule 6) — and
-by making the failure name which step failed and whether `.env` exists. The
-existing `_verify_uex_corp.py` fixture suite still passes.
-
-## Credential handling
-
-Token went from `.env` into the request header and nowhere else. **Not printed,
-logged, echoed, or written into any snapshot or manifest file.** I confirmed its
-presence by length only (40 chars).
-
-**Standing warning, repeated because it is independent of this job: that token
-was exposed in a screenshot and has still not been rotated.** It should be
-rotated at UEX regardless of this work order — I cannot do that from here.
-
-## Not done
-
-`/commodities_averages/` and `/commodities_prices_history/` need per-commodity
-and per-terminal parameterisation — 123 and 135+ requests respectively. The
-precedent exists (`fetch_items_by_category`). Not attempted in this run; flagged
-rather than silently skipped.
-
-**Nothing staged or committed.**
-
-**Next:** job 3 — the unreleased-content filter, which the work order flags as a
-possible live defect.
-
-*(+121 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+147 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
 ## PROJECT NOTES (from most recent full handoff doc)
 
-# UPDATE — PART C: both Go defects fixed and proven; STOPPED at step 4's stop condition
+# HANDOFF — C2 session, 2026-08-05 → 2026-08-07
 
-Defects 1 and 2 are fixed and proven against known-bad input. Step 4's
-comparison found a **third difference**, so per the work order I have stopped
-and am reporting rather than proceeding to delete `generate_handoff.py`.
+    from     C2 (Cowork), closing
+    for      the next session, whoever it is
+    scope    what you need to CONTINUE. Not what I did.
+    read     this first, then docs/HANDOVER-collector-rev5-COMPLETE.md
 
-## Defect 1 — invented entries — FIXED
+**Two rules before anything else, both learned the hard way this session:**
 
-`watcher-go/handoff_regen.go`. `strings.Split(string(raw), "\n### ")` replaced
-with `updateEntryHeaderRe`, matching only the headers `appendUpdate()` writes.
-Both required edge cases preserved: an empty header set returns the whole file
-as one entry, and preamble before the first header is kept.
+> **1. Before declaring anything absent from this repo, search at least THREE
+> phrasings.** I grepped `docs/` for "approval", found nothing, and told Sleven
+> the CIG record did not exist. It was in two files I had already read. The word
+> "approval" appears zero times in the file that holds it.
 
-Also extracted `parseUpdateEntriesFrom(path)` so the parser can be exercised
-against fixtures rather than only whatever the live log happens to hold.
-`parseUpdateEntries()` calls it with `updatesLogPath()` — behaviour unchanged.
+> **2. File to `inbox/` BEFORE handing anything to Sleven.** The moment he has a
+> document he forwards it. If it is not filed at that instant, the machine-side
+> session is working from a copy the repo has no record of.
 
-## Defect 2 — classification by prose — FIXED
+**And a mechanical fact that wasted an hour: `inbox/` reads EMPTY almost always.
+That is healthy.** The Go watcher lifts files out within seconds and moves them
+into `docs/`. **To verify a drop landed, look in `docs/` — never in `inbox/`.**
+Also: **you cannot build a file inside `inbox/` in stages** — the watcher takes
+it mid-write. Build outside the repo, place it complete, in one operation.
 
-`watcher-go/handoff.go`. `titleLine()` added; both `isHandoffDoc()` and
-`isUpdateDoc()` now use it instead of `firstRunesUpper(text, 500)`.
-**Evaluation order unchanged** — filename hints first, `isHandoffDoc()` before
-`isUpdateDoc()`, a doc matching both is a full handoff. `firstRunesUpper` had no
-remaining callers and was removed, with a comment recording what it was and why
-it went.
+---
 
-## Rule 12 — proven, not asserted
+# PART 1 — SETTLED. Do not re-derive.
 
-`watcher-go/handoff_defects_test.go` and `handoff_livelog_test.go`. `go build`,
-`go vet` and `go test ./...` all clean.
-
-| test | asserts |
+| Settled | Where |
 |---|---|
-| subheadings stay inside their entry | a body with two `###` subheadings yields **1** entry, not 3, and keeps both |
-| no headers returns whole file | content is not dropped |
-| preamble preserved | text before the first header survives |
-| hyphen separator parses | `-` works as well as `—` |
-| update mentioning "handoff" in BODY | classified as **update**, not handoff |
-| genuine handoff title | still detected (`CITIZEN COMPASS HANDOFF`, `SESSION ARCHIVE`) |
-| filename hint still wins | evaluation order intact |
-| `titleLine` | first heading, else first non-blank line |
-| **live `_updates_log.md`** | **70 total `###` headers -> 50 parsed entries, 0 phantoms** |
+| **CIG confirmed the site 2026-07-28** under clause 2(k), submitted 07-25. Sleven has a live RSI legal contact and has been through the Fan Kit. **A fresh 2(k) notification IS due** — the confirmation describes a ship price table as it stood then. | `docs/RECORD_cig-fansite-approval.md` |
+| **Compass is free forever. No ads, no sponsors, no paywalls.** Advertising exists only inside an arrangement made *with* CIG. Binding, not open to proposal. | `docs/RULING_advertising-amended-sleven-own-terms.md` |
+| **One item record, many placements.** Ship-attached items appear in the ship section AND stay in the catalogue. Liveries are a category off by default. | `docs/RULING_one-item-record-many-placements.md` |
+| **Commodity prices exist.** UEX served 2,597 rows, 123 commodities × 135 terminals, median age 1 day. The gap was a request never made. | `docs/handoff_archive/20260805_203717_...uex-commodities-landed...` |
+| **Mission payouts are in the files for ~50%** — `FixedReward` is a dict with a real amount. `CalculatedReward` is a boolean and marks the runtime-computed half. | `docs/REPORT_full-data-layer-dig-and-two-corrections.md` §1 |
+| **Quantum range is precomputed** per ship, 257 of 316, in `ships.json QuantumTravel`. Do not derive it. | `docs/URGENT_ships-json-quantum-range-job2.md` |
+| **206 commodities, 96,717 commodity↔location pairs**, in `resources/`. Closes the "remaining gap" declared 2026-07-31. | `docs/URGENT_commodity-gap-closed-resources-folder.md` |
+| **Extracted creative assets are OUT.** Textures, icons, models, CIG's description text. Factual data from game files is fine. | `docs/CORRECTION_extracted-textures-are-not-granted.md` |
+| **No licensed item icons exist, from anyone.** Fan Kit has no item category. Cornerstone, the wiki, UEX, Erkul, sc-craft, star-crafting, sccraftlab — all checked, none grants reuse. | `docs/ANSWERED_image-licensing-cic-research-and-analysis.md` |
+| **Player screenshots ARE covered** by CIG's stated exemption, on a compliant fan site. | same |
+| **Cloudflare Workers:** 20,000 static files free / 100,000 paid, 25 MiB per file both tiers, static asset requests "free and unlimited", storage free. **Only file count binds.** ~11,225 used. | `docs/WORKORDER_image-01-...md` §5 |
+| **Fan-site compliance checklist**, verbatim, complete. Domain `citizencompass.netlify.app` passes the brand-string test. | `docs/AMENDS_wo-image-01-mandatory-image-marking-and-atlas-conflict.md` §3 |
+| **Every published image must carry a Made-by-the-Community logo + trademark notice**, corner, ≥50% opacity, legible. | same, §1 |
+| **UEX's item taxonomy is good** — 17 sections, 55 categories. Keep it as the spine. Do not build a second one. | `docs/FINDING_7728-items-taxonomy-three-real-problems.md` |
+| **The grabber is BUILT and working.** Process-locked to `StarCitizen.exe`. 7 captures. | `citizen-collector/`, `docs/handoff_archive/20260805_201715_...` |
+| **MyBook backup verified.** 17.8 GB, 85,768 files, exit 0. The old exit-1 was PowerShell wrapping `git bundle verify`'s success message on stderr. | `docs/handoff_archive/20260805_211606_...` |
 
-Python (fixed) on the same live log: **50 entries, 0 phantoms.** Identical.
+---
 
-## Step 4 — the comparison, and the STOP
+# PART 2 — OPEN, RANKED, WITH WHAT BLOCKS EACH
 
-Built the fixed binary and regenerated via `--once`, then regenerated with
-`generate_handoff.py`, and diffed.
+**1. The ten-minute in-game test.** BLOCKS: the glyph atlas, the reader, the
+vocabulary, the event recorder — the entire reading half of the collector.
+Blocked on: **Sleven, and nothing else.** Two questions at once: is the UI font
+legible in a captured frame at 1920×1080, and **is the aUEC balance visible
+while a shop panel is open** (that one gates the whole event recorder and is
+easy to forget). Open since 2026-08-02.
 
-**The improvement is real and large:** fixed Go emitted **102,901 chars** where
-the deployed binary was emitting ~65,000. That recovers almost exactly the
-~37,000 characters the addendum measured as discarded.
+**2. Does the collector's price role survive?** BLOCKS: rev 6 of the collector
+spec. Blocked on: **Sleven's ruling.** C2's read is that the defensible role is
+**patch-attributed observation**, not price coverage — UEX has coverage and
+freshness, and cannot stamp a patch. **Do not write rev 6 before this lands or
+you write it twice.**
 
-**Both defects are confirmed fixed by structural comparison:**
+**3. Liveries: listed or paged?** BLOCKS: nothing — the join work is identical.
+C2 recommends listed-only with a deep link to the ship page. `WO-PLACE-01 §2a`.
 
-| | Go (fixed) | Python (fixed) |
-|---|---:|---:|
-| `###` headers in output | 40 | 40 |
-| timestamped entries shown | 20 | 20 |
+**4. Is "Ship Armor" structural or cosmetic?** BLOCKS: only the category label.
+43 items, 0 priced, 0 shops. `WO-PLACE-01 §3`.
 
-Identical. No phantoms, no classification divergence.
+**5. The image-marking vs atlas conflict.** BLOCKS: the atlas pipeline, which is
+**not cleared to build**. A legible mark in the corner of a 64 px icon is not
+achievable. Blocked on: reading what the Fan Kit's own docs say about applying
+the mark — **and Sleven already has the kit.**
 
-### But the outputs still disagree — third difference found
+**6. Three secrets unrotated** — UEX token, PostgreSQL password, Cloudflare
+token. All exposed. **Oldest open item in the project.** Blocked on Sleven.
 
-Beyond the Go-only version-marker block (which is the KEEP feature and is
-expected), the diff is 21 lines in two groups:
+**7. The fresh clause 2(k) notification.** A draft is already specified in
+`docs/workorder-image-provenance-and-renders.md` Part 3. **Code does not send
+it. Sleven does.**
 
-**1. Number formatting — 5 lines.**
+**8. The path-join bug.** Live — fired 2026-08-06 03:32 and left a zero-byte
+artifact inside `snapshots/`. Four occurrences. `docs/URGENT_path-join-bug-is-live-fired-tonight.md`
 
-| Go | Python |
-|---|---|
-| `**Project health score:** 35.0/100` | `**Project health score:** 35/100` |
-| `- Data completeness: 0.0%` | `- Data completeness: 0%` |
-| `- Viewer progress: 50.0%` | `- Viewer progress: 50%` |
-| `- Documentation: 100.0%` | `- Documentation: 100%` |
-| `**Ships:** ... (50.0%)` | `**Ships:** ... (50%)` |
+**9. `NotForRelease` / `WorkInProgress` filter.** Nothing filters on them.
+**Contract-derived pages may be advertising unreleased missions right now.**
 
-**2. Python emits a trailing line Go has no equivalent for:**
+**10. `FixedReward` census.** C2's 50/46 is a 25% sample; a full scan timed out
+through the Cowork bridge. **Run it locally.**
 
-```
-*(raw text of the most recently adopted handoff doc — local AI compression
-unavailable right now, showing it unmodified)*
-```
+**11. `blueprint_index.json` is still 11.4 MB** at the top level. Live
+dependency or leftover? Under the static ruling, a page that fetches it is the
+failure mode.
 
-That is Python's Ollama-fallback footer. Ollama is disabled and parked, so
-Python takes the fallback path and says so; Go never compresses at all, so it
-has nothing to report.
+---
 
-### Why I am stopping rather than judging
+# PART 3 — WHAT I WAS MID-WAY THROUGH
 
-The work order is explicit: *"If they still disagree there is a third difference
-— stop and report, do not assume Go is correct because it was fixed twice."*
+**The 7,728-item filing system.** Sleven ruled on placement (Part 1). `WO-PLACE-01`
+covers liveries and ship armour. **Four of the six rulings are still open:**
 
-They disagree. I can characterise both differences and neither touches entry
-content or classification — but "I can explain it" is not "it matches", and this
-is precisely the reasoning the stop condition exists to prevent. **Not
-executed:** step 5 (delete `generate_handoff.py` and `_verify_generate_handoff.py`)
-and step 6 (the CLAUDE.md additions).
+    "Full Set" (112)    is a set an item or a container? It behaves like a bundle.
+    junk drawer (366)   six buckets identified, not yet confirmed or named
+    commodities         175 in UEX items / 206 in game files / 204 from UEX's
+                        commodities endpoint. THREE COUNTS. Which is
+                        authoritative, one page type or two?
+    no manufacturer     3,218 items, 42%. Leave blank, infer, or hide the filter?
+    (3,218)
 
-### The decision these need
+**Sleven said he can tell you where every item goes. Do not ask him to sort
+7,728 things — get the rules, not the rows.**
 
-- **Number formatting:** which is correct? Python's `35/100` reads better;
-  Go's `35.0/100` is what the live document will show. One of them should
-  change so the two agree, or Python's retirement makes it moot.
-- **The Ollama footer:** Go is arguably right to omit it, since it never
-  attempts compression. If so, this difference is expected rather than a defect
-  — but that is a call to make explicitly, not to assume.
+**CIC (the research assistant) is mid-thread and productive.** He found the
+image-marking rule and the fan-site checklist. He offered to draft the exact
+footer notice markup and the atlas/`<picture>` delivery structure. **He correctly
+refuses to download the Fan Kit on Sleven's behalf.**
 
-## Deployment state — the fix is NOT live
+---
 
-`inbox_watcher_fixed.exe` (5,735,424 bytes, built from fixed source) sits in the
-repo root. `inbox_watcher.exe` (3,884,032 bytes, 29 July) is still the binary
-the scheduled task runs.
+# PART 4 — FINDINGS ONLY IN MY CONTEXT, NOT YET IN A FILE
 
-**So the live watcher is still the defective one**, still emitting ~65k with
-phantoms. Replacing it means stopping the scheduled task to unlock the file, and
-I have not done that — deploying while an unexplained third difference stands
-would bake in whichever formatting Go happens to use. Say the word and it is a
-two-minute change.
+**These die with this session unless carried forward.**
 
-Nothing deleted. `generate_handoff.py`, `_verify_generate_handoff.py` and
-`inbox_watcher.py` are all still on disk. Comparison artifacts moved to
-`_to_delete/go_migration_comparison_20260801/`.
+**`screenshot` is an empty string on all 7,728 UEX items.** The image gap,
+confirmed at the source rather than inferred.
+
+**The UEX item schema, 28 fields:** `id, id_parent, id_category, id_company,
+id_vehicle, name, section, category, company_name, vehicle_name, slug, size,
+uuid, color, color2, url_store, wiki, quality, is_exclusive_pledge,
+is_exclusive_subscriber, is_exclusive_concierge, is_commodity, is_harvestable,
+screenshot, game_version, notification, date_added, date_modified`.
+**`id_parent`, `id_vehicle`, `color`/`color2` and `quality` have never been
+examined by anyone.**
+
+**130 distinct manufacturers.** Clark Defense Systems 455, RSI 402, Kastak Arms
+218, Greycat 199, Fiore 146, Behring 137, Stegman's 116, Roussimoff 111, Virgil
+111, Aegis 109, Quirinus 108, Drake 106. **3,218 items have none.**
+
+**Priced coverage by section**, which nobody has looked at: Clothing 1055/1809,
+Armor 710/2366, Personal Weapons 157/558, Vehicle Weapons 185/324, Systems
+176/272, **Liveries 19/1099**, **Commodities 0/175**, Utility 84/91, Technology
+20/20.
+
+**A browsable HTML of all 7,728 exists** at
+`C:\Users\david\Downloads\citizen-compass-all-7728-items.html` — search, sort,
+filter, prices and price age joined. **Built this session, referenced in no
+document.** Also `C:\Users\david\Downloads\_cc_items_merged.json`, a scratch
+merge — safe to delete.
+
+**Name-pattern rule test:** 21 rules matched 3,733 items (48%) — **but most were
+re-deriving what UEX already supplies correctly.** The measurement is the
+finding: **do not build a second taxonomy.** Rules apply only where UEX is
+silent or the shape is wrong.
+
+**Two orphan files from the path bug** sit beside the snapshot directories:
+`20260806T033217Z.pullstderr.log` (98 bytes) and `.pullsummary.json` (0 bytes).
+**The 98-byte one contains the misleading dotenv error** — it is the physical
+evidence of that defect and worth keeping until the bug is fixed.
+
+**`data-layerrawhardpoints/ship_specs.json` is real ship data**, not junk — uuid,
+game_name, slug, class_name, port_tags, sizes. **Do not bin it with the two
+empty malformed directories.**
+
+---
+
+# PART 5 — WHAT I GOT WRONG, AND HOW
+
+**Thirteen errors in about eight hours. Sleven or another AI caught most of
+them; I caught a few myself. The individual mistakes matter less than the four
+patterns underneath, which are in §5.15.**
+
+## 5.1 — I called a working tool broken
+
+Reported `device_commit_files` as silently failing: five files "written", inbox
+empty. **It had worked every time.** The watcher moves files to `docs/` within
+seconds. **I checked where I put files, never where they went.** Told Sleven a
+tool was defective on that basis.
+
+## 5.2 — "Mission payouts are in no file. Only observable."
+
+Stated three times as fact. **`FixedReward` is present on ~50% of contracts with
+real aUEC amounts.** I found `CalculatedReward` was a boolean and stopped
+looking. **This was the #1 justification for the entire collector.**
+
+## 5.3 — "Screenshots are the only route to commodity prices."
+
+Every plan for weeks rested on it. **UEX serves them; the endpoint was never
+called.** I inherited the premise and never tested it. The root cause was a bare
+`except ImportError: pass` swallowing a dotenv failure and reporting a missing
+token that was never missing — **but I could have found that by reading the pull
+summary, which I eventually did, hours later.**
+
+## 5.4 — "Zero item images. 0% coverage."
+
+**39.1% — 4,805 of 12,283 rows — carry image URLs**, in a source already gated
+on disk and never parsed.
+
+## 5.5 — "`items/` is `items.json` split per file."
+
+Counts matched exactly (21,849 both) so I stopped. **Every file is
+`{Item, Raw}`; `items.json` holds only the `Item` half. ~850 MB of `Raw` never
+opened**, carrying a per-item 3D model path.
+
+## 5.6 — "1,774 positioned entities."
+
+**1,196 distinct.** Nine template entities account for 578 duplicate rows.
+**Claude Code caught it**, and a naive dict join would have silently discarded
+up to 119 real positions.
+
+## 5.7 — "~200 commodities."
+
+Carried through five revisions of the collector spec as if counted. **It is
+206.** An estimate laundered into a fact by repetition.
+
+## 5.8 — "Data.p4k icons are precisely the granted class."
+
+**No.** §XIII.D grants *"**certain** RSI Services-related images… that RSI may
+expressly designate 'for fansite use'."* A texture in the shipped archive was
+never designated. **CIC caught it.** I had recommended a build on it.
+
+## 5.9 — I paraphrased the ToS from memory and filed it as a finding
+
+Wrote in `historian-vision-architecture.md` that the grant "does not apply if
+you charge a subscription or access fee", then **repeated it to Sleven as
+fact.** The clause restricts *using their art and marks* while charging — a
+materially different and more workable constraint. **I never opened the source
+before filing.**
+
+## 5.10 — "A separate CIG licence is the short path."
+
+Said twice. **CIG's own FAQ: "We are not currently offering any Non-Commercial
+licenses. No means no, please do not submit multiple requests."**
+
+## 5.11 — I declared the CIG approval record absent
+
+Grepped `docs/` for "approval", got schema and WebFetch hits, told Sleven **"it
+was never written down."** It was in `workorder-image-provenance-and-renders.md`
+and `URGENT_wo_craft_01_b_description_rights_correction.md` — **both of which I
+had already listed and read this session.** The word "approval" appears zero
+times in the file that holds it.
+
+**This is my own starmap finding turned around.** I had written: *"Searching the
+schema and calling the data absent is a mistake that will repeat. Search values,
+not just keys."*
+
+## 5.12 — I framed a question as either/or that was not
+
+Asked whether liveries should have own pages **or** live on the ship page.
+**Sleven rejected the premise: both, with visibility control.** His answer was
+better, and mine would have made the ship page a second authority for what an
+item is — the exact defect this project already enforces against.
+
+## 5.13 — I filed after delivering, not before
+
+Sleven's standing rule, stated plainly: **the inbox note goes in first, then the
+file goes to him.** I did it backwards on rev 5. He forwards documents the
+moment he has them; filing afterwards is filing after it mattered.
+
+## 5.14 — I recommended sprite atlases without checking the image rules
+
+Recommended the delivery architecture, then discovered afterwards that CIG
+requires a legible logo on every image — **which a 64 px icon cannot carry.** I
+found the conflict myself, but only after recommending the thing.
+
+## 5.15 — THE FOUR PATTERNS. This is the useful part.
+
+**A. I stopped at the first negative result.**
+5.1, 5.2, 5.3, 5.5, 5.11. Grep returned nothing → absent. Field was a boolean →
+no payout exists. Counts matched → same data. **One negative check is not
+evidence of absence, and I treated it as proof five separate times.**
+
+**B. I read permissively when I wanted a permissive answer.**
+5.8, 5.9. Both on rights questions, both where a permissive reading unblocked
+work I wanted to do. **"Certain" was doing load-bearing work in a sentence I
+skimmed.** The correction came from opening the source both times.
+
+**C. I inherited premises without testing them.**
+5.3, 5.4. Two of the project's largest stated gaps were assertions nobody had
+checked, and I built plans on top of them rather than checking. **A premise
+repeated in three documents is still not a verified premise.**
+
+**D. I stated estimates as counts.**
+5.7, and 5.14 is the same reflex applied to design. **If a number was not
+computed this session, say so.**
+
+**Underneath all four: I was fast and confident on exactly the questions where
+being wrong was most expensive** — rights, the collector's justification, and
+what data we already hold. **Slow down on those three. Everything else can be
+fast.**
+
+## 5.16 — WHAT WORKED, so it is not lost with the rest
+
+**Pushback caught more than self-review did.** Sleven caught 5.7, 5.11, 5.12,
+5.13. CIC caught 5.8. Claude Code caught 5.6. **Adversarial reading by another
+party found six of thirteen. Build for it rather than around it.**
+
+**Opening the file always beat reasoning about the file.** Every correction came
+from reading the actual bytes — the ToS, the pull summary, `resources/`,
+`ships.json`, the contract files. **The `resources/` folder had been on disk
+since 1 August and closed the project's largest stated gap in one `ls`.**
+
+**Recording the source of a fact, not just the fact.** Claude Code's grabber
+sidecar stamps `patch_source`, `location_source` and a
+`location_pattern_verified` flag. **That is better provenance than I asked for
+and it is the pattern that would have prevented half of §5.**
 
