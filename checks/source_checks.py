@@ -523,8 +523,154 @@ def uex_join_health_check(repo_root: Path) -> list[Finding]:
     return findings
 
 
+SNAPSHOT_SOURCES_ROOT = Path("data-layer") / "external-sources"
+
+# A hard cap so a runaway tree cannot turn an auditor into an hours-long walk.
+# Exceeding it is reported as a LIMITATION naming the exact coverage, never as a
+# PASS - same rule as snapshot_integrity_check above.
+SHAPE_MAX_FILES_ENV = "CC_SNAPSHOT_SHAPE_MAX_FILES"
+SHAPE_MAX_FILES_DEFAULT = 250_000
+
+
+def snapshot_shape_check(repo_root: Path) -> list[Finding]:
+    """Structural audit of the snapshot tree. Two distinct defects, kept apart.
+
+    1. LOOSE FILES directly inside a `snapshots/` directory.
+
+       `snapshots/` holds sealed snapshot DIRECTORIES and nothing else. On
+       2026-08-06 an aborted UEX pull left these as SIBLINGS of the snapshot
+       directories rather than inside one:
+
+           uexcorp/snapshots/20260806T033217Z.pullstderr.log    98 bytes
+           uexcorp/snapshots/20260806T033217Z.pullsummary.json   0 bytes
+
+       The intended paths were `20260806T033217Z/_pull_stderr.log` and
+       `.../_pull_summary.json` - the separator AND the leading underscore are
+       both gone. `uex_corp.py` writes neither file: it prints the summary to
+       stdout and diagnostics to stderr, so the redirect is done by the CALLER.
+       There is no runner script in this repo, which means the malformed names
+       came from a hand-typed redirect and there is no committed code carrying
+       this bug to fix. That is exactly why it needs a CHECK rather than a
+       patch - nothing in the repo can be corrected to prevent a recurrence, so
+       the only durable guard is one that catches the result.
+
+       It matters beyond tidiness: a sealed-snapshot model whose snapshot
+       directory can contain loose files is one bad glob away from a gate
+       enumerating a file where it expected a snapshot.
+
+    2. ZERO-BYTE files anywhere inside the snapshot tree.
+
+       A separate defect that survives fixing the first one. Two of the three
+       empty artifacts found on 2026-08-07 sit at entirely CORRECT paths:
+
+           api.star-citizen.wiki/snapshots/20260731T031754Z.partial/
+                                                   _fetch_metadata.json  0 bytes
+           api.star-citizen.wiki/snapshots/
+               20260801T015346Z.partial.aborted__pagesize50/
+                                                   _pull_summary.json    0 bytes
+
+       An artifact that exists, is readable, parses as nothing and reports no
+       failure is the silent-success shape this project keeps finding. A run
+       that dies partway leaves no recoverable record of what it did, while
+       looking from the outside like a run that produced one.
+
+    Findings-only. This never deletes, moves or rewrites anything - per hard
+    rule 1 the cleanup of anything it reports is Sleven's.
+    """
+    findings: list[Finding] = []
+    root = repo_root / SNAPSHOT_SOURCES_ROOT
+
+    if not root.is_dir():
+        return [Finding("snapshot_shape", str(SNAPSHOT_SOURCES_ROOT), "LIMITATION",
+                        "external-sources root not present, so no snapshot shape "
+                        "check was performed. This is reported as NOT PERFORMED, "
+                        "never as a pass.")]
+
+    try:
+        max_files = int(os.environ.get(SHAPE_MAX_FILES_ENV, SHAPE_MAX_FILES_DEFAULT))
+    except ValueError:
+        max_files = SHAPE_MAX_FILES_DEFAULT
+
+    snapshot_dirs = sorted(root.glob("*/snapshots"))
+    if not snapshot_dirs:
+        return [Finding("snapshot_shape", str(SNAPSHOT_SOURCES_ROOT), "LIMITATION",
+                        "no */snapshots directories found under the external-sources "
+                        "root, so nothing was checked.")]
+
+    seen_files = 0
+    truncated = False
+
+    for snaps in snapshot_dirs:
+        source = snaps.parent.name
+
+        # --- 1. loose files sitting directly in snapshots/ -------------------
+        try:
+            entries = sorted(snaps.iterdir())
+        except OSError as e:
+            findings.append(Finding("snapshot_shape", f"{source}:snapshots", "LIMITATION",
+                                    f"could not read {snaps}: {type(e).__name__}: {e}. "
+                                    f"Reported as not performed, not as a pass."))
+            continue
+
+        loose = [p for p in entries if p.is_file()]
+        if loose:
+            findings.append(Finding(
+                "snapshot_shape", f"{source}:loose-files", "DEFECT",
+                f"{len(loose)} file(s) sit directly inside {snaps.as_posix()}, which "
+                f"must contain snapshot DIRECTORIES only. Anything enumerating this "
+                f"directory expecting snapshots will read a file instead. Files: "
+                f"{[p.name for p in loose][:10]}"))
+        else:
+            findings.append(Finding(
+                "snapshot_shape", f"{source}:loose-files", "PASS",
+                f"{snaps.as_posix()} contains only directories "
+                f"({len([p for p in entries if p.is_dir()])} snapshot(s))"))
+
+        # --- 2. zero-byte files anywhere in the tree -------------------------
+        empties = []
+        try:
+            for p in snaps.rglob("*"):
+                if truncated:
+                    break
+                if not p.is_file():
+                    continue
+                seen_files += 1
+                if seen_files > max_files:
+                    truncated = True
+                    break
+                if p.stat().st_size == 0:
+                    empties.append(p.relative_to(snaps).as_posix())
+        except OSError as e:
+            findings.append(Finding("snapshot_shape", f"{source}:zero-byte", "LIMITATION",
+                                    f"walk of {snaps} failed: {type(e).__name__}: {e}. "
+                                    f"Reported as not performed, not as a pass."))
+            continue
+
+        if empties:
+            findings.append(Finding(
+                "snapshot_shape", f"{source}:zero-byte", "DEFECT",
+                f"{len(empties)} zero-byte file(s) inside {snaps.as_posix()}. An "
+                f"artifact that exists, reads clean and contains nothing reports no "
+                f"failure while recording none of what the run did. Files: "
+                f"{empties[:10]}"))
+        else:
+            findings.append(Finding(
+                "snapshot_shape", f"{source}:zero-byte", "PASS",
+                f"no zero-byte files under {snaps.as_posix()}"))
+
+    if truncated:
+        findings.append(Finding(
+            "snapshot_shape", str(SNAPSHOT_SOURCES_ROOT), "LIMITATION",
+            f"stopped after {max_files} files ({SHAPE_MAX_FILES_ENV}). Coverage is "
+            f"PARTIAL and the unwalked remainder was NOT checked - this is not a pass "
+            f"over the whole tree."))
+
+    return findings
+
+
 CHECKERS = [
     ("snapshot_integrity", snapshot_integrity_check),
     ("cross_source_disagreement", cross_source_disagreement_check),
     ("uex_join_health", uex_join_health_check),
+    ("snapshot_shape", snapshot_shape_check),
 ]

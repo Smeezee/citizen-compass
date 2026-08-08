@@ -711,6 +711,134 @@ CHECKER_EMITS = {
     "missing_or_corrupt_3d_model": {"missing_or_corrupt_3d_model", "missing_preview_image"},
 }
 
+# Directories whose contents a player can actually see. Derived tables are NOT
+# in this list on purpose: they are supposed to carry the unreleased records,
+# because they are a faithful record of what is in the game files. The defect
+# is publishing one, not deriving one.
+PUBLISHED_ROOTS = ("releases", "static", "testing/_deploy")
+
+# Records marked with these have not been released by CIG. Imported from the
+# single definition rather than re-spelled here - rule 14.
+try:
+    from scripts.publication_filter import UNRELEASED_FLAGS, unreleased_reasons
+except Exception:  # pragma: no cover - import shape differs when run as a script
+    UNRELEASED_FLAGS = ("not_for_release", "work_in_progress")
+    unreleased_reasons = None
+
+
+def unreleased_content_check(repo_root: Path) -> list[Finding]:
+    """Refuse to let a record CIG has not released reach a published file.
+
+    THE RISK, stated accurately. As of 2026-08-07 this is NOT a live leak:
+    nothing published reads the contract tables. 959 of 5,107 contracts (18.8%)
+    carry not_for_release or work_in_progress, and they sit in
+    data-layer/derived/, which is not served. The check goes in before the first
+    contract page ships, because that is the cheap moment.
+
+    WHY IT REPORTS A LIMITATION RATHER THAN A PASS WHEN IT FINDS NOTHING.
+    A checker that scans for contract records in published output, finds no
+    contract records at all, and reports PASS is reporting "clean" for a corpus
+    it never had. That is the silent-success shape - the same defect as
+    integrity_scan globbing "*.json" and passing over files it never opened. So
+    when no publishable corpus exists, this says so.
+    """
+    findings: list[Finding] = []
+    scanned_files = 0
+    corpus_records = 0
+
+    for rel in PUBLISHED_ROOTS:
+        root = repo_root / rel
+        if not root.is_dir():
+            continue
+        for path in sorted(root.rglob("*.json")):
+            try:
+                raw = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError) as e:
+                findings.append(Finding(
+                    "unreleased_content", str(path.relative_to(repo_root)), "LIMITATION",
+                    f"could not read: {type(e).__name__}: {e}. Reported as not "
+                    f"performed, never as a pass."))
+                continue
+            scanned_files += 1
+
+            # Cheap pre-filter: a file that never mentions either flag cannot
+            # carry a flagged record. Checked textually so a nested structure
+            # this function does not understand still gets noticed.
+            if not any(flag in raw for flag in UNRELEASED_FLAGS):
+                continue
+
+            try:
+                data = json.loads(raw)
+            except ValueError:
+                findings.append(Finding(
+                    "unreleased_content", str(path.relative_to(repo_root)), "WARNING",
+                    f"mentions {UNRELEASED_FLAGS} but is not parseable JSON, so its "
+                    f"records could not be examined. Not reported as clean."))
+                continue
+
+            flagged = []
+            for record in _walk_records(data):
+                corpus_records += 1
+                reasons = ([f for f in UNRELEASED_FLAGS if _flag_set(record.get(f))]
+                           if unreleased_reasons is None else unreleased_reasons(record))
+                if reasons:
+                    flagged.append((record.get("debug_name") or record.get("uuid") or "?",
+                                    ",".join(reasons)))
+
+            if flagged:
+                findings.append(Finding(
+                    "unreleased_content", str(path.relative_to(repo_root)), "DEFECT",
+                    f"{len(flagged)} record(s) marked unreleased by CIG are present in a "
+                    f"PUBLISHED file. Publishing content CIG has not released misrepresents "
+                    f"the game to players and is exactly what the flags exist to prevent. "
+                    f"First few: {flagged[:5]}"))
+
+    if not findings and corpus_records == 0:
+        findings.append(Finding(
+            "unreleased_content", "/".join(PUBLISHED_ROOTS), "LIMITATION",
+            f"scanned {scanned_files} published .json file(s) and found NO records "
+            f"carrying {UNRELEASED_FLAGS} - but also no contract-shaped corpus to "
+            f"examine at all. This is reported as NOT PERFORMED rather than PASS: "
+            f"nothing published reads the contract tables yet, so a pass here would "
+            f"be a pass over an empty corpus. It becomes a real check the moment a "
+            f"contract page ships."))
+    elif not findings:
+        findings.append(Finding(
+            "unreleased_content", "/".join(PUBLISHED_ROOTS), "PASS",
+            f"examined {corpus_records} record(s) across {scanned_files} published "
+            f"file(s); none carry {UNRELEASED_FLAGS}"))
+
+    return findings
+
+
+def _flag_set(value) -> bool:
+    """Fallback used only if scripts.publication_filter cannot be imported."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"true", "yes", "1"}
+    if isinstance(value, (int, float)):
+        return value != 0
+    return False
+
+
+def _walk_records(data):
+    """Yield every dict in a nested JSON structure.
+
+    Walks rather than assuming a top-level list, because a future page is as
+    likely to publish {"systems": {"Stanton": [...]}} as a flat array, and a
+    checker that only understood one shape would pass over the other.
+    """
+    stack = [data]
+    while stack:
+        node = stack.pop()
+        if isinstance(node, dict):
+            yield node
+            stack.extend(node.values())
+        elif isinstance(node, list):
+            stack.extend(node)
+
+
 CHECKERS = [
     ("naming_convention_typo", naming_convention_typo_check),
     ("placeholder_null_density", placeholder_null_density_check),
@@ -726,4 +854,5 @@ CHECKERS = [
     ("large_binary_in_git", large_binary_in_git_check),
     ("fan_kit_compliance", fan_kit_compliance_check),
     ("broken_internal_link", broken_internal_link_check),
+    ("unreleased_content", unreleased_content_check),
 ]
