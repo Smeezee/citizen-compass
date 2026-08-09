@@ -45,12 +45,26 @@ DEFAULT_ALLOWED_FILES = {
     "loadout.html",
     "find.html",
     "kb_modes.gen.js",
+    # Kept in step with PAGES in build_deploy.py BY HAND - this set is only
+    # used when the guard runs standalone, and it does not derive from PAGES.
+    # Letting the two drift produces a standalone "unexpected file" failure
+    # that flatly contradicts a clean build, which is worse than either alone.
+    "sc_export.js",
+    "kb_actions.gen.js",
+    "holo.html",
+    "holo_data.gen.js",
 }
 
 # The only directories permitted. Their CONTENTS are asset payloads (347 MB of
 # ship models and images) and are not enumerated - but they are still checked
 # for dot-entries, because that is how the last leak arrived.
-DEFAULT_ALLOWED_DIRS = {"images", "models"}
+# "fonts" added 2026-08-09, DELIBERATELY, for the Star Citizen typefaces on
+# the keybind page. Served as files rather than base64-inlined, matching how
+# images/ and models/ are already served - inlining three families would add
+# six figures of base64 to keybinds.html on every build for something that
+# never changes between builds. A new top-level allowed directory is exactly
+# the kind of change a future session needs to know was intentional.
+DEFAULT_ALLOWED_DIRS = {"images", "models", "fonts"}
 
 
 def check_deploy_dir(out_dir, allowed_files=None, allowed_dirs=None):

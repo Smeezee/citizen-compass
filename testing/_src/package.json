@@ -1,0 +1,13 @@
+{
+  "name": "citizen-compass-export-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Test-only harnesses for sc_export.js. Not shipped - _deploy/ never includes this.",
+  "scripts": {
+    "roundtrip": "node roundtrip.js",
+    "mutate": "node mutate.js"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.8"
+  }
+}

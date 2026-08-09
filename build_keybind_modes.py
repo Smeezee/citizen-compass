@@ -266,6 +266,31 @@ def main():
         out.append("")
         report.append((label, len(rs), placed, len(board), len(uniq), dropped[0]))
 
+    # THE EXPORTER NEEDS TWO MORE THINGS, AND THEY LIVE HERE RATHER THAN IN A
+    # SECOND COPY PASTED INTO THE PAGE.
+    #
+    # sc_export.js build() takes opts.mapOrder and opts.categories. mapOrder is
+    # the game's own actionmap order, taken as FIRST-SEEN order in
+    # keybinds_site.json - which is itself derived from the game's own
+    # defaultProfile.xml, so the order is the game's and not ours. Getting it
+    # wrong does not warn: it silently writes actionmaps in the wrong order and
+    # the file stops being byte-identical to what the game wrote.
+    #
+    # Emitted from the one generator that already owns this file, so there is
+    # no second writer and no second copy of the ordering. Rule 14.
+    map_order = []
+    for r in recs:
+        m = r.get('map')
+        if m and m not in map_order:
+            map_order.append(m)
+    cats_path = os.path.join(HERE, 'data-layer', 'processed', 'actionmap_categories.json')
+    with open(cats_path, 'r', encoding='utf-8') as fh:
+        cats = json.load(fh)
+    out.append("/* The game's actionmap order and category map, for sc_export.js. */")
+    out.append('const KB_MAP_ORDER=%s;' % json.dumps(map_order, separators=(',', ':')))
+    out.append('const KB_CATEGORIES=%s;' % json.dumps(cats, separators=(',', ':'), sort_keys=True))
+    out.append('')
+
     with open(OUT, "w", encoding="utf-8", newline="\n") as fh:
         fh.write("\n".join(out))
 

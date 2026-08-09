@@ -1,0 +1,333 @@
+<!-- Citizen Compass - holographic ship viewer.
+
+     One loader and one model source: THREE.GLTFLoader + THREE.DRACOLoader
+     against _deploy/models/, the same 235 .glb files the index page uses.
+     Sleven's decision of 2026-08-09: the site's own models, not the Fan Kit's
+     14 .ctm hulls.
+
+     WHY THE HOLO LOOK IS A MATERIAL AND NOT A POSTPROCESSING CHAIN
+
+     The order specifies EffectComposer + UnrealBloomPass and friends. NONE of
+     those files are vendored in this repo - testing/_src/vendor/three/examples/js
+     has controls, libs and loaders and no postprocessing directory - and they
+     are not anywhere else on this machine either. Adding them means fetching
+     third-party JavaScript and shipping it to run in a visitor's browser, which
+     is not something to do quietly on the way past.
+
+     So the hologram is a ShaderMaterial written here: fresnel rim, scanlines and
+     additive blending against the already-vendored core. No new dependency, no
+     network, nothing downloaded. It is a different implementation of the same
+     look, and it is flagged rather than presented as what was asked for. -->
+<meta charset="utf-8">
+<title>Citizen Compass - holo viewer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:#070C14;--panel:#0B1626;--line:#1B2C42;--txt:#DCE7F2;--muted:#93A7B6;
+      --accent:#FF6B00;--holo:#5BC8FF}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);
+     font:14px/1.5 "Segoe UI",system-ui,sans-serif}
+.top{display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+     padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.top a{color:var(--accent);text-decoration:none}
+select,button{background:#0A1220;color:var(--txt);border:1px solid #24405F;
+  border-radius:6px;padding:6px 10px;font:inherit}
+button{cursor:pointer}
+button.on{border-color:var(--accent);color:var(--accent)}
+#wrap{display:grid;grid-template-columns:1fr 340px;gap:0;height:calc(100vh - 53px)}
+@media(max-width:900px){#wrap{grid-template-columns:1fr;height:auto}}
+#view{position:relative;min-height:420px}
+#view canvas{display:block}
+#side{border-left:1px solid var(--line);background:var(--panel);overflow:auto;
+      padding:14px 16px}
+h2{margin:0 0 8px;font-size:14px;color:var(--accent);letter-spacing:.03em}
+.hint{color:var(--muted);font-size:12px}
+#hplist{margin-top:10px}
+.hp{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;
+    cursor:pointer;background:#0A1220}
+.hp:hover,.hp.sel{border-color:var(--holo)}
+.hp .w{color:var(--txt);font-weight:600}
+.hp .k{color:var(--muted);font-size:12px}
+.hp .it{color:#8FE388;font-size:12px;margin-top:3px}
+.hp .turret{color:#FFD9A8;font-size:12px}
+.derived{margin-top:8px;padding:8px 10px;border:1px solid #3A2E14;
+  background:#17120A;border-radius:8px;color:#FFD9A8;font-size:12px}
+#tip{position:absolute;pointer-events:none;display:none;background:#0A1220ee;
+  border:1px solid var(--holo);border-radius:6px;padding:4px 8px;font-size:12px;
+  color:var(--txt);z-index:5}
+#status{position:absolute;left:12px;top:12px;color:var(--muted);font-size:12px}
+.warn{color:#FFD9A8}
+.gap{border:1px solid #3A2E14;background:#17120A;border-radius:8px;
+  padding:10px;margin-top:12px;color:#FFD9A8;font-size:12px}
+</style>
+
+<div class="top">
+  <a href="index.html">&larr; Citizen Compass</a>
+  <select id="ship"></select>
+  <button id="mirror">Mirror L/R: off</button>
+  <span class="hint" id="count"></span>
+</div>
+
+<div id="wrap">
+  <div id="view"><div id="status">loading&hellip;</div><div id="tip"></div></div>
+  <div id="side">
+    <h2>Hardpoints</h2>
+    <div class="hint" id="sidehint"></div>
+    <div id="hplist"></div>
+    <div id="gaps"></div>
+  </div>
+</div>
+
+<!-- CC_VENDOR_THREE -->
+<script src="holo_data.gen.js"></script>
+<script>
+(function(){
+'use strict';
+var view=document.getElementById('view'), side=document.getElementById('side');
+var elShip=document.getElementById('ship'), elCount=document.getElementById('count');
+var elList=document.getElementById('hplist'), elHint=document.getElementById('sidehint');
+var elTip=document.getElementById('tip'), elStatus=document.getElementById('status');
+var elMirror=document.getElementById('mirror'), elGaps=document.getElementById('gaps');
+var mirror=false, markers=[], current=null, selected=-1;
+
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+/* ---- scene ---- */
+var scene=new THREE.Scene();
+var camera=new THREE.PerspectiveCamera(45,1,0.1,20000);
+var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+view.appendChild(renderer.domElement);
+var controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+scene.add(new THREE.AmbientLight(0x8fd4ff,0.6));
+var key=new THREE.DirectionalLight(0xbfe8ff,0.8); key.position.set(1,2,1); scene.add(key);
+
+/* THE HOLOGRAM, as a material. Fresnel rim + scanlines + additive blending.
+   See the comment at the top of this file for why this is not a postprocessing
+   chain: those files are not vendored here and downloading them was not a
+   decision to take in passing. */
+function holoMaterial(){
+  return new THREE.ShaderMaterial({
+    uniforms:{uColor:{value:new THREE.Color(0x5BC8FF)},uTime:{value:0}},
+    vertexShader:[
+      'varying vec3 vN; varying vec3 vV; varying vec3 vP;',
+      'void main(){',
+      '  vN=normalize(normalMatrix*normal);',
+      '  vec4 mv=modelViewMatrix*vec4(position,1.0);',
+      '  vV=normalize(-mv.xyz); vP=position;',
+      '  gl_Position=projectionMatrix*mv;}'].join('\n'),
+    fragmentShader:[
+      'uniform vec3 uColor; uniform float uTime;',
+      'varying vec3 vN; varying vec3 vV; varying vec3 vP;',
+      'void main(){',
+      '  float f=pow(1.0-max(dot(normalize(vN),normalize(vV)),0.0),2.0);',
+      '  float scan=0.5+0.5*sin(vP.y*0.35+uTime*1.5);',
+      '  float a=0.10+0.72*f+0.10*scan;',
+      '  gl_FragColor=vec4(uColor*(0.45+0.9*f),a);}'].join('\n'),
+    transparent:true, blending:THREE.AdditiveBlending,
+    depthWrite:false, side:THREE.DoubleSide
+  });
+}
+var holoMat=holoMaterial();
+
+/* ---- loader: one loader, same DRACO wiring index.html uses ---- */
+var loader=new THREE.GLTFLoader();
+var dl=new THREE.DRACOLoader();
+dl._loadLibrary=function(url){
+  if(url==='draco_wasm_wrapper.js') return Promise.resolve(CC_DRACO_WRAPPER);
+  if(url==='draco_decoder.wasm'){
+    var b=atob(CC_DRACO_WASM_B64), a=new Uint8Array(b.length);
+    for(var n=0;n<b.length;n++) a[n]=b.charCodeAt(n);
+    return Promise.resolve(a.buffer);
+  }
+  return Promise.reject(new Error('unexpected draco asset '+url));
+};
+loader.setDRACOLoader(dl);
+
+function size(){
+  var w=view.clientWidth||800, h=view.clientHeight||520;
+  camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h,false);
+}
+addEventListener('resize',size);
+
+function clearModel(){
+  if(current){scene.remove(current);current=null;}
+  markers.forEach(function(m){scene.remove(m.obj);});
+  markers=[]; selected=-1;
+}
+
+/* ---- markers ---- */
+function markerMesh(colour){
+  var g=new THREE.SphereGeometry(1,14,10);
+  var m=new THREE.MeshBasicMaterial({color:colour,transparent:true,opacity:0.95,
+                                     depthTest:false});
+  return new THREE.Mesh(g,m);
+}
+function addMarkers(points,radius){
+  var r=Math.max(radius*0.018,0.4);
+  points.forEach(function(p,i){
+    var pilot=p.pilot!==false;
+    var mesh=markerMesh(pilot?0x5BC8FF:0xFFB259);
+    mesh.scale.setScalar(r);
+    mesh.renderOrder=10;
+    scene.add(mesh);
+    markers.push({obj:mesh,data:p,idx:i});
+  });
+  placeMarkers();
+}
+function placeMarkers(){
+  markers.forEach(function(m){
+    var p=m.data.pos||[0,0,0];
+    /* MIRROR L/R. Handedness is an assumption - nothing in the meshes confirms
+       which side the derivation called left - so it is a control, not a guess
+       baked in. Flipping X flips the model's left and right together with the
+       labels below. */
+    var x=mirror?-p[0]:p[0];
+    m.obj.position.set(x,p[1],p[2]);
+  });
+}
+function sideLabel(where){
+  /* Mirroring flips the LABEL as well as the geometry, or the panel would
+     confidently call a mount "Left" while it is drawn on the right.
+     Swapped through a sentinel so the two replacements cannot chase each
+     other's output and turn every side into "Right". */
+  if(!mirror) return where;
+  var SENT = "\u241E";
+  return String(where)
+    .replace(/\bLeft\b/g, SENT)
+    .replace(/\bRight\b/g, "Left")
+    .split(SENT).join("Right");
+}
+
+/* ---- side panel ---- */
+function renderList(points){
+  if(!points || !points.length){
+    elList.innerHTML='<div class="hint">No weapon mounts in the data for this ship. '+
+      'That is what the derivation found, not a loading error.</div>';
+    return;
+  }
+  elList.innerHTML=points.map(function(p,i){
+    var items=(p.items||[]).map(function(it){
+      return esc(it.name)+(it.size?' (S'+it.size+')':'');
+    }).join('<br>');
+    var turret=(p.pilot===false)
+      ? '<div class="turret">turret &mdash; not pilot-controlled</div>' : '';
+    return '<div class="hp" data-i="'+i+'">'+
+      '<div class="w">'+esc(sideLabel(p.where))+'</div>'+
+      '<div class="k">'+esc(p.kind||'')+'</div>'+
+      (items?'<div class="it">'+items+'</div>':'')+turret+
+      '<div class="derived">'+esc(HOLO_DERIVED_NOTE)+'</div>'+
+      '</div>';
+  }).join('');
+  Array.prototype.forEach.call(elList.querySelectorAll('.hp'),function(el){
+    el.addEventListener('click',function(){ select(+el.getAttribute('data-i')); });
+  });
+}
+function select(i){
+  selected=i;
+  Array.prototype.forEach.call(elList.querySelectorAll('.hp'),function(el){
+    el.classList.toggle('sel', +el.getAttribute('data-i')===i);
+  });
+  markers.forEach(function(m){
+    m.obj.material.opacity = (selected<0 || m.idx===selected) ? 0.95 : 0.35;
+  });
+}
+
+/* ---- load a ship ---- */
+function load(name){
+  clearModel();
+  var entry=HOLO_SHIPS[name];
+  var file=entry?entry.model:name;
+  elStatus.textContent='loading '+file+String.fromCharCode(8230);
+  loader.load('models/'+encodeURIComponent(file),function(g){
+    current=g.scene;
+    current.traverse(function(o){ if(o.isMesh) o.material=holoMat; });
+    var box=new THREE.Box3().setFromObject(current);
+    var c=box.getCenter(new THREE.Vector3()), s=box.getSize(new THREE.Vector3());
+    var radius=Math.max(s.x,s.y,s.z)||1;
+    current.position.sub(c);
+    scene.add(current);
+    camera.position.set(radius*1.1,radius*0.55,radius*1.5);
+    controls.target.set(0,0,0); controls.update();
+    elStatus.textContent='';
+    var pts=entry?entry.points:[];
+    addMarkers(pts,radius);
+    renderList(pts);
+    elCount.textContent=(pts.length||0)+' hardpoint'+(pts.length===1?'':'s');
+  },undefined,function(err){
+    elStatus.innerHTML='<span class="warn">model failed to load: '+esc(err&&err.message||'unknown')+'</span>';
+  });
+}
+
+/* ---- hover ---- */
+var ray=new THREE.Raycaster(); ray.params.Points={threshold:1};
+renderer.domElement.addEventListener('mousemove',function(e){
+  var r=renderer.domElement.getBoundingClientRect();
+  var mx=((e.clientX-r.left)/r.width)*2-1, my=-((e.clientY-r.top)/r.height)*2+1;
+  ray.setFromCamera({x:mx,y:my},camera);
+  var hit=ray.intersectObjects(markers.map(function(m){return m.obj;}),false)[0];
+  if(hit){
+    var m=markers.filter(function(k){return k.obj===hit.object;})[0];
+    elTip.style.display='block';
+    elTip.style.left=(e.clientX-r.left+12)+'px';
+    elTip.style.top=(e.clientY-r.top+12)+'px';
+    elTip.textContent=sideLabel(m.data.where);
+  }else elTip.style.display='none';
+});
+renderer.domElement.addEventListener('click',function(){
+  if(elTip.style.display==='block'){
+    var t=elTip.textContent;
+    markers.forEach(function(m){ if(sideLabel(m.data.where)===t) select(m.idx); });
+  }
+});
+
+/* ---- ship picker ---- */
+var withHp=Object.keys(HOLO_SHIPS).sort();
+withHp.forEach(function(n){
+  var o=document.createElement('option');
+  o.value=n; o.textContent=HOLO_SHIPS[n].display+'  ('+HOLO_SHIPS[n].points.length+' hardpoints)';
+  elShip.appendChild(o);
+});
+elShip.addEventListener('change',function(){ load(elShip.value); });
+
+/* SAY WHAT CANNOT BE SHOWN. Two of the four derived hardpoint sets have no
+   model in the library at all - reporting that is the point, since the
+   alternative is a viewer that quietly covers half of what exists. */
+if(typeof HOLO_UNMATCHED!=='undefined' && HOLO_UNMATCHED.length){
+  elGaps.innerHTML='<div class="gap"><strong>Derived hardpoints with no model in '+
+    'the library:</strong><br>'+
+    HOLO_UNMATCHED.map(function(u){
+      return esc(u.name)+' &mdash; '+u.count+' hardpoints, no <code>'+esc(u.bare)+
+             '.glb</code> exists';
+    }).join('<br>')+
+    '<br><br>These are absent from the 235-model set, not mis-deployed. They are '+
+    'listed rather than hidden.</div>';
+}
+
+elHint.textContent='Hover a marker to name it, click to select. Blue is '+
+  'pilot-controlled; amber is a turret.';
+
+size();
+(function tick(t){
+  holoMat.uniforms.uTime.value=(t||0)/1000;
+  controls.update(); renderer.render(scene,camera);
+  requestAnimationFrame(tick);
+})();
+
+elMirror.addEventListener('click',function(){
+  mirror=!mirror;
+  elMirror.textContent='Mirror L/R: '+(mirror?'on':'off');
+  elMirror.classList.toggle('on',mirror);
+  placeMarkers();
+  if(current) current.scale.x = mirror?-1:1;
+  var e=HOLO_SHIPS[elShip.value];
+  renderList(e?e.points:[]);
+  if(selected>=0) select(selected);
+});
+
+if(withHp.length) load(withHp[0]);
+else elStatus.textContent='no ships with hardpoint data';
+})();
+</script>

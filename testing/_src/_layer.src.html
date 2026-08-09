@@ -1241,7 +1241,14 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
     <span class="t">Keybinding Tester &mdash; <strong>Keyboard/Mouse</strong> bindings are
     transcribed from in-game screenshots and not yet verified against game files.
     <strong>Gamepad</strong> and <strong>Joystick / HOTAS</strong> read your controller
-    live and are accurate now.</span>
+    live and are accurate now.
+    <!-- LINK OUT, DO NOT DUPLICATE. Sleven's decision, 2026-08-09: this overlay
+         stays a lightweight verifier. The 691-action browser, the axis evidence
+         table and profile import/export live on keybinds.html and only there -
+         a second copy of the action list here would be free to drift, which is
+         the failure rule 14 exists to prevent. -->
+    <a href="keybinds.html" style="color:#FF9A4D">Full keybind reference,
+    all 691 actions, and profile import/export &rarr;</a></span>
   </div>
   <div class="modes" id="cc-kb-modes"></div>
   <div class="devs" id="cc-kb-devs"></div>
@@ -1571,13 +1578,92 @@ function pads(){
   for(i=0;i<g.length;i++) if(g[i]) out.push(g[i]);
   return out;
 }
-function slotOf(p){
+/* ---- DEVICE IDENTITY ------------------------------------------------
+   Which physical stick is js1? Three sources, in priority order:
+     1 an imported profile's <options> GUIDs  - the game wrote them
+     2 the player's own choice, per VID/PID   - survives a replug
+     3 a guess from plug order                - AND WE SAY IT IS A GUESS
+   See patch_device_identity.py for the full reasoning. */
+var profileDevices=null;          /* set by CCDEV.setProfileDevices() */
+var choiceCache=null;             /* "vid:pid" -> slot, from localStorage */
+var CC_SLOT_KEY="cc.js.slots.v1";
+
+/* SCX ships with the keybind page but NOT with the index page, so every use
+   of it is guarded and its absence simply means we cannot read VID/PID. */
+function haveSCX(){ return typeof SCX!=="undefined" && !!SCX.parseGamepadId; }
+function vidpid(p){
+  if(!haveSCX()) return null;
+  var r=null; try{ r=SCX.parseGamepadId(p.id); }catch(e){ return null; }
+  return (r&&r.vid&&r.pid)?r:null;
+}
+function padKey(p){ var v=vidpid(p); return v?(v.vid+":"+v.pid):null; }
+
+function choices(){
+  if(choiceCache) return choiceCache;
+  choiceCache={};
+  try{ var raw=window.localStorage&&localStorage.getItem(CC_SLOT_KEY);
+       if(raw) choiceCache=JSON.parse(raw)||{}; }catch(e){ choiceCache={}; }
+  return choiceCache;
+}
+function rememberSlot(p,n){
+  var k=padKey(p);
+  if(!k) return false;               /* no VID/PID - nothing stable to key on */
+  choices()[k]=n;
+  try{ localStorage.setItem(CC_SLOT_KEY,JSON.stringify(choiceCache)); }catch(e){}
+  padSlot[p.index]=n;
+  return true;
+}
+
+/* An imported profile decides. Derive this pad's GUID from its own VID/PID
+   and look for it among the profile's joystick <options> lines. */
+function fromProfile(p){
+  if(!profileDevices||!profileDevices.length) return 0;
+  var v=vidpid(p);
+  if(!v||!SCX.guidFromVidPid) return 0;
+  var guid=null; try{ guid=SCX.guidFromVidPid(v.vid,v.pid); }catch(e){ return 0; }
+  if(!guid) return 0;
+  for(var i=0;i<profileDevices.length;i++){
+    var d=profileDevices[i];
+    if(d&&d.type==="joystick"&&String(d.product||"").indexOf(guid)>=0)
+      return d.instance||0;
+  }
+  return 0;
+}
+function fromChoice(p){
+  var k=padKey(p);
+  return (k&&choices()[k])?choices()[k]:0;
+}
+
+/* Slots already spoken for by a RESOLVED device. A guess must not be handed
+   a number a profile or a remembered choice already owns. */
+function claimedSlots(){
+  var used={}, list=pads(), i, q, n;
+  for(i=0;i<list.length;i++){
+    q=list[i];
+    if(isStd(q)) continue;
+    n=fromProfile(q)||fromChoice(q);
+    if(n) used[n]=1;
+  }
+  return used;
+}
+function guessSlot(p){
   if(padSlot[p.index]) return padSlot[p.index];
-  var used={}, k, n;
+  var used=claimedSlots(), k, n;
   for(k in padSlot) used[padSlot[k]]=1;
   for(n=1;n<=8;n++) if(!used[n]){ padSlot[p.index]=n; return n; }
   padSlot[p.index]=1; return 1;
 }
+
+/* The one function that answers both questions: which slot, and how sure. */
+function identityOf(p){
+  var n=fromProfile(p);
+  if(n) return {slot:n, source:"profile"};
+  n=fromChoice(p);
+  if(n) return {slot:n, source:"remembered"};
+  return {slot:guessSlot(p), source:"guessed"};
+}
+function slotOf(p){ return identityOf(p).slot; }
+function slotSource(p){ return identityOf(p).source; }
 function isStd(p){ return p.mapping==="standard" && dev==="PAD"; }
 function prefix(p){ return isStd(p) ? "xi" : "js"+slotOf(p); }
 function esc(t){ return String(t).replace(/[&<>"]/g,function(c){
@@ -1683,8 +1769,15 @@ function buildDevice(list){
 
   h='<div class="dvhead">';
   list.forEach(function(p){
-    h+='<div class="dvchip on" data-chip="'+p.index+'"><div class="sl">'+prefix(p)+
-       '</div><div class="nm" title="'+esc(p.id)+'">'+esc(p.id)+'</div>'+
+    var _src=isStd(p)?"":slotSource(p);
+    var _note={profile:"from the imported profile",
+               remembered:"your choice, remembered for this device",
+               guessed:"guessed from plug order - click to set"}[_src]||"";
+    h+='<div class="dvchip on" data-chip="'+p.index+'"><div class="sl cc-slot'+
+       (_src?' cc-src-'+_src:'')+'" data-slot="'+p.index+'" title="'+esc(_note)+
+       '">'+prefix(p)+'</div>'+
+       (_note?'<div class="srcnote cc-src-'+_src+'">'+esc(_note)+'</div>':'')+
+       '<div class="nm" title="'+esc(p.id)+'">'+esc(p.id)+'</div>'+
        '<div class="id">'+p.buttons.length+' buttons · '+p.axes.length+' axes · '+
        (p.mapping==="standard"?"standard mapping":"raw / no standard mapping")+
        '</div></div>';
@@ -1937,6 +2030,49 @@ function poll(){
 function startPoll(){ if(rafId===null&&dev!=="KBM") rafId=requestAnimationFrame(poll); }
 window.addEventListener('gamepadconnected',function(){
   if(dev!=="KBM"){ devDom=null; renderDevice(); startPoll(); } });
+/* Clicking a slot cycles js1..js8 and remembers it against that device's
+   VID/PID. Without this, priority 2 could never fire. Delegated, because the
+   panel is re-rendered wholesale on every frame. */
+document.addEventListener('click',function(e){
+  var el=e.target&&e.target.closest?e.target.closest('.cc-slot'):null;
+  if(!el) return;
+  var idx=parseInt(el.getAttribute('data-slot'),10);
+  var list=pads(), i, p=null;
+  for(i=0;i<list.length;i++) if(list[i].index===idx) p=list[i];
+  if(!p||isStd(p)) return;
+  if(fromProfile(p)) return;   /* the game's own answer is not ours to cycle */
+  if(!rememberSlot(p,(slotOf(p)%8)+1)){
+    /* No VID/PID means nothing stable to remember it against. Say so rather
+       than appearing to accept the click. */
+    if(window.console&&console.warn)
+      console.warn('cannot remember a slot for this device: the browser '+
+                   'reports no Vendor/Product id for "'+p.id+'"');
+    return;
+  }
+  devDom=null; renderDevice();
+});
+
+/* The page tells the engine what an imported profile said. */
+window.CCDEV=window.CCDEV||{};
+window.CCDEV.setProfileDevices=function(devices){
+  profileDevices=(devices&&devices.length)?devices:null;
+  devDom=null;
+  if(typeof renderDevice==="function") renderDevice();
+};
+window.CCDEV.identityOf=identityOf;
+window.CCDEV.joysticks=function(){
+  /* [{instance,vid,pid,name}] for SCX.build's opts.joysticks. */
+  var out=[], list=pads(), i, p, v;
+  for(i=0;i<list.length;i++){
+    p=list[i];
+    if(isStd(p)) continue;
+    v=vidpid(p);
+    out.push({instance:slotOf(p), vid:v?v.vid:"", pid:v?v.pid:"",
+              name:v&&v.name?v.name:p.id});
+  }
+  return out;
+};
+
 window.addEventListener('gamepaddisconnected',function(e){
   delete padSlot[e.gamepad.index]; delete padPrev[e.gamepad.index];
   delete padCenter[e.gamepad.index];
