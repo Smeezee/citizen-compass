@@ -81,6 +81,21 @@ def _emitted_names(registered_name):
 
 
 def main():
+    # STDOUT MUST BE UTF-8 BEFORE ANY FINDING IS PRINTED.
+    #
+    # Rule 15 in the console path rather than a file open. Findings quote real
+    # Star Citizen names, and `tok.yai` is really spelled with a macron - the
+    # summary print died on U+0101 under the Windows cp1252 default, AFTER
+    # every checker had already run, so the whole group reported nothing and
+    # exited on a traceback. This is the same defect family as the four in
+    # CLAUDE.md, in the one place the missing_encoding checker cannot see:
+    # there is no open() here to inspect.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass  # already utf-8, or a stream that cannot be reconfigured
+
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--group", choices=["file", "db", "network", "sources", "all"],
                         default="file")
@@ -102,8 +117,13 @@ def main():
 
     if args.group in ("file", "all"):
         from checks.file_checks import CHECKERS as FILE_CHECKERS
+        # The node-based export harnesses belong to this group: they need
+        # stdlib, git and `node`, no database and no network. Kept in their own
+        # module so a missing `node` cannot stop file_checks importing.
+        from checks.node_checks import CHECKERS as NODE_CHECKERS
 
-        _collect(_run_group("file", FILE_CHECKERS, REPO_ROOT, None), FILE_CHECKERS)
+        group = list(FILE_CHECKERS) + list(NODE_CHECKERS)
+        _collect(_run_group("file", group, REPO_ROOT, None), group)
 
     if args.group in ("db", "all"):
         try:
