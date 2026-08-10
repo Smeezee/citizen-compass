@@ -45,7 +45,7 @@ import (
 // test. Any capture observed here therefore came from the press and from
 // nothing else - the test cannot pass by accident on a timer.
 func runHotkeyLoopSelftest(check func(name string, ok bool, detail string)) {
-	presses := make(chan struct{}, 1)
+	presses := make(chan string, 1)
 	stop := make(chan struct{})
 	captured := make(chan Trigger, 4)
 
@@ -59,7 +59,7 @@ func runHotkeyLoopSelftest(check func(name string, ok bool, detail string)) {
 			return `C:\fake\shot_0001.png`, nil
 		},
 	}
-	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0, IntervalMinutes: 0}
+	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0, IntervalSeconds: 0}
 
 	done := make(chan struct{})
 	go func() { _ = runAuto(cfg, "", deps, stop); close(done) }()
@@ -76,14 +76,25 @@ func runHotkeyLoopSelftest(check func(name string, ok bool, detail string)) {
 		check("no capture without a press", true, "quiet for 300ms, so the tick is not firing")
 	}
 
-	presses <- struct{}{}
+	presses <- "test"
 
 	select {
 	case t := <-captured:
 		check("a press CAPTURES", t.Kind == "hotkey",
 			fmt.Sprintf("capture fired with trigger kind %q", t.Kind))
-		check("manual frame is distinguishable", t.Note == "Ctrl+Alt+F9",
-			fmt.Sprintf("trigger records note %q, so a manual frame is identifiable afterwards", t.Note))
+		// The note carries the key AND the mechanism that delivered it.
+		//
+		// This asserted an exact match on "Ctrl+Alt+F9" and went red once the
+		// press channel started carrying which path delivered it - the note is
+		// now "Ctrl+Alt+F9 via test". The extra word is an improvement: two
+		// independent delivery paths exist and a log that says which one fired
+		// is the difference between diagnosing a dead hotkey and guessing at
+		// it. An exact-match assertion on a string that is meant to grow is a
+		// test that punishes the code for getting better.
+		check("manual frame is distinguishable",
+			strings.Contains(t.Note, "Ctrl+Alt+F9") && strings.Contains(t.Note, "via"),
+			fmt.Sprintf("trigger records note %q - it must name the key AND how the "+
+				"press arrived", t.Note))
 	case <-time.After(3 * time.Second):
 		check("a press CAPTURES", false, "press produced no capture within 3s - the channel is not wired into the loop")
 		check("manual frame is distinguishable", false, "not reached")
@@ -110,7 +121,7 @@ func runHotkeyLoopSelftest(check func(name string, ok bool, detail string)) {
 // So the capture here is made to FAIL on purpose. That is the case that used to
 // be silent, and it is the one worth proving.
 func runHotkeyPressLoggingSelftest(check func(name string, ok bool, detail string)) {
-	presses := make(chan struct{}, 1)
+	presses := make(chan string, 1)
 	stop := make(chan struct{})
 	sink := &logSink{}
 	attempted := make(chan struct{}, 1)
@@ -125,7 +136,7 @@ func runHotkeyPressLoggingSelftest(check func(name string, ok bool, detail strin
 			return "", fmt.Errorf("capture backend refused (deliberate)")
 		},
 	}
-	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0, IntervalMinutes: 0}
+	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0, IntervalSeconds: 0}
 
 	done := make(chan struct{})
 	go func() { _ = runAuto(cfg, "", deps, stop); close(done) }()
@@ -137,7 +148,7 @@ func runHotkeyPressLoggingSelftest(check func(name string, ok bool, detail strin
 	check("no press means no receipt line", sink.count("hotkey press received") == 0,
 		"nothing logged while no key was pressed")
 
-	presses <- struct{}{}
+	presses <- "test"
 
 	select {
 	case <-attempted:

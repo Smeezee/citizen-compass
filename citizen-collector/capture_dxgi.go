@@ -24,13 +24,13 @@ import (
 // --- constants -------------------------------------------------------------
 
 const (
-	d3d11SDKVersion       = 7
-	driverTypeHardware    = 1
-	driverTypeWARP        = 5
-	usageStaging          = 3
-	cpuAccessRead         = 0x20000
-	mapRead               = 1
-	formatB8G8R8A8Unorm   = 87
+	d3d11SDKVersion     = 7
+	driverTypeHardware  = 1
+	driverTypeWARP      = 5
+	usageStaging        = 3
+	cpuAccessRead       = 0x20000
+	mapRead             = 1
+	formatB8G8R8A8Unorm = 87
 
 	// BGRA support is required for Direct2D/WGC interop and costs nothing here.
 	createDeviceBGRASupport = 0x20
@@ -106,45 +106,45 @@ type dxgiOutputDesc struct {
 
 type id3d11DeviceVtbl struct {
 	IUnknownVtbl
-	CreateBuffer                    uintptr
-	CreateTexture1D                 uintptr
-	CreateTexture2D                 uintptr
-	CreateTexture3D                 uintptr
-	CreateShaderResourceView        uintptr
-	CreateUnorderedAccessView       uintptr
-	CreateRenderTargetView          uintptr
-	CreateDepthStencilView          uintptr
-	CreateInputLayout               uintptr
-	CreateVertexShader              uintptr
-	CreateGeometryShader            uintptr
-	CreateGeometryShaderWithSO      uintptr
-	CreatePixelShader               uintptr
-	CreateHullShader                uintptr
-	CreateDomainShader              uintptr
-	CreateComputeShader             uintptr
-	CreateClassLinkage              uintptr
-	CreateBlendState                uintptr
-	CreateDepthStencilState         uintptr
-	CreateRasterizerState           uintptr
-	CreateSamplerState              uintptr
-	CreateQuery                     uintptr
-	CreatePredicate                 uintptr
-	CreateCounter                   uintptr
-	CreateDeferredContext           uintptr
-	OpenSharedResource              uintptr
-	CheckFormatSupport              uintptr
-	CheckMultisampleQualityLevels   uintptr
-	CheckCounterInfo                uintptr
-	CheckCounter                    uintptr
-	GetPrivateData                  uintptr
-	SetPrivateData                  uintptr
-	SetPrivateDataInterface         uintptr
-	GetFeatureLevel                 uintptr
-	GetCreationFlags                uintptr
-	GetDeviceRemovedReason          uintptr
-	GetImmediateContext             uintptr
-	SetExceptionMode                uintptr
-	GetExceptionMode                uintptr
+	CreateBuffer                  uintptr
+	CreateTexture1D               uintptr
+	CreateTexture2D               uintptr
+	CreateTexture3D               uintptr
+	CreateShaderResourceView      uintptr
+	CreateUnorderedAccessView     uintptr
+	CreateRenderTargetView        uintptr
+	CreateDepthStencilView        uintptr
+	CreateInputLayout             uintptr
+	CreateVertexShader            uintptr
+	CreateGeometryShader          uintptr
+	CreateGeometryShaderWithSO    uintptr
+	CreatePixelShader             uintptr
+	CreateHullShader              uintptr
+	CreateDomainShader            uintptr
+	CreateComputeShader           uintptr
+	CreateClassLinkage            uintptr
+	CreateBlendState              uintptr
+	CreateDepthStencilState       uintptr
+	CreateRasterizerState         uintptr
+	CreateSamplerState            uintptr
+	CreateQuery                   uintptr
+	CreatePredicate               uintptr
+	CreateCounter                 uintptr
+	CreateDeferredContext         uintptr
+	OpenSharedResource            uintptr
+	CheckFormatSupport            uintptr
+	CheckMultisampleQualityLevels uintptr
+	CheckCounterInfo              uintptr
+	CheckCounter                  uintptr
+	GetPrivateData                uintptr
+	SetPrivateData                uintptr
+	SetPrivateDataInterface       uintptr
+	GetFeatureLevel               uintptr
+	GetCreationFlags              uintptr
+	GetDeviceRemovedReason        uintptr
+	GetImmediateContext           uintptr
+	SetExceptionMode              uintptr
+	GetExceptionMode              uintptr
 }
 
 type id3d11Device struct{ Vtbl *id3d11DeviceVtbl }
@@ -159,48 +159,48 @@ type id3d11DeviceContextVtbl struct {
 	SetPrivateData          uintptr
 	SetPrivateDataInterface uintptr
 
-	VSSetConstantBuffers uintptr
-	PSSetShaderResources uintptr
-	PSSetShader          uintptr
-	PSSetSamplers        uintptr
-	VSSetShader          uintptr
-	DrawIndexed          uintptr
-	Draw                 uintptr
-	Map                  uintptr // slot 14
-	Unmap                uintptr // slot 15
-	PSSetConstantBuffers uintptr
-	IASetInputLayout     uintptr
-	IASetVertexBuffers   uintptr
-	IASetIndexBuffer     uintptr
-	DrawIndexedInstanced uintptr
-	DrawInstanced        uintptr
-	GSSetConstantBuffers uintptr
-	GSSetShader          uintptr
-	IASetPrimitiveTopology uintptr
-	VSSetShaderResources uintptr
-	VSSetSamplers        uintptr
-	Begin                uintptr
-	End                  uintptr
-	GetData              uintptr
-	SetPredication       uintptr
-	GSSetShaderResources uintptr
-	GSSetSamplers        uintptr
-	OMSetRenderTargets   uintptr
-	OMSetRenderTargetsAndUAV uintptr
-	OMSetBlendState      uintptr
-	OMSetDepthStencilState uintptr
-	SOSetTargets         uintptr
-	DrawAuto             uintptr
+	VSSetConstantBuffers         uintptr
+	PSSetShaderResources         uintptr
+	PSSetShader                  uintptr
+	PSSetSamplers                uintptr
+	VSSetShader                  uintptr
+	DrawIndexed                  uintptr
+	Draw                         uintptr
+	Map                          uintptr // slot 14
+	Unmap                        uintptr // slot 15
+	PSSetConstantBuffers         uintptr
+	IASetInputLayout             uintptr
+	IASetVertexBuffers           uintptr
+	IASetIndexBuffer             uintptr
+	DrawIndexedInstanced         uintptr
+	DrawInstanced                uintptr
+	GSSetConstantBuffers         uintptr
+	GSSetShader                  uintptr
+	IASetPrimitiveTopology       uintptr
+	VSSetShaderResources         uintptr
+	VSSetSamplers                uintptr
+	Begin                        uintptr
+	End                          uintptr
+	GetData                      uintptr
+	SetPredication               uintptr
+	GSSetShaderResources         uintptr
+	GSSetSamplers                uintptr
+	OMSetRenderTargets           uintptr
+	OMSetRenderTargetsAndUAV     uintptr
+	OMSetBlendState              uintptr
+	OMSetDepthStencilState       uintptr
+	SOSetTargets                 uintptr
+	DrawAuto                     uintptr
 	DrawIndexedInstancedIndirect uintptr
-	DrawInstancedIndirect uintptr
-	Dispatch             uintptr
-	DispatchIndirect     uintptr
-	RSSetState           uintptr
-	RSSetViewports       uintptr
-	RSSetScissorRects    uintptr
-	CopySubresourceRegion uintptr
-	CopyResource         uintptr // slot 47
-	UpdateSubresource    uintptr
+	DrawInstancedIndirect        uintptr
+	Dispatch                     uintptr
+	DispatchIndirect             uintptr
+	RSSetState                   uintptr
+	RSSetViewports               uintptr
+	RSSetScissorRects            uintptr
+	CopySubresourceRegion        uintptr
+	CopyResource                 uintptr // slot 47
+	UpdateSubresource            uintptr
 }
 
 type id3d11DeviceContext struct{ Vtbl *id3d11DeviceContextVtbl }
@@ -259,14 +259,14 @@ type idxgiOutput1 struct{ Vtbl *idxgiOutput1Vtbl }
 
 type idxgiOutputDuplicationVtbl struct {
 	idxgiObjectVtbl
-	GetDesc               uintptr
-	AcquireNextFrame      uintptr
-	GetFrameDirtyRects    uintptr
-	GetFrameMoveRects     uintptr
-	GetFramePointerShape  uintptr
-	MapDesktopSurface     uintptr
-	UnMapDesktopSurface   uintptr
-	ReleaseFrame          uintptr
+	GetDesc              uintptr
+	AcquireNextFrame     uintptr
+	GetFrameDirtyRects   uintptr
+	GetFrameMoveRects    uintptr
+	GetFramePointerShape uintptr
+	MapDesktopSurface    uintptr
+	UnMapDesktopSurface  uintptr
+	ReleaseFrame         uintptr
 }
 
 type idxgiOutputDuplication struct{ Vtbl *idxgiOutputDuplicationVtbl }
@@ -287,12 +287,12 @@ func createD3D11Device() (*id3d11Device, *id3d11DeviceContext, string, error) {
 		var featureLevel uint32
 
 		hr, _, _ := syscall.SyscallN(procD3D11CreateDevice.Addr(),
-			0,                        // pAdapter (NULL = default for driver type)
-			dt.kind,                  // DriverType
-			0,                        // Software
+			0,       // pAdapter (NULL = default for driver type)
+			dt.kind, // DriverType
+			0,       // Software
 			uintptr(createDeviceBGRASupport),
-			0,                        // pFeatureLevels (NULL = default chain)
-			0,                        // FeatureLevels
+			0, // pFeatureLevels (NULL = default chain)
+			0, // FeatureLevels
 			uintptr(d3d11SDKVersion),
 			uintptr(unsafe.Pointer(&dev)),
 			uintptr(unsafe.Pointer(&featureLevel)),

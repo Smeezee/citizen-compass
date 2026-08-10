@@ -63,14 +63,63 @@ import (
 //	interval     - nothing changed for long enough that the fallback fired
 //	hotkey       - a human pressed the key
 //	once         - a human ran --once
+//
+// Value is "high" or "low" and decides whether a frame is actually taken.
+//
+// # WHY THIS FIELD EXISTS - THE 40-CAPTURE AUDIT, 2026-08-08
+//
+// Sleven looked through a session's pictures and said they were "random shots
+// of nothing", and that he had to sit for ten minutes to get one worth having.
+// Rather than take that as a tuning complaint, the 40 sidecars on disk were
+// tallied by what fired them:
+//
+//	14  interval                  a blind timer
+//	10  state_change:gamerules    every one of them to or from SC_Frontend
+//	                              - which IS the main menu
+//	10  event:client_spawned      the instant of appearing, before anything
+//	                              is on screen
+//	 3  event:loading_screen      literally photographs of loading screens
+//	 3  hotkey                    the only deliberate ones
+//
+// Twenty-three of forty fired on menu, loading and spawn transitions. Zero
+// fired on a shop, a kiosk or a mission board. The pattern repeats identically
+// every session because it is the game BOOTING: menu, spawn, load, spawn - and
+// then the collector goes blind and falls back to the timer.
+//
+// So the triggers were not broken. They were working perfectly, on the least
+// interesting moments a session contains.
+//
+// The fix is not a better timer. The log ALREADY announces the moments that
+// matter - RequestLocationInventory fires when a shop terminal is opened, and
+// the four transaction families fire on every buy and sell. Those patterns were
+// in the miner, which reads the log after the fact, and were never in the
+// detector, which decides when to look. Two halves that were never connected:
+// the collector already knew when a shop was open, it just never took a picture.
+//
+// Low-value triggers still update state and are still logged. They simply do
+// not spend a 3 MB frame. Nothing is lost except the noise.
 type Trigger struct {
 	Kind    string `json:"kind"`
 	Field   string `json:"field,omitempty"`
 	From    string `json:"from,omitempty"`
 	To      string `json:"to,omitempty"`
-	Minutes int    `json:"minutes,omitempty"`
+	Seconds int    `json:"seconds,omitempty"`
+	Value   string `json:"value,omitempty"`
 	Note    string `json:"note,omitempty"`
 }
+
+const (
+	valueHigh = "high"
+	valueLow  = "low"
+)
+
+// isHigh treats an unset value as high.
+//
+// Deliberate: a trigger added later by somebody who forgets this field should
+// CAPTURE rather than be silently dropped. The failure mode of over-capturing
+// is a wasted frame; the failure mode of under-capturing is a moment that is
+// gone forever. Those are not symmetric.
+func (t Trigger) isHigh() bool { return t.Value != valueLow }
 
 // Reason is the canonical one-line form, used in logs AND in the selftest's
 // assertions. Having one formatter means the test compares against the same
@@ -83,7 +132,11 @@ func (t Trigger) Reason() string {
 	case "event":
 		return fmt.Sprintf("event:%s %q", t.Field, t.To)
 	case "interval":
-		return fmt.Sprintf("interval:%dm", t.Minutes)
+		return fmt.Sprintf("interval:%ds", t.Seconds)
+	case "burst":
+		return fmt.Sprintf("burst:%s %q", t.Field, t.To)
+	case "keypress":
+		return fmt.Sprintf("keypress:%s (%s)", t.Field, t.To)
 	default:
 		if t.Field != "" {
 			return t.Kind + ":" + t.Field
@@ -141,7 +194,7 @@ func (d *autoDetector) Feed(line string) []Trigger {
 		if !d.primed {
 			return nil
 		}
-		return &Trigger{Kind: "state_change", Field: field, From: from, To: next}
+		return &Trigger{Kind: "state_change", Field: field, From: from, To: next, Value: valueLow}
 	}
 
 	// ORDER IS DETERMINISTIC and asserted by the selftest: gamerules, map,
@@ -201,7 +254,7 @@ func (d *autoDetector) Feed(line string) []Trigger {
 		if d.primed {
 			out = append(out, Trigger{
 				Kind: "event", Field: "loading_screen",
-				To: m[1] + " : " + m[2],
+				To: m[1] + " : " + m[2], Value: valueLow,
 			})
 		}
 	}
@@ -210,8 +263,46 @@ func (d *autoDetector) Feed(line string) []Trigger {
 		if d.primed {
 			out = append(out, Trigger{
 				Kind: "event", Field: "client_spawned", To: d.st.zone,
+				Value: valueLow,
 			})
 		}
+	}
+
+	// --- the two that were missing, and are the whole point ----------------
+	//
+	// Both patterns are borrowed from gamelog_mine.go rather than re-written
+	// here. Same package, one definition: a second copy would drift, and the
+	// day CIG changes the format one of the two copies would keep matching and
+	// hide the other's failure.
+	//
+	// reMineLocation is a VERIFIED pattern - confirmed live in 4.10 - and it
+	// fires when a shop or inventory terminal is opened. That is the moment
+	// prices are on the screen.
+	if m := reMineLocation.FindStringSubmatch(line); m != nil {
+		if v := strings.TrimSpace(m[1]); plausibleLocation(v) && d.primed {
+			out = append(out, Trigger{
+				Kind: "event", Field: "terminal_open", To: v, Value: valueHigh,
+				Note: "a shop or inventory terminal was opened",
+			})
+		}
+	}
+
+	// A transaction is the strongest signal in the whole log: the player is
+	// standing at a kiosk with a price list in front of them. The log gives us
+	// the price in text; the frame gives us everything AROUND the price that
+	// the log does not carry - stock levels, the rest of the list, the shop's
+	// layout.
+	if m := reMineTxn.FindStringSubmatch(line); m != nil && d.primed {
+		side := strings.ToLower(m[2])
+		market := "item"
+		if strings.HasSuffix(m[1], "Commodity") {
+			market = "commodity"
+		}
+		out = append(out, Trigger{
+			Kind: "event", Field: "transaction", To: market + " " + side,
+			Value: valueHigh,
+			Note:  "a buy or sell happened - the kiosk is on screen right now",
+		})
 	}
 
 	return out
@@ -229,6 +320,28 @@ type logTailer struct {
 	off  int64
 	det  *autoDetector
 	part []byte // trailing partial line carried to the next poll
+
+	// onLine receives EVERY appended line, live.
+	//
+	// # WHY THIS EXISTS - SLEVEN, 2026-08-08
+	//
+	//	"if it takes 2 seconds to open a terminal and find a part purchase
+	//	 that part and then back out of that terminal, it's done the entire
+	//	 transaction and has no recollection of the data until we get to the
+	//	 game log."
+	//
+	// Exactly right, and it was an architectural accident. This tailer already
+	// read every appended line - it had to, to fire triggers - and then threw
+	// the content away. The miner was a SEPARATE pass over the same file, run
+	// at start and at game exit. So a purchase that took two seconds sat
+	// unrecorded for the rest of the session, and if the process died in
+	// between (which it did, every fourteen minutes) it was recorded late or
+	// not at all.
+	//
+	// Two readers of one file, one of them blind to what the other was for.
+	// Now the same line that decides whether to take a picture also lands in
+	// the dataset, in the same pass, as it happens.
+	onLine func(string)
 }
 
 func newLogTailer(path string) *logTailer {
@@ -290,7 +403,14 @@ func (t *logTailer) Poll() ([]Trigger, error) {
 	sc := bufio.NewScanner(bytes.NewReader(data))
 	sc.Buffer(make([]byte, 0, 64*1024), 4*1024*1024)
 	for sc.Scan() {
-		triggers = append(triggers, t.det.Feed(sc.Text())...)
+		line := sc.Text()
+		// Data first. A line must reach the dataset even if it produces no
+		// trigger and even if the detector is still priming - priming exists to
+		// stop a burst of stale CAPTURES, not to discard facts.
+		if t.onLine != nil {
+			t.onLine(line)
+		}
+		triggers = append(triggers, t.det.Feed(line)...)
 	}
 
 	if !t.det.primed {
@@ -306,11 +426,24 @@ func (t *logTailer) Poll() ([]Trigger, error) {
 type autoConfig struct {
 	PollSeconds     int
 	DebounceSeconds int
-	IntervalMinutes int // 0 = interval fallback off
+	IntervalSeconds int // 0 = interval fallback off
+
+	// CaptureLowValue turns menu, loading-screen and spawn frames back on.
+	// Default OFF - see the audit in the Trigger doc comment. It is a setting
+	// rather than a deletion because "we decided these are worthless" is a
+	// judgement, and a judgement somebody may want to reverse without a rebuild.
+	CaptureLowValue bool
+
+	// Burst is the keep-shooting-while-a-terminal-is-open rhythm.
+	Burst burstConfig
+
+	// Keys the player asked to be watched. See keywatch.go.
+	Keys []*watchedKey
 }
 
 func defaultAutoConfig() autoConfig {
-	return autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalMinutes: 10}
+	return autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: defaultIntervalSeconds,
+		Burst: defaultBurstConfig()}
 }
 
 // autoRunner owns the debounce and interval decisions.
@@ -322,10 +455,24 @@ type autoRunner struct {
 	cfg     autoConfig
 	now     func() time.Time
 	lastCap time.Time
+
+	// skipped holds the low-value triggers dropped by the most recent decide().
+	// Reused between calls, so read it before the next one.
+	skipped []Trigger
+
+	// burst follows an open shop terminal. See session_burst.go.
+	burst *burstState
+
+	// keys fires when the player presses something they told us about.
+	keys *KeyWatcher
+
+	// burstStop carries the reason the last burst ended, for the caller to log.
+	burstStop string
 }
 
 func newAutoRunner(cfg autoConfig, now func() time.Time) *autoRunner {
-	return &autoRunner{cfg: cfg, now: now, lastCap: now()}
+	return &autoRunner{cfg: cfg, now: now, lastCap: now(),
+		burst: newBurstState(cfg.Burst), keys: NewKeyWatcher(cfg.Keys)}
 }
 
 // decide returns the trigger to capture on, or nil to do nothing.
@@ -335,7 +482,49 @@ func newAutoRunner(cfg autoConfig, now func() time.Time) *autoRunner {
 func (r *autoRunner) decide(triggers []Trigger) *Trigger {
 	now := r.now()
 
+	// The player's own keys, folded in as ordinary triggers so they inherit the
+	// debounce, the notes and the sidecar shape rather than growing a second
+	// path that behaves almost the same.
+	//
+	// A 3-second gap per key: long enough that pulsing a mining laser does not
+	// produce a picture per pulse, short enough that two deliberate presses are
+	// two frames.
+	triggers = append(triggers, r.keys.Poll(now, 3*time.Second)...)
+
+	// VALUE GATE. Low-value triggers are dropped here, not earlier, so the
+	// caller still sees the full list and can log what happened. The state was
+	// already updated inside Feed - skipping the frame does not skip the fact.
+	//
+	// r.skipped is what the loop reports, so a quiet collector can still say
+	// "I saw eleven things and none of them were worth a picture" rather than
+	// looking identical to a collector that saw nothing at all. That distinction
+	// is the same one the miner makes when it says "0 new" and explains why.
+	r.skipped = r.skipped[:0]
+	kept := make([]Trigger, 0, len(triggers))
+	for _, t := range triggers {
+		if t.isHigh() || r.cfg.CaptureLowValue {
+			kept = append(kept, t)
+		} else {
+			r.skipped = append(r.skipped, t)
+		}
+	}
+	triggers = kept
+
+	r.burstStop = ""
+
 	if len(triggers) > 0 {
+		// A HIGH-value trigger that is not this terminal means the player moved
+		// on. Ends the burst before the new trigger is served, so the record
+		// never shows a burst continuing past the thing that interrupted it.
+		for _, t := range triggers {
+			if t.Field == "terminal_open" {
+				r.burst.Begin(t.To, now)
+			} else if r.burst.Active() {
+				r.burst.Interrupt("interrupted by " + t.Reason())
+				r.burstStop = "burst ended: interrupted by " + t.Reason()
+			}
+		}
+
 		if now.Sub(r.lastCap) < time.Duration(r.cfg.DebounceSeconds)*time.Second {
 			return nil // debounced
 		}
@@ -353,16 +542,40 @@ func (r *autoRunner) decide(triggers []Trigger) *Trigger {
 		return &t
 	}
 
-	if r.cfg.IntervalMinutes > 0 &&
-		now.Sub(r.lastCap) >= time.Duration(r.cfg.IntervalMinutes)*time.Minute {
+	// BURST BEFORE INTERVAL, and the interval stands down entirely while a
+	// burst is running. Two mechanisms shooting at once would double the frames
+	// and make the sidecar ambiguous about which one was responsible - the same
+	// unreadable-corpus problem the Trigger field exists to prevent.
+	if bt, why := r.burst.Due(now); bt != nil {
+		r.lastCap = now
+		return bt
+	} else if why != "" {
+		r.burstStop = "burst ended: " + why
+	}
+	if r.burst.Active() {
+		return nil
+	}
+
+	if r.cfg.IntervalSeconds > 0 &&
+		now.Sub(r.lastCap) >= time.Duration(r.cfg.IntervalSeconds)*time.Second {
 		r.lastCap = now
 		return &Trigger{
-			Kind: "interval", Minutes: r.cfg.IntervalMinutes,
+			Kind: "interval", Seconds: r.cfg.IntervalSeconds,
 			Note: "no state change for the configured interval",
 		}
 	}
 	return nil
 }
+
+// noteCapture tells the runner a frame was taken by a path that does not go
+// through decide - today that means a hotkey press.
+//
+// WHY THIS EXISTS. The interval means "it has been this long since the last
+// picture", not "since the last AUTOMATIC picture". Without this a manual press
+// left lastCap untouched and the interval fired seconds later on a scene that
+// had just been photographed. At ten minutes that was a curiosity. At sixty
+// seconds it would be a duplicate almost every time.
+func (r *autoRunner) noteCapture(at time.Time) { r.lastCap = at }
 
 // --- settings file ---------------------------------------------------------
 
@@ -370,6 +583,14 @@ func (r *autoRunner) decide(triggers []Trigger) *Trigger {
 // has never opened a terminal can change the interval. Command-line flags still
 // win, so a support instruction ("run it with --interval 5 once") is not
 // defeated by whatever is in the file.
+// defaultIntervalSeconds is Sleven's call, 2026-08-07: sixty seconds.
+//
+// It was ten minutes, and the live PTU test showed why that was wrong. He named
+// it before the test - "we should have added more recessive capturing, ten
+// minutes was way too long" - and the log agreed: standing at a kiosk for two
+// minutes produced nothing at all.
+const defaultIntervalSeconds = 60
+
 const settingsFileName = "collector-settings.txt"
 
 const settingsTemplate = `# citizen-collector settings
@@ -382,15 +603,63 @@ const settingsTemplate = `# citizen-collector settings
 # Capture automatically while the game is running.
 auto = true
 
-# Take a picture every this many minutes even when nothing changes.
+# Take a picture every this many SECONDS even when nothing changes.
 # Set to 0 to turn the timer off completely.
-interval_minutes = 10
+#
+# This used to be interval_minutes. An old file that still says interval_minutes
+# keeps working - it is converted, and the log says so - but interval_seconds is
+# the setting to use now.
+interval_seconds = 60
 
 # How often to check the game log, in seconds.
 poll_seconds = 2
 
 # Never take two pictures closer together than this, in seconds.
 debounce_seconds = 3
+
+# Take pictures on menu changes, loading screens and spawning too.
+#
+# OFF by default. Of 40 real captures audited on 2026-08-08, twenty-three were
+# fired by exactly those three things - main menu transitions, loading screens
+# and the instant of spawning - and none were of a shop. They are still watched
+# and still written to the log; they just no longer cost a picture.
+capture_low_value = false
+
+# While a shop or inventory terminal is open, keep taking pictures this often,
+# in seconds, so a list longer than the screen is actually recorded as you
+# scroll it. Set to 0 to take a single picture when the terminal opens instead.
+burst_seconds = 2
+
+# Never take more than this many pictures for one terminal. A hard ceiling, so
+# a burst that somehow does not end is still bounded.
+burst_max_frames = 24
+
+# Keys you HOLD DOWN for an activity - mining laser, salvage beam, guns.
+#
+# These keep taking pictures for as long as the key is down, every couple of
+# seconds, and stop the moment you let go. Mouse buttons work here:
+#
+#   capture_keys_held = mouse1:guns, m:mining laser, v:salvage beam
+#
+# A mining laser held for thirty seconds is thirty seconds of changing numbers.
+# One picture taken at the instant before anything happened is the wrong answer.
+capture_keys_held =
+
+# Take a picture when YOU press a key. Empty by default - this tool does not
+# guess at your bindings.
+#
+# Write the keys you actually use, with a short label so the picture records
+# what you were doing:
+#
+#   capture_keys = tab:scan, alt+m:mining laser, v:salvage beam
+#
+# A mining ping lasts about three seconds and Star Citizen writes NOTHING about
+# it to its log - checked against 227 sessions. A timer will never catch it.
+# Your own keypress will.
+#
+# It only reads whether the key is down. It never intercepts, consumes or sends
+# a keypress, so the game gets every one exactly as it would have.
+capture_keys =
 
 # Where the pictures go. Relative names are next to this file.
 out = captures
@@ -536,7 +805,7 @@ type autoDeps struct {
 	//
 	// A nil channel is valid and simply never fires: select on a nil channel
 	// blocks forever, so callers that have no hotkey need no special case.
-	hotkeys <-chan struct{}
+	hotkeys <-chan string
 
 	// hotkeyName is the registered key's canonical name, recorded on the frames
 	// it produces so a manual capture is distinguishable afterwards.
@@ -550,6 +819,20 @@ type autoDeps struct {
 	// now is the clock. Injected so the heartbeat and the staleness warning can
 	// be tested in milliseconds instead of in minutes.
 	now func() time.Time
+
+	// onLogLine receives every appended Game.log line as it is written, so the
+	// dataset is current during play rather than at exit. See logTailer.onLine.
+	onLogLine func(string)
+
+	// onGameExit fires ONCE on the transition from "game running" to "game
+	// gone". Mining the log at that moment is the point: the file is finished,
+	// so the session is complete rather than half-written.
+	//
+	// Injected rather than called directly so the selftest can prove it fires
+	// exactly once per session and NOT on every poll where the game is absent -
+	// which is the obvious way to get this wrong, and would re-read the whole
+	// archive every two seconds forever.
+	onGameExit func()
 }
 
 // heartbeatEvery is how often the auto log says "still alive" during a quiet
@@ -597,7 +880,7 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 	lastLogPath := ""
 
 	deps.logf("auto mode started: poll %ds, debounce %ds, interval %s",
-		cfg.PollSeconds, cfg.DebounceSeconds, intervalDesc(cfg.IntervalMinutes))
+		cfg.PollSeconds, cfg.DebounceSeconds, intervalDesc(cfg.IntervalSeconds))
 
 	// WHICH LOG, AND HOW IT WAS CHOSEN - stated at every start.
 	//
@@ -620,12 +903,13 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 
 	// Heartbeat and staleness bookkeeping.
 	var (
-		lastBeat    = now()
-		bytesAtBeat int64
-		captures    int
-		lastSize    int64 = -1
-		lastGrowth        = now()
-		staleWarned bool
+		lastBeat     = now()
+		bytesAtBeat  int64
+		captures     int
+		lastSize     int64 = -1
+		lastGrowth         = now()
+		staleWarned  bool
+		gameWasAlive bool
 	)
 
 	ticker := time.NewTicker(time.Duration(cfg.PollSeconds) * time.Second)
@@ -637,7 +921,7 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			deps.logf("auto mode stopping")
 			return nil
 
-		case <-deps.hotkeys:
+		case via := <-deps.hotkeys:
 			// A human asked for THIS frame. It deliberately bypasses the
 			// debounce and the interval bookkeeping: those exist to stop the
 			// automatic triggers from flooding the folder, and an explicit
@@ -665,19 +949,27 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			// Citizen in exclusive fullscreen taking the key before any global
 			// hotkey sees it. This line is what makes that diagnosable rather
 			// than suspected.
-			deps.logf("hotkey press received (%s)", deps.hotkeyName)
+			// The mechanism is named because two of them are running and they
+			// fail under different conditions - see pollHotkey. One grep after a
+			// session says which path is carrying the load on this machine and
+			// this renderer, instead of leaving it to be inferred.
+			deps.logf("hotkey press received (%s, via %s)", deps.hotkeyName, via)
 
 			if err := deps.gameAlive(); err != nil {
 				deps.logf("hotkey press received but no game window: %v", err)
 				continue
 			}
-			t := Trigger{Kind: "hotkey", Note: deps.hotkeyName}
+			t := Trigger{Kind: "hotkey", Note: deps.hotkeyName + " via " + via}
 			out, err := deps.capture(t)
 			if err != nil {
 				deps.logf("hotkey capture FAILED: %v", err)
 				continue
 			}
 			captures++
+			// A manual frame counts as "the last picture" for interval
+			// purposes. Without this the 60s fallback fires seconds after a
+			// press, on a scene that was just photographed.
+			runner.noteCapture(now())
 			deps.logf("captured %s  <- %s (manual)", filepath.Base(out), t.Reason())
 			continue
 
@@ -699,10 +991,24 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		// mean to be worth anything.
 		gameErr := deps.gameAlive()
 
+		// THE EDGE, NOT THE LEVEL. gameWasAlive is what makes this fire once
+		// when the player quits, instead of on every tick for the rest of the
+		// night.
+		if gameWasAlive && gameErr != nil {
+			gameWasAlive = false
+			if deps.onGameExit != nil {
+				deps.logf("game closed - reading the session log")
+				deps.onGameExit()
+			}
+		} else if !gameWasAlive && gameErr == nil {
+			gameWasAlive = true
+		}
+
 		p, how := findLog()
 		if p != "" && p != lastLogPath {
 			deps.logf("watching %s (%s)", p, how)
 			tailer = newLogTailer(p)
+			tailer.onLine = deps.onLogLine
 			lastLogPath = p
 			lastSize = -1
 			lastGrowth = now()
@@ -794,6 +1100,28 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		}
 
 		t := runner.decide(triggers)
+
+		// SAY WHAT WAS SEEN AND NOT PHOTOGRAPHED.
+		//
+		// Without this the value gate is indistinguishable from a broken
+		// detector: both produce a log with no capture lines in it. The whole
+		// reason those 40 frames were menus and loading screens is that nobody
+		// could see what the triggers were choosing between.
+		// A hold that ended: say how much of the activity was recorded.
+		for _, r := range runner.keys.Released() {
+			deps.logf("finished recording %s", r)
+		}
+		if runner.burstStop != "" {
+			deps.logf("%s", runner.burstStop)
+		}
+		if len(runner.skipped) > 0 {
+			var names []string
+			for _, s := range runner.skipped {
+				names = append(names, s.Reason())
+			}
+			deps.logf("seen, not captured (low value): %s", strings.Join(names, "; "))
+		}
+
 		if t == nil {
 			continue
 		}
@@ -808,11 +1136,61 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 	}
 }
 
-func intervalDesc(m int) string {
-	if m <= 0 {
+func intervalDesc(sec int) string {
+	if sec <= 0 {
 		return "off"
 	}
-	return fmt.Sprintf("%dm", m)
+	if sec%60 == 0 && sec >= 60 {
+		return fmt.Sprintf("%ds (%dm)", sec, sec/60)
+	}
+	return fmt.Sprintf("%ds", sec)
+}
+
+// resolveIntervalSeconds reads interval_seconds, falling back to the old
+// interval_minutes, and REPORTS what it did.
+//
+// The rule this obeys: never silently ignore a setting that is sitting in a
+// file on the user's disk. An old file saying "interval_minutes = 10" must
+// either take effect or say out loud that it did not. Quietly reverting someone
+// to a default they did not choose is the same silent-failure shape as every
+// other bug in this tool's history.
+//
+// Precedence: interval_seconds wins, and the log names the loser.
+func resolveIntervalSeconds(s *settings) (sec int, notes []string, err error) {
+	sec = defaultIntervalSeconds
+
+	newVal, haveNew, errNew := s.intVal("interval_seconds")
+	oldVal, haveOld, errOld := s.intVal("interval_minutes")
+
+	if errNew != nil {
+		return sec, notes, errNew
+	}
+	if errOld != nil {
+		return sec, notes, errOld
+	}
+
+	switch {
+	case haveNew && haveOld:
+		notes = append(notes, fmt.Sprintf(
+			"settings: both interval_seconds (%d) and interval_minutes (%d) are set. "+
+				"Using interval_seconds = %ds and IGNORING interval_minutes. "+
+				"Delete the interval_minutes line to silence this.",
+			newVal, oldVal, newVal))
+		sec = newVal
+	case haveNew:
+		sec = newVal
+	case haveOld:
+		sec = oldVal * 60
+		notes = append(notes, fmt.Sprintf(
+			"settings: interval_minutes = %d is the old setting name; using it as %ds. "+
+				"Rename it to interval_seconds when convenient.", oldVal, sec))
+	}
+
+	if sec < 0 {
+		return defaultIntervalSeconds, notes, fmt.Errorf(
+			"interval is negative (%d); refusing to guess what that means", sec)
+	}
+	return sec, notes, nil
 }
 
 // openAutoLog opens the append-only log for unattended runs. With no console

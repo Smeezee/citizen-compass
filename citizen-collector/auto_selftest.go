@@ -231,7 +231,7 @@ func runAutoSelftest(dir string, check func(name string, ok bool, detail string)
 	// =====================================================================
 	base := time.Date(2026, 8, 6, 12, 0, 0, 0, time.UTC)
 	fake := base
-	cfg := autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalMinutes: 10}
+	cfg := autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 600}
 	r := newAutoRunner(cfg, func() time.Time { return fake })
 	one := []Trigger{{Kind: "state_change", Field: "gamerules", From: "a", To: "b"}}
 
@@ -253,7 +253,7 @@ func runAutoSelftest(dir string, check func(name string, ok bool, detail string)
 	// 6. INTERVAL FALLBACK - fires only with no change, and only once.
 	// =====================================================================
 	fake = base
-	r2 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalMinutes: 10},
+	r2 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 600},
 		func() time.Time { return fake })
 
 	fake = base.Add(9 * time.Minute)
@@ -263,14 +263,33 @@ func runAutoSelftest(dir string, check func(name string, ok bool, detail string)
 	fake = base.Add(10*time.Minute + time.Second)
 	i3 := r2.decide(nil) // just fired, timer reset
 
-	intervalOK := i1 == nil && i2 != nil && i2.Kind == "interval" && i2.Minutes == 10 && i3 == nil
-	check("auto: interval fires at N minutes, once",
+	// Seconds carries the configured interval, and it is SECONDS.
+	//
+	// This asserted == 10 and went red on 2026-08-08. The rename from
+	// IntervalMinutes to IntervalSeconds moved the unit; the field kept its
+	// name, so nothing failed to compile and the test simply started comparing
+	// 600 against 10.
+	//
+	// The worse half was the message. It printed only the three booleans - all
+	// three of which were correct - so the failure read as nonsense and looked
+	// like a bug in the interval logic rather than in the assertion. EVERY term
+	// of a compound condition belongs in its own detail, or a red check sends
+	// whoever reads it hunting in the wrong file.
+	wantSeconds := 600
+	intervalOK := i1 == nil && i2 != nil && i2.Kind == "interval" &&
+		i2.Seconds == wantSeconds && i3 == nil
+	gotKind, gotSecs := "<no trigger>", -1
+	if i2 != nil {
+		gotKind, gotSecs = i2.Kind, i2.Seconds
+	}
+	check("auto: interval fires at the configured interval, once",
 		intervalOK,
-		fmt.Sprintf("9m=%v 10m=%v 10m1s=%v", i1 != nil, i2 != nil, i3 != nil))
+		fmt.Sprintf("9m=%v 10m=%v 10m1s=%v kind=%q seconds=%d (want %d)",
+			i1 != nil, i2 != nil, i3 != nil, gotKind, gotSecs, wantSeconds))
 
 	// A state change must beat the timer, not queue behind it.
 	fake = base
-	r3 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalMinutes: 10},
+	r3 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 600},
 		func() time.Time { return fake })
 	fake = base.Add(11 * time.Minute)
 	pref := r3.decide(one)
@@ -282,7 +301,7 @@ func runAutoSelftest(dir string, check func(name string, ok bool, detail string)
 	// 7. INTERVAL OFF - 0 means off, and must mean it even after hours.
 	// =====================================================================
 	fake = base
-	r4 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalMinutes: 0},
+	r4 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 0},
 		func() time.Time { return fake })
 	fake = base.Add(6 * time.Hour)
 	off := r4.decide(nil)

@@ -78,6 +78,28 @@ func copyExeToTemp() (exePath string, dir string, err error) {
 	if err := out.Close(); err != nil {
 		return "", dir, err
 	}
+
+	// SEED CONSENT IN THE STAGED FOLDER.
+	//
+	// The child runs --auto from a fresh temp directory, which has no
+	// collector-consent.txt, so consent.go quite correctly refuses to start -
+	// and the child exits before it ever reaches RegisterHotKey. That made both
+	// e2e registration checks fail on 2026-08-08 for a reason that had nothing
+	// to do with hotkeys.
+	//
+	// The refusal is the RIGHT behaviour and is tested elsewhere. What this
+	// file measures is whether a running --auto process takes the key from
+	// Windows, and it cannot measure that on a process that declined to run.
+	//
+	// Worth writing down, because it is a real property and not only a test
+	// artefact: an --auto run in a folder that has never been consented to does
+	// nothing at all, and says so in its log. Somebody wiring the collector to
+	// a scheduled task in a fresh directory will hit exactly this.
+	consent := "# staged by the hotkey e2e selftest\nagreed_version = " +
+		itoaSmall(consentVersion) + "\n"
+	if err := os.WriteFile(filepath.Join(dir, consentFile), []byte(consent), 0o644); err != nil {
+		return "", dir, err
+	}
 	return dst, dir, nil
 }
 

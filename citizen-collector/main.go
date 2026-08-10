@@ -39,7 +39,7 @@ const (
 	// Version stamps every capture. The rev 5 addendum requires that any file a
 	// crew member sends back names the package version that produced it, so the
 	// stamping starts here, at the first artifact this tool ever writes.
-	Version = "0.1.0"
+	Version = "0.2.0"
 
 	hotkeyID = 1
 )
@@ -108,10 +108,14 @@ func findGameWindow(allowAny bool, titleHint string) (foundWindow, error) {
 		if err != nil || r.Width() < 200 || r.Height() < 200 {
 			return true // tool windows and 0-size ghosts
 		}
-		title := windowText(h)
-		if title == "" {
-			return true
-		}
+		// PROCESS FIRST, TITLE SECOND. Reordered 2026-08-08.
+		//
+		// windowText was called on every visible window before anything knew
+		// whose window it was. Belt and braces against the deadlock fixed in
+		// winapi.go: even if the own-process skip there were ever removed, the
+		// cheap gate now runs first and most windows never get their title read
+		// at all. It is also faster - one PID lookup beats a title read on every
+		// Explorer window on the desktop.
 		exe := strings.ToLower(filepath.Base(processImageName(windowPID(h))))
 
 		// THE GATE. Anything that is not the game is refused here, before any
@@ -121,6 +125,11 @@ func findGameWindow(allowAny bool, titleHint string) (foundWindow, error) {
 				exe = "<unreadable>"
 			}
 			rejectedProcesses[exe]++
+			return true
+		}
+
+		title := windowText(h)
+		if title == "" {
 			return true
 		}
 
@@ -486,6 +495,68 @@ func selftest(outDir string) int {
 	// legitimately holds a global hotkey, and reporting that as FAIL would make
 	// the packager's "assert exit 0" fail for a reason unrelated to the package.
 	// VOID keeps the two facts apart, which is the whole point of exit 2.
+	// The 2026-08-07 fixes: the callback leak, the polling fallback and the
+	// interval in seconds. Placed before the existing hotkey checks because if
+	// the callback leak is back, nothing after it can be trusted.
+	// The log miner, the export and the game-exit hook that drives them.
+	// Placed before the collector checks because a privacy failure here is the
+	// one that reaches other people's machines.
+	runMineParseSelftest(check)
+	runMinePrivacySelftest(check)
+	runMineDedupSelftest(check)
+	runMineExitHookSelftest(check)
+	runExportSelftest(check)
+
+	// Added 2026-08-09: the resend defect. Nothing marked a row as delivered,
+	// so every export carried the entire history, forever - send #10
+	// re-uploaded everything from sends #1-9. See gamelog_mine.go's
+	// SentTxnKeys/MarkTxnsSent/dedupAgainstSent and upload.go's SendExport.
+	runSentRowsExportSelftest(check)
+	runSentRowsResurrectionSelftest(check)
+	runMarkTxnsSentSelftest(check)
+	runPendingRowsPanelSelftest(check)
+	runSentRowsExportPrivacySelftest(check)
+
+	// Added 2026-08-08: the contributor id, the dataset schema guard, and the
+	// three extractors that compiled for months while reaching nothing.
+	runInstallIDSelftest(check)
+	runMineSchemaSelftest(check)
+	runMineWiredParsersSelftest(check)
+
+	// The capture-value gate and the two triggers that were missing. This group
+	// exists because of the 40-capture audit, not because of a crash.
+	runTriggerValueSelftest(check)
+	runBurstSelftest(check)
+	runBurstSettingsSelftest(check)
+	runCombatSelftest(check)
+	runMergeSelftest(check)
+	runUIScriptSelftest(check)
+	runKeyWatchSelftest(check)
+	runHeldKeySelftest(check)
+	runUpdateSelftest(check)
+	runUploadSelftest(check)
+	runScrubShapeSelftest(check)
+	runConsentSelftest(check)
+	// Placed BEFORE the browser checks: they are all downstream of this
+	// decision, and if it cannot say no they are testing a page that is
+	// never served.
+	runWebView2DetectSelftest(check)
+	runBrowserUISelftest(check)
+	// Placed immediately after it: runBrowserUISelftest proves authorised() is
+	// correct, this proves the four handlers actually CALL it. The two are only
+	// meaningful together - the first can pass with the guard unreachable.
+	runBrowserSocketSelftest(check)
+	runShortcutSelftest(check)
+	runEnumSelftest(check)
+	runTraySizeSelftest(check)
+	runWGCThreadSelftest(check)
+
+	runCallbackLeakSelftest(check)
+	runHotkeyEdgeSelftest(check)
+	runHotkeyDedupSelftest(check)
+	runIntervalSecondsSelftest(check)
+	runIntervalSettingsSelftest(check)
+
 	runHotkeyDefaultSelftest(check)
 	hkVoid := runHotkeySelftest(check)
 	runHotkeyLoopSelftest(check)
@@ -557,6 +628,40 @@ func main() {
 		exeDir = filepath.Dir(p)
 	}
 
+	// ASK BEFORE READING ANYTHING. Placed here - before flags, before settings,
+	// before any file is opened - because a tool that reads first and asks
+	// afterwards has not asked. --selftest and --merge are exempt: neither
+	// touches the game or the player, and demanding agreement to run a test
+	// would be theatre.
+	// (The actual call is below, once we know which mode we are in.)
+
+	// Menu, loading-screen and spawn frames are OFF by default - see the
+	// 40-capture audit in auto.go's Trigger doc comment. Set
+	// capture_low_value = true in collector-settings.txt to get them back.
+	captureLowValue := false
+
+	// While a shop terminal is open the collector keeps shooting, so a list
+	// longer than one screen is recorded as it is scrolled. See session_burst.go.
+	burstCfg := defaultBurstConfig()
+
+	// Keys the player wants a picture taken on. Empty by default - the tool
+	// does not guess at somebody's bindings.
+	var watchKeys []*watchedKey
+
+	// Where a finished export is sent, if anywhere. Empty means the zip stays
+	// on disk and the operator hands it over however they like.
+	sendURL, sendKey := "", ""
+	// Default ON because clearing space is the whole point of one-click send -
+	// but see upload.go: this is the only code in the collector that destroys
+	// anything, so the person who owns the disk gets a switch.
+	clearAfterSend := true
+
+	// liveStore accumulates during play. It is merged and saved by MineAll at
+	// game exit; holding it in memory meanwhile means a two-second purchase is
+	// captured immediately without writing the whole dataset to disk per line.
+	liveStore := newMineStore()
+	liveChannel := "LIVE"
+
 	defCfg := defaultAutoConfig()
 
 	var (
@@ -566,14 +671,32 @@ func main() {
 		once    = flag.Bool("once", false, "capture once immediately and exit (no hotkey)")
 		list    = flag.Bool("list-windows", false, "list capturable windows and exit")
 		test    = flag.Bool("selftest", false, "run internal checks and exit")
+		merge   = flag.String("merge", "", "merge every export (.zip or .json) in this folder into one dataset and exit")
 		ui      = flag.Bool("ui", false, "open the window (this is also what happens with no arguments at all)")
+
+		// --version exists so a release can be checked against the BINARY
+		// rather than against the source sitting next to it.
+		//
+		// This is not pedantry. update.go compares the version in the
+		// published feed against the Version compiled into the running exe. If
+		// a release is labelled 0.2.0 while the exe still reports 0.1.0, every
+		// collector on every machine is told an update is available, downloads
+		// it, installs it, still reports 0.1.0, and is told again on the next
+		// check. Forever. Nothing errors, and from the operator's side it
+		// looks like the updater is simply broken.
+		//
+		// Reading main.go to find out what the exe says is exactly the mistake
+		// that shape of bug is made of - the source is what it WILL say after
+		// the next build, not what this file says now.
+		showVer = flag.Bool("version", false, "print the version compiled into this binary and exit")
 
 		gamelog = flag.String("gamelog", "", "force the Game.log to watch (default: derive from the game window, else scan LIVE, PTU, EPTU, TECH-PREVIEW in that order)")
 
-		auto     = flag.Bool("auto", false, "capture automatically on Game.log state changes (no hotkey needed)")
-		interval = flag.Int("interval", defCfg.IntervalMinutes, "minutes between fallback captures when nothing changes; 0 = off")
-		poll     = flag.Int("poll", defCfg.PollSeconds, "seconds between Game.log checks in --auto")
-		debounce = flag.Int("debounce", defCfg.DebounceSeconds, "minimum seconds between two automatic captures")
+		auto        = flag.Bool("auto", false, "capture automatically on Game.log state changes (no hotkey needed)")
+		intervalSec = flag.Int("interval-seconds", defCfg.IntervalSeconds, "seconds between fallback captures when nothing changes; 0 = off")
+		intervalMin = flag.Int("interval", 0, "DEPRECATED, MINUTES between fallback captures. Use -interval-seconds.")
+		poll        = flag.Int("poll", defCfg.PollSeconds, "seconds between Game.log checks in --auto")
+		debounce    = flag.Int("debounce", defCfg.DebounceSeconds, "minimum seconds between two automatic captures")
 	)
 	// Bench flags come from the variant file. In the crew build this registers
 	// nothing at all, so --allow-any-window and --window are not merely refused -
@@ -581,6 +704,15 @@ func main() {
 	bench := registerBenchFlags()
 
 	flag.Parse()
+
+	// Answered before consent, before settings, before any file is touched.
+	// Asking a program its own version must never be the thing that makes it
+	// start watching anything.
+	if *showVer {
+		fmt.Println(Version)
+		return
+	}
+
 	allowAny, windowHint := bench()
 
 	// Applied before anything resolves a log path, so --selftest, --once and
@@ -613,12 +745,98 @@ func main() {
 			*dst = v
 		}
 	}
-	applyInt("interval", "interval_minutes", interval)
 	applyInt("poll", "poll_seconds", poll)
 	applyInt("debounce", "debounce_seconds", debounce)
+
+	// THE INTERVAL, and why it is not one line like the others.
+	//
+	// The unit changed from minutes to seconds on 2026-08-07 (Sleven: 60s).
+	// Three things have to keep working through that change, and none of them
+	// may fail quietly:
+	//
+	//   an old settings file saying   interval_minutes = 10
+	//   a new settings file saying    interval_seconds = 60
+	//   an old support instruction    --interval 5        (meaning 5 MINUTES)
+	//
+	// Every one of them is honoured, and every conversion or conflict is
+	// printed. A user whose setting is being reinterpreted gets told.
+	if v, notes, err := resolveIntervalSeconds(cfgSettings); err != nil {
+		fmt.Fprintf(os.Stderr, "settings: %v (ignored, using %ds)\n", err, *intervalSec)
+	} else {
+		for _, n := range notes {
+			fmt.Fprintf(os.Stderr, "%s\n", n)
+		}
+		if !typed["interval-seconds"] && !typed["interval"] {
+			*intervalSec = v
+		}
+	}
+	if typed["interval"] {
+		if typed["interval-seconds"] {
+			fmt.Fprintf(os.Stderr,
+				"settings: both -interval and -interval-seconds were given. "+
+					"Using -interval-seconds=%d and ignoring -interval=%d.\n",
+				*intervalSec, *intervalMin)
+		} else {
+			*intervalSec = *intervalMin * 60
+			fmt.Fprintf(os.Stderr,
+				"settings: -interval is deprecated and means MINUTES; "+
+					"-interval %d has been read as %d seconds. Use -interval-seconds.\n",
+				*intervalMin, *intervalSec)
+		}
+	}
 	if !typed["auto"] {
 		if v, ok := cfgSettings.boolVal("auto"); ok {
 			*auto = v
+		}
+	}
+	if v, ok := cfgSettings.boolVal("capture_low_value"); ok {
+		captureLowValue = v
+	}
+	// THE "found" BOOLEAN IS NOT OPTIONAL, AND IGNORING IT DISABLED THE BURST.
+	//
+	// Caught in a live session on 2026-08-08, not by any test: two shop
+	// terminals opened, both fired event:terminal_open, and not one burst frame
+	// followed. intVal returns (0, false, nil) for a key that is ABSENT, and
+	// this code read only the value and the error - so a settings file written
+	// before burst_seconds existed set FrameSeconds to 0, which is the documented
+	// way to turn bursting OFF.
+	//
+	// Every settings file in the world was missing that key. The feature was
+	// dead on arrival on every machine, and it looked exactly like a feature
+	// that had not been reached yet.
+	if v, found, err := cfgSettings.intVal("burst_seconds"); found && err == nil && v >= 0 {
+		burstCfg.FrameSeconds = v
+	}
+	if v, found, err := cfgSettings.intVal("burst_max_frames"); found && err == nil && v > 0 {
+		burstCfg.MaxFrames = v
+	}
+	if v, ok := cfgSettings.str("send_url"); ok {
+		sendURL = strings.TrimSpace(v)
+	}
+	if v, ok := cfgSettings.str("send_key"); ok {
+		sendKey = strings.TrimSpace(v)
+	}
+	if v, ok := cfgSettings.boolVal("clear_after_send"); ok {
+		clearAfterSend = v
+	}
+	if v, ok := cfgSettings.str("capture_keys"); ok && strings.TrimSpace(v) != "" {
+		keys, problems := ParseWatchedKeys(v)
+		watchKeys = append(watchKeys, keys...)
+		// Printed, not appended. settingNotes was already consumed ~90 lines
+		// above, so appending here dropped every complaint on the floor -
+		// exactly the "NAMED, NOT SWALLOWED" promise keywatch.go makes.
+		for _, p := range problems {
+			fmt.Fprintf(os.Stderr, "settings: capture_keys: %s\n", p)
+		}
+	}
+	// Keys that describe an ACTIVITY rather than a moment - a mining laser held
+	// for thirty seconds is thirty seconds of changing readouts, and one frame
+	// at the instant before anything happened is the wrong answer.
+	if v, ok := cfgSettings.str("capture_keys_held"); ok && strings.TrimSpace(v) != "" {
+		keys, problems := ParseHeldKeys(v)
+		watchKeys = append(watchKeys, keys...)
+		for _, p := range problems {
+			fmt.Fprintf(os.Stderr, "settings: capture_keys_held: %s\n", p)
 		}
 	}
 	if !typed["out"] {
@@ -665,19 +883,108 @@ func main() {
 	// being passed. --ui exists too, for automation and for testing, but it is
 	// never required and never the documented way to do anything.
 	if *ui || flag.NFlag() == 0 && flag.NArg() == 0 {
+		// CONSENT, HERE, BEFORE runUI OPENS ANYTHING.
+		//
+		// Found by review 2026-08-08, independently by two reviewers. The gate
+		// used to live ~75 lines below, after this branch had already returned -
+		// so the ONE mode the README tells testers to use ("Double-click
+		// collector.exe") never asked. --auto and --once asked; the default did
+		// not. consent.go's own header says it must appear in EVERY mode before
+		// the first log line is read, and the wiring did not implement it.
+		if !AskConsent(exeDir, nil) {
+			return
+		}
 		logPath := filepath.Join(exeDir, "collector-auto.log")
+
+		// Asked once, immediately after consent, and only in this branch.
+		//
+		// THIS BRANCH ONLY, deliberately. This is the double-click path - the
+		// one a person who has never opened a terminal uses, and the only one
+		// where "I cannot find it again" is a real problem. Somebody running
+		// --auto from a scheduled task does not want a desktop icon and has not
+		// asked to be interrupted by a dialog.
+		OfferShortcuts(exeDir, func(f string, a ...interface{}) {
+			if lf, err := openAutoLog(logPath); err == nil {
+				fmt.Fprintf(lf, "[%s] %s\n",
+					time.Now().Format("2006-01-02 15:04:05"), fmt.Sprintf(f, a...))
+				lf.Close()
+			}
+		})
 		cfg := autoConfig{
 			PollSeconds:     *poll,
 			DebounceSeconds: *debounce,
-			IntervalMinutes: *interval,
+			IntervalSeconds: *intervalSec,
+			CaptureLowValue: captureLowValue,
+			Burst:           burstCfg,
+			Keys:            watchKeys,
 		}
-		if err := runUI(cfg, *outDir, exeDir, logPath, *hotkey); err != nil {
+		if err := runUI(cfg, *outDir, exeDir, logPath, *hotkey, sendURL, sendKey, clearAfterSend); err != nil {
 			// No console to print to. Windows' own message box is the only
 			// place a person will ever see this.
 			showErrorBox("Citizen Collector", err.Error())
 			os.Exit(1)
 		}
 		return
+	}
+
+	// --merge turns a folder of other people's exports into one dataset.
+	//
+	// A separate mode rather than a button, because it is the ONE operation
+	// that is about everybody else's data rather than this machine's, and
+	// because whoever runs it wants to read the output rather than have it
+	// disappear into a window.
+	if strings.TrimSpace(*merge) != "" {
+		dir := strings.TrimSpace(*merge)
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			fmt.Printf("merge: cannot read %s: %v\n", dir, err)
+			os.Exit(1)
+		}
+		var paths []string
+		for _, e := range entries {
+			if e.IsDir() {
+				continue
+			}
+			ext := strings.ToLower(filepath.Ext(e.Name()))
+			// Skip the merge's own output, or a second run eats its own result
+			// and every confidence number doubles.
+			if e.Name() == "merged-dataset.json" {
+				continue
+			}
+			if ext == ".zip" || ext == ".json" {
+				paths = append(paths, filepath.Join(dir, e.Name()))
+			}
+		}
+		if len(paths) == 0 {
+			fmt.Printf("merge: nothing to merge in %s - looking for .zip exports or "+
+				"gamelog-dataset.json files\n", dir)
+			os.Exit(1)
+		}
+		m, err := MergeExports(paths, func(f string, a ...interface{}) {
+			fmt.Printf(f+"\n", a...)
+		})
+		if err != nil {
+			fmt.Printf("merge: %v\n", err)
+			os.Exit(1)
+		}
+		out := filepath.Join(dir, "merged-dataset.json")
+		if err := SaveMerged(m, out); err != nil {
+			fmt.Printf("merge: could not write %s: %v\n", out, err)
+			os.Exit(1)
+		}
+		fmt.Printf("\nmerged %d source(s) from %d contributor(s)\n",
+			len(m.Sources), len(m.Contributors))
+		fmt.Printf("  %d price observations, %d locations, %d ship classes\n",
+			len(m.Prices), len(m.Locations), len(m.Ships))
+		if len(m.Disagreements) > 0 {
+			fmt.Printf("  %d PRICE DISAGREEMENTS - not resolved, listed in the file "+
+				"with the builds so you can judge\n", len(m.Disagreements))
+		}
+		for _, w := range m.Warnings {
+			fmt.Printf("  WARNING: %s\n", w)
+		}
+		fmt.Printf("wrote %s\n", out)
+		os.Exit(0)
 	}
 
 	if *test {
@@ -689,6 +996,13 @@ func main() {
 		p := writeSelftestResults(exeDir, code, transcript)
 		fmt.Printf("results written to %s\n", p)
 		os.Exit(code)
+	}
+
+	// Consent gate. Everything past this point can read the game or the disk.
+	if !*test && strings.TrimSpace(*merge) == "" && !*list {
+		if !AskConsent(exeDir, nil) {
+			os.Exit(0)
+		}
 	}
 
 	if *list {
@@ -764,8 +1078,8 @@ func main() {
 			fmt.Fprintf(os.Stderr, "--debounce cannot be negative (got %d)\n", *debounce)
 			os.Exit(2)
 		}
-		if *interval < 0 {
-			fmt.Fprintf(os.Stderr, "--interval cannot be negative; use 0 to turn it off (got %d)\n", *interval)
+		if *intervalSec < 0 {
+			fmt.Fprintf(os.Stderr, "--interval-seconds cannot be negative; use 0 to turn it off (got %d)\n", *intervalSec)
 			os.Exit(2)
 		}
 
@@ -794,7 +1108,7 @@ func main() {
 		fmt.Printf("log      : %s\n", logPath)
 		fmt.Printf("settings : %s\n", filepath.Join(exeDir, settingsFileName))
 		fmt.Printf("poll %ds, debounce %ds, interval %s\n",
-			*poll, *debounce, intervalDesc(*interval))
+			*poll, *debounce, intervalDesc(*intervalSec))
 
 		// The watched log, and HOW it was chosen, on every start. The scan
 		// takes the first of LIVE, PTU, EPTU, TECH-PREVIEW that exists, which
@@ -826,7 +1140,7 @@ func main() {
 		// different place, and the console is hidden moments from now - so the
 		// log line is the only record that will still exist.
 		var (
-			hotkeyPresses <-chan struct{}
+			hotkeyPresses <-chan string
 			hotkeyName    string
 		)
 		if hl, err := startHotkeyListener(hotkeyID, *hotkey); err != nil {
@@ -872,12 +1186,49 @@ func main() {
 				}
 				return p, err
 			},
+
+			// MINE THE SESSION LOG WHEN THE GAME CLOSES.
+			//
+			// This hook has existed, been edge-detected and been covered by a
+			// passing selftest since 2026-08-07 - and nothing ever set it. The
+			// test supplied its own closure and asserted the edge fired exactly
+			// once, which it did, so the check passed while the product did
+			// nothing. gamelog_mine.go's own header says mining "runs on start
+			// and again when the game exits"; the second half of that sentence
+			// was not true until this line existed.
+			//
+			// Worth naming plainly: a green test proved the plumbing, not the
+			// feature. That gap is only visible by reading the caller.
+			// LIVE STREAM. Every appended log line lands in the dataset as the
+			// game writes it, so a two-second transaction is recorded the moment
+			// it happens instead of at session end.
+			onLogLine: func(line string) {
+				liveStore.MineLive(line, "", liveChannel)
+			},
+
+			onGameExit: func() {
+				logf("live: %d transactions, %d deaths, %d ships seen while playing",
+					len(liveStore.Txns), len(liveStore.Deaths), len(liveStore.Ships))
+				in, err := LoadOrCreateInstall(exeDir, logf)
+				if err != nil {
+					logf("mine: continuing without a contributor id (%v)", err)
+				}
+				if _, err := MineAll(*outDir, in, logf); err != nil {
+					logf("mine: this pass did not complete: %v", err)
+				}
+			},
 		}
 
+		// Same config as the window path. These two drifted once already: the
+		// UI branch got CaptureLowValue and Burst and this one did not, so
+		// --auto silently behaved differently from the program people run.
 		cfg := autoConfig{
 			PollSeconds:     *poll,
 			DebounceSeconds: *debounce,
-			IntervalMinutes: *interval,
+			IntervalSeconds: *intervalSec,
+			CaptureLowValue: captureLowValue,
+			Burst:           burstCfg,
+			Keys:            watchKeys,
 		}
 		if err := runAuto(cfg, logPath, deps, nil); err != nil {
 			logf("auto mode ended: %v", err)

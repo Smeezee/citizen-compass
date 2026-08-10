@@ -15,11 +15,11 @@ import (
 )
 
 const (
-	srcCopy       = 0x00CC0020
-	captureBlt    = 0x40000000
-	dibRGBColors  = 0
-	biRGB         = 0
-	pwClientOnly  = 0x00000001
+	srcCopy      = 0x00CC0020
+	captureBlt   = 0x40000000
+	dibRGBColors = 0
+	biRGB        = 0
+	pwClientOnly = 0x00000001
 	// PW_RENDERFULLCONTENT. Undocumented until Win8.1, this is what makes
 	// PrintWindow work against composited/DirectComposition windows at all.
 	pwRenderFullContent = 0x00000002

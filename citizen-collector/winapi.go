@@ -20,7 +20,9 @@ package main
 //   numerically.
 
 import (
+	"os"
 	"fmt"
+	"sync"
 	"syscall"
 	"unsafe"
 )
@@ -48,6 +50,10 @@ var (
 	procFindWindowW         = modUser32.NewProc("FindWindowW")
 	procEnumWindows         = modUser32.NewProc("EnumWindows")
 	procGetWindowTextW      = modUser32.NewProc("GetWindowTextW")
+	// InternalGetWindowText reads a caption without sending WM_GETTEXT, which
+	// is the only safe way to ask our OWN windows for their title. See
+	// windowText. Undocumented, present since NT 4; resolved defensively.
+	procInternalGetWindowText = modUser32.NewProc("InternalGetWindowText")
 	procGetClassNameW       = modUser32.NewProc("GetClassNameW")
 	procIsWindowVisible     = modUser32.NewProc("IsWindowVisible")
 	procGetWindowRect       = modUser32.NewProc("GetWindowRect")
@@ -59,6 +65,7 @@ var (
 	procGetForegroundWindow = modUser32.NewProc("GetForegroundWindow")
 	procGetWindowThreadPID  = modUser32.NewProc("GetWindowThreadProcessId")
 	procSetProcessDPIAware  = modUser32.NewProc("SetProcessDPIAware")
+	procGetAsyncKeyState    = modUser32.NewProc("GetAsyncKeyState")
 
 	// Used by --auto to hide the console it was launched from. See
 	// hideConsole() in auto.go for why hidden and not freed.
@@ -206,12 +213,58 @@ func GetClientRectOf(h HWND) (RECT, error) {
 	return r, nil
 }
 
+// windowText reads a window's caption WITHOUT ever being able to block.
+//
+// # WHY THIS IS NOT JUST A GetWindowTextW WRAPPER
+//
+// GetWindowTextW behaves differently depending on who owns the window. For
+// another process's window it reads kernel structures and returns. For a window
+// owned by the CALLING process it sends WM_GETTEXT - a blocking SendMessage
+// with no timeout - and if the owning thread is not pumping messages, it never
+// returns. That is the deadlock that killed two sessions on 2026-08-08; the
+// full account is in the note above EnumTopWindows.
+//
+// # WHY THE GUARD MOVED HERE, 2026-08-08 (second revision)
+//
+// The first fix skipped our own windows during enumeration. It worked, and it
+// was in the wrong place: the hazard is not "enumerate an own window", it is
+// "send a blocking message to an own window". Guarding the enumeration also
+// hid every own window from every caller, which broke the process-lock
+// selftest's decoy - the decoy is deliberately one of ours - and turned a
+// working negative control into a failure. A check that cannot see the thing it
+// tests is not a check.
+//
+// So the guard sits on the exact dangerous call instead. Own windows are
+// enumerated normally, and their captions are read with InternalGetWindowText,
+// which copies the caption out of the window structure and sends nothing.
+//
+// # IF InternalGetWindowText IS NOT THERE
+//
+// It is undocumented, though present in every user32 since NT 4. If it is ever
+// absent, this returns an empty string for our own windows rather than falling
+// back to GetWindowTextW. An unread title costs nothing - the collector is
+// looking for starcitizen.exe and has never needed to read its own caption -
+// and the fallback would reintroduce the deadlock, which is the one outcome
+// worth refusing outright.
 func windowText(h HWND) string {
 	buf := make([]uint16, 512)
+	if isOwnWindow(h) {
+		if !internalTextAvailable {
+			return ""
+		}
+		n, _, _ := syscall.SyscallN(procInternalGetWindowText.Addr(), uintptr(h),
+			uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)))
+		return syscall.UTF16ToString(buf[:n])
+	}
 	n, _, _ := syscall.SyscallN(procGetWindowTextW.Addr(), uintptr(h),
 		uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)))
 	return syscall.UTF16ToString(buf[:n])
 }
+
+// internalTextAvailable is resolved once, at startup, rather than per call.
+// procInternalGetWindowText.Addr() on a missing export panics, so the Find must
+// happen before anything can reach the Addr.
+var internalTextAvailable = procInternalGetWindowText.Find() == nil
 
 func windowClass(h HWND) string {
 	buf := make([]uint16, 256)
@@ -257,15 +310,108 @@ func processImageName(pid uint32) string {
 }
 
 // EnumTopWindows walks every top-level window. Callback returns false to stop.
-func EnumTopWindows(fn func(h HWND) bool) {
-	cb := syscall.NewCallback(func(h HWND, _ uintptr) uintptr {
-		if fn(h) {
+//
+// # WHY THERE IS EXACTLY ONE CALLBACK HERE, CREATED ONCE
+//
+// syscall.NewCallback allocates out of a fixed table that is scoped to the
+// PROCESS and is never freed. Creating one per call therefore leaks a slot per
+// call, permanently.
+//
+// This function is reached from findGameWindow on the 2-second poll tick. At
+// roughly 420 calls a minute the table was exhausted in a little over fourteen
+// minutes, every time, and the process died with:
+//
+//	fatal error: too many callback functions
+//
+// Measured in the field on 2026-08-07: four consecutive crashes at 14m2s,
+// 14m4s, 14m4s and 14m0s. A fixed budget spent at a fixed rate, not a race.
+//
+// So: ONE callback for the life of the process, dispatching through a
+// package-level function pointer that the mutex protects.
+//
+// Holding enumMu across the EnumWindows call is correct and is not a deadlock
+// risk FROM REENTRANCY: EnumWindows is SYNCHRONOUS, so enumFn cannot still be
+// in use once the lock is released. Nested calls from inside fn would deadlock;
+// nothing does that.
+//
+// # BUT THERE WAS A SECOND DEADLOCK, AND IT WAS NOT REENTRANCY - FOUND 2026-08-08
+//
+// The note above was right about the hazard it described and blind to the one
+// that mattered. The real shape is a lock-ordering inversion against a Win32
+// message dependency:
+//
+//	GetWindowTextW is documented to behave differently depending on WHO owns the
+//	window. For a window in ANOTHER process it reads the caption out of kernel
+//	structures and returns immediately. For a window owned by the CALLING
+//	process it sends WM_GETTEXT - a blocking SendMessage that does not return
+//	until the owning thread pumps messages. There is no timeout.
+//
+// The collector's own webview window is 480x660, visible and titled, so it sailed
+// through the visibility and 200x200 filters and had its title read on EVERY
+// enumeration. Meanwhile:
+//
+//	runAuto goroutine        takes enumMu -> reaches our own HWND -> SendMessage
+//	                         -> waits for the UI thread to pump
+//	UI thread (state/refresh) is INSIDE a webview binding, so it is not pumping,
+//	                         and it calls enumMu.Lock() -> waits for runAuto
+//
+// Neither ever proceeds. The window goes "Not Responding" for good, auto-capture
+// stops, the heartbeat stops, and the last log line looks like an ordinary poll.
+// It needs Task Manager. Two collector sessions on 2026-08-08 ended after ~30
+// minutes with termination-style exit codes and no Go panic, which is what this
+// looks like from outside.
+//
+// # THE FIX: NEVER ASK OUR OWN WINDOWS ANYTHING
+//
+// This process's windows are skipped in the callback, before any caller can
+// touch them. The collector is looking for starcitizen.exe; it has never had a
+// reason to read its own title, and the one call that could block is now
+// impossible to make.
+//
+// Done HERE rather than in findGameWindow on purpose. The deadlock is a property
+// of the enumeration, not of one caller - a future second caller would otherwise
+// reintroduce it, and it would take another two-day hunt to find.
+var (
+	enumMu       sync.Mutex
+	enumFn       func(h HWND) bool
+	enumCallback = syscall.NewCallback(func(h HWND, _ uintptr) uintptr {
+		if enumFn == nil {
+			return 0 // stop; nothing is listening
+		}
+		// NO OWN-WINDOW SKIP HERE ANY MORE - deliberately. The guard moved to
+		// windowText, which is where the blocking call actually lives. See the
+		// second revision note there. Hiding own windows from every caller
+		// blinded the process-lock selftest to its own decoy, and a check that
+		// cannot see what it tests is not a check.
+		if enumFn(h) {
 			return 1
 		}
 		return 0
 	})
-	syscall.SyscallN(procEnumWindows.Addr(), cb, 0)
+
+	ownPID = uint32(os.Getpid())
+)
+
+// isOwnWindow reports whether h belongs to this process.
+//
+// Cheap: one GetWindowThreadProcessId, no handle opened, no string built. It
+// runs per window per enumeration, so it has to be.
+func isOwnWindow(h HWND) bool {
+	return windowPID(h) == ownPID
 }
+
+func EnumTopWindows(fn func(h HWND) bool) {
+	enumMu.Lock()
+	defer enumMu.Unlock()
+	enumFn = fn
+	defer func() { enumFn = nil }()
+	syscall.SyscallN(procEnumWindows.Addr(), enumCallback, 0)
+}
+
+// callbacksAllocated reports how many syscall callbacks this package has
+// created. It exists so the selftest can assert the number does not grow, which
+// is the only way to prove the fix above rather than merely exercise it.
+func callbacksAllocated() int { return 1 }
 
 func GetForegroundWindowHandle() HWND {
 	h, _, _ := syscall.SyscallN(procGetForegroundWindow.Addr())
@@ -407,4 +553,34 @@ func RoGetActivationFactory(class string, iid *GUID) (unsafe.Pointer, error) {
 		return nil, hrErr("RoGetActivationFactory("+class+")", hr)
 	}
 	return out, nil
+}
+
+// ---------------------------------------------------------------------------
+// async keyboard state
+// ---------------------------------------------------------------------------
+
+// Virtual-key codes for the modifiers, as GetAsyncKeyState wants them. These
+// are the "either side" codes: VK_MENU is Alt, left or right.
+const (
+	vkShift   = 0x10
+	vkControl = 0x11
+	vkMenu    = 0x12 // Alt
+	vkLWin    = 0x5B
+	vkRWin    = 0x5C
+)
+
+// keyIsDown reports whether a key is physically down RIGHT NOW.
+//
+// GetAsyncKeyState returns two useful bits and they are easy to confuse:
+//
+//	0x8000  the key is down at this instant          <- we use this
+//	0x0001  the key went down since the last call    <- we deliberately do not
+//
+// The low bit is shared process-wide and is cleared by whoever reads it first,
+// so two readers race and one silently loses. Reading only the high bit and
+// doing our own edge detection means this cannot be perturbed by anything else
+// in the process, now or later.
+func keyIsDown(vk uint32) bool {
+	r, _, _ := syscall.SyscallN(procGetAsyncKeyState.Addr(), uintptr(vk))
+	return r&0x8000 != 0
 }

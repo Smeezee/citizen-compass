@@ -16,6 +16,7 @@ package main
 // on it, and contains no capture logic of its own.
 
 import (
+	"sync"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -232,7 +233,8 @@ func verifiedRuntimeNote(exeDir string) string {
 }
 
 // runUI opens the window and runs until it is closed.
-func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string) error {
+func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, sendURL, sendKey string,
+	clearAfterSend bool) error {
 	// Relaunch once so the bundled runtime is inherited from process creation.
 	// This process then has nothing left to do.
 	if pinBundledRuntime(exeDir) {
@@ -274,14 +276,34 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 	checkPreviousRun(exeDir, logf)
 
 	// Reported from what will ACTUALLY be used, not from what was intended.
+	// State the environment BEFORE anything can go wrong in it. See
+	// startup_diag.go - four wrong hotkey diagnoses in two days would all have
+	// been settled by these lines.
+	LogStartupDiagnostics(logf, exeDir)
+
+	// A visible sign of life. Built to fail without consequence - see tray.go.
+	// If the notification area refuses it, the icon is missing and nothing else
+	// changes.
+	tray := StartTray(logf)
+	defer tray.Stop()
+	tray.SetStatus("Citizen Collector - waiting for Star Citizen")
+
 	logf("webview2 runtime: %s", verifiedRuntimeNote(exeDir))
 
 	seq := nextSequence(outDir)
+	// seq is touched by the auto loop AND by the Capture-now button, which run
+	// on different threads. Without this both read the same number, format the
+	// same second-resolution filename, and the second write truncates the first.
+	var seqMu sync.Mutex
+
+	// liveStore accumulates during play; MineAll merges from the log files at
+	// exit. Held here so the exit hook above can report what it saw.
+	liveStore := newMineStore()
 
 	// THE ENGINE. Same loop the command line runs - not a reimplementation.
 	// §7: it follows the game, because runAuto's window gate already means no
 	// game window is no capture. There is nothing to start and nothing to stop.
-	var hotkeyPresses <-chan struct{}
+	var hotkeyPresses <-chan string
 	hotkeyName := ""
 	if hl, err := startHotkeyListener(hotkeyID, hotkeySpec); err != nil {
 		// SAY WHAT IT ACTUALLY MEANS. "Hot key is already registered" reads as
@@ -306,10 +328,40 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 			_, err := findGameWindow(false, "")
 			return err
 		},
+		// LIVE MINING AND THE EXIT MINE, IN THE MODE PEOPLE ACTUALLY RUN.
+		//
+		// Both were wired into --auto and left nil here. Review 2026-08-08 caught
+		// it, and it is the SECOND time this exact gap has been found: main.go
+		// already carries a comment celebrating the fix on the other branch. A
+		// passing selftest proved the plumbing again, not the feature, because
+		// the test supplies its own closure.
+		onLogLine: func(line string) {
+			liveStore.MineLive(line, "", "LIVE")
+		},
+		onGameExit: func() {
+			logf("live: %d transactions, %d deaths, %d ships seen while playing",
+				len(liveStore.Txns), len(liveStore.Deaths), len(liveStore.Ships))
+			in, err := LoadOrCreateInstall(exeDir, logf)
+			if err != nil {
+				logf("mine: continuing without a contributor id (%v)", err)
+			}
+			if _, err := MineAll(outDir, in, logf); err != nil {
+				logf("mine: this pass did not complete: %v", err)
+			}
+		},
+
 		capture: func(t Trigger) (string, error) {
-			p, err := doCapture(outDir, false, "", "", seq, t)
+			seqMu.Lock()
+			mySeq := seq
+			seq++
+			seqMu.Unlock()
+			p, err := doCapture(outDir, false, "", "", mySeq, t)
+			// The tooltip is the only place a person sees this without opening
+			// a file, so it says the COUNT and the last reason - the two things
+			// that distinguish "working" from "running".
+			tray.SetStatus(fmt.Sprintf("Citizen Collector - %d captures, last: %s",
+				seq+1, t.Reason()))
 			if err == nil {
-				seq++
 			}
 			return p, err
 		},
@@ -324,6 +376,65 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 
 	uid := defaultUIDeps(outDir, autoLogPath)
 
+	// What the window says about input. hotkeyName is "" exactly when
+	// registration failed, which is the distinction the panel has to show:
+	// a key that was never taken and a key that is broken look identical from
+	// the outside, and only this knows which happened.
+	uid.hotkey = hotkeyName
+	uid.hotkeyOK = hotkeyName != ""
+	if uid.hotkey == "" {
+		uid.hotkey = hotkeySpec
+	}
+	uid.watchKeys = NewKeyWatcher(cfg.Keys).Describe()
+	uid.settings = filepath.Join(exeDir, settingsFileName)
+
+	// ONE DEFINITION OF WHAT THE BUTTONS DO. See ui_actions.go.
+	//
+	// Both transports dispatch into this map. Nothing below implements an
+	// action; the bindings are three-line adapters that convert a typed webview
+	// call into a JSON one, and the browser server does the same in the other
+	// direction. That is the only way two front ends can be guaranteed not to
+	// drift, and hard rule 14 is on the books because this project has been
+	// bitten by drift five times.
+	acts := buildUIActions(uiActionCtx{
+		Deps:           uid,
+		Auto:           deps,
+		ExeDir:         exeDir,
+		OutDir:         outDir,
+		SendURL:        sendURL,
+		SendKey:        sendKey,
+		ClearAfterSend: clearAfterSend,
+		Logf:           logf,
+	})
+	// The tray is the only place a person sees a message without opening a
+	// file, so long-running work reports there. Set after the tray exists; if
+	// the notification area refused the icon this stays a harmless no-op.
+	uiNotify = tray.SetStatus
+
+	callString := func(name string, arg interface{}) string {
+		var raw json.RawMessage
+		if arg != nil {
+			raw, _ = json.Marshal(arg)
+		}
+		v, err := acts[name](raw)
+		if err != nil {
+			return "That didn't work: " + err.Error()
+		}
+		s, _ := v.(string)
+		return s
+	}
+
+	// WEBVIEW2 OR THE BROWSER - decided here, once, and never asked about.
+	//
+	// A missing runtime used to be a dead end that the 271 MB package existed
+	// to prevent. It is now simply the other path, and the person on the far
+	// end is never told which one they got because there is nothing they could
+	// usefully do with the information.
+	if !webview2Available(exeDir) {
+		logf("window: no WebView2 runtime found, using the browser instead")
+		return serveBrowserUI(acts, logf)
+	}
+
 	w := webview2.NewWithOptions(webview2.WebViewOptions{
 		Debug:     false,
 		AutoFocus: true,
@@ -335,36 +446,36 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath string, hotkeySpec string
 		},
 	})
 	if w == nil {
-		return fmt.Errorf("the window could not be created")
+		// THE SECOND ANSWER TO THE SAME QUESTION, and the reason
+		// webview2Available says it is not the last word.
+		//
+		// A runtime can be present on disk and still fail to load: wrong
+		// architecture, a half-applied update, group policy, a profile
+		// directory the user cannot write to. Before the browser path existed
+		// this was a dead end and the program simply stopped. Now it is just
+		// the other route, and the person never finds out anything went wrong.
+		logf("window: the WebView2 window could not be created, using the browser instead")
+		return serveBrowserUI(acts, logf)
 	}
 	defer w.Destroy()
 
-	// state() is called by the page on a timer. Every call rebuilds from
-	// reality; nothing is cached between calls (§9).
-	w.Bind("state", func() string {
-		b, _ := json.Marshal(buildUIState(uid))
-		return string(b)
-	})
-
-	// CAPTURE NOW. §8's one button plus this: a button cannot silently fail to
-	// register, which the hotkey demonstrably can.
-	w.Bind("captureNow", func() string {
-		if err := deps.gameAlive(); err != nil {
-			return "Star Citizen isn't running, so there's nothing to photograph yet."
-		}
-		p, err := deps.capture(Trigger{Kind: "hotkey", Note: "button"})
+	// The nine bindings. Each one is an adapter, not an implementation.
+	w.Bind("state", func() string { return callString("state", nil) })
+	w.Bind("captureNow", func() string { return callString("captureNow", nil) })
+	w.Bind("countData", func() string { return callString("countData", nil) })
+	w.Bind("sendData", func(includePNG bool) string { return callString("sendData", includePNG) })
+	w.Bind("checkUpdate", func() string { return callString("checkUpdate", nil) })
+	w.Bind("applyUpdate", func() string { return callString("applyUpdate", nil) })
+	w.Bind("makePackage", func() string { return callString("makePackage", nil) })
+	w.Bind("openCaptures", func() string { return callString("openCaptures", nil) })
+	w.Bind("restartNow", func() string { return callString("restartNow", nil) })
+	w.Bind("canPackage", func() bool {
+		v, err := acts["canPackage"](nil)
 		if err != nil {
-			logf("button capture FAILED: %v", err)
-			return "That didn't work. The details are in the log file."
+			return false
 		}
-		logf("captured %s  <- button (manual)", filepath.Base(p))
-		return "Saved " + filepath.Base(p)
-	})
-
-	w.Bind("openCaptures", func() string {
-		_ = os.MkdirAll(outDir, 0o755)
-		_ = exec.Command("explorer.exe", outDir).Start()
-		return ""
+		ok, _ := v.(bool)
+		return ok
 	})
 
 	w.SetHtml(uiHTML)
@@ -426,6 +537,10 @@ const uiHTML = `<!DOCTYPE html>
   .toast { margin-top: 11px; font-size: 13px; color: #46c17c; min-height: 18px; text-align: center; }
   .log { margin-top: 4px; font: 11.5px/1.55 Consolas, monospace; color: #5d6673;
          white-space: pre-wrap; word-break: break-all; }
+  .kv { display: flex; gap: 10px; margin-top: 7px; font-size: 13px; align-items: baseline; }
+  .kv .k { color: #7e8794; flex: none; min-width: 92px; }
+  .kv .v { color: #cfd6df; }
+  .kv .v.bad { color: #e0a34a; }
 </style></head><body>
   <h1>Citizen Collector</h1>
 
@@ -437,11 +552,55 @@ const uiHTML = `<!DOCTYPE html>
   </div>
   <div class="sub" id="sub"></div>
 
+  <!-- THE KEY, ON SCREEN. The panel told a person the log path, the capture
+       count and the folder - everything except the one thing they have to DO.
+       Sleven, watching it run on a friend's machine: "there need to be a place
+       for users to look at what the hotkey [is]". -->
+  <div class="kv"><span class="k">Picture key</span><span class="v" id="hotkey">—</span></div>
+  <div class="kv" id="watchrow" style="display:none"><span class="k">Watched keys</span><span class="v" id="watchkeys">—</span></div>
+
   <div class="problem" id="problem"></div>
 
+  <!-- ALWAYS VISIBLE, whatever the answer.
+       This used to be display:none unless an update existed, and the check ran
+       once at startup. So on a machine with no update, a machine with no
+       internet, or - as was true for the whole of 2026-08-08 - a feed that had
+       never been published, the person saw absolutely nothing and had no way to
+       ask. "I don't see an easy way for that to happen" was exactly right.
+       A status you can read and click beats a box that appears by magic. -->
+  <div class="note" id="updateline" title="Click to check again">Checking for updates…</div>
+  <div id="updatebox" style="display:none">
+    <div class="note" id="updatemsg" style="margin-bottom:6px"></div>
+    <button id="updatego">Update now</button>
+    <button class="ghost" id="updatelater">Not now</button>
+  </div>
+  <div id="restartbox" style="display:none">
+    <div class="note" id="restartmsg" style="margin-bottom:6px"></div>
+    <button id="restartgo">Restart now</button>
+  </div>
+
   <button id="send">Send my data back</button>
+  <div id="sendchoice" style="display:none">
+    <div class="note" id="sendmsg" style="margin-bottom:6px"></div>
+    <button class="ghost" id="senddata">Data only</button>
+    <button class="ghost" id="sendboth">Include my screenshots too</button>
+    <button class="ghost" id="sendcancel">Cancel</button>
+  </div>
   <button class="ghost" id="capture">Take a picture now</button>
   <button class="ghost" id="open">Open the pictures folder</button>
+  <button class="ghost" id="pkg" style="display:none">Make a copy to give somebody</button>
+  <div id="pkgchoice" style="display:none">
+    <!-- ONE package now. The two-option version offered "For any PC - about
+         200 MB" against "Small - only if they already have WebView2", which
+         was true until the browser fallback landed and then actively steered
+         you to the 271 MB file you cannot send. The small one works
+         everywhere now, so there is nothing left to choose. -->
+    <div class="note" style="margin-bottom:6px">Makes a zip of about 6 MB that runs on
+      any Windows PC with nothing to install. Your data, screenshots and contributor
+      id are left out.</div>
+    <button class="ghost" id="pkgmake">Make it</button>
+    <button class="ghost" id="pkgcancel">Cancel</button>
+  </div>
   <div class="toast" id="toast"></div>
 
   <div class="note">Nothing leaves your computer until you press that button.</div>
@@ -449,6 +608,7 @@ const uiHTML = `<!DOCTYPE html>
   <div class="panel">
     <div class="row"><div class="k">Watching</div><div class="v" id="logpath">—</div></div>
     <div class="row"><div class="k">Pictures</div><div class="v" id="captures">—</div></div>
+    <div class="row"><div class="k">Data</div><div class="v" id="rows">—</div></div>
     <div class="log" id="recent"></div>
   </div>
 
@@ -464,6 +624,26 @@ const uiHTML = `<!DOCTYPE html>
   function refresh() {
     window.state().then(function (raw) {
       var s = JSON.parse(raw);
+
+      var hk = document.getElementById('hotkey');
+      if (s.hotkey_ok) {
+        hk.textContent = s.hotkey + '  —  press it any time to take a picture';
+        hk.className = 'v';
+      } else {
+        // NOT SILENT WHEN IT FAILED. Registration really does fail - another
+        // collector still running, a vendor utility that took the combination
+        // first - and pressing a key that was never registered feels exactly
+        // like pressing a broken one. This is the only place that difference
+        // can be seen.
+        hk.textContent = (s.hotkey || 'none') +
+          '  —  NOT registered. Another collector may still be running. ' +
+          'The button below works either way.';
+        hk.className = 'v bad';
+      }
+      if (s.watch_keys) {
+        document.getElementById('watchrow').style.display = '';
+        document.getElementById('watchkeys').textContent = s.watch_keys;
+      }
 
       document.getElementById('dot').className = 'dot' + (s.collecting ? ' on' : '');
       var h = document.getElementById('headline');
@@ -490,6 +670,12 @@ const uiHTML = `<!DOCTYPE html>
         s.log_path ? (s.log_path + (s.log_how ? '  (' + s.log_how + ')' : '')) : 'not found yet';
       document.getElementById('captures').textContent =
         s.captures + '  in  ' + s.capture_dir;
+      // PENDING, not lifetime. A row already confirmed sent is dropped from
+      // the local dataset (see MarkTxnsSent), so this count only ever shows
+      // what SEND MY DATA would actually package right now.
+      document.getElementById('rows').textContent =
+        s.pending_rows + (s.pending_rows === 1 ? ' new row since your last send'
+                                                : ' new rows since your last send');
       document.getElementById('recent').textContent = (s.recent_log || []).join('\n');
     });
   }
@@ -501,9 +687,148 @@ const uiHTML = `<!DOCTYPE html>
   document.getElementById('open').addEventListener('click', function () {
     window.openCaptures();
   });
+
+    // The package button only exists on the master build. It is hidden rather
+    // than disabled, because a control you cannot use is a question you have to
+    // answer every time you see it.
+    //
+    // THREE BUTTONS, NOT A CONFIRM BOX, AND THIS IS WHY.
+    //
+    // The first version asked with confirm(): OK meant "include the runtime",
+    // Cancel meant "do not". Sleven pressed Cancel expecting nothing to happen
+    // and got a 3.5 MB package - the wrong one to send, built anyway, with no
+    // way to back out once the button was clicked.
+    //
+    // A two-state control cannot express three intentions. Cancel now cancels.
+    canPackage().then(function (ok) {
+      if (!ok) { return; }
+      var btn = document.getElementById('pkg');
+      var choice = document.getElementById('pkgchoice');
+      btn.style.display = '';
+
+      function show(showChoice) {
+        choice.style.display = showChoice ? '' : 'none';
+        btn.style.display = showChoice ? 'none' : '';
+      }
+      btn.addEventListener('click', function () { show(true); });
+      document.getElementById('pkgcancel').addEventListener('click', function () {
+        show(false);
+        toast('Nothing was made.');
+      });
+      document.getElementById('pkgmake').addEventListener('click', function () {
+        show(false);
+        makePackage().then(toast);
+      });
+    });
   document.getElementById('send').addEventListener('click', function () {
-    toast('Not built yet — coming next.');
+    // Ask BEFORE writing, and say the real numbers.
+    //
+    // SAME FIX AS THE PACKAGE BUTTON. This used confirm() too, where Cancel
+    // meant "data only" - so somebody who clicked Send and then changed their
+    // mind got a zip written anyway. Cancel now cancels, and the two choices
+    // are named rather than hidden behind OK.
+    //
+    // The screenshot question is asked every time on purpose: the dataset is
+    // scrubbed and safe to hand to anyone, and a screenshot is not.
+    window.countData().then(function (raw) {
+      var d = JSON.parse(raw);
+      var choice = document.getElementById('sendchoice');
+      var btn = document.getElementById('send');
+      // "New" because rows already confirmed sent were dropped from the
+      // local dataset the moment they were confirmed - this is never the
+      // whole history, only what happened since the last confirmed send.
+      var msg = 'Ready to package ' + d.rows +
+        (d.rows === 1 ? ' new row' : ' new rows') + ' of game data since your last send.';
+      if (d.frames > 0) {
+        msg += ' You also have ' + d.frames + ' screenshots. Screenshots are NOT ' +
+               'scrubbed - a frame can show your handle, the names of players near ' +
+               'you, and chat.';
+      }
+      if (d.held_back > 0) {
+        msg += ' (' + d.held_back + ' picture(s) will be left out either way - they ' +
+               'cannot prove they photographed the game.)';
+      }
+      document.getElementById('sendmsg').textContent = msg;
+      document.getElementById('sendboth').style.display = d.frames > 0 ? '' : 'none';
+      choice.style.display = '';
+      btn.style.display = 'none';
+
+      function done(withPNG) {
+        choice.style.display = 'none';
+        btn.style.display = '';
+        if (withPNG === null) { toast('Nothing was written.'); return; }
+        toast('Packaging…');
+        window.sendData(withPNG).then(toast);
+      }
+      document.getElementById('senddata').onclick   = function () { done(false); };
+      document.getElementById('sendboth').onclick   = function () { done(true); };
+      document.getElementById('sendcancel').onclick = function () { done(null); };
+    });
   });
+
+  // UPDATES - always say something, and always be askable.
+  //
+  // A failed check is a normal state: no internet, or the feed not published
+  // yet. It must never stop the window working, so nothing here is awaited by
+  // anything else. But it must also never be SILENT, which is what it was.
+  var updateLine = document.getElementById('updateline');
+  var updateBox  = document.getElementById('updatebox');
+
+  document.getElementById('updatelater').addEventListener('click', function () {
+    updateBox.style.display = 'none';
+  });
+  document.getElementById('updatego').addEventListener('click', function () {
+    toast('Downloading…');
+    updateLine.textContent = 'Downloading the update…';
+    applyUpdate().then(function (m) {
+      toast(m);
+      updateBox.style.display = 'none';
+      updateLine.textContent = m;
+      // The new file is in place but this process is still the old code, so
+      // offer the restart rather than describing it. "Close it and open it
+      // again" is a step, and steps are where people stop.
+      if (m && m.indexOf('installed') !== -1) {
+        document.getElementById('restartmsg').textContent = m;
+        document.getElementById('restartbox').style.display = '';
+      }
+    });
+  });
+  document.getElementById('restartgo').addEventListener('click', function () {
+    toast('Restarting…');
+    restartNow();
+  });
+
+  function doUpdateCheck() {
+    updateLine.textContent = 'Checking for updates…';
+    checkUpdate().then(function (raw) {
+      var u = {};
+      try { u = JSON.parse(raw); } catch (e) {
+        updateLine.textContent = 'Could not check for updates. Click to try again.';
+        return;
+      }
+      if (u.problem) {
+        updateLine.textContent = 'Could not check for updates: ' + u.problem +
+                                 ' Click to try again.';
+        return;
+      }
+      if (!u.available) {
+        updateLine.textContent = 'Up to date \u00b7 version ' + u.current +
+                                 '. Click to check again.';
+        updateBox.style.display = 'none';
+        return;
+      }
+      updateLine.textContent = 'An update is available.';
+      document.getElementById('updatemsg').textContent =
+        'Version ' + u.latest + ' is available. You have ' + u.current + '.' +
+        (u.notes ? ' ' + u.notes : '');
+      updateBox.style.display = '';
+    });
+  }
+  updateLine.addEventListener('click', doUpdateCheck);
+  doUpdateCheck();
+  // Re-check every six hours. A collector left running across a weekend would
+  // otherwise never learn about a release published on the Saturday.
+  setInterval(doUpdateCheck, 6 * 60 * 60 * 1000);
 
   refresh();
   setInterval(refresh, 1500);

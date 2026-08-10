@@ -1,0 +1,7 @@
+{
+  "version": "0.2.0",
+  "url": "https://github.com/Smeezee/citizen-compass/releases/download/collector-v0.2.0/collector.exe",
+  "sha256": "PUT THE REAL SHA256 OF collector.exe HERE - 64 hex characters",
+  "notes": "Shop bursts, capture on keypress, held-key recording.",
+  "min_from": ""
+}

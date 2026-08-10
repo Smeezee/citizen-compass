@@ -16,3 +16,35 @@ captures/
 #                           settings onto everyone else's.
 collector-auto.log
 collector-settings.txt
+
+# ---------------------------------------------------------------------------
+# Per-install secrets and personal state. Added 2026-08-09, when the first
+# commit of this directory in three days nearly took all of them with it.
+#
+# collector-scrub-salt.bin   THE IMPORTANT ONE. scrub.go:46 says the salt "is
+#                            random per install and never leaves the machine",
+#                            and the whole point of salting is that an unsalted
+#                            hash of a handle is reversible. Committing this
+#                            file would make every pseudonymised player name in
+#                            every export reversible by anyone holding the repo.
+#                            It is 32 bytes and it is the privacy guarantee.
+# collector-install-id.txt   This machine's contributor id. Committing it would
+#                            make one person's exports attributable, and would
+#                            hand every clone the same id.
+# collector-consent.txt      A record of a specific human agreeing to something,
+#                            with a timestamp. Not repo content.
+collector-scrub-salt.bin
+collector-install-id.txt
+collector-consent.txt
+
+# Runtime markers and machine-specific output. Written next to the exe while it
+# runs; they describe one machine's session, not the program.
+collector-running.marker
+collector-shortcut.txt
+collector-selftest-results.txt
+selftest-rerun-*.txt
+
+# Packages are built by make-package.ps1 / make-release.ps1 from the source
+# that IS committed. A 6 MB zip per release would bloat the history for
+# something reproducible from a tag.
+citizen-collector-*.zip

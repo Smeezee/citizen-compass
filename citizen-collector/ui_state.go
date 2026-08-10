@@ -54,8 +54,44 @@ type uiState struct {
 	LastCapture string `json:"last_capture"`
 	LastReason  string `json:"last_reason"`
 
+	// PendingRows is how many transaction rows are sitting in the local
+	// dataset waiting to go out. It is len(Txns) at read time - nothing more -
+	// because a row already confirmed sent is removed from Txns entirely (see
+	// MarkTxnsSent), so this number IS "new since your last confirmed send"
+	// without any separate bookkeeping to keep in step with that fact.
+	PendingRows int `json:"pending_rows"`
+
 	// RecentLog is the last few lines of collector-auto.log.
 	RecentLog []string `json:"recent_log"`
+
+	// Hotkey is the key that takes a picture, and HotkeyOK says whether
+	// Windows actually gave it to us.
+	//
+	// # WHY THIS IS ON SCREEN AND NOT ONLY IN A LOG FILE
+	//
+	// Sleven, watching it run on somebody else's machine 2026-08-08: "there
+	// need to be a place for users to look at what the hotkey [is] with the
+	// collector."
+	//
+	// He is right and it is the obvious omission. The window told a person the
+	// log path, the capture count and the folder - everything except the one
+	// thing they have to DO. A key you cannot see is a key you do not press.
+	//
+	// The OK flag matters as much as the name. Hotkey registration genuinely
+	// fails - another collector still running, a vendor utility that grabbed
+	// the combination first - and the failure is silent from the outside. A
+	// person pressing a key that was never registered gets exactly the same
+	// experience as a person pressing one that is broken, and this is the only
+	// place the difference can be shown.
+	Hotkey   string `json:"hotkey"`
+	HotkeyOK bool   `json:"hotkey_ok"`
+
+	// WatchKeys describes capture_keys / capture_keys_held in the player's own
+	// words, so they can see the tool read their settings the way they meant.
+	WatchKeys string `json:"watch_keys"`
+
+	// SettingsPath is where to change any of it.
+	SettingsPath string `json:"settings_path"`
 
 	// Problem is a plain-English sentence, or "" when nothing is wrong.
 	// §9: no error codes, no paths, no stack traces in the window.
@@ -197,6 +233,16 @@ type uiDeps struct {
 	findLog   func() (string, string)
 	outDir    string
 	autoLog   string
+
+	// hotkey/hotkeyOK/watchKeys are what the window reports about input. They
+	// are values rather than a lookup because they are decided once, at
+	// startup, by whether Windows accepted the registration - re-deriving them
+	// every refresh would be re-asking a question that has already been
+	// answered, and would report an intention rather than the outcome.
+	hotkey    string
+	hotkeyOK  bool
+	watchKeys string
+	settings  string
 }
 
 func defaultUIDeps(outDir, autoLog string) uiDeps {
@@ -216,6 +262,8 @@ func defaultUIDeps(outDir, autoLog string) uiDeps {
 // buildUIState measures everything, now.
 func buildUIState(d uiDeps) uiState {
 	s := uiState{CaptureDir: d.outDir}
+	s.Hotkey, s.HotkeyOK = d.hotkey, d.hotkeyOK
+	s.WatchKeys, s.SettingsPath = d.watchKeys, d.settings
 
 	// THE ONE FACT THAT DECIDES THE HEADLINE, asked of the operating system
 	// rather than of a variable this program set earlier.
@@ -236,6 +284,14 @@ func buildUIState(d uiDeps) uiState {
 	if newest != "" {
 		s.LastCapture = humanAge(newestAt)
 		s.LastReason = reasonForCapture(d.outDir, newest)
+	}
+
+	// Read fresh every time, same rule as everything else in this function -
+	// an unreadable or absent dataset just means nothing is pending yet, not
+	// an error worth surfacing here (countData already reports that case when
+	// it matters, at send time).
+	if mst, err := loadMineStore(d.outDir); err == nil {
+		s.PendingRows = len(mst.Txns)
 	}
 
 	s.RecentLog = tailLines(d.autoLog, 3)

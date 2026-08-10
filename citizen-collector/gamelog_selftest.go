@@ -193,7 +193,7 @@ func runAutoHeartbeatSelftest(check func(name string, ok bool, detail string)) {
 	// Poll fast so the loop iterates often in real time; the CLOCK is what
 	// advances, so heartbeat and staleness are driven deliberately, not by
 	// waiting.
-	cfg := autoConfig{PollSeconds: 1, DebounceSeconds: 0, IntervalMinutes: 0}
+	cfg := autoConfig{PollSeconds: 1, DebounceSeconds: 0, IntervalSeconds: 0}
 
 	done := make(chan struct{})
 	go func() { _ = runAuto(cfg, logPath, deps, stop); close(done) }()
@@ -255,7 +255,21 @@ func runAutoHeartbeatSelftest(check func(name string, ok bool, detail string)) {
 
 	// WARNED ONCE, not every poll. A line every second would bury the log it is
 	// meant to make readable.
+	//
+	// BOTH of the remaining checks compare a count against firstCount, so if the
+	// warning above never fired, firstCount is 0 and "the count did not go up"
+	// is trivially true - they would report a pass having measured nothing. That
+	// is the SILENT SUCCESS pattern, and it was observed for real: an
+	// intermittent miss on the positive check above left these two green while
+	// asserting 0 == 0. They are now gated on there being something to count.
 	firstCount := sink.count("has not grown in")
+	if firstCount == 0 {
+		check("staleness warns once per stall, not every poll", false,
+			"NOT PERFORMED - no warning ever fired, so there is no count to hold steady")
+		check("a log that starts growing again is NOT reported stale", false,
+			"NOT PERFORMED - no warning ever fired, so a cleared warning cannot be observed")
+		return
+	}
 	clock.Advance(30 * time.Second)
 	time.Sleep(1500 * time.Millisecond)
 	check("staleness warns once per stall, not every poll",
