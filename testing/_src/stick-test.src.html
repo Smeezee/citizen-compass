@@ -20,6 +20,12 @@
   .no .verdict{color:var(--bad)} .yes .verdict{color:var(--good)}
   .why{color:var(--dim);font-size:16px;margin:0}
   ol{padding-left:22px} li{margin-bottom:10px}
+  /* TWO STICKS SIDE BY SIDE. Sleven: "I wish I could have seen them side by
+     side instead of having to scroll." Comparing a HOTAS pair is the whole
+     job, and stacking them made it a scroll. Falls back to stacked when there
+     genuinely is not room. */
+  #devs{display:grid;gap:14px;grid-template-columns:1fr}
+  @media(min-width:900px){ #devs{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))} }
   .dev{border:1px solid var(--line);border-radius:8px;padding:14px 16px;
        background:var(--panel);margin-bottom:12px}
   .dev h3{margin:0 0 6px;font-size:17px;color:#fff}

@@ -506,7 +506,30 @@ function fireDev(p,label,sc,press){
 }
 
 var hatLast={};
+var ccPollCount = 0;
+var ccLastPresence = null;
+
+/* What can this page see, right now? Read fresh every call - a cached answer
+   is the one thing that would make this lie. */
+window.ccDiag = function(){
+  var g = navigator.getGamepads ? navigator.getGamepads() : [], names = [], i;
+  for(i=0;i<g.length;i++) if(g[i]) names.push({
+    id: g[i].id, index: g[i].index, mapping: g[i].mapping || '(none)',
+    axes: g[i].axes.length, buttons: g[i].buttons.length
+  });
+  return {
+    devices: names,
+    tab: (typeof dev !== 'undefined') ? dev : '(unknown)',
+    panelOpen: (typeof OPEN !== 'undefined') ? !!OPEN : null,
+    capture: (typeof capture !== 'undefined') ? !!capture : null,
+    rebinding: !!(window.KBREBIND && KBREBIND.listening()),
+    polls: ccPollCount,
+    lastPresenceChange: ccLastPresence
+  };
+};
+
 function poll(){
+  ccPollCount++;
   /* A REBIND POLLS REGARDLESS OF THE SELECTED TAB. The action browser lists
      keyboard, mouse, joystick and gamepad bindings in ONE list, and nothing in
      the UI tells anybody to switch tabs before rebinding a stick input.
@@ -626,6 +649,7 @@ function ccPresenceTick(){
   var names = ccDeviceNames(), sig = names.length + '|' + names.join('|');
   if(sig === ccPresenceSig) return;          /* nothing changed: do nothing */
   ccPresenceSig = sig;
+  ccLastPresence = new Date().toLocaleTimeString();
   devDom = null;
   ccPresenceChanged();
   if(dev !== "KBM" || (window.KBREBIND && KBREBIND.listening())){
