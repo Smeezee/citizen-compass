@@ -456,6 +456,15 @@ function fallbackCopy(txt){
 }
 
 function fireDev(p,label,sc,press){
+  /* REBIND FIRST, LIVE DISPLAY SECOND.
+     This is the one place a joystick, HOTAS or gamepad press has already become
+     the game's own token. A rebind needs exactly that string, so it is taken
+     from here rather than reimplemented - which is also why hats arrive as
+     their full compound token (js1_hat1_up) without special handling. */
+  if(window.KBREBIND && KBREBIND.listening()){
+    KBREBIND.capture(sc);
+    return;
+  }
   var ro=$(ID_+'ro');
   if(ro){ ro.classList.add('hot'); clearTimeout(fireDev._t);
     fireDev._t=setTimeout(function(){ ro.classList.remove('hot'); },450); }
@@ -475,7 +484,14 @@ function fireDev(p,label,sc,press){
 
 var hatLast={};
 function poll(){
-  if(dev==="KBM"||(typeof OPEN!=="undefined"&&!OPEN)){ rafId=null; return; }
+  /* A REBIND POLLS REGARDLESS OF THE SELECTED TAB. The action browser lists
+     keyboard, mouse, joystick and gamepad bindings in ONE list, and nothing in
+     the UI tells anybody to switch tabs before rebinding a stick input.
+     Requiring it would be an undocumented precondition; not requiring it means
+     this gate cannot depend on `dev` alone. */
+  var rebinding = !!(window.KBREBIND && KBREBIND.listening());
+  if((dev==="KBM"&&!rebinding)||(typeof OPEN!=="undefined"&&!OPEN&&!rebinding)){
+    rafId=null; return; }
   var list=pads(), now=Date.now();
   list.forEach(function(p){
     var prev=padPrev[p.index]||{b:[],a:[],hot:false}, hot=false;
@@ -522,7 +538,13 @@ function poll(){
   renderDevice();
   rafId=requestAnimationFrame(poll);
 }
-function startPoll(){ if(rafId===null&&dev!=="KBM") rafId=requestAnimationFrame(poll); }
+function startPoll(){
+  /* Same reasoning as poll(): a rebind needs the loop running even on the
+     Keyboard/Mouse tab, or the first stick press is never sampled and the cell
+     simply sits there listening forever. */
+  var rebinding = !!(window.KBREBIND && KBREBIND.listening());
+  if(rafId===null&&(dev!=="KBM"||rebinding)) rafId=requestAnimationFrame(poll);
+}
 window.addEventListener('gamepadconnected',function(){
   if(dev!=="KBM"){ devDom=null; renderDevice(); startPoll(); } });
 /* Clicking a slot cycles js1..js8 and remembers it against that device's
