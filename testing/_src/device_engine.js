@@ -63,10 +63,17 @@ var HAT_DIRS=[
 /* Display cap. Sticks report 128 buttons; almost none have 128. A tile
    above the cap still appears the moment it is pressed - see applyVis. */
 var BTN_SHOWN=40, showAll=false, hideUnused=false;
-var DVCOL_CSS="\n/* Two sticks are a pair, not a list. Side by side on a normal screen,\n   stacked only when there is genuinely no room. */\n.dvcols{display:grid;gap:14px;grid-template-columns:1fr}\n.dvcols.pair{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}\n.dvcol{background:#0B1626;border:1px solid #1B2C42;border-radius:10px;padding:11px 12px}\n.dvcolhd{font:800 13px/1.3 'Segoe UI',system-ui,sans-serif;color:#FF6B00;\n  letter-spacing:.04em;margin-bottom:9px;padding-bottom:7px;\n  border-bottom:1px solid #1B2C42}\n.dvcolhd small{display:block;font:600 11px/1.4 inherit;color:#93A7B6;\n  letter-spacing:.02em;margin-top:2px}\n";
+var DVCOL_CSS="\n/* The slot swap was a title= attribute nobody could find. Sleven asked\n   for \"a way to swap it or something\" - it existed, invisibly. */\n.slotswap{display:inline-block;margin-top:4px;font:600 10.5px/1.3 inherit;\n  color:#FFB259;background:#1A1206;border:1px solid #6B4C12;\n  border-radius:4px;padding:2px 6px;cursor:pointer}\n.slotswap:hover{border-color:#FF6B00;color:#FFD9A8}\n/* Two sticks are a pair, not a list. Side by side on a normal screen,\n   stacked only when there is genuinely no room. */\n.dvcols{display:grid;gap:14px;grid-template-columns:1fr}\n.dvcols.pair{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}\n.dvcol{background:#0B1626;border:1px solid #1B2C42;border-radius:10px;padding:11px 12px}\n.dvcolhd{font:800 13px/1.3 'Segoe UI',system-ui,sans-serif;color:#FF6B00;\n  letter-spacing:.04em;margin-bottom:9px;padding-bottom:7px;\n  border-bottom:1px solid #1B2C42}\n.dvcolhd small{display:block;font:600 11px/1.4 inherit;color:#93A7B6;\n  letter-spacing:.02em;margin-top:2px}\n";
 var HAT_CENTRE=1.2857, HAT_TOL=0.06;
 
 var DEADZONE=0.12, DRIFT=0.06;
+
+/* Deliberate-deflection thresholds for REBINDING ONLY - see
+   patch_axis_rebind_capture.py. AXIS_BIND_FIRE is past half travel so a resting
+   or brushed stick can never bind; AXIS_BIND_REARM is far enough below it that
+   a stick settling back cannot chatter across a single threshold. */
+var AXIS_BIND_FIRE=0.55, AXIS_BIND_REARM=0.25;
+var axisArmed={};   /* "padIndex:axisIndex" -> has returned near centre */
 
 function pads(){
   var g=navigator.getGamepads?navigator.getGamepads():[], out=[], i;
@@ -262,6 +269,18 @@ function buildDevice(list){
   }
   if(!list.length){ host.innerHTML=emptyPanel(); devDom=null; return; }
 
+  /* RENDER IN SLOT ORDER, NOT PLUG ORDER. pads() returns
+     navigator.getGamepads() order, which is OS enumeration - so js1 could be
+     drawn on the right of js2 while both were labelled correctly. Sorting here
+     changes only the layout; identity is still resolved by profile GUID, then
+     remembered choice, then an admitted guess. Standard-mapping gamepads have
+     no js slot and settle after the sticks without displacing them. */
+  list = list.slice().sort(function(a,b){
+    var sa = isStd(a) ? 99 : slotOf(a), sb = isStd(b) ? 99 : slotOf(b);
+    if(sa !== sb) return sa - sb;
+    return a.index - b.index;
+  });
+
   h='<div class="dvhead">';
   list.forEach(function(p){
     var _src=isStd(p)?"":slotSource(p);
@@ -272,6 +291,10 @@ function buildDevice(list){
        (_src?' cc-src-'+_src:'')+'" data-slot="'+p.index+'" title="'+esc(_note)+
        '">'+prefix(p)+'</div>'+
        (_note?'<div class="srcnote cc-src-'+_src+'">'+esc(_note)+'</div>':'')+
+       (_src&&_src!=='profile'
+         ? '<button class="slotswap cc-slot" data-slot="'+p.index+
+           '" title="Click to change which stick this is">wrong stick? click to swap</button>'
+         : '')+
        '<div class="nm" title="'+esc(p.id)+'">'+esc(p.id)+'</div>'+
        '<div class="id">'+p.buttons.length+' buttons · '+p.axes.length+' axes · '+
        (p.mapping==="standard"?"standard mapping":"raw / no standard mapping")+
@@ -501,7 +524,11 @@ function poll(){
       if(on!==was){
         key=p.index+":b"+i;
         if(on){ devHeld[key]=now; }
-        else if(typeof capture==="undefined"||capture){
+        /* A REBIND IS NOT SUBJECT TO THE CAPTURE TOGGLE. That toggle governs
+           the live tester readout; nothing in the UI ever said it also
+           disables rebinding, and with it OFF the panel named both sticks
+           while relaying nothing from them. */
+        else if(ccInputAllowed()){
           dur=now-(devHeld[key]||now); delete devHeld[key];
           press=dur>=400?"HOLD":"TAP";
           if(press==="TAP"&&lastTap[key]&&now-lastTap[key]<320) press="DOUBLE TAP";
@@ -519,14 +546,37 @@ function poll(){
         var dir=hatDir(v), hk=p.index+":h"+i;
         if(dir) hot=true;
         if(hatLast[hk]!==dir){
-          if(dir && (typeof capture==="undefined"||capture))
+          if(dir && ccInputAllowed())
             fireDev(p,"POV hat "+dir.replace('_','-'),
                     prefix(p)+"_hat"+hatAxis[key]+"_"+dir,"PRESS");
           hatLast[hk]=dir;
         }
       } else {
         var c=(padCenter[p.index]||[])[i]||0;
-        if(Math.abs(v-c)>DEADZONE) hot=true;
+        var off=Math.abs(v-c);
+        if(off>DEADZONE) hot=true;
+
+        /* AXIS CAPTURE FOR REBINDING. Only while a cell is listening, so the
+           live tester panel is untouched the rest of the time. Edge-detected:
+           one deliberate push binds once, and nothing binds again until the
+           axis has come back near centre. */
+        if(window.KBREBIND && KBREBIND.listening()){
+          var akey=p.index+":"+i;
+          if(off<AXIS_BIND_REARM) axisArmed[akey]=true;
+          if(off>=AXIS_BIND_FIRE && axisArmed[akey]){
+            axisArmed[akey]=false;
+            var an=axName(p,i);
+            /* an[3] is the "no Star Citizen name" flag - past slider2 there is
+               no token the game would accept, so refuse rather than invent. */
+            if(an[3]){
+              if(window.console&&console.warn)
+                console.warn('axis '+i+' on "'+p.id+'" has no Star Citizen name, so it '+
+                             'cannot be bound');
+            } else {
+              fireDev(p, an[1], an[0], "DEFLECT");
+            }
+          }
+        }
       }
       prev.a[i]=v;
     });
@@ -538,6 +588,53 @@ function poll(){
   renderDevice();
   rafId=requestAnimationFrame(poll);
 }
+/* Is device input allowed to fire right now?
+   Two reasons it may be: the Capture toggle is on (live tester readout), or a
+   rebind is listening (which the toggle has no business affecting). One
+   function so the button and hat call sites cannot drift apart. */
+function ccInputAllowed(){
+  if(window.KBREBIND && KBREBIND.listening()) return true;
+  return (typeof capture === "undefined" || capture);
+}
+
+/* ---- DEVICE PRESENCE -------------------------------------------------
+   Deliberately separate from poll(). poll() samples every button and axis at
+   60 Hz and is gated for good reason; this asks one question - "is the set of
+   connected devices different from last time?" - and does nothing at all when
+   the answer is no. See patch_device_presence.py. */
+var ccPresenceSig = null;
+
+function ccDeviceNames(){
+  var g = navigator.getGamepads ? navigator.getGamepads() : [], out = [], i;
+  for(i=0;i<g.length;i++) if(g[i]) out.push(g[i].id);
+  return out;
+}
+
+function ccPresenceChanged(){
+  var names = ccDeviceNames();
+  /* Published for the page's copy. A person must never have to guess whether
+     the site can see their hardware - that ambiguity is the whole complaint. */
+  try{
+    window.dispatchEvent(new CustomEvent('cc-devices', {detail:{names:names}}));
+  }catch(e){}
+  return names;
+}
+
+function ccPresenceTick(){
+  /* Re-read every tick. The browser populates getGamepads() lazily, so a cached
+     answer is exactly the wrong thing to trust here. */
+  var names = ccDeviceNames(), sig = names.length + '|' + names.join('|');
+  if(sig === ccPresenceSig) return;          /* nothing changed: do nothing */
+  ccPresenceSig = sig;
+  devDom = null;
+  ccPresenceChanged();
+  if(dev !== "KBM" || (window.KBREBIND && KBREBIND.listening())){
+    renderDevice();
+    startPoll();
+  }
+}
+setInterval(ccPresenceTick, 400);
+
 function startPoll(){
   /* Same reasoning as poll(): a rebind needs the loop running even on the
      Keyboard/Mouse tab, or the first stick press is never sampled and the cell
@@ -546,7 +643,12 @@ function startPoll(){
   if(rafId===null&&(dev!=="KBM"||rebinding)) rafId=requestAnimationFrame(poll);
 }
 window.addEventListener('gamepadconnected',function(){
-  if(dev!=="KBM"){ devDom=null; renderDevice(); startPoll(); } });
+  /* ALWAYS notice. Whether to start SAMPLING can depend on what is on screen;
+     whether to know a device exists cannot - this handler discarding the event
+     on the default tab is why a reload was needed. */
+    devDom=null;
+    ccPresenceChanged();
+    if(dev!=="KBM"){ renderDevice(); startPoll(); } });
 /* Clicking a slot cycles js1..js8 and remembers it against that device's
    VID/PID. Without this, priority 2 could never fire. Delegated, because the
    panel is re-rendered wholesale on every frame. */
@@ -594,4 +696,6 @@ window.addEventListener('gamepaddisconnected',function(e){
   delete padSlot[e.gamepad.index]; delete padPrev[e.gamepad.index];
   delete padCenter[e.gamepad.index];
   devDom=null;
+  /* Unplugging mid-session is worth saying out loud too, on any tab. */
+  ccPresenceChanged();
   if(dev!=="KBM") renderDevice(); });
