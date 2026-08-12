@@ -410,6 +410,11 @@ PAGES = [
     # inlines three.js/DRACO into it - no vendor/ directory in _deploy.
     ('holo.src.html',    'holo.html'),
     ('holo_data.gen.js', 'holo_data.gen.js'),
+    # A gamepad diagnostic that shares NO code with the site. That
+    # independence is the point: it answers "can this browser see the
+    # stick at all" without our own detection logic in the way. Copied
+    # verbatim - no vendor marker, no styling, no nav.
+    ('stick-test.src.html', 'stick-test.html'),
 ]
 # VENDOR INLINING FOR COPIED PAGES - §0 option 1, not a new allowed directory.
 #

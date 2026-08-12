@@ -53,6 +53,7 @@ DEFAULT_ALLOWED_FILES = {
     "kb_actions.gen.js",
     "holo.html",
     "holo_data.gen.js",
+    "stick-test.html",
 }
 
 # The only directories permitted. Their CONTENTS are asset payloads (347 MB of
