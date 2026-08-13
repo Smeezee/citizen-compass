@@ -350,6 +350,23 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
 .dofrow code{color:#DCE7F2;font-family:ui-monospace,Consolas,monospace}
 .dof-PROVEN{color:#8FE388;font-weight:700}
 .dof-UNATTESTED{color:#FFD9A8;font-weight:700}
+.unattnote{margin:8px 0 0;padding:9px 12px;border-radius:7px;
+  background:#1A1206;border:1px solid #6B4C12;color:#FFD9A8;
+  font:600 13px/1.5 'Segoe UI',system-ui,sans-serif}
+.unattnote .q{display:block;margin-top:4px;font-weight:500;color:#C9A87A}
+/* Shown only after an export, so it is advice about a file that exists. */
+.afterexport{margin:0 0 14px;padding:14px 18px;border-radius:9px;
+  background:#0B1626;border:1px solid #1B2C42;color:#C9D6E2;
+  font:400 13.5px/1.6 'Segoe UI',system-ui,sans-serif}
+.afterexport h3{margin:0 0 7px;font:800 13px/1.3 inherit;color:#FF6B00;
+  letter-spacing:.04em;text-transform:uppercase}
+.afterexport h3+ol,.afterexport h3+ul{margin-top:0}
+.afterexport ol,.afterexport ul{margin:0 0 13px;padding-left:22px}
+.afterexport li{margin:0 0 7px}
+.afterexport code{background:#071019;border:1px solid #1B2C42;border-radius:4px;
+  padding:1px 5px;font:600 12.5px/1.4 ui-monospace,Consolas,monospace;color:#FFB259}
+.afterexport .q{display:block;margin-top:3px;color:#93A7B6;font-size:12.5px}
+.afterexport ul.bad li{color:#FF8A6B}
 .dofrow .n{color:#93A7B6}
 .dofnote{color:#93A7B6;font-size:12px;padding:6px 14px 12px}
 </style>
@@ -451,14 +468,37 @@ window.KBEDIT = (function(){
       return out.length ? out : null;
     },
 
-    /* Another action in the SAME actionmap already using this input.
-       Returned, not resolved - the caller warns and the person decides. */
+    /* Another action ALREADY LIVE ALONGSIDE THIS ONE and using this input.
+       Returned, not resolved - the caller warns and the person decides.
+
+       IT USED TO CHECK ONLY WITHIN ONE ACTIONMAP, and that is why the real
+       export of 2026-08-12 came out with `js3_button29` driving BOTH
+       `v_flightready` (spaceship_general) and `v_atc_request`
+       (spaceship_movement) with no warning at all. Both of those maps are
+       live while you are sat in the seat, so the button did two things and
+       nothing said so.
+
+       WHAT COUNTS AS "LIVE TOGETHER" IS CIG'S OWN GROUPING, NOT OURS.
+       KB_CATEGORIES comes from the game's data: spaceship_general and
+       spaceship_movement are both @ui_CCSpaceFlight. We do not have a
+       simultaneity table and are not inventing one - a shared category is
+       the strongest grouping CIG actually publishes.
+
+       Where a map has NO category (null - spaceship_auto_weapons is one),
+       the check falls back to same-map only. That is a real gap and it is
+       deliberate: a warning invented from no evidence would be worse than a
+       missing one, and this is a warning, never a block. */
     conflict: function(map, action, input){
       if(!working) return null;
+      var cat = (typeof KB_CATEGORIES !== 'undefined') ? KB_CATEGORIES[map] : null;
       for(var i=0;i<working.length;i++){
         var b = working[i];
-        if(b.map===map && b.action!==action && b.input===input &&
-           !(SCX.isUnbind && SCX.isUnbind(b.input))) return b.action;
+        if(b.action===action && b.map===map) continue;
+        if(b.input!==input) continue;
+        if(SCX.isUnbind && SCX.isUnbind(b.input)) continue;
+        var together = (b.map===map) ||
+          (cat && typeof KB_CATEGORIES !== 'undefined' && KB_CATEGORIES[b.map]===cat);
+        if(together) return {action:b.action, map:b.map, sameMap:(b.map===map)};
       }
       return null;
     },
@@ -646,6 +686,9 @@ window.kbOverlay = function(base){
   <button class="tg" id="pexport">Export mapping .xml</button>
   <span class="lamp" id="pstatus">no profile imported</span>
 </div>
+<!-- Filled in after an export. Empty and hidden until then: an instruction
+     panel for a file that does not exist yet is just noise. -->
+<div id="pafter" class="afterexport" style="display:none"></div>
 
 <div class="wrap">
   <div class="board"><div class="rowset" id="board"></div></div>
@@ -742,7 +785,9 @@ function drawModes(){
   $('devs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
     if(!DEVS.find(x=>x.id===b.dataset.d).ok)return; dev=b.dataset.d;drawModes();render();
     if(dev!=="KBM"){startPoll();}
-    else if(rafId!==null){cancelAnimationFrame(rafId);rafId=null;}});
+    /* Was: cancelAnimationFrame(rafId); rafId=null. The loop has one owner
+       now and this is not it - see device_engine.js. */
+    else{pollStop();}});
 }
 function draw(rows,title){
   let h=title?`<div style="color:var(--muted);font-size:12.5px;margin:12px 0 5px">${title}</div>`:"";
@@ -879,15 +924,37 @@ function fire(id,label,press){
     `<span style="color:${match?'var(--live)':'var(--muted)'}">${match?match.a:"nothing bound"}</span>`;
   l.prepend(d);while(l.children.length>14)l.lastChild.remove();
 }
+/* THE PAGE HAS TO STILL BE READABLE WHILE IT IS LISTENING.
+   This is a 691-row reference page, and Capture is ON by default. Because
+   `CODE['End']` resolves to a board key, the handler below called
+   preventDefault() on it - so End, Home, Page Up and Page Down did nothing at
+   all, and the only way to reach the bottom of the page was to turn Capture
+   off, which silently stops the sticks working. Two innocent decisions adding
+   up to "nothing works", again.
+
+   These four keys now do what they do everywhere else. They are still
+   REPORTED by the tester - showing what was pressed never needed
+   preventDefault - so nothing is lost from the readout.
+
+   A DELIBERATE REBIND OUTRANKS SCROLLING. If a cell is listening, the person
+   is trying to bind End, not trying to reach the bottom of the page, and the
+   rebind handler's own preventDefault stands. That is the case the order
+   calls out and it is the reason this is a function rather than a list. */
+const NAV_SCROLL={Home:1,End:1,PageUp:1,PageDown:1};
+function navMayScroll(e){
+  if(!NAV_SCROLL[e.code])return false;
+  return !(window.KBREBIND && KBREBIND.listening());
+}
 addEventListener('keydown',e=>{
   if(dev!=="KBM")return;
   if(!capture||!MODES[modeIx].data)return;const id=CODE[e.code];if(!id)return;
-  e.preventDefault();if(e.repeat)return;
+  if(!navMayScroll(e))e.preventDefault();
+  if(e.repeat)return;
   down.add(id);held[id]=performance.now();setMods();render();},{capture:true});
 addEventListener('keyup',e=>{
   if(dev!=="KBM")return;
   if(!capture||!MODES[modeIx].data)return;const id=CODE[e.code];if(!id)return;
-  e.preventDefault();
+  if(!navMayScroll(e))e.preventDefault();
   const dur=performance.now()-(held[id]||performance.now());
   delete held[id];down.delete(id);
   let press=dur>=400?"HOLD":"TAP";const now=performance.now();
@@ -1037,7 +1104,9 @@ var ID_ = "";
    Raw index always shown; guesses marked; anything we cannot name in SC's
    vocabulary is flagged as unusable rather than given a plausible label.
    ================================================================ */
-var padSlot={}, padPrev={}, padCenter={}, rafId=null, devHeld={};
+/* `padSlot` is gone. It cached one device's guessed slot, which is exactly
+   the per-device thinking the 1..N reconciler replaced. */
+var padPrev={}, padCenter={}, rafId=null, devHeld={};
 var hatAxis={};      /* "padIndex:axisIndex" -> hat ordinal (1,2,...) */
 var hatSeen={};      /* padIndex -> how many hats identified so far    */
 var devDom=null;     /* built DOM references; null = needs a build     */
@@ -1062,7 +1131,7 @@ var HAT_DIRS=[
 /* Display cap. Sticks report 128 buttons; almost none have 128. A tile
    above the cap still appears the moment it is pressed - see applyVis. */
 var BTN_SHOWN=40, showAll=false, hideUnused=false;
-var DVCOL_CSS="\n/* The slot swap was a title= attribute nobody could find. Sleven asked\n   for \"a way to swap it or something\" - it existed, invisibly. */\n.slotswap{display:inline-block;margin-top:4px;font:600 10.5px/1.3 inherit;\n  color:#FFB259;background:#1A1206;border:1px solid #6B4C12;\n  border-radius:4px;padding:2px 6px;cursor:pointer}\n.slotswap:hover{border-color:#FF6B00;color:#FFD9A8}\n/* Two sticks are a pair, not a list. Side by side on a normal screen,\n   stacked only when there is genuinely no room. */\n.dvcols{display:grid;gap:14px;grid-template-columns:1fr}\n.dvcols.pair{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}\n.dvcol{background:#0B1626;border:1px solid #1B2C42;border-radius:10px;padding:11px 12px}\n.dvcolhd{font:800 13px/1.3 'Segoe UI',system-ui,sans-serif;color:#FF6B00;\n  letter-spacing:.04em;margin-bottom:9px;padding-bottom:7px;\n  border-bottom:1px solid #1B2C42}\n.dvcolhd small{display:block;font:600 11px/1.4 inherit;color:#93A7B6;\n  letter-spacing:.02em;margin-top:2px}\n";
+var DVCOL_CSS="\n/* The slot swap was a title= attribute nobody could find. Sleven asked\n   for \"a way to swap it or something\" - it existed, invisibly. */\n.slotswap{display:inline-block;margin-top:4px;font:600 10.5px/1.3 inherit;\n  color:#FFB259;background:#1A1206;border:1px solid #6B4C12;\n  border-radius:4px;padding:2px 6px;cursor:pointer}\n.slotswap:hover{border-color:#FF6B00;color:#FFD9A8}\n/* A control that cannot do anything must LOOK like it cannot, and still\n   say why - Sleven's complaint was never being told what a click did. */\n.slotswap[disabled]{opacity:.55;cursor:default;border-color:#3A2A10;\n  color:#B8895A}\n.slotswap[disabled]:hover{border-color:#3A2A10;color:#B8895A}\n.slotnote{grid-column:1/-1;margin:6px 0 0;font:600 11.5px/1.45 inherit;\n  color:#FFB259;background:#1A1206;border:1px solid #6B4C12;\n  border-radius:5px;padding:5px 8px}\n/* Two sticks are a pair, not a list. Side by side on a normal screen,\n   stacked only when there is genuinely no room. */\n.dvcols{display:grid;gap:14px;grid-template-columns:1fr}\n.dvcols.pair{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}\n.dvcol{background:#0B1626;border:1px solid #1B2C42;border-radius:10px;padding:11px 12px}\n.dvcolhd{font:800 13px/1.3 'Segoe UI',system-ui,sans-serif;color:#FF6B00;\n  letter-spacing:.04em;margin-bottom:9px;padding-bottom:7px;\n  border-bottom:1px solid #1B2C42}\n.dvcolhd small{display:block;font:600 11px/1.4 inherit;color:#93A7B6;\n  letter-spacing:.02em;margin-top:2px}\n";
 var HAT_CENTRE=1.2857, HAT_TOL=0.06;
 
 var DEADZONE=0.12, DRIFT=0.06;
@@ -1087,7 +1156,12 @@ function pads(){
    See patch_device_identity.py for the full reasoning. */
 var profileDevices=null;          /* set by CCDEV.setProfileDevices() */
 var choiceCache=null;             /* "vid:pid" -> slot, from localStorage */
-var CC_SLOT_KEY="cc.js.slots.v1";
+/* v2: v1 can hold a slot outside 1..N, written by the counter this file
+   replaced. The reconciler heals such a value, but bumping the key drops
+   today's known-bad state once instead of repairing it on every load for
+   the rest of the page's life. v1 is left in place rather than cleared -
+   it is inert the moment nothing reads it. */
+var CC_SLOT_KEY="cc.js.slots.v2";
 
 /* SCX ships with the keybind page but NOT with the index page, so every use
    of it is guarded and its absence simply means we cannot read VID/PID. */
@@ -1111,7 +1185,7 @@ function rememberSlot(p,n){
   if(!k) return false;               /* no VID/PID - nothing stable to key on */
   choices()[k]=n;
   try{ localStorage.setItem(CC_SLOT_KEY,JSON.stringify(choiceCache)); }catch(e){}
-  padSlot[p.index]=n;
+  invalidateSlots();
   return true;
 }
 
@@ -1135,33 +1209,113 @@ function fromChoice(p){
   return (k&&choices()[k])?choices()[k]:0;
 }
 
-/* Slots already spoken for by a RESOLVED device. A guess must not be handed
-   a number a profile or a remembered choice already owns. */
-function claimedSlots(){
-  var used={}, list=pads(), i, q, n;
-  for(i=0;i<list.length;i++){
-    q=list[i];
-    if(isStd(q)) continue;
-    n=fromProfile(q)||fromChoice(q);
-    if(n) used[n]=1;
-  }
-  return used;
+/* ---- SLOTS ARE EXACTLY 1..N -----------------------------------------
+   THIS REPLACES A COUNTER. The old code answered "which slot?" one device at
+   a time, and let a click do `(slotOf(p) % 8) + 1` - an increment, on a
+   control labelled "wrong stick? click to swap". Two sticks came up correctly
+   at js1/js2; one click to put them the right way round produced js3, the
+   next js4, and localStorage remembered it. That single line is where most of
+   2026-08-12's hardware testing went, and it is also what produced the dead
+   export: a profile full of `js3_*` tokens on a machine with two sticks.
+
+   The rule that removes the whole class: with N sticks connected, the slots
+   in use are a permutation of 1..N. Not "usually", not "after a repair pass"
+   - they are computed that way, and no code path here can produce anything
+   else. One stick is then not a special case at all: 1..1 is js1, and there
+   is nothing to swap it with.
+
+   Reconciliation runs over the whole set at once, because a per-device answer
+   cannot see a collision. The priority order is unchanged:
+     1 an imported profile's GUIDs  - the game's own answer
+     2 the player's remembered choice, IF it is a legal and free slot
+     3 plug order                   - AND WE STILL SAY IT IS A GUESS
+   A remembered choice that is not legal and free is not obeyed. It is
+   corrected and re-stored, so the bad state sitting in a browser right now
+   heals on load instead of being re-derived forever. */
+function sticks(){
+  var l=pads(), o=[], i;
+  for(i=0;i<l.length;i++) if(!isStd(l[i])) o.push(l[i]);
+  return o;
 }
-function guessSlot(p){
-  if(padSlot[p.index]) return padSlot[p.index];
-  var used=claimedSlots(), k, n;
-  for(k in padSlot) used[padSlot[k]]=1;
-  for(n=1;n<=8;n++) if(!used[n]){ padSlot[p.index]=n; return n; }
-  padSlot[p.index]=1; return 1;
+var slotMap=null, slotSrcMap={}, slotSig=null, slotNote="";
+function invalidateSlots(){ slotMap=null; slotSig=null; }
+
+function reconcileSlots(){
+  var list=sticks(), n=list.length, i, p, k, want,
+      used={}, map={}, src={}, repair=[], free=1;
+  /* 1. the game's own answer, where an imported profile gave one. */
+  for(i=0;i<n;i++){ p=list[i]; want=fromProfile(p);
+    if(want){ map[p.index]=want; src[p.index]="profile"; used[want]=1; } }
+  /* 2. a remembered choice - but only when it is inside 1..N and still free. */
+  for(i=0;i<n;i++){ p=list[i]; if(map[p.index]) continue;
+    want=fromChoice(p);
+    if(want>=1&&want<=n&&!used[want]){
+      map[p.index]=want; src[p.index]="remembered"; used[want]=1;
+    } else if(want){
+      repair.push(p);              /* stored, but not obeyable - healed below */
+    } }
+  /* 3. everything left takes the lowest free legal slot, in plug order. There
+     is always one: at most N devices claim at all, and only the remembered
+     claims are constrained to 1..N, so the free numbers inside 1..N can never
+     run short of the devices still needing one. */
+  for(i=0;i<n;i++){ p=list[i]; if(map[p.index]) continue;
+    while(used[free]) free++;
+    map[p.index]=free; used[free]=1;
+    if(!src[p.index]) src[p.index]="guessed"; }
+  /* 4. HEAL, rather than merely ignore. A stored slot we refused to obey is
+     rewritten to the value actually in use, so the correction survives the
+     next load. Slots we only GUESSED are deliberately NOT stored: persisting a
+     guess would freeze plug order and quietly promote an admitted guess into a
+     remembered choice nobody ever made. */
+  for(i=0;i<repair.length;i++){
+    p=repair[i]; src[p.index]="remembered"; k=padKey(p);
+    if(k){ choices()[k]=map[p.index];
+           try{ localStorage.setItem(CC_SLOT_KEY,JSON.stringify(choiceCache)); }
+           catch(e){} }
+  }
+  slotSrcMap=src;
+  return map;
+}
+/* Cached against the connected set AND the selected tab, because `isStd`
+   depends on `dev` - a standard-mapping pad is a stick on the JOY tab and is
+   not one on the PAD tab, with the same device indices either way. */
+function slots(){
+  var list=sticks(), sig=(typeof dev==="undefined"?"":dev)+"|"+list.length+"|", i;
+  for(i=0;i<list.length;i++) sig+=list[i].index+",";
+  if(slotMap&&sig===slotSig) return slotMap;
+  slotSig=sig; slotMap=reconcileSlots();
+  return slotMap;
+}
+
+/* SWAP, and it is genuinely a swap. Clicking exchanges this stick's slot with
+   whichever stick holds the next slot in 1..N, writing BOTH remembered values
+   in the same step - so the set is a permutation of 1..N at every moment,
+   never transiently duplicated and never out of range. With two sticks that
+   alternates between exactly two states, which is what the label has always
+   promised. With three or more, each click is still an exchange of exactly two
+   slots, so the label stays true there too. Returns null on success, or the
+   reason nothing happened - never silence. */
+function swapSlot(p){
+  var list=sticks(), n=list.length, m=slots(), mine=m[p.index], i, q=null, want;
+  if(n<2) return "only one stick is connected, so there is nothing to swap it with";
+  if(fromProfile(p))
+    return "the imported profile names this stick, and the game's own answer is not ours to override";
+  want=(mine%n)+1;
+  for(i=0;i<n;i++) if(m[list[i].index]===want) q=list[i];
+  if(!q) return "could not find the stick currently holding js"+want;
+  /* Both or neither. Remembering one half of an exchange would leave two
+     devices claiming one slot until the next reload. */
+  if(!padKey(p)||!padKey(q))
+    return "the browser reports no Vendor/Product id for one of these devices, "+
+           "so there is nothing stable to remember a choice against";
+  rememberSlot(p,want); rememberSlot(q,mine);
+  return null;
 }
 
 /* The one function that answers both questions: which slot, and how sure. */
 function identityOf(p){
-  var n=fromProfile(p);
-  if(n) return {slot:n, source:"profile"};
-  n=fromChoice(p);
-  if(n) return {slot:n, source:"remembered"};
-  return {slot:guessSlot(p), source:"guessed"};
+  var m=slots();
+  return {slot:m[p.index]||1, source:slotSrcMap[p.index]||"guessed"};
 }
 function slotOf(p){ return identityOf(p).slot; }
 function slotSource(p){ return identityOf(p).source; }
@@ -1280,6 +1434,10 @@ function buildDevice(list){
     return a.index - b.index;
   });
 
+  /* How many STICKS, not how many devices: a standard-mapping pad holds no
+     js slot, so it must not make a lone stick look like a pair. */
+  var _nSticks=sticks().length;
+
   h='<div class="dvhead">';
   list.forEach(function(p){
     var _src=isStd(p)?"":slotSource(p);
@@ -1291,14 +1449,26 @@ function buildDevice(list){
        '">'+prefix(p)+'</div>'+
        (_note?'<div class="srcnote cc-src-'+_src+'">'+esc(_note)+'</div>':'')+
        (_src&&_src!=='profile'
-         ? '<button class="slotswap cc-slot" data-slot="'+p.index+
-           '" title="Click to change which stick this is">wrong stick? click to swap</button>'
+         ? (_nSticks<2
+             /* NOT class="cc-slot", deliberately - the delegated handler keys
+                off that class, so a disabled control is unreachable by code as
+                well as by pointer. `disabled` alone would still match. */
+             ? '<button class="slotswap" disabled title="There is nothing to '+
+               'swap with - only one stick is connected">only one stick '+
+               '&mdash; nothing to swap</button>'
+             : '<button class="slotswap cc-slot" data-slot="'+p.index+
+               '" title="Exchange this stick with js'+((slotOf(p)%_nSticks)+1)+
+               '">wrong stick? click to swap</button>')
          : '')+
        '<div class="nm" title="'+esc(p.id)+'">'+esc(p.id)+'</div>'+
        '<div class="id">'+p.buttons.length+' buttons · '+p.axes.length+' axes · '+
        (p.mapping==="standard"?"standard mapping":"raw / no standard mapping")+
        '</div></div>';
   });
+  /* Why the last click did nothing. Rendered where the click happened, not
+     logged to a console - "it just doesn't do anything" is the report this
+     control has already generated once. */
+  if(slotNote) h+='<div class="slotnote">'+esc(slotNote)+'</div>';
   h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as centre">'+
      'Set centre</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
      '<button class="tg" id="'+ID_+'dvhide">Hide unused buttons</button>'+
@@ -1523,10 +1693,85 @@ window.ccDiag = function(){
     capture: (typeof capture !== 'undefined') ? !!capture : null,
     rebinding: !!(window.KBREBIND && KBREBIND.listening()),
     polls: ccPollCount,
+    /* THE NUMBERS THAT ANSWER "IS THERE EXACTLY ONE LOOP?".
+       `polls` alone cannot: two loops just make it climb twice as fast, which
+       nobody can see by eye. `loopRunning` is 0 or 1 by construction, and
+       `staleFrames` counts races that were absorbed - a number that is
+       allowed to be non-zero and means the guard did its job. */
+    loopRunning: pollRunning ? 1 : 0,
+    staleFrames: ccStaleFrames,
     lastPresenceChange: ccLastPresence
   };
 };
 
+/* ---- THE POLL LOOP HAS EXACTLY ONE OWNER -----------------------------
+   `rafId` had five writers, two of them in the host pages: the tab handler
+   cancelled it directly, startPoll() set it, poll() re-armed it,
+   ccPresenceTick() started it, and gamepadconnected started it.
+
+   The race is not theoretical, and it explains what Sleven saw - input
+   working, then dying, then returning on its own:
+
+     poll() finishes a frame and re-arms, storing a NEW id in rafId.
+     The tab handler, already past its own read of rafId, cancels the OLD
+     id and sets rafId = null.
+
+   Now a live callback exists that nobody has a handle on, and `rafId===null`
+   says the loop is stopped - so the next startPoll() starts a SECOND one.
+   Both then re-arm forever. The mirror case leaves a dead loop everybody
+   believes is running.
+
+   The fix is not a try/catch and is not "start another one to be safe". It
+   is a GENERATION COUNTER. Every start and every stop bumps `pollGen`, and a
+   frame carries the generation it was scheduled under. A frame from a
+   superseded generation returns without re-arming, so a callback nobody can
+   cancel still cannot keep a second loop alive. Cancellation becomes an
+   optimisation rather than the thing correctness rests on - which is the
+   only way to win a race against a callback that may already be queued.
+
+   Starting is idempotent, so "call it twice" is safe by construction rather
+   than by everyone remembering the guard. Every other caller, in this file
+   and in both host pages, goes through pollStart()/pollStop() and nothing
+   else touches rafId. */
+var pollGen = 0, pollRunning = false, ccStaleFrames = 0;
+
+function pollStart(){
+  if(pollRunning) return false;        /* already one loop - never a second */
+  pollRunning = true;
+  pollGen++;
+  schedule(pollGen);
+  return true;
+}
+function pollStop(){
+  if(!pollRunning) return false;
+  pollRunning = false;
+  pollGen++;                           /* any queued frame is now superseded */
+  if(rafId !== null){ cancelAnimationFrame(rafId); rafId = null; }
+  return true;
+}
+function schedule(gen){
+  rafId = requestAnimationFrame(function(){ pollFrame(gen); });
+}
+function pollFrame(gen){
+  /* THE LINE THAT WINS THE RACE. A frame scheduled by a generation that has
+     since been superseded does nothing at all - it does not sample, and
+     above all it does not re-arm. Counted, because a race that is absorbed
+     silently is indistinguishable from one that never happened, and the
+     difference is worth being able to see. */
+  if(gen !== pollGen){ ccStaleFrames++; return; }
+  rafId = null;
+  if(poll() === false){                /* the frame asked to stop */
+    pollRunning = false;
+    pollGen++;
+    return;
+  }
+  if(gen !== pollGen) return;          /* stopped DURING the frame */
+  schedule(gen);
+}
+
+/* Returns false to ask the loop to stop. It no longer touches rafId at all:
+   deciding whether to continue and owning the handle are two jobs, and it
+   having both is what made five writers possible. */
 function poll(){
   ccPollCount++;
   /* A REBIND POLLS REGARDLESS OF THE SELECTED TAB. The action browser lists
@@ -1536,7 +1781,7 @@ function poll(){
      this gate cannot depend on `dev` alone. */
   var rebinding = !!(window.KBREBIND && KBREBIND.listening());
   if((dev==="KBM"&&!rebinding)||(typeof OPEN!=="undefined"&&!OPEN&&!rebinding)){
-    rafId=null; return; }
+    return false; }
   var list=pads(), now=Date.now();
   list.forEach(function(p){
     var prev=padPrev[p.index]||{b:[],a:[],hot:false}, hot=false;
@@ -1608,7 +1853,7 @@ function poll(){
      properties - so there is no reason to gate it on a change threshold,
      and gating it was what made the readout lag behind the stick. */
   renderDevice();
-  rafId=requestAnimationFrame(poll);
+  return true;
 }
 /* Is device input allowed to fire right now?
    Two reasons it may be: the Capture toggle is on (live tester readout), or a
@@ -1649,6 +1894,10 @@ function ccPresenceTick(){
   if(sig === ccPresenceSig) return;          /* nothing changed: do nothing */
   ccPresenceSig = sig;
   ccLastPresence = new Date().toLocaleTimeString();
+  /* The set changed, so both the slot map and any explanation of a click
+     against the OLD set are now stale. Neither may outlive the set it
+     described. */
+  invalidateSlots(); slotNote = "";
   devDom = null;
   ccPresenceChanged();
   if(dev !== "KBM" || (window.KBREBIND && KBREBIND.listening())){
@@ -1661,36 +1910,37 @@ setInterval(ccPresenceTick, 400);
 function startPoll(){
   /* Same reasoning as poll(): a rebind needs the loop running even on the
      Keyboard/Mouse tab, or the first stick press is never sampled and the cell
-     simply sits there listening forever. */
+     simply sits there listening forever.
+
+     This is now only the POLICY - should we be sampling? - and pollStart()
+     owns the mechanism. The `rafId===null` test that used to live here was
+     the second half of the race: it read a variable another writer could
+     have just cleared while a live callback was still queued. */
   var rebinding = !!(window.KBREBIND && KBREBIND.listening());
-  if(rafId===null&&(dev!=="KBM"||rebinding)) rafId=requestAnimationFrame(poll);
+  if(dev!=="KBM"||rebinding) pollStart();
 }
 window.addEventListener('gamepadconnected',function(){
   /* ALWAYS notice. Whether to start SAMPLING can depend on what is on screen;
      whether to know a device exists cannot - this handler discarding the event
      on the default tab is why a reload was needed. */
     devDom=null;
+    invalidateSlots();
     ccPresenceChanged();
     if(dev!=="KBM"){ renderDevice(); startPoll(); } });
-/* Clicking a slot cycles js1..js8 and remembers it against that device's
-   VID/PID. Without this, priority 2 could never fire. Delegated, because the
-   panel is re-rendered wholesale on every frame. */
+/* Clicking a slot EXCHANGES it with another stick's, and remembers both
+   against their VID/PIDs. Without this, priority 2 could never fire.
+   Delegated, because the panel is re-rendered wholesale on every frame. */
 document.addEventListener('click',function(e){
   var el=e.target&&e.target.closest?e.target.closest('.cc-slot'):null;
   if(!el) return;
   var idx=parseInt(el.getAttribute('data-slot'),10);
-  var list=pads(), i, p=null;
+  var list=sticks(), i, p=null;
   for(i=0;i<list.length;i++) if(list[i].index===idx) p=list[i];
-  if(!p||isStd(p)) return;
-  if(fromProfile(p)) return;   /* the game's own answer is not ours to cycle */
-  if(!rememberSlot(p,(slotOf(p)%8)+1)){
-    /* No VID/PID means nothing stable to remember it against. Say so rather
-       than appearing to accept the click. */
-    if(window.console&&console.warn)
-      console.warn('cannot remember a slot for this device: the browser '+
-                   'reports no Vendor/Product id for "'+p.id+'"');
-    return;
-  }
+  if(!p) return;
+  var why=swapSlot(p);
+  /* Either it swapped, or the page states the reason it did not. There is no
+     third outcome, and in particular no silent one. */
+  slotNote = why ? ('Nothing was changed: '+why+'.') : "";
   devDom=null; renderDevice();
 });
 
@@ -1698,10 +1948,16 @@ document.addEventListener('click',function(e){
 window.CCDEV=window.CCDEV||{};
 window.CCDEV.setProfileDevices=function(devices){
   profileDevices=(devices&&devices.length)?devices:null;
+  invalidateSlots();      /* priority 1 just changed for every device at once */
   devDom=null;
   if(typeof renderDevice==="function") renderDevice();
 };
 window.CCDEV.identityOf=identityOf;
+/* THE HOSTS MUST NOT TOUCH rafId. Both tab handlers used to cancel it
+   directly, which is two of the five writers and both of them in another
+   file. They call these instead. */
+window.CCDEV.pollStart=pollStart;
+window.CCDEV.pollStop=pollStop;
 window.CCDEV.joysticks=function(){
   /* [{instance,vid,pid,name}] for SCX.build's opts.joysticks. */
   var out=[], list=pads(), i, p, v;
@@ -1716,7 +1972,8 @@ window.CCDEV.joysticks=function(){
 };
 
 window.addEventListener('gamepaddisconnected',function(e){
-  delete padSlot[e.gamepad.index]; delete padPrev[e.gamepad.index];
+  delete padPrev[e.gamepad.index];
+  invalidateSlots();        /* N just changed - 1..N now means something else */
   delete padCenter[e.gamepad.index];
   devDom=null;
   /* Unplugging mid-session is worth saying out loud too, on any tab. */
@@ -1743,6 +2000,8 @@ render();
   </div>
   <div class="devstate none" id="kbbdev">Looking for flight sticks&hellip;</div>
   <div class="editnote" id="kbbedit">Starting from Star Citizen's stock defaults &mdash; no changes yet. Click any binding to set it.</div>
+  <!-- Said at the moment of binding, not discovered later in the file. -->
+  <div class="unattnote" id="kbbunatt" style="display:none"></div>
   <div id="kbblist"></div>
 
   <div class="doftitle">Joystick axes &mdash; what the evidence actually supports</div>
@@ -1784,11 +2043,13 @@ render();
   var elDof  = document.getElementById('kbbdof');
   var elAll  = document.getElementById('kbbexpand');
   var elEdit = document.getElementById('kbbedit');
+  var elUnatt = document.getElementById('kbbunatt');
   if(!elCat || !elList) return;
 
   var open = {};          /* section name -> expanded */
   var listening = null;   /* {map, action} while waiting for a key */
   var pending = null;     /* {map, action, input, other} awaiting confirmation */
+  var unattestedNote = null;   /* {input, note} for the last captured axis */
 
   /* Counts come from KB_COUNTS, stated by the generator. `categories` is the
      NAMED count - the Uncategorised bucket is not a tenth category the game
@@ -1888,8 +2149,15 @@ render();
                  '<br><span class="lsub">' + listeningHint() +
                  '&nbsp;&middot;&nbsp;Esc to cancel</span></span>';
         }else if(pending && pending.map === a.m && pending.action === a.a){
+          /* Naming the OTHER actionmap matters when it is a different one:
+             "already Flight Ready" reads like a mistake on this screen, while
+             "already Flight Ready, in spaceship_general" reads like the two
+             things that will both fire in the cockpit. */
           cell = '<span class="conflict">' + esc(pending.input) +
-                 ' is already <b>' + esc(pending.other) + '</b>' +
+                 ' is already <b>' + esc(pending.other.action) + '</b>' +
+                 (pending.other.sameMap ? ''
+                    : ' <i>in ' + esc(pending.other.map) + ', which is live at the ' +
+                      'same time as this one</i>') +
                  '<button class="mini go" data-go="1">use it anyway</button>' +
                  '<button class="mini no" data-no="1">cancel</button></span>';
         }else if(sb.text){
@@ -1937,6 +2205,30 @@ render();
       ? n + ' change' + (n===1?'':'s') + ' ready to export'
       : 'no changes yet. Click any binding to set it.');
     elEdit.className = 'editnote' + (n ? ' dirty' : '');
+    paintUnattested();
+  }
+
+  /* THE WARNING HAS TO ARRIVE WHILE THE PERSON IS STILL DECIDING.
+     The row badge already said "unattested" once a binding had landed, which
+     is after the decision. This says it at the moment of capture, in the
+     place the eye is already looking.
+
+     The wording is the whole point and must not drift: UNATTESTED means
+     never observed, NOT rejected. Two of the three tokens that have ever
+     carried this flag - rotx and roty - turned out to work perfectly, and
+     the game itself proved it on 12 August. A page that had said "invalid"
+     would have talked somebody out of a working binding. */
+  function paintUnattested(){
+    if(!elUnatt) return;
+    if(!unattestedNote){ elUnatt.style.display = 'none'; elUnatt.textContent = ''; return; }
+    elUnatt.innerHTML =
+      '<b>' + esc(unattestedNote.input) + '</b> is bound, and it will be written to ' +
+      'the file &mdash; but that axis name is <b>unattested</b>: ' +
+      esc(unattestedNote.note) + '. ' +
+      '<span class="q">That is not the same as the game refusing it. It means we ' +
+      'have never seen it in a real profile, so we cannot promise it works. ' +
+      'If you fly it and it does, tell us and it stops being unattested.</span>';
+    elUnatt.style.display = '';
   }
 
   /* ---- what can actually arrive right now ---- */
@@ -2098,6 +2390,15 @@ render();
   function commit(map, action, input){
     var other = KBEDIT.conflict(map, action, input);
     listening = null;
+    /* AT CAPTURE TIME, not only in the table afterwards. The order's §2.4:
+       `rotx`/`roty` were "offered and bound with no warning". The badge in
+       the row was reached only after the binding had landed, which is after
+       the moment a person is deciding. UNATTESTED IS NOT A REFUSAL and the
+       wording must not read as one - it is unproven, not rejected, and both
+       of the last two tokens flagged this way turned out to be fine. */
+    var ev = axisEvidence(input);
+    if(ev && ev.status === 'UNATTESTED') unattestedNote = {input:input, note:ev.note};
+    else unattestedNote = null;
     if(other){
       /* FLAG, DO NOT AUTO-RESOLVE AND DO NOT HARD-BLOCK. The person is told
          which action already holds it and decides. */
@@ -2179,6 +2480,65 @@ trademarks of Cloud Imperium Rights LLC.
     status.style.color = bad ? '#FF8A6B' : '';
   }
 
+  /* WHERE THE FILE GOES, AND HOW TO TELL WHETHER THE GAME TOOK IT.
+     Sleven loaded a generated profile and could not tell whether it had even
+     been read - which made a numbering bug look like "the whole thing is
+     broken". A download that ends at the Downloads folder with no further
+     word is only half a feature.
+
+     What is CERTAIN and what is not is marked, because the install root
+     differs per machine and a confidently wrong path would waste exactly the
+     time this panel is meant to save. The tail of the path is fixed by the
+     game; the root is wherever the RSI Launcher put it.
+
+     The last step is the one that actually settles it, and it is the method
+     that proved the format worked on 2026-08-12: let the game write its own
+     profile back out and look for your bindings in it. The game's own output
+     is the only witness that cannot be misread. */
+  function showAfterExport(built, filename){
+    var box = document.getElementById('pafter');
+    if(!box) return;
+    var warn = (built.warnings || []).map(function(w){
+      return '<li>' + esc(w) + '</li>'; }).join('');
+    var refused = (built.refused || []).map(function(r){
+      return '<li><code>' + esc(r.binding.input) + '</code> on <b>' +
+             esc(r.binding.action) + '</b> &mdash; ' + esc(r.why) + '</li>'; }).join('');
+    box.innerHTML =
+      '<h3>' + esc(filename) + ' &mdash; now put it where the game looks</h3>' +
+      '<ol>' +
+      '<li>Move it into your Star Citizen <b>Mappings</b> folder. The end of the ' +
+        'path is always the same:<br><code>&hellip;\\LIVE\\USER\\Client\\0\\Controls\\Mappings\\</code>' +
+        '<br><span class="q">The start is wherever the RSI Launcher installed the game &mdash; ' +
+        'commonly <code>C:\\Program Files\\Roberts Space Industries\\StarCitizen\\</code>. ' +
+        'If you have ever exported a profile from the game itself, it landed in this ' +
+        'same folder, which is the quickest way to find it.</span></li>' +
+      '<li><b>Put it there before you launch.</b> The game reads this folder at ' +
+        'startup; a file dropped in while it is running will not be seen.</li>' +
+      '<li>In game: <b>Options &rarr; Keybindings &rarr; Advanced Controls ' +
+        '&rarr; Control Profiles</b>, and load <b>' + esc(filename.replace(/\.xml$/,'')) +
+        '</b>. Or from the console: <code>pp_RebindKeys ' +
+        esc(filename.replace(/\.xml$/,'')) + '</code></li>' +
+      '</ol>' +
+      '<h3>How to tell whether it actually took</h3>' +
+      '<ol>' +
+      '<li><b>Is the name in the Control Profiles list at all?</b> If it is not, the ' +
+        'game never read the file &mdash; that is a wrong folder or a launch that ' +
+        'happened first, not a bad profile.</li>' +
+      '<li>Load it, then find one of the actions you bound in the keybindings list. ' +
+        'It should show your control beside it.</li>' +
+      '<li><b>The one that settles it:</b> have the game <b>export</b> its own profile ' +
+        'and open that file. If your bindings are in what the game wrote, the game ' +
+        'genuinely holds them. This is exactly how the format was proven on ' +
+        '12 August.<br><span class="q">One honest surprise to expect: a binding that ' +
+        'matches the game\'s own default is written out as nothing at all. ' +
+        'An actionmap records only what DIFFERS from stock, so a missing line may ' +
+        'mean "same as default", not "rejected".</span></li>' +
+      '</ol>' +
+      (refused ? '<h3>Not written to the file</h3><ul class="bad">' + refused + '</ul>' : '') +
+      (warn ? '<h3>Worth reading before you fly</h3><ul>' + warn + '</ul>' : '');
+    box.style.display = 'block';
+  }
+
   if(typeof SCX === 'undefined'){
     say('exporter not loaded - sc_export.js is missing', true);
     expBtn.disabled = true;
@@ -2242,6 +2602,14 @@ trademarks of Cloud Imperium Rights LLC.
       name = 'citizen-compass';
       opts.profileName = name;
       opts.joysticks = (window.CCDEV && CCDEV.joysticks) ? CCDEV.joysticks() : [];
+      /* The evidence table travels to the builder rather than being copied
+         into it. KB_DOF is generated by build_kb_actions.py from the source
+         profiles and has one writer; a second copy inside sc_export.js would
+         be a second writer of the same fact (rule 14). */
+      if(typeof KB_DOF !== 'undefined'){
+        opts.axisEvidence = {};
+        KB_DOF.forEach(function(r){ opts.axisEvidence[r.axis] = r.status; });
+      }
       if(!binds.length && !opts.joysticks.length){
         /* Nothing bound and nothing connected. An honest nothing rather than
            a file that pretends to be a profile. */
@@ -2271,10 +2639,16 @@ trademarks of Cloud Imperium Rights LLC.
     document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 0);
 
+    /* `built.missingGuid` NEVER EXISTED. SCX.build has only ever returned
+       `warnings`, so this branch could not fire and the export reported a
+       clean result no matter what it had to say. Reading the real fields. */
     var note = 'exported ' + (binds.length ? binds.length + ' bindings' : 'device block only');
-    if(built.missingGuid && built.missingGuid.length)
-      note += ' - no VID/PID for: ' + built.missingGuid.join(', ');
-    say(note);
+    if(built.refused && built.refused.length)
+      note += ' - ' + built.refused.length + ' refused';
+    if(built.unattested && built.unattested.length)
+      note += ' - unattested axis: ' + built.unattested.join(', ');
+    say(note, !!(built.refused && built.refused.length));
+    showAfterExport(built, (name || 'layout') + '.xml');
   });
 })();
 </script>
