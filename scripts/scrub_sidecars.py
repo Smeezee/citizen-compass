@@ -172,6 +172,12 @@ def main():
             say("  ... and %d more" % (len(dirty) - 15))
 
     if not args.apply:
+        if not dirty:
+            # Do not invite a pointless --apply. This script is about not
+            # claiming things that are not true, and "re-run to rewrite 0
+            # file(s)" is a small one of those.
+            say("\nNothing to scrub - every sidecar is already clean.")
+            return 0
         say("\nREPORT ONLY - nothing was written.")
         say("Re-run with --apply to back up and rewrite these %d file(s)."
             % len(dirty))
