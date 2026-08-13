@@ -896,20 +896,27 @@ func main() {
 		}
 		logPath := filepath.Join(exeDir, "collector-auto.log")
 
-		// Asked once, immediately after consent, and only in this branch.
-		//
 		// THIS BRANCH ONLY, deliberately. This is the double-click path - the
 		// one a person who has never opened a terminal uses, and the only one
 		// where "I cannot find it again" is a real problem. Somebody running
 		// --auto from a scheduled task does not want a desktop icon and has not
 		// asked to be interrupted by a dialog.
-		OfferShortcuts(exeDir, func(f string, a ...interface{}) {
-			if lf, err := openAutoLog(logPath); err == nil {
-				fmt.Fprintf(lf, "[%s] %s\n",
-					time.Now().Format("2006-01-02 15:04:05"), fmt.Sprintf(f, a...))
-				lf.Close()
-			}
-		})
+		//
+		// THE OFFER ITSELF NOW HAPPENS INSIDE runUI, not here. Two reasons, and
+		// the second was not in the order:
+		//
+		//  1. The single-instance check lives in runUI. Offering here meant a
+		//     second launch - which exists only to raise the existing window and
+		//     exit - rewrote the Desktop shortcut on its way out.
+		//  2. runUI's first act is to relaunch itself so the bundled runtime is
+		//     inherited, and the child re-enters main() through this same
+		//     branch. So this ran TWICE on every ordinary double-click, once in
+		//     a process whose only job was to spawn another one.
+		//
+		// Passing the intent rather than performing it keeps "which mode may
+		// offer" here, where the modes are, and "may this process act" there,
+		// where that is known.
+		offerShortcuts := true
 		cfg := autoConfig{
 			PollSeconds:     *poll,
 			DebounceSeconds: *debounce,
@@ -918,7 +925,8 @@ func main() {
 			Burst:           burstCfg,
 			Keys:            watchKeys,
 		}
-		if err := runUI(cfg, *outDir, exeDir, logPath, *hotkey, sendURL, sendKey, clearAfterSend); err != nil {
+		if err := runUI(cfg, *outDir, exeDir, logPath, *hotkey, sendURL, sendKey,
+			clearAfterSend, offerShortcuts); err != nil {
 			// No console to print to. Windows' own message box is the only
 			// place a person will ever see this.
 			showErrorBox("Citizen Collector", err.Error())

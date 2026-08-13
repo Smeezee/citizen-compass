@@ -234,7 +234,7 @@ func verifiedRuntimeNote(exeDir string) string {
 
 // runUI opens the window and runs until it is closed.
 func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, sendURL, sendKey string,
-	clearAfterSend bool) error {
+	clearAfterSend, offerShortcuts bool) error {
 	// Relaunch once so the bundled runtime is inherited from process creation.
 	// This process then has nothing left to do.
 	if pinBundledRuntime(exeDir) {
@@ -260,6 +260,14 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, sendURL, sen
 	// that crashed on startup.
 	if yieldToExistingInstance(logf) {
 		return nil
+	}
+
+	// AFTER the instance check, and after the runtime relaunch, so exactly one
+	// process ever offers and it is the one that goes on to open a window. A
+	// launch that turns out to be a duplicate now exits without having touched
+	// the Desktop - which it previously did, every time, on its way out.
+	if offerShortcuts {
+		OfferShortcuts(exeDir, logf)
 	}
 
 	// A panic in ANY goroutine now lands in the log instead of a dead stderr.
