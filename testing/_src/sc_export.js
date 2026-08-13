@@ -217,6 +217,54 @@ var SCX = (function(){
     return out;
   }
 
+  /* ---- joystick renumbering ------------------------------------
+
+     BELT AND BRACES OVER THE UI. The first profile this tool ever produced
+     for real hardware was unusable: two sticks on the machine, and every
+     binding written as `js3_*`/`js4_*` with `<joystick instance="3"/>`,
+     because the panel's slot control had walked the numbers up. The panel is
+     fixed - but a bad screen must not be ABLE to produce a dead file, so the
+     export renumbers on its own account rather than trusting what it was
+     handed.
+
+     This is safe, and that is not an assumption: Star Citizen resolves a
+     stick by the Product GUID in its <options> line, not by the instance
+     number. Renumbering therefore cannot attach a binding to the wrong
+     stick, so long as the GUID travels with it - which is exactly what this
+     function keeps together.
+
+     A joystick we cannot describe (no VID/PID, so no GUID) gets NO number at
+     all. It is not declared, not described, and the bindings that referred
+     to it are refused with a reason rather than written against a device the
+     file never introduces. That refusal is reported; it is never silent. */
+  function joystickRenumber(good, joysticks){
+    var byInst = {}, used = {}, i, f, k, d, guid;
+    for(i=0;i<joysticks.length;i++)
+      if(joysticks[i] && joysticks[i].instance)
+        byInst[joysticks[i].instance] = joysticks[i];
+    /* Every instance ANYONE refers to - a live device, or a binding that
+       names one. Both, because either alone misses a real case: a stick
+       plugged in but not yet bound, and a binding for a stick since
+       unplugged. */
+    for(i=0;i<good.length;i++){
+      f = famOf(good[i].input);
+      if(f && f.fam === "joystick") used[f.inst] = 1;
+    }
+    for(k in byInst) used[k] = 1;
+
+    var order = Object.keys(used).map(Number).sort(function(a,b){ return a-b; });
+    var map = {}, devices = [], orphans = [], n = 0;
+    for(i=0;i<order.length;i++){
+      d = byInst[order[i]];
+      guid = d ? guidFromVidPid(d.vid, d.pid) : null;
+      if(!guid){ orphans.push(order[i]); continue; }
+      n++;
+      map[order[i]] = n;
+      devices.push({instance:n, vid:d.vid, pid:d.pid, name:d.name, guid:guid});
+    }
+    return {map:map, devices:devices, orphans:orphans};
+  }
+
   /* ---- writing ------------------------------------------------- */
 
   /* opts:
@@ -238,6 +286,42 @@ var SCX = (function(){
     for(i=0;i<bindings.length;i++){
       r = reject(bindings[i]);
       if(r) bad.push({binding:bindings[i], why:r}); else good.push(bindings[i]);
+    }
+
+    /* RENUMBER BEFORE ANYTHING READS THE TOKENS. Grouping, duplicate
+       detection and the <devices> block all key off b.input, so a rewrite
+       after any of them would leave two different answers in one file.
+
+       Only on the synthesis path. When opts.devices is supplied we are
+       round-tripping a real profile, and reproducing THAT faithfully is the
+       whole job - its numbering is the game's, not a screen's. */
+    var renum = null, orphanJs = [];
+    if(!(opts.devices && opts.devices.length)){
+      renum = joystickRenumber(good, opts.joysticks || []);
+      /* RECORDED HERE, where it is discovered. Reporting it further down -
+         inside `if(fams.joystick)` - meant the report vanished in exactly the
+         case worth reporting: refusing the orphan's bindings is what makes
+         `fams.joystick` false. roundtrip.js caught that within a minute. */
+      orphanJs = renum.orphans.slice();
+      var kept = [];
+      good.forEach(function(b){
+        var f = famOf(b.input), to;
+        if(!f || f.fam !== "joystick"){ kept.push(b); return; }
+        to = renum.map[f.inst];
+        if(!to){
+          bad.push({binding:b, why:"joystick "+f.inst+" is not connected and has "+
+                    "no Vendor/Product id, so this file cannot say which stick it "+
+                    "means. Plug that stick in and export again."});
+          return;
+        }
+        if(to === f.inst){ kept.push(b); return; }
+        /* A copy. The caller's working set is not ours to rewrite. */
+        var c = {}, key;
+        for(key in b) if(Object.prototype.hasOwnProperty.call(b, key)) c[key] = b[key];
+        c.input = b.input.replace(/^js\d+_/, "js" + to + "_");
+        kept.push(c);
+      });
+      good = kept;
     }
 
     /* group: map -> action -> [rebind] */
@@ -265,7 +349,7 @@ var SCX = (function(){
 
     /* <options> lines. Round-tripping supplies them verbatim; building
        from live pads synthesises them from VID/PID. */
-    var optLines = [], nameSynthesised = false, missingGuid = [];
+    var optLines = [], nameSynthesised = false, missingGuid = orphanJs;
     if(opts.devices && opts.devices.length){
       opts.devices.forEach(function(d){
         optLines.push({type:d.type, instance:d.instance, product:d.product});
@@ -273,15 +357,21 @@ var SCX = (function(){
     } else {
       if(fams.keyboard) optLines.push({type:"keyboard", instance:1, product:KB_GUID});
       if(fams.joystick){
-        var js = opts.joysticks || [];
-        for(var n=1;n<=(inst.joystick||1);n++){
-          var d = null;
-          for(var k=0;k<js.length;k++) if(js[k].instance===n) d = js[k];
-          var guid = d ? guidFromVidPid(d.vid, d.pid) : null;
-          if(!guid){ missingGuid.push(n); continue; }
+        /* THE DECLARED SET AND THE DESCRIBED SET ARE NOW ONE LIST.
+           The dead profile declared four joysticks and described two; the
+           two blocks were computed from different things - <devices> from
+           the highest instance any binding mentioned, <options> from the
+           devices we had GUIDs for - and nothing made them agree. They are
+           now both read from renum.devices below, so disagreeing is not a
+           state this function can reach. */
+        renum.devices.forEach(function(d){
           nameSynthesised = true;
-          optLines.push({type:"joystick", instance:n, product:productString(d.name, guid)});
-        }
+          optLines.push({type:"joystick", instance:d.instance,
+                         product:productString(d.name, d.guid)});
+        });
+        /* Exactly as many joysticks as we can describe. Not "the highest
+           number seen", which is what declared four of them. */
+        inst.joystick = renum.devices.length;
       }
     }
 
@@ -329,11 +419,28 @@ var SCX = (function(){
     x.push('</ActionMaps>');
 
     var dup = duplicates(good);
+
+    /* Unattested axis names, if the caller supplied the evidence table. This
+       file does NOT carry a copy of that table: KB_DOF is generated by
+       build_kb_actions.py from the source profiles, and a second copy here
+       would be a second writer of the same fact (rule 14). No table supplied
+       means no claim made - not a silent "all clear". */
+    var unattested = [];
+    if(opts.axisEvidence){
+      good.forEach(function(b){
+        var m = /^js\d+_([a-z0-9_]+)$/.exec(b.input);
+        if(!m) return;
+        var st = opts.axisEvidence[m[1]];
+        if(st === "UNATTESTED" && unattested.indexOf(m[1]) < 0) unattested.push(m[1]);
+      });
+    }
+
     var warn = [];
     if(missingGuid.length)
-      warn.push("Joystick instance "+missingGuid.join(", ")+" has no VID/PID, so no "+
-                "<options> line could be written for it and the game will not know "+
-                "which stick those bindings belong to.");
+      warn.push("Joystick "+missingGuid.join(", ")+" has no VID/PID, so this file "+
+                "cannot say which stick it means. It is NOT declared and NOT "+
+                "described, and any binding that named it was refused rather than "+
+                "written against a device the file never introduces.");
     if(nameSynthesised)
       warn.push("The joystick Product NAME is synthesised from what the browser reports, "+
                 "which is not the same string DirectInput gives the game. The GUID is exact. "+
@@ -343,8 +450,20 @@ var SCX = (function(){
                 "puts roll and lateral strafe on the same axis — but check it is deliberate.");
     if(bad.length)
       warn.push(bad.length+" binding(s) were refused and are NOT in this file.");
-    warn.push("No file generated by this tool has ever been loaded by Star Citizen. "+
-              "The format matches two real exports exactly; that is not the same as working.");
+    /* CORRECTED 2026-08-12. The previous sentence - "no file generated by
+       this tool has ever been loaded by Star Citizen" - became false the day
+       Sleven loaded one and the game wrote it back out. Shipping a claim we
+       know to be untrue is the same defect as shipping a guessed value. The
+       limit that IS still true is stated instead, and it is the one that
+       matters to somebody about to fly. */
+    warn.push("Star Citizen has loaded a profile generated by this tool and written "+
+              "it back out, so the FORMAT is accepted. That is not the same as the "+
+              "controls behaving correctly in a cockpit, which is untested.");
+    if(unattested.length)
+      warn.push("Unattested axis name(s) in this file: "+unattested.join(", ")+
+                ". Those names have never been seen in a real profile or in the "+
+                "game's own defaults. UNATTESTED does not mean rejected - it means "+
+                "unproven, and it is the one thing here we cannot vouch for.");
 
     return {
       xml: x.join(EOL)+EOL,
@@ -355,6 +474,7 @@ var SCX = (function(){
       unknownMaps: unknown,
       refused: bad,
       duplicates: dup,
+      unattested: unattested,
       warnings: warn,
       verified: false
     };

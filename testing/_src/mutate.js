@@ -84,9 +84,27 @@ const MUTATIONS=[
  ['M19 drop an unknown actionmap instead of appending it',
   s=>s.replace('mapsSeen.forEach(function(m){ if(emitted.indexOf(m)<0){ emitted.push(m); unknown.push(m); } });','')],
 
- ['M20 write a joystick <options> line even with no VID/PID',
-  s=>s.replace('if(!guid){ missingGuid.push(n); continue; }',
+ /* RE-POINTED 2026-08-12. This mutation stopped applying when the <options>
+    branch it targeted was replaced by joystickRenumber() - and a mutation that
+    does not apply is not a check, it is a line in a report that says SKIP.
+    Same defect, aimed at where the decision now lives. */
+ ['M20 fabricate a GUID for a stick with no VID/PID',
+  s=>s.replace('if(!guid){ orphans.push(order[i]); continue; }',
                'if(!guid){ guid="{0000-0000-0000-0000-504944564944}"; d = d || {name:"Joystick"}; }')],
+
+ /* The two invariants §2 of the master order is about. Both of these
+    mutations reproduce the dead export of 2026-08-12 exactly. */
+ ['M21 skip the renumber and write whatever the screen said',
+  s=>s.replace('c.input = b.input.replace(/^js\\d+_/, "js" + to + "_");',
+               'c.input = b.input;')],
+
+ ['M22 declare joysticks by highest instance seen, not by what is described',
+  s=>s.replace('inst.joystick = renum.devices.length;',
+               '')],
+
+ ['M23 pass an unattested axis without naming it',
+  s=>s.replace('if(st === "UNATTESTED" && unattested.indexOf(m[1]) < 0) unattested.push(m[1]);',
+               '')],
 ];
 
 let caught=0, survived=[];

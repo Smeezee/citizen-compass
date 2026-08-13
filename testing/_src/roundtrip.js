@@ -213,5 +213,125 @@ check('an unknown actionmap is appended, not dropped',
       oddMap.xml.includes('zzz_not_a_real_map') && oddMap.unknownMaps.length===1 &&
       oddMap.xml.indexOf('spaceship_movement') < oddMap.xml.indexOf('zzz_not_a_real_map'));
 
+/* ---- THE DEAD EXPORT, REPRODUCED AND THEN REFUSED ----------------
+   This is not a hypothetical. On 2026-08-12 this tool produced a profile
+   that Star Citizen would not use, from a machine with exactly two sticks:
+
+     <joystick instance="1"/> <joystick instance="2"/>
+     <joystick instance="3"/> <joystick instance="4"/>
+     <options type="joystick" instance="3" Product=" VKBsim ... EVO L ..."/>
+     <options type="joystick" instance="4" Product=" VKBsim ... EVO R ..."/>
+     ...every binding written as js3_* / js4_*
+
+   Four declared, two described, and every token naming a stick the game
+   had no reason to believe in. The inputs below are that exact state. If
+   any of these four checks ever goes red again, the export has regressed
+   to a file that cannot work. */
+console.log('\n=== the dead export of 2026-08-12, as an input ===');
+const dead = SCX2.build(
+  [{map:'spaceship_general', action:'v_flightready', input:'js3_button29'},
+   {map:'spaceship_movement',action:'v_roll',       input:'js3_x'},
+   {map:'spaceship_movement',action:'v_yaw',        input:'js4_rotz'}],
+  {profileName:'dead', categories:cats, mapOrder:mapOrder,
+   joysticks:[{instance:3,vid:'231d',pid:'0201',name:'VKBsim Gladiator EVO L'},
+              {instance:4,vid:'231d',pid:'0200',name:'VKBsim Gladiator EVO R'}]});
+
+check('js3_/js4_ are renumbered to js1_/js2_ regardless of what the screen said',
+      /js1_button29/.test(dead.xml) && /js1_x/.test(dead.xml) && /js2_rotz/.test(dead.xml) &&
+      !/js3_/.test(dead.xml) && !/js4_/.test(dead.xml),
+      devLines(dead.xml).join(' ') + '  ' +
+      (dead.xml.match(/input="js[0-9]_[a-z0-9]+"/g) || []).join(' '));
+
+check('<devices> declares exactly two joysticks, 1 and 2 — no phantoms',
+      JSON.stringify(devLines(dead.xml)) ===
+      JSON.stringify(['<joystick instance="1"/>','<joystick instance="2"/>']),
+      JSON.stringify(devLines(dead.xml)));
+
+/* The invariant the two blocks disagreed about, asserted directly rather
+   than inferred from the two checks above. */
+function optInstances(x, type){
+  return x.split('\r\n')
+          .filter(l=>l.indexOf('<options type="'+type+'"')>=0)
+          .map(l=>+/instance="(\d+)"/.exec(l)[1]);
+}
+function devInstances(x, type){
+  return devLines(x).filter(l=>l.indexOf('<'+type+' ')===0)
+                    .map(l=>+/instance="(\d+)"/.exec(l)[1]);
+}
+check('the DECLARED joystick set equals the DESCRIBED joystick set',
+      JSON.stringify(devInstances(dead.xml,'joystick')) ===
+      JSON.stringify(optInstances(dead.xml,'joystick')),
+      'declared ' + JSON.stringify(devInstances(dead.xml,'joystick')) +
+      ' vs described ' + JSON.stringify(optInstances(dead.xml,'joystick')));
+
+/* Renumbering is only safe because the GUID travels with the stick. If the
+   L stick's GUID ever came out attached to js2, renumbering WOULD have
+   mismatched a device — so this is the check that licenses the whole
+   approach, not a nicety. */
+check('each GUID follows its own stick across the renumber (L stays js1)',
+      /instance="1" Product=" VKBsim Gladiator EVO L    \{0201231D-0000-0000-0000-504944564944\}"/.test(dead.xml) &&
+      /instance="2" Product=" VKBsim Gladiator EVO R    \{0200231D-0000-0000-0000-504944564944\}"/.test(dead.xml),
+      (dead.xml.match(/<options type="joystick"[^>]*>/g)||[]).join('\n  '));
+
+/* Two sticks connected, one of them bound. This is the case that tells the
+   two ways of counting joysticks apart: the highest instance any binding
+   REFERS to is 1, while the number of sticks we can DESCRIBE is 2. Counting
+   the first way is what declared four devices for two sticks. Without this
+   case, deleting the fix changes nothing and the suite says PASS - which is
+   precisely what mutation M22 demonstrated. */
+console.log('\n=== two sticks, one of them bound ===');
+const halfBound = SCX2.build(
+  [{map:'spaceship_movement',action:'v_roll',input:'js1_x'}],
+  {profileName:'half', categories:cats, mapOrder:mapOrder,
+   joysticks:[{instance:1,vid:'231d',pid:'0201',name:'VKBsim Gladiator EVO L'},
+              {instance:2,vid:'231d',pid:'0200',name:'VKBsim Gladiator EVO R'}]});
+check('an unbound but connected stick is declared AND described, not half of each',
+      JSON.stringify(devInstances(halfBound.xml,'joystick'))==='[1,2]' &&
+      JSON.stringify(optInstances(halfBound.xml,'joystick'))==='[1,2]',
+      'declared ' + JSON.stringify(devInstances(halfBound.xml,'joystick')) +
+      ' vs described ' + JSON.stringify(optInstances(halfBound.xml,'joystick')));
+
+/* ---- ONE STICK, which is now the common case (§5b) ---------------- */
+console.log('\n=== one stick ===');
+const one = SCX2.build(
+  [{map:'spaceship_movement',action:'v_roll',input:'js1_x'}],
+  {profileName:'one', categories:cats, mapOrder:mapOrder,
+   joysticks:[{instance:1,vid:'231d',pid:'0201',name:'VKBsim Gladiator EVO L'}]});
+check('one stick exports one <joystick>, one <options>, and only js1_ tokens',
+      JSON.stringify(devInstances(one.xml,'joystick'))==='[1]' &&
+      JSON.stringify(optInstances(one.xml,'joystick'))==='[1]' &&
+      !/js[2-9]_/.test(one.xml),
+      JSON.stringify(devLines(one.xml)));
+
+/* ---- an unattested axis is NAMED, not merely tolerated ------------ */
+console.log('\n=== unattested axis names ===');
+const EVID = {x:'PROVEN', y:'PROVEN', z:'PROVEN', rotx:'PROVEN', roty:'PROVEN',
+              rotz:'PROVEN', slider1:'PROVEN', slider2:'UNATTESTED'};
+const unat = SCX2.build(
+  [{map:'spaceship_movement',action:'v_roll',input:'js1_slider2'},
+   {map:'spaceship_movement',action:'v_yaw', input:'js1_x'}],
+  {profileName:'unat', categories:cats, mapOrder:mapOrder, axisEvidence:EVID,
+   joysticks:[{instance:1,vid:'231d',pid:'0201',name:'VKBsim Gladiator EVO L'}]});
+check('an unattested axis in the file is named in the warnings',
+      unat.unattested.join(',')==='slider2' &&
+      unat.warnings.some(w=>/slider2/.test(w) && /UNATTESTED does not mean rejected/.test(w)),
+      JSON.stringify(unat.unattested));
+check('a proven axis is NOT flagged — the warning has to be worth reading',
+      !unat.unattested.includes('x'));
+const noEvid = SCX2.build(
+  [{map:'spaceship_movement',action:'v_roll',input:'js1_slider2'}],
+  {profileName:'noev', categories:cats, mapOrder:mapOrder,
+   joysticks:[{instance:1,vid:'231d',pid:'0201',name:'VKBsim Gladiator EVO L'}]});
+check('with no evidence table supplied, no claim is made either way',
+      noEvid.unattested.length===0 &&
+      !noEvid.warnings.some(w=>/UNATTESTED/.test(w)),
+      JSON.stringify(noEvid.unattested));
+
+/* ---- the claim about what the game has done with our files -------- */
+check('the export no longer claims no file has ever been loaded by the game',
+      !one.warnings.some(w=>/never been loaded/i.test(w)) &&
+      one.warnings.some(w=>/not the same as the controls behaving correctly/.test(w)),
+      one.warnings.join('\n  '));
+
 console.log('\n'+(failures? failures+' FAILURE(S)' : 'ALL CHECKS PASSED'));
 process.exit(failures?1:0);
