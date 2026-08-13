@@ -3,123 +3,207 @@
 """
 build_holo_data.py - hardpoint data for the holo viewer, generated not pasted.
 
-Reads the derived hardpoints and the model library that actually exists, and
-emits testing/_src/holo_data.gen.js. Same pattern as build_keybind_modes.py and
-build_kb_actions.py: one writer, no second copy of the data.
+Reads the derived fleet hardpoints and the model library that actually exists,
+and emits testing/_src/holo_data.gen.js. Same pattern as build_keybind_modes.py
+and build_kb_actions.py: one writer, no second copy of the data.
+
+WHY `unit` AND NOT `pos_model` -- THE DECISION THIS FILE RESTS ON
+=================================================================
+
+The fleet dataset carries two positions per mount. `pos_model` is in the
+MODEL's own units, and those units are not one thing:
+
+    ~1 unit/metre  (typical)   162 ships   median 0.9747
+    normalised / small           4 ships   Starlancer TAC 0.0093 ... 0.0953
+    ~100 (centimetres)           1 ship    Asgard 101.16
+
+A 10,000x span. Using `pos_model` would mean the page assuming its decode of a
+.glb matches the measurement space the derivation used - and when that
+assumption is wrong it is wrong SILENTLY: the markers simply sit somewhere
+else, which looks like bad derivation rather than a unit error. This viewer has
+already had that bug twice.
+
+`unit` removes the assumption instead of relying on it. It is normalised
+against the hull's own longest half-extent, so the page reconstructs a position
+from the mesh IN FRONT OF IT rather than from a number somebody measured
+elsewhere:
+
+    world position = unit * (longest half-extent of the loaded mesh)
+
+ONE SCALAR, ON EVERY AXIS. This was checked rather than assumed. The
+pos_model/unit ratio for the 100i is 8.743, 8.757, 8.743 across x/y/z; for the
+Asgard it is 2427.3, 2426.6, 2427.8. Identical per axis, so the normalisation
+is a single scalar - the longest half-extent - and NOT a per-axis extent.
+Multiplying by a per-axis half-extent would stretch every axis that is not the
+longest, which is the one plausible-looking way to get this wrong.
+
+AXIS ORDER IS NOT REMAPPED, DELIBERATELY. `frame` records which model axis is
+lateral/up/length, and eight different conventions appear across the fleet. It
+is a DESCRIPTION of the model's axes, not an instruction to permute them:
+`unit` is already expressed in the model's own axis order, which is the order
+three.js will load. Reordering here would break 137 ships to "fix" none.
 
 WHAT THIS SCRIPT WILL NOT DO: GUESS WHICH HULL A HARDPOINT SET BELONGS TO
 
-hardpoints.json is keyed by full names with manufacturers - "Drake Cutlass
-Black". The model library is keyed by the ship folder name - "Cutlass Black
-Best In Show Edition 2949". Matching those is mostly obvious and occasionally a
-judgement, and the judgement is where a wrong answer would be invisible: markers
-drawn on the wrong airframe still look like markers.
-
-So the match is EXACT-SUFFIX ONLY, after stripping a known manufacturer prefix.
-Anything that does not match exactly is reported as unmatched and carries no
-model. It is NOT silently attached to a lookalike.
-
-As of 2026-08-09 that leaves two of the four unmatched, and both are real gaps
-in the model library rather than naming problems:
-
-    Aegis Sabre               -> Sabre.glb            8 hardpoints, displayable
-    Tumbril Cyclone           -> Cyclone.glb          0 hardpoints, displayable
-    Drake Cutlass Black       -> NO MODEL            15 hardpoints, cannot show
-    RSI Constellation Aquila  -> NO MODEL            12 hardpoints, cannot show
-
-Neither the base Cutlass Black nor the Constellation Aquila exists in the 235
-model library or in sc-ships/ - checked directly, they are absent, not
-mis-deployed. The Cutlass Black Best In Show Edition 2949 is present and is
-plausibly the same airframe, but "plausibly the same airframe" is exactly the
-sort of assumption this project does not let a script make on its own. If Sleven
-confirms the hull is identical, add it to MANUAL_MATCHES below and it lights up.
+The fleet dataset resolves the model itself, so no manufacturer stripping or
+suffix matching happens any more - the matcher this file used to carry became
+unnecessary rather than being fixed. What remains is a check that the named
+.glb is genuinely present in _deploy/models/. A ship whose model is missing is
+reported in HOLO_UNMATCHED and carries no model, so the page can say what it
+cannot show instead of offering an entry that 404s.
 """
 
 import glob
+import io
 import json
 import os
-import re
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-HP = os.path.join(HERE, "data-layerrawhardpoints", "hardpoints.json")
+FLEET = os.path.join(HERE, "data-layer", "derived", "holo-hardpoints",
+                     "hardpoints_fleet.json")
+MANIFEST = os.path.join(HERE, "data-layer", "derived", "holo-hardpoints",
+                        "MANIFEST.json")
 MODELS = os.path.join(HERE, "testing", "_deploy", "models")
 OUT = os.path.join(HERE, "testing", "_src", "holo_data.gen.js")
 
-# Manufacturer words that prefix a hardpoints.json key but never a model name.
-MAKERS = ("Drake", "RSI", "Aegis", "Tumbril", "Anvil", "Origin", "MISC",
-          "Crusader", "Consolidated Outland", "Esperia", "Argo", "Banu",
-          "Aopoa", "Kruger", "Gatac", "Mirai", "Greycat", "Vanduul")
 
-# Deliberate, human-confirmed equivalences. EMPTY BY DEFAULT - an entry here is
-# somebody stating that two names are the same airframe, which is a claim about
-# the world that a script cannot check.
-MANUAL_MATCHES = {}
+def say(line):
+    """stdout that survives a ship called tok.yaai.
 
-
-def model_key(name):
-    """_deploy/models uses the CC_SAFE convention: non-alphanumerics -> _."""
-    return re.sub(r"[^A-Za-z0-9._-]+", "_", name)
+    The pipeline has been broken four times by cp1252, and one of those was a
+    diagnostic script printing a ship name. Xi'an and Banu names are not exotic
+    in a Star Citizen dataset - San'tok.yai is in this very file.
+    """
+    sys.stdout.buffer.write((line + "\n").encode("utf-8", "backslashreplace"))
 
 
 def main():
-    with open(HP, "r", encoding="utf-8") as fh:
-        hardpoints = json.load(fh)
+    with io.open(FLEET, "r", encoding="utf-8") as fh:
+        fleet = json.load(fh)
 
-    available = {os.path.splitext(os.path.basename(p))[0]
+    available = {os.path.basename(p)
                  for p in glob.glob(os.path.join(MODELS, "*.glb"))}
+    if not available:
+        sys.exit("NO MODELS FOUND in %s. Refusing to emit a dataset that would\n"
+                 "report every ship as unmatched - that is a missing library,\n"
+                 "not 167 missing ships." % MODELS)
 
-    ships, unmatched = {}, []
-    for full_name, points in hardpoints.items():
-        bare = full_name
-        for m in MAKERS:
-            if bare.startswith(m + " "):
-                bare = bare[len(m) + 1:]
-                break
-        candidate = MANUAL_MATCHES.get(full_name, bare)
-        key = model_key(candidate)
-        if key not in available:
-            unmatched.append((full_name, bare, len(points)))
+    ships, unmatched, no_points = {}, [], []
+    for name, rec in fleet.items():
+        model = rec.get("model") or ""
+        points = rec.get("hardpoints") or []
+        if model not in available:
+            unmatched.append((name, model, len(points)))
             continue
-        ships[full_name] = {
-            "model": key + ".glb",
-            "display": bare,
-            "points": points,
+        if not points:
+            # Kept and displayable - a hull with no mounts in the derivation is
+            # a fact about the ship, and the viewer already says so in words.
+            no_points.append(name)
+        ships[name] = {
+            "model": model,
+            "display": name,
+            # ONLY WHAT THE PAGE RENDERS. The full record - pos_model, port,
+            # type, dps, alpha, manufacturer, the frame - stays in
+            # hardpoints_fleet.json, which is the dataset. Copying all of it
+            # here would put 1798 mounts' worth of unrendered fields on the
+            # wire and make this file a second home for data that has one.
+            "points": [{
+                "where": p.get("where"),
+                "kind": p.get("kind"),
+                "pilot": p.get("pilot"),
+                "unit": p.get("unit"),
+                "items": [{"name": it.get("name"), "size": it.get("size")}
+                          for it in (p.get("items") or [])],
+            } for p in points],
         }
+
+    # Every emitted point must have a usable `unit`, or the page would place it
+    # at the origin and it would read as a mount inside the cockpit. Checked
+    # rather than trusted, because the dataset is generated by another tool.
+    bad = []
+    for name, s in ships.items():
+        for p in s["points"]:
+            u = p["unit"]
+            if not (isinstance(u, list) and len(u) == 3
+                    and all(isinstance(v, (int, float)) for v in u)):
+                bad.append((name, p["where"], u))
+    if bad:
+        for name, where, u in bad[:20]:
+            say("  BAD unit: %-28s %-30s %r" % (name, where, u))
+        sys.exit("%d hardpoint(s) have no usable `unit`. Refusing to emit a "
+                 "dataset\nthat would silently draw them at the ship's centre."
+                 % len(bad))
+
+    with io.open(MANIFEST, "r", encoding="utf-8") as fh:
+        manifest = json.load(fh)
 
     out = [
         "/* GENERATED by build_holo_data.py - do not hand edit.",
-        "   Sources: data-layerrawhardpoints/hardpoints.json and the .glb files",
-        "   actually present in _deploy/models/.",
+        "   Source: data-layer/derived/holo-hardpoints/hardpoints_fleet.json",
+        "   and the .glb files actually present in _deploy/models/.",
         "",
-        "   HOLO_UNMATCHED lists hardpoint sets with no model in the library. They",
-        "   are carried through DELIBERATELY rather than dropped, so the page can",
-        "   say what it cannot show instead of quietly showing less. */",
+        "   HOLO_UNMATCHED lists hardpoint sets whose model is not in the",
+        "   library. They are carried through DELIBERATELY rather than dropped,",
+        "   so the page can say what it cannot show instead of quietly showing",
+        "   less. */",
         "",
-        "const HOLO_SHIPS=%s;" % json.dumps(ships, separators=(",", ":"), sort_keys=True),
+        "const HOLO_SHIPS=%s;" % json.dumps(ships, separators=(",", ":"),
+                                            sort_keys=True, ensure_ascii=False),
         "const HOLO_UNMATCHED=%s;" % json.dumps(
-            [{"name": n, "bare": b, "count": c} for n, b, c in unmatched],
-            separators=(",", ":")),
+            [{"name": n, "model": m, "count": c} for n, m, c in unmatched],
+            separators=(",", ":"), ensure_ascii=False),
+        "/* HOW TO PLACE A MARKER. Emitted by the generator so the page never",
+        "   has to assume a unit system - the two bugs this viewer has already",
+        "   had were both an assumption about units made in the wrong place.",
+        "",
+        "     'unit'  position is normalised to the hull's longest HALF-extent.",
+        "             The page multiplies by that one scalar, measured from the",
+        "             mesh it has actually loaded:",
+        "",
+        "                 world = unit * (max(bbox size) / 2)",
+        "",
+        "             ONE scalar on every axis, not a per-axis extent - the",
+        "             ratio is identical across x/y/z, so a per-axis multiply",
+        "             would stretch everything that is not the longest axis.",
+        "",
+        "   This dataset spans 10,000x in model scale (0.0093 to 101.16 model",
+        "   units per metre), which is exactly why the page must not be handed",
+        "   a fixed multiplier. Any future dataset states its own convention",
+        "   here rather than inheriting this one. */",
+        "const HOLO_PLACEMENT=%s;" % json.dumps({"mode": "unit"}),
         "/* Every position in HOLO_SHIPS is DERIVED. CIG's own position field is",
-        "   null for all 53,651 mounts - see FINDING_fixed-hardpoints-derived. */",
+        "   null for all 25,150 ports in ship_specs.json - re-verified on this",
+        "   dataset. See FINDING_fixed-hardpoints-derived. */",
         "const HOLO_DERIVED_NOTE=%s;" % json.dumps(
             "Positions are derived from the ship's own geometry and port naming, "
-            "not read from the game files. CIG's position field is null for all "
-            "53,651 mounts, so there is nothing authoritative to read. Treat these "
-            "as close, not exact."),
+            "not read from the game files. CIG's position field is null for every "
+            "mount, so there is nothing authoritative to read. Treat these as "
+            "close, not exact."),
+        "/* What the DERIVATION itself measured, carried through from the",
+        "   dataset's manifest rather than restated here. */",
+        "const HOLO_DERIVATION=%s;" % json.dumps(
+            {"produced_by": manifest.get("produced_by"),
+             "verified": manifest.get("verified", {})},
+            separators=(",", ":"), ensure_ascii=False),
         "",
     ]
-    with open(OUT, "w", encoding="utf-8", newline="\n") as fh:
+    with io.open(OUT, "w", encoding="utf-8", newline="\n") as fh:
         fh.write("\n".join(out))
 
-    print("wrote %s" % os.path.relpath(OUT, HERE))
-    for name, s in sorted(ships.items()):
-        print("  %-30s -> %-34s %2d hardpoints" % (name, s["model"], len(s["points"])))
-    for name, bare, n in unmatched:
-        print("  %-30s -> NO MODEL IN LIBRARY (%r)   %2d hardpoints NOT displayable"
-              % (name, bare, n))
-    print()
-    print("  displayable: %d of %d hardpoint sets"
-          % (len(ships), len(ships) + len(unmatched)))
+    total_hp = sum(len(s["points"]) for s in ships.values())
+    say("wrote %s  (%.1f KB)"
+        % (os.path.relpath(OUT, HERE), os.path.getsize(OUT) / 1024.0))
+    say("  displayable: %d ships, %d hardpoints"
+        % (len(ships), total_hp))
+    if no_points:
+        say("  %d displayable ship(s) have NO mounts in the derivation: %s"
+            % (len(no_points), ", ".join(sorted(no_points)[:8])
+               + (" ..." if len(no_points) > 8 else "")))
+    for name, model, n in unmatched:
+        say("  %-30s -> NO MODEL IN LIBRARY (%r)   %2d hardpoints NOT displayable"
+            % (name, model, n))
+    say("  unmatched: %d of %d" % (len(unmatched), len(fleet)))
 
 
 if __name__ == "__main__":

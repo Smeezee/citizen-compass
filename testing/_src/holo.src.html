@@ -127,7 +127,9 @@ function holoMaterial(){
       '  float a=0.10+0.72*f+0.10*scan;',
       '  gl_FragColor=vec4(uColor*(0.45+0.9*f),a);}'].join('\n'),
     transparent:true, blending:THREE.AdditiveBlending,
-    depthWrite:false, side:THREE.DoubleSide
+    /* FrontSide, not DoubleSide: back faces were half the additive sum that
+       produced the white-out. depthWrite stays off - the pre-pass owns depth. */
+    depthWrite:false, side:THREE.FrontSide
   });
 }
 var holoMat=holoMaterial();
@@ -161,11 +163,17 @@ function clearModel(){
 /* ---- markers ---- */
 function markerMesh(colour){
   var g=new THREE.SphereGeometry(1,14,10);
+  /* depthTest stays ON. With the §1 pre-pass writing depth, a marker behind
+     the hull is correctly occluded - and fadeMarkers() then dims the far-side
+     ones so they are still readable as "there is one over there" without
+     punching through solid geometry. */
   var m=new THREE.MeshBasicMaterial({color:colour,transparent:true,opacity:0.95,
-                                     depthTest:false});
+                                     depthTest:true});
   return new THREE.Mesh(g,m);
 }
 function addMarkers(points,radius){
+  /* §2 Marker size scales with the hull. A fixed radius that reads well on a
+     24 m fighter is a speck on a 61 m Constellation. */
   var r=Math.max(radius*0.018,0.4);
   points.forEach(function(p,i){
     var pilot=p.pilot!==false;
@@ -177,15 +185,64 @@ function addMarkers(points,radius){
   });
   placeMarkers();
 }
-function placeMarkers(){
+
+/* §2 FAR-SIDE MARKERS FADE; THEY DO NOT SHOW THROUGH THE HULL.
+   depthTest:false would draw every marker over solid geometry, which reads as
+   "this ship is transparent" rather than as a UI convention. Fading keeps the
+   illusion that you are looking at a hologram of a solid object, which is the
+   whole point of the page. Agreeing with C1's call here, not overriding it.
+   Recomputed per frame because it depends on where the camera is. */
+function fadeMarkers(){
+  if(!markers.length) return;
+  var cam=camera.position, c=new THREE.Vector3();
+  if(current) new THREE.Box3().setFromObject(current).getCenter(c);
   markers.forEach(function(m){
-    var p=m.data.pos||[0,0,0];
+    var toCam=new THREE.Vector3().subVectors(cam,c).normalize();
+    var toMark=new THREE.Vector3().subVectors(m.obj.position,c);
+    var far = toMark.dot(toCam) < 0;          /* behind the hull's midpoint */
+    var base = (selected<0 || m.idx===selected) ? 0.95 : 0.35;
+    m.obj.material.opacity = far ? base*0.30 : base;
+  });
+}
+/* THE SCALAR THAT TURNS A NORMALISED POSITION INTO A WORLD ONE.
+   Measured from the mesh actually loaded, in load(), and nowhere else. The
+   fleet spans 10,000x in model units per metre - 0.0093 for the Starlancer
+   TAC, 101.16 for the Asgard - so there is no fixed multiplier that could be
+   correct, and a page that assumed one would be wrong SILENTLY on 5 ships out
+   of 167. */
+var unitScale=1;
+
+function placeMarkers(){
+  /* THE PAGE DOES NOT DECIDE THE UNIT SYSTEM; THE DATASET STATES IT.
+     Both bugs this viewer has had were a unit assumption made in the wrong
+     place, so an unrecognised mode is refused out loud rather than falling
+     back to something plausible. A silent fallback here would draw every
+     marker in the wrong place and look like bad derivation. */
+  var mode=HOLO_PLACEMENT&&HOLO_PLACEMENT.mode;
+  if(mode!=="unit"&&mode!=="cm"){
+    elStatus.textContent='This dataset states a placement mode this page does '+
+      'not implement ('+String(mode)+'), so no markers are drawn. Nothing here '+
+      'is a guess at where they would go.';
+    markers.forEach(function(m){ m.obj.visible=false; });
+    return;
+  }
+  markers.forEach(function(m){
+    var p, s;
+    if(mode==="unit"){
+      /* Normalised to the hull's longest HALF-extent, so one scalar on every
+         axis. A per-axis extent would stretch everything that is not the
+         longest axis - the plausible-looking way to get this wrong. */
+      p=m.data.unit||[0,0,0]; s=unitScale;
+    }else{
+      p=m.data.pos||[0,0,0]; s=HOLO_PLACEMENT.scale;
+    }
     /* MIRROR L/R. Handedness is an assumption - nothing in the meshes confirms
        which side the derivation called left - so it is a control, not a guess
        baked in. Flipping X flips the model's left and right together with the
        labels below. */
     var x=mirror?-p[0]:p[0];
-    m.obj.position.set(x,p[1],p[2]);
+    m.obj.visible=true;
+    m.obj.position.set(x,p[1],p[2]).multiplyScalar(s);
   });
 }
 function sideLabel(where){
@@ -243,10 +300,41 @@ function load(name){
   elStatus.textContent='loading '+file+String.fromCharCode(8230);
   loader.load('models/'+encodeURIComponent(file),function(g){
     current=g.scene;
-    current.traverse(function(o){ if(o.isMesh) o.material=holoMat; });
+    /* §1 THE WHITE-OUT. The holo material is additive, double-sided and does
+       not write depth, so on a 353k-vertex hull every face along the view ray
+       sums - near face, far face, and every internal rib between them - and
+       wherever the ship is deep the sum saturates to flat white. Measured at
+       63.7% of the visible Sabre.
+
+       The fix is a depth-only pre-pass: an invisible copy that writes depth and
+       draws nothing, so the additive pass then fails the depth test on anything
+       behind the nearest surface. polygonOffset keeps the two coincident meshes
+       from z-fighting. FrontSide on the hull removes the back faces from the
+       sum as well. */
+    var depthMat=new THREE.MeshBasicMaterial({
+      colorWrite:false, depthWrite:true, side:THREE.FrontSide,
+      polygonOffset:true, polygonOffsetFactor:1.2, polygonOffsetUnits:1.2});
+    var prepass=[];
+    current.traverse(function(o){
+      if(!o.isMesh) return;
+      o.material=holoMat;
+      o.renderOrder=1;
+      var d=new THREE.Mesh(o.geometry, depthMat);
+      d.renderOrder=-1;
+      prepass.push({mesh:d, parent:o.parent, from:o});
+    });
+    prepass.forEach(function(x){
+      x.mesh.position.copy(x.from.position);
+      x.mesh.quaternion.copy(x.from.quaternion);
+      x.mesh.scale.copy(x.from.scale);
+      x.parent.add(x.mesh);
+    });
     var box=new THREE.Box3().setFromObject(current);
     var c=box.getCenter(new THREE.Vector3()), s=box.getSize(new THREE.Vector3());
     var radius=Math.max(s.x,s.y,s.z)||1;
+    /* The longest HALF-extent, which is what `unit` was normalised against.
+       Set before addMarkers() places anything. */
+    unitScale=radius/2;
     current.position.sub(c);
     scene.add(current);
     camera.position.set(radius*1.1,radius*0.55,radius*1.5);
@@ -312,7 +400,7 @@ elHint.textContent='Hover a marker to name it, click to select. Blue is '+
 size();
 (function tick(t){
   holoMat.uniforms.uTime.value=(t||0)/1000;
-  controls.update(); renderer.render(scene,camera);
+  controls.update(); fadeMarkers(); renderer.render(scene,camera);
   requestAnimationFrame(tick);
 })();
 
