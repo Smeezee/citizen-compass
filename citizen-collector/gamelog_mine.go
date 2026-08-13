@@ -88,9 +88,21 @@ var (
 	// document nobody opens.
 	reMineObjectContainer = regexp.MustCompile(`(?i)\bobjectcontainer="([^"]+)"`)
 	reMineSpawnLocation   = regexp.MustCompile(`(?i)\bspawn_?location="([^"]+)"`)
-	reMineLocInvName      = regexp.MustCompile(`RequestLocationInventory[^\n]*?\bname="([^"]+)"`)
-	reMineQT       = regexp.MustCompile(`Successfully calculated route to (\S+).*?fuel estimate ([0-9.]+)`)
-	reMineShip     = regexp.MustCompile(`\b((?:AEGS|ANVL|ARGO|BANU|CNOU|CRUS|DRAK|ESPR|GAMA|GRIN|` +
+	// INVESTIGATED 2026-08-13 and its zero is now an expectation, not a
+	// suspicion. Its sibling reMineLocation is Verified and fires constantly,
+	// which made a permanent zero right beside it look like a stale pattern.
+	// It is not stale - it is speculative. 1038 RequestLocationInventory lines
+	// across 235 archived logs, and not one carries name=". There is no
+	// evidence CIG has ever written this form here.
+	//
+	// Left in place deliberately: it costs one regex per matching line and
+	// would catch the form if it ever appears. Do not "fix" it by loosening
+	// the pattern - the quoted-value rule above is what stops a location being
+	// invented out of two unrelated fields, and a looser version of THIS
+	// pattern would match the player handle on the same line.
+	reMineLocInvName = regexp.MustCompile(`RequestLocationInventory[^\n]*?\bname="([^"]+)"`)
+	reMineQT         = regexp.MustCompile(`Successfully calculated route to (\S+).*?fuel estimate ([0-9.]+)`)
+	reMineShip       = regexp.MustCompile(`\b((?:AEGS|ANVL|ARGO|BANU|CNOU|CRUS|DRAK|ESPR|GAMA|GRIN|` +
 		`KRIG|MISC|MRAI|ORIG|RSI|TMBL|VNCL|XIAN|XNAA|GLSN|APAR)_[A-Za-z0-9_]+?)_\d{6,}`)
 	reMineBuild  = regexp.MustCompile(`Changelist:\s*(\d+)`)
 	reMineRes    = regexp.MustCompile(`Change resolution:\s*(\d+x\d+)\s*\(([^)]+)\)`)
@@ -309,7 +321,14 @@ var mineExtractorTable = []MineExtractor{
 	{Name: "mineable_rock", Emits: "mineable_rocks{}", Verified: true,
 		Note: "rock class name carries type and rarity tier, e.g. SurfaceLegendary_Quantainium"},
 	{Name: "location_inventory_name", Emits: "locations{}", Verified: false,
-		Note: `the name="..." form, distinct from the verified Location[...] form`},
+		Note: `EXPECTED ZERO, MEASURED 2026-08-13. Speculative: the name="..." ` +
+			`form has never appeared in this subsystem. Across 235 archived logs ` +
+			`(2024-09 to 2025-11) there are 1038 RequestLocationInventory lines ` +
+			`and NONE carry name=". 1029 match the verified Location[...] reader ` +
+			`beside it; the other 9 are INVALID_LOCATION_ID, which is the game ` +
+			`saying a place has no inventory and is correctly not a location. ` +
+			`Kept because it costs one regex and would catch the form if CIG ever ` +
+			`writes it - not because anything is waiting on it.`},
 }
 
 // SubsystemGap is one thing the game did that this tool cannot yet read.
@@ -433,8 +452,8 @@ type MineStore struct {
 	// shapes is the distinct-form set per subsystem, capped so a chatty
 	// subsystem cannot grow this without bound. Not serialised - the counts
 	// that matter are folded into Uncovered at save time.
-	shapes map[string]map[string]struct{}
-	Uncovered  []SubsystemGap `json:"subsystems_not_yet_read"`
+	shapes    map[string]map[string]struct{}
+	Uncovered []SubsystemGap `json:"subsystems_not_yet_read"`
 
 	Txns []MineTxn `json:"transactions"`
 
@@ -1325,13 +1344,13 @@ func (d MineDeath) key() string {
 func mineCombatLine(st *MineStore, line string) {
 	if m := reMineDeath.FindStringSubmatch(line); m != nil {
 		d := MineDeath{
-			Zone:       scrubIDs(strings.TrimSpace(m[2])),
+			Zone: scrubIDs(strings.TrimSpace(m[2])),
 			// RAW, deliberately - see scrub.go. Deciding at collection time is
 			// deciding forever; the export decides instead, so a better rule can
 			// be re-run over data already gathered.
-			Victim: scrubIDs(strings.TrimSpace(m[1])),
-			Killer: scrubIDs(strings.TrimSpace(m[3])),
-			Weapon: scrubIDs(strings.TrimSpace(m[4])),
+			Victim:     scrubIDs(strings.TrimSpace(m[1])),
+			Killer:     scrubIDs(strings.TrimSpace(m[3])),
+			Weapon:     scrubIDs(strings.TrimSpace(m[4])),
 			Class:      strings.TrimSpace(m[5]),
 			DamageType: strings.TrimSpace(m[6]),
 		}

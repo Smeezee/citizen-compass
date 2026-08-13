@@ -85,6 +85,18 @@ func runMineParseSelftest(check func(name string, ok bool, detail string)) {
 		fmt.Sprintf("%d rows: %d buy, %d sell, %d commodity (expected 3: 1/2/1)",
 			len(st.Txns), buys, sells, commodity))
 
+	// §1, 2026-08-13. The archive says the verified form is the ONLY form this
+	// subsystem writes, and that INVALID_LOCATION_ID is not a place. Both are
+	// asserted here so that if either ever changes, it changes visibly.
+	if _, invalid := st.Locations["INVALID_LOCATION_ID"]; true {
+		check("mine: a location the game says has no inventory is not recorded as a location",
+			!invalid, "INVALID_LOCATION_ID was stored as a real location")
+	}
+	check("mine: the verified Location[...] reader is what fires, not the name= variant",
+		st.Locations["RR_JP_NyxCastra"] > 0 && st.hits["location_inventory_name"] == 0,
+		fmt.Sprintf("Location[] hits %d, name= hits %d",
+			st.Locations["RR_JP_NyxCastra"], st.hits["location_inventory_name"]))
+
 	// The 4.10 rename must be READ, not just tolerated.
 	sawNew := false
 	for _, t := range st.Txns {
