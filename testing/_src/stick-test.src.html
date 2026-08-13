@@ -25,7 +25,19 @@
      job, and stacking them made it a scroll. Falls back to stacked when there
      genuinely is not room. */
   #devs{display:grid;gap:14px;grid-template-columns:1fr}
-  @media(min-width:900px){ #devs{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))} }
+  /* THIS RULE COULD NEVER FIRE, and the page looked untouched because of it.
+     .wrap caps everything at 780px; two 420px columns need 854px plus the
+     gap, so auto-fit collapsed straight back to one column at every screen
+     size. The declaration was right and the container defeated it.
+
+     The device grid now escapes the prose width rather than fighting it: 780px
+     is a good measure for reading and a bad one for comparing two sticks. The
+     breakout is centred on the viewport, so the page stays centred. */
+  @media(min-width:980px){
+    #devs{grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
+          width:min(1180px,calc(100vw - 40px));
+          position:relative;left:50%;transform:translateX(-50%)}
+  }
   .dev{border:1px solid var(--line);border-radius:8px;padding:14px 16px;
        background:var(--panel);margin-bottom:12px}
   .dev h3{margin:0 0 6px;font-size:17px;color:#fff}
