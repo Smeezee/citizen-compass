@@ -283,7 +283,12 @@ func buildUIActions(c uiActionCtx) map[string]uiCall {
 // it must be a single argument with the comma attached and NO space before the
 // path, and the version with a space silently opens the user's Documents folder
 // instead. That is a wrong-looking-right failure, so it lives in one place.
-func revealFile(path string) {
+// revealFile is a package-level hook for the same reason uiNotify below is
+// one: the selftest has to be able to drive the real sendData action, and the
+// real sendData action ends by opening Explorer. A check that pops a window on
+// somebody's desktop every time the suite runs would be turned off, and a check
+// that is turned off is not a check. Production behaviour is unchanged.
+var revealFile = func(path string) {
 	_ = exec.Command("explorer.exe", "/select,"+path).Start()
 }
 

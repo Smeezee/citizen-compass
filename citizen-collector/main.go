@@ -584,6 +584,7 @@ func selftest(outDir string) int {
 	runLifecycleSelftest(check)
 	runPanicLoggingSelftest(check)
 	runUIInterfaceSelftest(check)
+	runSendIncludesCapturesSelftest(check)
 
 	// 7. Game.log discovery - reported, never fatal. The game not being
 	//    installed on a crew member's machine is not a broken collector.
