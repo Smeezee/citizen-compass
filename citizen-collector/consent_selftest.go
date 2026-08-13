@@ -106,11 +106,37 @@ func runConsentSelftest(check func(name string, ok bool, detail string)) {
 			[]string{"player names it saw", "including player names"},
 			"the local store keeps real handles - the person whose disk it is should be told"},
 		{"screenshots are not scrubbed",
-			[]string{"not covered by that name-swapping", "are not scrubbed"},
+			[]string{"not name-swapped", "not covered by that name-swapping", "are not scrubbed"},
 			"a frame can show handles; the name-swapping promise must not appear to cover it"},
 		{"the updater",
 			[]string{"newer version", "updating itself"},
 			"update.go can replace the running exe - that needs saying before it happens"},
+
+		// SLEVEN'S DECISION, 2026-08-13. Four statements the consent must make
+		// about screenshots, each one required here so it cannot quietly go
+		// missing in a future rewrite the way the name-swapping line just did.
+		//
+		// The decision's own words: "Must be true before any build goes to a
+		// third party." These checks are what make that enforceable rather
+		// than remembered.
+		{"screenshots are uploaded, plainly",
+			[]string{"pictures of your screen are part of what is sent",
+				"screenshots are part of what is sent"},
+			"version 2 led with what does NOT happen; somebody could agree without " +
+				"understanding that the pictures are the point"},
+		{"a frame can carry OTHER people's handles",
+			[]string{"handles of players standing near you",
+				"names of players standing near you"},
+			"the user can consent for themselves; they must at least know whose " +
+				"else's name is in the frame"},
+		{"screenshots are never published",
+			[]string{"never published"},
+			"internal-only use is the fact that makes the upload acceptable - " +
+				"if it is not stated, it is not agreed to"},
+		{"nothing extracted carries a name",
+			[]string{"carries no name", "carry no name"},
+			"the governing rule, in the words of the person agreeing to it: a " +
+				"frame may contain a name, nothing derived from it ever may"},
 	}
 	var missing []string
 	for _, m := range mustMention {

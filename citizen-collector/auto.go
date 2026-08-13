@@ -1053,11 +1053,29 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 	// runs at 1 frame/second, so waiting for the poll ticker would silently
 	// halve the rate somebody configured.
 	//
-	// This ticks only while a burst is running, and everything it wakes goes
-	// through exactly the same decide() as an ordinary poll. It produces no
-	// frames of its own.
-	burstTick := time.NewTicker(250 * time.Millisecond)
-	defer burstTick.Stop()
+	// IT EXISTS ONLY WHILE A BURST DOES. The first version was a permanent
+	// 250ms ticker, which woke the loop eight times per poll for the entire
+	// life of the process to do nothing - a burst is a few seconds of a
+	// session. A nil channel blocks forever in a select, so when no burst is
+	// running this case simply is not there.
+	//
+	// Everything it wakes goes through exactly the same decide() as an ordinary
+	// poll. It produces no frames of its own.
+	var burstTick *time.Ticker
+	var burstC <-chan time.Time
+	stopBurstTick := func() {
+		if burstTick != nil {
+			burstTick.Stop()
+			burstTick, burstC = nil, nil
+		}
+	}
+	startBurstTick := func() {
+		if burstTick == nil {
+			burstTick = time.NewTicker(250 * time.Millisecond)
+			burstC = burstTick.C
+		}
+	}
+	defer stopBurstTick()
 
 	for {
 		select {
@@ -1146,13 +1164,23 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 
 		case <-ticker.C:
 
-		case <-burstTick.C:
-			// Only meaningful mid-burst. Outside one this is a cheap no-op that
-			// falls straight through to the poll body, where decide() finds
-			// nothing due.
+		case <-burstC:
+			// Reached only while a burst is running - burstC is nil otherwise.
+			// If the burst ended between the tick and here, stand the fast
+			// clock down and let the ordinary poll take over.
 			if !runner.burstActive() {
+				stopBurstTick()
 				continue
 			}
+		}
+
+		// Keep the fast clock in step with the burst, wherever the burst was
+		// started or ended - a press, a terminal opening, a ceiling being hit.
+		// One place decides, so the two cannot drift apart.
+		if runner.burstActive() {
+			startBurstTick()
+		} else {
+			stopBurstTick()
 		}
 
 		// DETECTION RUNS FIRST, AND UNCONDITIONALLY (WO-UI-01 §6).

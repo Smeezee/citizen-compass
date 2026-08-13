@@ -34,6 +34,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -61,8 +62,8 @@ type ExportResult struct {
 	// the file that went out and must not be marked as if it had been.
 	IncludedTxnKeys []string `json:"-"`
 
-	InstallID   string `json:"install_id,omitempty"`
-	Note        string `json:"note"`
+	InstallID string `json:"install_id,omitempty"`
+	Note      string `json:"note"`
 }
 
 // BuildExport writes one zip the operator can hand over.
@@ -312,6 +313,14 @@ func listCaptures(dir string) captureAudit {
 			a.Why[png] = "photographed " + exe + ", not the game"
 			continue
 		}
+		// THE PRIVACY GATE. Checked on the raw bytes of the sidecar, not on a
+		// parsed struct, because the point is what would be SENT - a field this
+		// build does not know about still ships if it is in the file.
+		if why := sidecarPrivacyRefusal(b); why != "" {
+			a.Quaranti = append(a.Quaranti, png)
+			a.Why[png] = why
+			continue
+		}
 		a.OK = append(a.OK, png)
 	}
 	sort.Strings(a.OK)
@@ -335,6 +344,145 @@ func addFile(zw *zip.Writer, inZip, path string) error {
 
 // exportReadme is written INTO the zip so the file explains itself to whoever
 // receives it, months later, with no chat window to refer back to.
+// sidecarPrivacyRefusal returns the reason a sidecar must not be sent, or "".
+//
+// AN ALLOW-LIST WOULD BE STRONGER AND IS NOT WHAT THIS IS - stated plainly so
+// nobody reads more into it than it does. The sidecar's shape changes between
+// builds, and a strict field allow-list applied to old files would refuse
+// everything ever written, which in practice means somebody turns the guard
+// off. This refuses on the identifiers and the shapes that are known to leak,
+// and it is deliberately a LAST line rather than the only one: the parser fix
+// in gamelog.go is what stops these being written at all.
+//
+// Every rule here has a reason it exists:
+//
+//   - location_candidates  the field that leaked 401 of 449 sidecars on this
+//     disk. It is gone from the writer; a file on disk can
+//     still carry it, and those files are exactly the ones
+//     this must catch.
+//   - playerGEID / handle  the identifiers themselves, in the forms the game
+//     writes them.
+//   - a raw log line       any value carrying the log's own timestamp-and-
+//     channel shape. This is the general case: it catches
+//     a raw line pasted into a field nobody has thought of.
+//
+// IT DECODES FIRST, AND THAT IS THE WHOLE POINT.
+//
+// The first version of this scanned the file's raw bytes, reasoning that a
+// field this build has never heard of still ships if it is in the file. The
+// reasoning was right and the implementation could not see a single real
+// leaking sidecar.
+//
+// Go's encoding/json HTML-escapes < > and & by default, so a raw log line is
+// on disk as "\u003c2026-08-07T00:54:33.801Z\u003e [Notice] ..." and there is
+// no literal < in any sidecar this program has ever written. The raw-line rule
+// matched nothing, and the test passed only because the fixture was hand-written
+// JSON rather than something the encoder produced.
+//
+// Decoding and walking EVERY key and EVERY string value keeps the property that
+// mattered - unknown fields are still visited - and makes escaping the decoder's
+// problem rather than a spelling this file has to keep up with.
+func sidecarPrivacyRefusal(raw []byte) string {
+	var doc interface{}
+	if err := json.Unmarshal(raw, &doc); err != nil {
+		// FAIL CLOSED. A sidecar that will not parse cannot be shown to be
+		// clean, and the bytes are still worth scanning - a leak in a broken
+		// file is still a leak.
+		// The broad rule here, deliberately: with no structure to walk there is
+		// no way to tell a key from prose, and an unparseable sidecar is
+		// already refused below regardless.
+		if strings.Contains(string(raw), "location_candidates") {
+			return "sidecar could not be read AND mentions location_candidates - not sent"
+		}
+		if why := scanForIdentifiers(string(raw)); why != "" {
+			return why
+		}
+		return "sidecar could not be read, so it cannot be shown to be clean - not sent"
+	}
+	return walkForIdentifiers(doc)
+}
+
+// walkForIdentifiers visits every key and every string in the decoded document.
+func walkForIdentifiers(v interface{}) string {
+	switch t := v.(type) {
+	case map[string]interface{}:
+		for k, sub := range t {
+			if why := scanKey(k); why != "" {
+				return why
+			}
+			if why := walkForIdentifiers(sub); why != "" {
+				return why
+			}
+		}
+	case []interface{}:
+		for _, sub := range t {
+			if why := walkForIdentifiers(sub); why != "" {
+				return why
+			}
+		}
+	case string:
+		return scanForIdentifiers(t)
+	}
+	return ""
+}
+
+// scanKey refuses a FIELD NAME that must not be present.
+//
+// Separate from the value rules on purpose. location_candidates is a key, and
+// the sidecars that carry it also carry a location_reason reading "...see
+// location_candidates[] for the raw lines that looked relevant" - prose
+// describing the field. Applying the key rule to values refused every one of
+// those files even after the array had been stripped out of them, which made
+// the scrub pointless: the file could never become clean.
+//
+// Narrowing this is safe rather than merely convenient, because the thing the
+// key rule protects against - the raw lines themselves - is caught by the
+// raw-log-line value rule independently. Removing the key check entirely would
+// not be safe; a payload under a renamed key would still be caught, but the
+// known-bad field name is worth naming in the refusal.
+func scanKey(k string) string {
+	if strings.Contains(k, "location_candidates") {
+		return "sidecar carries a location_candidates field, which shipped raw " +
+			"log lines - not sent"
+	}
+	return ""
+}
+
+// scanForIdentifiers is the rule set, applied to one decoded string VALUE.
+//
+// Every rule here has a reason it exists:
+//
+//   - location_candidates  the field that leaked 401 of 449 sidecars on this
+//     disk. Gone from the writer; files on disk still carry
+//     it, and those are exactly the ones this must catch.
+//   - playerGEID / handle  the identifiers themselves, in the forms the game
+//     writes them.
+//   - a raw log line       any value carrying the log's own timestamp-and-
+//     channel shape. The general case: it catches a raw
+//     line pasted into a field nobody has thought of.
+func scanForIdentifiers(s string) string {
+	if strings.Contains(s, "playerGEID") {
+		return "sidecar carries a playerGEID - not sent"
+	}
+	if reSidecarRawLine.MatchString(s) {
+		return "sidecar carries a raw log line (timestamp and channel) - not sent"
+	}
+	if m := reSidecarHandle.FindStringSubmatch(s); m != nil {
+		return "sidecar carries an account handle in " + m[1] + "[] - not sent"
+	}
+	return ""
+}
+
+// A Game.log line, by its own shape: an ISO timestamp in angle brackets. Any
+// sidecar value containing one is quoting the log verbatim.
+// Both spellings: the decoded "<" and the escaped "\u003c" that the raw-byte
+// fallback still has to cope with.
+var reSidecarRawLine = regexp.MustCompile(`(?:<|\\u003c)\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}`)
+
+// Handle[...] and Player[...] are how the game names an account. The captured
+// group is the key, so the refusal can say which one it found.
+var reSidecarHandle = regexp.MustCompile(`\b(Handle|Player|nickname)\[`)
+
 func exportReadme(st *MineStore, frames int, included bool, quarantined int) string {
 	buys, sells := 0, 0
 	for _, t := range st.Txns {

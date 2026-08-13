@@ -104,10 +104,29 @@ var (
 	reMineQT         = regexp.MustCompile(`Successfully calculated route to (\S+).*?fuel estimate ([0-9.]+)`)
 	reMineShip       = regexp.MustCompile(`\b((?:AEGS|ANVL|ARGO|BANU|CNOU|CRUS|DRAK|ESPR|GAMA|GRIN|` +
 		`KRIG|MISC|MRAI|ORIG|RSI|TMBL|VNCL|XIAN|XNAA|GLSN|APAR)_[A-Za-z0-9_]+?)_\d{6,}`)
-	reMineBuild  = regexp.MustCompile(`Changelist:\s*(\d+)`)
-	reMineRes    = regexp.MustCompile(`Change resolution:\s*(\d+x\d+)\s*\(([^)]+)\)`)
-	reMineD3D    = regexp.MustCompile(`D3D Adapter: FeatureLevel = (.+)`)
-	reMineVulkan = regexp.MustCompile(`\bVulkan\b`)
+	reMineBuild = regexp.MustCompile(`Changelist:\s*(\d+)`)
+	reMineRes   = regexp.MustCompile(`Change resolution:\s*(\d+x\d+)\s*\(([^)]+)\)`)
+	reMineD3D   = regexp.MustCompile(`D3D Adapter: FeatureLevel = (.+)`)
+
+	// THE [VK] LOG CHANNEL, NOT THE WORD "Vulkan".
+	//
+	// This was `\bVulkan\b`, which matches the GPU driver's own capability
+	// line - "Driver Version (581.57.0.0) Vulkan API (1.4.312)" - that the
+	// driver prints whether or not the game is using Vulkan. Measured across
+	// the 235-log archive on 2026-08-13:
+	//
+	//     logs with [VK] channel lines             79
+	//     logs with [VK] AND a D3D Adapter line     0
+	//     156 D3D + 79 VK = 235 = every log
+	//
+	// A perfect partition, and the one log that contains the WORD Vulkan
+	// alongside a D3D Adapter line has zero [VK] lines - a DirectX session the
+	// old pattern would have reported as Vulkan.
+	//
+	// It matters more now than it did: this answer goes in every sidecar, where
+	// it is a claim about a specific session rather than a count in an
+	// aggregate.
+	reMineVulkan = regexp.MustCompile(`\[VK\]`)
 
 	// Entity ids hide INSIDE otherwise harmless names. A quantum destination
 	// came out of the archive as "PartyMemberMarker_200179793657" - another
@@ -189,6 +208,35 @@ var (
 // scrubIDs replaces any run of six or more digits with a marker.
 func scrubIDs(s string) string { return reMineEmbeddedID.ReplaceAllString(s, "<id>") }
 
+// THE GOVERNING RULE FOR EVERYTHING DERIVED FROM ANYTHING - Sleven, 2026-08-13
+//
+//	A frame may contain a name. Nothing DERIVED from a frame ever may.
+//
+// The screenshots themselves are internal-only and are never published, so a
+// picture is allowed to show a handle. The moment anything is EXTRACTED from
+// one - by OCR, by a reader, by anything - that extraction is data, and data
+// goes through the discipline below: NAME THE FIELDS THAT MAY EXIST, DROP THE
+// REST. Not a filter that removes what looks like a name; an allow-list that
+// admits only what is known to be safe.
+//
+// This is written here rather than in a document because of when it will be
+// needed. Nothing reads frame contents today - the collector is scoped "NO OCR,
+// no atlas, no vocabulary" in three file headers - so there is no code to guard
+// and a guard for a path that does not exist would be a check that has never
+// seen its subject.
+//
+// The day somebody builds the reading half, the frame data will not look like
+// log data, and writing "a quick scrubber for the OCR output" will feel like
+// the reasonable thing to do. THAT is the second, weaker mechanism the decision
+// forbids. Extend this map, or write another one in this shape. Do not write a
+// filter.
+//
+// Why an allow-list and never detection: §5b of the log-first order settled it.
+// Handles look like ordinary words, so any heuristic either misses real ones or
+// eats legitimate shop and item names - and both failures are silent. This
+// map has never leaked across 308 rows precisely because it never had to
+// recognise anything.
+//
 // mineTxnKeep is the allow-list. A field not named here never reaches disk.
 var mineTxnKeep = map[string]bool{
 	"shopName": true, "kioskId": true, "client_price": true,
@@ -759,6 +807,17 @@ func containsFloat(xs []float64, v float64) bool {
 //
 // This is what makes a fresh install useful on day one. On a machine that has
 // been playing for two years, logbackups is two years of sessions.
+// mineTargets is the injection point for the filesystem half of mining.
+//
+// It exists because a test that seeds its own store still had the real archive
+// mined into it: BuildExport -> MineAll -> MineTargets() walks real drive
+// letters, so the sent-rows checks found 309 rows where they had planted 1, and
+// passed only on machines with no Star Citizen installed.
+//
+// Production always uses MineTargets. Only a selftest ever replaces it, and it
+// restores it in a defer.
+var mineTargets = MineTargets
+
 func MineTargets() []string {
 	var out []string
 	seen := map[string]bool{}
@@ -826,7 +885,7 @@ func MineAll(outDir string, in Install, logf func(string, ...interface{})) (*Min
 
 	before := len(st.Txns)
 
-	targets := MineTargets()
+	targets := mineTargets()
 	fresh := 0
 	failed := 0
 	for _, p := range targets {

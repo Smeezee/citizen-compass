@@ -31,11 +31,21 @@ func runSentRowsExportSelftest(check func(name string, ok bool, detail string)) 
 	}
 	defer os.RemoveAll(tmp)
 
-	// Seed the store directly - bypassing MineTargets(), which scans real
-	// drive letters for a real game install and has nothing to find in a
-	// unit test. This is the same reason dedupAgainstSent was split out of
-	// MineAll: the resend logic is tested at the level that does not need a
-	// filesystem full of Star Citizen.
+	// ISOLATE THE FILESYSTEM, FOR REAL THIS TIME.
+	//
+	// Seeding the store directly is not enough and never was: BuildExport calls
+	// MineAll, which calls the target scan, so on a machine with the game
+	// installed the whole archive was mined into this temp folder and these
+	// checks found 309 rows where they had planted 1. They passed only where
+	// there was no game to find.
+	//
+	// Replacing the scan is what makes "the export carries exactly the row I
+	// seeded" a statement about the export rather than about whoever's laptop
+	// is running it.
+	savedTargets := mineTargets
+	mineTargets = func() []string { return nil }
+	defer func() { mineTargets = savedTargets }()
+
 	st := newMineStore()
 	st.Txns = []MineTxn{txnFixture("t1", "1000")}
 	if err := saveMineStore(tmp, st); err != nil {

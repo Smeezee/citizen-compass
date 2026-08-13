@@ -70,7 +70,28 @@ const consentFile = "collector-consent.txt"
 // while holding on to a year-old yes is the exact behaviour this file exists to
 // avoid" - is the rule that was about to be broken. Bumping asks everybody
 // again, including Sleven.
-const consentVersion = 2
+// Version 3, 2026-08-13. Sleven's decision on screenshots, and the promise had
+// been quietly soft on the one thing people care most about.
+//
+// Version 2 said screenshots "are NOT sent unless you specifically ask for
+// them" and left the rest to a tick box. That is true about the mechanism and
+// misleading about the outcome: the whole reason the box exists is that the
+// pictures are wanted, and a promise that leads with what does NOT happen is
+// one somebody can agree to without understanding what does.
+//
+// Three things are now said plainly instead:
+//
+//  1. Screenshots ARE uploaded when you send. Not "unless you ask" - it is what
+//     sending includes.
+//  2. A picture can show your handle and the handles of players near you.
+//     Version 2 said this. It stays, and it moves up.
+//  3. They are used INTERNALLY and are never published, and nothing extracted
+//     from a picture ever carries anybody's name. Neither was stated at all,
+//     and they are the two facts that make the first two acceptable.
+//
+// Bumping asks everybody again. Agreement to the old wording is not agreement
+// to this one.
+const consentVersion = 3
 
 const consentText = `Citizen Collector
 
@@ -100,14 +121,25 @@ WHAT LEAVES YOUR COMPUTER, AND ONLY WHEN YOU SAY SO
   written-down data is replaced with a made-up one - yours and everyone
   else's.
 
-  Screenshots are NOT sent unless you specifically ask for them, and they
-  are NOT covered by that name-swapping. A picture of your screen can show
-  your handle, the names of players standing near you, and your party
-  list. If you tick that box, that is what you are agreeing to send.
+  PICTURES OF YOUR SCREEN ARE PART OF WHAT IS SENT. Read this bit twice.
 
-  You can also just press PACKAGE instead, which writes the same file to
-  your own disk and sends nothing. Then it is yours to look at, or send by
-  hand, or delete.
+  A picture is not name-swapped and cannot be. It can show YOUR handle, the
+  handles of players standing near you, your party list, and anything else
+  the game had on screen at that moment.
+
+  What happens to them:
+
+    - They are looked at by us, to read prices and stock off the screen.
+      That is the entire reason they are wanted.
+    - They are NEVER PUBLISHED. They do not go on the website, into a
+      public dataset, or anywhere someone else can see them.
+    - Anything we take OUT of a picture - a price, an item, a place -
+      carries no name. Not yours, not anybody's. The numbers get used;
+      the names do not survive being read.
+
+  If that is not a trade you want to make, do not send. You can press
+  PACKAGE instead, which writes the same file to your own disk and sends
+  nothing. Then it is yours to look at, or send by hand, or delete.
 
 UPDATING ITSELF
   It checks whether a newer version exists and tells you in the window.

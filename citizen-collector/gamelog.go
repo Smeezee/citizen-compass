@@ -28,10 +28,19 @@ package main
 // the log; an invented one is a corrupt record, and this collector's whole
 // output is meant to be evidence.
 //
-// To close the gap: capture once while actually in the PU, then read
-// location_candidates[] in the sidecar JSON - it carries the raw lines this
-// parser thought were interesting but could not confidently parse. That is the
-// intended path from UNVERIFIED to VERIFIED.
+// To close a gap: read `location_patterns_tried` in the sidecar, which names
+// the matchers that ran and found nothing, and `location_candidate_lines`,
+// which says how many lines even looked relevant. Then go to the archive in
+// LIVE/logbackups and read the real lines THERE.
+//
+// That last part is deliberate and is not a detour. This block used to say
+// "read location_candidates[]", a field that shipped the raw log lines inside
+// the sidecar so they could be read without leaving the captures folder. It is
+// the only thing this tool ever wrote that bypassed the allow-listing, and it
+// leaked 364 sidecars' worth of player ids and handles in a single session
+// before anyone noticed. The archive has the same lines, with none of the
+// consequences, and it is where this parser's patterns were confirmed from in
+// the first place.
 
 import (
 	"bufio"
@@ -61,13 +70,32 @@ type GameLogInfo struct {
 	LocationOK  bool    `json:"location_pattern_verified"`
 	LocationWhy string  `json:"location_reason,omitempty"`
 
+	// Which graphics API the session actually ran on. Read from the log the
+	// capture path is already parsing - it took reading pixels off a PNG to
+	// answer "was that session Vulkan?" before this existed.
+	Renderer    *string `json:"renderer"`
+	RendererSrc string  `json:"renderer_source,omitempty"`
+
 	GameRules *string `json:"game_rules"` // "SC_Frontend" = main menu
 	Map       *string `json:"map"`        // "megamap"
 	InGame    *bool   `json:"appears_in_game"`
 
-	// Raw lines that look location-shaped but were not confidently parsed.
-	// This is the bridge from UNVERIFIED to VERIFIED - see the header.
-	LocationCandidates []string `json:"location_candidates,omitempty"`
+	// WHICH MATCHERS WERE TRIED, AND HOW MANY LINES LOOKED RELEVANT.
+	//
+	// This replaced `location_candidates []string`, which carried the raw log
+	// lines themselves so a human could read them and improve the pattern. It
+	// did that job once and then leaked continuously: 364 of 450 sidecars in
+	// one session, ~40 raw lines each, every one carrying playerGEID, the
+	// account handle and shard ids straight past the allow-listing that governs
+	// everything else this tool writes.
+	//
+	// It is the single field that ever bypassed that allow-listing, and the
+	// diagnostic value it provided - WHICH MATCHER SHOULD I BE LOOKING AT -
+	// survives here intact, without a byte of log text.
+	//
+	// Do not reintroduce a raw-line field "temporarily". That is what this was.
+	LocationPatternsTried  []string `json:"location_patterns_tried,omitempty"`
+	LocationCandidateLines int      `json:"location_candidate_lines,omitempty"`
 
 	LinesRead int `json:"lines_read"`
 }
@@ -137,8 +165,34 @@ type unverifiedPattern struct {
 // Requiring ="..." keeps a match inside one field. That is a real constraint,
 // not a cosmetic one: a pattern that cannot cross a field boundary cannot
 // invent a value out of two unrelated fields.
+// verifiedLocationPatterns are formats CONFIRMED against real logs. They
+// outrank every guess below, and unlike the guesses they may set
+// location_pattern_verified.
+//
+// reMineLocation is BORROWED from gamelog_mine.go rather than restated - the
+// same discipline auto.go already follows for the same regex. One definition,
+// three consumers: the miner, the capture trigger, and this parser. A second
+// copy would drift, and the day CIG changes the format one copy would keep
+// matching and hide the other's failure.
+//
+// THIS IS THE FIX FOR THE LEAK, and it is also the fix for a data-quality bug
+// nobody had connected to it. Every in-world capture was a photograph that did
+// not know where it was taken, while the burst path - reading this very
+// pattern - named the location correctly in the same second.
+var verifiedLocationPatterns = []unverifiedPattern{
+	{"RequestLocationInventory-Location[]", reMineLocation, 1},
+}
+
+// unverifiedLocationPatterns are guesses. A guess may fill a gap; it may never
+// displace something known.
+//
+// THE name=" FORM IS GONE FROM THIS LIST, and its removal is the whole story of
+// the leak. It was the first pattern tried for the subsystem that fires most
+// often, and it has never matched anything: 1038 RequestLocationInventory lines
+// across 235 archived logs, zero with name=". So the parser reached the end of
+// its list, found nothing, and dumped forty raw lines - every time, in-world,
+// for months.
 var unverifiedLocationPatterns = []unverifiedPattern{
-	{"RequestLocationInventory", regexp.MustCompile(`RequestLocationInventory[^\n]*?\bname="([^"]+)"`), 1},
 	{"OnClientSpawned-zone", regexp.MustCompile(`OnClientSpawned[^\n]*?\bzone="([^"]+)"`), 1},
 	{"SpawnLocation-quoted", regexp.MustCompile(`(?i)\bspawn_?location="([^"]+)"`), 1},
 	{"ObjectContainer-quoted", regexp.MustCompile(`(?i)\bobjectcontainer="([^"]+)"`), 1},
@@ -349,7 +403,9 @@ func ReadGameLog(path, how string) GameLogInfo {
 		branch             string
 		gameRules, mapName string
 		lastLoadingFor     string
-		candidates         []string
+		renderer           string
+		rendererSrc        string
+		candidateLines     int
 		locVal, locSrc     string
 		locVerified        bool
 	)
@@ -385,6 +441,17 @@ func ReadGameLog(path, how string) GameLogInfo {
 			}
 		}
 
+		// FIRST-WINS, unlike the state fields below: the renderer is chosen at
+		// startup and stated once. Taking the last match would let a stray
+		// mention later in a long log overwrite the real answer.
+		if renderer == "" {
+			if m := reMineD3D.FindStringSubmatch(line); m != nil {
+				renderer, rendererSrc = strings.TrimSpace(m[1]), "D3D Adapter line"
+			} else if reMineVulkan.MatchString(line) {
+				renderer, rendererSrc = "Vulkan", "[VK] log channel"
+			}
+		}
+
 		// These are last-wins: the newest line describes the current state.
 		if m := reGameRules.FindStringSubmatch(line); m != nil {
 			gameRules = m[1]
@@ -399,22 +466,33 @@ func ReadGameLog(path, how string) GameLogInfo {
 			}
 		}
 
-		// unverified location attempts, last plausible match wins
+		// VERIFIED FIRST. A confirmed format that matches is the answer, and no
+		// guess below may overwrite it.
+		for _, vp := range verifiedLocationPatterns {
+			if m := vp.re.FindStringSubmatch(line); m != nil {
+				v := strings.TrimSpace(m[vp.grp])
+				if plausibleLocation(v) {
+					locVal, locSrc, locVerified = v, vp.name+" (VERIFIED pattern)", true
+				}
+			}
+		}
+
+		// unverified location attempts, last plausible match wins - but never
+		// over a verified answer already found.
 		for _, up := range unverifiedLocationPatterns {
 			if m := up.re.FindStringSubmatch(line); m != nil {
 				v := strings.TrimSpace(m[up.grp])
-				if plausibleLocation(v) {
+				if plausibleLocation(v) && !locVerified {
 					locVal, locSrc, locVerified = v, up.name+" (UNVERIFIED pattern)", false
 				}
 			}
 		}
 
-		if reLocationish.MatchString(line) && len(candidates) < 40 {
-			t := strings.TrimSpace(line)
-			if len(t) > 400 {
-				t = t[:400] + "...[truncated]"
-			}
-			candidates = append(candidates, t)
+		// COUNTED, NOT KEPT. The count answers "was there anything to look at",
+		// which is the only question the raw lines were ever actually used to
+		// answer, and it cannot carry a handle.
+		if reLocationish.MatchString(line) {
+			candidateLines++
 		}
 	}
 	if err := sc.Err(); err != nil {
@@ -425,6 +503,7 @@ func ReadGameLog(path, how string) GameLogInfo {
 	info.Build, info.BuildSrc = sp(build), buildSrc
 	info.Branch = sp(branch)
 	info.GameRules, info.Map = sp(gameRules), sp(mapName)
+	info.Renderer, info.RendererSrc = sp(renderer), rendererSrc
 
 	// SC_Frontend is the main menu. VERIFIED: every Context Establisher line in
 	// the sample log carries gamerules="SC_Frontend" and the session never
@@ -463,12 +542,19 @@ func ReadGameLog(path, how string) GameLogInfo {
 		info.LocationWhy = "matched an UNVERIFIED pattern - treat as a hint, not a fact"
 
 	default:
-		info.LocationWhy = "no location pattern matched; see location_candidates[] " +
-			"for the raw lines that looked relevant"
+		info.LocationWhy = "no location pattern matched"
 	}
 
-	if len(candidates) > 0 && (info.Location == nil || !info.LocationOK) {
-		info.LocationCandidates = candidates
+	// The diagnostic, minus the payload. Attached only when the question is
+	// live - a confidently answered location has nothing to diagnose.
+	if info.Location == nil || !info.LocationOK {
+		info.LocationCandidateLines = candidateLines
+		for _, vp := range verifiedLocationPatterns {
+			info.LocationPatternsTried = append(info.LocationPatternsTried, vp.name)
+		}
+		for _, up := range unverifiedLocationPatterns {
+			info.LocationPatternsTried = append(info.LocationPatternsTried, up.name)
+		}
 	}
 	return info
 }

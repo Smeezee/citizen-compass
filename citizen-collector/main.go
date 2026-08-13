@@ -569,6 +569,9 @@ func selftest(outDir string) int {
 	// 6c. Which log is watched, and whether the loop says anything while quiet.
 	fmt.Println("  -- game log, heartbeat, staleness --")
 	runGameLogSelftest(check)
+	runSidecarLeakSelftest(check)
+	runRendererSelftest(check)
+	runExportPrivacyGuardSelftest(check)
 	runAutoHeartbeatSelftest(check)
 
 	// 6d. THE WINDOW. WO-UI-01 §10 - auto-detect, follows the game, count from
