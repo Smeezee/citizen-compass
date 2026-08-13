@@ -12,6 +12,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -269,15 +270,39 @@ func runIntervalSettingsSelftest(check func(name string, ok bool, detail string)
 		return &settings{values: kv, loaded: true}
 	}
 
+	// TWO CHECKS, NOT ONE, because they answer different questions and one of
+	// them used to answer both by accident. Asserting the literal 60 here made
+	// this a test of the constant's value dressed as a test of the resolver -
+	// so changing the default broke a check whose name says nothing about
+	// defaults.
 	sec, notes, err := resolveIntervalSeconds(mk(map[string]string{}))
-	check("no interval setting -> the 60s default",
-		err == nil && sec == 60 && len(notes) == 0,
+	check("no interval setting -> whatever the built-in default is",
+		err == nil && sec == defaultIntervalSeconds && len(notes) == 0,
 		fmt.Sprintf("sec=%d notes=%v err=%v", sec, notes, err))
+
+	// And the value itself, pinned on its own. A change to the default is a
+	// decision; this makes it a visible edit rather than a silent one.
+	check("the built-in default is 120s (§2, 2026-08-13 - gated, then doubled)",
+		defaultIntervalSeconds == 120,
+		fmt.Sprintf("defaultIntervalSeconds = %d", defaultIntervalSeconds))
 
 	sec, notes, err = resolveIntervalSeconds(mk(map[string]string{"interval_seconds": "30"}))
 	check("interval_seconds is honoured",
-		err == nil && sec == 30 && len(notes) == 0,
+		err == nil && sec == 30,
 		fmt.Sprintf("sec=%d err=%v", sec, err))
+	// NEW 2026-08-13: a file that overrides the default now SAYS it is doing
+	// so. Without this the only symptom of an old settings file is "I updated
+	// and the interval did not change".
+	check("a setting that overrides the default is reported, not silent",
+		len(notes) == 1 && strings.Contains(notes[0], "overrides the built-in default"),
+		fmt.Sprintf("notes = %v", notes))
+
+	// NEGATIVE CONTROL: a file that merely restates the default has nothing to
+	// report, and must not produce a line saying it overrode anything.
+	_, quietNotes, _ := resolveIntervalSeconds(mk(map[string]string{
+		"interval_seconds": fmt.Sprintf("%d", defaultIntervalSeconds)}))
+	check("NEGATIVE CONTROL: a file that matches the default says nothing",
+		len(quietNotes) == 0, fmt.Sprintf("notes = %v", quietNotes))
 
 	// The case that matters: Sleven's file on disk right now says
 	// interval_minutes = 10. It must keep working AND must say so.

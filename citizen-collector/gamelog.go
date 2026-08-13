@@ -158,6 +158,26 @@ var rejectedLocationValues = map[string]bool{
 	"megamap": true, "sc_frontend": true, "sc_default": true,
 }
 
+// inGameFromRules is the ONE place that decides whether the player is in the
+// world, from the one field that states it.
+//
+// Two callers: the sidecar's appears_in_game, and the interval-capture gate in
+// auto.go. They must never be able to disagree - a gate that thinks the player
+// is in the world while the sidecar says otherwise would produce exactly the
+// frames this gate exists to prevent, each one carrying a note saying it should
+// not have been taken.
+//
+// `known` is false until the log has stated gamerules at all. Callers treat
+// unknown as NOT a reason to skip: the cost of a wrong skip is a lost frame of
+// real gameplay, and the cost of a wrong capture is 3 MB. Those are not
+// symmetric, so this fails open and says so.
+func inGameFromRules(gameRules string) (in bool, known bool) {
+	if strings.TrimSpace(gameRules) == "" {
+		return false, false
+	}
+	return !strings.EqualFold(gameRules, "SC_Frontend"), true
+}
+
 func plausibleLocation(v string) bool {
 	t := strings.ToLower(strings.TrimSpace(v))
 	if t == "" || rejectedLocationValues[t] {
@@ -409,8 +429,11 @@ func ReadGameLog(path, how string) GameLogInfo {
 	// SC_Frontend is the main menu. VERIFIED: every Context Establisher line in
 	// the sample log carries gamerules="SC_Frontend" and the session never
 	// entered the PU.
-	if gameRules != "" {
-		in := !strings.EqualFold(gameRules, "SC_Frontend")
+	//
+	// The predicate itself now lives in inGameFromRules, because auto.go gates
+	// interval capture on the same fact and two copies of "what counts as being
+	// in the world" would be two things that agree until one of them is edited.
+	if in, known := inGameFromRules(gameRules); known {
 		info.InGame = &in
 	}
 

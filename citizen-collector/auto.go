@@ -105,7 +105,15 @@ type Trigger struct {
 	To      string `json:"to,omitempty"`
 	Seconds int    `json:"seconds,omitempty"`
 	Value   string `json:"value,omitempty"`
-	Note    string `json:"note,omitempty"`
+
+	// Press and Index make a burst REASSEMBLABLE from the sidecars alone.
+	// Without them a burst is a handful of frames a second apart with no
+	// statement that they belong together, which is the same data with the
+	// relationship thrown away.
+	Press int `json:"burst_press,omitempty"`
+	Index int `json:"burst_index,omitempty"`
+
+	Note string `json:"note,omitempty"`
 }
 
 const (
@@ -428,6 +436,13 @@ type autoConfig struct {
 	DebounceSeconds int
 	IntervalSeconds int // 0 = interval fallback off
 
+	// HotkeyBurst is the rhythm one deliberate press produces. FrameSeconds 0
+	// means single-frame mode: one press, one picture, exactly as before. That
+	// is a supported configuration and not a disabled feature - if bursts turn
+	// out to be wrong for some situation it must be a settings change, not a
+	// rebuild.
+	HotkeyBurst burstConfig
+
 	// CaptureLowValue turns menu, loading-screen and spawn frames back on.
 	// Default OFF - see the audit in the Trigger doc comment. It is a setting
 	// rather than a deletion because "we decided these are worthless" is a
@@ -443,7 +458,8 @@ type autoConfig struct {
 
 func defaultAutoConfig() autoConfig {
 	return autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: defaultIntervalSeconds,
-		Burst: defaultBurstConfig()}
+		HotkeyBurst: defaultHotkeyBurstConfig(),
+		Burst:       defaultBurstConfig()}
 }
 
 // autoRunner owns the debounce and interval decisions.
@@ -468,6 +484,22 @@ type autoRunner struct {
 
 	// burstStop carries the reason the last burst ended, for the caller to log.
 	burstStop string
+
+	// gameRules is the detector's latest observation, fed in by the loop. It is
+	// the ONLY input to the in-world gate - see inGameFromRules in gamelog.go.
+	gameRules string
+
+	// menuSkipSaid keeps the pause to one line per state change rather than one
+	// line every interval. At 120s a menu session would otherwise write a line
+	// every two minutes saying nothing new, which is how a log stops being read.
+	menuSkipSaid bool
+
+	// skipNote is emitted once by the loop when the gate first closes.
+	skipNote string
+
+	// presses counts deliberate hotkey presses for the whole session, so every
+	// burst frame can name the press it came from.
+	presses int
 }
 
 func newAutoRunner(cfg autoConfig, now func() time.Time) *autoRunner {
@@ -558,6 +590,32 @@ func (r *autoRunner) decide(triggers []Trigger) *Trigger {
 
 	if r.cfg.IntervalSeconds > 0 &&
 		now.Sub(r.lastCap) >= time.Duration(r.cfg.IntervalSeconds)*time.Second {
+
+		// THE MAIN-MENU GATE. There is nothing on a main menu, a loading screen
+		// or a shader-compilation wait that any dataset wants, and photographing
+		// it cost 818 MB in one session on 2026-08-12 - 104 interval frames at
+		// roughly 3 MB each, one of which recorded its own location as
+		// "main menu (Frontend_Main, not in world)".
+		//
+		// This reads the state the detector already keeps, through the same
+		// predicate the sidecar's appears_in_game uses. It is not a second
+		// in-game heuristic and must not become one.
+		//
+		// EVENTS AND HOTKEYS ARE NOT GATED - they return above this point. If a
+		// terminal_open somehow resolves while this reads false, that is
+		// evidence the flag is wrong, not a reason to lose the frame.
+		if in, known := inGameFromRules(r.gameRules); known && !in {
+			// lastCap is NOT advanced. The interval means "it has been this
+			// long since the last picture", and skipping is not taking one - so
+			// the moment the player enters the world, a frame is due
+			// immediately rather than up to another two minutes later.
+			if !r.menuSkipSaid {
+				r.menuSkipSaid = true
+				r.skipNote = "interval capture paused: not in the world " +
+					"(gamerules " + r.gameRules + "). Events and the hotkey still capture."
+			}
+			return nil
+		}
 		r.lastCap = now
 		return &Trigger{
 			Kind: "interval", Seconds: r.cfg.IntervalSeconds,
@@ -565,6 +623,39 @@ func (r *autoRunner) decide(triggers []Trigger) *Trigger {
 		}
 	}
 	return nil
+}
+
+// hotkeyPressed turns one press into a burst, or into the single frame the
+// caller should take when bursting is switched off.
+//
+// Returns (started, logLine). `started` false means single-frame mode and the
+// loop takes one picture the way it always did.
+func (r *autoRunner) hotkeyPressed(what string, at time.Time) (bool, string, *Trigger) {
+	if r.cfg.HotkeyBurst.FrameSeconds <= 0 {
+		return false, "", nil
+	}
+	r.presses++
+	why, first := r.burst.BeginHotkey(what, at, r.cfg.HotkeyBurst, r.presses)
+	return true, why, first
+}
+
+// burstActive reports whether a burst wants the loop to wake on its rhythm
+// rather than only on the poll ticker.
+func (r *autoRunner) burstActive() bool { return r.burst.Active() }
+
+// setGameRules feeds the runner the detector's own observation.
+//
+// Passed in rather than read from a shared pointer so the runner stays
+// testable with a literal value and holds no reference to the tailer.
+func (r *autoRunner) setGameRules(v string) {
+	if v == r.gameRules {
+		return
+	}
+	r.gameRules = v
+	// A change of state earns one more sentence. Without this the pause is
+	// announced once ever, and a player who goes menu -> world -> menu in one
+	// session sees nothing the second time.
+	r.menuSkipSaid = false
 }
 
 // noteCapture tells the runner a frame was taken by a path that does not go
@@ -583,13 +674,22 @@ func (r *autoRunner) noteCapture(at time.Time) { r.lastCap = at }
 // has never opened a terminal can change the interval. Command-line flags still
 // win, so a support instruction ("run it with --interval 5 once") is not
 // defeated by whatever is in the file.
-// defaultIntervalSeconds is Sleven's call, 2026-08-07: sixty seconds.
+// defaultIntervalSeconds: ten minutes, then sixty seconds, now one hundred and
+// twenty. Each move was made against a measurement rather than a preference.
 //
-// It was ten minutes, and the live PTU test showed why that was wrong. He named
-// it before the test - "we should have added more recessive capturing, ten
-// minutes was way too long" - and the log agreed: standing at a kiosk for two
-// minutes produced nothing at all.
-const defaultIntervalSeconds = 60
+// TEN MINUTES was wrong, and the live PTU test showed it. Sleven named it before
+// the test - "we should have added more recessive capturing, ten minutes was way
+// too long" - and the log agreed: standing at a kiosk for two minutes produced
+// nothing at all.
+//
+// SIXTY SECONDS was too fast once measured over a real session: 104 interval
+// frames inside 2.5 hours, ~818 MB total, and the overwhelming majority of them
+// unprompted. Confirmed by Sleven, 2026-08-13.
+//
+// The GATE matters more than this number and is the reason the number can rise
+// safely - see the main-menu gate in decide(). Doubling the interval halves the
+// frames; refusing to shoot the main menu removed a whole category of them.
+const defaultIntervalSeconds = 120
 
 const settingsFileName = "collector-settings.txt"
 
@@ -609,7 +709,7 @@ auto = true
 # This used to be interval_minutes. An old file that still says interval_minutes
 # keeps working - it is converted, and the log says so - but interval_seconds is
 # the setting to use now.
-interval_seconds = 60
+interval_seconds = 120
 
 # How often to check the game log, in seconds.
 poll_seconds = 2
@@ -633,6 +733,20 @@ burst_seconds = 2
 # Never take more than this many pictures for one terminal. A hard ceiling, so
 # a burst that somehow does not end is still bounded.
 burst_max_frames = 24
+
+# ONE PRESS OF THE HOTKEY TAKES A SHORT BURST, not a single picture, so you can
+# scroll a price board for a few seconds while it records.
+#
+# hotkey_burst_seconds is how often it shoots, in seconds.
+# hotkey_burst_frames is how many pictures one press may take.
+#
+# Pressing again DURING a burst extends it rather than starting a second one -
+# the log says so when it happens, and every picture records which press it
+# belongs to and where it sits in the burst.
+#
+# Set hotkey_burst_seconds = 0 for the old behaviour: one press, one picture.
+hotkey_burst_seconds = 1
+hotkey_burst_frames = 6
 
 # Keys you HOLD DOWN for an activity - mining laser, salvage beam, guns.
 #
@@ -832,6 +946,25 @@ type autoDeps struct {
 	// exactly once per session and NOT on every poll where the game is absent -
 	// which is the obvious way to get this wrong, and would re-read the whole
 	// archive every two seconds forever.
+	//
+	// DO NOT ADD A TIMER HERE. Asked and answered, 2026-08-13.
+	//
+	// Mining is driven by two events and nothing else: this one, and an export
+	// (BuildExport mines first so a SEND never ships a stale file). A periodic
+	// pass would re-read the entire archive on a clock for no gain, because
+	// between exits there is nothing new in it to find.
+	//
+	// AND THERE IS DELIBERATELY NO MINE ON STARTUP, which is worth stating
+	// because it looks like an omission and is not. `gameWasAlive` below is a
+	// plain bool, so it starts false and no exit transition can fire at launch.
+	// A startup pass would be a no-op by construction: nothing can have been
+	// appended to the archive since the last exit pass ran over it. That is
+	// exactly why a real run reports "244 logs read, 0 new rows" and says so in
+	// English rather than looking broken.
+	//
+	// Mining on EXIT rather than on a timer is also the better of the two on
+	// its merits: the session's log is complete at that moment, so it is read
+	// once in full instead of repeatedly while half-written.
 	onGameExit func()
 }
 
@@ -915,6 +1048,17 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 	ticker := time.NewTicker(time.Duration(cfg.PollSeconds) * time.Second)
 	defer ticker.Stop()
 
+	// A BURST CAN BE FASTER THAN THE POLL, so the loop needs a second reason to
+	// wake - not a second reason to CAPTURE. The poll is 2s and a hotkey burst
+	// runs at 1 frame/second, so waiting for the poll ticker would silently
+	// halve the rate somebody configured.
+	//
+	// This ticks only while a burst is running, and everything it wakes goes
+	// through exactly the same decide() as an ordinary poll. It produces no
+	// frames of its own.
+	burstTick := time.NewTicker(250 * time.Millisecond)
+	defer burstTick.Stop()
+
 	for {
 		select {
 		case <-stop:
@@ -959,6 +1103,33 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 				deps.logf("hotkey press received but no game window: %v", err)
 				continue
 			}
+			// ONE PRESS, A BURST OF FRAMES. Sleven: "Make the hot key a burst.
+			// That way I can scroll for a few seconds and try to capture
+			// multiple things."
+			//
+			// The frames themselves come from burstState.Due() below, the same
+			// producer the terminal burst uses. This case only STARTS or
+			// EXTENDS - it does not take pictures of its own, or there would be
+			// two things shooting and the record would not say which.
+			started, why, first := runner.hotkeyPressed(deps.hotkeyName+" via "+via, now())
+			if started {
+				deps.logf("%s", why)
+				// Frame 1 is taken here, above the window gate, so a press
+				// always produces a picture. The rest arrive from decide().
+				if first != nil {
+					out, err := deps.capture(*first)
+					if err != nil {
+						deps.logf("hotkey capture FAILED: %v", err)
+						continue
+					}
+					captures++
+					runner.noteCapture(now())
+					deps.logf("captured %s  <- %s (manual)", filepath.Base(out), first.Reason())
+				}
+				continue
+			}
+
+			// Single-frame mode, reached by setting hotkey_burst_seconds = 0.
 			t := Trigger{Kind: "hotkey", Note: deps.hotkeyName + " via " + via}
 			out, err := deps.capture(t)
 			if err != nil {
@@ -967,13 +1138,21 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			}
 			captures++
 			// A manual frame counts as "the last picture" for interval
-			// purposes. Without this the 60s fallback fires seconds after a
-			// press, on a scene that was just photographed.
+			// purposes. Without this the fallback fires seconds after a press,
+			// on a scene that was just photographed.
 			runner.noteCapture(now())
 			deps.logf("captured %s  <- %s (manual)", filepath.Base(out), t.Reason())
 			continue
 
 		case <-ticker.C:
+
+		case <-burstTick.C:
+			// Only meaningful mid-burst. Outside one this is a cheap no-op that
+			// falls straight through to the poll body, where decide() finds
+			// nothing due.
+			if !runner.burstActive() {
+				continue
+			}
 		}
 
 		// DETECTION RUNS FIRST, AND UNCONDITIONALLY (WO-UI-01 §6).
@@ -1099,6 +1278,14 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			staleWarned = true
 		}
 
+		// The detector has already parsed gamerules out of this poll's lines,
+		// because a change to it is itself a trigger. Handing that across is
+		// what makes the in-world gate a use of existing data rather than a
+		// second detector.
+		if tailer != nil && tailer.det != nil {
+			runner.setGameRules(tailer.det.st.gameRules)
+		}
+
 		t := runner.decide(triggers)
 
 		// SAY WHAT WAS SEEN AND NOT PHOTOGRAPHED.
@@ -1113,6 +1300,11 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		}
 		if runner.burstStop != "" {
 			deps.logf("%s", runner.burstStop)
+		}
+		// Once per state change, not once per interval - see menuSkipSaid.
+		if runner.skipNote != "" {
+			deps.logf("%s", runner.skipNote)
+			runner.skipNote = ""
 		}
 		if len(runner.skipped) > 0 {
 			var names []string
@@ -1179,6 +1371,21 @@ func resolveIntervalSeconds(s *settings) (sec int, notes []string, err error) {
 		sec = newVal
 	case haveNew:
 		sec = newVal
+		// SAY WHEN THE FILE IS HOLDING THE OLD DEFAULT.
+		//
+		// The default moved from 60 to 120 on 2026-08-13. Anyone who already
+		// has a settings file keeps their 60 - which is correct, it is their
+		// setting - but without this line the only symptom is "I updated and
+		// the interval did not change", with nothing anywhere saying why. The
+		// rule above is about not silently ignoring a setting; this is the
+		// same rule pointed the other way, at not silently ignoring the fact
+		// that a setting is overriding a new default.
+		if newVal != defaultIntervalSeconds {
+			notes = append(notes, fmt.Sprintf(
+				"settings: interval_seconds = %d comes from %s and overrides the "+
+					"built-in default of %ds. Delete the line to take the default.",
+				newVal, settingsFileName, defaultIntervalSeconds))
+		}
 	case haveOld:
 		sec = oldVal * 60
 		notes = append(notes, fmt.Sprintf(

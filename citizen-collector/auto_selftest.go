@@ -298,6 +298,84 @@ func runAutoSelftest(dir string, check func(name string, ok bool, detail string)
 		fmt.Sprintf("got %v", pref))
 
 	// =====================================================================
+	// 6b. THE MAIN-MENU GATE (§2, 2026-08-13).
+	//
+	// 818 MB in one session, 104 interval frames, one of them recording its own
+	// location as "main menu (Frontend_Main, not in world)". These four cases
+	// are the whole gate: it closes on the menu, it opens in the world, it
+	// fails OPEN when the log has not said, and it never touches events.
+	// =====================================================================
+	fake = base
+	gcfg := autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 120}
+
+	rMenu := newAutoRunner(gcfg, func() time.Time { return fake })
+	rMenu.setGameRules("SC_Frontend")
+	fake = base.Add(10 * time.Minute)
+	menuShot := rMenu.decide(nil)
+	check("auto: ten minutes in the main menu produces NO interval capture",
+		menuShot == nil, fmt.Sprintf("got %v", menuShot))
+	check("auto: and it says why, once",
+		strings.Contains(rMenu.skipNote, "not in the world"),
+		fmt.Sprintf("skipNote = %q", rMenu.skipNote))
+
+	// Said ONCE. A line every 120 seconds for a menu session is how a log
+	// stops being read.
+	rMenu.skipNote = ""
+	fake = base.Add(20 * time.Minute)
+	rMenu.decide(nil)
+	check("auto: the pause is not re-announced every interval",
+		rMenu.skipNote == "", fmt.Sprintf("said again: %q", rMenu.skipNote))
+
+	// NEGATIVE CONTROL. If this one did not fire, "no menu frames" would be
+	// satisfied by an interval that is simply broken.
+	fake = base
+	rWorld := newAutoRunner(gcfg, func() time.Time { return fake })
+	rWorld.setGameRules("SC_Default")
+	fake = base.Add(3 * time.Minute)
+	worldShot := rWorld.decide(nil)
+	check("NEGATIVE CONTROL: in the world, the interval still fires",
+		worldShot != nil && worldShot.Kind == "interval",
+		fmt.Sprintf("got %v - if this is nil the gate is not a gate, it is an off switch", worldShot))
+
+	// UNKNOWN FAILS OPEN. A log that has not stated gamerules yet is not a
+	// statement that the player is in a menu. Losing real gameplay costs more
+	// than a wasted frame, and the two are not symmetric.
+	fake = base
+	rUnknown := newAutoRunner(gcfg, func() time.Time { return fake })
+	fake = base.Add(3 * time.Minute)
+	unknownShot := rUnknown.decide(nil)
+	check("auto: with gamerules never seen, the interval still fires (fails open)",
+		unknownShot != nil, fmt.Sprintf("got %v", unknownShot))
+
+	// EVENTS ARE NOT GATED. An event resolving while the flag reads menu is
+	// evidence the flag is wrong, not a reason to lose the frame.
+	fake = base
+	rEvent := newAutoRunner(gcfg, func() time.Time { return fake })
+	rEvent.setGameRules("SC_Frontend")
+	fake = base.Add(1 * time.Minute)
+	evShot := rEvent.decide([]Trigger{{
+		Kind: "event", Field: "terminal_open", To: "Stanton4_NewBabbage",
+		Value: valueHigh,
+	}})
+	check("auto: a terminal_open captures even when the flag says main menu",
+		evShot != nil && evShot.Field == "terminal_open",
+		fmt.Sprintf("got %v", evShot))
+
+	// The gate must not consume the interval's clock. Skipping is not taking a
+	// picture, so entering the world means one is due immediately rather than
+	// up to another two minutes later.
+	fake = base
+	rResume := newAutoRunner(gcfg, func() time.Time { return fake })
+	rResume.setGameRules("SC_Frontend")
+	fake = base.Add(10 * time.Minute)
+	rResume.decide(nil)
+	rResume.setGameRules("SC_Default")
+	resumeShot := rResume.decide(nil)
+	check("auto: entering the world after a long menu captures at once",
+		resumeShot != nil && resumeShot.Kind == "interval",
+		fmt.Sprintf("got %v - the skip must not advance lastCap", resumeShot))
+
+	// =====================================================================
 	// 7. INTERVAL OFF - 0 means off, and must mean it even after hours.
 	// =====================================================================
 	fake = base
