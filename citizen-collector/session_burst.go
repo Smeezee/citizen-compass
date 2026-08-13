@@ -64,19 +64,54 @@ func defaultBurstConfig() burstConfig {
 	return burstConfig{FrameSeconds: 2, MaxFrames: 24, IdleSeconds: 20}
 }
 
-// burstState tracks one open terminal.
+// defaultHotkeyBurstConfig is the rhythm ONE deliberate press produces.
+//
+// Six seconds at one frame per second, which is the order's starting point and
+// Sleven's own description: "I can scroll for a few seconds and try to capture
+// multiple things."
+//
+// BOTH NUMBERS ARE SETTINGS, and that is the important part. The right values
+// depend on how fast he actually scrolls a commodity board, which nobody knows
+// yet - so these are a starting point to be measured against, not a judgement.
+// hotkey_burst_seconds = 0 turns bursting off entirely and restores one press,
+// one frame.
+//
+// Faster than the terminal burst deliberately: a terminal is followed patiently
+// for as long as it is open, while a press means "this screen, right now".
+// 1 frame/second is also the fastest rate a person can meaningfully scroll to.
+func defaultHotkeyBurstConfig() burstConfig {
+	return burstConfig{FrameSeconds: 1, MaxFrames: 6, IdleSeconds: 10}
+}
+
+// burstState tracks ONE burst - whichever kind is running.
+//
+// THERE IS DELIBERATELY ONE OF THESE. A hotkey burst and a terminal burst use
+// the same state, so "never two overlapping bursts" is a property of the type
+// rather than a rule somebody has to keep in mind. Two instances would have
+// been a second burst implementation wearing the first one's name, which is
+// exactly what the order forbade.
+//
+// `cfg` is now per-burst, because the two kinds want different rhythms: a
+// terminal is followed patiently for as long as it is open, while a hotkey
+// press is a person saying "now, and for a few seconds".
 type burstState struct {
-	cfg burstConfig
+	cfg     burstConfig // the rhythm of the burst currently running
+	termCfg burstConfig // the rhythm terminals get
 
 	active   bool
-	what     string // the terminal that opened, for the log and the sidecar
+	kind     string // "terminal" or "hotkey" - recorded on every frame
+	what     string // the terminal that opened, or the key that was pressed
 	started  time.Time
 	lastShot time.Time
 	frames   int
+	press    int // which press this burst belongs to (hotkey bursts only)
+	extended int // how many further presses landed inside it
 	stopWhy  string
 }
 
-func newBurstState(cfg burstConfig) *burstState { return &burstState{cfg: cfg} }
+func newBurstState(cfg burstConfig) *burstState {
+	return &burstState{cfg: cfg, termCfg: cfg}
+}
 
 // Begin starts a burst for a named terminal.
 //
@@ -86,18 +121,107 @@ func newBurstState(cfg burstConfig) *burstState { return &burstState{cfg: cfg} }
 // terminal every few seconds would reset the counter forever and the ceiling
 // would never be reached.
 func (b *burstState) Begin(what string, now time.Time) {
-	if b.cfg.FrameSeconds <= 0 {
+	if b.termCfg.FrameSeconds <= 0 {
+		return
+	}
+	// A DELIBERATE PRESS OUTRANKS THE LOG. If the person is holding the key
+	// down on a screen they chose, the terminal that happens to be open does
+	// not get to relabel their frames halfway through. The terminal burst can
+	// start the moment theirs finishes.
+	if b.active && b.kind == "hotkey" {
 		return
 	}
 	if b.active && b.what == what {
 		return
 	}
+	b.cfg = b.termCfg
 	b.active = true
+	b.kind = "terminal"
 	b.what = what
 	b.started = now
 	b.lastShot = now // the trigger itself already took the opening frame
 	b.frames = 0
+	b.press = 0
+	b.extended = 0
 	b.stopWhy = ""
+}
+
+// BeginHotkey starts - or EXTENDS - the burst a person asked for by pressing
+// the key.
+//
+// A SECOND PRESS EXTENDS, it does not start anything. That is the choice the
+// order left open, and it is the one that matches what the key is for: thirty
+// presses were recorded in one session, nine of them inside twelve seconds,
+// which is somebody saying "keep going" rather than "start again". Extending
+// pushes the ceiling out and resets the idle clock, so the frames stay one
+// coherent record with one press number on them.
+//
+// Returns the log line, so the loop states which of the two happened rather
+// than leaving a person to infer it from the frame count.
+func (b *burstState) BeginHotkey(what string, now time.Time, cfg burstConfig, press int) (string, *Trigger) {
+	if cfg.FrameSeconds <= 0 {
+		return "", nil // single-frame mode - the caller takes one picture instead
+	}
+	if b.active && b.kind == "hotkey" {
+		b.extended++
+		b.cfg.MaxFrames += cfg.MaxFrames
+		b.lastShot = now
+		return fmt.Sprintf("burst extended by press #%d - now up to %d frames",
+			press, b.cfg.MaxFrames), nil
+	}
+	prev := ""
+	if b.active {
+		prev = fmt.Sprintf(" (took over from the %s burst on %q)", b.kind, b.what)
+	}
+	b.cfg = cfg
+	b.active = true
+	b.kind = "hotkey"
+	b.what = what
+	b.started = now
+	b.lastShot = now
+	b.frames = 0
+	b.press = press
+	b.extended = 0
+	b.stopWhy = ""
+
+	// FRAME 1 BELONGS TO THE PRESS, and the caller takes it straight away.
+	//
+	// Not a nicety: the rest of the burst is served from decide(), which runs
+	// below the loop's window gate, while the press is handled above it. If the
+	// press produced no frame of its own, pressing the key with the game
+	// minimised would capture nothing while the log announced a burst.
+	//
+	// It is numbered as frame 1 of this burst rather than dressed as a separate
+	// one-off, so the sidecars still reassemble into one record.
+	b.frames = 1
+	first := b.frame()
+	return fmt.Sprintf("burst started by press #%d: up to %d frames, one every %ds%s",
+		press, cfg.MaxFrames, cfg.FrameSeconds, prev), first
+}
+
+// frame builds the Trigger for the frame just counted. One formatter, so a
+// press-taken frame and a Due-taken frame cannot describe themselves
+// differently.
+func (b *burstState) frame() *Trigger {
+	if b.kind == "hotkey" {
+		note := fmt.Sprintf("frame %d of at most %d from press #%d",
+			b.frames, b.cfg.MaxFrames, b.press)
+		if b.extended > 0 {
+			note += fmt.Sprintf(" (extended by %d further press(es))", b.extended)
+		}
+		return &Trigger{
+			Kind: "burst", Field: "hotkey_burst", To: b.what,
+			Seconds: b.cfg.FrameSeconds, Value: valueHigh,
+			Press: b.press, Index: b.frames, Note: note,
+		}
+	}
+	return &Trigger{
+		Kind: "burst", Field: "terminal_scroll", To: b.what,
+		Seconds: b.cfg.FrameSeconds, Value: valueHigh,
+		Index: b.frames,
+		Note: fmt.Sprintf("frame %d of at most %d while %q is open",
+			b.frames, b.cfg.MaxFrames, b.what),
+	}
 }
 
 // Interrupt ends a burst because the player did something else.
@@ -135,12 +259,19 @@ func (b *burstState) Due(now time.Time) (*Trigger, string) {
 
 	b.lastShot = now
 	b.frames++
-	return &Trigger{
-		Kind: "burst", Field: "terminal_scroll", To: b.what,
-		Seconds: b.cfg.FrameSeconds, Value: valueHigh,
-		Note: fmt.Sprintf("frame %d of at most %d while %q is open",
-			b.frames, b.cfg.MaxFrames, b.what),
-	}, ""
+
+	// EVERY FRAME SAYS WHICH BURST IT IS AND WHERE IT SITS IN IT. A burst that
+	// cannot be reassembled afterwards is noise with a timestamp - so the press
+	// number and the index travel in the sidecar, not just in the log.
+	return b.frame(), ""
+}
+
+// ActiveKind reports which sort of burst is running, or "" for none.
+func (b *burstState) ActiveKind() string {
+	if !b.active {
+		return ""
+	}
+	return b.kind
 }
 
 // Active reports whether a terminal is currently being followed. Used by the

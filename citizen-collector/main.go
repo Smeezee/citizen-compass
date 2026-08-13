@@ -527,6 +527,7 @@ func selftest(outDir string) int {
 	// exists because of the 40-capture audit, not because of a crash.
 	runTriggerValueSelftest(check)
 	runBurstSelftest(check)
+	runHotkeyBurstSelftest(check)
 	runBurstSettingsSelftest(check)
 	runCombatSelftest(check)
 	runMergeSelftest(check)
@@ -643,6 +644,7 @@ func main() {
 	// While a shop terminal is open the collector keeps shooting, so a list
 	// longer than one screen is recorded as it is scrolled. See session_burst.go.
 	burstCfg := defaultBurstConfig()
+	hotkeyBurstCfg := defaultHotkeyBurstConfig()
 
 	// Keys the player wants a picture taken on. Empty by default - the tool
 	// does not guess at somebody's bindings.
@@ -810,6 +812,15 @@ func main() {
 	if v, found, err := cfgSettings.intVal("burst_max_frames"); found && err == nil && v > 0 {
 		burstCfg.MaxFrames = v
 	}
+	// THE SAME `found` DISCIPLINE as burst_seconds above, for the same reason:
+	// a settings file written before these keys existed must keep the default,
+	// not silently receive 0 and lose the feature.
+	if v, found, err := cfgSettings.intVal("hotkey_burst_seconds"); found && err == nil && v >= 0 {
+		hotkeyBurstCfg.FrameSeconds = v
+	}
+	if v, found, err := cfgSettings.intVal("hotkey_burst_frames"); found && err == nil && v > 0 {
+		hotkeyBurstCfg.MaxFrames = v
+	}
 	if v, ok := cfgSettings.str("send_url"); ok {
 		sendURL = strings.TrimSpace(v)
 	}
@@ -923,6 +934,7 @@ func main() {
 			IntervalSeconds: *intervalSec,
 			CaptureLowValue: captureLowValue,
 			Burst:           burstCfg,
+			HotkeyBurst:     hotkeyBurstCfg,
 			Keys:            watchKeys,
 		}
 		if err := runUI(cfg, *outDir, exeDir, logPath, *hotkey, sendURL, sendKey,
@@ -1236,6 +1248,7 @@ func main() {
 			IntervalSeconds: *intervalSec,
 			CaptureLowValue: captureLowValue,
 			Burst:           burstCfg,
+			HotkeyBurst:     hotkeyBurstCfg,
 			Keys:            watchKeys,
 		}
 		if err := runAuto(cfg, logPath, deps, nil); err != nil {
