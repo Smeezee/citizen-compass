@@ -151,12 +151,24 @@ func buildUIActions(c uiActionCtx) map[string]uiCall {
 			return string(b), nil
 		},
 
-		// includePNG comes from the page, so the choice is the operator's and
-		// is made every time. There is no remembered setting: a default agreed
-		// to once, months ago, is not consent for tonight's frames.
+		// SENDING INCLUDES THE PICTURES, and that is decided here.
+		//
+		// This used to read the operator's per-send choice off the page. It no
+		// longer does, because consent v3 states "Screenshots ARE uploaded when
+		// you send" - the promise now says what happens, so the code must do
+		// it. Version 2 was worded around a tick box and that is exactly the
+		// drift the version number exists to catch.
+		//
+		// It is fixed HERE rather than by passing true from the page because
+		// the page is not the only caller: ui_browser binds the same name over
+		// a socket. A promise enforced only in the UI is enforced nowhere.
+		//
+		// The parameter stays on BuildExport - the selftests exercise both
+		// paths, and which value was used is still recorded in the zip README.
 		"sendData": func(arg json.RawMessage) (interface{}, error) {
-			includePNG := argBool(arg)
-			res, err := BuildExport(c.ExeDir, c.OutDir, c.OutDir, includePNG, logf)
+			// arg is ignored on purpose; see above. It stays in the signature
+			// so an older page that still sends a boolean does not error.
+			res, err := BuildExport(c.ExeDir, c.OutDir, c.OutDir, true, logf)
 			if err != nil {
 				logf("export FAILED: %v", err)
 				return "That didn't work: " + err.Error(), nil

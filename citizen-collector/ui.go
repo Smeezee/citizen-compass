@@ -590,8 +590,7 @@ const uiHTML = `<!DOCTYPE html>
   <button id="send">Send my data back</button>
   <div id="sendchoice" style="display:none">
     <div class="note" id="sendmsg" style="margin-bottom:6px"></div>
-    <button class="ghost" id="senddata">Data only</button>
-    <button class="ghost" id="sendboth">Include my screenshots too</button>
+    <button class="ghost" id="senddata">Send everything</button>
     <button class="ghost" id="sendcancel">Cancel</button>
   </div>
   <button class="ghost" id="capture">Take a picture now</button>
@@ -736,8 +735,12 @@ const uiHTML = `<!DOCTYPE html>
     // mind got a zip written anyway. Cancel now cancels, and the two choices
     // are named rather than hidden behind OK.
     //
-    // The screenshot question is asked every time on purpose: the dataset is
-    // scrubbed and safe to hand to anyone, and a screenshot is not.
+    // THERE IS NO LONGER A SCREENSHOT QUESTION. Consent v3 says plainly that
+    // "Screenshots ARE uploaded when you send", so offering "data only" here
+    // would contradict the promise the person already agreed to - and a
+    // choice that can silently reduce what is sent is how the code and the
+    // promise drifted apart in the first place. The screen still states
+    // exactly what is about to leave, and Cancel still cancels.
     window.countData().then(function (raw) {
       var d = JSON.parse(raw);
       var choice = document.getElementById('sendchoice');
@@ -748,16 +751,17 @@ const uiHTML = `<!DOCTYPE html>
       var msg = 'Ready to package ' + d.rows +
         (d.rows === 1 ? ' new row' : ' new rows') + ' of game data since your last send.';
       if (d.frames > 0) {
-        msg += ' You also have ' + d.frames + ' screenshots. Screenshots are NOT ' +
+        msg += ' This includes ' + d.frames + ' screenshots. Screenshots are NOT ' +
                'scrubbed - a frame can show your handle, the names of players near ' +
-               'you, and chat.';
+               'you, and chat. They are used internally only, are never published ' +
+               'or shared, and nothing taken from a picture ever carries ' +
+               'a player name.';
       }
       if (d.held_back > 0) {
         msg += ' (' + d.held_back + ' picture(s) will be left out either way - they ' +
                'cannot prove they photographed the game.)';
       }
       document.getElementById('sendmsg').textContent = msg;
-      document.getElementById('sendboth').style.display = d.frames > 0 ? '' : 'none';
       choice.style.display = '';
       btn.style.display = 'none';
 
@@ -768,8 +772,7 @@ const uiHTML = `<!DOCTYPE html>
         toast('Packaging…');
         window.sendData(withPNG).then(toast);
       }
-      document.getElementById('senddata').onclick   = function () { done(false); };
-      document.getElementById('sendboth').onclick   = function () { done(true); };
+      document.getElementById('senddata').onclick   = function () { done(true); };
       document.getElementById('sendcancel').onclick = function () { done(null); };
     });
   });
