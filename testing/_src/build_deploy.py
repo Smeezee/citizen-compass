@@ -75,6 +75,103 @@ sys.stdout.write(_r.stdout)
 if _r.returncode!=0:
     sys.exit("ENGINE INJECTION FAILED - refusing to build:\n"+_r.stdout+_r.stderr)
 
+# ---------------------------------------------------------------------------
+# BEHAVIOURAL GATES. Run before anything is written, and fail closed.
+#
+# Each of these harnesses exists because the behaviour it covers shipped
+# broken, and each proves itself by re-running against a deliberately broken
+# copy of its own subject - so a harness that has quietly stopped testing
+# anything reports that instead of a pass. See rule 12.
+#
+# FAIL CLOSED WHEN node IS ABSENT, exactly as inject_engine.py does. node is
+# already a build dependency; the alternative is a build that skips its own
+# tests and still says "safe to deploy".
+# ---------------------------------------------------------------------------
+import io, shutil as _sh
+_node = _sh.which("node")
+if _node is None:
+    sys.exit("NODE NOT ON PATH, so the behavioural gates could not run.\n"
+             "Refusing to build rather than deploy code whose tests were skipped.")
+
+for _h in ("_verify_slots.js", "_verify_conflict.js", "_verify_poll.js",
+           "_verify_navkeys.js"):
+    _p = os.path.join(SRC, _h)
+    if not os.path.exists(_p):
+        sys.exit("MISSING GATE: %s is gone. A gate that has been deleted is not a\n"
+                 "gate that passed - restore it or remove it from this list\n"
+                 "deliberately." % _h)
+    _r = _sp.run([_node, _p], capture_output=True, text=True)
+    if _r.returncode != 0:
+        sys.stdout.write(_r.stdout)
+        sys.stderr.write(_r.stderr)
+        sys.exit("GATE FAILED: %s. Refusing to build." % _h)
+    print("gate passed: %s" % _h)
+
+# The holo placement gate is Python, and it is run TWICE: once normally, and
+# once with --prove, which feeds it a per-axis normalisation and a 3x wrong
+# scalar and requires it to reject them. The node harnesses each prove
+# themselves on every run; this one does the same rather than relying on
+# somebody having typed --prove by hand at some point in the past.
+_holo = os.path.join(SRC, "_verify_holo_placement.py")
+if not os.path.exists(_holo):
+    sys.exit("MISSING GATE: _verify_holo_placement.py is gone. A gate that "
+             "has been deleted is not a gate that passed.")
+for _args, _what in (([], "checks"), (["--prove"], "self-proof")):
+    _r = _sp.run([sys.executable, _holo] + _args, capture_output=True, text=True)
+    if _r.returncode != 0:
+        sys.stdout.write(_r.stdout)
+        sys.stderr.write(_r.stderr)
+        sys.exit("GATE FAILED: _verify_holo_placement.py %s. Refusing to build."
+                 % _what)
+    print("gate passed: _verify_holo_placement.py (%s)" % _what)
+
+# ---------------------------------------------------------------------------
+# EVERY EXECUTABLE INLINE SCRIPT MUST PARSE.
+#
+# inject_engine.py syntax-checks the injected engine. Nothing checked the rest
+# of the page - and on 2026-08-12 a newline inside a string literal reached
+# both hosts and was caught only because somebody happened to run `node
+# --check` by hand. This removes the "happened to" from the other 90% of the
+# JavaScript on these pages.
+#
+# <script type="application/json"> data islands are NOT JavaScript and are
+# skipped: reporting those as syntax errors would be a check that cries wolf,
+# which is how checks get switched off.
+# ---------------------------------------------------------------------------
+import re as _re, tempfile as _tf
+_SCRIPT = _re.compile(r"<script(?![^>]*\bsrc=)([^>]*)>(.*?)</script>", _re.S | _re.I)
+_TYPE = _re.compile(r"""\btype\s*=\s*["']([^"']+)["']""", _re.I)
+_JS_TYPES = {"text/javascript", "application/javascript", "module",
+             "application/ecmascript", "text/ecmascript"}
+
+def _check_inline_js(path):
+    html = io.open(path, encoding="utf-8").read()
+    n = 0
+    for _m in _SCRIPT.finditer(html):
+        _t = _TYPE.search(_m.group(1))
+        if _t and _t.group(1).strip().lower() not in _JS_TYPES:
+            continue
+        code = _m.group(2)
+        n += 1
+        line0 = html.count("\n", 0, html.index(code))
+        _fd, _tmp = _tf.mkstemp(suffix=".js")
+        os.close(_fd)
+        io.open(_tmp, "w", encoding="utf-8", newline="").write("\n" * line0 + code)
+        _r = _sp.run([_node, "--check", _tmp], capture_output=True, text=True)
+        os.unlink(_tmp)
+        if _r.returncode != 0:
+            sys.exit("SYNTAX ERROR in %s, inline script %d - refusing to build:\n%s"
+                     % (os.path.basename(path), n, _r.stderr))
+    if n == 0:
+        sys.exit("NO EXECUTABLE INLINE SCRIPTS FOUND in %s. That is not a page this\n"
+                 "build understands, and reporting a pass on it would be a check\n"
+                 "that never looked." % os.path.basename(path))
+    return n
+
+for _pg in (LAYER, os.path.join(SRC, "keybinds.src.html")):
+    print("inline JS parses: %s (%d blocks)"
+          % (os.path.basename(_pg), _check_inline_js(_pg)))
+
 site  = rd(SITE)
 layer = rd(LAYER)
 
