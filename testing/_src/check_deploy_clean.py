@@ -52,6 +52,8 @@ DEFAULT_ALLOWED_FILES = {
     "sc_export.js",
     "kb_actions.gen.js",
     "holo.html",
+    # /loadout's real ship data, added 2026-08-13 with build_loadout_data.py.
+    "loadout_data.gen.js",
     "holo_data.gen.js",
     "stick-test.html",
 }

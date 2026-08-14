@@ -94,7 +94,7 @@ if _node is None:
              "Refusing to build rather than deploy code whose tests were skipped.")
 
 for _h in ("_verify_slots.js", "_verify_conflict.js", "_verify_poll.js",
-           "_verify_navkeys.js"):
+           "_verify_navkeys.js", "_verify_loadout_data.js"):
     _p = os.path.join(SRC, _h)
     if not os.path.exists(_p):
         sys.exit("MISSING GATE: %s is gone. A gate that has been deleted is not a\n"
@@ -507,6 +507,7 @@ PAGES = [
     # inlines three.js/DRACO into it - no vendor/ directory in _deploy.
     ('holo.src.html',    'holo.html'),
     ('holo_data.gen.js', 'holo_data.gen.js'),
+    ('loadout_data.gen.js', 'loadout_data.gen.js'),
     # A gamepad diagnostic that shares NO code with the site. That
     # independence is the point: it answers "can this browser see the
     # stick at all" without our own detection logic in the way. Copied
