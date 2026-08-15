@@ -1,8 +1,8 @@
 {
-    "version":  "0.3.1",
-    "url":  "https://github.com/Smeezee/citizen-compass/releases/download/collector-v0.3.1/collector.exe",
-    "sha256":  "f31890b1f70759f0faabc4e4fb2090a79f91086f38c91fe0bc8838eb500ab0e7",
-    "notes":  "Build 0.3.1.",
+    "version":  "0.3.2",
+    "url":  "https://github.com/Smeezee/citizen-compass/releases/download/collector-v0.3.2/collector.exe",
+    "sha256":  "011e5dda7925d63026ef3ff9f7c4e11cdf30d26d39768b54390c51fc31ef433c",
+    "notes":  "Build 0.3.2.",
     "min_from":  "",
     "send_url":  "https://collector-receiver.citizencompass-contact.workers.dev",
     "send_key":  "Hb4BMggHoBiYVfWM4DxWNrHNSFbqjDfG8jZFKVEu5BGLf96Vk"
