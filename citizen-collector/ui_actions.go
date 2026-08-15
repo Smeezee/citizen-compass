@@ -186,17 +186,19 @@ func buildUIActions(cv uiActionCtx) map[string]uiCall {
 			}
 
 			// One click packages AND sends - when there is anywhere to send.
+			//
+			// THE SAME CORE THE -send FLAG AND THE TRAY MENU USE. Three doors,
+			// one implementation: a second copy of "package and send" would
+			// drift, and the drift would show up as one door clearing somebody's
+			// pictures and another not.
 			if strings.TrimSpace(c.SendURL) != "" {
-				up, uerr := SendExport(res, c.OutDir, c.SendURL, c.SendKey, res.InstallID, c.ClearAfterSend, logf)
-				if uerr != nil {
-					logf("send FAILED: %v", uerr)
+				note, serr := SendNow(c.ExeDir, c.OutDir, c.SendURL, c.SendKey, c.ClearAfterSend, logf)
+				if serr != nil {
+					logf("send FAILED: %v", serr)
 					revealFile(res.Path)
-					return "Packaged, but sending failed: " + uerr.Error() +
-						" Your data is untouched and the file is in the folder.", nil
+					return serr.Error() + ".", nil
 				}
-				if up.Sent {
-					return up.Note, nil
-				}
+				return note, nil
 			}
 			revealFile(res.Path)
 
@@ -216,6 +218,16 @@ func buildUIActions(cv uiActionCtx) map[string]uiCall {
 		// The CHECK is automatic, the INSTALL is a click. A stale build nobody
 		// knows is stale is the defect that cost a full day on 2026-08-07; a
 		// program that replaces itself unasked is a different problem entirely.
+		// THE PAGE SAYING HELLO. See ui.go's bridge deadline.
+		//
+		// In the webview this name is ALSO bound directly, because there the
+		// hello is the only evidence the bridge works. Over the browser
+		// transport the request arriving is itself the proof, so this only has
+		// to exist and succeed.
+		"uiReady": func(json.RawMessage) (interface{}, error) {
+			return "", nil
+		},
+
 		"checkUpdate": func(json.RawMessage) (interface{}, error) {
 			st := CheckForUpdate(logf)
 

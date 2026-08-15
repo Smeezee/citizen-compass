@@ -550,6 +550,7 @@ func selftest(outDir string) int {
 	runShortcutSelftest(check)
 	runInstallLocationSelftest(check)
 	runHandsOffSelftest(check)
+	runUIBridgeSelftest(check)
 	runEnumSelftest(check)
 	runTraySizeSelftest(check)
 	runWGCThreadSelftest(check)
@@ -700,6 +701,7 @@ func main() {
 		// the next build, not what this file says now.
 		showVer = flag.Bool("version", false, "print the version compiled into this binary and exit")
 		watch   = flag.Bool("watch", false, "sit quiet, wait for Star Citizen, and start the collector when it appears")
+		sendNow = flag.Bool("send", false, "package and send what has been collected, without opening the window")
 
 		gamelog = flag.String("gamelog", "", "force the Game.log to watch (default: derive from the game window, else scan LIVE, PTU, EPTU, TECH-PREVIEW in that order)")
 
@@ -719,6 +721,18 @@ func main() {
 	// Answered before consent, before settings, before any file is touched.
 	// Asking a program its own version must never be the thing that makes it
 	// start watching anything.
+	// SEND WITHOUT THE WINDOW.
+	//
+	// The window failing used to mean a contributor could not contribute at all,
+	// and could not be talked through it on a phone either - there was nothing
+	// to tell them to type. This is that something.
+	//
+	// It goes through the same consent screen and the same send path as the
+	// button; see send_now.go.
+	if *sendNow {
+		os.Exit(SendFromCommandLine(exeDir, *outDir))
+	}
+
 	// THE WATCHER. Started by the per-user startup entry, and it is NOT the
 	// collector: it opens no window, claims a different lock, and its whole job
 	// is to notice the game and then get out of the way.

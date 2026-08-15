@@ -57,6 +57,19 @@ You are not doing anything wrong if you get the tab; it just means Windows
 did not have the bit it needed for a window, so it used the browser you
 already had. Leave the tab open while you play.
 
+Occasionally Windows has that bit but it does not work properly. If the
+window opens and then sits there doing nothing, the program notices by
+itself, closes it, and opens the browser tab instead. You do not have to
+do anything.
+
+If you ever end up with no working window at all, you can still send what
+you have collected without one. Nothing is lost and nothing is stuck:
+
+    collector.exe -send
+
+Double-clicking a shortcut with -send on the end does the same thing. It
+asks the same questions and sends the same data as the button does.
+
 The window can be minimised. It follows the game: when Star Citizen closes,
 it stops.
 

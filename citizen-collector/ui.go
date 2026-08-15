@@ -16,13 +16,14 @@ package main
 // on it, and contains no capture logic of its own.
 
 import (
-	"sync"
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/jchv/go-webview2"
@@ -82,6 +83,15 @@ func resolveBundledRuntime(exeDir string) (dir string, how string) {
 var uiRuntimeNote string
 
 const (
+	// uiBridgeTimeout is how long the page has to say hello before its window is
+	// treated as dead.
+	//
+	// Generous on purpose. A cold WebView2 start on a slow disk is seconds, and
+	// scrapping a window that was merely slow would swap a rare failure for a
+	// common one. Nothing here waits on the network, so this is bounded by local
+	// work only.
+	uiBridgeTimeout = 12 * time.Second
+
 	runtimeEnvVar = "WEBVIEW2_BROWSER_EXECUTABLE_FOLDER"
 	// reexecGuard stops the relaunch below from recursing. Without it a failure
 	// to apply the variable would fork forever.
@@ -367,6 +377,41 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	// If the notification area refuses it, the icon is missing and nothing else
 	// changes.
 	tray := StartTray(logf)
+
+	// THE THIRD DOOR. Right-click the icon by the clock -> "Send my data now".
+	//
+	// This is the one that works when the window does not and the person has
+	// never opened a terminal, which is exactly the situation that produced
+	// this feature: 26 captures, a working hotkey, and no way to send any of it.
+	//
+	// Same core as the button and the -send flag - see send_now.go.
+	if tray != nil {
+		tray.onSend = func() {
+			// RESOLVED HERE, NOT CAPTURED. The update check may have supplied a
+			// destination since this window opened.
+			d := ResolveDestination(localURL, localKey, "", "", LoadCachedDestination(exeDir))
+			if !d.Configured() {
+				showErrorBox("Citizen Collector",
+					"There is nowhere to send to yet, so nothing was sent.\n\n"+
+						"Leave this open for a minute while you have an internet "+
+						"connection - it collects the address by itself.")
+				return
+			}
+			tray.SetStatus("Citizen Collector - sending...")
+			note, err := SendNow(exeDir, outDir, d.URL, d.Key, clearAfterSend, logf)
+			if err != nil {
+				logf("tray send: FAILED - %v", err)
+				tray.SetStatus("Citizen Collector - send failed")
+				showErrorBox("Citizen Collector",
+					"That did not work:\n\n"+err.Error()+
+						"\n\nNothing was deleted. Everything is still on this computer.")
+				return
+			}
+			logf("tray send: %s", note)
+			tray.SetStatus("Citizen Collector - sent")
+			messageBox("Citizen Collector", note, 0x00000040)
+		}
+	}
 	defer tray.Stop()
 	tray.SetStatus("Citizen Collector - waiting for Star Citizen")
 
@@ -489,12 +534,12 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	// drift, and hard rule 14 is on the books because this project has been
 	// bitten by drift five times.
 	acts := buildUIActions(uiActionCtx{
-		Deps:           uid,
-		Auto:           deps,
-		ExeDir:         exeDir,
-		OutDir:         outDir,
-		SendURL:        sendURL,
-		SendKey:        sendKey,
+		Deps:    uid,
+		Auto:    deps,
+		ExeDir:  exeDir,
+		OutDir:  outDir,
+		SendURL: sendURL,
+		SendKey: sendKey,
 		// What this machine's own settings file said, kept so the feed can
 		// never repoint a collector somebody configured deliberately.
 		LocalURL:       localURL,
@@ -555,6 +600,12 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	}
 	defer w.Destroy()
 
+	// THE WINDOW'S OWN ICON. Never set before today, so the title bar, the
+	// taskbar button and Alt-Tab all showed the generic Windows glyph while the
+	// icon sat embedded in the exe unused. Third place in the same family as the
+	// shortcut and the tray.
+	setWindowIcon(uintptr(w.Window()), logf)
+
 	// The nine bindings. Each one is an adapter, not an implementation.
 	w.Bind("state", func() string { return callString("state", nil) })
 	w.Bind("captureNow", func() string { return callString("captureNow", nil) })
@@ -574,8 +625,49 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 		return ok
 	})
 
+	// THE PAGE HAS TO SAY HELLO.
+	//
+	// Everything above proves a runtime exists and a window was created. Neither
+	// proves the BRIDGE works, and on Sleven's machine both were true while
+	// state() never returned: dashes in the status, five buttons that did
+	// nothing. A UI that cannot answer must not look like one that can.
+	//
+	// The page calls uiReady() as its first act. If that has not arrived by the
+	// deadline, this window is scrapped and the browser transport is used
+	// instead - which is a real working UI rather than a decorated dead one.
+	ready := make(chan struct{}, 1)
+	w.Bind("uiReady", func() {
+		select {
+		case ready <- struct{}{}:
+		default:
+		}
+	})
+
+	var bridgeDead atomic.Bool
+	go func() {
+		select {
+		case <-ready:
+			// Answered. Nothing to do - this is the ordinary case.
+		case <-time.After(uiBridgeTimeout):
+			// NOT A SLOW NETWORK. Nothing here fetches anything; this is the
+			// page failing to execute at all. httpClient() has its own 15s
+			// timeout, so a hang in the window is never a slow request.
+			bridgeDead.Store(true)
+			logf("window: the page never answered within %s - the WebView2 bridge "+
+				"is not working on this machine. Closing this window and using "+
+				"the browser instead, which does work.", uiBridgeTimeout)
+			w.Terminate()
+		}
+	}()
+
 	w.SetHtml(uiHTML)
 	w.Run()
+
+	if bridgeDead.Load() {
+		// The window is gone. Serve the same interface over the transport that
+		// does not depend on WebView2 executing anything.
+		return serveBrowserUI(acts, logf)
+	}
 
 	// w.Run returns when the window is closed. That is the one exit that means
 	// the person is finished, and the supervisor treats it as final.
@@ -930,6 +1022,12 @@ const uiHTML = `<!DOCTYPE html>
   // Re-check every six hours. A collector left running across a weekend would
   // otherwise never learn about a release published on the Saturday.
   setInterval(doUpdateCheck, 6 * 60 * 60 * 1000);
+
+  // SAY HELLO FIRST. This is what proves the bridge works; if it never
+  // arrives the program scraps this window and uses the browser instead.
+  // Called before refresh() so a failure is detected even if state() is what
+  // is broken.
+  try { window.uiReady(); } catch (e) {}
 
   refresh();
   setInterval(refresh, 1500);

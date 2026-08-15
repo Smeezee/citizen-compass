@@ -27,6 +27,7 @@ package main
 // think to look for.
 
 import (
+	"os"
 	"runtime"
 	"sync"
 	"syscall"
@@ -44,18 +45,59 @@ var (
 	procRegisterClassExW = modUser32.NewProc("RegisterClassExW")
 	procDefWindowProcW   = modUser32.NewProc("DefWindowProcW")
 	procLoadIconW        = modUser32.NewProc("LoadIconW")
+	procCreatePopupMenu  = modUser32.NewProc("CreatePopupMenu")
+	procDestroyMenu      = modUser32.NewProc("DestroyMenu")
+	procAppendMenuW      = modUser32.NewProc("AppendMenuW")
+	procTrackPopupMenu   = modUser32.NewProc("TrackPopupMenu")
+	procGetCursorPos     = modUser32.NewProc("GetCursorPos")
+	procExtractIconExW   = modShell32.NewProc("ExtractIconExW")
+	procSendMessageW     = modUser32.NewProc("SendMessageW")
 	procPostMessageW     = modUser32.NewProc("PostMessageW")
 )
 
 const (
-	nimAdd    = 0x00000000
-	nimModify = 0x00000001
-	nimDelete = 0x00000002
-	nifIcon   = 0x00000002
-	nifTip    = 0x00000004
+	nimAdd     = 0x00000000
+	nimModify  = 0x00000001
+	nimDelete  = 0x00000002
+	nifIcon    = 0x00000002
+	nifMessage = 0x00000001
+
+	// The message the shell posts to our window when somebody clicks the icon.
+	// Anything from WM_APP up is ours to define.
+	wmTrayCallback = 0x0400 + 1 // WM_APP + 1
+
+	wmRButtonUp = 0x0205
+	wmLButtonUp = 0x0202
+	wmCommand   = 0x0111
+
+	// Menu command ids. Small integers, ours alone, because this window has no
+	// other menu to collide with.
+	cmdSendNow = 1001
+	cmdExit    = 1002
+
+	mfString       = 0x00000000
+	tpmRightAlign  = 0x0008
+	tpmBottomAlign = 0x0020
+	tpmRightButton = 0x0002
+	nifTip         = 0x00000004
 
 	idiApplication = 32512
-	wmClose        = 0x0010
+
+	// HWND_MESSAGE. Passing this as the parent makes a MESSAGE-ONLY window:
+	// invisible, never in the taskbar or Alt-Tab, and impossible for a person
+	// to close. It still receives the notification-area callbacks, which is the
+	// only thing this window is for.
+	//
+	// THE DEFECT THIS FIXES. The parent was 0, which does not make a hidden
+	// window - it makes an ordinary top-level one that happens to have no size
+	// and no content. Sleven saw it as a second, empty black window and took it
+	// for a command prompt. Closing it delivered WM_CLOSE to the loop below,
+	// which is how this thread is asked to shut down, so closing that stray box
+	// took the whole collector with it.
+	//
+	// (HWND)-3 as a uintptr.
+	hwndMessage = ^uintptr(0) - 2
+	wmClose     = 0x0010
 )
 
 // notifyIconData is NOTIFYICONDATAW at its VERSION 1 size, and the size is the
@@ -120,6 +162,11 @@ type wndClassEx struct {
 // trayHandle is what the collector holds. Every method on it is safe to call
 // on a zero value, so no caller ever has to check whether the tray came up.
 type trayHandle struct {
+	// onSend is what the menu's "Send my data now" runs. Injected rather than
+	// called directly so this file knows nothing about exporting or uploading -
+	// and so the selftest can prove the menu is wired without sending anything.
+	onSend func()
+
 	mu   sync.Mutex
 	hwnd uintptr
 	ok   bool
@@ -169,23 +216,36 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 			ready <- false
 			return
 		}
+		// PARENTED TO HWND_MESSAGE, so this is a message-only window rather than
+		// a top-level one nobody can explain and anybody can close.
 		hwnd, _, _ := procCreateWindowExW.Call(0,
 			uintptr(unsafe.Pointer(className)), uintptr(unsafe.Pointer(className)),
-			0, 0, 0, 0, 0, 0, 0, 0, 0)
+			0, 0, 0, 0, 0, hwndMessage, 0, 0, 0)
 		if hwnd == 0 {
 			logf("tray: could not create its hidden window - no icon. Everything " +
 				"else is unaffected.")
 			ready <- false
 			return
 		}
-		hIcon, _, _ := procLoadIconW.Call(0, uintptr(idiApplication))
+		// OUR ICON, NOT WINDOWS' DEFAULT.
+		//
+		// This was LoadIcon(NULL, IDI_APPLICATION) - the generic white-and-blue
+		// window glyph every unstyled program gets. The collector's own icon is
+		// embedded in the exe and was already sitting there unused, which is the
+		// same defect as the shortcut icon fixed earlier today, in a second
+		// place nobody had looked at.
+		hIcon := trayIcon(logf)
 
 		nid := notifyIconData{
 			CbSize: uint32(unsafe.Sizeof(notifyIconData{})),
 			HWnd:   hwnd,
 			UID:    1,
-			UFlags: nifIcon | nifTip,
-			HIcon:  hIcon,
+			// NIF_MESSAGE, so clicks reach us at all. Without it the icon is
+			// decoration: it shows a tooltip and nothing can be done with it,
+			// which is what it was before today.
+			UFlags:           nifIcon | nifTip | nifMessage,
+			UCallbackMessage: wmTrayCallback,
+			HIcon:            hIcon,
 		}
 		copyTip(&nid, "Citizen Collector - starting")
 		if r, _, _ := procShellNotifyIw.Call(nimAdd, uintptr(unsafe.Pointer(&nid))); r == 0 {
@@ -210,8 +270,36 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 			// WM_CLOSE is how Stop() asks this thread to finish. Handling it
 			// here means the window is destroyed by its owner, which is the
 			// only thread allowed to do it.
+			//
+			// A PERSON CAN NO LONGER SEND THIS. The window is parented to
+			// HWND_MESSAGE now, so it has no frame to close - this arrives only
+			// from Stop().
 			if m.Message == wmClose {
 				break
+			}
+
+			// A CLICK ON THE ICON. Right-click and left-click both open the
+			// menu: a left-click on a tray icon does nothing on most programs
+			// and a person hunting for a way to send will try it first.
+			if m.Message == wmTrayCallback &&
+				(uint32(m.LParam) == wmRButtonUp || uint32(m.LParam) == wmLButtonUp) {
+				t.showMenu(logf)
+				continue
+			}
+
+			if m.Message == wmCommand {
+				switch uint32(m.WParam) & 0xFFFF {
+				case cmdSendNow:
+					// ON ITS OWN GOROUTINE. Packaging and uploading a session
+					// takes minutes; doing it here would freeze this message
+					// loop, and a frozen loop means the tooltip stops updating
+					// and the menu stops opening - the program would look hung
+					// at exactly the moment it is working hardest.
+					go t.onSend()
+				case cmdExit:
+					return
+				}
+				continue
 			}
 			procTranslateMessage.Call(uintptr(unsafe.Pointer(&m)))
 			procDispatchMessageW.Call(uintptr(unsafe.Pointer(&m)))
@@ -284,4 +372,134 @@ func (t *trayHandle) Stop() {
 	}
 	t.ok = false
 	procPostMessageW.Call(t.hwnd, wmClose, 0, 0)
+}
+
+// trayIcon returns the collector's own icon, falling back to the system default
+// only if our own cannot be read.
+//
+// # WHY EXTRACT FROM THE EXE RATHER THAN LOAD A RESOURCE ID
+//
+// The icon is embedded by the build, and the resource id it lands on is decided
+// by the toolchain rather than by us. Extracting index 0 from our own file asks
+// for "the first icon in this program", which is a stable question with a stable
+// answer, instead of hardcoding a number that a change of build tooling could
+// silently move.
+//
+// # WHY THE SMALL ONE
+//
+// The notification area draws at small-icon size. Handing it the large icon
+// gets a downscaled, muddy version of the right picture - which looks like a
+// rendering bug rather than a wrong call, and is therefore worse than the
+// default icon it replaced.
+//
+// A FALLBACK, NOT A FAILURE. A missing icon is cosmetic; refusing to show a
+// tray icon at all because the pretty one could not be read would trade a small
+// loss for a real one. It says so in the log rather than doing it quietly.
+func trayIcon(logf func(string, ...interface{})) uintptr {
+	if exe, err := os.Executable(); err == nil {
+		if p, err := syscall.UTF16PtrFromString(exe); err == nil {
+			var large, small uintptr
+			n, _, _ := procExtractIconExW.Call(
+				uintptr(unsafe.Pointer(p)), 0,
+				uintptr(unsafe.Pointer(&large)),
+				uintptr(unsafe.Pointer(&small)), 1)
+			if n > 0 && small != 0 {
+				return small
+			}
+			if n > 0 && large != 0 {
+				return large
+			}
+		}
+	}
+	if logf != nil {
+		logf("tray: could not read this program's own icon, so the notification " +
+			"area is showing the generic Windows one. Cosmetic only.")
+	}
+	h, _, _ := procLoadIconW.Call(0, uintptr(idiApplication))
+	return h
+}
+
+// setWindowIcon gives a window this program's own icon.
+//
+// WM_SETICON with BOTH sizes. Windows asks for the small icon for the title bar
+// and the large one for Alt-Tab and the taskbar; setting only one leaves the
+// other as the default, which looks like a half-finished job rather than a
+// missing call.
+//
+// Never fatal. A window with the wrong picture still works.
+func setWindowIcon(hwnd uintptr, logf func(string, ...interface{})) {
+	if hwnd == 0 {
+		return
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		return
+	}
+	p, err := syscall.UTF16PtrFromString(exe)
+	if err != nil {
+		return
+	}
+	var large, small uintptr
+	n, _, _ := procExtractIconExW.Call(uintptr(unsafe.Pointer(p)), 0,
+		uintptr(unsafe.Pointer(&large)), uintptr(unsafe.Pointer(&small)), 1)
+	if n == 0 || (large == 0 && small == 0) {
+		if logf != nil {
+			logf("window: could not read this program's own icon - the title bar " +
+				"will show the generic Windows one. Cosmetic only.")
+		}
+		return
+	}
+	const (
+		wmSetIcon    = 0x0080
+		iconSmallSet = 0
+		iconBigSet   = 1
+	)
+	if small != 0 {
+		procSendMessageW.Call(hwnd, wmSetIcon, iconSmallSet, small)
+	}
+	if large != 0 {
+		procSendMessageW.Call(hwnd, wmSetIcon, iconBigSet, large)
+	}
+}
+
+// showMenu opens the notification-area menu.
+//
+// # THE SetForegroundWindow CALL IS NOT OPTIONAL
+//
+// Documented Windows behaviour: a popup menu belonging to a window that is not
+// in the foreground never receives the click that dismisses it, so it stays on
+// screen until the next click somewhere else. Every tray program does this and
+// every one that forgot has the same bug report.
+func (t *trayHandle) showMenu(logf func(string, ...interface{})) {
+	if t == nil || t.hwnd == 0 {
+		return
+	}
+	menu, _, _ := procCreatePopupMenu.Call()
+	if menu == 0 {
+		return
+	}
+	defer procDestroyMenu.Call(menu)
+
+	add := func(id uintptr, text string) {
+		p, err := syscall.UTF16PtrFromString(text)
+		if err != nil {
+			return
+		}
+		procAppendMenuW.Call(menu, mfString, id, uintptr(unsafe.Pointer(p)))
+	}
+	add(cmdSendNow, "Send my data now")
+	add(cmdExit, "Exit Citizen Collector")
+
+	var pt struct{ X, Y int32 }
+	procGetCursorPos.Call(uintptr(unsafe.Pointer(&pt)))
+
+	// See the note above - without this the menu will not close.
+	procSetForegroundWindow.Call(t.hwnd)
+	procTrackPopupMenu.Call(menu,
+		tpmRightAlign|tpmBottomAlign|tpmRightButton,
+		uintptr(pt.X), uintptr(pt.Y), 0, t.hwnd, 0)
+
+	// Documented workaround: post a null message so the menu dismisses properly
+	// the first time rather than on the click after.
+	procPostMessageW.Call(t.hwnd, 0, 0, 0)
 }

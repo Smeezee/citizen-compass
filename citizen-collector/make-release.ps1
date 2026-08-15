@@ -316,7 +316,16 @@ if (Test-Path $rt) {
     $bigMb = [math]::Round((Get-Item $bigZip).Length / 1MB, 1)
     Ok "citizen-collector-$Version-with-runtime.zip  ($bigMb MB)  - runs on any Windows machine"
 } else {
-    Note "no webview2-runtime folder here, so no with-runtime package. Machines without WebView2 will need it installed."
+    Write-Host ""
+    Write-Host "   !!   NO WITH-RUNTIME PACKAGE IS BEING PUBLISHED." -ForegroundColor Yellow
+    Write-Host "        There is no webview2-runtime folder beside the exe, so the only" -ForegroundColor Yellow
+    Write-Host "        asset this release ships is the small one. On a machine with no" -ForegroundColor Yellow
+    Write-Host "        WebView2 runtime the collector falls back to a browser tab, which" -ForegroundColor Yellow
+    Write-Host "        works - that fallback is proven and is why this is a warning" -ForegroundColor Yellow
+    Write-Host "        rather than a refusal." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "        The payload is gitignored on purpose; see" -ForegroundColor DarkGray
+    Write-Host "        WEBVIEW2_RUNTIME_PROVENANCE.md for where it came from." -ForegroundColor DarkGray
 }
 
 Remove-Item $stage -Recurse -Force

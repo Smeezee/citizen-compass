@@ -367,9 +367,12 @@ func browserPage(token string) string {
     };
   }
 
+  // uiReady is in this list for a reason. The page calls it unconditionally,
+  // and a browser without it would throw on the first line of its own
+  // bootstrap - breaking the fallback that exists to rescue a broken bridge.
   var names = ["state","captureNow","countData","sendData","checkUpdate",
                "applyUpdate","canPackage","makePackage","openCaptures",
-               "restartNow"];
+               "restartNow","uiReady"];
   for (var i = 0; i < names.length; i++) { window[names[i]] = call(names[i]); }
 
   // Closing the tab is how somebody stops it, so say so on the way out rather
