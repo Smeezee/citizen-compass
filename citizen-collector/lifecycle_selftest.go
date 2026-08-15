@@ -63,8 +63,16 @@ func runLifecycleSelftest(check func(name string, ok bool, detail string)) {
 	// Simulate exactly what happened three times tonight - a process that
 	// vanished without reaching any exit path of its own. The marker survives,
 	// because nothing removed it.
+	//
+	// THE MARKER MUST NAME A PID THAT IS GONE. This used to reuse the marker
+	// left by the line above, which names THIS process - very much alive. Now
+	// that the report checks whether the pid is still running before saying what
+	// happened, that fixture described a second copy running, not a run that
+	// died. A dead run is staged with a pid that cannot be one of ours.
+	clearRunningMarker(dir)
+	_ = os.WriteFile(markerPath(dir), []byte("pid=2147483632 started=2026-08-07T00:00:00Z"), 0o644)
 	lines = nil
-	checkPreviousRun(dir, logf) // marker from the previous line is still there
+	checkPreviousRun(dir, logf)
 	check("a killed run IS reported at next start", has("DID NOT SHUT DOWN CLEANLY"),
 		"the leftover marker is the evidence the dead process could not leave itself")
 	check("the report names the dead process", has("pid ") && has("left no shutdown line"),

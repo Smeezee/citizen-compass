@@ -91,3 +91,6 @@ data-layer/derived/**/routes/
 # Node test-only dependencies (testing/_src, testing/_tools). Never shipped;
 # _deploy/ vendors what actually ships. Added 2026-08-09.
 node_modules/
+
+# wrangler local dev secrets - never committed
+citizen-collector/.dev.vars

@@ -79,15 +79,32 @@ func checkPreviousRun(exeDir string, logf func(string, ...interface{})) {
 		prev := strings.TrimSpace(string(b))
 		pid, when := parseMarker(prev)
 
-		// A leftover marker means the previous run never reached ANY of its own
-		// exit paths. It was killed, or it crashed in a way that skipped every
-		// handler.
-		logf("PREVIOUS RUN DID NOT SHUT DOWN CLEANLY.")
-		if pid != 0 {
-			logf("    It was pid %d, started %s, and left no shutdown line.", pid, when)
+		// ASK WHETHER THAT PID IS STILL ALIVE before saying what happened.
+		//
+		// A marker naming a LIVE process and one naming a dead process describe
+		// opposite situations - a second copy running right now, versus a
+		// previous one that died - and this used to report them identically.
+		//
+		// pidIsLiveSibling also checks the image name, so a pid Windows has
+		// recycled for some unrelated program is correctly read as "gone"
+		// rather than as a collector that is somehow still here.
+		switch {
+		case pid != 0 && pidIsLiveSibling(pid):
+			logf("A COLLECTOR IS ALREADY RUNNING as pid %d, started %s.", pid, when)
+			logf("    That process is alive right now, so this is not a leftover " +
+				"from a crash. If you did not mean to open a second one, close this window.")
+		case pid != 0:
+			logf("PREVIOUS RUN DID NOT SHUT DOWN CLEANLY.")
+			logf("    It was pid %d, started %s, and left no shutdown line. That "+
+				"process is NOT running now - checked, not assumed.", pid, when)
+			logf("    So it was killed from outside (Task Manager, a script, " +
+				"sign-out) or it crashed hard. A clean exit always writes one.")
+			logf("    The stale marker has been cleared. It never blocked startup, " +
+				"and it is not blocking this one.")
+		default:
+			logf("PREVIOUS RUN DID NOT SHUT DOWN CLEANLY, and its marker names no " +
+				"readable pid, so which run it was cannot be established.")
 		}
-		logf("    That means it was killed from outside (Task Manager, a script, " +
-			"sign-out) or it crashed hard. A clean exit always writes one.")
 	}
 
 	// Claim this run.

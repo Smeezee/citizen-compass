@@ -581,6 +581,8 @@ func selftest(outDir string) int {
 	runUIFollowsGameSelftest(check)
 	runUICountSelftest(check)
 	runSingleInstanceSelftest(check)
+	runRestartHandoverSelftest(check)
+	runDestinationSelftest(check)
 	runLifecycleSelftest(check)
 	runPanicLoggingSelftest(check)
 	runUIInterfaceSelftest(check)
@@ -941,8 +943,12 @@ func main() {
 			HotkeyBurst:     hotkeyBurstCfg,
 			Keys:            watchKeys,
 		}
-		if err := runUI(cfg, *outDir, exeDir, logPath, *hotkey, sendURL, sendKey,
-			clearAfterSend, offerShortcuts); err != nil {
+		// The RAW settings values go through. Where this machine sends is
+		// decided inside runUI, which is where there is a log to explain it in -
+		// a correction applied before any logger exists is a correction nobody
+		// is ever told about.
+		if err := runUI(cfg, *outDir, exeDir, logPath, *hotkey,
+			sendURL, sendKey, clearAfterSend, offerShortcuts); err != nil {
 			// No console to print to. Windows' own message box is the only
 			// place a person will ever see this.
 			showErrorBox("Citizen Collector", err.Error())

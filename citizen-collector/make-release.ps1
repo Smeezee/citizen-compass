@@ -414,12 +414,44 @@ $relDir = Join-Path $RepoPath "releases"
 if (-not (Test-Path $relDir)) { New-Item -ItemType Directory -Path $relDir | Out-Null }
 $feedPath = Join-Path $relDir "collector-latest.json"
 
+# CARRY THE DESTINATION FORWARD.
+#
+# send_url and send_key live in this same file and belong to
+# publish-destination.ps1, not to the release. Rebuilding the feed from scratch
+# would delete them, and every collector taking its destination from the feed
+# would silently go back to writing zips to its own disk - days later, on
+# somebody else's machine, with nothing in this output to connect it to the
+# release that caused it.
+$carriedUrl = ""
+$carriedKey = ""
+if (Test-Path $feedPath) {
+    try {
+        $prevFeed = [IO.File]::ReadAllText($feedPath) | ConvertFrom-Json
+        if ($prevFeed.send_url) { $carriedUrl = [string]$prevFeed.send_url }
+        if ($prevFeed.send_key) { $carriedKey = [string]$prevFeed.send_key }
+    } catch {
+        # An unreadable existing feed is not a reason to guess. Say so and stop:
+        # overwriting it would destroy a destination we could not read.
+        Fail "the existing feed could not be parsed ($($_.Exception.Message)), so the destination in it cannot be carried forward. Fix or remove it deliberately - overwriting would silently un-configure every collector."
+    }
+}
+
 $feed = [ordered]@{
     version  = $Version
     url      = $assetUrl
     sha256   = $sha
     notes    = "Build $Version."
     min_from = ""
+}
+if ($carriedUrl -and $carriedKey) {
+    $feed.send_url = $carriedUrl
+    $feed.send_key = $carriedKey
+    Ok "carried the existing destination forward ($carriedUrl)"
+    Note "the key was copied without being read or printed"
+} else {
+    Note "no destination in the current feed to carry forward - collectors with"
+    Note "nothing in collector-settings.txt will have nowhere to send. Set one"
+    Note "with publish-destination.ps1."
 }
 # NO BYTE-ORDER MARK. `Set-Content -Encoding UTF8` on Windows PowerShell 5.1
 # prepends ef bb bf, and Go's encoding/json - which is what update.go parses
@@ -444,6 +476,12 @@ try {
 }
 if ($parsed.sha256 -ne $sha -or $parsed.version -ne $Version -or -not $parsed.url) {
     Fail "the feed read back does not match what was meant to be written (version '$($parsed.version)', sha '$($parsed.sha256)'). Nothing has been announced."
+}
+if ($carriedUrl -and $carriedKey) {
+    if ($parsed.send_url -ne $carriedUrl -or $parsed.send_key -ne $carriedKey) {
+        Fail "the destination did not survive writing the feed. Publishing this would un-configure every collector that relies on it. Nothing has been announced."
+    }
+    Ok "the destination survived the rewrite - collectors keep their send address"
 }
 Ok "feed parses, and its version, url and sha256 are the ones just published"
 Ok "wrote $feedPath"

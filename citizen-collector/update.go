@@ -59,10 +59,32 @@ type ReleaseInfo struct {
 	SHA256  string `json:"sha256"`   // of the file at URL
 	Notes   string `json:"notes"`    // one line, shown to the operator
 	MinFrom string `json:"min_from"` // optional: refuse to jump from older than this
+
+	// WHERE TO SEND, so that nobody ever types an address or a key.
+	//
+	// This file is already trusted enough to name a binary this program
+	// downloads and runs; a destination from the same source is strictly less
+	// dangerous than that. See destination.go for the precedence rules - local
+	// settings always win, and these are only ever used by a machine that has
+	// configured nothing.
+	//
+	// SendKey is published deliberately and is NOT a secret. It is a revocable
+	// channel identifier; the controls that actually bound abuse live in the
+	// Worker. docs/ROTATING-THE-UPLOAD-KEY.md is the procedure.
+	SendURL string `json:"send_url"`
+	SendKey string `json:"send_key"`
 }
 
 // UpdateStatus is what the window shows.
 type UpdateStatus struct {
+	// SendURL/SendKey are what the feed said the destination is, so the caller
+	// can cache them and use them when nothing is configured locally. Carried
+	// here rather than applied here: this file's job is checking for updates,
+	// and a function that also silently repointed where data goes would be
+	// doing something its name does not admit to.
+	SendURL string `json:"-"`
+	SendKey string `json:"-"`
+
 	Checked   bool   `json:"checked"`
 	Available bool   `json:"available"`
 	Current   string `json:"current"`
@@ -150,6 +172,8 @@ func CheckForUpdate(logf func(string, ...interface{})) UpdateStatus {
 	st.Checked = true
 	st.Latest = rel.Version
 	st.Notes = rel.Notes
+	st.SendURL = strings.TrimSpace(rel.SendURL)
+	st.SendKey = strings.TrimSpace(rel.SendKey)
 	st.Available = compareVersions(Version, rel.Version) < 0
 	if logf != nil {
 		if st.Available {

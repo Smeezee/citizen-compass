@@ -233,7 +233,7 @@ func verifiedRuntimeNote(exeDir string) string {
 }
 
 // runUI opens the window and runs until it is closed.
-func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, sendURL, sendKey string,
+func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, localKey string,
 	clearAfterSend, offerShortcuts bool) error {
 	// Relaunch once so the bundled runtime is inherited from process creation.
 	// This process then has nothing left to do.
@@ -260,6 +260,44 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, sendURL, sen
 	// that crashed on startup.
 	if yieldToExistingInstance(logf) {
 		return nil
+	}
+
+	// PASTED ANGLE BRACKETS ARE STRIPPED, AND SAID OUT LOUD.
+	//
+	// send_key was written as <the-key> on Sleven's own machine, which is what a
+	// printed template invites. The collector then sent a key two characters
+	// longer than the Worker's secret and got a 403 that looks exactly like a
+	// broken endpoint.
+	var strippedURL, strippedKey bool
+	localURL, strippedURL = StripWrappingBrackets(localURL)
+	localKey, strippedKey = StripWrappingBrackets(localKey)
+	if strippedURL {
+		logf("settings: send_url was wrapped in < > - the brackets have been " +
+			"removed for this run. Take them out of collector-settings.txt.")
+	}
+	if strippedKey {
+		logf("settings: send_key was wrapped in < > - the brackets have been " +
+			"removed for this run. Left in place they add two characters to the " +
+			"key and every send is refused with 403, which reads as a broken " +
+			"receiver. Take them out of collector-settings.txt.")
+	}
+	for _, w := range []string{BracketWarning("send_url", localURL), BracketWarning("send_key", localKey)} {
+		if w != "" {
+			logf("settings: WARNING - %s", w)
+		}
+	}
+
+	// WHERE THIS MACHINE SENDS. Local settings win outright; the fallback is
+	// whatever the feed supplied on a previous run and this machine remembered.
+	// The update check may supply a fresher one - see checkUpdate in
+	// ui_actions.go.
+	dest := ResolveDestination(localURL, localKey, "", "", LoadCachedDestination(exeDir))
+	sendURL, sendKey := dest.URL, dest.Key
+	if dest.Configured() {
+		logf("destination: sending to %s (from %s)", sendURL, dest.Source)
+	} else {
+		logf("destination: NOTHING IS CONFIGURED YET, so SEND will only write a " +
+			"zip to this computer. The next update check may supply an address.")
 	}
 
 	// AFTER the instance check, and after the runtime relaunch, so exactly one
@@ -411,6 +449,10 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, sendURL, sen
 		OutDir:         outDir,
 		SendURL:        sendURL,
 		SendKey:        sendKey,
+		// What this machine's own settings file said, kept so the feed can
+		// never repoint a collector somebody configured deliberately.
+		LocalURL:       localURL,
+		LocalKey:       localKey,
 		ClearAfterSend: clearAfterSend,
 		Logf:           logf,
 	})

@@ -36,6 +36,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -88,11 +89,72 @@ func alreadyRunningNamed(mutexName string) bool {
 		// is bad, refusing to start the only one is worse.
 		return false
 	}
-	_, _, lastErr := procCreateMutexW.Call(0, 0, uintptr(unsafe.Pointer(name)))
+	h, _, lastErr := procCreateMutexW.Call(0, 0, uintptr(unsafe.Pointer(name)))
 	if errno, ok := lastErr.(syscall.Errno); ok && uintptr(errno) == errAlreadyExists {
+		// SOMEBODY ELSE OWNS IT. Close the handle we were just given.
+		//
+		// CreateMutex hands back a valid handle even when the object already
+		// exists, and holding it keeps the mutex ALIVE for as long as this
+		// process lives. Keeping it made the question unaskable a second time:
+		// once this process had looked, it was itself a reason for the answer to
+		// stay "yes", so it could never observe the real owner letting go.
+		if h != 0 {
+			procCloseHandle.Call(h)
+		}
 		return true
 	}
+	// WE own it now. Keep the handle so the claim can be released deliberately
+	// on the restart path - see releaseInstanceLock.
+	if h != 0 {
+		instanceLock = h
+	}
 	return false
+}
+
+// instanceLock is this process's claim on the single-instance mutex, kept so it
+// can be released before handing over to a replacement.
+var instanceLock uintptr
+
+// releaseInstanceLock gives up this process's claim, before it exits.
+//
+// WHY THIS EXISTS. Restarting after an update starts the new exe and lets this
+// one go. The new process checks the mutex immediately; this one held it until
+// os.Exit. The replacement therefore saw a collector "already running" - the
+// very process that had just launched it - found no window to raise because
+// this one's was already gone, and exited. Nothing was left running, and the
+// only visible evidence was a message telling the person to look in Task
+// Manager for a process that was no longer there.
+//
+// Releasing before the handover closes that window at the source.
+func releaseInstanceLock() {
+	if instanceLock != 0 {
+		procCloseHandle.Call(instanceLock)
+		instanceLock = 0
+	}
+}
+
+// pidIsLiveSibling reports whether pid is a LIVE process running this same
+// executable.
+//
+// Both halves matter. A dead pid cannot be opened, so it answers false. A pid
+// that Windows has since recycled for something unrelated answers false too,
+// because the image name will not match - which is why this asks what the
+// process IS rather than merely whether the number is in use. Guessing from the
+// number alone would refuse to start because some unrelated program happened to
+// inherit it.
+func pidIsLiveSibling(pid int) bool {
+	if pid <= 0 {
+		return false
+	}
+	self, err := os.Executable()
+	if err != nil {
+		return false
+	}
+	img := processImageName(uint32(pid))
+	if img == "" {
+		return false
+	}
+	return strings.EqualFold(filepath.Base(img), filepath.Base(self))
 }
 
 // findExistingWindow returns the collector window belonging to ANOTHER process
@@ -231,17 +293,53 @@ func yieldToExistingInstance(logf func(string, ...interface{})) bool {
 	if !alreadyRunning() {
 		return false
 	}
-	h := findExistingWindow()
-	raiseWindow(h)
-	if logf != nil {
-		if h == 0 {
-			logf("another collector is already running, so this launch is exiting - " +
-				"but its window could not be found to raise. Look for collector-master.exe in Task Manager.")
-		} else {
-			logf("another collector is already running - exited instead of starting a second one, " +
-				"and flashed its taskbar button. Windows does not reliably allow a new launch to " +
-				"steal focus, so the existing window may not come to the front by itself.")
+
+	// A HELD LOCK IS NOT PROOF OF A RUNNING COLLECTOR.
+	//
+	// A process on its way out still holds it. That is exactly what a restart
+	// after an update looks like from here: the collector that launched this one
+	// is a second away from exiting, and its window has already gone. Refusing
+	// on the spot left the person with NOTHING running - strictly worse than the
+	// duplicate this guard exists to prevent.
+	//
+	// So look for the thing that would actually be there: a window belonging to
+	// another process running this same executable. If one exists, raise it and
+	// stand down - that is a genuine duplicate launch. If none does, give the
+	// holder a moment to finish leaving, re-asking the lock each time.
+	deadline := time.Now().Add(3 * time.Second)
+	for {
+		if h := findExistingWindow(); h != 0 {
+			raiseWindow(h)
+			if logf != nil {
+				logf("another collector is already running - exited instead of starting a second one, " +
+					"and flashed its taskbar button. Windows does not reliably allow a new launch to " +
+					"steal focus, so the existing window may not come to the front by itself.")
+			}
+			return true
 		}
+		if !alreadyRunning() {
+			// The holder let go. It was handing over, not running.
+			if logf != nil {
+				logf("the previous collector was still finishing as this one started; " +
+					"it has now let go, so this launch is continuing normally.")
+			}
+			return false
+		}
+		if time.Now().After(deadline) {
+			break
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+
+	// Still held, still no window, after three seconds. Say what is true and
+	// name the program that is actually running, rather than a hardcoded one.
+	if logf != nil {
+		self, _ := os.Executable()
+		logf("another collector is already holding the single-instance lock and has no "+
+			"window to raise, so this launch is exiting. Look for %s in Task Manager; "+
+			"if nothing is there, the lock is held by a process that is still shutting "+
+			"down and starting again in a few seconds will work.",
+			filepath.Base(self))
 	}
 	return true
 }

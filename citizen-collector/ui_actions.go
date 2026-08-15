@@ -61,8 +61,16 @@ type uiActionCtx struct {
 	Auto           autoDeps
 	ExeDir         string
 	OutDir         string
+
+	// SendURL/SendKey are the destination IN EFFECT, which may have come from
+	// the feed. LocalURL/LocalKey are what collector-settings.txt actually
+	// said, kept because precedence has to be re-decided every time the feed
+	// answers - and a machine somebody configured on purpose must never be
+	// repointed by a published default.
 	SendURL        string
 	SendKey        string
+	LocalURL       string
+	LocalKey       string
 	ClearAfterSend bool
 	Logf           func(string, ...interface{})
 }
@@ -85,7 +93,10 @@ func argBool(arg json.RawMessage) bool {
 	return b
 }
 
-func buildUIActions(c uiActionCtx) map[string]uiCall {
+func buildUIActions(cv uiActionCtx) map[string]uiCall {
+	// A POINTER, so the update check can repoint this collector without a
+	// restart. Taken once here rather than threaded through every action.
+	c := &cv
 	logf := c.Logf
 	if logf == nil {
 		logf = func(string, ...interface{}) {}
@@ -174,9 +185,7 @@ func buildUIActions(c uiActionCtx) map[string]uiCall {
 				return "That didn't work: " + err.Error(), nil
 			}
 
-			// One click packages AND sends. With no send address configured
-			// this does nothing at all and the zip is simply on disk, which is
-			// exactly how it behaved before sending existed.
+			// One click packages AND sends - when there is anywhere to send.
 			if strings.TrimSpace(c.SendURL) != "" {
 				up, uerr := SendExport(res, c.OutDir, c.SendURL, c.SendKey, res.InstallID, c.ClearAfterSend, logf)
 				if uerr != nil {
@@ -190,6 +199,17 @@ func buildUIActions(c uiActionCtx) map[string]uiCall {
 				}
 			}
 			revealFile(res.Path)
+
+			// §3: A LOCAL-ONLY ZIP MUST NOT READ AS "SENT".
+			//
+			// This used to return "Saved <file>", which is what a successful
+			// send also looks like from across the room. Sleven's wife pressed
+			// SEND, got a 27 MB zip and nothing else, and read a correctly
+			// working program as broken. Name the file, say it stayed here, say
+			// why.
+			if strings.TrimSpace(c.SendURL) == "" {
+				return LocalOnlyResult(filepath.Base(res.Path)), nil
+			}
 			return "Saved " + filepath.Base(res.Path) + " — " + res.Note, nil
 		},
 
@@ -197,7 +217,34 @@ func buildUIActions(c uiActionCtx) map[string]uiCall {
 		// knows is stale is the defect that cost a full day on 2026-08-07; a
 		// program that replaces itself unasked is a different problem entirely.
 		"checkUpdate": func(json.RawMessage) (interface{}, error) {
-			b, _ := json.Marshal(CheckForUpdate(logf))
+			st := CheckForUpdate(logf)
+
+			// THE FEED MAY ALSO SAY WHERE TO SEND.
+			//
+			// Remembered on disk first, so a machine that is offline next time
+			// still knows, and only then applied - with the same precedence as
+			// at startup, which means a locally configured machine is left
+			// exactly as its owner set it.
+			if st.SendURL != "" && st.SendKey != "" {
+				if err := SaveCachedDestination(c.ExeDir, st.SendURL, st.SendKey); err != nil {
+					logf("destination: could not remember the feed's address (%v) - "+
+						"it still applies to this run", err)
+				}
+			}
+			was := c.SendURL
+			dest := ResolveDestination(c.LocalURL, c.LocalKey, st.SendURL, st.SendKey,
+				LoadCachedDestination(c.ExeDir))
+			c.SendURL, c.SendKey = dest.URL, dest.Key
+
+			// SAY WHERE IT CAME FROM, ONCE (§3). A program that starts uploading
+			// to an address the operator never entered should announce it rather
+			// than let them discover it later.
+			if c.SendURL != "" && c.SendURL != was {
+				logf("destination: sending to %s - this address came from %s, "+
+					"not from anything typed on this computer", c.SendURL, dest.Source)
+			}
+
+			b, _ := json.Marshal(st)
 			return string(b), nil
 		},
 		"applyUpdate": func(json.RawMessage) (interface{}, error) {
@@ -250,20 +297,32 @@ func buildUIActions(c uiActionCtx) map[string]uiCall {
 			if err != nil {
 				return "Could not work out which program to start again: " + err.Error(), nil
 			}
+			// LET GO BEFORE HANDING OVER.
+			//
+			// The replacement checks the single-instance lock the moment it
+			// starts. While this process still holds it, that check says "a
+			// collector is already running" - about this one, which is leaving -
+			// and the new process exits. The person is left with nothing.
+			//
+			// The previous version slept 1500ms here "so the child is past its
+			// check before this one releases the lock", which is backwards: the
+			// child's check happens first either way, and the sleep only held
+			// the lock across it. Releasing first is what the comment always
+			// meant.
+			releaseInstanceLock()
+
 			cmd := exec.Command(exe)
 			cmd.Dir = c.ExeDir
 			if err := cmd.Start(); err != nil {
 				return "Could not start the new version: " + err.Error() +
 					" Close this and open collector.exe yourself.", nil
 			}
-			logf("restart: started %s, this process is exiting", exe)
-			// A beat, so the child is past its single-instance check before this
-			// one releases the lock. Without it the new process can see the old
-			// one still holding the marker and refuse to start - which would
-			// leave the person with nothing running at all, which is far worse
-			// than a second of delay.
+			logf("restart: released the single-instance lock, started %s, this process is exiting", exe)
+			// A short beat so the reply reaches the window before the process
+			// goes. The lock is already released, so the replacement's check
+			// cannot see this one at all.
 			go func() {
-				time.Sleep(1500 * time.Millisecond)
+				time.Sleep(250 * time.Millisecond)
 				os.Exit(0)
 			}()
 			return "Starting the new version…", nil

@@ -1,0 +1,10 @@
+﻿name = "collector-receiver"
+main = "collector-receiver.worker.js"
+compatibility_date = "2026-08-01"
+
+# The bucket the Worker writes into. The binding name BUCKET is what the
+# Worker's code refers to - renaming it here breaks env.BUCKET.put silently at
+# runtime rather than at deploy, so leave it alone.
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "collector-uploads"
