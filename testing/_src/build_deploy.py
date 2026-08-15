@@ -553,6 +553,9 @@ open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
 
 import shutil
 PAGES = [
+    # The public download page. Its job is to describe the SmartScreen warning
+    # before somebody meets it, because the collector ships unsigned by ruling.
+    ('download.src.html', 'download.html'),
     ('keybinds.src.html', 'keybinds.html'),
     ('loadout.src.html',  'loadout.html'),
     ('find.src.html',     'find.html'),

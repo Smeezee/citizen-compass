@@ -549,6 +549,7 @@ func selftest(outDir string) int {
 	runBrowserSocketSelftest(check)
 	runShortcutSelftest(check)
 	runInstallLocationSelftest(check)
+	runHandsOffSelftest(check)
 	runEnumSelftest(check)
 	runTraySizeSelftest(check)
 	runWGCThreadSelftest(check)
@@ -698,6 +699,7 @@ func main() {
 		// that shape of bug is made of - the source is what it WILL say after
 		// the next build, not what this file says now.
 		showVer = flag.Bool("version", false, "print the version compiled into this binary and exit")
+		watch   = flag.Bool("watch", false, "sit quiet, wait for Star Citizen, and start the collector when it appears")
 
 		gamelog = flag.String("gamelog", "", "force the Game.log to watch (default: derive from the game window, else scan LIVE, PTU, EPTU, TECH-PREVIEW in that order)")
 
@@ -717,6 +719,23 @@ func main() {
 	// Answered before consent, before settings, before any file is touched.
 	// Asking a program its own version must never be the thing that makes it
 	// start watching anything.
+	// THE WATCHER. Started by the per-user startup entry, and it is NOT the
+	// collector: it opens no window, claims a different lock, and its whole job
+	// is to notice the game and then get out of the way.
+	if *watch {
+		wlog := filepath.Join(exeDir, "collector-auto.log")
+		lf, err := openAutoLog(wlog)
+		if err != nil {
+			return
+		}
+		defer lf.Close()
+		RunWatcher(exeDir, func(format string, args ...interface{}) {
+			fmt.Fprintf(lf, "[%s] %s\n", time.Now().Format("2006-01-02 15:04:05"),
+				fmt.Sprintf(format, args...))
+		})
+		return
+	}
+
 	if *showVer {
 		fmt.Println(Version)
 		return

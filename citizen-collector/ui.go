@@ -314,6 +314,32 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	// process ever offers and it is the one that goes on to open a window. A
 	// launch that turns out to be a duplicate now exits without having touched
 	// the Desktop - which it previously did, every time, on its way out.
+	// ASKED ONCE, AFTER CONSENT, AND NEVER RETROACTIVELY.
+	//
+	// An install upgraded from 0.3.1 has no recorded answer, so it is asked -
+	// and until it answers it is on ask-every-time. Sleven's wife and his friend
+	// agreed to a README that says nothing is ever sent on its own; they get the
+	// question before that becomes untrue, not afterwards.
+	sendMode := AskSendChoice(exeDir, logf)
+	logf("send mode: %s", sendMode)
+
+	// STARTS WITH WINDOWS, and says how to stop it in the same breath.
+	//
+	// A per-user startup entry, not a service - see autostart.go for why, which
+	// is that a service runs outside the desktop session and could neither
+	// capture the screen nor show this window.
+	if !AutostartEnabled() {
+		if exe, err := os.Executable(); err == nil {
+			if err := EnableAutostart(exe, exeDir); err != nil {
+				logf("autostart: could not set it to start with Windows (%v) - "+
+					"everything else works, you just have to open it yourself.", err)
+			} else {
+				logf("autostart: it will now start with Windows and wait for Star Citizen.")
+				logf("autostart: %s", AutostartRemovalInstructions())
+			}
+		}
+	}
+
 	if offerShortcuts {
 		OfferShortcuts(exeDir, logf)
 	}
@@ -404,6 +430,16 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 			if _, err := MineAll(outDir, in, logf); err != nil {
 				logf("mine: this pass did not complete: %v", err)
 			}
+
+			// THE SESSION IS OVER. Act on what this person actually chose, and
+			// on nothing else.
+			//
+			// Read from disk at the moment it is needed rather than captured at
+			// startup: the choice is changeable from the window, and a value
+			// read hours ago would honour an answer that has since been
+			// withdrawn. For a decision about sending somebody's screenshots,
+			// the freshest reading is the only honest one.
+			AutoSendIfChosen(exeDir, outDir, logf)
 		},
 
 		capture: func(t Trigger) (string, error) {

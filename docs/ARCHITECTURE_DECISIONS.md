@@ -97,3 +97,42 @@ This gives any importer, watcher, or future AI session one predictable place to 
 
 - **Component Database (Priority 8) data sourcing** — where canonical weapon/shield/cooler/etc. specs actually come from (community data-mining sources vs. manual entry, same as ships today). Not a schema question — a content-sourcing question.
 - **Loadout System (Priority 9) rule placement** — compatibility rules in application code vs. a compatibility table in the database. Deliberately deferred until Priority 8 (component data) actually exists to design against.
+
+---
+
+## LOCKED — the collector's resident component is a per-user startup entry, NOT a Windows service
+
+**Ruled by Sleven, 2026-08-15.** This **amends the standing "long-running
+components run as real background services" rule for this component only.** It is
+recorded here because the general rule is right for everything else, and somebody
+reading only that rule would "correct" this back to a service.
+
+**The technical reason, which settles it on its own:**
+
+A Windows service runs in **session 0**, isolated from the desktop since Vista.
+It has no window station and no desktop of its own. This component's entire
+purpose is to take pictures of the Star Citizen window and to show a window to
+the person using it. **A service could not capture the screen and could not show
+the window.** The general rule and the component's purpose are in direct
+conflict, and the purpose wins.
+
+**The human reason, which matters just as much:**
+
+A service needs administrator rights to install, does not appear in the Startup
+tab an ordinary person can reach, and is removed with `sc delete` from an
+elevated prompt. The requirement is that removal be **one obvious action, not
+registry surgery**. A service cannot satisfy both that and "survives reboot".
+
+**What is built instead:** a shortcut in the per-user Startup folder
+(`FOLDERID_Startup`), pointing at `collector.exe -watch`. It starts at login, is
+silent, shows no console window, and survives reboot — and it is removed by
+deleting one file, or by one toggle in Task Manager → Startup, with no admin
+rights either way. It also cannot outlive the user profile it belongs to, which
+matters on a shared family machine.
+
+**Not the registry `Run` key**, although that would also work: a file in a folder
+is something a person can *see*. That is the whole difference between a program
+you can get rid of and one you have to look up how to get rid of.
+
+See `citizen-collector/autostart.go`, which carries the same reasoning at the
+point of use.

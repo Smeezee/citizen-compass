@@ -1,0 +1,140 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Citizen Collector &mdash; download</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!--
+  download.src.html - the public download page.
+
+  ITS JOB IS TO MAKE A WARNING SURVIVABLE.
+
+  Sleven ruled the collector ships UNSIGNED: code signing costs a few hundred
+  a year and the project is free and unmonetised by standing ruling, so that
+  money does not exist. The consequence is accepted rather than ignored -
+  Windows SmartScreen WILL warn, and antivirus may quarantine.
+
+  A person who was told what they are about to see reads it as honesty. The
+  same box unannounced reads as malware. So the warning is described BEFORE
+  the download link, not after it, and not in small print.
+
+  NO SIGNUP, NO EMAIL BOX, NO "REGISTER YOUR INTEREST" FORM. Ruled out
+  explicitly - it is a privacy surface this project does not want and does not
+  need. GitHub's own download count is the interest signal.
+
+  The "what it does not do" list is lifted from README-FOR-TESTERS.txt rather
+  than rewritten, because that list is already right and a second version of it
+  would be free to drift.
+-->
+<style>
+  :root{
+    --bg:#070C14; --panel:#0B1626; --line:#22364F; --ink:#E6EEF7;
+    --muted:#8BA0B4; --accent:#00C9A7; --amber:#FF9A4D; --warn:#FFC53D;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:400 16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:760px;margin:0 auto;padding:48px 20px 80px}
+  h1{font-size:2rem;line-height:1.2;margin:0 0 6px}
+  h2{font-size:1.15rem;margin:34px 0 10px;color:var(--accent)}
+  p{margin:0 0 14px}
+  .lede{color:var(--muted);font-size:1.05rem;margin-bottom:28px}
+  ul{margin:0 0 14px;padding-left:20px}
+  li{margin:0 0 7px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:20px 22px;margin:0 0 22px}
+  .warn{border-color:#5A4A1E;background:#171205}
+  .warn h2{color:var(--warn);margin-top:0}
+  .dl{display:inline-block;background:var(--accent);color:#04140F;font-weight:700;
+    text-decoration:none;padding:13px 22px;border-radius:8px;margin:6px 0}
+  .dl.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .steps{counter-reset:s;list-style:none;padding-left:0}
+  .steps li{counter-increment:s;position:relative;padding-left:34px;margin-bottom:10px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:23px;height:23px;
+    border-radius:50%;background:#20344B;color:var(--ink);font-size:13px;font-weight:700;
+    display:flex;align-items:center;justify-content:center}
+  code{background:#0E1B2C;border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:.92em}
+  a{color:var(--accent)}
+  .muted{color:var(--muted);font-size:.92rem}
+  .no{color:var(--muted)}
+  .no b{color:var(--ink)}
+</style>
+
+<div class="wrap">
+
+  <h1>Citizen Collector</h1>
+  <p class="lede">It watches Star Citizen while you play and writes down what the
+  game already records, so the community can build a better map of prices, ships
+  and places. It is free, it is not selling anything, and you can delete it by
+  deleting its folder.</p>
+
+  <!-- THE WARNING COMES BEFORE THE BUTTON. Deliberately. -->
+  <div class="panel warn">
+    <h2>Windows will warn you about this download. Here is exactly what you will see.</h2>
+    <p>The program is <strong>not code-signed</strong>. Signing costs a few hundred
+    pounds a year and this project takes no money, so it is not signed &mdash; and
+    Windows treats anything unsigned as suspicious by default.</p>
+    <p>When you run it you will get a blue box that says
+    <strong>&ldquo;Windows protected your PC&rdquo;</strong>. It does not offer a
+    Run button until you look for one:</p>
+    <ol class="steps">
+      <li>Click <strong>More info</strong> &mdash; the small link in the box.</li>
+      <li>Click <strong>Run anyway</strong>, which appears after you do.</li>
+    </ol>
+    <p><strong>Your antivirus may also quarantine it</strong>, and the reason is
+    not mysterious: this program reads files, takes screenshots and uploads. That
+    is a fair description of what a scanner is built to be suspicious of, and it
+    is also a fair description of what this program honestly does.</p>
+    <p><strong>Do not turn your antivirus off.</strong> Nobody should talk you out
+    of your scanner on the strength of a paragraph on a web page. If you are not
+    comfortable, the better answer is to
+    <a href="https://github.com/Smeezee/citizen-compass/tree/main/citizen-collector">read the source</a>
+    &mdash; all of it is public &mdash; or to not install it. Both are reasonable.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Download</h2>
+    <p><a class="dl" href="https://github.com/Smeezee/citizen-compass/releases/latest">Get the latest release</a></p>
+    <p class="muted">Downloads come from GitHub. <code>collector.exe</code> is the
+    program on its own; the <code>.zip</code> is the same thing with a readme and
+    a settings file.</p>
+    <p class="muted">Every release lists a SHA256. If you want to check what you
+    downloaded is what was published, run
+    <code>Get-FileHash collector.exe</code> in PowerShell and compare it.</p>
+  </div>
+
+  <div class="panel">
+    <h2>What it does not do</h2>
+    <ul class="no">
+      <li><b>It does not modify the game.</b> No injection, no code in the game's
+        process, no reading the game's memory, no automating play. It reads a text
+        file the game already writes, and takes ordinary screenshots.</li>
+      <li><b>It does not read any window except Star Citizen's.</b> It checks the
+        window belongs to the game before it looks.</li>
+      <li><b>It does not read chat.</b> Not filtered, not scrubbed &mdash; never
+        sampled.</li>
+      <li><b>It does not send anything without your say-so.</b> When you set it up
+        it asks one question &mdash; send automatically when you finish playing, or
+        ask every time &mdash; and does exactly what you picked. You can change it
+        whenever you like.</li>
+      <li><b>It does not delete anything the server has not confirmed receiving.</b>
+        A failed send costs you nothing.</li>
+      <li><b>It does not want your email address.</b> There is no signup, no
+        account and no form on this page for a reason.</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>Before you install it, know this</h2>
+    <p>It takes <strong>pictures of your screen</strong> while you play, and those
+    pictures are part of what gets sent. A picture can show your handle, the
+    handles of other players near you, and anything else the game had on screen.
+    They are read by us for prices and stock, they are <strong>never
+    published</strong>, and nothing taken out of them carries anybody&rsquo;s name.</p>
+    <p>The program says all of this on its first screen, and does not collect
+    anything until you agree to it there.</p>
+  </div>
+
+  <p class="muted">Citizen Compass is an unofficial fan project. It is not
+  affiliated with Cloud Imperium Games. Star Citizen&reg; and related marks are
+  the property of Cloud Imperium Rights LLC.</p>
+
+</div>

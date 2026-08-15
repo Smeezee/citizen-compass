@@ -17,10 +17,19 @@ That is the whole thing.
 
 WHAT IT DOES NOT DO
 
-  - It never sends anything on its own. Not on a timer, not in the
-    background, not when you are not looking. The only thing that sends
-    anything is you pressing the button, and it asks what to include
-    before it does.
+  - It never sends anything without your say-so. When you set it up it
+    asks one question - send automatically when you finish playing, or
+    ask every time - and it does exactly what you picked. Nothing goes
+    on a timer, nothing goes while you are playing, and nothing goes
+    from a machine that has not answered that question: until it is
+    answered, the answer is ask.
+    If you already had this installed before that question existed, you
+    are on ASK, and you will be asked once. Nothing changed underneath
+    you.
+    You can change your answer whenever you like.
+  - It never deletes anything the server has not confirmed receiving.
+    If a send fails, or is too big, everything stays on your computer
+    and it tells you what happened the next time you open the window.
   - It does not read any window except Star Citizen's. It checks the
     window belongs to the game before it looks.
   - It does not read chat. Not filtered, not scrubbed - never sampled.

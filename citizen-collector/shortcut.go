@@ -85,6 +85,7 @@ const (
 	slotShellSetWorkDir = 9
 	slotShellSetDesc    = 7
 	slotShellSetIcon    = 17
+	slotShellSetArgs    = 11
 	slotShellGetIcon    = 16
 	slotQueryInterface  = 0
 	slotPersistLoad     = 5
@@ -146,9 +147,30 @@ func CreateShortcut(lnkPath, target, workDir, desc, icon string) error {
 	return nil
 }
 
+// CreateShortcutWithArgs is CreateShortcut plus command-line arguments.
+//
+// The startup entry points at `collector.exe -watch` rather than at the
+// collector itself: starting the whole program at login would put a window in
+// somebody's face every morning whether or not they meant to play.
+func CreateShortcutWithArgs(lnkPath, target, workDir, desc, icon, args string) error {
+	if err := createShortcutFull(lnkPath, target, workDir, desc, icon, args); err != nil {
+		return err
+	}
+	if icon != "" {
+		if err := VerifyShortcutIcon(lnkPath); err != nil {
+			return fmt.Errorf("the shortcut was written but its icon is wrong: %w", err)
+		}
+	}
+	return nil
+}
+
 // createShortcutNoVerify writes the .lnk and checks everything except whether
 // the icon it recorded resolves.
 func createShortcutNoVerify(lnkPath, target, workDir, desc, icon string) error {
+	return createShortcutFull(lnkPath, target, workDir, desc, icon, "")
+}
+
+func createShortcutFull(lnkPath, target, workDir, desc, icon, args string) error {
 	var psl unsafe.Pointer
 	// CLSCTX_INPROC_SERVER = 1. The apartment is already initialised - the
 	// process is apartment-threaded from go-webview2's init, and the CLI path
@@ -179,6 +201,11 @@ func createShortcutNoVerify(lnkPath, target, workDir, desc, icon string) error {
 	}
 	if err := set(slotShellSetDesc, desc); err != nil {
 		return err
+	}
+	if args != "" {
+		if err := set(slotShellSetArgs, args); err != nil {
+			return err
+		}
 	}
 	// CHECKED LIKE EVERY SIBLING CALL.
 	//
