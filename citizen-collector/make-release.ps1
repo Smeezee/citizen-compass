@@ -180,6 +180,38 @@ if (-not (Test-Path $readme)) {
 Ok "README-FOR-TESTERS.txt present"
 
 # ---------------------------------------------------------------------------
+# THE UPLOAD KEY MUST NOT GO INTO A PUBLIC RELEASE ASSET
+# ---------------------------------------------------------------------------
+#
+# Step 4 copies collector-settings.txt into the shipped zip, send_key included.
+# That was written when packages were handed out privately. A GitHub release is
+# public: the zip is downloadable by anyone, so a non-empty send_key here means
+# publishing the shared upload key to the whole internet, where it can be used
+# to post anything at all into the bucket.
+#
+# REFUSE, rather than warn. A warning in a wall of green output is not a
+# control, and the cost of getting this wrong is rotating a key that every
+# collector already has.
+$settingsCheck = Join-Path $here "collector-settings.txt"
+if (Test-Path $settingsCheck) {
+    $leaky = @()
+    foreach ($line in (Get-Content -LiteralPath $settingsCheck -Encoding UTF8)) {
+        if ($line -match '^\s*#') { continue }
+        if ($line -match '^\s*send_key\s*=\s*(\S.*)$') { $leaky += "send_key" }
+    }
+    if ($leaky.Count -gt 0) {
+        Fail ("collector-settings.txt has a non-empty send_key, and step 4 copies that " +
+              "file into the release zip. A GitHub release is PUBLIC - publishing it " +
+              "would hand the shared upload key to anyone who downloads the package, " +
+              "and rotating it means every existing collector stops being able to send. " +
+              "Blank send_key here before releasing; give the key to people separately.")
+    }
+    Ok "collector-settings.txt carries no upload key, so the public zip cannot leak one"
+} else {
+    Note "no collector-settings.txt to check"
+}
+
+# ---------------------------------------------------------------------------
 # 2. IS THIS ACTUALLY NEWER THAN WHAT IS PUBLISHED?
 # ---------------------------------------------------------------------------
 Step "checking against what is already published"
@@ -299,12 +331,36 @@ if (-not $gh) {
 $assets = @($crew, $smallZip)
 if ($bigZip) { $assets += $bigZip }
 
+# STDERR TO A FILE, NOT INTO THE PIPELINE. `2>&1` on a native exe in PowerShell
+# 5.1 wraps stderr in ErrorRecords; with $ErrorActionPreference = "Stop" that
+# kills the script on output that is not necessarily an error. It made the
+# "tag already exists" fallback below unreachable - the recovery path existed
+# and could never run, so every re-run of a release died at this line.
+function Invoke-Gh {
+    param([Parameter(ValueFromRemainingArguments = $true)] [string[]] $GhArgs)
+    $errFile = [IO.Path]::GetTempFileName()
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $out = (& gh @GhArgs 2>$errFile | Out-String)
+        $code = $LASTEXITCODE
+        $err = ""
+        if (Test-Path $errFile) { $err = [IO.File]::ReadAllText($errFile) }
+    } finally {
+        $ErrorActionPreference = $prev
+        Remove-Item -LiteralPath $errFile -Force -ErrorAction SilentlyContinue
+    }
+    return [pscustomobject]@{ Code = $code; All = "$out`n$err" }
+}
+
 Write-Host "        creating release $tag ..."
-& gh release create $tag @assets --repo $Repo --title "Citizen Collector $Version" --notes "Build $Version." 2>&1 | ForEach-Object { Note $_ }
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "        release create failed or the tag already exists; trying to upload assets to it instead..."
-    & gh release upload $tag @assets --repo $Repo --clobber 2>&1 | ForEach-Object { Note $_ }
-    if ($LASTEXITCODE -ne 0) { Fail "could not attach the assets. Nothing was written to the feed, so no collector has been told about this build." }
+$mk = Invoke-Gh release create $tag @assets --repo $Repo --title "Citizen Collector $Version" --notes "Build $Version."
+$mk.All -split "`n" | ForEach-Object { if ($_.Trim()) { Note $_.Trim() } }
+if ($mk.Code -ne 0) {
+    Write-Host "        the tag already exists (or create failed); attaching the assets to it instead..."
+    $up = Invoke-Gh release upload $tag @assets --repo $Repo --clobber
+    $up.All -split "`n" | ForEach-Object { if ($_.Trim()) { Note $_.Trim() } }
+    if ($up.Code -ne 0) { Fail "could not attach the assets. Nothing was written to the feed, so no collector has been told about this build." }
 }
 Ok "assets attached to $tag"
 
@@ -365,7 +421,31 @@ $feed = [ordered]@{
     notes    = "Build $Version."
     min_from = ""
 }
-($feed | ConvertTo-Json -Depth 3) | Set-Content -LiteralPath $feedPath -Encoding UTF8
+# NO BYTE-ORDER MARK. `Set-Content -Encoding UTF8` on Windows PowerShell 5.1
+# prepends ef bb bf, and Go's encoding/json - which is what update.go parses
+# this with - refuses a leading BOM with "invalid character looking for
+# beginning of value". A feed written that way is unreadable by every collector
+# alive, while looking perfectly fine in any text editor.
+$feedJson = ($feed | ConvertTo-Json -Depth 3)
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[IO.File]::WriteAllText($feedPath, $feedJson, $utf8NoBom)
+
+# READ IT BACK AND PARSE IT. Writing a file only proves a file was written.
+# The question that matters is whether the program on somebody else's machine
+# can read it, so ask that question here, where it can still be fixed.
+$rawBytes = [IO.File]::ReadAllBytes($feedPath)
+if ($rawBytes.Length -ge 3 -and $rawBytes[0] -eq 0xEF -and $rawBytes[1] -eq 0xBB -and $rawBytes[2] -eq 0xBF) {
+    Fail "the feed was written with a UTF-8 BOM. Go's json parser rejects it, so no collector could read this file. Nothing has been announced."
+}
+try {
+    $parsed = [IO.File]::ReadAllText($feedPath) | ConvertFrom-Json
+} catch {
+    Fail "the feed just written is not valid JSON ($($_.Exception.Message)). Nothing has been announced."
+}
+if ($parsed.sha256 -ne $sha -or $parsed.version -ne $Version -or -not $parsed.url) {
+    Fail "the feed read back does not match what was meant to be written (version '$($parsed.version)', sha '$($parsed.sha256)'). Nothing has been announced."
+}
+Ok "feed parses, and its version, url and sha256 are the ones just published"
 Ok "wrote $feedPath"
 
 if (-not $Announce) {
