@@ -200,13 +200,16 @@ if (Test-Path $settingsCheck) {
         if ($line -match '^\s*send_key\s*=\s*(\S.*)$') { $leaky += "send_key" }
     }
     if ($leaky.Count -gt 0) {
-        Fail ("collector-settings.txt has a non-empty send_key, and step 4 copies that " +
-              "file into the release zip. A GitHub release is PUBLIC - publishing it " +
-              "would hand the shared upload key to anyone who downloads the package, " +
-              "and rotating it means every existing collector stops being able to send. " +
-              "Blank send_key here before releasing; give the key to people separately.")
+        # NOT FATAL ANY MORE, AND THE REASON IS WORTH STATING PRECISELY.
+        # The key is published in the feed on purpose, so this is no longer a
+        # leak. It matters because the packaging step below strips it: this
+        # machine keeps its local override, and the zip ships blank so every
+        # install follows the feed.
+        Note "this machine has a local send_key - it is NOT copied into the package"
+        Note "(local values override the feed here only, which is the escape hatch)"
+    } else {
+        Note "no local send_key on this machine; the package ships blank either way"
     }
-    Ok "collector-settings.txt carries no upload key, so the public zip cannot leak one"
 } else {
     Note "no collector-settings.txt to check"
 }
@@ -253,10 +256,40 @@ Copy-Item $readme (Join-Path $stage "README.txt")
 # was left switched on, plus this machine's paths.
 $settingsSrc = Join-Path $here "collector-settings.txt"
 if (Test-Path $settingsSrc) {
-    # Strip anything machine-specific rather than shipping it.
-    Get-Content $settingsSrc | Where-Object { $_ -notmatch '^\s*(out|log_path|game_log)\s*=' } |
-        Set-Content -Path (Join-Path $stage "collector-settings.txt") -Encoding UTF8
-    Add-Content -Path (Join-Path $stage "collector-settings.txt") -Value "out = captures" -Encoding UTF8
+    # Strip anything machine-specific, AND the destination.
+    #
+    # send_url/send_key are deliberately blank in a shipped package. Local
+    # values beat the feed, so a package carrying them would pin every new
+    # install to the key that happened to be current the day the zip was built,
+    # and no rotation would ever reach those machines. Being able to rotate is
+    # what makes publishing the key safe in the first place.
+    $stagedSettings = Join-Path $stage "collector-settings.txt"
+    Get-Content $settingsSrc |
+        Where-Object { $_ -notmatch '^\s*(out|log_path|game_log|send_url|send_key)\s*=' } |
+        Set-Content -Path $stagedSettings -Encoding UTF8
+    Add-Content -Path $stagedSettings -Encoding UTF8 -Value @"
+out = captures
+
+# Left blank on purpose. The collector is told where to send by the published
+# update feed, so there is nothing to fill in here and nothing to paste.
+#
+# Setting either of these overrides the feed for this machine and stops it
+# following any future change of address or key. That is the escape hatch for a
+# machine pointed somewhere else deliberately - not a setup step.
+send_url =
+send_key =
+"@
+
+    # ASSERT IT AGAINST THE FILE THAT ACTUALLY SHIPS.
+    #
+    # Checked here rather than before staging, because what matters is the bytes
+    # in the zip, not what the filter was supposed to do to them.
+    foreach ($line in (Get-Content -LiteralPath $stagedSettings -Encoding UTF8)) {
+        if ($line -match '^\s*send_(url|key)\s*=\s*(\S.+)$') {
+            Fail "the staged collector-settings.txt still carries a send_$($Matches[1]). Every install from this package would be pinned to it and would never follow a rotation."
+        }
+    }
+    Ok "the package ships with no destination - the feed governs, so rotation reaches it"
 } else {
     Note "no collector-settings.txt here; the package ships without one and the program uses its defaults"
 }
@@ -343,6 +376,23 @@ function Invoke-Gh {
     $ErrorActionPreference = "Continue"
     try {
         $out = (& gh @GhArgs 2>$errFile | Out-String)
+        $code = $LASTEXITCODE
+        $err = ""
+        if (Test-Path $errFile) { $err = [IO.File]::ReadAllText($errFile) }
+    } finally {
+        $ErrorActionPreference = $prev
+        Remove-Item -LiteralPath $errFile -Force -ErrorAction SilentlyContinue
+    }
+    return [pscustomobject]@{ Code = $code; All = "$out`n$err" }
+}
+
+function Invoke-Git {
+    param([Parameter(ValueFromRemainingArguments = $true)] [string[]] $GitArgs)
+    $errFile = [IO.Path]::GetTempFileName()
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $out = (& git @GitArgs 2>$errFile | Out-String)
         $code = $LASTEXITCODE
         $err = ""
         if (Test-Path $errFile) { $err = [IO.File]::ReadAllText($errFile) }
@@ -517,16 +567,22 @@ Push-Location $RepoPath
 try {
     # ONLY this path. `git add -A` on this repo stages ~50 files that differ by
     # nothing but CRLF, and that has been a standing rule since it happened.
-    & git add -- "releases/collector-latest.json" 2>&1 | ForEach-Object { Note $_ }
-    if ($LASTEXITCODE -ne 0) { Fail "git add failed. The build is published; only the feed is unannounced." }
+    $r = Invoke-Git add -- "releases/collector-latest.json"
+    $r.All -split "`n" | ForEach-Object { if ($_.Trim()) { Note $_.Trim() } }
+    if ($r.Code -ne 0) { Fail "git add failed. The build is published; only the feed is unannounced." }
 
-    & git commit -m "collector $Version" 2>&1 | ForEach-Object { Note $_ }
-    if ($LASTEXITCODE -ne 0) {
+    $r = Invoke-Git commit -m "collector $Version"
+    $r.All -split "`n" | ForEach-Object { if ($_.Trim()) { Note $_.Trim() } }
+    if ($r.Code -ne 0) {
         Note "nothing to commit, or the commit failed - continuing to check what is live"
     }
 
-    & git push 2>&1 | ForEach-Object { Note $_ }
-    if ($LASTEXITCODE -ne 0) { Fail "git push failed. The build is published but no collector will be told." }
+    # git writes progress to stderr even on success, which is why this goes
+    # through Invoke-Git rather than a pipeline redirect. A push that worked
+    # used to come back exit 1.
+    $r = Invoke-Git push
+    $r.All -split "`n" | ForEach-Object { if ($_.Trim()) { Note $_.Trim() } }
+    if ($r.Code -ne 0) { Fail "git push failed. The build is published but no collector will be told." }
 } finally {
     Pop-Location
 }

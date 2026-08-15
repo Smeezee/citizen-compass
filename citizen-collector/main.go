@@ -39,7 +39,7 @@ const (
 	// Version stamps every capture. The rev 5 addendum requires that any file a
 	// crew member sends back names the package version that produced it, so the
 	// stamping starts here, at the first artifact this tool ever writes.
-	Version = "0.3.0"
+	Version = "0.3.1"
 
 	hotkeyID = 1
 )
