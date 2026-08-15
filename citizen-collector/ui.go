@@ -235,6 +235,16 @@ func verifiedRuntimeNote(exeDir string) string {
 // runUI opens the window and runs until it is closed.
 func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, localKey string,
 	clearAfterSend, offerShortcuts bool) error {
+	// BEFORE ANYTHING IS WRITTEN, including the log.
+	//
+	// The log lives beside the exe, so opening it first would put one more file
+	// on the Desktop while deciding whether this program should be putting files
+	// on the Desktop. Ahead of the runtime relaunch too - there is no point
+	// starting a second process that is going to reach the same conclusion.
+	if GuardInstallLocation(exeDir, nil) {
+		return nil
+	}
+
 	// Relaunch once so the bundled runtime is inherited from process creation.
 	// This process then has nothing left to do.
 	if pinBundledRuntime(exeDir) {
@@ -685,8 +695,10 @@ const uiHTML = `<!DOCTYPE html>
         // like pressing a broken one. This is the only place that difference
         // can be seen.
         hk.textContent = (s.hotkey || 'none') +
-          '  —  NOT registered. Another collector may still be running. ' +
-          'The button below works either way.';
+          '  —  NOT registered, because another copy of Citizen Collector is ' +
+          'already running and has claimed this key. Installing a new copy does ' +
+          'not stop the old one: close the other window, or end 'collector.exe' ' +
+          'in Task Manager, then start this again. The button below works either way.';
         hk.className = 'v bad';
       }
       if (s.watch_keys) {

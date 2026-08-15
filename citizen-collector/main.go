@@ -548,6 +548,7 @@ func selftest(outDir string) int {
 	// meaningful together - the first can pass with the guard unreachable.
 	runBrowserSocketSelftest(check)
 	runShortcutSelftest(check)
+	runInstallLocationSelftest(check)
 	runEnumSelftest(check)
 	runTraySizeSelftest(check)
 	runWGCThreadSelftest(check)

@@ -473,6 +473,68 @@ out = out[:_b] + '\n' + GATE + out[_b:]
 # matches production: it reports a mismatch for a reason with nothing to do
 # with the content, so the next person either chases a phantom change or
 # redeploys to "fix" it and churns the live site for nothing.
+# ---------------------------------------------------------------------------
+# LOADOUT_LINK - record id -> the class id the bench is keyed on
+# ---------------------------------------------------------------------------
+#
+# The ship page needs to open the bench on the ship being looked at. The site's
+# ship records carry a record number and a display name; the bench is keyed on
+# the game's class id. Joining those on the NAME at runtime is the failure mode
+# data-layer/ship_resolution.json exists to have closed, so the join happens
+# ONCE, here, against that artifact, and what ships is an id -> id table.
+#
+# Built from the page that was just assembled, so the record ids are exactly the
+# ones the page holds rather than ones read from a second source that could
+# disagree with it.
+_res = json.loads(rd(os.path.join(REPO, 'data-layer', 'ship_resolution.json')))
+_m = re.search(r'const SHIPS\s*=\s*(\[.*?\]);', out, re.S)
+if not _m:
+    sys.exit("could not find the SHIPS array in the assembled page, so the "
+             "loadout entry point cannot be keyed on record ids. Nothing written.")
+_site_ships = json.loads(_m.group(1))
+
+_lo_src = rd(os.path.join(SRC, 'loadout_data.gen.js'))
+_lm = re.search(r'LOADOUT_SHIPS\s*=\s*(\{.*?\})\s*;', _lo_src, re.S)
+if not _lm:
+    sys.exit("could not read LOADOUT_SHIPS out of loadout_data.gen.js. Nothing written.")
+_bench = json.loads(_lm.group(1))
+_bench_by_stem = {k.lower(): k for k in _bench}
+
+_stem_by_site = {}
+for _r in _res.get('matched', []):
+    _stem_by_site[_r['site']] = _r['file'].rsplit('.', 1)[0].lower()
+
+_link, _offered, _absent, _absent_names = {}, 0, 0, []
+for _s in _site_ships:
+    _stem = _stem_by_site.get(_s['name'])
+    _cls = _bench_by_stem.get(_stem) if _stem else None
+    if _cls:
+        _link[str(_s['id'])] = _cls
+        _offered += 1
+    else:
+        _absent += 1
+        if len(_absent_names) < 8:
+            _absent_names.append(_s['name'])
+
+# EVERY SHIP ACCOUNTED FOR, and the two numbers must sum to the total. A spot
+# check on one ship is how 315 dead ends would ship unnoticed.
+if _offered + _absent != len(_site_ships):
+    sys.exit("loadout link accounting does not add up: %d + %d != %d"
+             % (_offered, _absent, len(_site_ships)))
+if _offered == 0:
+    sys.exit("no ship resolved to a bench entry, so the loadout control would "
+             "never appear. Refusing to ship a dead entry point.")
+print('loadout entry point: %d of %d ships offer the bench, %d correctly do not'
+      % (_offered, len(_site_ships), _absent))
+print('  no bench data (first few): %s' % ', '.join(_absent_names))
+
+_link_js = ('<script>const LOADOUT_LINK=%s;</script>'
+            % json.dumps(_link, ensure_ascii=True, separators=(',', ':')).replace('<', r'\u003c'))
+if '</body>' in out:
+    out = out.replace('</body>', _link_js + '\n</body>', 1)
+else:
+    out = out + _link_js
+
 open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
 
 # ---------------------------------------------------------------------------

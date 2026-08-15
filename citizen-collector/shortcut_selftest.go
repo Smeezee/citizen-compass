@@ -84,7 +84,10 @@ func runShortcutSelftest(check func(name string, ok bool, detail string)) {
 	}
 
 	lnk := filepath.Join(tmp, shortcutTargetName()+".lnk")
-	cErr := CreateShortcut(lnk, exe, filepath.Dir(exe), "selftest", exe+",0")
+	// A PATH, NOT "path,index". This test used to pass exe+",0" - the exact
+	// defect it should have been catching - so it reproduced the bug and
+	// reported success.
+	cErr := CreateShortcut(lnk, exe, filepath.Dir(exe), "selftest", exe)
 	check("SHORTCUT: a shortcut can actually be created",
 		cErr == nil,
 		"CreateShortcut failed: "+errText(cErr))
@@ -103,6 +106,73 @@ func runShortcutSelftest(check func(name string, ok bool, detail string)) {
 			check("SHORTCUT: the file is a real shell link, not just bytes on disk",
 				ok, "the .lnk header magic is wrong - "+itoaSmall(len(b))+" bytes")
 		}
+	}
+
+	// -----------------------------------------------------------------
+	// 3b. THE ICON, READ BACK OFF THE SAVED FILE
+	// -----------------------------------------------------------------
+	//
+	// THE CHECK THAT WOULD HAVE CAUGHT IT, and the only one that would have.
+	// Every other check in this file passed for the entire life of the feature
+	// while the shortcut on the Desktop was a blank white page: the name was
+	// right, the file existed, the header magic was right, and the icon pointed
+	// at a filename that could not exist.
+	if cErr == nil {
+		gotIcon, gotIdx, iErr := ReadShortcutIconLocation(lnk)
+		check("SHORTCUT: the icon location can be read back off the saved .lnk",
+			iErr == nil && gotIcon != "",
+			"read: "+errText(iErr))
+		check("SHORTCUT: the saved icon is the exe itself, with no index glued on",
+			strings.EqualFold(gotIcon, exe),
+			"the .lnk records icon path "+gotIcon+" (index "+itoaSmall(gotIdx)+")")
+		check("SHORTCUT: the icon index is passed as an index, not inside the path",
+			gotIdx == 0 && !strings.Contains(gotIcon, ","),
+			"path/index came back as "+gotIcon+" / "+itoaSmall(gotIdx))
+		check("SHORTCUT: the saved icon location exists on disk",
+			VerifyShortcutIcon(lnk) == nil,
+			"VerifyShortcutIcon: "+errText(VerifyShortcutIcon(lnk)))
+	}
+
+	// -----------------------------------------------------------------
+	// 3c. NEGATIVE CONTROLS FOR THE ICON CHECK ITSELF
+	// -----------------------------------------------------------------
+	//
+	// THE LOAD-BEARING ONES. A shortcut verifier that has never been observed
+	// rejecting anything is exactly the thing it exists to catch. Both of these
+	// build a shortcut the old code would have produced and confirm the new
+	// check refuses it.
+	{
+		// The original defect, reproduced deliberately: path with ",0" glued on.
+		badIcon := filepath.Join(tmp, "with-comma-index.lnk")
+		mkErr := createShortcutNoVerify(badIcon, exe, filepath.Dir(exe), "selftest", exe+",0")
+		if mkErr == nil {
+			vErr := VerifyShortcutIcon(badIcon)
+			check("SHORTCUT: NEGATIVE CONTROL - an icon path with ,0 glued on IS rejected",
+				vErr != nil,
+				"the exact shortcut every install has been getting was accepted as fine")
+			check("SHORTCUT: and the rejection names the real cause",
+				vErr != nil && strings.Contains(vErr.Error(), "index appended"),
+				"the message would send somebody looking for a missing icon file: "+errText(vErr))
+		} else {
+			check("SHORTCUT: NEGATIVE CONTROL - could not build the bad shortcut to test with",
+				false, errText(mkErr))
+		}
+
+		// An icon that is simply not there.
+		missing := filepath.Join(tmp, "missing-icon.lnk")
+		gone := filepath.Join(tmp, "no-such-icon-file.ico")
+		if mkErr := createShortcutNoVerify(missing, exe, filepath.Dir(exe), "selftest", gone); mkErr == nil {
+			check("SHORTCUT: NEGATIVE CONTROL - an icon file that does not exist IS rejected",
+				VerifyShortcutIcon(missing) != nil,
+				"a shortcut pointing at a non-existent icon passed verification")
+		}
+
+		// AND THE CHECK MUST NOT REJECT EVERYTHING. Without this, a verifier
+		// that always failed would satisfy both controls above and break every
+		// shortcut the program makes.
+		check("SHORTCUT: NEGATIVE CONTROL - a correct shortcut is still accepted",
+			VerifyShortcutIcon(lnk) == nil,
+			"the verifier rejects good shortcuts too, so it proves nothing")
 	}
 
 	// -----------------------------------------------------------------
@@ -128,4 +198,20 @@ func runShortcutSelftest(check func(name string, ok bool, detail string)) {
 	recordShortcutAnswer(tmp, "no")
 	check("SHORTCUT: recording an answer stops it being asked again",
 		shortcutAsked(tmp), "the answer was not remembered - it would ask on every launch")
+
+	// -----------------------------------------------------------------
+	// 6. REPAIR APPLIES TO YES, AND ONLY TO YES
+	// -----------------------------------------------------------------
+	//
+	// Existing installs have a broken icon through no fault of theirs and must
+	// be corrected without a second prompt. Somebody who said NO must not have
+	// shortcuts appear on their desktop because of a repair pass - that would
+	// turn a bug fix into doing the opposite of what they asked.
+	check("SHORTCUT: an answer of no is not treated as a request to repair",
+		!shortcutAnswerWasYes(tmp),
+		"a machine that declined shortcuts would have them written by the repair")
+	recordShortcutAnswer(tmp, "yes")
+	check("SHORTCUT: an answer of yes is recognised, so repairs can happen silently",
+		shortcutAnswerWasYes(tmp),
+		"an install that asked for shortcuts would never get its icon fixed")
 }

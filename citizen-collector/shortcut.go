@@ -85,7 +85,9 @@ const (
 	slotShellSetWorkDir = 9
 	slotShellSetDesc    = 7
 	slotShellSetIcon    = 17
+	slotShellGetIcon    = 16
 	slotQueryInterface  = 0
+	slotPersistLoad     = 5
 	slotPersistSave     = 6
 )
 
@@ -126,7 +128,27 @@ func knownFolder(id GUID) (string, error) {
 }
 
 // CreateShortcut writes a .lnk pointing at this executable.
+// CreateShortcut writes a shortcut AND verifies its icon resolves.
+//
+// The two halves are separable because the selftest has to be able to produce a
+// deliberately broken shortcut and watch the check reject it. A writer that
+// cannot write a bad shortcut leaves the verifier untestable, and an untested
+// verifier is the thing this whole erratum is about.
 func CreateShortcut(lnkPath, target, workDir, desc, icon string) error {
+	if err := createShortcutNoVerify(lnkPath, target, workDir, desc, icon); err != nil {
+		return err
+	}
+	if icon != "" {
+		if err := VerifyShortcutIcon(lnkPath); err != nil {
+			return fmt.Errorf("the shortcut was written but its icon is wrong: %w", err)
+		}
+	}
+	return nil
+}
+
+// createShortcutNoVerify writes the .lnk and checks everything except whether
+// the icon it recorded resolves.
+func createShortcutNoVerify(lnkPath, target, workDir, desc, icon string) error {
 	var psl unsafe.Pointer
 	// CLSCTX_INPROC_SERVER = 1. The apartment is already initialised - the
 	// process is apartment-threaded from go-webview2's init, and the CLI path
@@ -158,9 +180,20 @@ func CreateShortcut(lnkPath, target, workDir, desc, icon string) error {
 	if err := set(slotShellSetDesc, desc); err != nil {
 		return err
 	}
+	// CHECKED LIKE EVERY SIBLING CALL.
+	//
+	// This was the one setter whose HRESULT was thrown away, and the asymmetry
+	// was itself the smell. It would NOT have caught the bug above -
+	// SetIconLocation stores the string without resolving it and returns S_OK
+	// for a path pointing at nothing - but a result nobody reads is a result
+	// that cannot report anything, ever.
 	if icon != "" {
-		if p, err := syscall.UTF16PtrFromString(icon); err == nil {
-			comCall(psl, slotShellSetIcon, uintptr(unsafe.Pointer(p)), 0)
+		p, err := syscall.UTF16PtrFromString(icon)
+		if err != nil {
+			return fmt.Errorf("the icon path could not be encoded: %w", err)
+		}
+		if hr := comCall(psl, slotShellSetIcon, uintptr(unsafe.Pointer(p)), 0); hr != 0 {
+			return fmt.Errorf("setting the shortcut icon returned 0x%x", hr)
 		}
 	}
 
@@ -188,6 +221,79 @@ func CreateShortcut(lnkPath, target, workDir, desc, icon string) error {
 	if _, err := os.Stat(lnkPath); err != nil {
 		return fmt.Errorf("the shortcut reported success but is not on disk: %w", err)
 	}
+
+	return nil
+}
+
+// ReadShortcutIconLocation opens a saved .lnk and reports the icon path and
+// index recorded inside it.
+//
+// Reading it back is the only way to check this. Everything up to Save is an
+// intention; the .lnk on disk is what Explorer will actually draw from.
+func ReadShortcutIconLocation(lnkPath string) (string, int, error) {
+	var psl unsafe.Pointer
+	r, _, _ := procCoCreateInstance.Call(
+		uintptr(unsafe.Pointer(&clsidShellLink)), 0, 1,
+		uintptr(unsafe.Pointer(&iidShellLinkW)), uintptr(unsafe.Pointer(&psl)))
+	if r != 0 || psl == nil {
+		return "", 0, fmt.Errorf("could not create a shell link object (0x%x)", r)
+	}
+	defer comCall(psl, slotRelease)
+
+	var ppf unsafe.Pointer
+	if hr := comCall(psl, slotQueryInterface,
+		uintptr(unsafe.Pointer(&iidPersistFile)), uintptr(unsafe.Pointer(&ppf))); hr != 0 || ppf == nil {
+		return "", 0, fmt.Errorf("the shell link does not support loading (0x%x)", hr)
+	}
+	defer comCall(ppf, slotRelease)
+
+	wp, err := syscall.UTF16PtrFromString(lnkPath)
+	if err != nil {
+		return "", 0, err
+	}
+	// Load(path, STGM_READ=0)
+	if hr := comCall(ppf, slotPersistLoad, uintptr(unsafe.Pointer(wp)), 0); hr != 0 {
+		return "", 0, fmt.Errorf("could not read %s (0x%x)", lnkPath, hr)
+	}
+
+	buf := make([]uint16, 1024)
+	var idx int32
+	if hr := comCall(psl, slotShellGetIcon,
+		uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)),
+		uintptr(unsafe.Pointer(&idx))); hr != 0 {
+		return "", 0, fmt.Errorf("could not read the icon location (0x%x)", hr)
+	}
+	return syscall.UTF16ToString(buf), int(idx), nil
+}
+
+// VerifyShortcutIcon fails when a saved shortcut names an icon that is not
+// there.
+//
+// THIS IS THE CHECK THAT WOULD HAVE CAUGHT THE DEFECT, and the only one that
+// would have. Everything else in this file passed while the shortcut on the
+// Desktop was a blank white page.
+func VerifyShortcutIcon(lnkPath string) error {
+	icon, _, err := ReadShortcutIconLocation(lnkPath)
+	if err != nil {
+		return err
+	}
+	icon = strings.TrimSpace(icon)
+	if icon == "" {
+		return fmt.Errorf("no icon location is recorded in %s", filepath.Base(lnkPath))
+	}
+	// NAME THE ACTUAL DEFECT when it is seen again. "file not found" would be
+	// true and would send the next person looking for a missing icon file
+	// rather than at the string that was written.
+	if i := strings.LastIndex(icon, ","); i > 0 {
+		if tail := icon[i+1:]; tail != "" && strings.Trim(tail, "0123456789") == "" {
+			return fmt.Errorf("the icon path has an index appended to it (%q) - "+
+				"path and index are separate arguments to SetIconLocation, so the "+
+				"shell is looking for a file with a comma in its name", icon)
+		}
+	}
+	if _, err := os.Stat(icon); err != nil {
+		return fmt.Errorf("the icon location %q does not exist on disk: %w", icon, err)
+	}
 	return nil
 }
 
@@ -195,6 +301,90 @@ func CreateShortcut(lnkPath, target, workDir, desc, icon string) error {
 func shortcutAsked(dir string) bool {
 	_, err := os.Stat(filepath.Join(dir, shortcutAnswerFile))
 	return err == nil
+}
+
+// shortcutAnswerWasYes reports whether this machine asked for shortcuts.
+//
+// Distinct from shortcutAsked: repairing a broken shortcut is right for
+// somebody who wanted one and wrong for somebody who said no, and those were
+// previously the same question.
+func shortcutAnswerWasYes(dir string) bool {
+	b, err := os.ReadFile(filepath.Join(dir, shortcutAnswerFile))
+	if err != nil {
+		return false
+	}
+	for _, line := range strings.Split(string(b), "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+		if k, v, ok := strings.Cut(line, "="); ok && strings.TrimSpace(k) == "shortcuts" {
+			return strings.EqualFold(strings.TrimSpace(v), "yes")
+		}
+	}
+	return false
+}
+
+// shortcutPlaces is the one list of where shortcuts go, so creating and
+// repairing cannot drift apart.
+func shortcutPlaces() []struct {
+	id    GUID
+	label string
+} {
+	return []struct {
+		id    GUID
+		label string
+	}{
+		{folderIDDesktop, "desktop"},
+		{folderIDPrograms, "Start Menu"},
+	}
+}
+
+// RepairShortcuts silently corrects shortcuts this machine already asked for.
+//
+// WHY IT DOES NOT ASK. Every install in the world has a broken icon because of
+// a defect in this file - a path built as `exe + ",0"` that no file could ever
+// match. The people affected already said yes. Asking again would make our
+// mistake their decision, and a second prompt for something they have already
+// agreed to reads as the program being unsure of itself.
+//
+// It is silent when nothing is wrong. A repair pass that announced itself on
+// every launch would be noise, and noise is how real messages get ignored.
+func RepairShortcuts(exeDir string, logf func(string, ...interface{})) {
+	if logf == nil {
+		logf = func(string, ...interface{}) {}
+	}
+	if !shortcutAnswerWasYes(exeDir) {
+		return
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		return
+	}
+	for _, t := range shortcutPlaces() {
+		dir, err := knownFolder(t.id)
+		if err != nil {
+			continue
+		}
+		lnk := filepath.Join(dir, shortcutName+".lnk")
+		if _, err := os.Stat(lnk); err != nil {
+			// Gone. Deleting a shortcut is a thing people do on purpose, and
+			// putting it back uninvited would be worse than the broken icon.
+			continue
+		}
+		if err := VerifyShortcutIcon(lnk); err == nil {
+			continue
+		}
+		if err := CreateShortcut(lnk, exe, exeDir,
+			"Records what Star Citizen already writes down, so the community can map prices and places.",
+			exe); err != nil {
+			logf("shortcut: the %s shortcut has a broken icon and could not be "+
+				"rewritten (%v). It still works - only the picture is wrong.", t.label, err)
+			continue
+		}
+		logf("shortcut: repaired the %s shortcut - it was written with an icon "+
+			"path that could not exist, so it showed a blank page.", t.label)
+	}
 }
 
 func recordShortcutAnswer(dir, answer string) {
@@ -214,6 +404,9 @@ func OfferShortcuts(exeDir string, logf func(string, ...interface{})) {
 		logf = func(string, ...interface{}) {}
 	}
 	if shortcutAsked(exeDir) {
+		// ALREADY ANSWERED - but a yes made before today produced a shortcut
+		// with an icon path that cannot exist. Fix it rather than ask again.
+		RepairShortcuts(exeDir, logf)
 		return
 	}
 
@@ -248,18 +441,20 @@ func OfferShortcuts(exeDir string, logf func(string, ...interface{})) {
 
 	// The icon comes from the exe itself now that resources are embedded, so
 	// there is no .ico file to ship, lose, or get out of step with the binary.
-	icon := exe + ",0"
-
-	targets := []struct {
-		id    GUID
-		label string
-	}{
-		{folderIDDesktop, "desktop"},
-		{folderIDPrograms, "Start Menu"},
-	}
+	//
+	// A PATH, NOT "path,index". This read `exe + ",0"` and produced a blank
+	// white page icon on every install ever made.
+	//
+	// `C:\...\collector.exe,0` is the syntax the Windows Properties DIALOG
+	// accepts as one typed string. SetIconLocation is not that dialog: it takes
+	// the path and the index as two separate parameters, and the index was
+	// already being passed correctly as the second argument. So the shell was
+	// asked for an icon inside a file literally named `collector.exe,0`, which
+	// cannot exist, and fell back to the generic document glyph.
+	icon := exe
 
 	made := 0
-	for _, t := range targets {
+	for _, t := range shortcutPlaces() {
 		dir, err := knownFolder(t.id)
 		if err != nil {
 			logf("shortcut: could not find your %s folder (%v)", t.label, err)

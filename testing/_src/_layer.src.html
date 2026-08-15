@@ -549,6 +549,13 @@ body{padding-top:30px}
           <div class="cc-dealers" id="cc-dealers"></div></div>
         <a class="cc-link" id="cc-rsi" target="_blank" rel="noopener">View on RSI &#8599;</a>
       </div>
+      <!-- THE LOADOUT ENTRY POINT. On the ship page, carrying the ship's own
+           class id, per Sleven's 2026-08-02 ruling. Hidden entirely for a ship
+           the bench has no data for - see openLoadout(). -->
+      <div class="cc-panel" id="cc-lowrap"><h3>Loadout</h3>
+        <div class="cc-sub" id="cc-lonote"></div>
+        <a class="cc-link" id="cc-lolink" target="_blank" rel="noopener">Open in the loadout bench &#8599;</a>
+      </div>
       <div class="cc-panel" id="cc-notewrap"><h3>Notes</h3><p class="cc-note" id="cc-note"></p></div>
       <div class="cc-panel"><h3>Record</h3><div class="cc-prov" id="cc-prov"></div></div>
     </div>
@@ -855,6 +862,30 @@ function open(ship){
   const rsi=$('cc-rsi');
   if(ship.pledge_url){rsi.href=ship.pledge_url;rsi.style.display='';}else rsi.style.display='none';
   $('cc-notewrap').style.display=ship.notes?'':'none'; $('cc-note').textContent=ship.notes||'';
+  /* THE BENCH LINK.
+     Keyed on the record id, never on the ship's name. The id -> class-id table
+     is built once at build time from data-layer/ship_resolution.json, which is
+     this project's existing verified resolution artifact; doing the join here
+     on a display name would reintroduce exactly the class of failure that
+     finding closed.
+     A ship the bench has no data for shows NO link and says why. Opening the
+     bench onto a ship it knows nothing about reads as the tool being broken
+     rather than the data being absent. */
+  (function(){
+    var wrap=$('cc-lowrap'), link=$('cc-lolink'), note=$('cc-lonote');
+    if(!wrap) return;
+    var cls=(typeof LOADOUT_LINK!=='undefined')?LOADOUT_LINK[String(ship.id)]:null;
+    if(cls){
+      link.href='loadout.html#'+encodeURIComponent(cls);
+      link.style.display='';
+      note.textContent='Components, weapons and shields for this ship.';
+    }else{
+      link.removeAttribute('href');
+      link.style.display='none';
+      note.textContent='No loadout data - the game files carry no build for '+
+        'this ship yet, so there is nothing to open.';
+    }
+  })();
   $('cc-prov').innerHTML='<span>Confidence <b>'+(ship.confidence||'unrecorded')+
     '</b></span><span>Last verified <b>'+(ship.last_verified_patch||'not recorded')+
     '</b></span><span>Record <b>#'+ship.id+'</b></span>';
@@ -1229,10 +1260,14 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
      on any window under about 1000px. The stack was designed for two.
      PLACE: a floating tab has no idea which ship you are looking at. The
      loadout belongs on the ship page, reached from the ship, opening on that
-     ship. That entry point is deliberately NOT wired yet - loadout.html
-     currently knows one ship, so 315 of 316 links would dead-end. It goes in
-     when the bench is driven by the real per-ship slot data, which is on disk
-     and verified. See docs/workorder-loadout-real-data.md. -->
+     ship.
+     WIRED 2026-08-15. The "not yet" above was true when loadout.html knew one
+     ship. It knows 316, so the condition that comment named as the blocker is
+     satisfied and the note had become a message from the past being read as a
+     decision about today. The entry point is now the "Open in the loadout
+     bench" control on the ship page, which passes the ship's own class id.
+     The tab itself stays removed - the two reasons above are Sleven's ruling
+     and are not affected by the bench having data. -->
 <button id="cc-kb-tab" class="cc-ui" title="Keybinding tester">KEYBINDS</button>
 
 <div id="cc-kb" class="cc-ui">
@@ -2604,7 +2639,9 @@ $('cc-kb').addEventListener('click',function(e){
 })();
 </script>
 
-<!-- LOADOUT floating tab removed 2026-08-02, second removal.
+<!-- LOADOUT floating tab removed 2026-08-02, second removal. STILL REMOVED
+     as of 2026-08-15: the bench is now reachable from the ship page instead,
+     which is reason 2 below being satisfied rather than overruled.
      Two reasons, recorded so it does not return a third time:
      1. The right edge stacks tabs at 44% + 0/150/290/430px. The fourth starts
         at 826px on a 900px-tall window - off the bottom of the screen on
