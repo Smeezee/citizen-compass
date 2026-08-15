@@ -44,6 +44,21 @@ param(
     # rewriting and UPLOAD_KEY is known to be correct already.
     [switch] $SkipSecret,
 
+    # Take the key from the send_key already in collector-settings.txt instead
+    # of prompting.
+    #
+    # WHY THIS EXISTS. The prompt is the right default for a person, but it
+    # cannot be answered by anything running without a console - which includes
+    # every automated run of this script. This reads the value that is already
+    # on this machine, uses it, and never prints it: not to the screen, not to a
+    # log, not into a command line, and not into the commit message.
+    #
+    # It strips a wrapping pair of angle brackets first, because that is exactly
+    # how the value is written on this machine and publishing <key> would set
+    # the Worker's secret to something two characters longer than what every
+    # collector sends.
+    [switch] $KeyFromSettings,
+
     [string] $SendUrl = "https://collector-receiver.citizencompass-contact.workers.dev",
     [string] $Repo = "Smeezee/citizen-compass"
 )
@@ -80,16 +95,47 @@ Ok "version $($existing.version), sha256 $($existing.sha256.Substring(0,16))..."
 # THE KEY
 # ---------------------------------------------------------------------------
 Step "the upload key"
-Write-Host "        Type or paste the upload key. It is not echoed." -ForegroundColor Yellow
-Write-Host "        The SAME value goes to Cloudflare and into the feed, from this one" -ForegroundColor DarkGray
-Write-Host "        prompt, so the two cannot drift apart." -ForegroundColor DarkGray
-Write-Host ""
-$secure = Read-Host "        upload key" -AsSecureString
-$bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-try {
-    $key = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
-} finally {
-    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+if ($KeyFromSettings) {
+    $settingsPath = Join-Path $here "collector-settings.txt"
+    if (-not (Test-Path $settingsPath)) {
+        Fail "-KeyFromSettings was given but $settingsPath does not exist."
+    }
+    $key = ""
+    foreach ($line in (Get-Content -LiteralPath $settingsPath -Encoding UTF8)) {
+        if ($line -match '^\s*send_key\s*=\s*(.+?)\s*$') { $key = $Matches[1] }
+    }
+    if ([string]::IsNullOrWhiteSpace($key)) {
+        Fail "collector-settings.txt has no send_key to publish. Set one, or run without -KeyFromSettings and type it."
+    }
+    # ONE MATCHING PAIR OF ANGLE BRACKETS COMES OFF.
+    #
+    # send_key is written as <key> on this machine - what a printed template
+    # invites. Publishing that verbatim would set the Worker's secret two
+    # characters longer than the bare value, and every send would be refused.
+    $stripped = $false
+    if ($key.Length -ge 2 -and $key.StartsWith("<") -and $key.EndsWith(">")) {
+        $key = $key.Substring(1, $key.Length - 2).Trim()
+        $stripped = $true
+    }
+    if ($key -match '^<|>$') {
+        Fail "the send_key in collector-settings.txt is still wrapped in angle brackets after one pair was removed. Nothing was changed - open that file and fix it deliberately."
+    }
+    Ok "read the key from collector-settings.txt (not shown, not logged)"
+    if ($stripped) {
+        Note "a wrapping pair of < > was removed - the BARE value is what gets published"
+    }
+} else {
+    Write-Host "        Type or paste the upload key. It is not echoed." -ForegroundColor Yellow
+    Write-Host "        The SAME value goes to Cloudflare and into the feed, from this one" -ForegroundColor DarkGray
+    Write-Host "        prompt, so the two cannot drift apart." -ForegroundColor DarkGray
+    Write-Host ""
+    $secure = Read-Host "        upload key" -AsSecureString
+    $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+    try {
+        $key = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+    } finally {
+        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+    }
 }
 if ([string]::IsNullOrWhiteSpace($key)) { Fail "no key given. Nothing was changed." }
 if ($key.Length -lt 16) {
