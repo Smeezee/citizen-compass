@@ -154,10 +154,20 @@ func newScrubber(exeDir string, logf func(string, ...interface{})) *scrubber {
 // direction is a stranger's handle in a file built to be sent.
 func (s *scrubber) Value(v string) string {
 	v = strings.TrimSpace(v)
-	if v == "" || strings.EqualFold(v, "unknown") {
+
+	// ONE CLASSIFIER. See nameclass.go - the rules about NPC archetypes,
+	// mission characters and already-swapped tags live there and are shared
+	// with the write-time path, so the two cannot drift.
+	// A TAG PASSES THROUGH UNTOUCHED, not through scrubIDs.
+	//
+	// scrubIDs eats any run of six or more digits, and a tag is eight hex
+	// characters - so player:2860302f became player:<id>f. Silent, and it gave
+	// one person two identities depending on whether their tag happened to
+	// contain enough digits.
+	if rePseudonym.MatchString(v) {
 		return v
 	}
-	if reMineAssetish.MatchString(scrubIDs(v)) || reMineAssetish.MatchString(v) {
+	if KeepsName(v) {
 		return scrubIDs(v)
 	}
 	if !s.ok {

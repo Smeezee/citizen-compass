@@ -428,6 +428,18 @@ var coveredSubsystems = map[string]bool{
 
 // MineStore is the accumulated dataset. It is merged, never overwritten.
 type MineStore struct {
+	// swapName replaces a person's name with a stable tag, AS THE STORE IS
+	// WRITTEN. Not serialised - it is machinery, not data.
+	//
+	// Nil means no swapping, which is only correct in tests that are checking
+	// the parser rather than the privacy path. MineAll always sets it, and
+	// mineLineInto fails CLOSED when it is missing - see swap().
+	swapName func(string) string `json:"-"`
+
+	// swapped counts how many values this pass replaced, so the privacy note
+	// can state a fact rather than a hope.
+	swapped int `json:"-"`
+
 	SchemaVersion int    `json:"schema_version"`
 	Generated     string `json:"generated"`
 	ToolVersion   string `json:"tool_version"`
@@ -534,12 +546,38 @@ func (st *MineStore) noteHit(name string) {
 	st.hits[name]++
 }
 
-const minePrivacyNote = "No player handle, playerId, shopId, session id, shard id, " +
-	"account id or other player's name appears in this file. Fields are allow-listed " +
-	"by name, so anything the game adds in a future patch is dropped rather than " +
-	"emitted. Any run of six or more digits inside a name is replaced with <id>. " +
-	"No raw log line is ever included. The install_id is 16 random bytes and is not " +
-	"derived from you, your handle, your account or your hardware."
+// minePrivacyNote is the part that is true regardless of what was seen.
+//
+// The part that DEPENDS on what was seen - how many names were replaced - is
+// added by privacyNote() from the swapper's own count, so it cannot claim
+// something the code did not do.
+const minePrivacyNote = "Player names are replaced with a stable tag as this file " +
+	"is written, on your computer, before the file exists - the real name never " +
+	"reaches disk. The same person always gets the same tag, so the data still " +
+	"joins, and the tag cannot be turned back into a name. Names of mission " +
+	"characters and of the game's own background NPCs are kept, because they are " +
+	"not people. Fields are allow-listed by name, so anything the game adds in a " +
+	"future patch is dropped rather than emitted. Any run of six or more digits " +
+	"inside a name is replaced with <id>. The install_id is 16 random bytes and is " +
+	"not derived from you, your handle, your account or your hardware."
+
+// privacyNote returns the statement for a store, including what actually
+// happened to it.
+//
+// GENERATED, NOT ASSERTED. The old constant said "no player handle appears in
+// this file" and shipped unchanged into a file where it was false. A count the
+// swapper returns is a fact about this file; a sentence typed months earlier is
+// a hope about every file.
+func privacyNote(replaced int) string {
+	if replaced <= 0 {
+		return minePrivacyNote + " No name needed replacing in this file."
+	}
+	if replaced == 1 {
+		return minePrivacyNote + " 1 name was replaced with a tag in this file."
+	}
+	return minePrivacyNote + " " + itoaSmall(replaced) +
+		" names were replaced with tags in this file."
+}
 
 func newMineStore() *MineStore {
 	return &MineStore{
@@ -579,6 +617,28 @@ func newMineStore() *MineStore {
 // mineLineInto is the single definition of "what one log line contributes".
 // Both the archive walk and the live tailer go through it, so the two can
 // never drift into extracting different things from the same file.
+// swap is how every name-shaped value reaches the store.
+//
+// FAILS CLOSED. If no swapper was installed, a value that ClassifyName does not
+// vouch for is redacted rather than written. A missing swapper is a programming
+// error, and the direction it fails in decides whether that error costs a
+// stranger their handle.
+func (st *MineStore) swap(v string) string {
+	// Already a tag: leave it exactly as it is. scrubIDs would eat the digits
+	// out of it - see scrub.go's Value for the full reasoning.
+	if rePseudonym.MatchString(v) {
+		return v
+	}
+	if KeepsName(v) {
+		return scrubIDs(v)
+	}
+	if st == nil || st.swapName == nil {
+		return "<player>"
+	}
+	st.swapped++
+	return st.swapName(v)
+}
+
 func mineLineInto(st *MineStore, line, build, channel string) {
 
 	if m := reMineBuild.FindStringSubmatch(line); m != nil {
@@ -868,6 +928,20 @@ func MineAll(outDir string, in Install, logf func(string, ...interface{})) (*Min
 	if logf == nil {
 		logf = func(string, ...interface{}) {}
 	}
+
+	// THE SWAPPER IS BUILT BEFORE ANYTHING IS PARSED.
+	//
+	// The salt lives beside the exe so it survives somebody clearing their
+	// captures folder - the same reasoning as the install id. A machine with no
+	// usable salt redacts to <player> rather than hashing with a fixed value:
+	// an unsalted hash of a handle is reversible by anybody holding a list of
+	// handles, which is worse than redaction while looking more sophisticated.
+	exeDir := "."
+	if p, err := os.Executable(); err == nil {
+		exeDir = filepath.Dir(p)
+	}
+	sc := newScrubber(exeDir, logf)
+
 	st, err := loadMineStore(outDir)
 	if err != nil {
 		// A dataset from a NEWER build is not a broken file to be replaced. It
@@ -881,6 +955,26 @@ func MineAll(outDir string, in Install, logf func(string, ...interface{})) (*Min
 		}
 		logf("mine: could not read existing dataset (%v) - starting a new one", err)
 		st = newMineStore()
+	}
+
+	// ATTACHED BEFORE THE FIRST LINE IS READ. Every name-shaped value written
+	// during this pass goes through it - see MineStore.swap, which fails closed
+	// if this is ever missing.
+	st.swapName = sc.Value
+
+	// AND THE DATASET ALREADY ON DISK IS CLEANED.
+	//
+	// Write-time swapping protects everything collected from now on and does
+	// nothing about names an older build already wrote. Sleven's machine had 13
+	// real handles sitting in this file; every machine that ran an older build
+	// has its own set. The requirement is that a real name appears nowhere in
+	// the file, not nowhere in it from today.
+	//
+	// Idempotent: a value that is already a tag is kept by ClassifyName, so
+	// every run after the first changes nothing.
+	if n := st.migrateNames(); n > 0 {
+		logf("mine: replaced %d name(s) left in the dataset by an older build - "+
+			"they are now stable tags, and the same person still joins to themselves", n)
 	}
 
 	before := len(st.Txns)
@@ -913,7 +1007,7 @@ func MineAll(outDir string, in Install, logf func(string, ...interface{})) (*Min
 	st.SchemaVersion = MineSchemaVersion
 	st.Generated = time.Now().UTC().Format(time.RFC3339)
 	st.ToolVersion = Version
-	st.Privacy = minePrivacyNote
+	st.Privacy = privacyNote(st.swapped)
 	st.InstallID, st.InstallSince = in.ID, in.FirstSeen
 	st.Extractors = buildExtractors(st)
 	st.Uncovered = buildGaps(st)
@@ -1404,12 +1498,15 @@ func mineCombatLine(st *MineStore, line string) {
 	if m := reMineDeath.FindStringSubmatch(line); m != nil {
 		d := MineDeath{
 			Zone: scrubIDs(strings.TrimSpace(m[2])),
-			// RAW, deliberately - see scrub.go. Deciding at collection time is
-			// deciding forever; the export decides instead, so a better rule can
-			// be re-run over data already gathered.
-			Victim:     scrubIDs(strings.TrimSpace(m[1])),
-			Killer:     scrubIDs(strings.TrimSpace(m[3])),
-			Weapon:     scrubIDs(strings.TrimSpace(m[4])),
+			// SWAPPED AS IT IS WRITTEN. The real name never reaches disk.
+			//
+			// This used to store raw and let the export decide, which bought the
+			// ability to re-run a better rule over old data and cost 13 real
+			// handles sitting in a file whose own privacy field said there were
+			// none. Sleven reversed it on 2026-08-16.
+			Victim:     st.swap(strings.TrimSpace(m[1])),
+			Killer:     st.swap(strings.TrimSpace(m[3])),
+			Weapon:     st.swap(strings.TrimSpace(m[4])),
 			Class:      strings.TrimSpace(m[5]),
 			DamageType: strings.TrimSpace(m[6]),
 		}
@@ -1424,4 +1521,54 @@ func mineCombatLine(st *MineStore, line string) {
 		st.VehicleLosses[v]++
 		st.noteHit("vehicle_destroyed")
 	}
+}
+
+// migrateNames re-keys anything an older build wrote raw.
+//
+// Returns how many values were replaced, so the caller can say so rather than
+// doing it silently - a person's dataset changing under them deserves a line in
+// the log.
+//
+// ONLY the fields that can hold a person. Zone, class and damage type are game
+// vocabulary and re-keying them would be churn with a risk attached.
+func (st *MineStore) migrateNames() int {
+	if st == nil {
+		return 0
+	}
+	changed := 0
+
+	// deaths: Zone | Victim | Killer | Weapon | Class | DamageType
+	if len(st.Deaths) > 0 {
+		out := make(map[string]int, len(st.Deaths))
+		for k, n := range st.Deaths {
+			parts := strings.Split(k, "|")
+			if len(parts) == 6 {
+				for _, i := range []int{1, 2, 3} {
+					if v := st.swap(parts[i]); v != parts[i] {
+						parts[i] = v
+						changed++
+					}
+				}
+			}
+			out[strings.Join(parts, "|")] += n
+		}
+		st.Deaths = out
+	}
+
+	// vehicle losses: the same shape of risk, one field.
+	if len(st.VehicleLosses) > 0 {
+		out := make(map[string]int, len(st.VehicleLosses))
+		for k, n := range st.VehicleLosses {
+			parts := strings.Split(k, "|")
+			for i := range parts {
+				if v := st.swap(parts[i]); v != parts[i] {
+					parts[i] = v
+					changed++
+				}
+			}
+			out[strings.Join(parts, "|")] += n
+		}
+		st.VehicleLosses = out
+	}
+	return changed
 }

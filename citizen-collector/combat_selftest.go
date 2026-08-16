@@ -18,7 +18,14 @@ const combatFixture = `<2026-08-07T22:00:00.000Z> <Actor Death> CActor::Kill: 'J
 `
 
 func runCombatSelftest(check func(name string, ok bool, detail string)) {
+	// MINED THROUGH THE REAL PATH, with a swapper installed exactly as MineAll
+	// installs one. A fixture mined without it would exercise the fail-closed
+	// branch instead of the branch that runs on every machine.
+	saltDir, _ := os.MkdirTemp("", "combat-salt-")
+	defer os.RemoveAll(saltDir)
+
 	st := newMineStore()
+	st.swapName = newScrubber(saltDir, nil).Value
 	for _, line := range strings.Split(combatFixture, "\n") {
 		if strings.TrimSpace(line) != "" {
 			mineLineInto(st, line, "12399239", "PTU")
@@ -30,22 +37,40 @@ func runCombatSelftest(check func(name string, ok bool, detail string)) {
 	check("combat: vehicle destruction is recorded",
 		len(st.VehicleLosses) == 1, "one hull lost in the fixture")
 
-	// THE LOCAL STORE NOW KEEPS RAW NAMES ON PURPOSE. What must be clean is the
-	// EXPORT copy, so that is what these checks read.
+	// THE LOCAL STORE IS NOW CLEAN TOO - Sleven's ruling, 2026-08-16.
+	//
+	// This used to assert the opposite: that the raw name stayed on disk so a
+	// better rule could be re-run over it later. That bought a retroactive fix
+	// and cost 13 real handles sitting in a file whose own privacy field said
+	// there were none. The name no longer reaches disk at all.
 	rawJoined := ""
 	for k := range st.Deaths {
 		rawJoined += k + "\n"
 	}
-	check("raw: the local dataset DOES keep the real name",
-		strings.Contains(rawJoined, "Jeri_Blade"),
-		"deciding at collection time is deciding forever - the raw stays so a "+
-			"better rule can be re-run over it later")
+	for _, handle := range []string{"Jeri_Blade", "DukeSP", "Sleven-K"} {
+		check("raw: "+handle+" never reaches the LOCAL dataset either",
+			!strings.Contains(rawJoined, handle),
+			"the swap happens as it is written, so nothing downstream has to be trusted")
+	}
+	check("raw: the local dataset carries stable tags instead",
+		strings.Contains(rawJoined, "player:"),
+		"a blank would be indistinguishable from a parse failure, and a flat "+
+			"<player> would destroy every relationship in the data")
 
 	tmp, _ := os.MkdirTemp("", "scrub-")
 	defer os.RemoveAll(tmp)
-	safe, people := ScrubForExport(st, tmp, nil)
-	check("scrub: the export replaced the people it found",
-		people >= 2, "Jeri_Blade and DukeSP at least")
+	safe, _ := ScrubForExport(st, tmp, nil)
+
+	// EXPORTING AN ALREADY-SWAPPED STORE MUST CHANGE NOTHING. Without this, a
+	// second pass would tag the tags and one person would end up with two
+	// identities - which breaks every join in the dataset silently.
+	reJoined := ""
+	for k := range safe.Deaths {
+		reJoined += k + "\n"
+	}
+	check("scrub: exporting an already-swapped store is idempotent",
+		reJoined == rawJoined,
+		"a tag of a tag gives one person two identities")
 
 	joined := ""
 	for k := range safe.Deaths {
@@ -65,6 +90,15 @@ func runCombatSelftest(check func(name string, ok bool, detail string)) {
 		strings.Contains(joined, "player:"),
 		"a blank would be indistinguishable from a parse failure, and a flat "+
 			"<player> would destroy every relationship in the dataset")
+
+	// THE AMBIENT NPC SURVIVES. Before 2026-08-16 the scrubber judged on the
+	// asset pattern alone, which does not know PU_Human-... , so it turned 80
+	// of 85 ambient NPC names into player tags - safe, and it destroyed data
+	// Sleven says is worth keeping.
+	check("PRIVACY: NEGATIVE CONTROL - an ambient NPC is NOT swapped",
+		strings.Contains(rawJoined, "NPC_Archetypes-Male-Human-Civilians"),
+		"a classifier that swapped everything would pass every leak check above "+
+			"and leave a dataset of nothing but tags")
 
 	// The valuable half must survive, or the scrubber is just a delete button.
 	check("combat: the WEAPON survives",
