@@ -5,6 +5,7 @@ use (
 	./pkg/pgconn
 	./pkg/pipelinelog
 	./registry-builder
+	./roadmap-watcher
 	./schema-init
 	./watcher-go
 )

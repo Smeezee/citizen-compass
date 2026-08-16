@@ -1,0 +1,16 @@
+# Built binaries and per-machine state.
+#
+# Same separation the rest of this repo uses: the SOURCE is tracked, the things
+# the program writes about THIS machine are not.
+#
+# roadmap-watcher-state.json holds the baseline of cards this machine has
+# already seen and when it last completed a good run. Committing it would ship
+# one machine's idea of "already known" to every other, so a card somebody else
+# has never seen would arrive pre-marked as old - which is the one thing a
+# tripwire must never do.
+#
+# roadmap-watcher-settings.json is written with defaults on first run, so a
+# fresh checkout gets a correct one without carrying anybody's edits.
+*.exe
+roadmap-watcher-state.json
+roadmap-watcher-settings.json
