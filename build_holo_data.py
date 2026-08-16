@@ -57,6 +57,7 @@ import glob
 import io
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -66,6 +67,29 @@ MANIFEST = os.path.join(HERE, "data-layer", "derived", "holo-hardpoints",
                         "MANIFEST.json")
 MODELS = os.path.join(HERE, "testing", "_deploy", "models")
 OUT = os.path.join(HERE, "testing", "_src", "holo_data.gen.js")
+
+# THE BENCH'S OWN OUTPUT, READ AS THE AUTHORITY ON SHIP DPS.
+#
+# The rule from Sleven: the viewer's number for a ship must EQUAL the loadout
+# bench's number for the same ship. Two pages showing different DPS for one hull
+# is the kind of contradiction a visitor notices immediately and never forgets.
+#
+# The cheapest way to guarantee that is not to compute the same thing twice
+# carefully - it is to read the number the other page will show. So the ship
+# totals below come out of loadout_data.gen.js, and the derived fleet dataset's
+# own pilot_dps is used as a CHECK against it rather than as the source. If the
+# two ever disagree this script refuses to emit, which is the only way a
+# disagreement becomes visible before a visitor finds it.
+BENCH = os.path.join(HERE, "testing", "_src", "loadout_data.gen.js")
+
+# The snapshot the bench was built from - the same one, deliberately. A weapon
+# DPS read from a different patch than the ship total would be the same
+# contradiction one level down.
+SNAPSHOT = "20260801T204744Z"
+SNAPDIR = os.path.join(HERE, "data-layer", "external-sources", "scunpacked-data",
+                       "snapshots", SNAPSHOT)
+SHIPS_JSON = os.path.join(SNAPDIR, "ships.json")
+ITEMS_JSON = os.path.join(SNAPDIR, "ship-items.json")
 
 
 def say(line):
@@ -78,9 +102,139 @@ def say(line):
     sys.stdout.buffer.write((line + "\n").encode("utf-8", "backslashreplace"))
 
 
+def norm_name(s):
+    """Ship names, reduced to what two datasets can be compared on.
+
+    The fleet dataset keys on the bare name ("100i"); the bench keys on the full
+    one ("Origin 100i"). Nothing else about them differs, so the comparison is a
+    suffix match on letters and digits - and it is required to be UNIQUE, below,
+    because a match that could be two ships is not a match.
+    """
+    return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+
+
+def load_bench():
+    """The ship totals the loadout bench shows, read out of its generated file.
+
+    Returns {normalised name: {"n": display, "dps":, "sdps":, "alpha":}}.
+    """
+    with io.open(BENCH, "r", encoding="utf-8") as fh:
+        js = fh.read()
+    m = re.search(r"const LOADOUT_SHIPS=(\{.*?\});\n", js, re.S)
+    if not m:
+        sys.exit("Could not find LOADOUT_SHIPS in %s.\nRefusing to emit ship DPS "
+                 "that has not been checked against the bench." % BENCH)
+    out = {}
+    for rec in json.loads(m.group(1)).values():
+        cig = rec.get("cig") or {}
+        out.setdefault(norm_name(rec.get("n")), {
+            "n": rec.get("n"),
+            "dps": cig.get("dps"),
+            "sdps": cig.get("sdps"),
+            "alpha": cig.get("alpha"),
+        })
+    return out
+
+
+def bench_for(name, bench):
+    """The bench record for one fleet ship, or None - and never a guess.
+
+    A name that matches two bench ships returns None rather than picking one.
+    Silently taking the first would be exactly the kind of near-enough join this
+    project keeps finding months later.
+    """
+    n = norm_name(name)
+    hits = [v for k, v in bench.items() if k == n or k.endswith(n)]
+    if len(hits) == 1:
+        return hits[0]
+    return None
+
+
+def load_port_weapons():
+    """Per ship, the guns fitted to each top-level hardpoint port.
+
+    The fleet dataset carries the MOUNT on each hardpoint ("VariPuck S3 Gimbal
+    Mount") and the guns only as an unattributed list, so a gun cannot be tied
+    to a mount from it alone - there are 14 WeaponGun entries across 1798
+    hardpoints. The snapshot's loadout tree does carry the link: every entry
+    records `Path`, and Path[0] is the top-level port the fleet dataset keys on.
+
+    Returns {normalised ship name: {port: [{"name":, "dps":, "size":}]}}.
+    """
+    with io.open(ITEMS_JSON, "r", encoding="utf-8") as fh:
+        items = json.load(fh)
+    by_ref = {}
+    for it in items:
+        st = it.get("stdItem") or {}
+        w = st.get("Weapon") or {}
+        dmg = (w or {}).get("Damage") or {}
+        rec = {
+            "name": st.get("Name") or it.get("name"),
+            # SUSTAINED, matching the bench's own weapon cards exactly. DpsTotal
+            # is the burst figure and flatters anything with a small magazine -
+            # the trap the aggregation finding documents.
+            "dps": dmg.get("Sustained") if isinstance(dmg, dict) else None,
+            "size": it.get("size"),
+        }
+        for key in (it.get("className"), it.get("ClassName"), it.get("reference"),
+                    it.get("UUID")):
+            if key:
+                by_ref[str(key).lower()] = rec
+
+    with io.open(SHIPS_JSON, "r", encoding="utf-8") as fh:
+        ships = json.load(fh)
+
+    out = {}
+    for s in ships:
+        ports = {}
+
+        def walk(node):
+            for e in node or []:
+                if not isinstance(e, dict):
+                    continue
+                typ = e.get("Type") or ""
+                if typ.startswith("WeaponGun"):
+                    path = e.get("Path") or []
+                    port = path[0] if path else e.get("HardpointName")
+                    ref = None
+                    for key in (e.get("ClassName"), e.get("UUID")):
+                        if key and str(key).lower() in by_ref:
+                            ref = by_ref[str(key).lower()]
+                            break
+                    if port and ref and ref.get("dps") is not None:
+                        ports.setdefault(port, []).append(ref)
+                walk(e.get("Loadout"))
+
+        walk(s.get("Loadout"))
+        if ports:
+            out.setdefault(norm_name(s.get("Name")), ports)
+    return out
+
+
+def port_weapons_for(name, table):
+    n = norm_name(name)
+    hits = [v for k, v in table.items() if k == n or k.endswith(n)]
+    if len(hits) == 1:
+        return hits[0]
+    return {}
+
+
+def guns_for_port(gun_by_port, port):
+    """The guns on one port, trimmed for the wire. [] when there are none."""
+    out = []
+    for g in gun_by_port.get(port or "", []):
+        out.append({"name": g.get("name"), "dps": round(float(g["dps"]), 1),
+                    "size": g.get("size")})
+    return out
+
+
 def main():
     with io.open(FLEET, "r", encoding="utf-8") as fh:
         fleet = json.load(fh)
+
+    bench = load_bench()
+    guns = load_port_weapons()
+    unnamed = []
 
     available = {os.path.basename(p)
                  for p in glob.glob(os.path.join(MODELS, "*.glb"))}
@@ -100,9 +254,24 @@ def main():
             # Kept and displayable - a hull with no mounts in the derivation is
             # a fact about the ship, and the viewer already says so in words.
             no_points.append(name)
+        b = bench_for(name, bench)
+        if b is None:
+            unnamed.append(name)
+        gun_by_port = port_weapons_for(name, guns)
+
         ships[name] = {
             "model": model,
             "display": name,
+            # WHAT THE PILOT CAN FIRE, taken from the bench's own output.
+            #
+            # null is a real answer and is NOT zero. 24 of these 167 hulls have
+            # no pilot-fired weapon at all - Hammerhead, Caterpillar, Retaliator,
+            # the Cyclones - and CIG publishes no figure for them. Zero would
+            # read as "this ship does no damage", which is a claim the data never
+            # made; the page says the number is not available instead.
+            "dps": (b or {}).get("dps"),
+            "sdps": (b or {}).get("sdps"),
+            "alpha": (b or {}).get("alpha"),
             # ONLY WHAT THE PAGE RENDERS. The full record - pos_model, port,
             # type, dps, alpha, manufacturer, the frame - stays in
             # hardpoints_fleet.json, which is the dataset. Copying all of it
@@ -115,8 +284,49 @@ def main():
                 "unit": p.get("unit"),
                 "items": [{"name": it.get("name"), "size": it.get("size")}
                           for it in (p.get("items") or [])],
+                # THE GUNS FITTED TO THIS MOUNT, from the same snapshot the
+                # bench reads. Absent - not empty, not zero - when this port
+                # holds no gun, which is most of them: a countermeasure launcher
+                # and a missile rack are hardpoints too.
+                "guns": guns_for_port(gun_by_port, p.get("port")),
             } for p in points],
         }
+
+    # ---- THE TWO PAGES MUST AGREE, AND THAT IS CHECKED HERE ---------------
+    #
+    # The viewer's DPS for a ship comes from the bench's output. The derived
+    # fleet dataset carries its own pilot_dps, from ship_specs.json - a
+    # DIFFERENT read of the same game data. So the two are compared, and a
+    # disagreement stops the build.
+    #
+    # This is the whole reason the check exists rather than a note saying they
+    # should match: two pages disagreeing about one ship's damage is the kind of
+    # contradiction a visitor notices immediately and never forgets, and it
+    # would be invisible from either page alone.
+    if unnamed:
+        sys.exit("%d ship(s) could not be matched to a bench record: %s\n"
+                 "Refusing to emit DPS that has not been checked against the "
+                 "page it must agree with. A name that matches two bench ships "
+                 "counts as unmatched - picking one would be a guess."
+                 % (len(unnamed), ", ".join(sorted(unnamed)[:12])))
+
+    disagreed = []
+    for name, rec in fleet.items():
+        if name not in ships:
+            continue
+        mine = ships[name]["dps"]
+        theirs = rec.get("pilot_dps")
+        if mine is None and theirs is None:
+            continue
+        if mine is None or theirs is None or abs(float(mine) - float(theirs)) > 0.51:
+            disagreed.append((name, mine, theirs))
+    if disagreed:
+        for n, a, b_ in disagreed[:20]:
+            say("  DISAGREEMENT %-28s bench=%r derived=%r" % (n, a, b_))
+        sys.exit("%d ship(s) have a different pilot DPS in the bench and in the "
+                 "derived fleet dataset.\nRefusing to emit. One of the two is "
+                 "wrong and the viewer must not pick a side silently."
+                 % len(disagreed))
 
     # Every emitted point must have a usable `unit`, or the page would place it
     # at the origin and it would read as a mount inside the cockpit. Checked
@@ -196,6 +406,23 @@ def main():
         % (os.path.relpath(OUT, HERE), os.path.getsize(OUT) / 1024.0))
     say("  displayable: %d ships, %d hardpoints"
         % (len(ships), total_hp))
+
+    # THE DPS COVERAGE, COUNTED AND MADE TO SUM.
+    #
+    # Two numbers that add up to the fleet size is the difference between "most
+    # ships have it" and a statement somebody can check. A ship in neither bucket
+    # would mean the emit dropped it silently.
+    with_dps = sum(1 for s in ships.values() if s.get("dps") is not None)
+    without = sum(1 for s in ships.values() if s.get("dps") is None)
+    say("  pilot DPS: %d ships carry it, %d say it is not available, %d + %d = %d"
+        % (with_dps, without, with_dps, without, with_dps + without))
+    if with_dps + without != len(ships):
+        sys.exit("The DPS buckets do not sum to the ship count. A ship is in "
+                 "neither, which means this report is not describing what was "
+                 "emitted.")
+    armed = sum(1 for s in ships.values()
+                for p in s["points"] if p.get("guns"))
+    say("  per-hardpoint: %d mount(s) carry a gun with its own DPS" % armed)
     if no_points:
         say("  %d displayable ship(s) have NO mounts in the derivation: %s"
             % (len(no_points), ", ".join(sorted(no_points)[:8])

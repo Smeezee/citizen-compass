@@ -56,6 +56,14 @@ DEFAULT_ALLOWED_FILES = {
     "loadout_data.gen.js",
     "holo_data.gen.js",
     "stick-test.html",
+    # The public collector download page, added 2026-08-15 with
+    # download.src.html. IT WAS ALREADY LIVE and this list had not been told -
+    # /download returns 200 on the testing site while this guard called the file
+    # unexpected. Exactly the drift the note above warns about: the standalone
+    # guard flatly contradicting a clean build, which is worse than either
+    # alone. Recorded here rather than fixed silently, because the next person
+    # to add a page will hit it the same way.
+    "download.html",
 }
 
 # The only directories permitted. Their CONTENTS are asset payloads (347 MB of

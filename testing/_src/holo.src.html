@@ -50,6 +50,16 @@ h2{margin:0 0 8px;font-size:14px;color:var(--accent);letter-spacing:.03em}
 .hp .k{color:var(--muted);font-size:12px}
 .hp .it{color:#8FE388;font-size:12px;margin-top:3px}
 .hp .turret{color:#FFD9A8;font-size:12px}
+/* DAMAGE IS READ, NOT DERIVED - and it is coloured differently from the
+   derived-position caveat on purpose. The two must not read as one thing. */
+.hp .dps{color:var(--holo);font-size:12px;margin-top:3px}
+#shipdps{border:1px solid #24405F;background:#0A1220;border-radius:8px;
+  padding:10px 12px;margin-bottom:10px}
+#shipdps .big{font-size:20px;color:var(--holo);font-weight:600;line-height:1.2}
+#shipdps .lbl{color:var(--muted);font-size:12px;letter-spacing:.03em}
+#shipdps .sub{color:var(--muted);font-size:12px;margin-top:4px}
+#shipdps .na{color:#FFD9A8;font-size:13px}
+#shipdps .src{color:var(--muted);font-size:11px;margin-top:6px}
 .derived{margin-top:8px;padding:8px 10px;border:1px solid #3A2E14;
   background:#17120A;border-radius:8px;color:#FFD9A8;font-size:12px}
 #tip{position:absolute;pointer-events:none;display:none;background:#0A1220ee;
@@ -73,6 +83,7 @@ h2{margin:0 0 8px;font-size:14px;color:var(--accent);letter-spacing:.03em}
   <div id="side">
     <h2>Hardpoints</h2>
     <div class="hint" id="sidehint"></div>
+    <div id="shipdps"></div>
     <div id="hplist"></div>
     <div id="gaps"></div>
   </div>
@@ -258,6 +269,42 @@ function sideLabel(where){
     .split(SENT).join("Right");
 }
 
+/* ---- what the pilot can fire ----------------------------------------------
+
+   VISIBLE WITHOUT CLICKING ANYTHING. The ship total is the number people came
+   for, so it is not hidden behind selecting a hardpoint.
+
+   NOT AVAILABLE IS NOT ZERO. 24 of the 167 hulls here have no pilot-fired
+   weapon at all - the Hammerhead and the Caterpillar are turret ships, the
+   Cyclones are ground vehicles - and CIG publishes no figure for them. A 0
+   would read as "this ship does no damage", which is a claim the data never
+   made. So the page says the number is not available and says why.
+
+   AND THE DERIVED-POSITION CAVEAT DOES NOT REACH THIS BOX. Where the markers
+   sit is derived from the hull's geometry. What the guns do is read straight
+   out of the game files. Letting one warning cover both would undersell real
+   data and dilute a caveat that matters. */
+function renderShipDps(entry){
+  var el=document.getElementById('shipdps');
+  if(!entry){ el.innerHTML=''; return; }
+  if(entry.dps==null){
+    el.innerHTML='<div class="lbl">PILOT DPS</div>'+
+      '<div class="na">Not available for this ship.</div>'+
+      '<div class="sub">The game files publish no pilot-weapon total for this '+
+      'hull &mdash; usually because nothing on it is fired from the pilot seat. '+
+      'That is different from zero damage.</div>';
+    return;
+  }
+  var bits=[];
+  if(entry.sdps!=null) bits.push('sustained '+esc(entry.sdps));
+  if(entry.alpha!=null) bits.push('alpha '+esc(entry.alpha));
+  el.innerHTML='<div class="lbl">PILOT DPS</div>'+
+    '<div class="big">'+esc(entry.dps)+'</div>'+
+    (bits.length?'<div class="sub">'+bits.join(' &middot; ')+'</div>':'')+
+    '<div class="src">Read from the game files, and the same figure the loadout '+
+    'bench shows for this ship. Only the marker positions are derived.</div>';
+}
+
 /* ---- side panel ---- */
 function renderList(points){
   if(!points || !points.length){
@@ -271,10 +318,19 @@ function renderList(points){
     }).join('<br>');
     var turret=(p.pilot===false)
       ? '<div class="turret">turret &mdash; not pilot-controlled</div>' : '';
+    /* THE GUN ON THIS MOUNT, with its own DPS. The mount above is the hardware
+       - a gimbal, a rack - and carries no damage figure of its own; the gun
+       fitted inside it does. Sustained, which is the figure the loadout bench
+       shows on the same weapon, so the two pages cannot disagree about it. */
+    var guns=(p.guns||[]).map(function(g){
+      return esc(g.name)+(g.size?' (S'+esc(g.size)+')':'')+
+             ' &mdash; '+esc(g.dps)+' DPS sustained';
+    }).join('<br>');
     return '<div class="hp" data-i="'+i+'">'+
       '<div class="w">'+esc(sideLabel(p.where))+'</div>'+
       '<div class="k">'+esc(p.kind||'')+'</div>'+
-      (items?'<div class="it">'+items+'</div>':'')+turret+
+      (items?'<div class="it">'+items+'</div>':'')+
+      (guns?'<div class="dps">'+guns+'</div>':'')+turret+
       '<div class="derived">'+esc(HOLO_DERIVED_NOTE)+'</div>'+
       '</div>';
   }).join('');
@@ -343,6 +399,7 @@ function load(name){
     var pts=entry?entry.points:[];
     addMarkers(pts,radius);
     renderList(pts);
+    renderShipDps(entry);
     elCount.textContent=(pts.length||0)+' hardpoint'+(pts.length===1?'':'s');
   },undefined,function(err){
     elStatus.innerHTML='<span class="warn">model failed to load: '+esc(err&&err.message||'unknown')+'</span>';
@@ -412,6 +469,7 @@ elMirror.addEventListener('click',function(){
   if(current) current.scale.x = mirror?-1:1;
   var e=HOLO_SHIPS[elShip.value];
   renderList(e?e.points:[]);
+  renderShipDps(e);
   if(selected>=0) select(selected);
 });
 
