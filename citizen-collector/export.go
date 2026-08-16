@@ -73,6 +73,32 @@ type ExportResult struct {
 // in the README inside the zip.
 func BuildExport(exeDir, outDir, capturesDir string, includeCaptures bool,
 	logf func(string, ...interface{})) (ExportResult, error) {
+	return buildExport(exeDir, outDir, capturesDir, includeCaptures, nil, logf)
+}
+
+// BuildExportBatch is BuildExport restricted to the frames named.
+//
+// # WHY BATCHES EXIST
+//
+// Sleven pressed Send and it packaged 1,704,563,569 bytes, which Cloudflare
+// refused with 413 before a byte reached our Worker - their request body limit
+// is 100 MB on the free plan. 695 frames will never be one request, and no
+// amount of raising MAX_BYTES changes that, because MAX_BYTES was never what
+// refused it.
+//
+// So pictures go in batches that fit, each one cleared only after the server
+// confirms it. The dataset - the entire point of the project, and 249 KB -
+// goes first and on its own, so it is never hostage to a gigabyte of frames.
+func BuildExportBatch(exeDir, outDir, capturesDir string, only []string,
+	logf func(string, ...interface{})) (ExportResult, error) {
+	return buildExport(exeDir, outDir, capturesDir, true, only, logf)
+}
+
+// buildExport is the implementation. `only`, when non-nil, restricts which
+// frames are packaged; nil means every frame, which is what BuildExport asks
+// for and what every existing caller gets.
+func buildExport(exeDir, outDir, capturesDir string, includeCaptures bool,
+	only []string, logf func(string, ...interface{})) (ExportResult, error) {
 
 	if logf == nil {
 		logf = func(string, ...interface{}) {}
@@ -190,7 +216,20 @@ func BuildExport(exeDir, outDir, capturesDir string, includeCaptures bool,
 
 	// 3. screenshots, only on request
 	if includeCaptures {
+		// A batch packages only the frames it was handed. Everything else is
+		// left exactly where it is, for a later batch - including anything
+		// captured while this zip was being written.
+		var wanted map[string]bool
+		if only != nil {
+			wanted = make(map[string]bool, len(only))
+			for _, p := range only {
+				wanted[p] = true
+			}
+		}
 		for _, p := range frames {
+			if wanted != nil && !wanted[p] {
+				continue
+			}
 			if err := addFile(zw, "captures/"+filepath.Base(p), p); err != nil {
 				logf("export: could not add %s: %v", filepath.Base(p), err)
 				continue

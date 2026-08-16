@@ -13,11 +13,14 @@ package main
 // Discord refuses anything over 10 MB, and the workaround - "install Microsoft's
 // WebView2 first" - is precisely the extra step that means nobody ever runs it.
 //
-// So the fix is not a smaller zip. It is to stop bundling a browser, because
-// every Windows machine already has one. When WebView2 is present the window
-// looks exactly as it does today; when it is absent the same interface opens as
-// a tab in whatever browser they already use. One 11 MB file either way, and
-// nothing for the recipient to decide, install, or understand.
+// So the fix was not a smaller zip. It was to stop bundling a browser.
+//
+// The first answer used the browser already on the machine - WebView2 if
+// present, an ordinary browser tab if not. THAT ANSWER IS ALSO GONE as of
+// 2026-08-15: four defects in one day traced to rendering three buttons in a
+// browser engine, so the window is now a plain Windows window with no engine
+// underneath. One ~12 MB file, and nothing for the recipient to decide, install
+// or understand. See window.go.
 //
 // # WHY THE ACTIONS MOVED OUT OF ui.go TO MAKE THAT POSSIBLE
 //

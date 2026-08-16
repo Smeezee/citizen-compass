@@ -78,11 +78,13 @@ var packageExcluded = map[string]string{
 // he could not send. The labels were steering him toward the wrong answer with
 // perfect confidence.
 //
-// The small package now works on any machine, because a machine without
-// WebView2 gets the browser interface instead of nothing. So the 200 MB option
-// is not a trade-off any more; it is just the same program with half a gigabyte
-// of dead weight attached. An option that is never the right answer is not an
-// option, it is a way to make a mistake.
+// The small package now works on any machine. It did so first because a machine
+// without WebView2 got a browser tab instead of nothing, and since 2026-08-15 it
+// does so because THERE IS NO BROWSER ENGINE AT ALL - the window is a plain
+// Windows window. Either way the 200 MB option stopped being a trade-off and
+// became the same program with half a gigabyte of dead weight attached. An
+// option that is never the right answer is not an option, it is a way to make a
+// mistake.
 //
 // One package. ~6 MB. Fits Discord. Works everywhere.
 func BuildCrewPackage(exeDir string, logf func(string, ...interface{})) (PackageResult, error) {

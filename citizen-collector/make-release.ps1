@@ -173,6 +173,43 @@ if ($exeVer -ne $Version) {
 }
 Ok "collector.exe reports $exeVer, which matches the release label"
 
+# ---------------------------------------------------------------------------
+# THE SUBSYSTEM BYTE. Refuse to publish anything that opens a console.
+# ---------------------------------------------------------------------------
+#
+# collector.exe and collector-master.exe both shipped as subsystem 3 (CONSOLE)
+# while seven source files stated they were built -H windowsgui. Nobody was
+# lying; everybody read the comment. On Windows 11 that console is Windows
+# Terminal - the black box Sleven photographed four times - and closing it kills
+# the collector, because closing a console terminates what is attached to it.
+#
+# This reads the artifact. A flag can be forgotten and a comment can be wrong;
+# the byte in the file is what Windows actually acts on.
+function Get-PESubsystem($path) {
+    $fs = [IO.File]::OpenRead($path)
+    try {
+        $br = New-Object IO.BinaryReader($fs)
+        $fs.Position = 0x3C
+        $peOff = $br.ReadInt32()
+        $fs.Position = $peOff
+        if ($br.ReadUInt32() -ne 0x00004550) { throw "not a PE file" }
+        $fs.Position = $peOff + 4 + 20 + 68
+        return $br.ReadUInt16()
+    } finally { $fs.Dispose() }
+}
+
+$sub = $null
+try { $sub = Get-PESubsystem $crew } catch {
+    Fail "could not read the subsystem out of collector.exe ($($_.Exception.Message)). Refusing to publish a binary whose type cannot be established."
+}
+if ($sub -ne 2) {
+    Fail ("collector.exe has PE subsystem $sub, not 2 (GUI). Subsystem 3 is CONSOLE: " +
+          "Windows opens a terminal window on every launch, and closing that window " +
+          "kills the collector. Build it with build.ps1, which passes -H=windowsgui " +
+          "and checks this itself. Nothing was published.")
+}
+Ok "collector.exe is a GUI binary (PE subsystem 2) - no console window"
+
 $readme = Join-Path $here "README-FOR-TESTERS.txt"
 if (-not (Test-Path $readme)) {
     Fail "README-FOR-TESTERS.txt is missing. A build handed to somebody with no explanation is not a test, it is an imposition."
@@ -305,8 +342,14 @@ if ((Get-Item $smallZip).Length -lt 10MB) {
     Note "over 10 MB - Discord will refuse this one too. Use the link."
 }
 
+# NO WITH-RUNTIME PACKAGE ANY MORE.
+#
+# It existed to carry a WebView2 runtime for machines that had none. There is no
+# WebView2 in this program as of 2026-08-15 - the window is a plain Windows
+# window - so the 162 MB payload has nothing to be for. Kept as a branch that
+# simply never fires rather than as dead code somebody has to reason about.
 $bigZip = $null
-$rt = Join-Path $here "webview2-runtime"
+$rt = Join-Path $here "webview2-runtime-no-longer-used"
 if (Test-Path $rt) {
     Write-Host "        copying the WebView2 runtime (slow, ~500 MB on disk)..."
     Copy-Item $rt (Join-Path $stage "webview2-runtime") -Recurse

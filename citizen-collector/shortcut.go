@@ -172,9 +172,16 @@ func createShortcutNoVerify(lnkPath, target, workDir, desc, icon string) error {
 
 func createShortcutFull(lnkPath, target, workDir, desc, icon, args string) error {
 	var psl unsafe.Pointer
-	// CLSCTX_INPROC_SERVER = 1. The apartment is already initialised - the
-	// process is apartment-threaded from go-webview2's init, and the CLI path
-	// initialises before calling here.
+	// CLSCTX_INPROC_SERVER = 1.
+	//
+	// THE APARTMENT IS OURS NOW. This used to rely on go-webview2's package
+	// init having initialised COM as a side effect. Removing that dependency
+	// would have left CoCreateInstance failing with CO_E_NOTINITIALIZED, and
+	// the only symptom would be a shortcut that quietly never appears on
+	// somebody else's desktop - which people read as having declined it.
+	//
+	// ensureCOM is idempotent and safe to call from any thread that gets here.
+	ensureCOM()
 	r, _, _ := procCoCreateInstance.Call(
 		uintptr(unsafe.Pointer(&clsidShellLink)), 0, 1,
 		uintptr(unsafe.Pointer(&iidShellLinkW)), uintptr(unsafe.Pointer(&psl)))

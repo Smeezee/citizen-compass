@@ -6,6 +6,7 @@ package main
 import (
 	"os"
 	"os/exec"
+	"sync"
 	"time"
 )
 
@@ -26,3 +27,32 @@ func runForOutput(path string, args ...string) (string, error) {
 }
 
 func osGetenv(k string) string { return os.Getenv(k) }
+
+// comOnce guards the process-wide COM apartment.
+var comOnce sync.Once
+
+// ensureCOM initialises an apartment-threaded COM apartment, once.
+//
+// # WHY THIS EXISTS AT ALL
+//
+// It did not, until the browser engine was removed. shortcut.go's own comment
+// said the apartment was "already initialised - the process is
+// apartment-threaded from go-webview2's init": COM was working because a
+// DEPENDENCY happened to set it up on import.
+//
+// That is a load-bearing side effect of something nobody thought of as
+// providing it, and deleting the dependency would have turned every
+// CoCreateInstance into CO_E_NOTINITIALIZED. The symptom would have been a
+// shortcut that silently never appears - indistinguishable, to the person, from
+// having said no to it.
+//
+// S_FALSE means the apartment was already initialised on this thread, which is
+// success, not failure. RPC_E_CHANGED_MODE means somebody got there first with
+// a different model - also not something to fail over, because the calls that
+// need this work fine in either.
+func ensureCOM() {
+	comOnce.Do(func() {
+		const coinitApartmentThreaded = 2
+		procCoInitializeEx.Call(0, coinitApartmentThreaded)
+	})
+}

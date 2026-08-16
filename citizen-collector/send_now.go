@@ -45,25 +45,24 @@ func SendNow(exeDir, outDir, sendURL, sendKey string, clearAfterSend bool,
 		logf = func(string, ...interface{}) {}
 	}
 
-	res, err := BuildExport(exeDir, outDir, outDir, true, logf)
-	if err != nil {
-		return "", fmt.Errorf("the package could not be built: %w", err)
-	}
-
+	// NOWHERE TO SEND: package locally and say so. This is the one path that
+	// deliberately LEAVES a zip behind, because the zip is the whole point -
+	// it is what somebody hands over by other means.
 	if strings.TrimSpace(sendURL) == "" {
-		// §3 of the destination work: blank must never look like a send.
+		res, err := BuildExport(exeDir, outDir, outDir, true, logf)
+		if err != nil {
+			return "", fmt.Errorf("the package could not be built: %w", err)
+		}
 		return LocalOnlyResult(filepath.Base(res.Path)), nil
 	}
 
-	up, uerr := SendExport(res, outDir, sendURL, sendKey, res.InstallID, clearAfterSend, logf)
-	if uerr != nil {
-		return "", fmt.Errorf("packaged, but sending failed: %w. Your data is "+
-			"untouched and the file is in the folder", uerr)
-	}
-	if !up.Sent {
-		return "Packaged, but the server did not confirm it. Nothing was removed.", nil
-	}
-	return up.Note, nil
+	// THE NOTES FIRST, THEN THE PICTURES IN BATCHES.
+	//
+	// One 1.7 GB request is refused by Cloudflare at the edge before our Worker
+	// sees it, so a send that is all-or-nothing can never succeed on a machine
+	// with a real backlog - and it took the 249 KB dataset down with it every
+	// time. See send_batched.go.
+	return SendEverything(exeDir, outDir, sendURL, sendKey, clearAfterSend, logf)
 }
 
 // SendFromCommandLine is the -send flag.
@@ -74,7 +73,7 @@ func SendNow(exeDir, outDir, sendURL, sendKey string, clearAfterSend bool,
 // double-click has nowhere to read output. The result goes to a message box AND
 // to the log: the box because that is where they are looking, the log because
 // that is what they can send back when it goes wrong.
-func SendFromCommandLine(exeDir, outDir string) int {
+func SendFromCommandLine(exeDir, outDir string, notesOnly bool) int {
 	logPath := filepath.Join(exeDir, "collector-auto.log")
 	lf, err := openAutoLog(logPath)
 	if err != nil {
@@ -118,7 +117,15 @@ func SendFromCommandLine(exeDir, outDir string) int {
 	}
 	logf("send: sending to %s (from %s)", dest.URL, dest.Source)
 
-	note, err := SendNow(exeDir, outDir, dest.URL, dest.Key, clearAfterSend, logf)
+	var note string
+	if notesOnly {
+		// THE NOTES ALONE. Nothing is cleared by this - the notes carry no
+		// pictures, so there is nothing of theirs to remove.
+		logf("send: notes only, as asked")
+		note, err = SendNotesOnly(exeDir, outDir, dest.URL, dest.Key, logf)
+	} else {
+		note, err = SendNow(exeDir, outDir, dest.URL, dest.Key, clearAfterSend, logf)
+	}
 	if err != nil {
 		logf("send: FAILED - %v", err)
 		showErrorBox("Citizen Collector",

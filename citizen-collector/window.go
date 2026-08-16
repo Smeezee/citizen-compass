@@ -550,17 +550,6 @@ func (w *collectorWindow) doRevert() {
 // need "which file am I" cannot disagree about it.
 func executablePath() (string, error) { return osExecutable() }
 
-// useLegacyWebView reports whether to take the old browser-engine path.
-//
-// A TEMPORARY SWITCH WITH A DEATH DATE. The order keeps WebView2 working until
-// the native window passes on Sleven's machine, then everything behind this
-// flag is deleted. It is an environment variable rather than a setting because
-// nobody should discover it, and because a setting would imply it is a choice
-// somebody is meant to make.
-func useLegacyWebView() bool {
-	return osGetenv("CITIZEN_COLLECTOR_LEGACY_WEBVIEW") == "1"
-}
-
 // waitForTrayExit blocks until the tray's Exit is chosen.
 //
 // The tray owns the program's lifetime now. That is the point of the rebuild:

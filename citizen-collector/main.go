@@ -531,7 +531,6 @@ func selftest(outDir string) int {
 	runBurstSettingsSelftest(check)
 	runCombatSelftest(check)
 	runMergeSelftest(check)
-	runUIScriptSelftest(check)
 	runKeyWatchSelftest(check)
 	runHeldKeySelftest(check)
 	runUpdateSelftest(check)
@@ -541,17 +540,14 @@ func selftest(outDir string) int {
 	// Placed BEFORE the browser checks: they are all downstream of this
 	// decision, and if it cannot say no they are testing a page that is
 	// never served.
-	runWebView2DetectSelftest(check)
-	runBrowserUISelftest(check)
 	// Placed immediately after it: runBrowserUISelftest proves authorised() is
 	// correct, this proves the four handlers actually CALL it. The two are only
 	// meaningful together - the first can pass with the guard unreachable.
-	runBrowserSocketSelftest(check)
 	runShortcutSelftest(check)
 	runInstallLocationSelftest(check)
 	runHandsOffSelftest(check)
-	runUIBridgeSelftest(check)
 	runWindowSelftest(check)
+	runSendBatchedSelftest(check)
 	runEnumSelftest(check)
 	runTraySizeSelftest(check)
 	runWGCThreadSelftest(check)
@@ -706,10 +702,11 @@ func main() {
 		// Reading main.go to find out what the exe says is exactly the mistake
 		// that shape of bug is made of - the source is what it WILL say after
 		// the next build, not what this file says now.
-		showVer = flag.Bool("version", false, "print the version compiled into this binary and exit")
-		watch   = flag.Bool("watch", false, "sit quiet, wait for Star Citizen, and start the collector when it appears")
-		sendNow = flag.Bool("send", false, "package and send what has been collected, without opening the window")
-		revert  = flag.Bool("revert", false, "go back to the previous version kept on this computer")
+		showVer   = flag.Bool("version", false, "print the version compiled into this binary and exit")
+		watch     = flag.Bool("watch", false, "sit quiet, wait for Star Citizen, and start the collector when it appears")
+		sendNow   = flag.Bool("send", false, "package and send what has been collected, without opening the window")
+		revert    = flag.Bool("revert", false, "go back to the previous version kept on this computer")
+		sendNotes = flag.Bool("send-notes", false, "send only the notes, not the pictures")
 
 		gamelog = flag.String("gamelog", "", "force the Game.log to watch (default: derive from the game window, else scan LIVE, PTU, EPTU, TECH-PREVIEW in that order)")
 
@@ -754,7 +751,10 @@ func main() {
 	// It goes through the same consent screen and the same send path as the
 	// button; see send_now.go.
 	if *sendNow {
-		os.Exit(SendFromCommandLine(exeDir, *outDir))
+		os.Exit(SendFromCommandLine(exeDir, *outDir, false))
+	}
+	if *sendNotes {
+		os.Exit(SendFromCommandLine(exeDir, *outDir, true))
 	}
 
 	// THE WATCHER. Started by the per-user startup entry, and it is NOT the

@@ -16,82 +16,15 @@ package main
 // on it, and contains no capture logic of its own.
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"time"
-
-	"github.com/jchv/go-webview2"
 )
 
-// bundledRuntimeDir is where the fixed-version WebView2 runtime lives relative
-// to the exe. See WEBVIEW2_RUNTIME_PROVENANCE.md.
-const bundledRuntimeDir = "webview2-runtime"
-
-// resolveBundledRuntime points WebView2 at the runtime shipped beside the exe.
-//
-// # WHY THIS MATTERS MORE THAN IT LOOKS
-//
-// Sleven's ruling: the runtime being installed on the development machine is a
-// trap, because the runtime-missing path cannot occur there and will never be
-// exercised by normal testing. Bundling makes that failure impossible instead
-// of rare - but ONLY if the bundled copy is actually the one loaded. If this
-// silently falls back to a system install, the bundling is decoration and the
-// first machine without the runtime is where anyone finds out.
-//
-// go-webview2 passes nil for browserExecutableFolder, so the WebView2 loader
-// does its own resolution - and that resolution honours this environment
-// variable. Setting it is therefore how the bundled copy wins.
-//
-// Returns the folder and how it was chosen, both of which are reported, because
-// "which runtime am I actually running" must be answerable.
-func resolveBundledRuntime(exeDir string) (dir string, how string) {
-	root := filepath.Join(exeDir, bundledRuntimeDir)
-	entries, err := os.ReadDir(root)
-	if err != nil {
-		return "", "no bundled runtime folder beside the exe"
-	}
-	// Version directories, newest name last.
-	var versions []string
-	for _, e := range entries {
-		if e.IsDir() {
-			versions = append(versions, e.Name())
-		}
-	}
-	if len(versions) == 0 {
-		return "", "bundled runtime folder is empty"
-	}
-	pick := versions[len(versions)-1]
-	cand := filepath.Join(root, pick)
-
-	// Presence of the actual engine, not merely of a directory. A folder that
-	// exists but holds nothing would otherwise report success and then fail at
-	// window creation with something unreadable.
-	if _, err := os.Stat(filepath.Join(cand, "msedgewebview2.exe")); err != nil {
-		return "", "bundled runtime folder has no msedgewebview2.exe"
-	}
-	return cand, "bundled " + pick
-}
-
-// uiRuntimeNote records what happened when the runtime was resolved, so the
-// selftest and the window can both report it rather than assuming.
-var uiRuntimeNote string
-
 const (
-	// uiBridgeTimeout is how long the page has to say hello before its window is
-	// treated as dead.
-	//
-	// Generous on purpose. A cold WebView2 start on a slow disk is seconds, and
-	// scrapping a window that was merely slow would swap a rare failure for a
-	// common one. Nothing here waits on the network, so this is bounded by local
-	// work only.
-	uiBridgeTimeout = 12 * time.Second
-
 	runtimeEnvVar = "WEBVIEW2_BROWSER_EXECUTABLE_FOLDER"
 	// reexecGuard stops the relaunch below from recursing. Without it a failure
 	// to apply the variable would fork forever.
@@ -99,148 +32,6 @@ const (
 	// superviseGuard marks the child, so it never tries to supervise itself.
 	superviseGuard = "CITIZEN_COLLECTOR_SUPERVISED"
 )
-
-// pinBundledRuntime makes the BUNDLED runtime the one that actually loads, by
-// relaunching once with the variable inherited from process creation.
-//
-// # WHY A RELAUNCH RATHER THAN JUST os.Setenv
-//
-// Setting the variable in-process does not work, and this was measured, not
-// assumed. With os.Setenv the log cheerfully reported
-//
-//	webview2 runtime: bundled 151.0.4129.59
-//
-// while the process had in fact loaded
-//
-//	C:\Program Files (x86)\Microsoft\EdgeWebView\Application\...
-//
-// go-webview2 loads WebView2Loader.dll from memory via go-winloader, and that
-// copy resolves the runtime against the environment block the process was
-// CREATED with. A variable set afterwards is not seen. Pre-setting it in the
-// parent and launching again loads the bundled copy - the difference was
-// confirmed by looking at which msedgewebview2.exe was actually running.
-//
-// That old log line is the exact defect this project keeps finding: it reported
-// an INTENTION as though it were an OUTCOME. On this machine, where a system
-// runtime exists, everything worked and nothing would ever have shown it.
-//
-// Returns true when a relaunch was started and this process should exit.
-func pinBundledRuntime(exeDir string) bool {
-	dir, how := resolveBundledRuntime(exeDir)
-	uiRuntimeNote = how
-
-	// No bundle: fall back to a system runtime. Deliberately not fatal -
-	// refusing to start would turn a degraded state into no program at all.
-	if dir == "" {
-		return false
-	}
-	// Already inherited correctly, or already relaunched once. Either way,
-	// going round again would be a loop.
-	if os.Getenv(runtimeEnvVar) == dir || os.Getenv(reexecGuard) == "1" {
-		return false
-	}
-
-	exe, err := os.Executable()
-	if err != nil {
-		uiRuntimeNote = "bundled runtime found but could not relaunch to use it: " + err.Error()
-		return false
-	}
-	superviseChild(exe, dir, exeDir)
-	return true
-}
-
-// superviseChild runs the window in a child process and RESTARTS it if it dies.
-//
-// # WHY THE PARENT STAYS
-//
-// The relaunch for the bundled runtime already created a parent/child pair, and
-// the parent had nothing left to do but exit. Keeping it costs almost nothing
-// and buys the thing WO-UI-01's audience actually needs: a person who starts
-// this in the morning still has it running in the evening without checking.
-//
-// The supervisor is deliberately tiny. It owns no window, no WebView, no
-// capture backend and no hotkey - the components that can crash are all in the
-// child. A supervisor that shared their failure modes would be pointless.
-//
-// It restarts on ANY unexpected exit, and stops for the one case that means the
-// person is finished: the child exiting 0, which is what closing the window
-// does.
-func superviseChild(exe, runtimeDir, exeDir string) {
-	logPath := filepath.Join(exeDir, "collector-auto.log")
-
-	say := func(format string, args ...interface{}) {
-		f, err := openAutoLog(logPath)
-		if err != nil {
-			return
-		}
-		defer f.Close()
-		fmt.Fprintf(f, "[%s] supervisor: %s\n",
-			time.Now().Format("2006-01-02 15:04:05"), fmt.Sprintf(format, args...))
-	}
-
-	// Backoff so a child that fails instantly and repeatedly - a missing
-	// runtime, a corrupt install - cannot become a spin loop that fills the
-	// disk with log lines.
-	backoff := 2 * time.Second
-	const maxBackoff = 60 * time.Second
-
-	for {
-		started := time.Now()
-
-		cmd := exec.Command(exe, os.Args[1:]...)
-		cmd.Env = append(os.Environ(),
-			runtimeEnvVar+"="+runtimeDir,
-			reexecGuard+"=1",
-			superviseGuard+"=1")
-		if err := cmd.Start(); err != nil {
-			say("could not start the collector: %v - giving up", err)
-			return
-		}
-
-		err := cmd.Wait()
-		ran := time.Since(started)
-
-		// Closing the window is a clean exit and means the person is done.
-		if err == nil {
-			say("collector exited normally after %s - not restarting", ran.Round(time.Second))
-			return
-		}
-
-		say("collector STOPPED UNEXPECTEDLY after %s (%v) - restarting in %s",
-			ran.Round(time.Second), err, backoff)
-
-		time.Sleep(backoff)
-
-		// A child that survived a decent while was healthy; reset the backoff so
-		// one bad night does not leave the delay pinned at a minute forever.
-		if ran > 2*time.Minute {
-			backoff = 2 * time.Second
-		} else if backoff < maxBackoff {
-			backoff *= 2
-			if backoff > maxBackoff {
-				backoff = maxBackoff
-			}
-		}
-	}
-}
-
-// verifiedRuntimeNote reports the runtime this process will ACTUALLY use.
-//
-// Reported from the inherited environment rather than from what was intended,
-// because the previous version of this note was wrong in precisely that way.
-func verifiedRuntimeNote(exeDir string) string {
-	inherited := os.Getenv(runtimeEnvVar)
-	bundled, _ := resolveBundledRuntime(exeDir)
-	switch {
-	case bundled != "" && inherited == bundled:
-		return "bundled, pinned and inherited: " + inherited
-	case inherited != "":
-		return "pinned to " + inherited + " (NOT the bundled copy)"
-	case bundled == "":
-		return "NO BUNDLED RUNTIME - falling back to whatever is installed on this machine"
-	}
-	return "bundled copy present but NOT pinned - a system runtime will be used"
-}
 
 // runUI opens the window and runs until it is closed.
 func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, localKey string,
@@ -252,12 +43,6 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	// on the Desktop. Ahead of the runtime relaunch too - there is no point
 	// starting a second process that is going to reach the same conclusion.
 	if GuardInstallLocation(exeDir, nil) {
-		return nil
-	}
-
-	// Relaunch once so the bundled runtime is inherited from process creation.
-	// This process then has nothing left to do.
-	if pinBundledRuntime(exeDir) {
 		return nil
 	}
 
@@ -415,8 +200,6 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	defer tray.Stop()
 	tray.SetStatus("Citizen Collector - waiting for Star Citizen")
 
-	logf("webview2 runtime: %s", verifiedRuntimeNote(exeDir))
-
 	seq := nextSequence(outDir)
 	// seq is touched by the auto loop AND by the Capture-now button, which run
 	// on different threads. Without this both read the same number, format the
@@ -552,19 +335,6 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	// the notification area refused the icon this stays a harmless no-op.
 	uiNotify = tray.SetStatus
 
-	callString := func(name string, arg interface{}) string {
-		var raw json.RawMessage
-		if arg != nil {
-			raw, _ = json.Marshal(arg)
-		}
-		v, err := acts[name](raw)
-		if err != nil {
-			return "That didn't work: " + err.Error()
-		}
-		s, _ := v.(string)
-		return s
-	}
-
 	// ===================================================================
 	// THE NATIVE WINDOW - Sleven's ruling, 2026-08-15
 	// ===================================================================
@@ -578,7 +348,7 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	// needs a usable collector in the meantime. Once it passes, everything from
 	// here down goes - the browser fallback, the bridge timeout and the parity
 	// check with it. Half-removed would be worse than either.
-	if !useLegacyWebView() {
+	{
 		// The question is asked ONCE, and never of an install that predates it -
 		// see window_settings.go. An update must not interrogate somebody who
 		// did not ask for it.
@@ -623,109 +393,14 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 		return nil
 	}
 
-	// ------------------------------------------------------------------
-	// LEGACY WEBVIEW2 PATH - scheduled for deletion once the window passes
-	// ------------------------------------------------------------------
-	if !webview2Available(exeDir) {
-		logf("window: no WebView2 runtime found, using the browser instead")
-		return serveBrowserUI(acts, logf)
-	}
-
-	w := webview2.NewWithOptions(webview2.WebViewOptions{
-		Debug:     false,
-		AutoFocus: true,
-		WindowOptions: webview2.WindowOptions{
-			Title:  "Citizen Collector",
-			Width:  480,
-			Height: 660,
-			Center: true,
-		},
-	})
-	if w == nil {
-		// THE SECOND ANSWER TO THE SAME QUESTION, and the reason
-		// webview2Available says it is not the last word.
-		//
-		// A runtime can be present on disk and still fail to load: wrong
-		// architecture, a half-applied update, group policy, a profile
-		// directory the user cannot write to. Before the browser path existed
-		// this was a dead end and the program simply stopped. Now it is just
-		// the other route, and the person never finds out anything went wrong.
-		logf("window: the WebView2 window could not be created, using the browser instead")
-		return serveBrowserUI(acts, logf)
-	}
-	defer w.Destroy()
-
-	// THE WINDOW'S OWN ICON. Never set before today, so the title bar, the
-	// taskbar button and Alt-Tab all showed the generic Windows glyph while the
-	// icon sat embedded in the exe unused. Third place in the same family as the
-	// shortcut and the tray.
-	setWindowIcon(uintptr(w.Window()), logf)
-
-	// The nine bindings. Each one is an adapter, not an implementation.
-	w.Bind("state", func() string { return callString("state", nil) })
-	w.Bind("captureNow", func() string { return callString("captureNow", nil) })
-	w.Bind("countData", func() string { return callString("countData", nil) })
-	w.Bind("sendData", func(includePNG bool) string { return callString("sendData", includePNG) })
-	w.Bind("checkUpdate", func() string { return callString("checkUpdate", nil) })
-	w.Bind("applyUpdate", func() string { return callString("applyUpdate", nil) })
-	w.Bind("makePackage", func() string { return callString("makePackage", nil) })
-	w.Bind("openCaptures", func() string { return callString("openCaptures", nil) })
-	w.Bind("restartNow", func() string { return callString("restartNow", nil) })
-	w.Bind("canPackage", func() bool {
-		v, err := acts["canPackage"](nil)
-		if err != nil {
-			return false
-		}
-		ok, _ := v.(bool)
-		return ok
-	})
-
-	// THE PAGE HAS TO SAY HELLO.
+	// There is no other path. The native window is the UI; the tray is home.
 	//
-	// Everything above proves a runtime exists and a window was created. Neither
-	// proves the BRIDGE works, and on Sleven's machine both were true while
-	// state() never returned: dashes in the status, five buttons that did
-	// nothing. A UI that cannot answer must not look like one that can.
-	//
-	// The page calls uiReady() as its first act. If that has not arrived by the
-	// deadline, this window is scrapped and the browser transport is used
-	// instead - which is a real working UI rather than a decorated dead one.
-	ready := make(chan struct{}, 1)
-	w.Bind("uiReady", func() {
-		select {
-		case ready <- struct{}{}:
-		default:
-		}
-	})
-
-	var bridgeDead atomic.Bool
-	go func() {
-		select {
-		case <-ready:
-			// Answered. Nothing to do - this is the ordinary case.
-		case <-time.After(uiBridgeTimeout):
-			// NOT A SLOW NETWORK. Nothing here fetches anything; this is the
-			// page failing to execute at all. httpClient() has its own 15s
-			// timeout, so a hang in the window is never a slow request.
-			bridgeDead.Store(true)
-			logf("window: the page never answered within %s - the WebView2 bridge "+
-				"is not working on this machine. Closing this window and using "+
-				"the browser instead, which does work.", uiBridgeTimeout)
-			w.Terminate()
-		}
-	}()
-
-	w.SetHtml(uiHTML)
-	w.Run()
-
-	if bridgeDead.Load() {
-		// The window is gone. Serve the same interface over the transport that
-		// does not depend on WebView2 executing anything.
-		return serveBrowserUI(acts, logf)
-	}
-
-	// w.Run returns when the window is closed. That is the one exit that means
-	// the person is finished, and the supervisor treats it as final.
+	// What used to be here: a WebView2 window, a browser fallback serving the
+	// same page over 127.0.0.1, a twelve-second bridge timeout to notice when
+	// the embedded browser opened a window and then answered nothing, and a
+	// parity check keeping the two transports' function lists identical. All of
+	// it existed to prop up an embedded browser, and all of it is gone. See
+	// _to_delete/webview2_path_retired_20260815/.
 	logExit(logf, exeDir, "window closed")
 	return nil
 }

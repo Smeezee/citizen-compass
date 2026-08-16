@@ -69,6 +69,24 @@ func LogStartupDiagnostics(logf func(string, ...interface{}), exeDir string) {
 			"register and never fire - that exact mismatch cost two days in August.")
 	} else {
 		logf("env: running at normal privilege (not elevated)")
+
+	// WINDOW OR CONSOLE, RECORDED RATHER THAN ASSERTED.
+	//
+	// A GUI-subsystem build (PE subsystem 2) gets no console from Windows, so
+	// GetConsoleWindow returns 0 unless this process deliberately attached to a
+	// parent's - which console.go does on purpose when run from a terminal.
+	//
+	// This program spent months claiming in seven files to be a GUI build while
+	// both binaries were subsystem 3, which is why a black Windows Terminal
+	// window appeared on every launch and why closing it killed the collector.
+	// The comment was the defect. This is the observation.
+	if hasConsole() {
+		logf("env: a console IS attached to this process. If it was not started " +
+			"from a terminal, this binary was built without -H=windowsgui and " +
+			"Windows opened a console for it - closing that window kills the collector.")
+	} else {
+		logf("env: no console window (GUI build, as intended)")
+	}
 	}
 
 	if wd, err := os.Getwd(); err == nil {

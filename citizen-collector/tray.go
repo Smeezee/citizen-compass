@@ -108,9 +108,9 @@ const (
 	// which is how this thread is asked to shut down, so closing that stray box
 	// took the whole collector with it.
 	//
-	// (HWND)-3 as a uintptr.
-	hwndMessage = ^uintptr(0) - 2
-	wmClose     = 0x0010
+	// WS_EX_TOOLWINDOW: no taskbar button, no Alt-Tab entry.
+	wsExToolWindow = 0x00000080
+	wmClose        = 0x0010
 )
 
 // notifyIconData is NOTIFYICONDATAW at its VERSION 1 size, and the size is the
@@ -241,11 +241,20 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 			ready <- false
 			return
 		}
-		// PARENTED TO HWND_MESSAGE, so this is a message-only window rather than
-		// a top-level one nobody can explain and anybody can close.
-		hwnd, _, _ := procCreateWindowExW.Call(0,
+		// INVISIBLE, NOT MESSAGE-ONLY.
+		//
+		// WS_EX_TOOLWINDOW keeps it out of Alt-Tab and the taskbar, and it is
+		// never shown - no WS_VISIBLE and no ShowWindow call - so there is
+		// nothing on screen for anybody to find or close.
+		//
+		// It is deliberately NOT parented to HWND_MESSAGE. A message-only
+		// window cannot take the foreground, and TrackPopupMenu needs an owner
+		// that can, so the notification-area menu simply never appears. That
+		// was tried on 2026-08-15 and is why right-clicking the icon did
+		// nothing.
+		hwnd, _, _ := procCreateWindowExW.Call(wsExToolWindow,
 			uintptr(unsafe.Pointer(className)), uintptr(unsafe.Pointer(className)),
-			0, 0, 0, 0, 0, hwndMessage, 0, 0, 0)
+			wsPopup, 0, 0, 0, 0, 0, 0, 0, 0)
 		if hwnd == 0 {
 			logf("tray: could not create its hidden window - no icon. Everything " +
 				"else is unaffected.")
