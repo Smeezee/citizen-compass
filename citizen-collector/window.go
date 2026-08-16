@@ -39,7 +39,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -115,7 +114,6 @@ const (
 	idAutostart
 	idShowWindow
 	idHotkey
-	idInterval
 	idSaveSettings
 	idRevert
 )
@@ -135,7 +133,6 @@ type collectorWindow struct {
 	chkAutostart uintptr
 	chkShowWin   uintptr
 	edHotkey     uintptr
-	edInterval   uintptr
 
 	exeDir string
 	outDir string
@@ -351,10 +348,17 @@ func (w *collectorWindow) buildControls() {
 	w.edHotkey = w.mk("EDIT", "", esAutoHScroll|wsTabStop|0x00800000, /*WS_BORDER*/
 		x+px(labelW), y, px(180), px(rowH), idHotkey)
 	y += px(rowH + 4)
-	w.mk("STATIC", "Seconds between pictures", ssLeft, x, y+px(4), px(labelW), px(rowH), 0)
-	w.edInterval = w.mk("EDIT", "", esAutoHScroll|wsTabStop|0x00800000,
-		x+px(labelW), y, px(180), px(rowH), idInterval)
-	y += px(rowH + gap)
+	// NO "SECONDS BETWEEN PICTURES" CONTROL.
+	//
+	// Nothing captures on a timer any more - §6 removed interval capture, the
+	// event triggers and the bursts outright rather than disabling them. A box
+	// asking how often to do a thing that never happens is a control that does
+	// nothing, and this project has spent a week finding text that claims a
+	// property the program does not have.
+	//
+	// The log POLL interval is a different number: how often Game.log is checked
+	// for new lines. It is internal, it captures nothing, and there is no answer
+	// a person could want to give it.
 
 	w.mk("BUTTON", "Save settings", bsPushButton|wsTabStop, x, y, bw, bh, idSaveSettings)
 	y += bh + px(margin)
@@ -409,11 +413,6 @@ func (w *collectorWindow) loadSettingsIntoControls() {
 		hk = defaultHotkey
 	}
 	w.setText(w.edHotkey, hk)
-	iv := "120"
-	if v, found, err := cfg.intVal("interval_seconds"); found && err == nil {
-		iv = strconv.Itoa(v)
-	}
-	w.setText(w.edInterval, iv)
 }
 
 // refresh re-reads the state and pushes it into the controls.
@@ -528,13 +527,9 @@ func (w *collectorWindow) saveSettings() {
 	if hk != "" {
 		_ = SetSetting(w.exeDir, "hotkey", hk)
 	}
-	iv := strings.TrimSpace(w.getText(w.edInterval))
-	if n, err := strconv.Atoi(iv); err == nil && n >= 0 {
-		_ = SetSetting(w.exeDir, "interval_seconds", strconv.Itoa(n))
-	}
 	messageBox("Citizen Collector",
-		"Saved.\n\nThe hotkey and the interval take effect the next time it starts. "+
-			"Everything else is already in force.", 0x00000040)
+		"Saved.\n\nThe hotkey takes effect the next time it starts. Everything "+
+			"else is already in force.", 0x00000040)
 }
 
 func (w *collectorWindow) doRevert() {
