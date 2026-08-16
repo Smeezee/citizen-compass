@@ -30,6 +30,7 @@ import (
 	"os"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"unsafe"
 )
@@ -42,17 +43,18 @@ var (
 	// winapi.go. Redeclaring them here compiled as a duplicate and the compiler
 	// said so - which is the good version of the two-copies problem, since the
 	// bad version is two copies that both compile and then drift.
-	procRegisterClassExW = modUser32.NewProc("RegisterClassExW")
-	procDefWindowProcW   = modUser32.NewProc("DefWindowProcW")
-	procLoadIconW        = modUser32.NewProc("LoadIconW")
-	procCreatePopupMenu  = modUser32.NewProc("CreatePopupMenu")
-	procDestroyMenu      = modUser32.NewProc("DestroyMenu")
-	procAppendMenuW      = modUser32.NewProc("AppendMenuW")
-	procTrackPopupMenu   = modUser32.NewProc("TrackPopupMenu")
-	procGetCursorPos     = modUser32.NewProc("GetCursorPos")
-	procExtractIconExW   = modShell32.NewProc("ExtractIconExW")
-	procSendMessageW     = modUser32.NewProc("SendMessageW")
-	procPostMessageW     = modUser32.NewProc("PostMessageW")
+	procRegisterClassExW  = modUser32.NewProc("RegisterClassExW")
+	procDefWindowProcW    = modUser32.NewProc("DefWindowProcW")
+	procLoadIconW         = modUser32.NewProc("LoadIconW")
+	procCreatePopupMenu   = modUser32.NewProc("CreatePopupMenu")
+	procDestroyMenu       = modUser32.NewProc("DestroyMenu")
+	procAppendMenuW       = modUser32.NewProc("AppendMenuW")
+	procTrackPopupMenu    = modUser32.NewProc("TrackPopupMenu")
+	procGetCursorPos      = modUser32.NewProc("GetCursorPos")
+	procExtractIconExW    = modShell32.NewProc("ExtractIconExW")
+	procSendMessageW      = modUser32.NewProc("SendMessageW")
+	procSendNotifyMessage = modUser32.NewProc("SendNotifyMessageW")
+	procPostMessageW      = modUser32.NewProc("PostMessageW")
 )
 
 const (
@@ -172,6 +174,21 @@ type wndClassEx struct {
 	HIconSm       uintptr
 }
 
+// WHICH PATH THE CLICK ARRIVED ON.
+//
+// Not decoration. "The handler is wired" has been said about this three times
+// while the icon did nothing on screen, and each time it was reasoning from the
+// source. These are counted at the two places a notification-area message can
+// possibly arrive, so the answer is a number that can be printed - see
+// -tray-probe, which drives both paths and reports them.
+var (
+	trayCallbackViaWndProc int64
+	trayCallbackViaLoop    int64
+	trayCommandViaWndProc  int64
+	trayMenuShown          int64
+	trayLeftOpenedWindow   int64
+)
+
 // trayHandle is what the collector holds. Every method on it is safe to call
 // on a zero value, so no caller ever has to check whether the tray came up.
 type trayHandle struct {
@@ -226,7 +243,52 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 		defer runtime.UnlockOSThread()
 
 		className, _ := syscall.UTF16PtrFromString("CitizenCollectorTray")
+		// THE WINDOW PROCEDURE HANDLES THE TRAY MESSAGES. It used to hand
+		// every message straight to DefWindowProc and let the message LOOP
+		// below look for them, which is why right-clicking the icon has never
+		// opened a menu on any build.
+		//
+		// A message that is SENT is not a message that is POSTED. GetMessage
+		// returns posted messages; sent messages are delivered directly to the
+		// window procedure while the thread waits inside GetMessage, and never
+		// appear in the MSG it hands back. The notification area sends, and
+		// TrackPopupMenu SENDS its WM_COMMAND too - so the loop's checks could
+		// only ever have fired for messages this program posted to itself
+		// (wmAppOpenWindow, wmClose), which is exactly the set that worked.
+		//
+		// Counted as well as handled: trayCallbackViaWndProc and
+		// trayCallbackViaLoop say which path a real click arrived on, so the
+		// next report of this is a number instead of an argument.
 		wndProc := syscall.NewCallback(func(h uintptr, msg uint32, w, l uintptr) uintptr {
+			switch msg {
+			case wmTrayCallback:
+				atomic.AddInt64(&trayCallbackViaWndProc, 1)
+				// RIGHT OPENS THE MENU, LEFT OPENS THE WINDOW.
+				//
+				// Both used to open the menu, on the argument that a left-click
+				// does nothing in most programs so somebody hunting for SEND
+				// would try it first. That argument was made when the window
+				// was the main surface and the tray was a shortcut to it. It is
+				// now the other way round - version one makes the window
+				// optional - and what people expect from a tray icon is left
+				// for the program, right for its menu. Doing something else,
+				// however defensible, is one more thing to learn.
+				switch uint32(l) & 0xFFFF {
+				case wmRButtonUp:
+					t.showMenu(logf)
+				case wmLButtonUp:
+					atomic.AddInt64(&trayLeftOpenedWindow, 1)
+					if t.onOpenWindow != nil {
+						t.onOpenWindow()
+					}
+				}
+				return 0
+			case wmCommand:
+				atomic.AddInt64(&trayCommandViaWndProc, 1)
+				if t.handleCommand(uint32(w) & 0xFFFF) {
+					return 0
+				}
+			}
 			r, _, _ := procDefWindowProcW.Call(h, uintptr(msg), w, l)
 			return r
 		})
@@ -247,11 +309,17 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 		// never shown - no WS_VISIBLE and no ShowWindow call - so there is
 		// nothing on screen for anybody to find or close.
 		//
-		// It is deliberately NOT parented to HWND_MESSAGE. A message-only
-		// window cannot take the foreground, and TrackPopupMenu needs an owner
-		// that can, so the notification-area menu simply never appears. That
-		// was tried on 2026-08-15 and is why right-clicking the icon did
-		// nothing.
+		// It is deliberately NOT parented to HWND_MESSAGE: a message-only
+		// window cannot take the foreground, and TrackPopupMenu wants an owner
+		// that can.
+		//
+		// THAT IS NOT WHY THE MENU NEVER OPENED, and the comment that used to
+		// stand here said it was. The menu has never opened on any build,
+		// including ones made before HWND_MESSAGE appeared in this file, so the
+		// revert of 2026-08-15 cannot have been the fix. The real cause was the
+		// window procedure discarding every SENT message - see the note on
+		// wndProc above, and docs/ERRATUM_tray-right-click-was-never-delivered
+		// -2026-08-16.md.
 		hwnd, _, _ := procCreateWindowExW.Call(wsExToolWindow,
 			uintptr(unsafe.Pointer(className)), uintptr(unsafe.Pointer(className)),
 			wsPopup, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -305,9 +373,10 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 			// here means the window is destroyed by its owner, which is the
 			// only thread allowed to do it.
 			//
-			// A PERSON CAN NO LONGER SEND THIS. The window is parented to
-			// HWND_MESSAGE now, so it has no frame to close - this arrives only
-			// from Stop().
+			// A PERSON CANNOT SEND THIS. The window is never shown and has no
+			// frame to close, so this arrives only from Stop() or from Exit on
+			// the menu. (It is NOT parented to HWND_MESSAGE - an earlier
+			// version of this comment said it was.)
 			//
 			// MATCHED ON OUR OWN WINDOW. The collector window lives on this
 			// thread too now, and closing it must not stop the message loop
@@ -324,45 +393,42 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 				continue
 			}
 
-			// A CLICK ON THE ICON. Right-click and left-click both open the
-			// menu: a left-click on a tray icon does nothing on most programs
-			// and a person hunting for a way to send will try it first.
-			if m.Message == wmTrayCallback && m.HWnd == t.hwnd &&
-				(uint32(m.LParam) == wmRButtonUp || uint32(m.LParam) == wmLButtonUp) {
-				t.showMenu(logf)
-				continue
+			// A CLICK ON THE ICON, ARRIVING THE OTHER WAY.
+			//
+			// The notification area SENDS, so in practice this branch never
+			// fires for a real click - it is the window procedure above that
+			// does. It is kept, and counted, because a posted callback is still
+			// a legal way for one to arrive and because the counts are how the
+			// next argument about this gets settled with a number.
+			//
+			// Right opens the menu, left opens the window. Same rule as above,
+			// and the two are the same rule on purpose: a click must not mean
+			// different things depending on how Windows chose to deliver it.
+			if m.Message == wmTrayCallback && m.HWnd == t.hwnd {
+				atomic.AddInt64(&trayCallbackViaLoop, 1)
+				switch uint32(m.LParam) & 0xFFFF {
+				case wmRButtonUp:
+					t.showMenu(logf)
+					continue
+				case wmLButtonUp:
+					atomic.AddInt64(&trayLeftOpenedWindow, 1)
+					if t.onOpenWindow != nil {
+						t.onOpenWindow()
+					}
+					continue
+				}
 			}
 
 			// OUR MENU ONLY. The window's buttons send WM_COMMAND straight to
 			// their own parent rather than through the queue, so they never
 			// arrive here - but matching on the window makes that a fact rather
 			// than a happy accident.
+			// A POSTED WM_COMMAND. Menu clicks are SENT and reach the window
+			// procedure instead, but the same handler runs either way.
 			if m.Message == wmCommand && m.HWnd == t.hwnd {
-				switch uint32(m.WParam) & 0xFFFF {
-				case cmdSendNow:
-					// ON ITS OWN GOROUTINE. Packaging and uploading a session
-					// takes minutes; doing it here would freeze this message
-					// loop, and a frozen loop means the tooltip stops updating
-					// and the menu stops opening - the program would look hung
-					// at exactly the moment it is working hardest.
-					go t.run(t.onSend)
-				case cmdCaptureNow:
-					go t.run(t.onCaptureNow)
-				case cmdOpenPictures:
-					go t.run(t.onOpenPictures)
-				case cmdOpenWindow:
-					// NOT on a goroutine. A window has to be created by a
-					// thread with a message loop, and this is one.
-					if t.onOpenWindow != nil {
-						t.onOpenWindow()
-					}
-				case cmdRevert:
-					go t.run(t.onRevert)
-				case cmdExit:
-					t.signalExit()
-					return
+				if t.handleCommand(uint32(m.WParam) & 0xFFFF) {
+					continue
 				}
-				continue
 			}
 			procTranslateMessage.Call(uintptr(unsafe.Pointer(&m)))
 			procDispatchMessageW.Call(uintptr(unsafe.Pointer(&m)))
@@ -525,6 +591,47 @@ func setWindowIcon(hwnd uintptr, logf func(string, ...interface{})) {
 	}
 }
 
+// handleCommand runs one menu choice. Shared by both delivery paths.
+//
+// TrackPopupMenu SENDS its WM_COMMAND to the owner window, so the copy of this
+// switch that lived in the message loop could never run for a menu click. It is
+// one function now, called from the window procedure, and the loop calls the
+// same one - so the two cannot drift apart the way they already had.
+func (t *trayHandle) handleCommand(id uint32) bool {
+	if t == nil {
+		return false
+	}
+	switch id {
+	case cmdSendNow:
+		// ON ITS OWN GOROUTINE. Packaging and uploading a session takes
+		// minutes; doing it on this thread would freeze the message loop, and a
+		// frozen loop means the tooltip stops updating and the menu stops
+		// opening - the program would look hung at exactly the moment it is
+		// working hardest.
+		go t.run(t.onSend)
+	case cmdCaptureNow:
+		go t.run(t.onCaptureNow)
+	case cmdOpenPictures:
+		go t.run(t.onOpenPictures)
+	case cmdOpenWindow:
+		// NOT on a goroutine. A window has to be created by a thread with a
+		// message loop, and this is one.
+		if t.onOpenWindow != nil {
+			t.onOpenWindow()
+		}
+	case cmdRevert:
+		go t.run(t.onRevert)
+	case cmdExit:
+		t.signalExit()
+		// Asks the loop on this thread to finish, rather than returning from
+		// somewhere inside a sent message and leaving the icon behind.
+		procPostMessageW.Call(t.hwnd, wmClose, 0, 0)
+	default:
+		return false
+	}
+	return true
+}
+
 // showMenu opens the notification-area menu.
 //
 // # THE SetForegroundWindow CALL IS NOT OPTIONAL
@@ -566,6 +673,7 @@ func (t *trayHandle) showMenu(logf func(string, ...interface{})) {
 
 	// See the note above - without this the menu will not close.
 	procSetForegroundWindow.Call(t.hwnd)
+	atomic.AddInt64(&trayMenuShown, 1)
 	procTrackPopupMenu.Call(menu,
 		tpmRightAlign|tpmBottomAlign|tpmRightButton,
 		uintptr(pt.X), uintptr(pt.Y), 0, t.hwnd, 0)

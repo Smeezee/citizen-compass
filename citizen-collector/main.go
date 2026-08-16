@@ -686,6 +686,7 @@ func main() {
 		once    = flag.Bool("once", false, "capture once immediately and exit (no hotkey)")
 		list    = flag.Bool("list-windows", false, "list capturable windows and exit")
 		test    = flag.Bool("selftest", false, "run internal checks and exit")
+		trayHdw = flag.Bool("tray-probe", false, "drive the notification-area icon and report what happened, then exit")
 		merge   = flag.String("merge", "", "merge every export (.zip or .json) in this folder into one dataset and exit")
 		ui      = flag.Bool("ui", false, "open the window (this is also what happens with no arguments at all)")
 
@@ -1074,6 +1075,15 @@ func main() {
 		}
 		fmt.Printf("wrote %s\n", out)
 		os.Exit(0)
+	}
+
+	// THE TRAY, OBSERVED. Before the consent gate and before the instance
+	// check on purpose: it reads nothing, writes nothing and sends nothing, and
+	// requiring the running collector to be closed first is what let this
+	// defect survive four builds unexamined.
+	if *trayHdw {
+		attachParentConsole()
+		os.Exit(runTrayProbe())
 	}
 
 	if *test {
