@@ -329,22 +329,75 @@ func routeSimple(path string, destDir string, note string) (string, string, erro
 	return routeTo(path, filepath.Join(destDir, filepath.Base(path)), note)
 }
 
-// routeTo moves path to dest, never overwriting -- if dest already exists,
-// a timestamp is appended to the destination's name instead, matching
-// inbox_watcher.py's collision handling exactly.
+// routeTo moves path to dest, never destroying anything -- and THE PLAIN NAME
+// ALWAYS ENDS UP HOLDING THE NEWEST ARRIVAL.
+//
+// # WHY THIS CHANGED, 2026-08-14
+//
+// It used to rename the NEWCOMER on a collision, which meant a corrected
+// document landed under a timestamped filename while the plain one kept the
+// superseded text. Observed live the same day:
+//
+//	AMENDS_tripwire-release-view-only-2026-08-14.md                  rev 1, WRONG
+//	AMENDS_tripwire-release-view-only-2026-08-14__20260814180543.md  rev 2, right
+//
+// Rev 1 attributed a decision to Sleven that he never made. The correction
+// existed, was filed, and went to a name nobody would open -- so anyone reading
+// the obvious file got a stale instruction stated confidently. C3 hit it, and
+// it was caught only because he happened to list the directory.
+//
+// Now the INCUMBENT is the one that moves aside. Both versions still survive
+// (rule 1 is untouched -- nothing is deleted or overwritten), but the plain
+// name resolves to the latest arrival, which is what every reader already
+// assumes it does.
+//
+// The archived copy carries ITS OWN modification time, not "now", so the stamp
+// says when that version was current rather than when it was pushed aside.
 func routeTo(path string, dest string, note string) (string, string, error) {
 	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
 		return "", "", err
 	}
-	if _, err := os.Stat(dest); err == nil {
-		stamp := time.Now().Format("20060102150405")
-		ext := filepath.Ext(dest)
-		stem := strings.TrimSuffix(filepath.Base(dest), ext)
-		dest = filepath.Join(filepath.Dir(dest), fmt.Sprintf("%s__%s%s", stem, stamp, ext))
-		note += " (name collision, kept both — old file untouched)"
+	if fi, err := os.Stat(dest); err == nil {
+		archived, aerr := archiveName(dest, fi.ModTime())
+		if aerr != nil {
+			return "", "", aerr
+		}
+		if err := os.Rename(dest, archived); err != nil {
+			return "", "", fmt.Errorf("could not move the previous %s aside, so the "+
+				"new one was NOT filed (nothing was lost): %w", filepath.Base(dest), err)
+		}
+		note += fmt.Sprintf(" (SUPERSEDES an earlier file of this name — the older "+
+			"one is kept as %s; this name now holds the newest)", filepath.Base(archived))
 	}
 	if err := os.Rename(path, dest); err != nil {
 		return "", "", err
 	}
 	return note, dest, nil
+}
+
+// archiveName picks a free name for a superseded file, stamped with when that
+// version was last written.
+//
+// The loop matters: two corrections to the same document inside one second used
+// to be possible to lose, because a second-resolution stamp collides and
+// os.Rename would then overwrite the first archive silently. It counts up
+// rather than overwriting, because "we kept both" has to be true every time or
+// it is not a property, it is a probability.
+func archiveName(dest string, when time.Time) (string, error) {
+	ext := filepath.Ext(dest)
+	stem := strings.TrimSuffix(filepath.Base(dest), ext)
+	dir := filepath.Dir(dest)
+	stamp := when.Format("20060102150405")
+	for i := 0; i < 100; i++ {
+		name := fmt.Sprintf("%s__%s%s", stem, stamp, ext)
+		if i > 0 {
+			name = fmt.Sprintf("%s__%s-%d%s", stem, stamp, i, ext)
+		}
+		candidate := filepath.Join(dir, name)
+		if _, err := os.Stat(candidate); os.IsNotExist(err) {
+			return candidate, nil
+		}
+	}
+	return "", fmt.Errorf("could not find a free archive name for %s after 100 "+
+		"attempts; refusing to overwrite an existing archive", filepath.Base(dest))
 }

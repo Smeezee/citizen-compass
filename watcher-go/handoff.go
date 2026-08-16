@@ -20,6 +20,71 @@ var handoffHeadingHints = []string{"HANDOFF", "SESSION ARCHIVE", "AI KNOWLEDGE B
 var updateFilenameHints = []string{"update", "updates"}
 var updateHeadingHints = []string{"UPDATE", "UPDATES", "CHANGELOG"}
 
+// docTypePrefixes maps this project's naming convention to what a document IS.
+//
+// A PREFIX IS AN EXPLICIT DECLARATION BY WHOEVER WROTE THE FILE, and it beats
+// anything inferred from prose. It exists because inference got it wrong in a
+// way nobody would have caught by reading the code:
+//
+//	WORKORDER_rework-tripwire-build-spec-2026-08-14.md
+//	title: "...and do NOT key on updateDate."
+//
+// "UPDATE" is a substring of "updateDate", so a work order was filed as an
+// update doc and routed into handoff_archive/ - and the amendment that pointed
+// at it then pointed somewhere nobody would look. The same shape as the old
+// Python generator, where the word "handoff" in any document hijacked its
+// routing.
+//
+// "" means "this type is neither a handoff nor an update" - it is a document
+// that keeps its own name and goes where documents go. That is the case the
+// misrouting broke.
+//
+// THE LIST IS TAKEN FROM THE DIRECTORY, NOT FROM MEMORY. Enumerating docs/ by
+// prefix is how ADDENDUM_ was found missing: the first version of this map was
+// written from the types I happened to have seen, and an ADDENDUM whose title
+// read "a stopped watcher must not look like an update saying nothing" routed
+// straight into the archive on the word "update". Third instance of the same
+// bite in one evening.
+var docTypePrefixes = map[string]string{
+	"workorder_":    "",
+	"workorder-":    "",
+	"finding_":      "",
+	"finding-":      "",
+	"decision_":     "",
+	"erratum_":      "",
+	"erratum-":      "",
+	"amends_":       "",
+	"addendum_":     "",
+	"addendum-":     "",
+	"ruling_":       "",
+	"report_":       "",
+	"urgent_":       "",
+	"project-":      "",
+	"architecture_": "",
+	"current-":      "",
+	"screenshot_":   "",
+	"prompt-":       "",
+	"ai-":           "",
+	"handoff_":      "handoff",
+	"update-":       "update",
+	"update_":       "update",
+}
+
+// docTypeFromPrefix returns the declared type and whether one was declared.
+//
+// Checked longest-first so a longer prefix cannot be shadowed by a shorter one
+// that happens to be its head.
+func docTypeFromPrefix(path string) (string, bool) {
+	name := strings.ToLower(filepath.Base(path))
+	best, bestLen, found := "", 0, false
+	for p, kind := range docTypePrefixes {
+		if strings.HasPrefix(name, p) && len(p) > bestLen {
+			best, bestLen, found = kind, len(p), true
+		}
+	}
+	return best, found
+}
+
 func latestRawPath() string {
 	return filepath.Join(handoffArchiveDir, "_latest_raw.md")
 }
@@ -56,6 +121,11 @@ func titleLine(text string) string {
 }
 
 func isHandoffDoc(path string, text string) bool {
+	// AN EXPLICIT DECLARATION WINS. If the filename says what this is, the
+	// prose is not consulted - see docTypePrefixes.
+	if kind, ok := docTypeFromPrefix(path); ok {
+		return kind == "handoff"
+	}
 	name := strings.ToLower(strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)))
 	for _, hint := range handoffFilenameHints {
 		if strings.Contains(name, hint) {
@@ -72,6 +142,9 @@ func isHandoffDoc(path string, text string) bool {
 }
 
 func isUpdateDoc(path string, text string) bool {
+	if kind, ok := docTypeFromPrefix(path); ok {
+		return kind == "update"
+	}
 	name := strings.ToLower(strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)))
 	for _, hint := range updateFilenameHints {
 		if strings.Contains(name, hint) {
