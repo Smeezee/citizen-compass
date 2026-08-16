@@ -335,7 +335,7 @@ $smallZip = Join-Path $here "citizen-collector-$Version.zip"
 if (Test-Path $smallZip) { Remove-Item $smallZip -Force }
 Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $smallZip
 $smallMb = [math]::Round((Get-Item $smallZip).Length / 1MB, 1)
-Ok "citizen-collector-$Version.zip  ($smallMb MB)  - needs WebView2 already installed"
+Ok "citizen-collector-$Version.zip  ($smallMb MB)  - runs on any Windows machine"
 if ((Get-Item $smallZip).Length -lt 10MB) {
     Note "under 10 MB, so this one still fits a plain Discord message if you ever need that"
 } else {
