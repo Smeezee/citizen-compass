@@ -1,0 +1,16 @@
+{
+ "dataset": "ship-configurations",
+ "produced_by": "build_ship_configurations.py",
+ "ruling": "docs/DECISION_hull-configuration-acquisition-2026-08-16.md",
+ "what_this_is": "THREE CONCRETE CASES built to the hull / configuration / routes ruling, so the shared shape can be taken from what they needed rather than designed in advance.",
+ "what_this_is_NOT": "Not a schema, not a migration, and not the other 86 game-only files. Generalising is the next decision and it is Sleven's.",
+ "sources": {
+  "scunpacked snapshot": "20260801T204744Z",
+  "uex snapshot": "20260801T235530Z",
+  "site rows": "releases/latest.html"
+ },
+ "unverified_by_design": [
+  "route = trade. The Wikelo terminals are typed `fuel` and no vehicle price references them. CIG's roadmap is the only source and it is attributed as such.",
+  "which livery is the edition's. No file marks one."
+ ]
+}
