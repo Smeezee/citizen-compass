@@ -549,6 +549,7 @@ func selftest(outDir string) int {
 	runWindowSelftest(check)
 	runSendBatchedSelftest(check)
 	runNameClassSelftest(check)
+	runScrubPolicySelftest(check)
 	runEnumSelftest(check)
 	runTraySizeSelftest(check)
 	runWGCThreadSelftest(check)

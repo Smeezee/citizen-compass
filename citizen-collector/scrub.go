@@ -187,6 +187,17 @@ func (s *scrubber) Value(v string) string {
 // scrubber can be re-run over old data later - which is the whole argument for
 // deciding late instead of early, and it only works if the raw is still there.
 func ScrubForExport(st *MineStore, exeDir string, logf func(string, ...interface{})) (*MineStore, int) {
+	// NORMALISE logf HERE, not only inside newScrubber.
+	//
+	// newScrubber took a nil logf and quietly replaced its OWN copy with a
+	// no-op, which made this function look nil-safe when it was not: the first
+	// time anything in ScrubForExport itself logged - the prose-scan line added
+	// 2026-08-16 - it dereferenced nil and took the process down. Two selftest
+	// callers and any future one pass nil. Fixed at the parameter so the next
+	// log line added below cannot reintroduce it.
+	if logf == nil {
+		logf = func(string, ...interface{}) {}
+	}
 	sc := newScrubber(exeDir, logf)
 	out := *st // shallow copy; every map touched below is rebuilt
 
@@ -259,6 +270,34 @@ func ScrubForExport(st *MineStore, exeDir string, logf func(string, ...interface
 	// was the bug above. They already went through scrubIDs on the way in.
 	out.Locations = st.Locations
 
+	// FREE TEXT THAT CAN NAME SOMEBODY.
+	//
+	// Contracts and Objectives had never been scrubbed and had never been
+	// looked at - they were simply not in this walk. A PvP bounty names its
+	// target, so "Eliminate <somebody>" is a mission objective with a handle
+	// in it. Scanned token by token rather than replaced wholesale, or the
+	// sentence is destroyed along with the name.
+	prose := 0
+	scanMap := func(in map[string]int) map[string]int {
+		if len(in) == 0 {
+			return in
+		}
+		outm := make(map[string]int, len(in))
+		for k, n := range in {
+			cleaned, hits := sc.ScrubProse(k)
+			prose += hits
+			outm[cleaned] += n
+		}
+		return outm
+	}
+	out.Contracts = scanMap(st.Contracts)
+	out.Objectives = scanMap(st.Objectives)
+	out.GameTips = scanMap(st.GameTips)
+	if prose > 0 {
+		logf("scrub: replaced %d name(s) found inside mission text - contracts, "+
+			"objectives or tips", prose)
+	}
+
 	txns := make([]MineTxn, 0, len(st.Txns))
 	for _, t := range st.Txns {
 		t.Shop = sc.Value(t.Shop)
@@ -268,4 +307,66 @@ func ScrubForExport(st *MineStore, exeDir string, logf func(string, ...interface
 	out.Txns = txns
 
 	return &out, len(sc.mapped)
+}
+
+// reHandleShaped matches a token that a person's handle looks like and English
+// prose does not: it contains a digit or an underscore.
+//
+// THIS IS THE PROSE RULE, and it is deliberately narrow. A mission title reads
+// "Adagio Holdings in Need of Salvagers" - every word of that is capitalised
+// English and swapping on capitalisation alone would destroy the sentence while
+// protecting nobody. Handles like 8mole5duro, KDog79 and mrDonkey6511 carry a
+// digit or an underscore; "Adagio" does not.
+//
+// A handle with no digit and no underscore - "Corjack" - is NOT caught by this
+// rule. It is caught by the known-people rule below if that person has appeared
+// anywhere structured, which is the common case. Where neither fires, the token
+// is REPORTED rather than silently passed, so the gap is visible instead of
+// theoretical.
+var reHandleShaped = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]*[0-9_][A-Za-z0-9_]*$`)
+
+// reProseToken splits prose into things that could be a name.
+//
+// A TAG THIS SCANNER ALREADY WROTE MATCHES FIRST, and that ordering is the
+// whole point of the alternation. Without it "player:dd0e64c6" splits at the
+// colon into "player" and "dd0e64c6" - and the second half is digit-bearing,
+// so a second pass tags the tag and produces "player:player:2ccacea7". One
+// person then holds two identities and every join in the dataset quietly
+// stops matching. Caught by the idempotence check in scrub_policy_selftest.go,
+// which is why that check exists rather than being assumed.
+var reProseToken = regexp.MustCompile(`player:[0-9a-f]{8}|[A-Za-z][A-Za-z0-9_\-']*`)
+
+// ScrubProse replaces people named inside free text, and leaves the text.
+//
+// Two rules, in order:
+//
+//  1. anybody this scrubber has ALREADY identified elsewhere in the dataset -
+//     the reliable one, because a PvP bounty target has almost certainly also
+//     appeared as a victim or a killer
+//  2. anything shaped like a handle rather than like a word
+//
+// Returns the text and how many tokens it replaced.
+func (s *scrubber) ScrubProse(v string) (string, int) {
+	if v == "" {
+		return v, 0
+	}
+	n := 0
+	out := reProseToken.ReplaceAllStringFunc(v, func(tok string) string {
+		// 0. already a tag - leave it exactly as it is.
+		if rePseudonym.MatchString(tok) {
+			return tok
+		}
+		// 1. somebody already known to be a person.
+		if t, seen := s.mapped[tok]; seen {
+			n++
+			return t
+		}
+		// 2. shaped like a handle rather than a word, and not game vocabulary.
+		if reHandleShaped.MatchString(tok) && !KeepsName(tok) {
+			n++
+			return s.Value(tok)
+		}
+		return tok
+	})
+	return out, n
 }

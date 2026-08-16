@@ -64,12 +64,17 @@ func runCombatSelftest(check func(name string, ok bool, detail string)) {
 	// EXPORTING AN ALREADY-SWAPPED STORE MUST CHANGE NOTHING. Without this, a
 	// second pass would tag the tags and one person would end up with two
 	// identities - which breaks every join in the dataset silently.
-	reJoined := ""
-	for k := range safe.Deaths {
-		reJoined += k + "\n"
-	}
+	//
+	// COMPARED BY KEY, NOT BY CONCATENATION. I wrote this as two strings built
+	// by ranging over two maps, which Go deliberately iterates in a different
+	// order every run - so it was not testing idempotence, it was testing luck.
+	// It passed several times and then failed on a run where nothing about the
+	// scrubber had changed. The note thirty lines below says exactly this about
+	// exactly this mistake, made earlier, in the same file. A check that gives a
+	// different answer for identical input is worse than no check: the day it
+	// fails for the real reason, nobody believes it.
 	check("scrub: exporting an already-swapped store is idempotent",
-		reJoined == rawJoined,
+		sameKeys(st.Deaths, safe.Deaths),
 		"a tag of a tag gives one person two identities")
 
 	joined := ""
@@ -141,19 +146,27 @@ func runCombatSelftest(check func(name string, ok bool, detail string)) {
 	check("scrub: tokens are shaped player:xxxxxxxx",
 		strings.Contains(joined, "player:"), "stable, unreversible, and obviously a token")
 
-	// NEGATIVE CONTROLS for safeActor itself. Without these, a function that
-	// returned "<player>" for EVERYTHING would pass every privacy check above
-	// and destroy the dataset.
-	check("NEGATIVE CONTROL: safeActor passes a real item class through",
-		safeActor("behr_rifle_ballistic_01", "<player>") == "behr_rifle_ballistic_01",
-		"the guard must let game assets travel")
-	check("NEGATIVE CONTROL: safeActor blocks a bare handle",
-		safeActor("Jeri_Blade", "<player>") == "<player>",
-		"and stop people")
-	check("NEGATIVE CONTROL: safeActor blocks a handle that CONTAINS an asset name",
-		safeActor("xX_behr_rifle_ballistic_01_Xx", "<player>") == "<player>",
-		"the pattern is anchored, so wrapping an asset name in a handle does not smuggle it")
+	// NEGATIVE CONTROL, against the guard that actually runs. A classifier that
+	// answered "person" to everything would pass every privacy check above and
+	// leave a dataset of nothing but tags.
 	check("NEGATIVE CONTROL: unknown stays unknown, not <player>",
-		safeActor("unknown", "<player>") == "unknown",
+		s1.Value("unknown") == "unknown",
 		"the game says unknown when there was no killer - that is a fact, not a person")
+}
+
+// sameKeys reports whether two counted maps hold exactly the same keys with the
+// same counts, independently of iteration order.
+//
+// Go randomises map iteration on purpose, so any check that compares maps by
+// concatenating them is a coin toss wearing the name of a test.
+func sameKeys(a, b map[string]int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for k, n := range a {
+		if b[k] != n {
+			return false
+		}
+	}
+	return true
 }

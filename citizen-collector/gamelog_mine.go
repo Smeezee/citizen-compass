@@ -436,9 +436,27 @@ type MineStore struct {
 	// mineLineInto fails CLOSED when it is missing - see swap().
 	swapName func(string) string `json:"-"`
 
+	// swapProse replaces people named INSIDE free text, also as the store is
+	// written. Separate from swapName because the whole value is not a name -
+	// "Eliminate <somebody> before the timer expires" has to come out the other
+	// side still being a sentence.
+	//
+	// IT HAS TO HAPPEN HERE, NOT AT EXPORT. The export scrubber starts empty,
+	// and by the time it runs every structured field already holds tags - so
+	// the rule that catches a bounty target because they were also a killer can
+	// never fire there. It can only fire on the pass that saw the raw names, and
+	// that is this one. The same defect as safeActor: a rule that exists, tests
+	// green, and is unreachable where it matters.
+	swapProse func(string) (string, int) `json:"-"`
+
 	// swapped counts how many values this pass replaced, so the privacy note
 	// can state a fact rather than a hope.
 	swapped int `json:"-"`
+
+	// proseDropped counts free-text entries refused because no scanner was
+	// installed. Fail-closed has a cost and this is it, counted rather than
+	// hidden.
+	proseDropped int `json:"-"`
 
 	SchemaVersion int    `json:"schema_version"`
 	Generated     string `json:"generated"`
@@ -639,6 +657,25 @@ func (st *MineStore) swap(v string) string {
 	return st.swapName(v)
 }
 
+// prose is how every free-text value reaches the store.
+//
+// FAILS CLOSED, like swap(). Without a scanner the text is REFUSED rather than
+// written raw - a mission objective is the one field that quotes a player's
+// handle verbatim, so "no scanner" cannot mean "write it anyway". The caller
+// records nothing and proseDropped says how often that happened.
+func (st *MineStore) prose(v string) (string, bool) {
+	if st == nil || v == "" {
+		return "", false
+	}
+	if st.swapProse == nil {
+		st.proseDropped++
+		return "", false
+	}
+	out, n := st.swapProse(v)
+	st.swapped += n
+	return out, true
+}
+
 func mineLineInto(st *MineStore, line, build, channel string) {
 
 	if m := reMineBuild.FindStringSubmatch(line); m != nil {
@@ -749,8 +786,10 @@ func mineLineInto(st *MineStore, line, build, channel string) {
 		// not an objective, it is the absence of one, and counting it would put
 		// a fake step in every mission's list.
 		if v != "" && !strings.Contains(v, "UNINITIALIZED") {
-			st.Objectives[scrubIDs(v)]++
-			st.noteHit("mission_objective")
+			if txt, ok := st.prose(scrubIDs(v)); ok {
+				st.Objectives[txt]++
+				st.noteHit("mission_objective")
+			}
 		}
 	}
 
@@ -759,16 +798,20 @@ func mineLineInto(st *MineStore, line, build, channel string) {
 		st.Payouts[m[1]]++
 		st.noteHit("mission_payout")
 	} else if m := reMineContract.FindStringSubmatch(line); m != nil {
-		st.Contracts[scrubIDs(strings.TrimSpace(m[1]))]++
-		st.noteHit("contract")
+		if txt, ok := st.prose(scrubIDs(strings.TrimSpace(m[1]))); ok {
+			st.Contracts[txt]++
+			st.noteHit("contract")
+		}
 	} else if m := reMineNotify.FindStringSubmatch(line); m != nil {
 		// Only tips - text that TEACHES. A notification naming a place or a
 		// person is an event, not instruction, and the two are told apart by
 		// the colon-then-sentence shape CIG uses for tips.
 		txt := strings.TrimSpace(m[1])
 		if i := strings.Index(txt, ": "); i > 0 && i < 40 && strings.HasSuffix(txt, ".") {
-			st.GameTips[scrubIDs(txt)]++
-			st.noteHit("game_tip")
+			if t, ok := st.prose(scrubIDs(txt)); ok {
+				st.GameTips[t]++
+				st.noteHit("game_tip")
+			}
 		}
 	}
 	for _, a := range reMineAttach.FindAllStringSubmatch(line, -1) {
@@ -961,6 +1004,7 @@ func MineAll(outDir string, in Install, logf func(string, ...interface{})) (*Min
 	// during this pass goes through it - see MineStore.swap, which fails closed
 	// if this is ever missing.
 	st.swapName = sc.Value
+	st.swapProse = sc.ScrubProse
 
 	// AND THE DATASET ALREADY ON DISK IS CLEANED.
 	//
@@ -1466,18 +1510,16 @@ var (
 	// otherwise pass.
 )
 
-// safeActor returns a value only if it is shaped like a game asset.
-func safeActor(v, placeholder string) string {
-	v = strings.TrimSpace(v)
-	switch {
-	case v == "" || strings.EqualFold(v, "unknown"):
-		return "unknown"
-	case reMineAssetish.MatchString(scrubIDs(v)) || reMineAssetish.MatchString(v):
-		return scrubIDs(v)
-	default:
-		return placeholder
-	}
-}
+// safeActor is GONE, 2026-08-16.
+//
+// It was the documented name guard and it never had a caller. Four selftest
+// checks certified it, including "NEGATIVE CONTROL: safeActor blocks a bare
+// handle", and every one passed against a function nothing reached - evidence
+// about the source and none about the program.
+//
+// ClassifyName in nameclass.go is the reachable answer, used by both the write
+// path and the export, and it is proven by mining a fixture and looking at what
+// comes out rather than by calling it directly.
 
 // MineDeath is one death, with nobody in it.
 type MineDeath struct {
@@ -1569,6 +1611,31 @@ func (st *MineStore) migrateNames() int {
 			out[strings.Join(parts, "|")] += n
 		}
 		st.VehicleLosses = out
+	}
+
+	// FREE TEXT ALREADY ON DISK.
+	//
+	// Contracts, objectives and tips were never scanned by any build before
+	// 2026-08-16, so whatever they collected is sitting there as the game wrote
+	// it. Same argument as the death rows: the requirement is that no real name
+	// is in the file, not that none has been added since.
+	//
+	// Skipped entirely when no scanner is installed - re-keying with nothing to
+	// re-key with would empty three collections, and fail-closed on a MIGRATION
+	// means leaving the data alone, not deleting it.
+	if st.swapProse != nil {
+		for _, m := range []*map[string]int{&st.Contracts, &st.Objectives, &st.GameTips} {
+			if len(*m) == 0 {
+				continue
+			}
+			out := make(map[string]int, len(*m))
+			for k, n := range *m {
+				cleaned, hits := st.swapProse(k)
+				changed += hits
+				out[cleaned] += n
+			}
+			*m = out
+		}
 	}
 	return changed
 }
