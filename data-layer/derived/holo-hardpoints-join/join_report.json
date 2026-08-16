@@ -1,0 +1,516 @@
+{
+ "placed": [
+  [
+   "600i_Explorer",
+   15,
+   0.006,
+   0
+  ],
+  [
+   "A2_Hercules",
+   29,
+   0.017,
+   7
+  ],
+  [
+   "Anvil_Ballista_Dunestalker",
+   5,
+   0.012,
+   0
+  ],
+  [
+   "Anvil_Ballista_Snowblind",
+   5,
+   0.012,
+   0
+  ],
+  [
+   "Argo_Mole_Carbon_Edition",
+   6,
+   0.049,
+   0
+  ],
+  [
+   "Argo_Mole_Talus_Edition",
+   6,
+   0.049,
+   0
+  ],
+  [
+   "Aurora_CL",
+   10,
+   0.019,
+   0
+  ],
+  [
+   "Aurora_ES",
+   10,
+   0.019,
+   0
+  ],
+  [
+   "Aurora_LN",
+   10,
+   0.019,
+   0
+  ],
+  [
+   "Aurora_LX",
+   10,
+   0.051,
+   0
+  ],
+  [
+   "Aurora_MR",
+   10,
+   0.019,
+   0
+  ],
+  [
+   "C2_Hercules",
+   29,
+   0.021,
+   10
+  ],
+  [
+   "C8R_Pisces",
+   6,
+   0.334,
+   0
+  ],
+  [
+   "Carrack_Expedition_w_C8X",
+   11,
+   0.07,
+   1
+  ],
+  [
+   "Carrack_w_C8X",
+   11,
+   0.07,
+   1
+  ],
+  [
+   "Caterpillar_Best_In_Show_Edition_2949",
+   13,
+   0.002,
+   3
+  ],
+  [
+   "Caterpillar_Pirate_Edition",
+   13,
+   0.002,
+   3
+  ],
+  [
+   "Cutlass_Black_Best_In_Show_Edition_2949",
+   17,
+   0.045,
+   0
+  ],
+  [
+   "Dragonfly_Black",
+   6,
+   0.082,
+   0
+  ],
+  [
+   "F7C-M_Super_Hornet_Heartseeker_Mk_I",
+   10,
+   0.098,
+   0
+  ],
+  [
+   "Gladius_Pirate_Edition",
+   12,
+   0.047,
+   0
+  ],
+  [
+   "Hammerhead_Best_In_Show_Edition_2949",
+   20,
+   0.046,
+   0
+  ],
+  [
+   "Khartu-Al",
+   5,
+   0.315,
+   0
+  ],
+  [
+   "M2_Hercules",
+   29,
+   0.021,
+   9
+  ],
+  [
+   "M50",
+   8,
+   0.121,
+   0
+  ],
+  [
+   "Mercury",
+   13,
+   0.1,
+   0
+  ],
+  [
+   "Mustang_Alpha_Vindicator",
+   7,
+   0.201,
+   0
+  ],
+  [
+   "Reclaimer_Best_In_Show_Edition_2949",
+   20,
+   0.179,
+   0
+  ],
+  [
+   "Valkyrie_Liberator_Edition",
+   33,
+   0.044,
+   15
+  ]
+ ],
+ "refused": [],
+ "skipped": [
+  [
+   "ATLS",
+   "no decoded geometry"
+  ],
+  [
+   "ATLS_GEO",
+   "no decoded geometry"
+  ],
+  [
+   "Ares_Inferno",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Ares_Ion",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Clipper",
+   "no decoded geometry"
+  ],
+  [
+   "Crucible",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Defender",
+   "no decoded geometry"
+  ],
+  [
+   "E1_Spirit",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Eclipse",
+   "no decoded geometry"
+  ],
+  [
+   "Endeavor",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Expanse",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "G12",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "G12a",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "G12r",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Galaxy",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Genesis",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Hull_D",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Hull_E",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Javelin",
+   "no decoded geometry"
+  ],
+  [
+   "Kraken",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Kraken_Privateer",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Legionnaire",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Liberator",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "MDC",
+   "no decoded geometry"
+  ],
+  [
+   "Nautilus",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Nautilus_Solstice_Edition",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Nova",
+   "no decoded geometry"
+  ],
+  [
+   "Odyssey",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Orion",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Pioneer",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Pulse",
+   "no decoded geometry"
+  ],
+  [
+   "Pulse_LX",
+   "no decoded geometry"
+  ],
+  [
+   "ROC",
+   "no decoded geometry"
+  ],
+  [
+   "ROC-DS",
+   "no decoded geometry"
+  ],
+  [
+   "Ranger_CV",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Ranger_RC",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Ranger_TR",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Vulcan",
+   "no mount-data key's words appear in this model's name"
+  ],
+  [
+   "Zeus_Mk_II_MR",
+   "no mount-data key's words appear in this model's name"
+  ]
+ ],
+ "rule": [
+  [
+   "Anvil_Ballista_Dunestalker",
+   "Ballista Dunestalker",
+   5
+  ],
+  [
+   "Anvil_Ballista_Snowblind",
+   "Ballista Snowblind",
+   5
+  ],
+  [
+   "Argo_Mole_Carbon_Edition",
+   "MOLE",
+   6
+  ],
+  [
+   "Argo_Mole_Talus_Edition",
+   "MOLE",
+   6
+  ],
+  [
+   "Carrack_Expedition_w_C8X",
+   "Carrack Expedition",
+   11
+  ],
+  [
+   "Carrack_w_C8X",
+   "Carrack",
+   11
+  ],
+  [
+   "Caterpillar_Best_In_Show_Edition_2949",
+   "Caterpillar",
+   13
+  ],
+  [
+   "Caterpillar_Pirate_Edition",
+   "Caterpillar Pirate",
+   13
+  ],
+  [
+   "Cutlass_Black_Best_In_Show_Edition_2949",
+   "Cutlass Black",
+   17
+  ],
+  [
+   "Dragonfly_Black",
+   "Dragonfly",
+   6
+  ],
+  [
+   "F7C-M_Super_Hornet_Heartseeker_Mk_I",
+   "F7C-M Hornet Heartseeker Mk I",
+   10
+  ],
+  [
+   "Gladius_Pirate_Edition",
+   "Gladius Pirate",
+   12
+  ],
+  [
+   "Hammerhead_Best_In_Show_Edition_2949",
+   "Hammerhead",
+   20
+  ],
+  [
+   "Mustang_Alpha_Vindicator",
+   "Mustang Alpha",
+   7
+  ],
+  [
+   "Reclaimer_Best_In_Show_Edition_2949",
+   "Reclaimer",
+   20
+  ],
+  [
+   "Valkyrie_Liberator_Edition",
+   "Valkyrie",
+   33
+  ]
+ ],
+ "mapped": [
+  [
+   "600i_Explorer",
+   "600i",
+   15
+  ],
+  [
+   "A2_Hercules",
+   "A2 Hercules Starlifter",
+   29
+  ],
+  [
+   "Aurora_CL",
+   "Aurora Mk I CL",
+   10
+  ],
+  [
+   "Aurora_ES",
+   "Aurora Mk I ES",
+   10
+  ],
+  [
+   "Aurora_LN",
+   "Aurora Mk I LN",
+   10
+  ],
+  [
+   "Aurora_LX",
+   "Aurora Mk I LX",
+   10
+  ],
+  [
+   "Aurora_MR",
+   "Aurora Mk I MR",
+   10
+  ],
+  [
+   "C2_Hercules",
+   "C2 Hercules Starlifter",
+   29
+  ],
+  [
+   "C8R_Pisces",
+   "C8R Pisces Rescue",
+   6
+  ],
+  [
+   "Khartu-Al",
+   "Khartu-al",
+   5
+  ],
+  [
+   "M2_Hercules",
+   "M2 Hercules Starlifter",
+   29
+  ],
+  [
+   "M50",
+   "M50 Interceptor",
+   8
+  ],
+  [
+   "Mercury",
+   "Mercury Star Runner",
+   13
+  ]
+ ],
+ "unchecked_hull": [
+  [
+   "Anvil_Ballista_Dunestalker",
+   "Ballista Dunestalker"
+  ],
+  [
+   "Anvil_Ballista_Snowblind",
+   "Ballista Snowblind"
+  ],
+  [
+   "Caterpillar_Pirate_Edition",
+   "Caterpillar Pirate"
+  ],
+  [
+   "Cutlass_Black_Best_In_Show_Edition_2949",
+   "Cutlass Black"
+  ],
+  [
+   "Dragonfly_Black",
+   "Dragonfly"
+  ],
+  [
+   "F7C-M_Super_Hornet_Heartseeker_Mk_I",
+   "F7C-M Hornet Heartseeker Mk I"
+  ],
+  [
+   "Gladius_Pirate_Edition",
+   "Gladius Pirate"
+  ]
+ ]
+}

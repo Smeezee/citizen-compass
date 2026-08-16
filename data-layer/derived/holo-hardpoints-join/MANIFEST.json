@@ -1,0 +1,17 @@
+{
+ "dataset": "holo-hardpoints-join",
+ "produced_by": "build_hardpoint_join.py",
+ "what_this_is": "Ships whose mount data already existed under a name that did not join to the model file. Placed with a pure-Python port of place_fleet.py's rules, checked against that script's own output for a control ship.",
+ "why_a_separate_file": "hardpoints_fleet.json has one writer, place_fleet.py. A second writer on one artifact is a defect this project has paid for three times.",
+ "port_check": {
+  "ok": true,
+  "compared": 7,
+  "worst_unit_delta": 0.052,
+  "frame_matches": true
+ },
+ "counts": {
+  "placed": 29,
+  "refused": 0,
+  "skipped": 39
+ }
+}

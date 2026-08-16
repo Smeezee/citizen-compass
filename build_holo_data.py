@@ -82,6 +82,13 @@ OUT = os.path.join(HERE, "testing", "_src", "holo_data.gen.js")
 # disagreement becomes visible before a visitor finds it.
 BENCH = os.path.join(HERE, "testing", "_src", "loadout_data.gen.js")
 
+# The ships recovered by joining a model file to mount data that was sitting
+# under a different name. A SEPARATE dataset with its own writer - see
+# merge_join below for why the viewer reads two files rather than one being
+# rewritten by two programs.
+JOIN = os.path.join(HERE, "data-layer", "derived", "holo-hardpoints-join",
+                    "hardpoints_join.json")
+
 # The snapshot the bench was built from - the same one, deliberately. A weapon
 # DPS read from a different patch than the ship total would be the same
 # contradiction one level down.
@@ -228,9 +235,53 @@ def guns_for_port(gun_by_port, port):
     return out
 
 
+def merge_join(fleet):
+    """Add the ships recovered by build_hardpoint_join.py.
+
+    TWO DATASETS, ONE VIEWER, AND NO SECOND WRITER. hardpoints_fleet.json keeps
+    its single writer (place_fleet.py); the recovered ships live in their own
+    file and are merged here, at read time, where a collision is visible.
+
+    The key a recovered ship gets says what it IS:
+
+      - resolved BY MAPPING - the model is that ship under a shorter file name,
+        so it takes the ship's real name: Aurora_CL -> "Aurora Mk I CL".
+      - resolved BY RULE - the model is an EDITION or a paint of another hull,
+        so it keeps its own identity: "Caterpillar Best In Show Edition 2949",
+        borrowing the base hull's hardpoints without pretending to be it.
+
+    A key that already exists is REFUSED rather than overwritten. Silently
+    replacing a placed ship with a recovered one would be the second-writer
+    defect wearing a different hat.
+    """
+    if not os.path.exists(JOIN):
+        return fleet, {"merged": 0, "note": "no join dataset present"}
+    with io.open(JOIN, "r", encoding="utf-8") as fh:
+        joined = json.load(fh)
+
+    merged, collisions = 0, []
+    for stem, rec in sorted(joined.items()):
+        base = rec.get("resolved_from") or stem
+        key = base if rec.get("resolved_by") == "mapping" else stem.replace("_", " ")
+        if key in fleet:
+            collisions.append([stem, key])
+            continue
+        fleet[key] = rec
+        merged += 1
+    if collisions:
+        for stem, key in collisions:
+            say("  COLLISION: %s would overwrite %r - refused" % (stem, key))
+        sys.exit("%d recovered ship(s) collide with ships already placed. Refusing "
+                 "to emit: one of the two is wrong about which hull it is, and "
+                 "picking silently is how a Gladius ends up wearing somebody "
+                 "else's hardpoints." % len(collisions))
+    return fleet, {"merged": merged}
+
+
 def main():
     with io.open(FLEET, "r", encoding="utf-8") as fh:
         fleet = json.load(fh)
+    fleet, join_note = merge_join(fleet)
 
     bench = load_bench()
     guns = load_port_weapons()
@@ -254,9 +305,16 @@ def main():
             # Kept and displayable - a hull with no mounts in the derivation is
             # a fact about the ship, and the viewer already says so in words.
             no_points.append(name)
-        b = bench_for(name, bench)
+        # A RECOVERED EDITION LOOKS UP ITS BASE HULL'S NUMBERS.
+        #
+        # "Caterpillar Best In Show Edition 2949" is not a row on the bench and
+        # never will be; the hull it is an edition of is. resolved_from carries
+        # that name, and using it is the same claim the hardpoints already make -
+        # same hull, same fit, same figures.
+        lookup = rec.get("resolved_from") or name
+        b = bench_for(lookup, bench)
         if b is None:
-            unnamed.append(name)
+            unnamed.append("%s (looked up as %r)" % (name, lookup))
         gun_by_port = port_weapons_for(name, guns)
 
         ships[name] = {
