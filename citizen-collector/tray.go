@@ -66,14 +66,27 @@ const (
 	// Anything from WM_APP up is ours to define.
 	wmTrayCallback = 0x0400 + 1 // WM_APP + 1
 
+	// wmAppOpenWindow asks THIS thread to create the window.
+	//
+	// A window belongs to the thread that creates it, and only a thread with a
+	// message loop can service one. The tray thread has both, so startup posts
+	// this rather than creating the window on whatever goroutine it happens to
+	// be running on - which is exactly the mistake that produced a window with
+	// no pump.
+	wmAppOpenWindow = 0x0400 + 2
+
 	wmRButtonUp = 0x0205
 	wmLButtonUp = 0x0202
 	wmCommand   = 0x0111
 
 	// Menu command ids. Small integers, ours alone, because this window has no
 	// other menu to collide with.
-	cmdSendNow = 1001
-	cmdExit    = 1002
+	cmdSendNow      = 1001
+	cmdExit         = 1002
+	cmdCaptureNow   = 1003
+	cmdOpenPictures = 1004
+	cmdOpenWindow   = 1005
+	cmdRevert       = 1006
 
 	mfString       = 0x00000000
 	tpmRightAlign  = 0x0008
@@ -162,10 +175,22 @@ type wndClassEx struct {
 // trayHandle is what the collector holds. Every method on it is safe to call
 // on a zero value, so no caller ever has to check whether the tray came up.
 type trayHandle struct {
-	// onSend is what the menu's "Send my data now" runs. Injected rather than
-	// called directly so this file knows nothing about exporting or uploading -
-	// and so the selftest can prove the menu is wired without sending anything.
-	onSend func()
+	// The menu's actions. Injected rather than called directly so this file
+	// knows nothing about exporting, capturing or reverting - and so the
+	// selftest can prove the menu is wired without doing any of it.
+	//
+	// THE TRAY IS HOME. Every one of these has to work when the window does
+	// not, which is the whole reason they live here.
+	onSend         func()
+	onCaptureNow   func()
+	onOpenPictures func()
+	onOpenWindow   func()
+	onRevert       func()
+
+	// exited closes when the person chooses Exit, so the program can wait on
+	// the one surface that is always present rather than on a window that may
+	// never have rendered.
+	exited chan struct{}
 
 	mu   sync.Mutex
 	hwnd uintptr
@@ -180,7 +205,7 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 	if logf == nil {
 		logf = func(string, ...interface{}) {}
 	}
-	t := &trayHandle{}
+	t := &trayHandle{exited: make(chan struct{})}
 	ready := make(chan bool, 1)
 
 	go func() {
@@ -274,20 +299,36 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 			// A PERSON CAN NO LONGER SEND THIS. The window is parented to
 			// HWND_MESSAGE now, so it has no frame to close - this arrives only
 			// from Stop().
-			if m.Message == wmClose {
+			//
+			// MATCHED ON OUR OWN WINDOW. The collector window lives on this
+			// thread too now, and closing it must not stop the message loop
+			// that every other window here depends on.
+			if m.Message == wmClose && m.HWnd == t.hwnd {
 				break
+			}
+
+			// CREATE THE WINDOW ON THIS THREAD. See wmAppOpenWindow.
+			if m.Message == wmAppOpenWindow && m.HWnd == t.hwnd {
+				if t.onOpenWindow != nil {
+					t.onOpenWindow()
+				}
+				continue
 			}
 
 			// A CLICK ON THE ICON. Right-click and left-click both open the
 			// menu: a left-click on a tray icon does nothing on most programs
 			// and a person hunting for a way to send will try it first.
-			if m.Message == wmTrayCallback &&
+			if m.Message == wmTrayCallback && m.HWnd == t.hwnd &&
 				(uint32(m.LParam) == wmRButtonUp || uint32(m.LParam) == wmLButtonUp) {
 				t.showMenu(logf)
 				continue
 			}
 
-			if m.Message == wmCommand {
+			// OUR MENU ONLY. The window's buttons send WM_COMMAND straight to
+			// their own parent rather than through the queue, so they never
+			// arrive here - but matching on the window makes that a fact rather
+			// than a happy accident.
+			if m.Message == wmCommand && m.HWnd == t.hwnd {
 				switch uint32(m.WParam) & 0xFFFF {
 				case cmdSendNow:
 					// ON ITS OWN GOROUTINE. Packaging and uploading a session
@@ -295,8 +336,21 @@ func StartTray(logf func(string, ...interface{})) *trayHandle {
 					// loop, and a frozen loop means the tooltip stops updating
 					// and the menu stops opening - the program would look hung
 					// at exactly the moment it is working hardest.
-					go t.onSend()
+					go t.run(t.onSend)
+				case cmdCaptureNow:
+					go t.run(t.onCaptureNow)
+				case cmdOpenPictures:
+					go t.run(t.onOpenPictures)
+				case cmdOpenWindow:
+					// NOT on a goroutine. A window has to be created by a
+					// thread with a message loop, and this is one.
+					if t.onOpenWindow != nil {
+						t.onOpenWindow()
+					}
+				case cmdRevert:
+					go t.run(t.onRevert)
 				case cmdExit:
+					t.signalExit()
 					return
 				}
 				continue
@@ -487,7 +541,15 @@ func (t *trayHandle) showMenu(logf func(string, ...interface{})) {
 		}
 		procAppendMenuW.Call(menu, mfString, id, uintptr(unsafe.Pointer(p)))
 	}
+	add(cmdOpenWindow, "Open Citizen Collector")
 	add(cmdSendNow, "Send my data now")
+	add(cmdCaptureNow, "Take a picture now")
+	add(cmdOpenPictures, "Open the pictures folder")
+	if HasPreviousBuild() {
+		// ONLY WHEN THERE IS SOMETHING TO GO BACK TO. An item that always
+		// exists and usually fails teaches people to ignore it.
+		add(cmdRevert, "Go back to the previous version")
+	}
 	add(cmdExit, "Exit Citizen Collector")
 
 	var pt struct{ X, Y int32 }
@@ -502,4 +564,49 @@ func (t *trayHandle) showMenu(logf func(string, ...interface{})) {
 	// Documented workaround: post a null message so the menu dismisses properly
 	// the first time rather than on the click after.
 	procPostMessageW.Call(t.hwnd, 0, 0, 0)
+}
+
+// run calls a menu action if one is wired, so a missing action is a no-op
+// rather than a crash in somebody's notification area.
+func (t *trayHandle) run(f func()) {
+	if f != nil {
+		f()
+	}
+}
+
+func (t *trayHandle) signalExit() {
+	if t == nil || t.exited == nil {
+		return
+	}
+	select {
+	case <-t.exited:
+	default:
+		close(t.exited)
+	}
+}
+
+// WaitForExit blocks until Exit is chosen from the menu.
+//
+// THE TRAY OWNS THE PROGRAM'S LIFETIME now that the window is optional. A
+// program whose lifetime was owned by a window would stop existing the moment
+// somebody closed it by reflex - and for a collector that runs while you play,
+// that is the opposite of what it is for.
+func (t *trayHandle) WaitForExit() {
+	if t == nil || t.exited == nil {
+		return
+	}
+	<-t.exited
+}
+
+// RequestOpenWindow asks the tray's thread to create or raise the window.
+//
+// POSTED, NOT CALLED. The caller is almost never the UI thread, and a window
+// created on a thread that does not pump messages is a window that renders once
+// and then ignores everything - which is precisely the defect this replaced.
+func (t *trayHandle) RequestOpenWindow() bool {
+	if t == nil || t.hwnd == 0 {
+		return false
+	}
+	procPostMessageW.Call(t.hwnd, wmAppOpenWindow, 0, 0)
+	return true
 }

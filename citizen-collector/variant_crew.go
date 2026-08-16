@@ -19,6 +19,17 @@ package main
 
 const BuildVariant = "crew"
 
+// defaultShowWindow is FALSE for the crew build.
+//
+// The tray is home. A contributor installs this, plays, and never touches it -
+// Sleven's acceptance test is "they just have to play the game after they
+// install it", and a window that opens itself every launch is something to
+// close every launch.
+//
+// A fresh crew install is ASKED which it wants; an upgraded one keeps what it
+// already had. See ShowWindowSetting.
+const defaultShowWindow = false
+
 // masterOnlyCommands is empty here. main() consults it so that the two variants
 // share one entry point.
 func masterOnlyCommands() map[string]func() int { return nil }

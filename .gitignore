@@ -94,3 +94,10 @@ node_modules/
 
 # wrangler local dev secrets - never committed
 citizen-collector/.dev.vars
+
+# Per-machine collector state, same reasoning as the consent record: it is
+# written by the running program and describes THIS install, so committing it
+# would ship one machine's cached destination and send history to everybody.
+citizen-collector/collector-destination.json
+citizen-collector/collector-last-send.txt
+citizen-collector/*.rolledback

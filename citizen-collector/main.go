@@ -551,6 +551,7 @@ func selftest(outDir string) int {
 	runInstallLocationSelftest(check)
 	runHandsOffSelftest(check)
 	runUIBridgeSelftest(check)
+	runWindowSelftest(check)
 	runEnumSelftest(check)
 	runTraySizeSelftest(check)
 	runWGCThreadSelftest(check)
@@ -631,7 +632,13 @@ func main() {
 	// Without DPI awareness Windows reports virtualised coordinates on a scaled
 	// display, so the window rect and the captured texture disagree and the
 	// crop lands in the wrong place.
-	syscall.SyscallN(procSetProcessDPIAware.Addr())
+	//
+	// THE ONE DPI CALL IN THE PROGRAM, and it must stay first: whichever call
+	// runs first wins, and a later one is silently refused. makeDpiAware asks
+	// for per-monitor v2 and falls back to this same system-DPI call, so the
+	// capture path keeps exactly what it always had and the window stops being
+	// bitmap-stretched on a scaled display.
+	makeDpiAware()
 
 	exeDir := "."
 	if p, err := os.Executable(); err == nil {
@@ -702,6 +709,7 @@ func main() {
 		showVer = flag.Bool("version", false, "print the version compiled into this binary and exit")
 		watch   = flag.Bool("watch", false, "sit quiet, wait for Star Citizen, and start the collector when it appears")
 		sendNow = flag.Bool("send", false, "package and send what has been collected, without opening the window")
+		revert  = flag.Bool("revert", false, "go back to the previous version kept on this computer")
 
 		gamelog = flag.String("gamelog", "", "force the Game.log to watch (default: derive from the game window, else scan LIVE, PTU, EPTU, TECH-PREVIEW in that order)")
 
@@ -721,6 +729,22 @@ func main() {
 	// Answered before consent, before settings, before any file is touched.
 	// Asking a program its own version must never be the thing that makes it
 	// start watching anything.
+	// GO BACK, WITHOUT THE WINDOW OR THE TRAY.
+	//
+	// The tray menu is the intended way and needs no terminal. This exists
+	// because a rollback is what you reach for when things are already wrong,
+	// and "the tray icon is also broken" is exactly the situation where a
+	// last resort earns its place.
+	if *revert {
+		msg, err := RevertToPrevious(exeDir, nil)
+		if err != nil {
+			showErrorBox("Citizen Collector", err.Error())
+			os.Exit(1)
+		}
+		messageBox("Citizen Collector", msg, 0x00000040)
+		os.Exit(0)
+	}
+
 	// SEND WITHOUT THE WINDOW.
 	//
 	// The window failing used to mean a contributor could not contribute at all,

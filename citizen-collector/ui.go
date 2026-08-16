@@ -565,12 +565,67 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 		return s
 	}
 
-	// WEBVIEW2 OR THE BROWSER - decided here, once, and never asked about.
+	// ===================================================================
+	// THE NATIVE WINDOW - Sleven's ruling, 2026-08-15
+	// ===================================================================
 	//
-	// A missing runtime used to be a dead end that the 271 MB package existed
-	// to prevent. It is now simply the other path, and the person on the far
-	// end is never told which one they got because there is nothing they could
-	// usefully do with the information.
+	// The tray is home. The window is something you open when you want it,
+	// never something you need, and it is a plain Windows window with no
+	// browser engine underneath - see window.go for why.
+	//
+	// WEBVIEW2 IS STILL BELOW THIS, deliberately and temporarily. The order
+	// keeps it working until the new window passes on his machine, because he
+	// needs a usable collector in the meantime. Once it passes, everything from
+	// here down goes - the browser fallback, the bridge timeout and the parity
+	// check with it. Half-removed would be worse than either.
+	if !useLegacyWebView() {
+		// The question is asked ONCE, and never of an install that predates it -
+		// see window_settings.go. An update must not interrogate somebody who
+		// did not ask for it.
+		show := AskWindowChoice(exeDir, logf)
+
+		stateFn := func() uiState { return buildUIState(uid) }
+		if tray != nil {
+			tray.onOpenWindow = func() {
+				ShowCollectorWindow(exeDir, outDir, stateFn, acts, logf)
+			}
+			tray.onCaptureNow = func() { _, _ = acts["captureNow"](nil) }
+			tray.onOpenPictures = func() { _, _ = acts["openCaptures"](nil) }
+			tray.onRevert = func() {
+				msg, err := RevertToPrevious(exeDir, logf)
+				if err != nil {
+					showErrorBox("Citizen Collector", err.Error())
+					return
+				}
+				messageBox("Citizen Collector", msg, 0x00000040)
+			}
+		}
+
+		if show {
+			// ASKED FOR, NOT CREATED HERE. This goroutine has no message loop;
+			// the tray's thread does. Creating it here produced a window that
+			// drew once and then answered nothing.
+			if tray == nil || !tray.RequestOpenWindow() {
+				logf("window: the tray is not available, so the window cannot be " +
+					"opened. The collector is running and still collecting.")
+			} else {
+				logf("window: open. Closing it leaves the collector running in the tray.")
+			}
+		} else {
+			logf("window: staying in the tray, as chosen. Right-click the icon by " +
+				"the clock to open it, send, or stop.")
+		}
+
+		// THE TRAY'S MESSAGE LOOP IS NOW THE PROGRAM'S LIFETIME. It is the one
+		// surface that is always present, which is exactly why the revert lives
+		// there too.
+		waitForTrayExit(tray)
+		return nil
+	}
+
+	// ------------------------------------------------------------------
+	// LEGACY WEBVIEW2 PATH - scheduled for deletion once the window passes
+	// ------------------------------------------------------------------
 	if !webview2Available(exeDir) {
 		logf("window: no WebView2 runtime found, using the browser instead")
 		return serveBrowserUI(acts, logf)

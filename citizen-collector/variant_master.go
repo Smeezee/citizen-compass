@@ -32,6 +32,13 @@ import "flag"
 
 const BuildVariant = "master"
 
+// defaultShowWindow is TRUE for the master build.
+//
+// Sleven is working ON this, not merely running it, so the window is the point
+// rather than an interruption. Same window as the crew build, different default
+// - see window.go. One implementation.
+const defaultShowWindow = true
+
 // registerBenchFlags defines the bench-testing flags. They exist ONLY here.
 //
 // --allow-any-window lifts the StarCitizen.exe process restriction so the
