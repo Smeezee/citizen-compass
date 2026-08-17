@@ -113,6 +113,26 @@ func runOnce(log *pipelinelog.Logger, cfg Config, statePath, trigger string) {
 		st.BoardLastUpdated[key] = res.LastUpdated
 
 		matches := Matches(res.Cards, cfg.Watch)
+
+		// APPENDED BEFORE THE DIFF, ON PURPOSE.
+		//
+		// Diff MUTATES the stored fingerprints - that is how it works, and it
+		// is why main saves before it reports. If the history were written
+		// afterwards it would be recording the state the diff had already
+		// moved to, and the run that changed a card would be the one run whose
+		// "before" was never kept. Writing first means the log holds what was
+		// actually observed on the wire, every run, whatever the diff then does
+		// with it.
+		if n, err := AppendObservations(HistoryPath(filepath.Dir(statePath)), res, cfg.Watch,
+			trigger, log.Logf); err != nil {
+			// NOT FATAL, AND NOT SILENT. A history that stops recording is
+			// exactly the defect this closes, so it is said out loud every run
+			// it fails rather than discovered empty in a year.
+			log.Logf("HISTORY NOT WRITTEN for board %d: %v", board, err)
+		} else if n > 0 {
+			log.Logf("history: %d observation(s) appended for board %d", n, board)
+		}
+
 		changes := Diff(st, res, cfg.Watch)
 		all = append(all, changes...)
 
