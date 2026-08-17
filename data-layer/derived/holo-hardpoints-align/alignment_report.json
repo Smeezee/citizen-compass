@@ -1,14 +1,6 @@
 {
  "aligned": [
   [
-   "600i_Explorer",
-   "600i Touring",
-   15,
-   0.159,
-   0.0,
-   1.2
-  ],
-  [
    "M2_Hercules",
    "C2_Hercules",
    29,
@@ -25,14 +17,6 @@
    1.2
   ],
   [
-   "Cutter Scout",
-   "Cutter Rambler",
-   12,
-   0.295,
-   0.291,
-   1.2
-  ],
-  [
    "Guardian QI",
    "Guardian",
    10,
@@ -41,27 +25,11 @@
    1.2
   ],
   [
-   "MISC Reliant Sen",
-   "MISC Reliant Mako",
-   13,
-   0.205,
-   0.267,
-   1.2
-  ],
-  [
-   "Mustang Alpha",
-   "Mustang Beta",
-   7,
-   0.174,
-   0.196,
-   1.2
-  ],
-  [
-   "Mustang_Alpha_Vindicator",
-   "Mustang Beta",
-   7,
-   0.211,
-   0.231,
+   "Razor LX",
+   "Razor EX",
+   8,
+   0.66,
+   0.688,
    1.2
   ],
   [
@@ -78,6 +46,14 @@
    11,
    0.233,
    0.245,
+   1.2
+  ],
+  [
+   "Terrapin Medic",
+   "Terrapin",
+   3,
+   0.154,
+   0.153,
    1.2
   ]
  ],
@@ -129,6 +105,13 @@
     "Hammerhead_Best_In_Show_Edition_2949"
    ],
    0.052
+  ],
+  [
+   [
+    "Mustang Alpha",
+    "Mustang_Alpha_Vindicator"
+   ],
+   0.04
   ],
   [
    [
@@ -194,6 +177,20 @@
     ],
     [
      "325a"
+    ]
+   ]
+  ],
+  [
+   [
+    "600i Touring",
+    "600i_Explorer"
+   ],
+   [
+    [
+     "600i Touring"
+    ],
+    [
+     "600i_Explorer"
     ]
    ]
   ],
@@ -324,7 +321,9 @@
      "Cutter"
     ],
     [
-     "Cutter Rambler",
+     "Cutter Rambler"
+    ],
+    [
      "Cutter Scout"
     ]
    ]
@@ -519,7 +518,9 @@
      "MISC Reliant Kore"
     ],
     [
-     "MISC Reliant Mako",
+     "MISC Reliant Mako"
+    ],
+    [
      "MISC Reliant Sen"
     ],
     [
@@ -566,8 +567,10 @@
    [
     [
      "Mustang Alpha",
-     "Mustang Beta",
      "Mustang_Alpha_Vindicator"
+    ],
+    [
+     "Mustang Beta"
     ],
     [
      "Mustang Gamma",
@@ -609,22 +612,6 @@
   ],
   [
    [
-    "Razor",
-    "Razor EX",
-    "Razor LX"
-   ],
-   [
-    [
-     "Razor",
-     "Razor EX"
-    ],
-    [
-     "Razor LX"
-    ]
-   ]
-  ],
-  [
-   [
     "Storm",
     "Storm AA"
    ],
@@ -634,20 +621,6 @@
     ],
     [
      "Storm AA"
-    ]
-   ]
-  ],
-  [
-   [
-    "Terrapin",
-    "Terrapin Medic"
-   ],
-   [
-    [
-     "Terrapin"
-    ],
-    [
-     "Terrapin Medic"
     ]
    ]
   ],
@@ -712,6 +685,291 @@
      "Zeus Mk II ES"
     ]
    ]
+  ]
+ ],
+ "config_merged": [
+  [
+   "Razor",
+   "Razor LX",
+   "worst axis differs by 5.2% ([2.26, 7.93, 11.46] vs [2.38, 7.93, 11.46])"
+  ],
+  [
+   "Terrapin",
+   "Terrapin Medic",
+   "worst axis differs by 6.7% ([6.95, 15.31, 19.7] vs [6.95, 16.4, 19.7])"
+  ]
+ ],
+ "config_too_different": [
+  [
+   "Cutter",
+   "Cutter Rambler",
+   "worst axis differs by 14.8% ([5.56, 12.72, 19.89] vs [6.53, 12.72, 19.71])"
+  ],
+  [
+   "Cutter",
+   "Cutter Scout",
+   "worst axis differs by 14.4% ([5.56, 12.72, 19.89] vs [6.49, 12.72, 19.39])"
+  ]
+ ],
+ "not_configuration": [
+  [
+   "300i",
+   "325a",
+   "different published dimensions"
+  ],
+  [
+   "A2_Hercules",
+   "C2_Hercules",
+   "different pilot DPS"
+  ],
+  [
+   "A2_Hercules",
+   "M2_Hercules",
+   "different pilot DPS"
+  ],
+  [
+   "Aurora_CL",
+   "Aurora_LX",
+   "neither name contains the other"
+  ],
+  [
+   "Cyclone MT",
+   "Cyclone TR",
+   "neither name contains the other"
+  ],
+  [
+   "Gladius Valiant",
+   "Gladius_Pirate_Edition",
+   "different pilot DPS"
+  ],
+  [
+   "Glaive",
+   "Vanduul Scythe",
+   "different pilot DPS"
+  ],
+  [
+   "L-21 Wolf",
+   "L-22 Alpha Wolf",
+   "different pilot DPS"
+  ],
+  [
+   "MISC Freelancer",
+   "MISC Freelancer MAX",
+   "different published dimensions"
+  ],
+  [
+   "MISC Reliant Kore",
+   "MISC Reliant Mako",
+   "different pilot DPS"
+  ],
+  [
+   "MISC Reliant Kore",
+   "MISC Reliant Sen",
+   "different pilot DPS"
+  ],
+  [
+   "MISC Reliant Kore",
+   "MISC Reliant Tana",
+   "different pilot DPS"
+  ],
+  [
+   "MISC Reliant Mako",
+   "MISC Reliant Tana",
+   "different pilot DPS"
+  ],
+  [
+   "MISC Reliant Sen",
+   "MISC Reliant Tana",
+   "different pilot DPS"
+  ],
+  [
+   "Mustang Alpha",
+   "Mustang Gamma",
+   "different pilot DPS"
+  ],
+  [
+   "Mustang Alpha",
+   "Mustang Omega",
+   "different pilot DPS"
+  ],
+  [
+   "Mustang Beta",
+   "Mustang Gamma",
+   "different pilot DPS"
+  ],
+  [
+   "Mustang Beta",
+   "Mustang Omega",
+   "different pilot DPS"
+  ],
+  [
+   "Vanguard Harbinger",
+   "Vanguard Hoplite",
+   "different pilot DPS"
+  ],
+  [
+   "Vanguard Harbinger",
+   "Vanguard Warden",
+   "different pilot DPS"
+  ],
+  [
+   "Vanguard Hoplite",
+   "Vanguard Warden",
+   "different pilot DPS"
+  ],
+  [
+   "X1",
+   "X1 Velocity",
+   "different pilot DPS"
+  ]
+ ],
+ "mount_clear": [
+  [
+   "C2_Hercules",
+   "M2_Hercules",
+   "7 cell(s) differ (0 only on C2_Hercules, 7 only on M2_Hercules) and no mount is within 1 cell(s) of any of them"
+  ],
+  [
+   "Anvil_Ballista_Dunestalker",
+   "Anvil_Ballista_Snowblind",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Argo_Mole_Carbon_Edition",
+   "Argo_Mole_Talus_Edition",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Argo_Mole_Carbon_Edition",
+   "MOLE",
+   "2 cell(s) differ (2 only on Argo_Mole_Carbon_Edition, 0 only on MOLE) and no mount is within 1 cell(s) of any of them"
+  ],
+  [
+   "Aurora_CL",
+   "Aurora_ES",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Aurora_CL",
+   "Aurora_LN",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Aurora_CL",
+   "Aurora_MR",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Carrack",
+   "Carrack Expedition",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Carrack",
+   "Carrack_Expedition_w_C8X",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Carrack",
+   "Carrack_w_C8X",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Caterpillar",
+   "Caterpillar_Best_In_Show_Edition_2949",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Caterpillar",
+   "Caterpillar_Pirate_Edition",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Constellation Phoenix",
+   "Constellation Phoenix Emerald",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Guardian",
+   "Guardian QI",
+   "6 cell(s) differ (0 only on Guardian, 6 only on Guardian QI) and no mount is within 1 cell(s) of any of them"
+  ],
+  [
+   "Hammerhead",
+   "Hammerhead_Best_In_Show_Edition_2949",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Mustang Alpha",
+   "Mustang_Alpha_Vindicator",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Mustang Gamma",
+   "Mustang Omega",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Razor",
+   "Razor EX",
+   "2 cell(s) differ (2 only on Razor, 0 only on Razor EX) and no mount is within 1 cell(s) of any of them"
+  ],
+  [
+   "Razor",
+   "Razor LX",
+   "6 cell(s) differ (0 only on Razor, 6 only on Razor LX) and no mount is within 1 cell(s) of any of them"
+  ],
+  [
+   "Reclaimer",
+   "Reclaimer_Best_In_Show_Edition_2949",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Sabre",
+   "Sabre Comet",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "Talon",
+   "Talon Shrike",
+   "16 cell(s) differ (16 only on Talon, 0 only on Talon Shrike) and no mount is within 1 cell(s) of any of them"
+  ],
+  [
+   "Terrapin",
+   "Terrapin Medic",
+   "208 cell(s) differ (127 only on Terrapin, 81 only on Terrapin Medic) and no mount is within 1 cell(s) of any of them"
+  ],
+  [
+   "Valkyrie",
+   "Valkyrie_Liberator_Edition",
+   "the two hulls occupy the same space at 64 cells"
+  ],
+  [
+   "X1",
+   "X1 Force",
+   "the two hulls occupy the same space at 64 cells"
+  ]
+ ],
+ "mount_blocked": [
+  [
+   "600i Touring",
+   "600i_Explorer",
+   "1 mount(s) sit in or beside the 161 cell(s) where these hulls differ: 600i_Explorer / Remote turret top"
+  ],
+  [
+   "Cutter Rambler",
+   "Cutter Scout",
+   "2 mount(s) sit in or beside the 247 cell(s) where these hulls differ: Cutter Rambler / Countermeasure left 02; Cutter Rambler / Countermeasure right 02"
+  ],
+  [
+   "MISC Reliant Mako",
+   "MISC Reliant Sen",
+   "1 mount(s) sit in or beside the 15 cell(s) where these hulls differ: MISC Reliant Sen / Missilerack wing left"
+  ],
+  [
+   "Mustang Alpha",
+   "Mustang Beta",
+   "1 mount(s) sit in or beside the 150 cell(s) where these hulls differ: Mustang Alpha / Weapon regen pool turrets"
   ]
  ]
 }

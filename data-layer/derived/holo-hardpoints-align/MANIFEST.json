@@ -4,10 +4,13 @@
  "what_this_is": "An OVERLAY of marker positions for ships that share a hull with another ship and disagreed with it about where the hardpoints are.",
  "why_an_overlay": "hardpoints_fleet.json has one writer, place_fleet.py, and hardpoints_join.json has another. This changes neither; build_holo_data.py applies it at read time.",
  "reference_choice": "the group medoid - the member closest to all the others by median marker distance",
+ "settled_on_geometry_not_tolerance": {
+  "Cutter / Cutter Scout / Cutter Rambler": "NOT alignable, and not a threshold question. Sleven checked all three against RSI's own pages on 2026-08-16: the Cutter has a plain roof, the Scout carries a large circular dome which IS the variant - RSI's copy calls it 'a powerful onboard scanner' - and the Rambler carries a box structure instead. The 17% height difference is real external geometry that defines each variant. A scanner mount sits ON the dome; aligning it to the base Cutter would drag the marker to a roof line the Scout does not have. Raising the tolerance would not make these alignable, only make the mistake reachable."
+ },
  "tolerance": 0.15,
  "counts": {
-  "ships_moved": 10,
-  "groups_left_alone": 11,
+  "ships_moved": 7,
+  "groups_left_alone": 12,
   "refused": 0,
   "no_geometry": 0
  }

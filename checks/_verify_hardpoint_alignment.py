@@ -19,6 +19,7 @@ Run:  python checks/_verify_hardpoint_alignment.py
 Rule 15: encodings stated.
 """
 
+import io
 import math
 import os
 import sys
@@ -27,7 +28,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 
 from build_hardpoint_join import hull_matches  # noqa: E402
 from build_hardpoint_alignment import (  # noqa: E402
-    median_between, worst_between, TOLERANCE,
+    median_between, worst_between, mounts_clear_of_differences,
+    difference_cells, cell_centre_unit, TOLERANCE,
 )
 
 failures = []
@@ -109,7 +111,123 @@ def main():
           worst_between(far, base) > TOLERANCE,
           "got %.3f - nothing would ever be aligned" % worst_between(far, base))
 
-    # ---- 4. THE APPLY GUARD, WHICH ALREADY FIRED FOR REAL --------------
+    # ---- 4. THE CHECK THAT MATTERS ---------------------------------------
+    #
+    # A pair that PASSES the envelope test and is REFUSED by the mount test.
+    # Sleven named this one exactly, because it is the case the envelope cannot
+    # see: the Cutter Scout's dome and the Rambler's box make almost the same
+    # bounding box, and only luck kept a marker off them.
+    #
+    # SYNTHETIC FIRST, so this runs anywhere. Two identical slabs; one of them
+    # has a dome on top. Their envelopes match to within 2%, so the first pass
+    # waves them through.
+    # A DOME AGAINST A BOX, both the same height - which is what makes their
+    # envelopes match and the first pass wave them through. Exactly the
+    # Scout/Rambler shape of problem, in miniature.
+    def slab(roof):
+        pts = []
+        # DENSE ENOUGH THAT A CELL HOLDS SEVERAL POINTS. At 0.04 the sample
+        # was sparser than the 64-cell grid, so every cell held one point,
+        # every cell was discarded as noise, and the fixture found no
+        # difference between a box and a dome. The fixture was too coarse to
+        # test what it claimed - caught by its own check.
+        step = 0.015
+        n = int(2.0 / step) + 1
+        for i in range(n):
+            for j in range(n):
+                x = -1.0 + i * step
+                z = -1.0 + j * step
+                pts.extend([x, -1.0, z])                    # floor
+                pts.extend([x, 0.0, z])                     # roof deck
+                r2 = x * x + z * z
+                if roof == "box" and abs(x) <= 0.5 and abs(z) <= 0.5:
+                    pts.extend([x, 0.5, z])                 # square box on top
+                if roof == "dome" and r2 <= 0.25:
+                    pts.extend([x, 0.5, z])                 # round dome on top
+        return {"pts": pts, "min": [-1.0, -1.0, -1.0], "max": [1.0, 0.5, 1.0]}
+
+    rambler, scout = slab("box"), slab("dome")
+    ok, detail = hull_matches(rambler, scout)
+    check("gate: FIRST PASS - the envelope waves the dome/box pair through",
+          ok, "the envelope refused them (%s), so this fixture would not be "
+              "testing what it claims to" % detail)
+
+    deck_mounts = [hp("cm_left", (-0.9, 0.0, 0.0)), hp("cm_right", (0.9, 0.0, 0.0))]
+    clear, why = mounts_clear_of_differences("rambler", "scout", rambler, scout,
+                                             deck_mounts, deck_mounts)
+    check("gate: with no mount on the roof structure, the pair is allowed",
+          clear, "it refused a pair whose only difference nothing sits on: %s" % why)
+
+    # AND NOW THE ONE THE ORDER ASKS FOR. A scanner ON the part that differs -
+    # the corner of the box, where the dome has nothing.
+    #
+    # THE POSITION IS COMPUTED, NOT TYPED. `unit` is normalised against the
+    # hull's LONGEST half-extent, so a short axis never reaches 1.0 - my first
+    # attempt put the mount at y=0.5 in unit space, which on this fixture is
+    # below the deck rather than on the box, and the gate correctly allowed it.
+    # The fixture was wrong, not the gate. Same trap caught the real-ship case
+    # below, where the Scout's dome apex is at unit y 0.33 and not 1.0.
+    only_box, only_dome, _ = difference_cells(rambler, scout)
+    check("gate: the box corners ARE seen as structure the dome lacks",
+          len(only_box) > 0,
+          "the gate found no difference between a box and a dome, so nothing "
+          "below could refuse anything")
+    if not only_box:
+        print("  [----] the dome/box fixture cannot continue - nothing to plant on")
+        return 1
+    scanner = deck_mounts + [hp("scanner", cell_centre_unit(sorted(only_box)[0]))]
+    clear, why = mounts_clear_of_differences("rambler", "scout", rambler, scout,
+                                             scanner, deck_mounts)
+    check("gate: THE CASE THAT MATTERS - a mount ON the dome is REFUSED",
+          not clear,
+          "it ALLOWED it. A Scout's scanner would be dragged down to a roof line "
+          "the Scout does not have, which is the exact failure this gate exists "
+          "for.")
+    if not clear:
+        print("         refused with: %s" % why)
+    check("gate: and the refusal NAMES the mount",
+          "scanner" in (why or ""),
+          "'these differ' is not actionable; 'the scanner sits on the dome' is")
+
+    # ---- 4b. THE SAME CASE ON THE REAL SHIPS ---------------------------
+    geo_dir = os.environ.get("CC_GEO_DIR", "")
+    if geo_dir and os.path.isdir(geo_dir):
+        import json as _json
+
+        def load(stem):
+            p = os.path.join(geo_dir, stem + ".json")
+            if not os.path.exists(p):
+                return None
+            with io.open(p, encoding="utf-8") as fh:
+                return _json.load(fh)
+
+        ram, sco = load("Cutter_Rambler"), load("Cutter_Scout")
+        if ram and sco:
+            ok, _ = hull_matches(ram, sco)
+            check("real: the Rambler and Scout PASS the envelope test",
+                  ok, "the fixture rests on them passing it")
+            # The dome apex in the Scout's OWN model coordinates, converted
+            # to unit space the same way the markers are.
+            _, only_scout, _ = difference_cells(ram, sco)
+            if not only_scout:
+                print("  [----] real Cutter fixture COULD NOT RUN - the gate sees "
+                      "no Scout-only structure, so there is nothing to plant on")
+                only_scout = None
+            planted = ([hp("scanner_dome", cell_centre_unit(sorted(only_scout)[0]))]
+                       if only_scout else [])
+            clear, why = mounts_clear_of_differences(
+                "Cutter Rambler", "Cutter Scout", ram, sco, [], planted)
+            check("real: a planted Scout mount ON THE DOME is refused",
+                  not clear, "it was allowed: %s" % why)
+            if not clear:
+                print("         refused with: %s" % why)
+        else:
+            print("  [----] real Cutter fixture COULD NOT RUN - geometry not decoded")
+    else:
+        print("  [----] real Cutter fixture COULD NOT RUN - CC_GEO_DIR not set. "
+              "That is a check not performed, not a check that passed.")
+
+    # ---- 5. THE APPLY GUARD, WHICH ALREADY FIRED FOR REAL --------------
     #
     # An overlay entry naming a ship or a port the viewer does not have must
     # stop the build. It did: three joined ships are keyed by model stem in the
