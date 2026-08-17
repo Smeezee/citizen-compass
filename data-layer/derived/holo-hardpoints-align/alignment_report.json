@@ -1,0 +1,717 @@
+{
+ "aligned": [
+  [
+   "600i_Explorer",
+   "600i Touring",
+   15,
+   0.159,
+   0.0,
+   1.2
+  ],
+  [
+   "M2_Hercules",
+   "C2_Hercules",
+   29,
+   1.566,
+   1.599,
+   1.2
+  ],
+  [
+   "Constellation Phoenix Emerald",
+   "Constellation Phoenix",
+   18,
+   0.602,
+   0.62,
+   1.2
+  ],
+  [
+   "Cutter Scout",
+   "Cutter Rambler",
+   12,
+   0.295,
+   0.291,
+   1.2
+  ],
+  [
+   "Guardian QI",
+   "Guardian",
+   10,
+   0.305,
+   0.32,
+   1.2
+  ],
+  [
+   "MISC Reliant Sen",
+   "MISC Reliant Mako",
+   13,
+   0.205,
+   0.267,
+   1.2
+  ],
+  [
+   "Mustang Alpha",
+   "Mustang Beta",
+   7,
+   0.174,
+   0.196,
+   1.2
+  ],
+  [
+   "Mustang_Alpha_Vindicator",
+   "Mustang Beta",
+   7,
+   0.211,
+   0.231,
+   1.2
+  ],
+  [
+   "Sabre Comet",
+   "Sabre",
+   11,
+   0.168,
+   0.164,
+   1.2
+  ],
+  [
+   "Talon Shrike",
+   "Talon",
+   11,
+   0.233,
+   0.245,
+   1.2
+  ]
+ ],
+ "left_alone": [
+  [
+   [
+    "Anvil_Ballista_Dunestalker",
+    "Anvil_Ballista_Snowblind"
+   ],
+   0.0
+  ],
+  [
+   [
+    "Argo_Mole_Carbon_Edition",
+    "Argo_Mole_Talus_Edition",
+    "MOLE"
+   ],
+   0.027
+  ],
+  [
+   [
+    "Aurora_CL",
+    "Aurora_ES",
+    "Aurora_LN",
+    "Aurora_MR"
+   ],
+   0.0
+  ],
+  [
+   [
+    "Carrack",
+    "Carrack Expedition",
+    "Carrack_Expedition_w_C8X",
+    "Carrack_w_C8X"
+   ],
+   0.036
+  ],
+  [
+   [
+    "Caterpillar",
+    "Caterpillar_Best_In_Show_Edition_2949",
+    "Caterpillar_Pirate_Edition"
+   ],
+   0.034
+  ],
+  [
+   [
+    "Hammerhead",
+    "Hammerhead_Best_In_Show_Edition_2949"
+   ],
+   0.052
+  ],
+  [
+   [
+    "Mustang Gamma",
+    "Mustang Omega"
+   ],
+   0.0
+  ],
+  [
+   [
+    "Razor",
+    "Razor EX"
+   ],
+   0.078
+  ],
+  [
+   [
+    "Reclaimer",
+    "Reclaimer_Best_In_Show_Edition_2949"
+   ],
+   0.055
+  ],
+  [
+   [
+    "Valkyrie",
+    "Valkyrie_Liberator_Edition"
+   ],
+   0.054
+  ],
+  [
+   [
+    "X1",
+    "X1 Force"
+   ],
+   0.025
+  ]
+ ],
+ "no_geometry": [],
+ "refused": [],
+ "different_hulls": [
+  [
+   [
+    "100i",
+    "135c"
+   ],
+   [
+    [
+     "100i"
+    ],
+    [
+     "135c"
+    ]
+   ]
+  ],
+  [
+   [
+    "300i",
+    "325a"
+   ],
+   [
+    [
+     "300i"
+    ],
+    [
+     "325a"
+    ]
+   ]
+  ],
+  [
+   [
+    "A1 Spirit",
+    "C1 Spirit"
+   ],
+   [
+    [
+     "A1 Spirit"
+    ],
+    [
+     "C1 Spirit"
+    ]
+   ]
+  ],
+  [
+   [
+    "A2_Hercules",
+    "C2_Hercules",
+    "M2_Hercules"
+   ],
+   [
+    [
+     "A2_Hercules"
+    ],
+    [
+     "C2_Hercules",
+     "M2_Hercules"
+    ]
+   ]
+  ],
+  [
+   [
+    "Anvil_Ballista_Dunestalker",
+    "Anvil_Ballista_Snowblind",
+    "Ballista"
+   ],
+   [
+    [
+     "Anvil_Ballista_Dunestalker",
+     "Anvil_Ballista_Snowblind"
+    ],
+    [
+     "Ballista"
+    ]
+   ]
+  ],
+  [
+   [
+    "Apollo Medivac",
+    "Apollo Triage"
+   ],
+   [
+    [
+     "Apollo Medivac"
+    ],
+    [
+     "Apollo Triage"
+    ]
+   ]
+  ],
+  [
+   [
+    "Aurora_CL",
+    "Aurora_ES",
+    "Aurora_LN",
+    "Aurora_LX",
+    "Aurora_MR"
+   ],
+   [
+    [
+     "Aurora_CL",
+     "Aurora_ES",
+     "Aurora_LN",
+     "Aurora_MR"
+    ],
+    [
+     "Aurora_LX"
+    ]
+   ]
+  ],
+  [
+   [
+    "Avenger Stalker",
+    "Avenger Titan",
+    "Avenger Titan Renegade",
+    "Avenger Warlock"
+   ],
+   [
+    [
+     "Avenger Stalker"
+    ],
+    [
+     "Avenger Titan"
+    ],
+    [
+     "Avenger Titan Renegade"
+    ],
+    [
+     "Avenger Warlock"
+    ]
+   ]
+  ],
+  [
+   [
+    "C8 Pisces",
+    "C8R_Pisces"
+   ],
+   [
+    [
+     "C8 Pisces"
+    ],
+    [
+     "C8R_Pisces"
+    ]
+   ]
+  ],
+  [
+   [
+    "Cutter",
+    "Cutter Rambler",
+    "Cutter Scout"
+   ],
+   [
+    [
+     "Cutter"
+    ],
+    [
+     "Cutter Rambler",
+     "Cutter Scout"
+    ]
+   ]
+  ],
+  [
+   [
+    "Cyclone",
+    "Cyclone AA",
+    "Cyclone RC",
+    "Cyclone RN"
+   ],
+   [
+    [
+     "Cyclone"
+    ],
+    [
+     "Cyclone AA"
+    ],
+    [
+     "Cyclone RC"
+    ],
+    [
+     "Cyclone RN"
+    ]
+   ]
+  ],
+  [
+   [
+    "Cyclone MT",
+    "Cyclone TR"
+   ],
+   [
+    [
+     "Cyclone MT"
+    ],
+    [
+     "Cyclone TR"
+    ]
+   ]
+  ],
+  [
+   [
+    "Dragonfly Yellowjacket",
+    "Dragonfly_Black"
+   ],
+   [
+    [
+     "Dragonfly Yellowjacket"
+    ],
+    [
+     "Dragonfly_Black"
+    ]
+   ]
+  ],
+  [
+   [
+    "F7A Hornet Mk II",
+    "F7C Hornet Mk II",
+    "F7C-M Super Hornet Mk II",
+    "F7C-R Hornet Tracker Mk II",
+    "F7C-S Hornet Ghost Mk II"
+   ],
+   [
+    [
+     "F7A Hornet Mk II"
+    ],
+    [
+     "F7C Hornet Mk II"
+    ],
+    [
+     "F7C-M Super Hornet Mk II"
+    ],
+    [
+     "F7C-R Hornet Tracker Mk II"
+    ],
+    [
+     "F7C-S Hornet Ghost Mk II"
+    ]
+   ]
+  ],
+  [
+   [
+    "F7C Hornet Mk I",
+    "F7C-R Hornet Tracker Mk I",
+    "F7C-S Hornet Ghost Mk I"
+   ],
+   [
+    [
+     "F7C Hornet Mk I"
+    ],
+    [
+     "F7C-R Hornet Tracker Mk I"
+    ],
+    [
+     "F7C-S Hornet Ghost Mk I"
+    ]
+   ]
+  ],
+  [
+   [
+    "F7C-M Super Hornet Mk I",
+    "F7C-M_Super_Hornet_Heartseeker_Mk_I"
+   ],
+   [
+    [
+     "F7C-M Super Hornet Mk I"
+    ],
+    [
+     "F7C-M_Super_Hornet_Heartseeker_Mk_I"
+    ]
+   ]
+  ],
+  [
+   [
+    "F8C Lightning",
+    "F8C Lightning Executive Edition"
+   ],
+   [
+    [
+     "F8C Lightning"
+    ],
+    [
+     "F8C Lightning Executive Edition"
+    ]
+   ]
+  ],
+  [
+   [
+    "Gladius Valiant",
+    "Gladius_Pirate_Edition"
+   ],
+   [
+    [
+     "Gladius Valiant"
+    ],
+    [
+     "Gladius_Pirate_Edition"
+    ]
+   ]
+  ],
+  [
+   [
+    "Glaive",
+    "Vanduul Scythe"
+   ],
+   [
+    [
+     "Glaive"
+    ],
+    [
+     "Vanduul Scythe"
+    ]
+   ]
+  ],
+  [
+   [
+    "L-21 Wolf",
+    "L-22 Alpha Wolf"
+   ],
+   [
+    [
+     "L-21 Wolf"
+    ],
+    [
+     "L-22 Alpha Wolf"
+    ]
+   ]
+  ],
+  [
+   [
+    "MISC Freelancer",
+    "MISC Freelancer MAX"
+   ],
+   [
+    [
+     "MISC Freelancer"
+    ],
+    [
+     "MISC Freelancer MAX"
+    ]
+   ]
+  ],
+  [
+   [
+    "MISC Reliant Kore",
+    "MISC Reliant Mako",
+    "MISC Reliant Sen",
+    "MISC Reliant Tana"
+   ],
+   [
+    [
+     "MISC Reliant Kore"
+    ],
+    [
+     "MISC Reliant Mako",
+     "MISC Reliant Sen"
+    ],
+    [
+     "MISC Reliant Tana"
+    ]
+   ]
+  ],
+  [
+   [
+    "MISC Starfarer",
+    "MISC Starfarer Gemini"
+   ],
+   [
+    [
+     "MISC Starfarer"
+    ],
+    [
+     "MISC Starfarer Gemini"
+    ]
+   ]
+  ],
+  [
+   [
+    "MPUV Cargo",
+    "MPUV Personnel"
+   ],
+   [
+    [
+     "MPUV Cargo"
+    ],
+    [
+     "MPUV Personnel"
+    ]
+   ]
+  ],
+  [
+   [
+    "Mustang Alpha",
+    "Mustang Beta",
+    "Mustang Gamma",
+    "Mustang Omega",
+    "Mustang_Alpha_Vindicator"
+   ],
+   [
+    [
+     "Mustang Alpha",
+     "Mustang Beta",
+     "Mustang_Alpha_Vindicator"
+    ],
+    [
+     "Mustang Gamma",
+     "Mustang Omega"
+    ]
+   ]
+  ],
+  [
+   [
+    "Nox",
+    "Nox Kue"
+   ],
+   [
+    [
+     "Nox"
+    ],
+    [
+     "Nox Kue"
+    ]
+   ]
+  ],
+  [
+   [
+    "P-52 Merlin",
+    "P-72 Archimedes",
+    "P-72 Archimedes Emerald"
+   ],
+   [
+    [
+     "P-52 Merlin"
+    ],
+    [
+     "P-72 Archimedes"
+    ],
+    [
+     "P-72 Archimedes Emerald"
+    ]
+   ]
+  ],
+  [
+   [
+    "Razor",
+    "Razor EX",
+    "Razor LX"
+   ],
+   [
+    [
+     "Razor",
+     "Razor EX"
+    ],
+    [
+     "Razor LX"
+    ]
+   ]
+  ],
+  [
+   [
+    "Storm",
+    "Storm AA"
+   ],
+   [
+    [
+     "Storm"
+    ],
+    [
+     "Storm AA"
+    ]
+   ]
+  ],
+  [
+   [
+    "Terrapin",
+    "Terrapin Medic"
+   ],
+   [
+    [
+     "Terrapin"
+    ],
+    [
+     "Terrapin Medic"
+    ]
+   ]
+  ],
+  [
+   [
+    "Ursa",
+    "Ursa Fortuna"
+   ],
+   [
+    [
+     "Ursa"
+    ],
+    [
+     "Ursa Fortuna"
+    ]
+   ]
+  ],
+  [
+   [
+    "Vanguard Harbinger",
+    "Vanguard Hoplite",
+    "Vanguard Warden"
+   ],
+   [
+    [
+     "Vanguard Harbinger"
+    ],
+    [
+     "Vanguard Hoplite"
+    ],
+    [
+     "Vanguard Warden"
+    ]
+   ]
+  ],
+  [
+   [
+    "X1",
+    "X1 Force",
+    "X1 Velocity"
+   ],
+   [
+    [
+     "X1",
+     "X1 Force"
+    ],
+    [
+     "X1 Velocity"
+    ]
+   ]
+  ],
+  [
+   [
+    "Zeus Mk II CL",
+    "Zeus Mk II ES"
+   ],
+   [
+    [
+     "Zeus Mk II CL"
+    ],
+    [
+     "Zeus Mk II ES"
+    ]
+   ]
+  ]
+ ]
+}

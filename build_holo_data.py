@@ -89,6 +89,12 @@ BENCH = os.path.join(HERE, "testing", "_src", "loadout_data.gen.js")
 JOIN = os.path.join(HERE, "data-layer", "derived", "holo-hardpoints-join",
                     "hardpoints_join.json")
 
+# Marker positions for ships that share a hull with another ship and disagreed
+# with it about where the hardpoints are. An OVERLAY, applied here at read time:
+# neither dataset above is rewritten, and both keep their single writer.
+ALIGN = os.path.join(HERE, "data-layer", "derived", "holo-hardpoints-align",
+                     "alignment_overlay.json")
+
 # The snapshot the bench was built from - the same one, deliberately. A weapon
 # DPS read from a different patch than the ship total would be the same
 # contradiction one level down.
@@ -255,11 +261,11 @@ def merge_join(fleet):
     defect wearing a different hat.
     """
     if not os.path.exists(JOIN):
-        return fleet, {"merged": 0, "note": "no join dataset present"}
+        return fleet, {"merged": 0, "alias": {}, "note": "no join dataset present"}
     with io.open(JOIN, "r", encoding="utf-8") as fh:
         joined = json.load(fh)
 
-    merged, collisions = 0, []
+    merged, collisions, alias = 0, [], {}
     for stem, rec in sorted(joined.items()):
         base = rec.get("resolved_from") or stem
         key = base if rec.get("resolved_by") == "mapping" else stem.replace("_", " ")
@@ -267,6 +273,7 @@ def merge_join(fleet):
             collisions.append([stem, key])
             continue
         fleet[key] = rec
+        alias[stem] = key
         merged += 1
     if collisions:
         for stem, key in collisions:
@@ -275,13 +282,56 @@ def merge_join(fleet):
                  "to emit: one of the two is wrong about which hull it is, and "
                  "picking silently is how a Gladius ends up wearing somebody "
                  "else's hardpoints." % len(collisions))
-    return fleet, {"merged": merged}
+    return fleet, {"merged": merged, "alias": alias}
+
+
+def apply_alignment(fleet, alias):
+    """Move markers onto the positions their own hull already uses elsewhere.
+
+    THE OVERLAY IS APPLIED, NOT MERGED. Every entry names a ship and a port that
+    exists, and a port it does not recognise is a hard failure rather than a
+    silent skip: an overlay that quietly matched nothing would leave the pages
+    disagreeing while reporting that it had fixed them.
+    """
+    if not os.path.exists(ALIGN):
+        return fleet, {"moved": 0, "note": "no alignment overlay present"}
+    with io.open(ALIGN, "r", encoding="utf-8") as fh:
+        overlay = json.load(fh)
+
+    moved, unknown = 0, []
+    for key, ports in overlay.items():
+        # A RECOVERED SHIP IS KEYED BY ITS MODEL STEM IN THE OVERLAY and by the
+        # name it was merged under here - "M2_Hercules" against "M2 Hercules
+        # Starlifter". The alias map from merge_join is the only thing that
+        # knows both, so it does the translating rather than a second guess at
+        # the naming rule.
+        rec = fleet.get(key) or fleet.get(alias.get(key, ""))
+        if rec is None:
+            unknown.append(key)
+            continue
+        by_port = {h["port"]: h for h in rec["hardpoints"]}
+        for port, pos in ports.items():
+            h = by_port.get(port)
+            if h is None:
+                unknown.append("%s / %s" % (key, port))
+                continue
+            h["unit"] = pos["unit"]
+            h["pos_model"] = pos["pos_model"]
+            moved += 1
+    if unknown:
+        for u in unknown[:20]:
+            say("  OVERLAY names something that is not here: %s" % u)
+        sys.exit("%d overlay entr(ies) matched nothing. Refusing to emit: an "
+                 "overlay that silently matches nothing reports a fix it did not "
+                 "make." % len(unknown))
+    return fleet, {"moved": moved}
 
 
 def main():
     with io.open(FLEET, "r", encoding="utf-8") as fh:
         fleet = json.load(fh)
     fleet, join_note = merge_join(fleet)
+    fleet, align_note = apply_alignment(fleet, join_note.get("alias") or {})
 
     bench = load_bench()
     guns = load_port_weapons()
@@ -464,6 +514,7 @@ def main():
         % (os.path.relpath(OUT, HERE), os.path.getsize(OUT) / 1024.0))
     say("  displayable: %d ships, %d hardpoints"
         % (len(ships), total_hp))
+    say("  alignment overlay: %s" % json.dumps(align_note))
 
     # THE DPS COVERAGE, COUNTED AND MADE TO SUM.
     #
