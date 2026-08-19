@@ -1005,7 +1005,7 @@ F3  DONE  ee91865  The cc-pending panel, and what it would now need.
 
 --- PHASE F COMPLETE. ------------------------------------------------------
 
-SWEEP  <pending>  Ran every control written in this session, back to back,
+SWEEP  273ea61  Ran every control written in this session, back to back,
     after the last item. That found a regression I had introduced and not
     noticed, which is the argument for running the sweep rather than trusting
     that each item was green when it was written.
