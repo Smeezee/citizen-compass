@@ -525,10 +525,9 @@ func selftest(outDir string) int {
 
 	// The capture-value gate and the two triggers that were missing. This group
 	// exists because of the 40-capture audit, not because of a crash.
-	runTriggerValueSelftest(check)
-	runBurstSelftest(check)
 	runHotkeyBurstSelftest(check)
-	runBurstSettingsSelftest(check)
+	runNoAutoCaptureSelftest(check)
+	runDiarySelftest(check)
 	runCombatSelftest(check)
 	runMergeSelftest(check)
 	runKeyWatchSelftest(check)
@@ -549,6 +548,7 @@ func selftest(outDir string) int {
 	runWindowSelftest(check)
 	runSendBatchedSelftest(check)
 	runNameClassSelftest(check)
+	runPlayerEvidenceSelftest(check)
 	runScrubPolicySelftest(check)
 	runEnumSelftest(check)
 	runTraySizeSelftest(check)
@@ -557,8 +557,6 @@ func selftest(outDir string) int {
 	runCallbackLeakSelftest(check)
 	runHotkeyEdgeSelftest(check)
 	runHotkeyDedupSelftest(check)
-	runIntervalSecondsSelftest(check)
-	runIntervalSettingsSelftest(check)
 
 	runHotkeyDefaultSelftest(check)
 	hkVoid := runHotkeySelftest(check)
@@ -650,14 +648,8 @@ func main() {
 	// would be theatre.
 	// (The actual call is below, once we know which mode we are in.)
 
-	// Menu, loading-screen and spawn frames are OFF by default - see the
-	// 40-capture audit in auto.go's Trigger doc comment. Set
-	// capture_low_value = true in collector-settings.txt to get them back.
-	captureLowValue := false
-
-	// While a shop terminal is open the collector keeps shooting, so a list
-	// longer than one screen is recorded as it is scrolled. See session_burst.go.
-	burstCfg := defaultBurstConfig()
+	// The hotkey burst: hold the key and the frames keep coming while a long
+	// list is scrolled. The only burst left - see §6 in auto.go.
 	hotkeyBurstCfg := defaultHotkeyBurstConfig()
 
 	// Keys the player wants a picture taken on. Empty by default - the tool
@@ -713,11 +705,9 @@ func main() {
 
 		gamelog = flag.String("gamelog", "", "force the Game.log to watch (default: derive from the game window, else scan LIVE, PTU, EPTU, TECH-PREVIEW in that order)")
 
-		auto        = flag.Bool("auto", false, "capture automatically on Game.log state changes (no hotkey needed)")
-		intervalSec = flag.Int("interval-seconds", defCfg.IntervalSeconds, "seconds between fallback captures when nothing changes; 0 = off")
-		intervalMin = flag.Int("interval", 0, "DEPRECATED, MINUTES between fallback captures. Use -interval-seconds.")
-		poll        = flag.Int("poll", defCfg.PollSeconds, "seconds between Game.log checks in --auto")
-		debounce    = flag.Int("debounce", defCfg.DebounceSeconds, "minimum seconds between two automatic captures")
+		auto     = flag.Bool("auto", false, "capture automatically on Game.log state changes (no hotkey needed)")
+		poll     = flag.Int("poll", defCfg.PollSeconds, "seconds between Game.log checks in --auto")
+		debounce = flag.Int("debounce", defCfg.DebounceSeconds, "minimum seconds between two automatic captures")
 	)
 	// Bench flags come from the variant file. In the crew build this registers
 	// nothing at all, so --allow-any-window and --window are not merely refused -
@@ -829,56 +819,17 @@ func main() {
 	//
 	// Every one of them is honoured, and every conversion or conflict is
 	// printed. A user whose setting is being reinterpreted gets told.
-	if v, notes, err := resolveIntervalSeconds(cfgSettings); err != nil {
-		fmt.Fprintf(os.Stderr, "settings: %v (ignored, using %ds)\n", err, *intervalSec)
-	} else {
-		for _, n := range notes {
-			fmt.Fprintf(os.Stderr, "%s\n", n)
-		}
-		if !typed["interval-seconds"] && !typed["interval"] {
-			*intervalSec = v
-		}
-	}
-	if typed["interval"] {
-		if typed["interval-seconds"] {
-			fmt.Fprintf(os.Stderr,
-				"settings: both -interval and -interval-seconds were given. "+
-					"Using -interval-seconds=%d and ignoring -interval=%d.\n",
-				*intervalSec, *intervalMin)
-		} else {
-			*intervalSec = *intervalMin * 60
-			fmt.Fprintf(os.Stderr,
-				"settings: -interval is deprecated and means MINUTES; "+
-					"-interval %d has been read as %d seconds. Use -interval-seconds.\n",
-				*intervalMin, *intervalSec)
-		}
-	}
 	if !typed["auto"] {
 		if v, ok := cfgSettings.boolVal("auto"); ok {
 			*auto = v
 		}
 	}
-	if v, ok := cfgSettings.boolVal("capture_low_value"); ok {
-		captureLowValue = v
-	}
-	// THE "found" BOOLEAN IS NOT OPTIONAL, AND IGNORING IT DISABLED THE BURST.
+	// THE SESSION BURST IS GONE, and with it burst_seconds / burst_max_frames.
 	//
-	// Caught in a live session on 2026-08-08, not by any test: two shop
-	// terminals opened, both fired event:terminal_open, and not one burst frame
-	// followed. intVal returns (0, false, nil) for a key that is ABSENT, and
-	// this code read only the value and the error - so a settings file written
-	// before burst_seconds existed set FrameSeconds to 0, which is the documented
-	// way to turn bursting OFF.
-	//
-	// Every settings file in the world was missing that key. The feature was
-	// dead on arrival on every machine, and it looked exactly like a feature
-	// that had not been reached yet.
-	if v, found, err := cfgSettings.intVal("burst_seconds"); found && err == nil && v >= 0 {
-		burstCfg.FrameSeconds = v
-	}
-	if v, found, err := cfgSettings.intVal("burst_max_frames"); found && err == nil && v > 0 {
-		burstCfg.MaxFrames = v
-	}
+	// It fired a run of frames when a shop terminal opened - a picture the
+	// program decided to take. §6 removed every one of those. The HOTKEY burst
+	// stays and keeps its own settings: that one is the person's own press,
+	// continuing while they hold the key.
 	// THE SAME `found` DISCIPLINE as burst_seconds above, for the same reason:
 	// a settings file written before these keys existed must keep the default,
 	// not silently receive 0 and lose the feature.
@@ -998,9 +949,6 @@ func main() {
 		cfg := autoConfig{
 			PollSeconds:     *poll,
 			DebounceSeconds: *debounce,
-			IntervalSeconds: *intervalSec,
-			CaptureLowValue: captureLowValue,
-			Burst:           burstCfg,
 			HotkeyBurst:     hotkeyBurstCfg,
 			Keys:            watchKeys,
 		}
@@ -1178,10 +1126,6 @@ func main() {
 			fmt.Fprintf(os.Stderr, "--debounce cannot be negative (got %d)\n", *debounce)
 			os.Exit(2)
 		}
-		if *intervalSec < 0 {
-			fmt.Fprintf(os.Stderr, "--interval-seconds cannot be negative; use 0 to turn it off (got %d)\n", *intervalSec)
-			os.Exit(2)
-		}
 
 		// Give the user something to edit. Never overwrites an existing file.
 		if sp, created, err := writeSettingsTemplateIfAbsent(exeDir); err != nil {
@@ -1207,8 +1151,8 @@ func main() {
 		fmt.Printf("captures : %s\n", *outDir)
 		fmt.Printf("log      : %s\n", logPath)
 		fmt.Printf("settings : %s\n", filepath.Join(exeDir, settingsFileName))
-		fmt.Printf("poll %ds, debounce %ds, interval %s\n",
-			*poll, *debounce, intervalDesc(*intervalSec))
+		fmt.Printf("poll %ds, debounce %ds. NOTHING captures on a timer.\n",
+			*poll, *debounce)
 
 		// The watched log, and HOW it was chosen, on every start. The scan
 		// takes the first of LIVE, PTU, EPTU, TECH-PREVIEW that exists, which
@@ -1325,9 +1269,6 @@ func main() {
 		cfg := autoConfig{
 			PollSeconds:     *poll,
 			DebounceSeconds: *debounce,
-			IntervalSeconds: *intervalSec,
-			CaptureLowValue: captureLowValue,
-			Burst:           burstCfg,
 			HotkeyBurst:     hotkeyBurstCfg,
 			Keys:            watchKeys,
 		}

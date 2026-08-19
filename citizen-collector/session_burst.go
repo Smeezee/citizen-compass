@@ -56,29 +56,6 @@ type burstConfig struct {
 	IdleSeconds  int // give up if no frame taken in this long
 }
 
-func defaultBurstConfig() burstConfig {
-	// Two seconds is chosen against the thing being photographed, not picked
-	// round: the log poll is already 2s, so a faster burst would shoot frames
-	// the detector cannot yet explain. Twenty-four frames covers roughly fifty
-	// seconds of scrolling, which is a long look at one kiosk.
-	return burstConfig{FrameSeconds: 2, MaxFrames: 24, IdleSeconds: 20}
-}
-
-// defaultHotkeyBurstConfig is the rhythm ONE deliberate press produces.
-//
-// Six seconds at one frame per second, which is the order's starting point and
-// Sleven's own description: "I can scroll for a few seconds and try to capture
-// multiple things."
-//
-// BOTH NUMBERS ARE SETTINGS, and that is the important part. The right values
-// depend on how fast he actually scrolls a commodity board, which nobody knows
-// yet - so these are a starting point to be measured against, not a judgement.
-// hotkey_burst_seconds = 0 turns bursting off entirely and restores one press,
-// one frame.
-//
-// Faster than the terminal burst deliberately: a terminal is followed patiently
-// for as long as it is open, while a press means "this screen, right now".
-// 1 frame/second is also the fastest rate a person can meaningfully scroll to.
 func defaultHotkeyBurstConfig() burstConfig {
 	return burstConfig{FrameSeconds: 1, MaxFrames: 6, IdleSeconds: 10}
 }
@@ -120,44 +97,10 @@ func newBurstState(cfg burstConfig) *burstState {
 // ceiling still bounds the whole visit. Without that, a log that mentions the
 // terminal every few seconds would reset the counter forever and the ceiling
 // would never be reached.
-func (b *burstState) Begin(what string, now time.Time) {
-	if b.termCfg.FrameSeconds <= 0 {
-		return
-	}
-	// A DELIBERATE PRESS OUTRANKS THE LOG. If the person is holding the key
-	// down on a screen they chose, the terminal that happens to be open does
-	// not get to relabel their frames halfway through. The terminal burst can
-	// start the moment theirs finishes.
-	if b.active && b.kind == "hotkey" {
-		return
-	}
-	if b.active && b.what == what {
-		return
-	}
-	b.cfg = b.termCfg
-	b.active = true
-	b.kind = "terminal"
-	b.what = what
-	b.started = now
-	b.lastShot = now // the trigger itself already took the opening frame
-	b.frames = 0
-	b.press = 0
-	b.extended = 0
-	b.stopWhy = ""
-}
+// Begin() IS GONE. It started a burst because a shop TERMINAL opened - a run
+// of pictures the program decided to take on its own, which is exactly what §6
+// removed. BeginHotkey stays: that one is a person holding a key.
 
-// BeginHotkey starts - or EXTENDS - the burst a person asked for by pressing
-// the key.
-//
-// A SECOND PRESS EXTENDS, it does not start anything. That is the choice the
-// order left open, and it is the one that matches what the key is for: thirty
-// presses were recorded in one session, nine of them inside twelve seconds,
-// which is somebody saying "keep going" rather than "start again". Extending
-// pushes the ceiling out and resets the idle clock, so the frames stay one
-// coherent record with one press number on them.
-//
-// Returns the log line, so the loop states which of the two happened rather
-// than leaving a person to infer it from the frame count.
 func (b *burstState) BeginHotkey(what string, now time.Time, cfg burstConfig, press int) (string, *Trigger) {
 	if cfg.FrameSeconds <= 0 {
 		return "", nil // single-frame mode - the caller takes one picture instead

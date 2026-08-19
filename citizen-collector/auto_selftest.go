@@ -27,7 +27,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 // A realistic header, matching the shape of the real log this parser was built
@@ -226,165 +225,22 @@ func runAutoSelftest(dir string, check func(name string, ok bool, detail string)
 	}
 
 	// =====================================================================
-	// 5. DEBOUNCE - driven by a fake clock, so it is deterministic rather
-	//    than a sleep that passes or fails depending on machine load.
-	// =====================================================================
-	base := time.Date(2026, 8, 6, 12, 0, 0, 0, time.UTC)
-	fake := base
-	cfg := autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 600}
-	r := newAutoRunner(cfg, func() time.Time { return fake })
-	one := []Trigger{{Kind: "state_change", Field: "gamerules", From: "a", To: "b"}}
-
-	fake = base.Add(1 * time.Second)
-	d1 := r.decide(one) // inside the 3s window - must be suppressed
-	fake = base.Add(4 * time.Second)
-	d2 := r.decide(one) // outside - must fire
-	fake = base.Add(5 * time.Second)
-	d3 := r.decide(one) // 1s after that capture - suppressed
-	fake = base.Add(8 * time.Second)
-	d4 := r.decide(one) // 4s after - fires
-
-	check("auto: debounce holds to 1 per 3s",
-		d1 == nil && d2 != nil && d3 == nil && d4 != nil,
-		fmt.Sprintf("t+1s=%v t+4s=%v t+5s=%v t+8s=%v",
-			d1 != nil, d2 != nil, d3 != nil, d4 != nil))
-
-	// =====================================================================
-	// 6. INTERVAL FALLBACK - fires only with no change, and only once.
-	// =====================================================================
-	fake = base
-	r2 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 600},
-		func() time.Time { return fake })
-
-	fake = base.Add(9 * time.Minute)
-	i1 := r2.decide(nil) // too early
-	fake = base.Add(10 * time.Minute)
-	i2 := r2.decide(nil) // due
-	fake = base.Add(10*time.Minute + time.Second)
-	i3 := r2.decide(nil) // just fired, timer reset
-
-	// Seconds carries the configured interval, and it is SECONDS.
+	// SECTIONS 5-7 ARE GONE WITH THE FEATURE THEY TESTED.
 	//
-	// This asserted == 10 and went red on 2026-08-08. The rename from
-	// IntervalMinutes to IntervalSeconds moved the unit; the field kept its
-	// name, so nothing failed to compile and the test simply started comparing
-	// 600 against 10.
+	// They covered the debounce, the interval fallback, the main-menu gate and
+	// the state-change-outranks-interval rule - every one of them a property of
+	// `decide()`, which §6 removed. Tests for a deleted feature that keep
+	// passing are worse than no tests: they certify behaviour nobody can
+	// reach.
 	//
-	// The worse half was the message. It printed only the three booleans - all
-	// three of which were correct - so the failure read as nonsense and looked
-	// like a bug in the interval logic rather than in the assertion. EVERY term
-	// of a compound condition belongs in its own detail, or a red check sends
-	// whoever reads it hunting in the wrong file.
-	wantSeconds := 600
-	intervalOK := i1 == nil && i2 != nil && i2.Kind == "interval" &&
-		i2.Seconds == wantSeconds && i3 == nil
-	gotKind, gotSecs := "<no trigger>", -1
-	if i2 != nil {
-		gotKind, gotSecs = i2.Kind, i2.Seconds
-	}
-	check("auto: interval fires at the configured interval, once",
-		intervalOK,
-		fmt.Sprintf("9m=%v 10m=%v 10m1s=%v kind=%q seconds=%d (want %d)",
-			i1 != nil, i2 != nil, i3 != nil, gotKind, gotSecs, wantSeconds))
-
-	// A state change must beat the timer, not queue behind it.
-	fake = base
-	r3 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 600},
-		func() time.Time { return fake })
-	fake = base.Add(11 * time.Minute)
-	pref := r3.decide(one)
-	check("auto: state change outranks the interval",
-		pref != nil && pref.Kind == "state_change",
-		fmt.Sprintf("got %v", pref))
-
-	// =====================================================================
-	// 6b. THE MAIN-MENU GATE (§2, 2026-08-13).
+	// The text is in _to_delete/collector_auto_capture_removed_20260818/ rather
+	// than destroyed, because the debounce fixture in particular is a good
+	// pattern if a future feature ever needs one.
 	//
-	// 818 MB in one session, 104 interval frames, one of them recording its own
-	// location as "main menu (Frontend_Main, not in world)". These four cases
-	// are the whole gate: it closes on the menu, it opens in the world, it
-	// fails OPEN when the log has not said, and it never touches events.
+	// What survives above: the detector and the log tailer, which still parse
+	// every line for the diary and for the in-world flag on a hotkey capture.
+	// What survives below: the settings reader.
 	// =====================================================================
-	fake = base
-	gcfg := autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 120}
-
-	rMenu := newAutoRunner(gcfg, func() time.Time { return fake })
-	rMenu.setGameRules("SC_Frontend")
-	fake = base.Add(10 * time.Minute)
-	menuShot := rMenu.decide(nil)
-	check("auto: ten minutes in the main menu produces NO interval capture",
-		menuShot == nil, fmt.Sprintf("got %v", menuShot))
-	check("auto: and it says why, once",
-		strings.Contains(rMenu.skipNote, "not in the world"),
-		fmt.Sprintf("skipNote = %q", rMenu.skipNote))
-
-	// Said ONCE. A line every 120 seconds for a menu session is how a log
-	// stops being read.
-	rMenu.skipNote = ""
-	fake = base.Add(20 * time.Minute)
-	rMenu.decide(nil)
-	check("auto: the pause is not re-announced every interval",
-		rMenu.skipNote == "", fmt.Sprintf("said again: %q", rMenu.skipNote))
-
-	// NEGATIVE CONTROL. If this one did not fire, "no menu frames" would be
-	// satisfied by an interval that is simply broken.
-	fake = base
-	rWorld := newAutoRunner(gcfg, func() time.Time { return fake })
-	rWorld.setGameRules("SC_Default")
-	fake = base.Add(3 * time.Minute)
-	worldShot := rWorld.decide(nil)
-	check("NEGATIVE CONTROL: in the world, the interval still fires",
-		worldShot != nil && worldShot.Kind == "interval",
-		fmt.Sprintf("got %v - if this is nil the gate is not a gate, it is an off switch", worldShot))
-
-	// UNKNOWN FAILS OPEN. A log that has not stated gamerules yet is not a
-	// statement that the player is in a menu. Losing real gameplay costs more
-	// than a wasted frame, and the two are not symmetric.
-	fake = base
-	rUnknown := newAutoRunner(gcfg, func() time.Time { return fake })
-	fake = base.Add(3 * time.Minute)
-	unknownShot := rUnknown.decide(nil)
-	check("auto: with gamerules never seen, the interval still fires (fails open)",
-		unknownShot != nil, fmt.Sprintf("got %v", unknownShot))
-
-	// EVENTS ARE NOT GATED. An event resolving while the flag reads menu is
-	// evidence the flag is wrong, not a reason to lose the frame.
-	fake = base
-	rEvent := newAutoRunner(gcfg, func() time.Time { return fake })
-	rEvent.setGameRules("SC_Frontend")
-	fake = base.Add(1 * time.Minute)
-	evShot := rEvent.decide([]Trigger{{
-		Kind: "event", Field: "terminal_open", To: "Stanton4_NewBabbage",
-		Value: valueHigh,
-	}})
-	check("auto: a terminal_open captures even when the flag says main menu",
-		evShot != nil && evShot.Field == "terminal_open",
-		fmt.Sprintf("got %v", evShot))
-
-	// The gate must not consume the interval's clock. Skipping is not taking a
-	// picture, so entering the world means one is due immediately rather than
-	// up to another two minutes later.
-	fake = base
-	rResume := newAutoRunner(gcfg, func() time.Time { return fake })
-	rResume.setGameRules("SC_Frontend")
-	fake = base.Add(10 * time.Minute)
-	rResume.decide(nil)
-	rResume.setGameRules("SC_Default")
-	resumeShot := rResume.decide(nil)
-	check("auto: entering the world after a long menu captures at once",
-		resumeShot != nil && resumeShot.Kind == "interval",
-		fmt.Sprintf("got %v - the skip must not advance lastCap", resumeShot))
-
-	// =====================================================================
-	// 7. INTERVAL OFF - 0 means off, and must mean it even after hours.
-	// =====================================================================
-	fake = base
-	r4 := newAutoRunner(autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: 0},
-		func() time.Time { return fake })
-	fake = base.Add(6 * time.Hour)
-	off := r4.decide(nil)
-	check("auto: interval 0 never fires", off == nil,
-		"six hours of silence with the timer off")
 
 	// =====================================================================
 	// 8. SETTINGS FILE - the values a non-technical user will actually edit,

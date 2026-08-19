@@ -287,7 +287,7 @@ func runMineExitHookSelftest(check func(name string, ok bool, detail string)) {
 	}
 	// PollSeconds is 0 so the ticker runs as fast as it can; the test drives
 	// the transition by flipping `alive`, not by waiting on real time.
-	cfg := autoConfig{PollSeconds: 1, DebounceSeconds: 0, IntervalSeconds: 0}
+	cfg := autoConfig{PollSeconds: 1, DebounceSeconds: 0}
 
 	done := make(chan struct{})
 	go func() { _ = runAuto(cfg, "", deps, stop); close(done) }()

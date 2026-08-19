@@ -59,7 +59,7 @@ func runHotkeyLoopSelftest(check func(name string, ok bool, detail string)) {
 			return `C:\fake\shot_0001.png`, nil
 		},
 	}
-	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0, IntervalSeconds: 0}
+	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0}
 
 	done := make(chan struct{})
 	go func() { _ = runAuto(cfg, "", deps, stop); close(done) }()
@@ -136,7 +136,7 @@ func runHotkeyPressLoggingSelftest(check func(name string, ok bool, detail strin
 			return "", fmt.Errorf("capture backend refused (deliberate)")
 		},
 	}
-	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0, IntervalSeconds: 0}
+	cfg := autoConfig{PollSeconds: 3600, DebounceSeconds: 0}
 
 	done := make(chan struct{})
 	go func() { _ = runAuto(cfg, "", deps, stop); close(done) }()

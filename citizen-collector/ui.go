@@ -251,6 +251,23 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 		onGameExit: func() {
 			logf("live: %d transactions, %d deaths, %d ships seen while playing",
 				len(liveStore.Txns), len(liveStore.Deaths), len(liveStore.Ships))
+
+			// KEEP THE WHOLE SESSION LOG, BEFORE ANYTHING ELSE (V1 §3).
+			//
+			// The miner below reads the fields it understands and drops the
+			// rest; the game overwrites Game.log on its next launch. Whatever
+			// is not kept here cannot be recovered by any future parser, so it
+			// is kept first: if the mine fails, the raw session is still safe.
+			//
+			// It stays on this computer - see diary.go. The scrubbed dataset is
+			// what travels.
+			if lp, _ := findLogFromRunningGame(); lp != "" {
+				if _, _, err := KeepDiary(exeDir, lp, "game-exit",
+					ReadGameLog(lp, "diary"), logf); err != nil {
+					logf("diary: this session was NOT kept (%v) - the session is "+
+						"lost when the game next overwrites its log", err)
+				}
+			}
 			in, err := LoadOrCreateInstall(exeDir, logf)
 			if err != nil {
 				logf("mine: continuing without a contributor id (%v)", err)
@@ -286,6 +303,27 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 			return p, err
 		},
 	}
+
+	// THE STARTUP SWEEP (V1 §3).
+	//
+	// A session only reaches the diary through onGameExit, and there are
+	// obvious ways to miss that: the collector was closed while the game ran,
+	// it crashed, the machine was restarted. This picks up a log that is on
+	// disk and not yet kept, so those sessions are not lost - and because the
+	// diary is keyed on the log's CONTENT, a session already kept at exit is
+	// recognised and not stored twice.
+	go func() {
+		defer logPanic(logf, exeDir, "the diary sweep")
+		if lp, _ := findLogFromRunningGame(); lp != "" {
+			if _, kept, err := KeepDiary(exeDir, lp, "startup-sweep",
+				ReadGameLog(lp, "diary"), logf); err != nil {
+				logf("diary: startup sweep could not keep %s (%v)", lp, err)
+			} else if kept {
+				logf("diary: a session that was never kept at exit has been " +
+					"picked up now")
+			}
+		}
+	}()
 
 	stop := make(chan struct{})
 	go func() {

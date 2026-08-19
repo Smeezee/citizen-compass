@@ -193,7 +193,7 @@ func runAutoHeartbeatSelftest(check func(name string, ok bool, detail string)) {
 	// Poll fast so the loop iterates often in real time; the CLOCK is what
 	// advances, so heartbeat and staleness are driven deliberately, not by
 	// waiting.
-	cfg := autoConfig{PollSeconds: 1, DebounceSeconds: 0, IntervalSeconds: 0}
+	cfg := autoConfig{PollSeconds: 1, DebounceSeconds: 0}
 
 	done := make(chan struct{})
 	go func() { _ = runAuto(cfg, logPath, deps, stop); close(done) }()

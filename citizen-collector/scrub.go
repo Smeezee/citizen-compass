@@ -173,6 +173,28 @@ func (s *scrubber) Value(v string) string {
 	if !s.ok {
 		return "<player>"
 	}
+	return s.Tag(v)
+}
+
+// Tag mints a pseudonym WITHOUT consulting the classifier.
+//
+// THE CLASSIFIER IS NOT THE LAST WORD, AND THIS IS THE DOOR FOR THAT.
+//
+// Value() keeps a spaced name because a handle "cannot" contain a space. When
+// the log itself has called that name a player - `nickname="..." playerGEID=` -
+// that hint is beaten by evidence, and the caller needs a way to say so. Before
+// this existed the override in MineStore.swap looked right and did nothing:
+// swap decided to swap, called Value, and Value kept the name on the very rule
+// being overridden. Caught by a check driving the real path rather than by
+// reading either function.
+func (s *scrubber) Tag(v string) string {
+	v = strings.TrimSpace(v)
+	if rePseudonym.MatchString(v) {
+		return v
+	}
+	if !s.ok {
+		return "<player>"
+	}
 	if t, seen := s.mapped[v]; seen {
 		return t
 	}

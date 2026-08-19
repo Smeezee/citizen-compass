@@ -139,3 +139,62 @@ func runNameClassSelftest(check func(name string, ok bool, detail string)) {
 		bare.swap("AEGS_Sabre_Firebird_<id>") == "AEGS_Sabre_Firebird_<id>",
 		"failing closed must not mean destroying everything")
 }
+
+// runPlayerEvidenceSelftest - the space rule is a HINT, never a verdict.
+//
+// Sleven, 2026-08-18: "The space rule is a hint, never a verdict - anything not
+// clearly an NPC gets swapped. Losing an NPC name costs nothing, leaking a
+// player name costs everything."
+//
+// The classifier keeps a spaced name on the claim that a handle cannot contain
+// a space. Nothing in this repo can verify that claim, so the store overrides it
+// with evidence: a name the log itself called a player is swapped whatever it
+// looks like. This drives BOTH directions through the real mine path.
+func runPlayerEvidenceSelftest(check func(name string, ok bool, detail string)) {
+	dir, err := os.MkdirTemp("", "player-evidence-")
+	if err != nil {
+		check("evidence: temp dir", false, err.Error())
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	sc := newScrubber(dir, nil)
+
+	// A mission NPC with a spaced name, and a PLAYER whose name also has a
+	// space - which the space rule alone would keep.
+	st := newMineStore()
+	st.swapName = sc.Value
+	st.swapProse = sc.ScrubProse
+	st.tagName = sc.Tag
+
+	// Real line shapes, copied from the live Game.log.
+	mineLineInto(st, `<2026-08-18T20:47:50.163Z> [Notice] <Expect Incoming Connection> `+
+		`session=2594 node_id=0000 nickname="Ruto Vega" playerGEID=204354536218`, "1", "LIVE")
+	mineLineInto(st, `<2026-08-18T20:47:47.002Z> [Notice] <AccountLoginCharacterStatus_Character> `+
+		`Character: createdAt 1784177222540 - geid 204354536218 - accountId 1343523 - name Sleven`,
+		"1", "LIVE")
+
+	got := st.swap("Ruto Vega")
+	check("evidence: a SPACED name the log called a player is swapped anyway",
+		strings.HasPrefix(got, "player:"),
+		"got "+got+" - the space rule was allowed to be the verdict, and a "+
+			"player with a space in their name would be published")
+
+	check("evidence: and a plain account name is swapped too",
+		strings.HasPrefix(st.swap("Sleven"), "player:"),
+		"got "+st.swap("Sleven"))
+
+	// NEGATIVE CONTROL. A spaced name the log never called a player is still
+	// kept - or this override has quietly turned into "swap everything", which
+	// would destroy the mission-NPC data §4 says to keep.
+	kept := st.swap("Kai Fenn")
+	check("evidence: NEGATIVE CONTROL - an unseen spaced name is still KEPT",
+		kept == "Kai Fenn",
+		"got "+kept+" - the override is swallowing mission NPCs as well as players")
+
+	// And the ambient archetypes are still cheap to keep.
+	amb := st.swap("NPC_Archetypes-Male-Human-Civilians-Utilitarian-Technician_01_855480118723")
+	check("evidence: NEGATIVE CONTROL - an ambient archetype is still kept",
+		strings.HasPrefix(amb, "NPC_Archetypes-Male-Human"),
+		"got "+amb)
+}

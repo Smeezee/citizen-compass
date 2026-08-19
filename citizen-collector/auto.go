@@ -434,7 +434,6 @@ func (t *logTailer) Poll() ([]Trigger, error) {
 type autoConfig struct {
 	PollSeconds     int
 	DebounceSeconds int
-	IntervalSeconds int // 0 = interval fallback off
 
 	// HotkeyBurst is the rhythm one deliberate press produces. FrameSeconds 0
 	// means single-frame mode: one press, one picture, exactly as before. That
@@ -442,12 +441,6 @@ type autoConfig struct {
 	// out to be wrong for some situation it must be a settings change, not a
 	// rebuild.
 	HotkeyBurst burstConfig
-
-	// CaptureLowValue turns menu, loading-screen and spawn frames back on.
-	// Default OFF - see the audit in the Trigger doc comment. It is a setting
-	// rather than a deletion because "we decided these are worthless" is a
-	// judgement, and a judgement somebody may want to reverse without a rebuild.
-	CaptureLowValue bool
 
 	// Burst is the keep-shooting-while-a-terminal-is-open rhythm.
 	Burst burstConfig
@@ -457,9 +450,9 @@ type autoConfig struct {
 }
 
 func defaultAutoConfig() autoConfig {
-	return autoConfig{PollSeconds: 2, DebounceSeconds: 3, IntervalSeconds: defaultIntervalSeconds,
+	return autoConfig{PollSeconds: 2, DebounceSeconds: 3,
 		HotkeyBurst: defaultHotkeyBurstConfig(),
-		Burst:       defaultBurstConfig()}
+	}
 }
 
 // autoRunner owns the debounce and interval decisions.
@@ -504,126 +497,24 @@ type autoRunner struct {
 
 func newAutoRunner(cfg autoConfig, now func() time.Time) *autoRunner {
 	return &autoRunner{cfg: cfg, now: now, lastCap: now(),
-		burst: newBurstState(cfg.Burst), keys: NewKeyWatcher(cfg.Keys)}
+		burst: newBurstState(defaultHotkeyBurstConfig()), keys: NewKeyWatcher(cfg.Keys)}
 }
 
 // decide returns the trigger to capture on, or nil to do nothing.
 //
 // Precedence is deliberate: a real state change always beats the interval
 // fallback, and the fallback only speaks when nothing has been said.
-func (r *autoRunner) decide(triggers []Trigger) *Trigger {
-	now := r.now()
-
-	// The player's own keys, folded in as ordinary triggers so they inherit the
-	// debounce, the notes and the sidecar shape rather than growing a second
-	// path that behaves almost the same.
-	//
-	// A 3-second gap per key: long enough that pulsing a mining laser does not
-	// produce a picture per pulse, short enough that two deliberate presses are
-	// two frames.
-	triggers = append(triggers, r.keys.Poll(now, 3*time.Second)...)
-
-	// VALUE GATE. Low-value triggers are dropped here, not earlier, so the
-	// caller still sees the full list and can log what happened. The state was
-	// already updated inside Feed - skipping the frame does not skip the fact.
-	//
-	// r.skipped is what the loop reports, so a quiet collector can still say
-	// "I saw eleven things and none of them were worth a picture" rather than
-	// looking identical to a collector that saw nothing at all. That distinction
-	// is the same one the miner makes when it says "0 new" and explains why.
-	r.skipped = r.skipped[:0]
-	kept := make([]Trigger, 0, len(triggers))
-	for _, t := range triggers {
-		if t.isHigh() || r.cfg.CaptureLowValue {
-			kept = append(kept, t)
-		} else {
-			r.skipped = append(r.skipped, t)
-		}
-	}
-	triggers = kept
-
-	r.burstStop = ""
-
-	if len(triggers) > 0 {
-		// A HIGH-value trigger that is not this terminal means the player moved
-		// on. Ends the burst before the new trigger is served, so the record
-		// never shows a burst continuing past the thing that interrupted it.
-		for _, t := range triggers {
-			if t.Field == "terminal_open" {
-				r.burst.Begin(t.To, now)
-			} else if r.burst.Active() {
-				r.burst.Interrupt("interrupted by " + t.Reason())
-				r.burstStop = "burst ended: interrupted by " + t.Reason()
-			}
-		}
-
-		if now.Sub(r.lastCap) < time.Duration(r.cfg.DebounceSeconds)*time.Second {
-			return nil // debounced
-		}
-		t := triggers[0]
-		if len(triggers) > 1 {
-			// The others are named so the record does not imply this was the
-			// only thing that happened in this poll.
-			var rest []string
-			for _, o := range triggers[1:] {
-				rest = append(rest, o.Reason())
-			}
-			t.Note = "also in this poll: " + strings.Join(rest, "; ")
-		}
-		r.lastCap = now
-		return &t
-	}
-
-	// BURST BEFORE INTERVAL, and the interval stands down entirely while a
-	// burst is running. Two mechanisms shooting at once would double the frames
-	// and make the sidecar ambiguous about which one was responsible - the same
-	// unreadable-corpus problem the Trigger field exists to prevent.
-	if bt, why := r.burst.Due(now); bt != nil {
-		r.lastCap = now
-		return bt
-	} else if why != "" {
-		r.burstStop = "burst ended: " + why
-	}
-	if r.burst.Active() {
-		return nil
-	}
-
-	if r.cfg.IntervalSeconds > 0 &&
-		now.Sub(r.lastCap) >= time.Duration(r.cfg.IntervalSeconds)*time.Second {
-
-		// THE MAIN-MENU GATE. There is nothing on a main menu, a loading screen
-		// or a shader-compilation wait that any dataset wants, and photographing
-		// it cost 818 MB in one session on 2026-08-12 - 104 interval frames at
-		// roughly 3 MB each, one of which recorded its own location as
-		// "main menu (Frontend_Main, not in world)".
-		//
-		// This reads the state the detector already keeps, through the same
-		// predicate the sidecar's appears_in_game uses. It is not a second
-		// in-game heuristic and must not become one.
-		//
-		// EVENTS AND HOTKEYS ARE NOT GATED - they return above this point. If a
-		// terminal_open somehow resolves while this reads false, that is
-		// evidence the flag is wrong, not a reason to lose the frame.
-		if in, known := inGameFromRules(r.gameRules); known && !in {
-			// lastCap is NOT advanced. The interval means "it has been this
-			// long since the last picture", and skipping is not taking one - so
-			// the moment the player enters the world, a frame is due
-			// immediately rather than up to another two minutes later.
-			if !r.menuSkipSaid {
-				r.menuSkipSaid = true
-				r.skipNote = "interval capture paused: not in the world " +
-					"(gamerules " + r.gameRules + "). Events and the hotkey still capture."
-			}
-			return nil
-		}
-		r.lastCap = now
-		return &Trigger{
-			Kind: "interval", Seconds: r.cfg.IntervalSeconds,
-			Note: "no state change for the configured interval",
-		}
-	}
-	return nil
-}
+// decide() IS GONE, and this note stands where it was.
+//
+// It took the detector's triggers and answered "take a picture?" - on an
+// interval, on a state change, on a loading screen, a spawn, a terminal, a
+// transaction. §6 removed the feature outright rather than switching it off,
+// because a disabled capture path is a capture path waiting for a settings
+// file to turn it back on, and the window now tells people nothing captures on
+// its own.
+//
+// What replaced it is nothing. The loop takes a picture when the person presses
+// the key, and at no other time.
 
 // hotkeyPressed turns one press into a burst, or into the single frame the
 // caller should take when bursting is switched off.
@@ -674,22 +565,6 @@ func (r *autoRunner) noteCapture(at time.Time) { r.lastCap = at }
 // has never opened a terminal can change the interval. Command-line flags still
 // win, so a support instruction ("run it with --interval 5 once") is not
 // defeated by whatever is in the file.
-// defaultIntervalSeconds: ten minutes, then sixty seconds, now one hundred and
-// twenty. Each move was made against a measurement rather than a preference.
-//
-// TEN MINUTES was wrong, and the live PTU test showed it. Sleven named it before
-// the test - "we should have added more recessive capturing, ten minutes was way
-// too long" - and the log agreed: standing at a kiosk for two minutes produced
-// nothing at all.
-//
-// SIXTY SECONDS was too fast once measured over a real session: 104 interval
-// frames inside 2.5 hours, ~818 MB total, and the overwhelming majority of them
-// unprompted. Confirmed by Sleven, 2026-08-13.
-//
-// The GATE matters more than this number and is the reason the number can rise
-// safely - see the main-menu gate in decide(). Doubling the interval halves the
-// frames; refusing to shoot the main menu removed a whole category of them.
-const defaultIntervalSeconds = 120
 
 const settingsFileName = "collector-settings.txt"
 
@@ -700,16 +575,12 @@ const settingsTemplate = `# citizen-collector settings
 # Delete this file to go back to the defaults - a fresh one is written on the
 # next run.
 
-# Capture automatically while the game is running.
-auto = true
-
-# Take a picture every this many SECONDS even when nothing changes.
-# Set to 0 to turn the timer off completely.
+# Watch the game while it runs, and read its log for the diary.
 #
-# This used to be interval_minutes. An old file that still says interval_minutes
-# keeps working - it is converted, and the log says so - but interval_seconds is
-# the setting to use now.
-interval_seconds = 120
+# THIS TAKES NO PICTURES BY ITSELF. It is what keeps the collector reading the
+# log so the diary is complete and so a picture you DO take knows where you
+# were.
+auto = true
 
 # How often to check the game log, in seconds.
 poll_seconds = 2
@@ -717,22 +588,16 @@ poll_seconds = 2
 # Never take two pictures closer together than this, in seconds.
 debounce_seconds = 3
 
-# Take pictures on menu changes, loading screens and spawning too.
+# NOTHING HERE TAKES A PICTURE ON ITS OWN, AND NOTHING CAN BE MADE TO.
 #
-# OFF by default. Of 40 real captures audited on 2026-08-08, twenty-three were
-# fired by exactly those three things - main menu transitions, loading screens
-# and the instant of spawning - and none were of a shop. They are still watched
-# and still written to the log; they just no longer cost a picture.
-capture_low_value = false
-
-# While a shop or inventory terminal is open, keep taking pictures this often,
-# in seconds, so a list longer than the screen is actually recorded as you
-# scroll it. Set to 0 to take a single picture when the terminal opens instead.
-burst_seconds = 2
-
-# Never take more than this many pictures for one terminal. A hard ceiling, so
-# a burst that somehow does not end is still bounded.
-burst_max_frames = 24
+# This file used to carry interval_seconds, capture_low_value, burst_seconds and
+# burst_max_frames. Each let the program decide to photograph something - on a
+# timer, on a loading screen, at the instant of spawning, when a shop terminal
+# opened. Version one removed the feature outright rather than defaulting it
+# off, because a setting that can turn automatic capture back on is automatic
+# capture with an extra step.
+#
+# A picture is taken when you press the key. That is the entire list.
 
 # ONE PRESS OF THE HOTKEY TAKES A SHORT BURST, not a single picture, so you can
 # scroll a price board for a few seconds while it records.
@@ -750,13 +615,11 @@ hotkey_burst_frames = 6
 
 # Keys you HOLD DOWN for an activity - mining laser, salvage beam, guns.
 #
-# These keep taking pictures for as long as the key is down, every couple of
-# seconds, and stop the moment you let go. Mouse buttons work here:
+# These are RECORDED, not photographed: the collector notes that you were
+# mining, and for how long, in the diary. Holding a key no longer takes a run of
+# pictures, because nothing takes a picture except the hotkey.
 #
 #   capture_keys_held = mouse1:guns, m:mining laser, v:salvage beam
-#
-# A mining laser held for thirty seconds is thirty seconds of changing numbers.
-# One picture taken at the instant before anything happened is the wrong answer.
 capture_keys_held =
 
 # Take a picture when YOU press a key. Empty by default - this tool does not
@@ -1012,8 +875,9 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 	var tailer *logTailer
 	lastLogPath := ""
 
-	deps.logf("auto mode started: poll %ds, debounce %ds, interval %s",
-		cfg.PollSeconds, cfg.DebounceSeconds, intervalDesc(cfg.IntervalSeconds))
+	deps.logf("auto mode started: poll %ds, debounce %ds. Pictures are taken "+
+		"when you press the key and at no other time.",
+		cfg.PollSeconds, cfg.DebounceSeconds)
 
 	// WHICH LOG, AND HOW IT WAS CHOSEN - stated at every start.
 	//
@@ -1314,123 +1178,47 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			runner.setGameRules(tailer.det.st.gameRules)
 		}
 
-		t := runner.decide(triggers)
-
-		// SAY WHAT WAS SEEN AND NOT PHOTOGRAPHED.
+		// NOTHING IS SERVED FROM THE DETECTOR ANY MORE.
 		//
-		// Without this the value gate is indistinguishable from a broken
-		// detector: both produce a log with no capture lines in it. The whole
-		// reason those 40 frames were menus and loading screens is that nobody
-		// could see what the triggers were choosing between.
-		// A hold that ended: say how much of the activity was recorded.
+		// §6 of the version-one design: no automatic pictures. Not disabled -
+		// removed. `decide()` used to turn a loading screen, a spawn, a
+		// terminal opening, a transaction, a state change or a plain timer into
+		// a capture; every one of those is gone, and so is the value gate that
+		// existed only to filter them.
+		//
+		// THE DETECTOR STAYS, and that is not a contradiction. It parses
+		// gamerules and zone out of these same lines, which is what tells a
+		// hotkey capture's sidecar whether the player was in the world - and
+		// the miner reads every line for the diary regardless. Feed updates
+		// state; nothing acts on what it returns.
+		_ = triggers
+
+		// A hold that ended: say how much of the activity was recorded. The
+		// keys are still watched, because §7 wants the activity LISTED - they
+		// simply no longer take pictures.
 		for _, r := range runner.keys.Released() {
 			deps.logf("finished recording %s", r)
 		}
-		if runner.burstStop != "" {
-			deps.logf("%s", runner.burstStop)
-		}
-		// Once per state change, not once per interval - see menuSkipSaid.
-		if runner.skipNote != "" {
-			deps.logf("%s", runner.skipNote)
-			runner.skipNote = ""
-		}
-		if len(runner.skipped) > 0 {
-			var names []string
-			for _, s := range runner.skipped {
-				names = append(names, s.Reason())
+
+		// THE ONLY REMAINING SOURCE OF A PICTURE: a key the person pressed.
+		// A hotkey burst is that same press continuing - one press, several
+		// frames while it is held - so it survives §6 while everything the
+		// program decided on its own does not.
+		if bt, why := runner.burst.Due(now()); bt != nil {
+			out, err := deps.capture(*bt)
+			if err != nil {
+				deps.logf("capture FAILED (%s): %v", bt.Reason(), err)
+				continue
 			}
-			deps.logf("seen, not captured (low value): %s", strings.Join(names, "; "))
+			captures++
+			runner.noteCapture(now())
+			deps.logf("captured %s  <- %s", filepath.Base(out), bt.Reason())
+		} else if why != "" {
+			deps.logf("burst ended: %s", why)
 		}
-
-		if t == nil {
-			continue
-		}
-
-		out, err := deps.capture(*t)
-		if err != nil {
-			deps.logf("capture FAILED (%s): %v", t.Reason(), err)
-			continue
-		}
-		captures++
-		deps.logf("captured %s  <- %s", filepath.Base(out), t.Reason())
 	}
 }
 
-func intervalDesc(sec int) string {
-	if sec <= 0 {
-		return "off"
-	}
-	if sec%60 == 0 && sec >= 60 {
-		return fmt.Sprintf("%ds (%dm)", sec, sec/60)
-	}
-	return fmt.Sprintf("%ds", sec)
-}
-
-// resolveIntervalSeconds reads interval_seconds, falling back to the old
-// interval_minutes, and REPORTS what it did.
-//
-// The rule this obeys: never silently ignore a setting that is sitting in a
-// file on the user's disk. An old file saying "interval_minutes = 10" must
-// either take effect or say out loud that it did not. Quietly reverting someone
-// to a default they did not choose is the same silent-failure shape as every
-// other bug in this tool's history.
-//
-// Precedence: interval_seconds wins, and the log names the loser.
-func resolveIntervalSeconds(s *settings) (sec int, notes []string, err error) {
-	sec = defaultIntervalSeconds
-
-	newVal, haveNew, errNew := s.intVal("interval_seconds")
-	oldVal, haveOld, errOld := s.intVal("interval_minutes")
-
-	if errNew != nil {
-		return sec, notes, errNew
-	}
-	if errOld != nil {
-		return sec, notes, errOld
-	}
-
-	switch {
-	case haveNew && haveOld:
-		notes = append(notes, fmt.Sprintf(
-			"settings: both interval_seconds (%d) and interval_minutes (%d) are set. "+
-				"Using interval_seconds = %ds and IGNORING interval_minutes. "+
-				"Delete the interval_minutes line to silence this.",
-			newVal, oldVal, newVal))
-		sec = newVal
-	case haveNew:
-		sec = newVal
-		// SAY WHEN THE FILE IS HOLDING THE OLD DEFAULT.
-		//
-		// The default moved from 60 to 120 on 2026-08-13. Anyone who already
-		// has a settings file keeps their 60 - which is correct, it is their
-		// setting - but without this line the only symptom is "I updated and
-		// the interval did not change", with nothing anywhere saying why. The
-		// rule above is about not silently ignoring a setting; this is the
-		// same rule pointed the other way, at not silently ignoring the fact
-		// that a setting is overriding a new default.
-		if newVal != defaultIntervalSeconds {
-			notes = append(notes, fmt.Sprintf(
-				"settings: interval_seconds = %d comes from %s and overrides the "+
-					"built-in default of %ds. Delete the line to take the default.",
-				newVal, settingsFileName, defaultIntervalSeconds))
-		}
-	case haveOld:
-		sec = oldVal * 60
-		notes = append(notes, fmt.Sprintf(
-			"settings: interval_minutes = %d is the old setting name; using it as %ds. "+
-				"Rename it to interval_seconds when convenient.", oldVal, sec))
-	}
-
-	if sec < 0 {
-		return defaultIntervalSeconds, notes, fmt.Errorf(
-			"interval is negative (%d); refusing to guess what that means", sec)
-	}
-	return sec, notes, nil
-}
-
-// openAutoLog opens the append-only log for unattended runs. With no console
-// there is nowhere else for the record to go, and a collector that has been
-// running for six hours needs to be able to say what it did.
 func openAutoLog(path string) (*os.File, error) {
 	return os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
 }

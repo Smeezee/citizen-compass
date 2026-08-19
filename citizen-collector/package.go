@@ -252,25 +252,25 @@ const crewSettingsTemplate = `# citizen-collector settings
 # Watch and capture automatically while the game is running.
 auto = true
 
-# Take a picture every this many SECONDS even when nothing changes.
-interval_seconds = 60
-
-# How often to check the game log, in seconds.
+# How often to check the game log, in seconds. THIS TAKES NO PICTURES - it is
+# how often the diary is read.
 poll_seconds = 2
 
 # Never take two pictures closer together than this, in seconds.
 debounce_seconds = 3
 
-# Take pictures on menu changes, loading screens and spawning too. Off by
-# default - those turned out to be almost all of the useless ones.
-capture_low_value = false
+# NOTHING IN HERE TAKES A PICTURE ON ITS OWN.
+#
+# There used to be interval_seconds, capture_low_value, burst_seconds and
+# burst_max_frames. Every one of them let the program decide to photograph
+# something - on a timer, on a loading screen, when a shop terminal opened. They
+# are gone, not switched off, so no settings file can turn them back on.
+#
+# A picture is taken when you press the key. That is the whole list.
 
-# While a shop or inventory terminal is open, keep taking pictures this often
-# so a list longer than the screen is recorded as you scroll. 0 = one picture.
-burst_seconds = 2
-
-# Never more than this many pictures for one terminal.
-burst_max_frames = 24
+# Hold the key and the pictures keep coming while you scroll a long list.
+# 0 = one press, one picture.
+hotkey_burst_seconds = 1
 
 # Where the pictures go. Relative names are next to this file.
 out = captures

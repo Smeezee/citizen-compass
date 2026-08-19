@@ -436,6 +436,15 @@ type MineStore struct {
 	// mineLineInto fails CLOSED when it is missing - see swap().
 	swapName func(string) string `json:"-"`
 
+	// knownPlayers are names this session's log has explicitly called players.
+	// Consulted by swap() BEFORE the classifier, so positive evidence beats
+	// every keep rule including the spaced-name hint.
+	knownPlayers map[string]bool `json:"-"`
+
+	// tagName mints a pseudonym WITHOUT asking the classifier. Used only for
+	// names the log itself called players - see swap().
+	tagName func(string) string `json:"-"`
+
 	// swapProse replaces people named INSIDE free text, also as the store is
 	// written. Separate from swapName because the whole value is not a name -
 	// "Eliminate <somebody> before the timer expires" has to come out the other
@@ -641,11 +650,47 @@ func newMineStore() *MineStore {
 // vouch for is redacted rather than written. A missing swapper is a programming
 // error, and the direction it fails in decides whether that error costs a
 // stranger their handle.
+// notePlayer records that the log called this name a player.
+func (st *MineStore) notePlayer(name string) {
+	name = strings.TrimSpace(name)
+	if st == nil || name == "" {
+		return
+	}
+	if st.knownPlayers == nil {
+		st.knownPlayers = map[string]bool{}
+	}
+	st.knownPlayers[name] = true
+}
+
+// isKnownPlayer reports whether the log named this person as a player.
+func (st *MineStore) isKnownPlayer(name string) bool {
+	if st == nil || st.knownPlayers == nil {
+		return false
+	}
+	return st.knownPlayers[strings.TrimSpace(name)]
+}
+
 func (st *MineStore) swap(v string) string {
 	// Already a tag: leave it exactly as it is. scrubIDs would eat the digits
 	// out of it - see scrub.go's Value for the full reasoning.
 	if rePseudonym.MatchString(v) {
 		return v
+	}
+	// POSITIVE EVIDENCE OUTRANKS EVERY KEEP RULE. If this session's log called
+	// this name a player, it is a player - spaced, capitalised, or looking like
+	// anything else.
+	if st != nil && st.isKnownPlayer(v) {
+		st.swapped++
+		// TAG, NOT SWAP. swapName runs the classifier again and would keep the
+		// very name being overridden - which is exactly what it did until a
+		// check drove the real path and caught it.
+		if st.tagName != nil {
+			return st.tagName(v)
+		}
+		if st.swapName == nil {
+			return "<player>"
+		}
+		return st.swapName(v)
 	}
 	if KeepsName(v) {
 		return scrubIDs(v)
@@ -676,7 +721,40 @@ func (st *MineStore) prose(v string) (string, bool) {
 	return out, true
 }
 
+// NAMES THE LOG ITSELF CALLS PLAYERS.
+//
+// MEASURED, NOT ASSUMED. Both patterns are copied off the live Game.log on
+// 2026-08-18 - 21 nickname lines and 2 account lines in a single menu session:
+//
+//	<Expect Incoming Connection> session=... nickname="Sleven-K" playerGEID=204354536218
+//	<AccountLoginCharacterStatus_Character> Character: ... - geid 204354536218 - accountId 1343523 - name Sleven
+//
+// THIS IS WHAT MAKES THE SPACE RULE A HINT RATHER THAN A VERDICT.
+//
+// The classifier keeps a spaced name because a handle "cannot" contain a space.
+// That is a claim about RSI's handle rules which nothing in this repo can
+// verify, and the order is explicit that anything not clearly an NPC gets
+// swapped. So positive evidence outranks the hint: a name the log has called a
+// player is swapped whatever it looks like, and if RSI ever allows a space in a
+// handle, that person is still protected.
+//
+// Not persisted between runs, deliberately. The evidence and the death lines
+// are in the same file, read by the same pass, so the override is available
+// exactly when it is needed - and a list of real player names saved to disk is
+// the thing this whole mechanism exists to avoid.
+var reLogPlayerNickname = regexp.MustCompile(`nickname="([^"]+)"\s+playerGEID=`)
+var reLogAccountName = regexp.MustCompile(`AccountLoginCharacterStatus_Character.*?- name (\S+)`)
+
 func mineLineInto(st *MineStore, line, build, channel string) {
+
+	// Learned before anything on this line is written, so a death line that
+	// names the same person in the same poll is already covered.
+	if m := reLogPlayerNickname.FindStringSubmatch(line); m != nil {
+		st.notePlayer(m[1])
+	}
+	if m := reLogAccountName.FindStringSubmatch(line); m != nil {
+		st.notePlayer(m[1])
+	}
 
 	if m := reMineBuild.FindStringSubmatch(line); m != nil {
 		st.Builds[m[1]]++
@@ -1004,6 +1082,7 @@ func MineAll(outDir string, in Install, logf func(string, ...interface{})) (*Min
 	// during this pass goes through it - see MineStore.swap, which fails closed
 	// if this is ever missing.
 	st.swapName = sc.Value
+	st.tagName = sc.Tag
 	st.swapProse = sc.ScrubProse
 
 	// AND THE DATASET ALREADY ON DISK IS CLEANED.
