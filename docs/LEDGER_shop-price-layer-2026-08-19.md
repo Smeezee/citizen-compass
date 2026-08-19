@@ -785,3 +785,84 @@ D4  DONE  e94ded1  /api/v1/shop/search - name/slug substring, category,
     Also observed: a garbage identifier 404s rather than 500s; an over-large
     limit is clamped AND the response says so; a search matching nothing
     returns an honest 200 with total 0.
+
+E1  DONE  <pending>  testing/_deploy/find.html no longer invents anything.
+    The block commented "invented data" - 17 made-up items across 9 made-up
+    shops - is GONE, along with every view that read from it. `const LOC`,
+    `const SHOP` and `const ITEM` are all absent, asserted by the control.
+    The page now calls /api/v1/shop. API base is overridable with
+    ?api=http://127.0.0.1:8077 so the page can be driven against a local
+    server without editing the file, which is how it was verified.
+    KEPT UNTOUCHED: the CSS, the header, the MOCKUP banner (see E2), and the
+    Fan Kit disclaimer and trademark footer. The rebuild script REFUSES to
+    write if either the banner or "Cloud Imperium Rights LLC" is missing from
+    the preserved head - rule 8 made structural rather than remembered.
+    ALSO ADDED, and it would have been a silent failure otherwise: CORS
+    middleware in app/main.py. The site is Netlify and the API is Railway -
+    different origins - and nothing had ever fetched across that boundary
+    before, because find.html used invented data. Without it the browser
+    blocks every request and the page shows "we cannot reach the price data"
+    while the API is perfectly healthy: an outage that is not one. Verified
+    over real HTTP in BOTH directions - an allowed origin gets the header
+    back, and https://evil.example.com gets no access-control headers at all.
+    GET and OPTIONS only, no credentials; a method wildcard would advertise
+    POST and DELETE on an API that serves neither.
+
+E2  BLOCKED  <pending>  THE MOCKUP BANNER STAYS. E2 permits removing it only
+    after "fetching the deployed URL and confirming real rows come back - not
+    after a successful build, not after a successful deploy."
+    THE DEPLOYED API IS DOWN. https://citizen-compass-production.up.railway.app
+    returns HTTP 502 "Application failed to respond" on /health, on /docs and
+    on /api/v1/shop/categories, each after roughly 15 seconds. So the
+    confirmation E2 requires cannot be made, and the banner is not touched -
+    not removed, not reworded, not softened.
+    I CHECKED WHETHER MY PUSH CAUSED IT rather than assuming not: the app
+    imports cleanly with an unreachable DATABASE_URL (simulated), so the new
+    router and models are not breaking the boot. The Procfile is unchanged
+    since f8d612d. I cannot see Railway's own logs from here and I have NOT
+    tried to work around the 502 (rule 9) - it is reported as the answer.
+    WHAT WOULD UNBLOCK IT: the Railway service coming back up, then a single
+    fetch of /api/v1/shop/search?q=omnisky returning real rows. At that point
+    the banner comes off and nothing else needs to change.
+    ONE THING I DID CHANGE, and it is not the banner: the home page explainer
+    said "Seventeen invented items across nine invented shops". That
+    described the DATA, and the data is now real, so leaving it would have
+    been false in the other direction. It now says the page reads live data
+    and that the banner stays until the deployed API is confirmed.
+    DECIDED-BY-DEFAULT, reverses in one line if Sleven disagrees.
+
+E3  DONE  <pending>  Buy and sell are SEPARATE COLUMNS on both the item page
+    and the terminal page. Asserted by the control: a Buy header and a Sell
+    header both present, and no key or text matching average/blended/avg
+    anywhere in the rendered output. A missing side renders as a dash marked
+    "no data" - never as 0, and the control checks that no price cell
+    contains a bare 0. Section 3.1 end to end: NULL in the database, no
+    averaged field in the API, blank on the page.
+
+E4  DONE  <pending>  Every price row renders "snapshot 20260801T235530Z -
+    reported N days ago", and anything with no last_verified_patch is
+    visibly flagged "not verified against a patch" rather than shown as
+    though it were confirmed. Rows older than 30 days get the `old` class so
+    stale data looks stale. All three asserted by the control.
+
+    CONTROL FOR PHASE E: checks/_verify_find_page.mjs, 30 assertions.
+    It loads THE PAGE OWN SCRIPT verbatim out of find.html into a node vm
+    with the few browser globals it touches, and calls its real view
+    functions against the running API - so it tests the page, not a
+    reimplementation of it. Nothing was installed to get a browser (rule 7).
+    STATED PLAINLY RATHER THAN GLOSSED: this does NOT prove browser layout,
+    CSS, or real browser CORS enforcement. Those are unverified and the
+    control says so in its own output rather than letting a green run imply
+    otherwise.
+    THE E CONTROL PASSES: a search matching nothing shows an honest empty
+    state - not a spinner, not filler - and an unreachable API produces a
+    visible explained failure rather than a "Looking..." that never resolves.
+    THE HARNESS ITSELF HAD A BUG AND IT MATTERED. First version set the hash
+    without a leading "#", so location.hash.slice(1) ate the first character
+    and EVERY route fell through to home(). The search test still "passed",
+    because the home page hint text happens to contain the word "Omnisky". A
+    control that green-lights the wrong page is worse than no control, and it
+    was only caught by the other assertions failing around it. Fixed, and the
+    reason is written into the file so it is not reintroduced.
+
+--- PHASE E COMPLETE except E2, which is BLOCKED on the Railway 502. --------
