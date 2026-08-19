@@ -42,12 +42,11 @@ from sqlalchemy.orm import Session  # noqa: E402
 
 from app.database import engine  # noqa: E402
 from app.models import ItemCategory, ShopItem  # noqa: E402
-# The source guard is shared with B1 rather than copy-pasted. It is the one
-# piece that was already proven (checks/_verify_shop_importers.py) and
-# re-implementing it here would mean two guards to keep correct.
-from import_uex_terminals import (  # noqa: E402
+from app.uex_pipeline import (  # noqa: E402
     clean,
     load_envelope,
+    make_logger,
+    split_detail,
     to_dt,
 )
 
@@ -68,13 +67,7 @@ PROMOTED = {
 }
 
 
-def log(message: str) -> None:
-    stamp = datetime.datetime.now().isoformat(timespec="seconds")
-    line = f"[{stamp}] items_cat{CATEGORY_ID}: {message}"
-    print(line)
-    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(LOG_PATH, "a", encoding="utf-8") as fh:
-        fh.write(line + "\n")
+log = make_logger(f"items_cat{CATEGORY_ID}")
 
 
 def main() -> int:
@@ -133,7 +126,7 @@ def main() -> int:
             if uuid is None:
                 no_uuid += 1
 
-            detail = {k: v for k, v in row.items() if k not in PROMOTED}
+            detail = split_detail(row, PROMOTED)
             values = {
                 "uuid": uuid,
                 "name": clean(row.get("name")) or f"item {uex_id}",
@@ -149,7 +142,7 @@ def main() -> int:
                 "slug": clean(row.get("slug")),
                 "url_store": clean(row.get("url_store")),
                 "source_date_modified": to_dt(row.get("date_modified")),
-                "detail": detail or None,
+                "detail": detail,
                 "verification_source": f"uexcorp snapshot {args.snapshot}",
                 "confidence": "medium",
             }

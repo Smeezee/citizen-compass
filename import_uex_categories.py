@@ -40,6 +40,12 @@ from sqlalchemy.orm import Session  # noqa: E402
 
 from app.database import engine  # noqa: E402
 from app.models import ItemCategory  # noqa: E402
+from app.uex_pipeline import (  # noqa: E402
+    make_logger,
+    split_detail,
+    to_bool,
+    to_dt,
+)
 
 SNAPSHOT_ROOT = PROJECT_ROOT / "data-layer" / "external-sources" / "uexcorp" / "snapshots"
 DEFAULT_SNAPSHOT = "20260801T235530Z"
@@ -52,19 +58,7 @@ PROMOTED = {"id", "type", "section", "name", "is_game_related", "is_mining",
             "date_modified"}
 
 
-def log(message: str) -> None:
-    """One line per run, matching the project's per-tool log convention.
-
-    No Unicode symbols: the known caveat in CLAUDE.md is that these log
-    helpers can crash on them when running with no console attached, and the
-    print() fails before the file write.
-    """
-    stamp = datetime.datetime.now().isoformat(timespec="seconds")
-    line = f"[{stamp}] categories: {message}"
-    print(line)
-    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(LOG_PATH, "a", encoding="utf-8") as fh:
-        fh.write(line + "\n")
+log = make_logger("categories")
 
 
 def load_rows(snapshot: str) -> list[dict]:
@@ -86,26 +80,6 @@ def load_rows(snapshot: str) -> list[dict]:
     if not isinstance(rows, list) or not rows:
         raise SystemExit(f"{path} carries no rows - refusing to report success")
     return rows
-
-
-def to_dt(value):
-    """A UEX unix timestamp as a datetime, or None. 0 means 'never', not 1970."""
-    try:
-        seconds = int(value)
-    except (TypeError, ValueError):
-        return None
-    if seconds <= 0:
-        return None
-    return datetime.datetime.fromtimestamp(seconds, tz=datetime.timezone.utc).replace(tzinfo=None)
-
-
-def to_bool(value):
-    if value is None:
-        return None
-    try:
-        return bool(int(value))
-    except (TypeError, ValueError):
-        return None
 
 
 def main() -> int:
@@ -131,7 +105,7 @@ def main() -> int:
                 log(f"SKIPPED a row with no id: {row!r}")
                 continue
 
-            detail = {k: v for k, v in row.items() if k not in PROMOTED}
+            detail = split_detail(row, PROMOTED)
             values = {
                 "type": row.get("type"),
                 "section": row.get("section"),
@@ -139,7 +113,7 @@ def main() -> int:
                 "is_game_related": to_bool(row.get("is_game_related")),
                 "is_mining": to_bool(row.get("is_mining")),
                 "source_date_modified": to_dt(row.get("date_modified")),
-                "detail": detail or None,
+                "detail": detail,
                 "verification_source": f"uexcorp snapshot {args.snapshot}",
                 "confidence": "medium",
             }

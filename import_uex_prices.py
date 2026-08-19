@@ -49,12 +49,17 @@ from dotenv import load_dotenv
 PROJECT_ROOT = Path(__file__).resolve().parent
 load_dotenv(PROJECT_ROOT / ".env")
 
-from sqlalchemy import insert, select  # noqa: E402
+from sqlalchemy import select  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
 from app.database import engine  # noqa: E402
 from app.models import ItemPrice, ShopItem, Snapshot, Terminal  # noqa: E402
-from import_uex_terminals import load_envelope, to_dt  # noqa: E402
+from app.uex_pipeline import (  # noqa: E402
+    append_only,
+    load_envelope,
+    make_logger,
+    to_dt,
+)
 
 SNAPSHOT_ROOT = PROJECT_ROOT / "data-layer" / "external-sources" / "uexcorp" / "snapshots"
 DEFAULT_SNAPSHOT = "20260801T235530Z"
@@ -62,13 +67,7 @@ LOG_PATH = PROJECT_ROOT / "logs" / "shop_layer_import.log"
 BATCH = 2000
 
 
-def log(message: str) -> None:
-    stamp = datetime.datetime.now().isoformat(timespec="seconds")
-    line = f"[{stamp}] prices: {message}"
-    print(line)
-    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(LOG_PATH, "a", encoding="utf-8") as fh:
-        fh.write(line + "\n")
+log = make_logger("prices")
 
 
 def price_or_none(value):
@@ -213,8 +212,7 @@ def main() -> int:
                 f"within this one snapshot - first occurrence kept")
 
         if not args.dry_run and pending:
-            for start in range(0, len(pending), BATCH):
-                session.execute(insert(ItemPrice), pending[start:start + BATCH])
+            append_only(session, ItemPrice, pending, batch_size=BATCH)
             session.commit()
         else:
             session.rollback()

@@ -303,7 +303,7 @@ B2  DONE  dd5c083  import_uex_items_category20.py - category 20 only,
     B4 abstraction arriving early - it is declining to maintain two copies of
     a guard that has already been proven.
 
-B3  DONE  <pending>  import_uex_prices.py - append-only, keyed by snapshot.
+B3  DONE  cad3dad  import_uex_prices.py - append-only, keyed by snapshot.
     IDEMPOTENT ON THE SAME SNAPSHOT, observed: re-run reports "51 already
     stored, 0 rows ready to insert". That is A5's stated control ("re-running
     the same snapshot inserts zero new rows") demonstrated on the importer.
@@ -322,3 +322,54 @@ B3  DONE  <pending>  import_uex_prices.py - append-only, keyed by snapshot.
     Nothing in this file updates or deletes a price. The only write is an
     insert. Upserting on (item, terminal) would be less code and would
     destroy the history the table exists to hold.
+
+B4  DONE  <pending>  app/uex_pipeline.py - extracted from B1-B3 AFTER they
+    existed, per §B4. The order asked for both halves of this, so:
+
+    WHAT THE THREE GENUINELY SHARED:
+      load_envelope()  - the source guard. Identical in all three, and the
+                         only piece already proven against known-bad input.
+      to_dt / to_bool / clean - and they had ALREADY started to drift.
+                         to_bool existed twice with the same body; `clean`
+                         existed in one importer that needed it and not in
+                         another that also did.
+      make_logger()    - four copies differing only in a prefix string.
+      split_detail()   - the same three lines everywhere, and the exact place
+                         a dropped source field would vanish unnoticed.
+      upsert_by_key()  - load, diff, insert-or-update, count all three
+                         outcomes. B1 (twice), B2 and the categories loader.
+
+    WHAT I EXPECTED THEM TO SHARE AND THEY DID NOT - and this is the part
+    that vindicates the rule:
+      THE WRITE STRATEGY. Had I designed this before B3, I would have built
+      one generic importer that upserts on a natural key, because that is what
+      B1 and B2 both do and they came first. B3 does not upsert AT ALL - it is
+      insert-only, and an upsert there would silently overwrite price history.
+      That is the §3.4 failure this entire layer exists to prevent, and a
+      generic importer written after B1 and B2 would have walked straight into
+      it while looking completely reasonable. So upsert_by_key() and
+      append_only() are two functions, not one function with a flag: a flag
+      would put the destructive behaviour one argument away from the safe one,
+      on the only table where the mistake is unrecoverable.
+      THE SHAPE OF A KEY. B1/B2 key on one integer from the source file. B3
+      keys on a 3-tuple of RESOLVED FOREIGN KEYS - database ids that appear
+      nowhere in the source. A "key_column" parameter covers two of three and
+      is useless for the third.
+      FK RESOLUTION. B1 resolves parents against rows it is inserting in the
+      same transaction; B2 does one lookup; B3 does two plus a snapshot.
+      Generalising it would have meant inventing a small configuration
+      language, which is the thing the rule is there to stop.
+      DEFERRAL. Only B3 has "cannot be placed YET, report as incomplete".
+      B1 and B2 have no such state and would never have grown one.
+
+    So what exists is a TOOLKIT, not a framework. Nothing in it knows what a
+    terminal or a price is, and no importer must use all of it.
+    NOT FOLDED IN: import_uex_snapshots.py. It walks directories rather than
+    reading envelopes, and it must RECORD an unexpected file shape rather than
+    reject it - the opposite of what load_envelope() is for. Forcing it in
+    would be exactly the over-generalisation §B4 warns about.
+    PROVEN BEHAVIOUR-NEUTRAL, which is the real risk in a refactor: every
+    importer was re-run afterwards and reported 0 inserted and **0 UPDATED**
+    across all 2,697 stored rows. Any drift in a single coercion would have
+    surfaced as an update on every row of that table. The source-guard control
+    still passes all 15 assertions.

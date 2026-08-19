@@ -63,6 +63,14 @@ from app.locations import (  # noqa: E402
     unresolvable_references,
 )
 from app.models import Location, Terminal  # noqa: E402
+from app.uex_pipeline import (  # noqa: E402
+    clean,
+    make_logger,
+    split_detail,
+    to_bool,
+    to_dt,
+)
+from app.uex_pipeline import load_envelope as _shared_load_envelope
 
 SNAPSHOT_ROOT = PROJECT_ROOT / "data-layer" / "external-sources" / "uexcorp" / "snapshots"
 DEFAULT_SNAPSHOT = "20260801T235530Z"
@@ -102,13 +110,7 @@ TERMINAL_PROMOTED = {
 }
 
 
-def log(message: str) -> None:
-    stamp = datetime.datetime.now().isoformat(timespec="seconds")
-    line = f"[{stamp}] terminals: {message}"
-    print(line)
-    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(LOG_PATH, "a", encoding="utf-8") as fh:
-        fh.write(line + "\n")
+log = make_logger("terminals")
 
 
 def load_envelope(path: Path) -> list:
@@ -119,61 +121,10 @@ def load_envelope(path: Path) -> list:
     import zero rows and report success" - applies to every importer here, not
     only the one it is written under.
     """
-    if not path.exists():
-        raise SystemExit(f"MALFORMED SOURCE: {path} does not exist")
-    try:
-        with open(path, encoding="utf-8") as fh:
-            payload = json.load(fh)
-    except json.JSONDecodeError as exc:
-        raise SystemExit(f"MALFORMED SOURCE: {path} is not valid JSON - {exc}")
-
-    if not isinstance(payload, dict) or "data" not in payload:
-        raise SystemExit(
-            f"MALFORMED SOURCE: {path} has no 'data' key - this is not a UEX "
-            f"envelope and its shape will not be guessed at"
-        )
-    rows = payload["data"]
-    if rows is None:
-        # A real and legitimate case - HTTP 200, envelope ok, no rows. It is
-        # NOT malformed, and it is NOT silently treated as success either: the
-        # caller decides whether an empty endpoint is acceptable.
-        return []
-    if not isinstance(rows, list):
-        raise SystemExit(
-            f"MALFORMED SOURCE: {path} has 'data' as "
-            f"{type(rows).__name__}, not a list"
-        )
-    return rows
-
-
-def to_dt(value):
-    try:
-        seconds = int(value)
-    except (TypeError, ValueError):
-        return None
-    if seconds <= 0:
-        return None
-    return datetime.datetime.fromtimestamp(
-        seconds, tz=datetime.timezone.utc
-    ).replace(tzinfo=None)
-
-
-def to_bool(value):
-    if value is None:
-        return None
-    try:
-        return bool(int(value))
-    except (TypeError, ValueError):
-        return None
-
-
-def clean(value):
-    """Empty string -> None. UEX uses "" where it means 'not set', and storing
-    it as "" makes every downstream `IS NOT NULL` check quietly wrong."""
-    if isinstance(value, str):
-        value = value.strip()
-        return value or None
-    return value
+    # One implementation, in app/uex_pipeline.py, proven against nine kinds
+    # of broken file in checks/_verify_shop_importers.py. Re-exported here
+    # because that control imports it from this module by name.
+    return _shared_load_envelope(path)
 
 
 def import_locations(session, snapshot, source_rows, dry_run):
