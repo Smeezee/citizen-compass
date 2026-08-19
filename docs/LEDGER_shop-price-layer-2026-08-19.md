@@ -786,7 +786,7 @@ D4  DONE  e94ded1  /api/v1/shop/search - name/slug substring, category,
     limit is clamped AND the response says so; a search matching nothing
     returns an honest 200 with total 0.
 
-E1  DONE  <pending>  testing/_deploy/find.html no longer invents anything.
+E1  DONE  a2823b3  testing/_deploy/find.html no longer invents anything.
     The block commented "invented data" - 17 made-up items across 9 made-up
     shops - is GONE, along with every view that read from it. `const LOC`,
     `const SHOP` and `const ITEM` are all absent, asserted by the control.
@@ -808,7 +808,7 @@ E1  DONE  <pending>  testing/_deploy/find.html no longer invents anything.
     GET and OPTIONS only, no credentials; a method wildcard would advertise
     POST and DELETE on an API that serves neither.
 
-E2  BLOCKED  <pending>  THE MOCKUP BANNER STAYS. E2 permits removing it only
+E2  BLOCKED  a2823b3  THE MOCKUP BANNER STAYS. E2 permits removing it only
     after "fetching the deployed URL and confirming real rows come back - not
     after a successful build, not after a successful deploy."
     THE DEPLOYED API IS DOWN. https://citizen-compass-production.up.railway.app
@@ -831,7 +831,7 @@ E2  BLOCKED  <pending>  THE MOCKUP BANNER STAYS. E2 permits removing it only
     and that the banner stays until the deployed API is confirmed.
     DECIDED-BY-DEFAULT, reverses in one line if Sleven disagrees.
 
-E3  DONE  <pending>  Buy and sell are SEPARATE COLUMNS on both the item page
+E3  DONE  a2823b3  Buy and sell are SEPARATE COLUMNS on both the item page
     and the terminal page. Asserted by the control: a Buy header and a Sell
     header both present, and no key or text matching average/blended/avg
     anywhere in the rendered output. A missing side renders as a dash marked
@@ -839,7 +839,7 @@ E3  DONE  <pending>  Buy and sell are SEPARATE COLUMNS on both the item page
     contains a bare 0. Section 3.1 end to end: NULL in the database, no
     averaged field in the API, blank on the page.
 
-E4  DONE  <pending>  Every price row renders "snapshot 20260801T235530Z -
+E4  DONE  a2823b3  Every price row renders "snapshot 20260801T235530Z -
     reported N days ago", and anything with no last_verified_patch is
     visibly flagged "not verified against a patch" rather than shown as
     though it were confirmed. Rows older than 30 days get the `old` class so
@@ -866,3 +866,24 @@ E4  DONE  <pending>  Every price row renders "snapshot 20260801T235530Z -
     reason is written into the file so it is not reintroduced.
 
 --- PHASE E COMPLETE except E2, which is BLOCKED on the Railway 502. --------
+
+E-FIX  <pending>  I EDITED THE BUILD OUTPUT INSTEAD OF THE SOURCE, and caught
+    it before it cost anything. testing/_deploy/ is gitignored (344 MB of ship
+    models), so the E commit went through carrying only app/main.py, the
+    control and the ledger - find.html was silently not in it. Chasing that
+    down found the real problem: testing/_src/find.src.html is the TRACKED
+    SOURCE, and testing/_src/build_deploy.py line 587 maps
+    ('find.src.html', 'find.html') - so the next build would have overwritten
+    the entire E1 rewrite with the invented-data version, and the symptom
+    would have been the mockup coming back on its own.
+    Confirmed it was a plain copy before fixing: _src/find.src.html was
+    BYTE-IDENTICAL to the pre-edit _deploy/find.html, so nothing else had
+    diverged and copying the edited file back to source is exact.
+    The change now lives in testing/_src/find.src.html, which is tracked and
+    committed. _deploy and _src are identical, and
+    testing/_src/check_deploy_clean.py reports "_deploy contains only known
+    assets - safe to deploy".
+    THIS IS RULE 14 FROM THE INSIDE. One artifact, one writer - and the
+    writer for _deploy/find.html is build_deploy.py, not me. Writing to the
+    output rather than the input is the same defect as a second writer, just
+    with the loss deferred to the next build instead of the next save.

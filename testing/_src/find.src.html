@@ -103,298 +103,353 @@ trademarks of Cloud Imperium Rights LLC.
 </footer>
 
 <script>
-/* ================= invented data ================= */
-const LOC={
- area18:{n:"Area18",p:"ArcCorp",sys:"Stanton"},
- nb:{n:"New Babbage",p:"microTech",sys:"Stanton"},
- lor:{n:"Lorville",p:"Hurston",sys:"Stanton"},
- orison:{n:"Orison",p:"Crusader",sys:"Stanton"},
- everus:{n:"Everus Harbour",p:"Hurston orbit",sys:"Stanton"},
- grim:{n:"GrimHEX",p:"Yela orbit",sys:"Stanton"}
-};
-const SHOP={
- centermass:{n:"Centermass",loc:"area18",kind:"Weapons & ammo"},
- cubby:{n:"Cubby Blast",loc:"grim",kind:"Weapons & ammo"},
- casaba:{n:"Casaba Outlet",loc:"area18",kind:"Clothing & flight suits"},
- casabanb:{n:"Casaba Outlet",loc:"nb",kind:"Clothing & flight suits"},
- dumper:{n:"Dumper's Depot",loc:"nb",kind:"Ship components"},
- tammany:{n:"Tammany & Sons",loc:"lor",kind:"Ship components"},
- platinum:{n:"Platinum Bay",loc:"everus",kind:"Commodities"},
- medbay:{n:"medical supplies kiosk",loc:"orison",kind:"Medical"},
- gm:{n:"G-Loc Bar",loc:"area18",kind:"Food & drink"}
-};
-const ITEM={
- pembroke:{n:"Pembroke Flight Suit",cat:"Flight suits",mfr:"CDS",
-   d:"A light flight suit. Keeps you breathing in vacuum and takes up little room.",
-   px:[{s:"casaba",p:14200,age:"4 hours"},{s:"casabanb",p:15900,age:"1 day"}]},
- tailwind:{n:"Tailwind Flight Suit",cat:"Flight suits",mfr:"Roberts Space Industries",
-   d:"Mid-weight flight suit with better temperature range than the entry models.",
-   px:[{s:"casabanb",p:22400,age:"6 hours"},{s:"casaba",p:23100,age:"2 days"}]},
- novikov:{n:"Novikov Backpack",cat:"Backpacks",mfr:"CDS",
-   d:"Large capacity backpack. Slows you slightly when full.",
-   px:[{s:"casaba",p:9800,age:"3 hours"},{s:"casabanb",p:10400,age:"5 hours"}]},
- inquis:{n:"Inquisitor Armour — Full Set",cat:"Armor",mfr:"Clark Defense",
-   d:"Heavy armour set. Good protection, poor stamina.",
-   px:[{s:"centermass",p:118000,age:"9 hours"}]},
- killshot:{n:"Killshot Rifle",cat:"Personal weapons",mfr:"Kastak Arms",
-   d:"Ballistic marksman rifle. Common in bunker work.",
-   px:[{s:"centermass",p:41500,age:"2 hours"},{s:"cubby",p:39900,age:"11 hours"}]},
- killammo:{n:"Killshot Ammo Box",cat:"Ammo",mfr:"Kastak Arms",
-   d:"Refill for the Killshot. Cheap, and everyone forgets to buy it.",
-   px:[{s:"centermass",p:1200,age:"2 hours"},{s:"cubby",p:1150,age:"11 hours"}]},
- deadbolt:{n:"Deadbolt III",cat:"Ship weapons",mfr:"Behring",
-   d:"Size 3 ballistic repeater. No energy draw, so it stays quiet.",
-   px:[{s:"centermass",p:412000,age:"4 hours"}]},
- erebos:{n:"Erebos Quantum Drive",cat:"Quantum drives",mfr:"Juno Starwerk",
-   d:"Size 1 quantum drive. Longer range than stock, lower signature.",
-   px:[{s:"dumper",p:598000,age:"1 day"},{s:"tammany",p:611000,age:"3 hours"}]},
- palisade:{n:"Palisade Shield Generator",cat:"Shield generators",mfr:"Gorgon Defender",
-   d:"Size 1 shield with a much smaller electronic footprint than the stock unit.",
-   px:[{s:"dumper",p:688000,age:"2 days"}]},
- frost:{n:"Frost Star Cooler",cat:"Coolers",mfr:"JS-Defense",
-   d:"Size 1 cooler. More headroom, runs quieter.",
-   px:[{s:"dumper",p:194000,age:"5 hours"},{s:"tammany",p:201000,age:"3 hours"}]},
- medpen:{n:"MedPen",cat:"Medical",mfr:"CureLife",
-   d:"One-shot injector. Stops bleeding and gets you upright.",
-   px:[{s:"medbay",p:280,age:"1 hour"},{s:"centermass",p:340,age:"4 hours"}]},
- hydrapen:{n:"HydraPen",cat:"Medical",mfr:"CureLife",
-   d:"Rehydration injector. Cheap insurance on long hauls.",
-   px:[{s:"medbay",p:190,age:"1 hour"}]},
- wafer:{n:"Ration Wafer",cat:"Food",mfr:"Various",
-   d:"Dense emergency food. Tastes like it sounds.",
-   px:[{s:"gm",p:65,age:"2 hours"},{s:"medbay",p:70,age:"1 hour"}]},
- cruzlox:{n:"Cruz Lox Energy Drink",cat:"Drinks",mfr:"Cruz",
-   d:"Caffeinated. Popular with haulers on long runs.",
-   px:[{s:"gm",p:120,age:"2 hours"}]},
- hadanite:{n:"Hadanite",cat:"Harvestables",mfr:"—",
-   d:"Gemstone found in caves. Hand-mined, then sold.",
-   px:[],sell:[{s:"platinum",p:2750,age:"3 hours"},{s:"cubby",p:2610,age:"8 hours"}]},
- tungsten:{n:"Tungsten",cat:"Commodities",mfr:"—",
-   d:"Industrial metal. Bulk cargo.",
-   px:[{s:"platinum",p:38,age:"3 hours"}],sell:[{s:"platinum",p:41,age:"3 hours"}]},
- fabricator:{n:"Item Fabricator",cat:"Crafting",mfr:"Greycat",
-   d:"Bench unit for crafting components from blueprints and raw materials.",
-   px:[{s:"dumper",p:1240000,age:"7 hours"},{s:"tammany",p:1198000,age:"2 hours"}]}
-};
+/* ================= real data, from the shop API =================
+ *
+ * E1 of the 2026-08-19 order. The block that used to sit here was labelled
+ * "invented data" - 17 made-up items across 9 made-up shops - and it is gone.
+ * Every number on this page now comes from /api/v1/shop, which is backed by
+ * 26,657 real price rows across 823 real terminals.
+ *
+ * WHY THE MOCKUP BANNER IS STILL AT THE TOP OF THIS PAGE
+ * ------------------------------------------------------
+ * E2 says the banner comes off ONLY after fetching the deployed URL and
+ * reading real rows back from it - "not after a successful build, not after
+ * a successful deploy". At the time of writing, the deployed API answers 502
+ * (Application failed to respond) on every path, so that confirmation cannot
+ * be made and the banner stays exactly as it was. It is not edited, softened
+ * or reworded. The home-page explainer below IS updated, because it described
+ * the data ("seventeen invented items") and the data has changed - leaving
+ * that would be false in the other direction.
+ *
+ * PRICES: buy and sell are separate columns, always (E3 / §3.1). A blank is
+ * a blank - it means "no data" and is never rendered as 0, and there is no
+ * blended average anywhere on this page.
+ *
+ * PROVENANCE: every price row shows its snapshot and the age of its own
+ * source date, and anything unverified is visibly flagged (E4).
+ */
 
-/* words people type that carry no meaning for matching */
-const STOP=new Set(["star","citizen","sc","where","to","buy","find","can","i","get","the","a","an",
- "how","much","is","does","cost","at","in","on","for","of","do","you","what","price","prices",
- "sell","sells","selling","best","in-game","ingame","game","location","locations","shop","shops"]);
+/* Where the API lives. Overridable with ?api=http://127.0.0.1:8077 so this
+ * page can be driven against a local server without editing the file - which
+ * is how it was verified before deployment. */
+const API_BASE = (new URLSearchParams(location.search).get("api")
+  || "https://citizen-compass-production.up.railway.app").replace(/\/$/, "");
 
-const $=s=>document.querySelector(s);
-const fmt=n=>n>=1000?Math.round(n).toLocaleString():String(n);
-function ageClass(a){return /day|week/.test(a)?"old":"";}
-function locLine(sid){const s=SHOP[sid],l=LOC[s.loc];return `${s.n}, ${l.n} — ${l.p}, ${l.sys}`;}
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = n => (n == null ? null : Number(n).toLocaleString("en-US"));
 
-/* ================= search ================= */
-function tokens(q){
-  return q.toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/)
-    .filter(t=>t&&!STOP.has(t));
+/* A price cell. null is a BLANK, never a zero and never a dash pretending to
+ * be a number - blank means "nobody reported this side here". */
+function priceCell(value, cls) {
+  const shown = fmt(value);
+  return shown === null
+    ? `<span class="conf">—<span class="conf"> no data</span></span>`
+    : `<span class="${cls}">${shown}</span>`;
 }
-function search(q){
-  const ts=tokens(q); if(!ts.length) return [];
-  const out=[];
-  // items
-  for(const k in ITEM){
-    const it=ITEM[k];
-    const hay=(it.n+" "+it.cat+" "+it.mfr).toLowerCase();
-    const locs=(it.px||[]).concat(it.sell||[]).map(x=>LOC[SHOP[x.s].loc].n.toLowerCase()+" "+SHOP[x.s].n.toLowerCase()).join(" ");
-    let score=0, why=[];
-    ts.forEach(t=>{
-      if(hay.includes(t)){score+=(it.n.toLowerCase().includes(t)?4:2);}
-      else if(locs.includes(t)){score+=3;why.push("sold in that area");}
-    });
-    if(score) out.push({type:"item",k,score,why:[...new Set(why)]});
-  }
-  // shops
-  for(const k in SHOP){
-    const s=SHOP[k], hay=(s.n+" "+s.kind+" "+LOC[s.loc].n+" "+LOC[s.loc].p).toLowerCase();
-    let score=0; ts.forEach(t=>{if(hay.includes(t))score+=3;});
-    if(score) out.push({type:"shop",k,score});
-  }
-  // locations
-  for(const k in LOC){
-    const l=LOC[k], hay=(l.n+" "+l.p+" "+l.sys).toLowerCase();
-    let score=0; ts.forEach(t=>{if(hay.includes(t))score+=2;});
-    if(score) out.push({type:"loc",k,score});
-  }
-  return out.sort((a,b)=>b.score-a.score);
+
+/* How old a source date is, in words, plus a class so old data looks old. */
+function age(iso) {
+  if (!iso) return { text: "age unknown", cls: "old" };
+  const days = Math.floor((Date.now() - new Date(iso + "Z").getTime()) / 86400000);
+  if (isNaN(days)) return { text: "age unknown", cls: "old" };
+  if (days <= 0) return { text: "today", cls: "" };
+  if (days === 1) return { text: "yesterday", cls: "" };
+  if (days < 30) return { text: days + " days ago", cls: "" };
+  if (days < 365) return { text: Math.round(days / 30) + " months ago", cls: "old" };
+  return { text: "over a year ago", cls: "old" };
+}
+
+/* E4: the standing rule is that the front end flags unverified data. It is
+ * flagged rather than hidden, and the words say what is actually unknown. */
+function verifiedNote(patch) {
+  return patch
+    ? `<span class="conf">verified in patch ${esc(patch)}</span>`
+    : `<span class="conf old">not verified against a patch</span>`;
+}
+
+function provenance(row) {
+  const a = age(row.source_date_modified);
+  return `<span class="conf ${a.cls}">snapshot ${esc(row.snapshot_key)} ·
+    reported ${a.text}</span>`;
+}
+
+async function api(path) {
+  const response = await fetch(API_BASE + path, { headers: { Accept: "application/json" } });
+  let body = null;
+  try { body = await response.json(); } catch (e) { body = null; }
+  return { ok: response.ok, status: response.status, body };
+}
+
+/* Honest failure. Not a spinner that never stops, and not an empty results
+ * list that reads as "there is nothing" when the truth is "we could not ask". */
+function apiDown(status) {
+  return `<div class="none"><b>We can't reach the price data right now.</b>
+    The shop API answered ${status ? "HTTP " + status : "not at all"}.
+    That is a problem at our end, not with what you typed — nothing here is
+    missing, we just could not look it up.</div>`;
 }
 
 /* ================= views ================= */
-function searchBox(val,hero){
-  return `<div class="searchwrap${hero?' hero':''}">
-    ${hero?`<h1>What are you looking for?</h1>
-      <p>Type it how you'd say it. "flight suits in new babbage" works fine.</p>`:""}
+function searchBox(val, hero) {
+  return `<div class="searchwrap${hero ? " hero" : ""}">
+    ${hero ? `<h1>What are you looking for?</h1>
+      <p>Type it how you'd say it. "flight suit" or "Omnisky" both work.</p>` : ""}
     <div class="sbox">
-      <input id="q" placeholder="flight suits new babbage" value="${val||""}" autocomplete="off">
+      <input id="q" placeholder="omnisky cannon" value="${esc(val || "")}" autocomplete="off">
       <button onclick="go()">Find it</button></div>
     <div class="egs">Try:
-      <a href="#s/where to buy flight suits">where to buy flight suits</a>·
-      <a href="#s/how much is a medpen">how much is a medpen</a>·
-      <a href="#s/killshot ammo">killshot ammo</a>·
-      <a href="#s/what sells at area18">what sells at area18</a>·
-      <a href="#s/hadanite">hadanite</a></div></div>`;
+      <a href="#s/omnisky">omnisky</a>·
+      <a href="#s/medpen">medpen</a>·
+      <a href="#s/quantum drive">quantum drive</a>·
+      <a href="#s/fuel tank">fuel tank</a>·
+      <a href="#s/agricium">agricium</a></div></div>`;
 }
-function home(){
-  return searchBox("",true)+`<div class="mock2" style="max-width:760px;margin:22px auto 0">
-    <strong>Mockup.</strong> Seventeen invented items across nine invented shops, to show how
-    finding something would work. Prices are made up.</div>`;
-}
-function results(q){
-  const r=search(q);
-  let h=searchBox(q)+`<div style="max-width:900px;margin:18px auto 0">`;
-  if(!r.length){
-    h+=`<div class="none"><b>Nothing matched "${q}"</b>
-      That might be our fault, not yours — tell us what you were after.
-      <div class="chips" style="justify-content:center">
-        <a href="#s/flight suits">flight suits</a><a href="#s/medpen">medpen</a>
-        <a href="#s/quantum drive">quantum drive</a><a href="#s/hadanite">hadanite</a>
-        <a href="#s/ammo">ammo</a></div></div>`;
-    return h+"</div>";
-  }
-  h+=`<p style="color:var(--muted);font-size:15px">${r.length} result${r.length>1?"s":""}
-      for <b style="color:var(--text)">${q}</b></p>`;
-  r.slice(0,14).forEach(x=>{
-    if(x.type==="item"){
-      const it=ITEM[x.k], buy=(it.px||[]).slice().sort((a,b)=>a.p-b.p)[0];
-      h+=`<a class="res" href="#i/${x.k}">
-        <span class="rp">${buy?`<b>${fmt(buy.p)} aUEC</b><small>cheapest of ${it.px.length}</small>`
-          :`<b style="color:var(--warn)">sells for ${fmt(it.sell[0].p)}</b><small>not bought in shops</small>`}</span>
-        <span class="rt">${it.n}</span>
-        ${x.why.length?`<span class="why">${x.why[0]}</span>`:""}
-        <div class="rs">${it.cat}${it.mfr!=="—"?" · "+it.mfr:""}</div></a>`;
-    } else if(x.type==="shop"){
-      const s=SHOP[x.k];
-      h+=`<a class="res" href="#p/${x.k}"><span class="rt">${s.n}</span>
-        <span class="why">shop</span>
-        <div class="rs">${s.kind} · ${LOC[s.loc].n}, ${LOC[s.loc].p}</div></a>`;
-    } else {
-      const l=LOC[x.k];
-      const shops=Object.keys(SHOP).filter(k=>SHOP[k].loc===x.k);
-      h+=`<a class="res" href="#p/${shops[0]}"><span class="rt">${l.n}</span>
-        <span class="why">place</span>
-        <div class="rs">${l.p}, ${l.sys} · ${shops.length} shop${shops.length>1?"s":""} listed</div></a>`;
-    }
-  });
-  return h+"</div>";
-}
-function item(k){
-  const it=ITEM[k]; if(!it) return home();
-  const buys=(it.px||[]).slice().sort((a,b)=>a.p-b.p);
-  const sells=(it.sell||[]).slice().sort((a,b)=>b.p-a.p);
-  let ans;
-  if(buys.length){
-    const b=buys[0], l=LOC[SHOP[b.s].loc];
-    ans=`Sold at <b>${buys.length} shop${buys.length>1?"s":""}</b>. Cheapest is
-      <span class="cheap">${SHOP[b.s].n} in ${l.n}</span> at <b>${fmt(b.p)} aUEC</b>.`;
-    if(sells.length) ans+=` It sells back for about <b>${fmt(sells[0].p)}</b>.`;
-  } else if(sells.length){
-    const s=sells[0];
-    ans=`Shops don't sell this — you find it out in the world.
-      Best price to <b>sell</b> it is <span class="cheap">${SHOP[s.s].n} in ${LOC[SHOP[s.s].loc].n}</span>
-      at <b>${fmt(s.p)} aUEC</b>.`;
-  } else ans="We don't have price information for this yet.";
 
-  let h=`<div style="max-width:960px;margin:0 auto">${searchBox("")}
+function home() {
+  return searchBox("", true) + `<div class="mock2" style="max-width:760px;margin:22px auto 0">
+    <strong>Reading live data.</strong> The invented items and shops that used to be here are
+    gone — this page now queries the real shop API. The banner at the top stays until that API
+    has been confirmed answering from its deployed address, which it is not yet doing.</div>`;
+}
+
+async function results(q) {
+  const view = $("#view");
+  const r = await api("/api/v1/shop/search?limit=20&q=" + encodeURIComponent(q));
+  let h = searchBox(q) + `<div style="max-width:900px;margin:18px auto 0">`;
+
+  if (!r.ok) return view.innerHTML = h + apiDown(r.status) + "</div>";
+
+  const items = (r.body && r.body.items) || [];
+  /* The control: a search that matches nothing shows an honest empty state.
+   * Not a spinner, and not filler. */
+  if (!items.length) {
+    return view.innerHTML = h + `<div class="none"><b>Nothing matched "${esc(q)}"</b>
+      We looked through ${fmt(7932)} items and found none with that in the name.
+      That might be our gap rather than your typo.
+      <div class="chips" style="justify-content:center">
+        <a href="#s/omnisky">omnisky</a><a href="#s/medpen">medpen</a>
+        <a href="#s/quantum drive">quantum drive</a><a href="#s/fuel tank">fuel tank</a>
+        <a href="#s/agricium">agricium</a></div></div></div>`;
+  }
+
+  h += `<p style="color:var(--muted);font-size:15px">${fmt(r.body.total)}
+    result${r.body.total > 1 ? "s" : ""} for
+    <b style="color:var(--text)">${esc(q)}</b>${r.body.total > items.length
+      ? ` · showing the first ${items.length}` : ""}</p>`;
+
+  items.forEach(row => {
+    const it = row.item;
+    const ref = `${it.source_kind}:${it.uex_id}`;
+    let price;
+    if (row.terminal_count === 0) {
+      /* §3.6 - absence is data, and the page has to be able to say it. */
+      price = `<b style="color:var(--muted)">no shop sells it</b>
+        <small>not stocked anywhere we hold</small>`;
+    } else if (row.price_buy_min != null) {
+      price = `<b>${fmt(row.price_buy_min)} aUEC</b><small>cheapest of
+        ${row.terminal_count} shop${row.terminal_count > 1 ? "s" : ""}</small>`;
+    } else {
+      price = `<b style="color:var(--warn)">sells for ${fmt(row.price_sell_max)}</b>
+        <small>not bought in shops</small>`;
+    }
+    h += `<a class="res" href="#i/${encodeURIComponent(ref)}">
+      <span class="rp">${price}</span>
+      <span class="rt">${esc(it.name)}</span>
+      ${it.source_kind === "commodity" ? `<span class="why">commodity</span>` : ""}
+      <div class="rs">${esc(it.category_name || "uncategorised")}${
+        it.company_name ? " · " + esc(it.company_name) : ""}</div></a>`;
+  });
+  view.innerHTML = h + "</div>";
+}
+
+async function item(ref) {
+  const view = $("#view");
+  const r = await api("/api/v1/shop/items/" + encodeURIComponent(ref) + "/prices");
+
+  if (r.status === 404) {
+    return view.innerHTML = searchBox("") +
+      `<div style="max-width:900px;margin:18px auto 0"><div class="none">
+        <b>We don't have that item.</b> Nothing in the catalogue matches
+        "${esc(ref)}".</div></div>`;
+  }
+  /* An ambiguous identifier is a real answer, not an error to swallow: this
+   * dataset has 120 uuids worn by up to ten different products, and picking
+   * one for the reader would be inventing an answer. */
+  if (r.status === 409) {
+    const d = (r.body && r.body.detail) || {};
+    const list = (d.candidates || []).map(c =>
+      `<a href="#i/${encodeURIComponent(c.source_kind + ":" + c.uex_id)}">
+        ${esc(c.name)} <span class="conf">${esc(c.category || "")}</span></a>`).join("");
+    return view.innerHTML = searchBox("") +
+      `<div style="max-width:900px;margin:18px auto 0"><div class="none">
+        <b>That identifier means more than one thing.</b>
+        ${(d.candidates || []).length} different items share it, so we won't
+        guess which you meant.
+        <div class="chips" style="justify-content:center">${list}</div></div></div>`;
+  }
+  if (!r.ok) return view.innerHTML = searchBox("") +
+    `<div style="max-width:900px;margin:18px auto 0">${apiDown(r.status)}</div>`;
+
+  const it = r.body.item;
+  const rows = r.body.prices || [];
+  const buys = rows.filter(x => x.price_buy != null).sort((a, b) => a.price_buy - b.price_buy);
+  const sells = rows.filter(x => x.price_sell != null).sort((a, b) => b.price_sell - a.price_sell);
+
+  let ans;
+  if (buys.length) {
+    ans = `Sold at <b>${buys.length} terminal${buys.length > 1 ? "s" : ""}</b>. Cheapest is
+      <span class="cheap">${esc(buys[0].terminal_name)}</span> at
+      <b>${fmt(buys[0].price_buy)} aUEC</b>.`;
+    if (sells.length) ans += ` Best price to sell it back is
+      <b>${fmt(sells[0].price_sell)}</b>.`;
+  } else if (sells.length) {
+    ans = `No shop sells this — you find it out in the world. Best price to
+      <b>sell</b> it is <span class="cheap">${esc(sells[0].terminal_name)}</span>
+      at <b>${fmt(sells[0].price_sell)} aUEC</b>.`;
+  } else {
+    /* §3.6 again. "Nobody sells this" is an answer, and a real one. */
+    ans = `<b>No terminal we hold buys or sells this.</b> That is what the data
+      says rather than a gap in it — the item exists, and nowhere stocks it.`;
+  }
+
+  let h = `<div style="max-width:960px;margin:0 auto">${searchBox("")}
     <div class="crumb" style="margin-top:16px"><a href="#">Home</a> ›
-      <a href="#s/${encodeURIComponent(it.cat)}">${it.cat}</a> › ${it.n}</div>
-    <div class="hdr"><h1>${it.n}</h1><span class="cat">${it.cat}</span>
-      ${it.mfr!=="—"?`<span class="mfr">${it.mfr}</span>`:""}</div>
-    <p style="color:var(--muted);margin:0 0 16px;font-size:17px">${it.d}</p>
+      <a href="#s/${encodeURIComponent(it.category_name || "")}">${esc(it.category_name
+        || "uncategorised")}</a> › ${esc(it.name)}</div>
+    <div class="hdr"><h1>${esc(it.name)}</h1>
+      <span class="cat">${esc(it.category_name || "uncategorised")}</span>
+      ${it.company_name ? `<span class="mfr">${esc(it.company_name)}</span>` : ""}</div>
+    <p style="color:var(--muted);margin:0 0 6px;font-size:15px">
+      UEX ${esc(it.source_kind)} #${esc(it.uex_id)}${it.uuid
+        ? ` · uuid ${esc(it.uuid)}` : " · no uuid in the source"}
+      · ${verifiedNote(it.last_verified_patch)}</p>
     <div class="answer">${ans}</div>`;
 
-  if(buys.length){
-    h+=`<div class="card"><h2>Where to buy it</h2><table>
-      <tr><th>Shop</th><th>Where</th><th>Price</th></tr>`;
-    buys.forEach((b,i)=>{
-      const s=SHOP[b.s], l=LOC[s.loc];
-      h+=`<tr class="${i===0?'best':''}"><td><a href="#p/${b.s}">${s.n}</a>
-        ${i===0?'<span class="pill">CHEAPEST</span>':''}</td>
-        <td>${l.n}<div class="conf">${l.p}, ${l.sys}</div></td>
-        <td class="price">${fmt(b.p)}
-        <span class="conf ${ageClass(b.age)}">player-reported, ${b.age} ago</span></td></tr>`;
+  /* E3: buy and sell are SEPARATE columns. They are never combined and never
+   * averaged into one figure. */
+  if (rows.length) {
+    h += `<div class="card"><h2>Every terminal that lists it</h2><table>
+      <tr><th>Terminal</th><th>Where</th><th>Buy</th><th>Sell</th><th>Source</th></tr>`;
+    const cheapest = buys.length ? buys[0] : null;
+    rows.forEach(x => {
+      const best = cheapest && x.terminal_id === cheapest.terminal_id
+        && x.price_buy === cheapest.price_buy;
+      h += `<tr class="${best ? "best" : ""}">
+        <td><a href="#p/${x.terminal_uex_id}">${esc(x.terminal_name)}</a>
+          ${best ? '<span class="pill">CHEAPEST</span>' : ""}</td>
+        <td>${esc(x.location || "location unknown")}</td>
+        <td class="price">${priceCell(x.price_buy, "")}</td>
+        <td class="sell">${priceCell(x.price_sell, "")}</td>
+        <td>${provenance(x)}</td></tr>`;
     });
-    h+=`</table></div>`;
+    h += `</table></div>`;
   }
-  if(sells.length){
-    h+=`<div class="card"><h2>What it sells for</h2><table>
-      <tr><th>Shop</th><th>Where</th><th>They pay</th></tr>`;
-    sells.forEach((b,i)=>{const s=SHOP[b.s],l=LOC[s.loc];
-      h+=`<tr class="${i===0?'best':''}"><td><a href="#p/${b.s}">${s.n}</a>
-        ${i===0?'<span class="pill">BEST</span>':''}</td>
-        <td>${l.n}<div class="conf">${l.p}, ${l.sys}</div></td>
-        <td class="sell">${fmt(b.p)}
-        <span class="conf ${ageClass(b.age)}">player-reported, ${b.age} ago</span></td></tr>`;});
-    h+=`</table></div>`;
-  }
-  h+=`<div class="warn"><strong>How sure are we?</strong> These prices come from players
-    reporting what they saw, not from the game itself. Gear and component prices in particular
-    swing a long way. Treat them as "about right", and check the age next to each one.</div>`;
-  const same=Object.keys(ITEM).filter(x=>x!==k&&ITEM[x].cat===it.cat);
-  if(same.length){
-    h+=`<div class="card"><h2>Others in ${it.cat}</h2><div class="chips">`+
-      same.map(x=>`<a href="#i/${x}">${ITEM[x].n}</a>`).join("")+`</div></div>`;
-  }
-  return h+"</div>";
+
+  h += `<div class="warn"><strong>How sure are we?</strong> These prices come from UEX, where
+    players report what they saw in game — not from the game itself. Each row shows which
+    sealed snapshot it came from and how old the player report behind it is. Anything not
+    verified against a patch says so.</div>`;
+
+  return view.innerHTML = h + "</div>";
 }
-function shop(k){
-  const s=SHOP[k]; if(!s) return home();
-  const l=LOC[s.loc];
-  const rows=[];
-  for(const ik in ITEM){
-    (ITEM[ik].px||[]).forEach(x=>{if(x.s===k)rows.push({ik,p:x.p,age:x.age,kind:"buy"});});
-    (ITEM[ik].sell||[]).forEach(x=>{if(x.s===k)rows.push({ik,p:x.p,age:x.age,kind:"sell"});});
+
+async function terminal(uexId) {
+  const view = $("#view");
+  const r = await api("/api/v1/shop/terminals/" + encodeURIComponent(uexId)
+    + "/inventory?limit=200");
+
+  if (r.status === 404) {
+    return view.innerHTML = searchBox("") +
+      `<div style="max-width:900px;margin:18px auto 0"><div class="none">
+        <b>We don't have that terminal.</b></div></div>`;
   }
-  const buys=rows.filter(r=>r.kind==="buy").sort((a,b)=>a.p-b.p);
-  const sells=rows.filter(r=>r.kind==="sell");
-  const alsoHere=Object.keys(SHOP).filter(x=>x!==k&&SHOP[x].loc===s.loc);
-  let h=`<div style="max-width:960px;margin:0 auto">${searchBox("")}
-    <div class="crumb" style="margin-top:16px"><a href="#">Home</a> › ${l.sys} › ${l.p} › ${l.n} › ${s.n}</div>
-    <div class="hdr"><h1>${s.n}</h1><span class="cat">${s.kind}</span></div>
-    <p style="color:var(--muted);margin:0 0 16px;font-size:17px">${l.n} — ${l.p}, ${l.sys}</p>
-    <div class="answer">Stocks <b>${buys.length} thing${buys.length!==1?"s":""}</b> we know about${
-      sells.length?`, and buys <b>${sells.length}</b> off you`:""}.
-      ${buys.length?`Cheapest here is <span class="cheap">${ITEM[buys[0].ik].n}</span> at
-      <b>${fmt(buys[0].p)} aUEC</b>.`:""}</div>`;
-  if(buys.length){
-    h+=`<div class="card"><h2>What they sell</h2><table>
-      <tr><th>Item</th><th>Category</th><th>Price</th></tr>`;
-    buys.forEach(r=>{h+=`<tr><td><a href="#i/${r.ik}">${ITEM[r.ik].n}</a></td>
-      <td style="color:var(--muted)">${ITEM[r.ik].cat}</td>
-      <td class="price">${fmt(r.p)}<span class="conf ${ageClass(r.age)}">seen ${r.age} ago</span></td></tr>`;});
-    h+=`</table></div>`;
+  if (!r.ok) return view.innerHTML = searchBox("") +
+    `<div style="max-width:900px;margin:18px auto 0">${apiDown(r.status)}</div>`;
+
+  const t = r.body.terminal;
+  const rows = r.body.items || [];
+  const buys = rows.filter(x => x.price_buy != null);
+  const sells = rows.filter(x => x.price_sell != null);
+
+  let h = `<div style="max-width:960px;margin:0 auto">${searchBox("")}
+    <div class="crumb" style="margin-top:16px"><a href="#">Home</a> ›
+      ${esc(t.resolved_path || "location unknown")}</div>
+    <div class="hdr"><h1>${esc(t.name)}</h1>
+      <span class="cat">${esc(t.type || "terminal")}</span></div>
+    <p style="color:var(--muted);margin:0 0 6px;font-size:17px">
+      ${esc(t.resolved_path || "location unknown")}</p>
+    <p style="color:var(--muted);margin:0 0 16px;font-size:15px">
+      UEX terminal #${esc(t.uex_id)} · ${verifiedNote(t.last_verified_patch)}</p>
+    <div class="answer">Lists <b>${fmt(r.body.total)}</b> price
+      row${r.body.total !== 1 ? "s" : ""} — ${buys.length} to buy,
+      ${sells.length} they'll buy off you.</div>`;
+
+  if (!rows.length) {
+    h += `<div class="none"><b>Nothing is listed here.</b> The terminal exists in
+      the data; no prices have been reported at it.</div>`;
+  } else {
+    h += `<div class="card"><h2>What it lists</h2><table>
+      <tr><th>Item</th><th>Category</th><th>Buy</th><th>Sell</th><th>Source</th></tr>`;
+    rows.forEach(x => {
+      h += `<tr>
+        <td><a href="#i/${encodeURIComponent(x.source_kind + ":" + x.item_uex_id)}">
+          ${esc(x.item_name)}</a></td>
+        <td style="color:var(--muted)">${esc(x.category_name || "—")}</td>
+        <td class="price">${priceCell(x.price_buy, "")}</td>
+        <td class="sell">${priceCell(x.price_sell, "")}</td>
+        <td><span class="conf ${age(x.source_date_modified).cls}">snapshot
+          ${esc(x.snapshot_key)} · reported ${age(x.source_date_modified).text}</span></td>
+        </tr>`;
+    });
+    h += `</table></div>`;
   }
-  if(sells.length){
-    h+=`<div class="card"><h2>What they'll buy from you</h2><table>
-      <tr><th>Item</th><th>They pay</th></tr>`;
-    sells.forEach(r=>{h+=`<tr><td><a href="#i/${r.ik}">${ITEM[r.ik].n}</a></td>
-      <td class="sell">${fmt(r.p)}<span class="conf ${ageClass(r.age)}">seen ${r.age} ago</span></td></tr>`;});
-    h+=`</table></div>`;
+
+  if (r.body.total > rows.length) {
+    h += `<p style="color:var(--muted);font-size:15px">Showing ${rows.length}
+      of ${fmt(r.body.total)} rows.</p>`;
   }
-  if(alsoHere.length){
-    h+=`<div class="card"><h2>Also at ${l.n}</h2><div class="chips">`+
-      alsoHere.map(x=>`<a href="#p/${x}">${SHOP[x].n} — ${SHOP[x].kind}</a>`).join("")+`</div></div>`;
-  }
-  return h+"</div>";
+  return view.innerHTML = h + "</div>";
 }
 
 /* ================= routing ================= */
-function go(){const v=document.getElementById('q').value.trim();
-  if(v)location.hash="s/"+encodeURIComponent(v);}
-function route(){
-  const h=decodeURIComponent(location.hash.slice(1));
-  let out;
-  if(h.startsWith("i/")) out=item(h.slice(2));
-  else if(h.startsWith("p/")) out=shop(h.slice(2));
-  else if(h.startsWith("s/")) out=results(h.slice(2));
-  else out=home();
-  document.getElementById('view').innerHTML=out;
-  const q=document.getElementById('q');
-  if(q){q.onkeydown=e=>{if(e.key==="Enter")go();};}
-  window.scrollTo(0,0);
+function go() {
+  const v = document.getElementById("q").value.trim();
+  if (v) location.hash = "s/" + encodeURIComponent(v);
 }
-addEventListener('hashchange',route); route();
+
+function wireBox() {
+  const q = document.getElementById("q");
+  if (q) q.onkeydown = e => { if (e.key === "Enter") go(); };
+  window.scrollTo(0, 0);
+}
+
+async function route() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  const view = $("#view");
+
+  /* Something on screen immediately, so a slow API never looks like a hang -
+   * and it is replaced by a real answer or an honest failure, never left. */
+  if (h) view.innerHTML = searchBox(h.startsWith("s/") ? h.slice(2) : "")
+    + `<div style="max-width:900px;margin:18px auto 0;color:var(--muted)">Looking…</div>`;
+
+  try {
+    if (h.startsWith("i/")) await item(h.slice(2));
+    else if (h.startsWith("p/")) await terminal(h.slice(2));
+    else if (h.startsWith("s/")) await results(h.slice(2));
+    else view.innerHTML = home();
+  } catch (err) {
+    /* A thrown fetch (DNS failure, offline, CORS) must land somewhere the
+     * reader can see. The alternative is the spinner that never stops. */
+    view.innerHTML = searchBox("") +
+      `<div style="max-width:900px;margin:18px auto 0">${apiDown(null)}
+       <p class="conf">${esc(err && err.message)}</p></div>`;
+  }
+  wireBox();
+}
+
+addEventListener("hashchange", route);
+route();
 </script>
 </html>
