@@ -70,13 +70,27 @@ def refusal_cases(ids):
             {"uex_id": TEST_ID_BASE + 2, "name": "Duplicate category"},
             "uq_item_categories_uex_id",
         ),
-        # ---- A4 shop items --------------------------------------------------
+        # ---- A4 shop items, widened at B6 -----------------------------------
+        # The expected constraint NAME changed here, and that is the control
+        # working rather than the control breaking. B6 replaced
+        # uq_shop_items_uex_id with uq_shop_items_source_kind_uex_id because
+        # 200 commodity ids collide with item ids. The bad row is still
+        # refused either way - asserting on the NAME is what made the swap
+        # visible instead of silent, which is the whole reason this harness
+        # names the constraint rather than settling for "something raised".
         (
-            "duplicate item uex_id",
-            "insert into shop_items (uex_id, name, confidence) "
-            "values (:uex_id, :name, 'unverified')",
+            "duplicate (source_kind, uex_id) for an item",
+            "insert into shop_items (uex_id, source_kind, name, confidence) "
+            "values (:uex_id, 'item', :name, 'unverified')",
             {"uex_id": TEST_ID_BASE + 3, "name": "Duplicate item"},
-            "uq_shop_items_uex_id",
+            "uq_shop_items_source_kind_uex_id",
+        ),
+        (
+            "a source_kind that is not a source_kind",
+            "insert into shop_items (uex_id, source_kind, name, confidence) "
+            "values (:uex_id, 'spaceship', :name, 'unverified')",
+            {"uex_id": TEST_ID_BASE + 50, "name": "Bad source kind"},
+            "ck_shop_items_source_kind_valid",
         ),
         # ---- A6 snapshots ---------------------------------------------------
         (
@@ -235,6 +249,14 @@ def acceptance_cases(ids):
             "values (:uex_id, 'Jericho XL', "
             "'0cced6b1-acfd-4c55-96cc-d0503638b9ad', 'unverified')",
             {"uex_id": TEST_ID_BASE + 32},
+        ),
+        (
+            "THE B6 WIDENING: the same uex_id under a DIFFERENT source_kind "
+            "is ACCEPTED - 200 commodity ids collide with item ids and both "
+            "must be storable",
+            "insert into shop_items (uex_id, source_kind, name, confidence) "
+            "values (:uex_id, 'commodity', :name, 'unverified')",
+            {"uex_id": TEST_ID_BASE + 3, "name": "Same id, different kind"},
         ),
         (
             "an item with NO uuid at all is ACCEPTED (28% of the source)",

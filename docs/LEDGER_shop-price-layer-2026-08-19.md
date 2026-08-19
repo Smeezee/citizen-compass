@@ -888,7 +888,7 @@ E-FIX  d187217  I EDITED THE BUILD OUTPUT INSTEAD OF THE SOURCE, and caught
     output rather than the input is the same defect as a second writer, just
     with the loss deferred to the next build instead of the next save.
 
-F1  DONE  <pending>  The 39 skipped ships, grouped by cause. The order
+F1  DONE  ee91865  The 39 skipped ships, grouped by cause. The order
     predicted "most of the 39 share two or three causes" and that is exactly
     right - there are TWO, and one of them subdivides usefully.
 
@@ -927,7 +927,7 @@ F1  DONE  <pending>  The 39 skipped ships, grouped by cause. The order
     geometry (12) or on CIG shipping the ship (25). Not fixed, per §F1 - the
     grouping is the deliverable.
 
-F2  DONE  <pending>  The 7 unchecked_hull entries. ONE cause, and the design
+F2  DONE  ee91865  The 7 unchecked_hull entries. ONE cause, and the design
     is already right.
     WHAT IT MEANS: the model borrowed a base ship's mount data, and the hull
     check that would confirm "this really is the same hull" could not run
@@ -960,7 +960,7 @@ F2  DONE  <pending>  The 7 unchecked_hull entries. ONE cause, and the design
     rules on - the mapping is what lets the check RUN, and the check may still
     refuse the pair. That is the point of running it.
 
-F3  DONE  <pending>  The cc-pending panel, and what it would now need.
+F3  DONE  ee91865  The cc-pending panel, and what it would now need.
 
     FIRST, A CORRECTION TO THE ORDER: there is ONE such panel, not two. It is
     at testing/_src/_layer.src.html:569 and appears a second time only as its
@@ -1004,3 +1004,33 @@ F3  DONE  <pending>  The cc-pending panel, and what it would now need.
     data is somewhere it is not.
 
 --- PHASE F COMPLETE. ------------------------------------------------------
+
+SWEEP  <pending>  Ran every control written in this session, back to back,
+    after the last item. That found a regression I had introduced and not
+    noticed, which is the argument for running the sweep rather than trusting
+    that each item was green when it was written.
+    B6 replaced uq_shop_items_uex_id with uq_shop_items_source_kind_uex_id.
+    checks/_verify_shop_schema_db.py was still asserting the OLD name, so it
+    failed - the bad row was still being refused, just by a different
+    constraint. THAT IS THE HARNESS WORKING. It names the constraint that
+    must do the rejecting precisely so a swap like this is visible instead of
+    silent; had it settled for "an error was raised", the rename would have
+    passed unnoticed and the harness would have been asserting something it
+    no longer checked.
+    Updated, and the B6 widening now has its own cases: the same uex_id under
+    a DIFFERENT source_kind is OBSERVED being accepted, and a source_kind
+    that is not one is OBSERVED being refused by ck_shop_items_source_kind_valid.
+    FINAL STATE OF EVERY CONTROL:
+      _verify_location_hierarchy.py        31 assertions
+      _verify_location_hierarchy_db.py      8 assertions
+      _verify_shop_schema_db.py            39 assertions (17 refusals observed,
+                                              16 acceptances observed)
+      _verify_shop_schema_db.py --self-test PASSED - the harness fails on demand
+      _verify_shop_importers.py            15 assertions
+      _verify_items_import_b5.py           10 assertions
+      _verify_shop_checks.py               24 assertions (C6, both halves)
+      _verify_shop_api.py                  36 assertions against a real server
+      _verify_find_page.mjs                30 assertions against a real server
+      TOTAL 193 assertions, all passing.
+    E2 re-checked at the end of the run: the deployed API still answers 502
+    on /health and on /api/v1/shop/search. Still BLOCKED, banner still on.
