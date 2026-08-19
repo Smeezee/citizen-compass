@@ -529,6 +529,7 @@ func selftest(outDir string) int {
 	runNoAutoCaptureSelftest(check)
 	runDiarySelftest(check)
 	runActivitySelftest(check)
+	runSelfInstallSelftest(check)
 	runCombatSelftest(check)
 	runMergeSelftest(check)
 	runKeyWatchSelftest(check)
@@ -680,6 +681,8 @@ func main() {
 		once    = flag.Bool("once", false, "capture once immediately and exit (no hotkey)")
 		list    = flag.Bool("list-windows", false, "list capturable windows and exit")
 		test    = flag.Bool("selftest", false, "run internal checks and exit")
+		uninst  = flag.Bool("uninstall", false, "remove Citizen Collector from this computer")
+		quietU  = flag.Bool("quiet", false, "with -uninstall: ask nothing, remove the program and keep collected data")
 		trayHdw = flag.Bool("tray-probe", false, "drive the notification-area icon and report what happened, then exit")
 		merge   = flag.String("merge", "", "merge every export (.zip or .json) in this folder into one dataset and exit")
 		ui      = flag.Bool("ui", false, "open the window (this is also what happens with no arguments at all)")
@@ -1025,6 +1028,15 @@ func main() {
 		}
 		fmt.Printf("wrote %s\n", out)
 		os.Exit(0)
+	}
+
+	// UNINSTALL. This is what Add/Remove Programs invokes, so it runs before
+	// the consent gate, before the instance check and before anything opens a
+	// window: somebody removing the program must not be asked to agree to
+	// collection first.
+	if *uninst {
+		attachParentConsole()
+		os.Exit(RunUninstall(*quietU, nil))
 	}
 
 	// THE TRAY, OBSERVED. Before the consent gate and before the instance

@@ -42,6 +42,21 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 	// on the Desktop while deciding whether this program should be putting files
 	// on the Desktop. Ahead of the runtime relaunch too - there is no point
 	// starting a second process that is going to reach the same conclusion.
+	// RUNNING FROM A ZIP PREVIEW OR A TEMP FOLDER: refuse, before anything is
+	// written. Everything saved there is deleted by Windows without warning, and
+	// the person is never told. See RefuseTempOrArchive.
+	if RefuseTempOrArchive(exeDir, nil) {
+		return nil
+	}
+
+	// FIRST RUN: install into a per-user program folder, register in Add/Remove
+	// Programs, make the shortcuts, and adopt whatever this folder already
+	// holds. Returns true when the installed copy has been started and this
+	// process is finished.
+	if FirstRunInstall(exeDir, nil) {
+		return nil
+	}
+
 	if GuardInstallLocation(exeDir, nil) {
 		return nil
 	}

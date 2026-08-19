@@ -53,7 +53,19 @@ const autostartLinkName = "Citizen Collector (starts with Windows)"
 
 // autostartPath is where the startup shortcut lives, or "" if the folder
 // cannot be resolved.
+// autostartDirOverride lets a check prove the startup entry is really removed
+// without writing to somebody's real Startup folder.
+//
+// EMPTY IN EVERY REAL RUN. Hard rule 6 says I ask before writing outside the
+// repo, and "the uninstaller takes the startup entry with it" is the single
+// requirement of the install work that MUST be proved by effect - so the effect
+// is produced somewhere disposable rather than left unproven.
+var autostartDirOverride string
+
 func autostartPath() string {
+	if autostartDirOverride != "" {
+		return filepath.Join(autostartDirOverride, autostartLinkName+".lnk")
+	}
 	dir, err := knownFolder(folderIDStartup)
 	if err != nil || dir == "" {
 		return ""
