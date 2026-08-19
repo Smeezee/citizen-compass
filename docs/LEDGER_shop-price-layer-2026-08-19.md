@@ -867,7 +867,7 @@ E4  DONE  a2823b3  Every price row renders "snapshot 20260801T235530Z -
 
 --- PHASE E COMPLETE except E2, which is BLOCKED on the Railway 502. --------
 
-E-FIX  <pending>  I EDITED THE BUILD OUTPUT INSTEAD OF THE SOURCE, and caught
+E-FIX  d187217  I EDITED THE BUILD OUTPUT INSTEAD OF THE SOURCE, and caught
     it before it cost anything. testing/_deploy/ is gitignored (344 MB of ship
     models), so the E commit went through carrying only app/main.py, the
     control and the ledger - find.html was silently not in it. Chasing that
@@ -887,3 +887,120 @@ E-FIX  <pending>  I EDITED THE BUILD OUTPUT INSTEAD OF THE SOURCE, and caught
     writer for _deploy/find.html is build_deploy.py, not me. Writing to the
     output rather than the input is the same defect as a second writer, just
     with the loss deferred to the next build instead of the next save.
+
+F1  DONE  <pending>  The 39 skipped ships, grouped by cause. The order
+    predicted "most of the 39 share two or three causes" and that is exactly
+    right - there are TWO, and one of them subdivides usefully.
+
+    12  NO DECODED GEOMETRY. Model-side, nothing to do with mount data:
+        ATLS, ATLS_GEO, Clipper, Defender, Eclipse, Javelin, MDC, Nova,
+        Pulse, Pulse_LX, ROC, ROC-DS
+
+    27  "no mount-data key's words appear in this model's name". This is the
+        group worth splitting, because the label makes all 27 look like the
+        same naming problem and only TWO of them are:
+
+        2  A REAL, FIXABLE MATCHER BUG - the mount data EXISTS:
+             Ares_Inferno -> mount key "Ares Star Fighter Inferno"
+             Ares_Ion     -> mount key "Ares Star Fighter Ion"
+           The matcher requires every word of the KEY to appear in the MODEL
+           name. "Star" and "Fighter" are in the key and not in the model
+           stem, so it refuses a pair that is obviously correct. The test is
+           DIRECTIONAL, and that is the actual defect. Two ships, one rule.
+
+       25  NOT A NAMING PROBLEM AT ALL - there is no mount data under any
+           name, so the join is correctly reporting absence:
+             no mount key contains the word at all (15): Crucible, Endeavor,
+               Expanse, G12, G12a, G12r, Galaxy, Genesis, Kraken,
+               Kraken_Privateer, Legionnaire, Liberator, Nautilus,
+               Nautilus_Solstice_Edition, Odyssey, Orion, Pioneer, Ranger_CV,
+               Ranger_RC, Ranger_TR, Vulcan
+             sibling variants exist but not THIS one (4):
+               Hull_D and Hull_E   - only MISC Hull A, B and C have mount data
+               Zeus_Mk_II_MR       - only Zeus Mk II CL and ES have it
+               E1_Spirit           - only A1 Spirit and C1 Spirit have it
+           These are mostly concept and unreleased ships. Reporting them as
+           "skipped" is correct; there is nothing to join them to.
+
+    SO THE ACTIONABLE NUMBER IS 2, NOT 39. Fixing the directional word-match
+    recovers Ares Inferno and Ares Ion. The other 37 are waiting on decoded
+    geometry (12) or on CIG shipping the ship (25). Not fixed, per §F1 - the
+    grouping is the deliverable.
+
+F2  DONE  <pending>  The 7 unchecked_hull entries. ONE cause, and the design
+    is already right.
+    WHAT IT MEANS: the model borrowed a base ship's mount data, and the hull
+    check that would confirm "this really is the same hull" could not run
+    because the BASE ship has no .glb on disk to compare against. The builder
+    already reports this rather than counting it as passed - the log says
+    "HULL CHECK NOT PERFORMED ... Reported, not counted as passed". That is
+    rule 12 already being obeyed, and it is why these 7 are visible at all.
+    IT SPLITS 4 / 3, and the halves want different things:
+
+      4  THE BASE MODEL IS ON DISK, under a different stem than the mount key
+         names. A naming-convention gap, fixable with a mapping:
+           Anvil_Ballista_Dunestalker  -> base "Ballista Dunestalker"
+           Anvil_Ballista_Snowblind    -> base "Ballista Snowblind"
+               ... both could compare against `Ballista`, which IS on disk
+           Caterpillar_Pirate_Edition  -> base "Caterpillar Pirate"
+               ... `Caterpillar` IS on disk
+           F7C-M_Super_Hornet_Heartseeker_Mk_I -> base "F7C-M Hornet
+               Heartseeker Mk I" ... `F7C-M_Super_Hornet_Mk_I` IS on disk
+
+      3  THE BASE MODEL GENUINELY IS NOT THERE. Verified by exact stem:
+           Cutlass_Black  - absent (Cutlass_Red, _Steel, _Blue are present)
+           Dragonfly      - absent (Dragonfly_Black, _Yellowjacket present)
+           Gladius        - absent (Gladius_Valiant present)
+         Nothing to compare against until those three base models are built.
+
+    Not fixed, per §F2. Note that the 4 in the first group must not be
+    mapped blindly: `Ballista` is the base hull and Dunestalker/Snowblind are
+    paint variants, which is exactly the case
+    docs/DECISION_shared-hulls-are-fine-unless-the-shape-differs-2026-08-14.md
+    rules on - the mapping is what lets the check RUN, and the check may still
+    refuse the pair. That is the point of running it.
+
+F3  DONE  <pending>  The cc-pending panel, and what it would now need.
+
+    FIRST, A CORRECTION TO THE ORDER: there is ONE such panel, not two. It is
+    at testing/_src/_layer.src.html:569 and appears a second time only as its
+    own build output in testing/_layer.html:570. The `.cc-pending` CSS rule
+    two hundred lines earlier is a style, not a panel. Searching the whole
+    testing tree for its text returns exactly those two, one of which is
+    generated from the other.
+
+    IT SAYS: "Hardpoint and component data is not in the site file yet. It
+    lives in PostgreSQL and reaches this panel once the API is wired in."
+
+    PHASE D WIRED AN API. IT IS NOT THIS PANEL'S API, and the panel would
+    still be empty today. What it actually needs:
+
+      1. AN ENDPOINT THAT DOES NOT EXIST. The panel fills `#cc-slots` with
+         pilot weapons / missile racks / turrets / shield generators for ONE
+         SHIP. Every endpoint that exists lists components by CATEGORY
+         (/api/v1/weapons, /missiles, /turrets) or ships (/api/v1/ships).
+         There is no /api/v1/ships/{id}/hardpoints. That is the Loadout
+         System, Priority 9 in ARCHITECTURE_DECISIONS and deliberately
+         deferred - so this panel is blocked on a decision, not on wiring.
+
+      2. THE PANEL'S OWN TEXT IS WRONG, and this is the useful finding.
+         "It lives in PostgreSQL" is only half true. The COMPONENTS are in
+         PostgreSQL. The HARDPOINT SLOTS are not - app/models.py has no
+         hardpoint or mount table at all, and says so: "Hardpoint/loadout
+         mount references (Priority 9, not built yet)". The slot data lives
+         in data-layer/derived/holo-hardpoints-join/hardpoints_join.json, on
+         disk, outside the database. So "wire in the API" would not fill this
+         panel even with an endpoint - the join output has to be imported
+         into a real table first, which is a schema item nobody has written.
+
+      3. CORS, WHICH PHASE E ALREADY FIXED. The panel would have failed
+         silently in the browser regardless of any endpoint, because the site
+         is Netlify and the API is Railway and nothing had ever crossed that
+         boundary. That blocker is gone now.
+
+    So the honest order of work for that panel is: import hardpoints_join.json
+    into a real table, then build the ship-loadout endpoint, then wire the
+    panel - and correct its text, because it currently tells the reader the
+    data is somewhere it is not.
+
+--- PHASE F COMPLETE. ------------------------------------------------------
