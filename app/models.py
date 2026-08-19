@@ -742,3 +742,48 @@ class Terminal(VerifiableMixin, Base):
         foreign_keys=[star_system_id]
     )
     verified_patch: Mapped["Patch | None"] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# A3. ITEM CATEGORY.
+#
+# UEX's own taxonomy: 100 rows, each with a `section` that groups them
+# ("Armor" contains Arms, Legs, Torso, Undersuit; "Weapons" contains several
+# more). The section is a real column and not a separate table because it is
+# a plain string on UEX's side with no id of its own - inventing a sections
+# table would mean inventing ids UEX does not have, and §3.5 rules against
+# giving upstream data a shape it does not actually possess.
+#
+# `is_game_related = 0` rows are IMPORTED AND FLAGGED, never skipped (§3.8).
+# The column is here precisely so that hiding them stays a display decision
+# Sleven makes later, rather than a silent data loss decided by an importer.
+# ---------------------------------------------------------------------------
+
+
+class ItemCategory(VerifiableMixin, Base):
+    """One of UEX's 100 item categories, e.g. section='Armor', name='Arms'."""
+
+    __tablename__ = "item_categories"
+    __table_args__ = (
+        VerifiableMixin.confidence_check("item_categories"),
+        UniqueConstraint("uex_id", name="uq_item_categories_uex_id"),
+    )
+
+    uex_id: Mapped[int] = mapped_column(nullable=False)
+    # UEX's `type` field: "item" for nearly all of them. Kept as-is.
+    type: Mapped[str | None] = mapped_column(String(50), index=True)
+    section: Mapped[str | None] = mapped_column(String(100), index=True)
+    name: Mapped[str] = mapped_column(String(150), nullable=False)
+
+    # Both indexed: "only things that exist in the game" and "only mining
+    # gear" are both routine filters, and C4 groups coverage by them.
+    is_game_related: Mapped[bool | None] = mapped_column(index=True)
+    is_mining: Mapped[bool | None] = mapped_column(index=True)
+
+    source_date_modified: Mapped[datetime.datetime | None] = mapped_column()
+    detail: Mapped[dict | None] = mapped_column(JSONB)
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
+
+    verified_patch: Mapped["Patch | None"] = relationship()

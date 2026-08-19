@@ -63,7 +63,7 @@ A1  DONE  e2b397d  `locations` exists: one self-referential table for every
     cheaply: pull those two endpoints, import them, remove them from
     RESOLVABLE_KINDS' exclusion, re-run the importer.
 
-A2  DONE  <pending>  `terminals` exists: uex_id UNIQUE, the four different
+A2  DONE  c49cd1d  `terminals` exists: uex_id UNIQUE, the four different
     names UEX ships per terminal (name/fullname/nickname/displayname - they
     are not interchangeable and picking one now would be a guess about a UI
     that does not exist), code, type, location FK + denormalised
@@ -86,3 +86,27 @@ A2  DONE  <pending>  `terminals` exists: uex_id UNIQUE, the four different
     auditor finding, not an import failure. Reverses cheaply: add the CHECK.
     NOT YET PROVEN: the "823 rows import" half of A2's acceptance is B1's
     work. Recording that as outstanding rather than implying it is done.
+
+A3  DONE  <pending>  `item_categories` exists AND holds all 100 rows.
+    Migration e6b3d0ad40b4 (additive only), plus import_uex_categories.py -
+    this loader lives at A3 rather than phase B because A3's acceptance is
+    stated in rows, not DDL.
+    ACCEPTANCE: 100 rows, 21 sections, grouping correctly - General 33,
+    Utility 11, Clothing 10, Vehicle Weapons 8, Systems 7, Armor 6,
+    Miscellaneous 5, Data 3, then 13 sections of 1-2.
+    IDEMPOTENT, observed: second run reports inserted 0, updated 0,
+    unchanged 100.
+    DRY RUN PROVEN BY BEHAVIOUR, not by reading the code (rule 12): counted
+    0 rows, ran --dry-run, it reported "would insert 100", counted 0 rows
+    again from a separate connection. The flag is a check that the write path
+    did not run, and it has now been observed not running.
+    CONTROL: duplicate category uex_id OBSERVED refused by
+    uq_item_categories_uex_id. Inverse half present, including the specific
+    case that a category flagged is_game_related=0 is ACCEPTED and not
+    refused - §3.8 says those are imported and flagged, and a constraint that
+    quietly rejected them would enforce the opposite of the ruling.
+    MEASURED, and this one is worth Sleven's attention: 48 of the 100
+    categories carry is_game_related = 0. That is not a handful of oddities,
+    it is nearly half the taxonomy, and it means "hide non-game categories"
+    is a much bigger display decision than the flag's name suggests. All 48
+    are imported and flagged per §3.8; none are skipped.

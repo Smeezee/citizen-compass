@@ -62,6 +62,14 @@ def refusal_cases():
             {"uex_id": TEST_ID_BASE + 1, "name": "Duplicate terminal"},
             "uq_terminals_uex_id",
         ),
+        # ---- A3 item categories --------------------------------------------
+        (
+            "duplicate category uex_id",
+            "insert into item_categories (uex_id, name, confidence) "
+            "values (:uex_id, :name, 'unverified')",
+            {"uex_id": TEST_ID_BASE + 2, "name": "Duplicate category"},
+            "uq_item_categories_uex_id",
+        ),
     ]
 
 
@@ -80,6 +88,19 @@ def acceptance_cases():
             "values (:uex_id, :name, 'unverified')",
             {"uex_id": TEST_ID_BASE + 21, "name": "Also fine"},
         ),
+        (
+            "a category with a fresh uex_id inserts",
+            "insert into item_categories (uex_id, name, section, confidence) "
+            "values (:uex_id, :name, 'Armor', 'unverified')",
+            {"uex_id": TEST_ID_BASE + 22, "name": "Fine category"},
+        ),
+        (
+            "a category flagged is_game_related=0 is ACCEPTED, not refused",
+            "insert into item_categories "
+            "(uex_id, name, is_game_related, confidence) "
+            "values (:uex_id, :name, false, 'unverified')",
+            {"uex_id": TEST_ID_BASE + 23, "name": "Non-game category"},
+        ),
     ]
 
 
@@ -89,6 +110,11 @@ def seed(conn):
         text("insert into terminals (uex_id, name, type, confidence) "
              "values (:uex_id, :name, 'item', 'unverified')"),
         {"uex_id": TEST_ID_BASE + 1, "name": "Seed terminal"},
+    )
+    conn.execute(
+        text("insert into item_categories (uex_id, name, section, confidence) "
+             "values (:uex_id, :name, 'Armor', 'unverified')"),
+        {"uex_id": TEST_ID_BASE + 2, "name": "Seed category"},
     )
 
 
