@@ -37,7 +37,7 @@ L3  NOTE   2026-08-19  BACKUP, per rule 4, and it did NOT pass first time.
     warning that will now fire on every backup, which Sleven should decide
     about deliberately.
 
-A1  DONE  <pending>  `locations` exists: one self-referential table for every
+A1  DONE  e2b397d  `locations` exists: one self-referential table for every
     level UEX names, with kind+uex_id unique, denormalised star_system_id and
     planet_id for the "everything in Stanton" filter, JSONB `detail`, and a
     materialised `resolved_path`. app/locations.py resolves a UEX terminal
@@ -62,3 +62,27 @@ A1  DONE  <pending>  `locations` exists: one self-referential table for every
     level it CAN name, and the raw ids are preserved in `detail`. Reverses
     cheaply: pull those two endpoints, import them, remove them from
     RESOLVABLE_KINDS' exclusion, re-run the importer.
+
+A2  DONE  <pending>  `terminals` exists: uex_id UNIQUE, the four different
+    names UEX ships per terminal (name/fullname/nickname/displayname - they
+    are not interchangeable and picking one now would be a guess about a UI
+    that does not exist), code, type, location FK + denormalised
+    star_system_id + materialised resolved_path, company_name, is_available,
+    source_date_modified as a real indexed timestamp (C5 buckets on it),
+    JSONB detail, last_verified_patch. Migration fb37274717f7, additive only.
+    CONTROL: checks/_verify_shop_schema_db.py OBSERVES the database refusing a
+    duplicate uex_id, and names the constraint that did it - "an error was
+    raised" would also be satisfied by a typo, which proves nothing. The
+    inverse half is there too: two terminals with different uex_ids both
+    insert, so the constraint is not simply rejecting everything.
+    MEASURED, not assumed: all 823 terminals resolve to a nameable location -
+    zero fall through to "no resolvable level". Terminal types are
+    item 479, commodity 161, fuel 98, vehicle_rent 32, commodity_raw 23,
+    refinery 21, vehicle_buy 9.
+    DECIDED-BY-DEFAULT: `type` is indexed but NOT constrained to those seven
+    values. A CHECK there would stop the importer dead the day UEX adds an
+    eighth type, on a row that stores perfectly well. §3.8 already rules this
+    shape - import and flag, do not skip - so an unknown type becomes an
+    auditor finding, not an import failure. Reverses cheaply: add the CHECK.
+    NOT YET PROVEN: the "823 rows import" half of A2's acceptance is B1's
+    work. Recording that as outstanding rather than implying it is done.

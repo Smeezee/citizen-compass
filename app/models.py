@@ -645,3 +645,100 @@ class Location(VerifiableMixin, Base):
         "Location", remote_side="Location.id", foreign_keys=[parent_id]
     )
     verified_patch: Mapped["Patch | None"] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# A2. TERMINAL.
+#
+# The 823 places that actually sell something. UEX calls them terminals and
+# gives each one a `type`: measured across the snapshot, that is
+#   item 479, commodity 161, fuel 98, vehicle_rent 32, commodity_raw 23,
+#   refinery 21, vehicle_buy 9.
+#
+# WHY `type` IS INDEXED BUT NOT CONSTRAINED TO THOSE SEVEN VALUES:
+# a CHECK constraint here would mean that the day UEX adds an eighth terminal
+# type, the importer stops dead on a row it could have stored perfectly well.
+# That is the wrong failure. §3.8 of the order already rules the pattern for
+# this exact situation - `is_game_related = 0` categories are "imported and
+# flagged, not skipped" - and an unrecognised terminal type is the same shape
+# of problem. So: import it, and let an auditor report it. The constraint that
+# WOULD be right here is one that cannot be satisfied by new upstream data, and
+# there isn't one.
+#
+# WHY is_available AND is_available_live ARE REAL COLUMNS while the other
+# nineteen is_*/has_* flags are not: those two decide whether a terminal
+# appears on the site at all, so they are on every query. `is_refinery`,
+# `has_freight_elevator` and the rest are facts nobody has asked a question
+# about yet, and §3.9 says JSONB is for exactly that tail.
+# ---------------------------------------------------------------------------
+
+
+class Terminal(VerifiableMixin, Base):
+    """A place that buys or sells something, at a resolved location."""
+
+    __tablename__ = "terminals"
+    __table_args__ = (
+        VerifiableMixin.confidence_check("terminals"),
+        # THE key. UEX terminal ids are unique across all types, unlike
+        # location ids which are only unique within their endpoint.
+        UniqueConstraint("uex_id", name="uq_terminals_uex_id"),
+        Index(
+            "ix_terminals_name_trgm", "name",
+            postgresql_using="gin", postgresql_ops={"name": "gin_trgm_ops"},
+        ),
+    )
+
+    uex_id: Mapped[int] = mapped_column(nullable=False)
+
+    # UEX ships four different names per terminal and they are not
+    # interchangeable: name="Admin - ARC-L1", fullname="Commodity Shop - Admin
+    # - ARC-L1", nickname="ARC-L1", displayname="ARC-L1 Wide Forest Station".
+    # All four are kept because the site needs different ones in different
+    # places, and picking one now would be a guess about a UI that does not
+    # exist yet.
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    fullname: Mapped[str | None] = mapped_column(String(255))
+    nickname: Mapped[str | None] = mapped_column(String(255))
+    displayname: Mapped[str | None] = mapped_column(String(255))
+    code: Mapped[str | None] = mapped_column(String(50))
+    type: Mapped[str | None] = mapped_column(String(50), index=True)
+
+    # Nullable even though all 823 rows in this snapshot resolve. A terminal
+    # whose location cannot be resolved is a real future case, and the honest
+    # storage for it is a NULL plus a finding - not a row silently parented to
+    # whatever system happened to be first.
+    location_id: Mapped[int | None] = mapped_column(
+        ForeignKey("locations.id"), index=True
+    )
+    # Denormalised for "everything in Stanton", same reasoning as Location.
+    star_system_id: Mapped[int | None] = mapped_column(
+        ForeignKey("locations.id"), index=True
+    )
+    # Materialised readable place, written by app.locations.resolve_path().
+    resolved_path: Mapped[str | None] = mapped_column(Text)
+
+    company_name: Mapped[str | None] = mapped_column(String(255))
+
+    # Whether the site should show this terminal at all - on every query, so a
+    # real column rather than a JSONB lookup.
+    is_available: Mapped[bool | None] = mapped_column(index=True)
+    is_available_live: Mapped[bool | None] = mapped_column()
+
+    # UEX's own last-modified for this terminal, as a real timestamp. C5
+    # (staleness) buckets on this, so it is a column and not a JSONB field.
+    source_date_modified: Mapped[datetime.datetime | None] = mapped_column(
+        index=True
+    )
+
+    detail: Mapped[dict | None] = mapped_column(JSONB)
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
+
+    location: Mapped["Location | None"] = relationship(
+        foreign_keys=[location_id]
+    )
+    star_system: Mapped["Location | None"] = relationship(
+        foreign_keys=[star_system_id]
+    )
+    verified_patch: Mapped["Patch | None"] = relationship()
