@@ -283,7 +283,7 @@ B1  DONE  ff3d2c4  import_uex_terminals.py - concrete, hand-written, no
     empty. A guard that cannot tell "empty" from "broken" is the wrong guard
     whichever way it errs, so that distinction is asserted directly.
 
-B2  DONE  <pending>  import_uex_items_category20.py - category 20 only,
+B2  DONE  dd5c083  import_uex_items_category20.py - category 20 only,
     hardcoded, deliberately not generic per §B2 ("Concrete. Not generic.
     Resist.").
     ACCEPTANCE, exact: 1,099 source rows -> 1,099 stored.
@@ -302,3 +302,23 @@ B2  DONE  <pending>  import_uex_items_category20.py - category 20 only,
     to_dt() are imported from B1 instead of re-implemented. That is not the
     B4 abstraction arriving early - it is declining to maintain two copies of
     a guard that has already been proven.
+
+B3  DONE  <pending>  import_uex_prices.py - append-only, keyed by snapshot.
+    IDEMPOTENT ON THE SAME SNAPSHOT, observed: re-run reports "51 already
+    stored, 0 rows ready to insert". That is A5's stated control ("re-running
+    the same snapshot inserts zero new rows") demonstrated on the importer.
+    DRY RUN PROVEN BY BEHAVIOUR: 0 rows, --dry-run claimed 51, 0 rows.
+    ONLY 51 OF 23,734 ROWS LANDED, AND THAT IS CORRECT AT THIS POINT. Only
+    category 20 is imported, so 23,683 rows reference items that do not exist
+    yet. They are DEFERRED and COUNTED, and the importer exits reporting
+    "NOT COMPLETE" with the exact number - it does not store fewer rows and
+    call it success, which is the failure mode rule 12 is about. The exact
+    row-count acceptance for B3 is therefore verified AFTER B5, not here, and
+    is recorded as outstanding until then.
+    Incidentally measured: liveries barely sell in-game. 1,099 livery items
+    produce just 51 price rows across all 823 terminals - they are almost
+    entirely pledge-store goods. Worth knowing before anyone reads C4's
+    coverage table and assumes a low number means missing data.
+    Nothing in this file updates or deletes a price. The only write is an
+    insert. Upserting on (item, terminal) would be less code and would
+    destroy the history the table exists to hold.
