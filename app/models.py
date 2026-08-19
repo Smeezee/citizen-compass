@@ -11,12 +11,38 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
 CONFIDENCE_LEVELS = ("unverified", "low", "medium", "high", "verified")
 SHIP_STATUSES = ("purchasable", "pledge_only")
+
+# LIFECYCLE_STATUSES answers "does this still exist in the game?".
+# SHIP_STATUSES above answers "can you buy it?". They are ORTHOGONAL and must
+# never be merged: the Aurora Mk I was pledge_only AND is now retired, and
+# collapsing them would lose the ability to say a thing was buyable while it
+# existed. "retired AND was purchasable" is a real query.
+#
+# `unknown` is load-bearing, not a placeholder. An entity that vanished before
+# we started sealing snapshots (2026-07-31) must NOT be labelled `retired` - we
+# do not know it was retired rather than renamed. Guessing there manufactures
+# false history on a site whose whole premise is provenance.
+LIFECYCLE_STATUSES = (
+    "live",
+    "retired",
+    "renamed",
+    "replaced",
+    "never_released",
+    "unknown",
+)
+
+# How much the reader should trust what is on the page.
+#   sealed    - present in a snapshot we hold. Authoritative.
+#   external  - from an outside source. Carries a rights question (rule 8).
+#   testimony - remembered, never in any file. Cannot be verified against one.
+EVIDENCE_TIERS = ("sealed", "external", "testimony")
 
 # CC-12 natural-key fallback. components.class_name is NOT NULL and unique
 # because it is what importers upsert on. When a component's real in-game class
@@ -66,6 +92,50 @@ class ProvenanceMixin:
         )
 
 
+class LifecycleMixin:
+    """When did this exist, and what happened to it?
+
+    Separate from `last_verified_patch`, which answers "is this current?".
+    Preservation needs the other question, and the two are not the same: a row
+    can be freshly verified AND describe something CIG removed.
+
+    Why this is a mixin rather than columns on Ship: paints, items and locations
+    all need it and none of them have it yet. Writing it once means the next
+    table cannot get a subtly different version.
+    """
+
+    # Patch VERSION STRINGS (e.g. "4.9"), not FKs to patches.id. A retired
+    # entity's last patch may predate any row we hold in `patches`, and a FK
+    # would make the honest answer unstorable.
+    first_seen_patch: Mapped[str | None] = mapped_column(String(50))
+    last_seen_patch: Mapped[str | None] = mapped_column(String(50))
+
+    # Indexed: "show me everything retired" and "show me only what we can
+    # prove" are both routine filters, and they get run together.
+    lifecycle_status: Mapped[str] = mapped_column(
+        String(20), server_default="live", nullable=False, index=True
+    )
+    evidence_tier: Mapped[str] = mapped_column(
+        String(20), server_default="sealed", nullable=False, index=True
+    )
+
+    # Citizen Compass's own words, not CIG's. Nullable: most rows never need one.
+    removal_note: Mapped[str | None] = mapped_column(Text)
+
+    @staticmethod
+    def lifecycle_checks(table_name: str) -> tuple:
+        return (
+            CheckConstraint(
+                f"lifecycle_status IN {LIFECYCLE_STATUSES}",
+                name=f"ck_{table_name}_lifecycle_status_valid",
+            ),
+            CheckConstraint(
+                f"evidence_tier IN {EVIDENCE_TIERS}",
+                name=f"ck_{table_name}_evidence_tier_valid",
+            ),
+        )
+
+
 class VerifiableMixin(ProvenanceMixin):
     """Common provenance/audit columns shared by every reference table.
 
@@ -111,7 +181,7 @@ class Manufacturer(VerifiableMixin, Base):
     )
 
 
-class Ship(VerifiableMixin, Base):
+class Ship(LifecycleMixin, VerifiableMixin, Base):
     __tablename__ = "ships"
     __table_args__ = (
         VerifiableMixin.confidence_check("ships"),
@@ -132,6 +202,11 @@ class Ship(VerifiableMixin, Base):
         UniqueConstraint(
             "name", "manufacturer_id", name="uq_ships_name_manufacturer_id"
         ),
+        # Lifecycle (2026-08-08). Deliberately NOT folded into
+        # ck_ships_status_valid: `status` is commercial availability and
+        # `lifecycle_status` is existence. A ship can be pledge_only AND
+        # retired, and each constraint must reject only its own bad values.
+        *LifecycleMixin.lifecycle_checks("ships"),
     )
 
     name: Mapped[str] = mapped_column(String(150), nullable=False)
@@ -142,11 +217,20 @@ class Ship(VerifiableMixin, Base):
     size: Mapped[str | None] = mapped_column(String(20))
     notes: Mapped[str | None] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(20), nullable=False)
+    # Aurora Mk I -> Aurora Mk II. Self-referential and nullable: most ships
+    # never have a successor, and a successor may not exist yet when the
+    # predecessor is retired.
+    successor_id: Mapped[int | None] = mapped_column(
+        ForeignKey("ships.id"), nullable=True, index=True
+    )
     last_verified_patch: Mapped[int | None] = mapped_column(
         ForeignKey("patches.id")
     )
 
     manufacturer: Mapped["Manufacturer"] = relationship()
+    successor: Mapped["Ship | None"] = relationship(
+        "Ship", remote_side="Ship.id", foreign_keys=[successor_id]
+    )
     dealer_listings: Mapped[list["ShipDealerListing"]] = relationship()
     pledge_links: Mapped[list["PledgeLink"]] = relationship()
     verified_patch: Mapped["Patch | None"] = relationship()
@@ -451,3 +535,113 @@ class ShipRegistry(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(
         server_default=func.now(), nullable=False
     )
+
+
+# ---------------------------------------------------------------------------
+# Shop and price layer — added 2026-08-19 for
+# docs/ORDER_shop-and-price-layer-RUN-CONTINUOUSLY-2026-08-19.md.
+#
+# A1. LOCATION HIERARCHY.
+#
+# UEX terminals carry eight separate location ids: id_star_system, id_planet,
+# id_orbit, id_moon, id_space_station, id_outpost, id_poi, id_city. Every one
+# of them is an integer, and UEX uses 0 (not NULL) to mean "not applicable" —
+# ARC-L1 Wide Forest Station has id_space_station=1 and id_moon=0, because a
+# Lagrange station orbits a planet and never a moon.
+#
+# WHY ONE SELF-REFERENTIAL TABLE rather than eight tables:
+# the levels are not a fixed ladder. A terminal can hang off a city (Area 18),
+# an outpost (ArcCorp Mining Area 045), a space station (ARC-L1), a planet, or
+# a bare star system, and the levels it skips differ per branch. Eight tables
+# would need eight nullable FKs on Terminal and a resolver that knows the
+# precedence order anyway; one table with a parent pointer stores the same
+# facts and makes "everything under Stanton" a single recursive query.
+#
+# WHY DENORMALISED ANCESTOR COLUMNS (star_system_id, planet_id) EXIST ANYWAY:
+# per §3.9 of the order, anything queried gets a real indexed column. "Show me
+# prices in Stanton" is the single most likely filter on this whole layer, and
+# making it a recursive CTE every time is the wrong trade. These two are
+# maintained by the importer, not by the database, and checks/db_checks.py
+# gains an auditor for drift rather than a trigger that hides it.
+#
+# ORBITS ARE A KNOWN GAP, recorded rather than invented: terminals, planets,
+# moons and outposts all carry `id_orbit`, but the 20260801T235530Z snapshot
+# contains no orbits.json — UEX was never asked for that endpoint. Orbit ids
+# are therefore preserved verbatim in `detail` and NEVER resolved to a name.
+# An unresolvable id is stored as the id, never as a guess (rule 11).
+# ---------------------------------------------------------------------------
+
+# The kinds of place a terminal can sit at, ordered LEAST to MOST specific.
+# The order is load-bearing: resolve_terminal_location() walks it backwards to
+# find the most specific level a terminal actually names. "poi" and "orbit" are
+# listed because UEX terminals reference them, not because this snapshot can
+# resolve them — see the module docstring above.
+LOCATION_KINDS = (
+    "star_system",
+    "planet",
+    "orbit",
+    "moon",
+    "space_station",
+    "outpost",
+    "poi",
+    "city",
+)
+
+
+class Location(VerifiableMixin, Base):
+    """One place in the Star Citizen location hierarchy, at any level.
+
+    `kind` says which level this row is; `parent_id` says what it hangs off.
+    A row's uex_id is only unique WITHIN its kind — UEX numbers each endpoint
+    from 1, so star_system 1 and planet 1 are different places. The unique
+    constraint is therefore on the pair, and anything that joins on uex_id
+    alone without also matching kind is a bug.
+    """
+
+    __tablename__ = "locations"
+    __table_args__ = (
+        VerifiableMixin.confidence_check("locations"),
+        CheckConstraint(
+            f"kind IN {LOCATION_KINDS}", name="ck_locations_kind_valid"
+        ),
+        # See the class docstring: uex_id alone is NOT unique across kinds.
+        UniqueConstraint("kind", "uex_id", name="uq_locations_kind_uex_id"),
+    )
+
+    uex_id: Mapped[int] = mapped_column(nullable=False)
+    kind: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    code: Mapped[str | None] = mapped_column(String(20))
+    nickname: Mapped[str | None] = mapped_column(String(200))
+
+    parent_id: Mapped[int | None] = mapped_column(
+        ForeignKey("locations.id"), index=True
+    )
+    # Denormalised ancestors — see the module comment for why these are real
+    # columns. Both are nullable: a star_system row has neither, and a planet
+    # row has no planet_id of its own.
+    star_system_id: Mapped[int | None] = mapped_column(
+        ForeignKey("locations.id"), index=True
+    )
+    planet_id: Mapped[int | None] = mapped_column(
+        ForeignKey("locations.id"), index=True
+    )
+
+    # The readable string, materialised at import so the front end never pays
+    # for a parent walk. app.locations.resolve_path() is the single writer of
+    # this column and the only definition of the format.
+    resolved_path: Mapped[str | None] = mapped_column(Text)
+
+    # Everything UEX sends that this project has not ruled a meaning for —
+    # is_available, has_refinery, pad_types, jurisdiction ids, the orbit id.
+    # Per §3.5: preserved verbatim, never dropped, never given a guessed column.
+    detail: Mapped[dict | None] = mapped_column(JSONB)
+
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
+
+    parent: Mapped["Location | None"] = relationship(
+        "Location", remote_side="Location.id", foreign_keys=[parent_id]
+    )
+    verified_patch: Mapped["Patch | None"] = relationship()
