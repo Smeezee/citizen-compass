@@ -323,7 +323,7 @@ B3  DONE  cad3dad  import_uex_prices.py - append-only, keyed by snapshot.
     insert. Upserting on (item, terminal) would be less code and would
     destroy the history the table exists to hold.
 
-B4  DONE  <pending>  app/uex_pipeline.py - extracted from B1-B3 AFTER they
+B4  DONE  4d0063d  app/uex_pipeline.py - extracted from B1-B3 AFTER they
     existed, per §B4. The order asked for both halves of this, so:
 
     WHAT THE THREE GENUINELY SHARED:
@@ -373,3 +373,47 @@ B4  DONE  <pending>  app/uex_pipeline.py - extracted from B1-B3 AFTER they
     across all 2,697 stored rows. Any drift in a single coercion would have
     surfaced as an update on every row of that table. The source-guard control
     still passes all 15 assertions.
+
+B5  DONE  <pending>  import_uex_items_all.py - the B4 pipeline over every
+    category file.
+    ACCEPTANCE, EXACT: source files sum to 7,728 items; shop_items holds
+    7,728. 100 category files, 56 with rows, 44 empty.
+    CROSS-CHECK WORTH NOTING: the run reported "inserted 6629, updated 0,
+    unchanged 1099". The 1,099 rows B2 wrote by hand are byte-identical under
+    the generalised importer - zero updates. That is independent evidence that
+    B5 reproduces B2 exactly rather than merely covering it.
+    DRY RUN PROVEN BY BEHAVIOUR: 1,099 rows before, --dry-run claimed 6,629
+    inserts, 1,099 rows after.
+    MEASURED: 2,162 of 7,728 (28.0%) carry no uuid - the catalogue-wide figure
+    behind the A4 decision, now confirmed on the full import rather than
+    extrapolated.
+    GAP FOUND AND CLOSED WHILE WRITING THE CONTROL: if EVERY category file
+    were empty, the importer would have reported "0 source items" and exited
+    0. Each individual file is perfectly valid in that scenario, so the
+    per-file guard cannot catch it - and a UEX outage returning null across
+    the board is exactly how it would happen. That is a textbook silent
+    success and it is now refused: all-empty is a pull that did not land, not
+    a catalogue with no items in it.
+    CONTROL, at the IMPORTER level rather than the guard level, because those
+    are different claims - a guard can raise correctly while the importer
+    around it catches, warns, imports the other 99 files and exits 0.
+    checks/_verify_items_import_b5.py OBSERVES all four:
+      one malformed file among good ones -> exit 1, and NOTHING imported
+        (the importer reads every file before writing anything, so a bad file
+        at position 90 cannot leave 89 categories half-imported)
+      every file empty                    -> exit 1
+      no category files / missing dir     -> exit 1
+      a valid directory                   -> exit 0, and it REPORTS
+        "inserted 2" - so exit 0 is earned by finding the rows, not by
+        refusing everything unconditionally
+    The positive case runs --dry-run only, deliberately: a real run would put
+    two fake liveries into production shop_items permanently, since this
+    project never deletes and blocks deletion at the engine. A control that
+    pollutes the data it checks is worse than no control.
+
+B3  COMPLETED  <pending>  Re-run after B5, and the outstanding half of B3's
+    acceptance is now met EXACTLY: 23,734 source price rows -> 23,734 stored
+    for snapshot 20260801T235530Z. Zero deferred, zero skipped for want of a
+    price side, zero duplicate (item, terminal) pairs within the snapshot.
+    The 23,683 rows B3 reported as unplaceable landed on the re-run, exactly
+    as it said they would.
