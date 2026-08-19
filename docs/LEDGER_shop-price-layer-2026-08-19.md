@@ -469,7 +469,7 @@ B6  DONE  0ca407d  import_uex_commodities.py - 204 commodities and 2,923
     locations 675 | terminals 823 | item_categories 100 | snapshots 2
     shop_items 7,932 (7,728 items + 204 commodities) | item_prices 26,657
 
-C1  DONE  <pending>  checks/shop_checks.py:price_outlier_check. Per category
+C1  DONE  8b61f66  checks/shop_checks.py:price_outlier_check. Per category
     AND per side - buy and sell are never pooled, because a category bought at
     100 and sold at 20,000 makes a bimodal blob that flags nothing.
     JUDGED IN LOG SPACE, and that was changed AFTER the first real run rather
@@ -487,14 +487,14 @@ C1  DONE  <pending>  checks/shop_checks.py:price_outlier_check. Per category
     Categories below 8 priced rows report LIMITATION, NOT pass - "we could
     not judge this" and "we judged it fine" are different answers.
 
-C2  DONE  <pending>  checks/shop_checks.py:orphan_check. Currently PASS on
+C2  DONE  8b61f66  checks/shop_checks.py:orphan_check. Currently PASS on
     all four conditions: every price row resolves to a real item and a real
     terminal, every terminal has a location, every item has a category.
     THE HARD-ORPHAN BRANCH IS UNREACHABLE WHILE THE FOREIGN KEYS EXIST, which
     would normally make it exactly the kind of check rule 12 says not to
     trust. It is proven anyway - see C6.
 
-C3  DONE  <pending>  checks/shop_checks.py:name_collision_check.
+C3  DONE  8b61f66  checks/shop_checks.py:name_collision_check.
     *** THE NUMBERS THE ORDER ASKED FOR ***
       item display names colliding WITHIN items:  7 of 7,721, worst case 2
       commodity display names colliding:          0 of 204 - all unique
@@ -515,7 +515,7 @@ C3  DONE  <pending>  checks/shop_checks.py:name_collision_check.
     The uuid finding is a DEFECT **in the source data**, explicitly not in
     this database - nothing here is broken by it and nothing is auto-fixed.
 
-C5  DONE  <pending>  checks/shop_checks.py:price_staleness_check.
+C5  DONE  8b61f66  checks/shop_checks.py:price_staleness_check.
       0-30 days     4,754  (17.8%)
       31-90 days   18,246  (68.4%)
       91-180 days   3,060  (11.5%)
@@ -529,7 +529,7 @@ C5  DONE  <pending>  checks/shop_checks.py:price_staleness_check.
     pulled yesterday can be two years old, and it is the second number a
     player needs.
 
-C4  DONE  <pending>  checks/shop_checks.py:category_coverage_check.
+C4  DONE  8b61f66  checks/shop_checks.py:category_coverage_check.
     *** THIS IS THE TABLE. It answers the thruster/armour/fuel-tank
     question with numbers instead of an opinion, per §3.3. ***
     Driven from item_categories so ALL 100 categories appear - grouping
@@ -684,7 +684,7 @@ C4  DONE  <pending>  checks/shop_checks.py:category_coverage_check.
       * 10 categories are at 100% coverage, 37 partial, 9 have items but no
         prices at all.
 
-C6  DONE  <pending>  checks/_verify_shop_checks.py - the negative control for
+C6  DONE  8b61f66  checks/_verify_shop_checks.py - the negative control for
     all five auditors, BOTH halves, 24 assertions.
     Silence is measured as a DELTA, not as an absolute, because these run
     against 26,657 real rows that already legitimately trip C1, C3 and C5.
@@ -721,3 +721,67 @@ C6  DONE  <pending>  checks/_verify_shop_checks.py - the negative control for
     real findings store - 185 findings written, 11 checkers ok, 0 errored.
 
 --- PHASE C COMPLETE. ------------------------------------------------------
+
+D1  DONE  <pending>  app/routers/shop.py - list + filter + detail over
+    ItemCategory, Terminal and ShopItem, mounted at /api/v1/shop.
+    THE ENVELOPE IS LOCKED, AND THE RIGHT WAY TO LOCK IT WAS NOT TO INVENT
+    ONE. §D1 says lock it "before there are three consumers" - `Page`
+    (items/total/limit/offset) is ALREADY locked by ARCHITECTURE_DECISIONS
+    section 3, and a second envelope for these endpoints would give the site
+    two pagination conventions to remember, which is the thing locking one
+    prevents. The full written contract is at the top of the shop section of
+    app/schemas.py: `total` ignores limit/offset so a client can compute page
+    count; `limit` echoes what was APPLIED not what was asked, so a clamped
+    request is visible rather than looking like the end of the data; ordering
+    ALWAYS carries a unique tiebreaker, because paginating an unordered query
+    silently repeats and skips rows and looks fine until page 4.
+
+D2  DONE  <pending>  /api/v1/shop/items/{identifier}/prices - one item, every
+    terminal selling it, with resolved location and buy/sell SEPARATE.
+    §D2 SAYS "item uuid ->" AND THAT ENDPOINT CANNOT WORK AS WRITTEN, for the
+    A4 reasons: 2,162 items have no uuid (unreachable) and 120 uuids are worn
+    by up to 10 items (ambiguous). So the path segment accepts a uuid, a UEX
+    id, or a prefixed key - "item:1" / "commodity:1" - plus ?source_kind=.
+    FOUND BY TESTING THE RUNNING API, WHICH IS WHY §D DEMANDS IT: my first
+    version resolved a bare uex_id against uex_id alone, ignoring source_kind.
+    GET /items/1/prices matched BOTH "Omnisky III Cannon" (item 1) and
+    "Agricium" (commodity 1) and 409'd with advice - "re-request by uex_id" -
+    that was useless to someone who had just done exactly that. Reading the
+    code would not have shown this; the running server did, immediately. The
+    409 now detects WHICH kind of ambiguity it hit and gives the matching
+    advice.
+    AMBIGUITY IS A 409 WITH ALL CANDIDATES, NEVER A SILENT PICK. Returning
+    the first match would be the quiet version of the same defect the uuid
+    collision causes upstream, and this is the last layer that can catch it
+    before it reaches a page.
+
+D3  DONE  <pending>  /api/v1/shop/terminals/{uex_id}/inventory - the reverse.
+    Paginated, filterable by category and source_kind.
+
+D4  DONE  <pending>  /api/v1/shop/search - name/slug substring, category,
+    section, source_kind, buy-price range, priced_only.
+    Results carry a price RANGE (min/max buy and sell), never an average -
+    §3.1, and the surest way to never render an average as a price is for the
+    API to have no field for one. Verified: no key anywhere in the response
+    contains "avg".
+    min_price above max_price is REFUSED with 422 rather than returning an
+    empty list. An empty list there reads as "nothing is priced in that
+    range", which is a false statement about the data rather than about the
+    query.
+
+    CONTROL FOR ALL OF PHASE D: checks/_verify_shop_api.py, 36 assertions,
+    against a REAL uvicorn on a spare port over real HTTP - not a TestClient.
+    That distinction is the point: a TestClient exercises the same handlers
+    but proves nothing about the app starting or the router actually being
+    mounted in main.py, and both have been real failures.
+    §D's stated control is checked against all THREE wrong answers by name,
+    because only one of them is obvious:
+      500 -> the handler crashed. Loud, at least.        NOT observed.
+      200 with an empty list -> THE DANGEROUS ONE. It says "this item exists
+          and nobody sells it" about a thing that does not exist. §3.6 makes
+          "nobody sells this" a real displayable answer, which is precisely
+          what makes confusing the two expensive.        NOT observed.
+      404 with an explanatory body.                      OBSERVED, correct.
+    Also observed: a garbage identifier 404s rather than 500s; an over-large
+    limit is clamped AND the response says so; a search matching nothing
+    returns an honest 200 with total 0.

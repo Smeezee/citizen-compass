@@ -104,3 +104,174 @@ class TurretOut(ComponentBaseOut):
     weapon_slots: int | None
     slot_weapon_size: int | None
     manned: bool | None
+
+
+# ---------------------------------------------------------------------------
+# Shop and price layer (Phase D, 2026-08-19).
+#
+# THE RESPONSE ENVELOPE IS `Page`, ABOVE. D1 asks to "lock the response
+# envelope and pagination format now, in writing, before there are three
+# consumers of it" - and the right way to do that turned out to be to NOT
+# invent one. `Page` is already locked by ARCHITECTURE_DECISIONS section 3 and
+# already carries total/limit/offset. A second envelope for the shop endpoints
+# would give the site two pagination conventions to remember, which is the
+# thing locking one is supposed to prevent.
+#
+# So the locked contract for every shop list endpoint is:
+#
+#     {"items": [...], "total": <int>, "limit": <int>, "offset": <int>}
+#
+#     total   - rows matching the filter, IGNORING limit/offset. A client can
+#               compute page count from it without fetching anything.
+#     limit   - what was actually applied, not what was asked for. Requests
+#               above MAX_LIMIT are clamped, and the response says so rather
+#               than silently returning fewer rows than the caller thinks.
+#     offset  - echoed back, so a response is interpretable on its own.
+#
+# Ordering is ALWAYS deterministic and always includes a unique tiebreaker.
+# Paginating an unordered query silently repeats and skips rows, and it looks
+# fine until someone reads page 4.
+#
+# PRICES: buy and sell are ALWAYS separate fields and either may be null.
+# null means "no data" and is never rendered as 0 (§3.1). There is deliberately
+# no combined or averaged price field anywhere in these schemas - the surest
+# way to never show an average as a price is for the API to not have one.
+# ---------------------------------------------------------------------------
+
+
+class LocationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    kind: str
+    name: str
+    # The readable place, most specific first: "ARC-L1 Wide Forest Station,
+    # ArcCorp, Stanton". Never contains a "None" segment - a missing level is
+    # skipped rather than rendered.
+    resolved_path: str | None
+
+
+class ItemCategoryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    uex_id: int
+    section: str | None
+    name: str
+    is_game_related: bool | None
+    is_mining: bool | None
+
+
+class TerminalOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    uex_id: int
+    name: str
+    nickname: str | None
+    code: str | None
+    type: str | None
+    resolved_path: str | None
+    company_name: str | None
+    is_available: bool | None
+    last_verified_patch: int | None
+    # Standing rule: the front end flags unverified data, so the API has to
+    # hand it something to flag on.
+    confidence: str
+
+
+class ShopItemOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    uex_id: int
+    source_kind: str
+    # Present but NOT an identifier. 2,162 items have none and 120 uuids are
+    # shared by up to ten items - see A4. Exposed because other UEX-derived
+    # data cross-references it.
+    uuid: str | None
+    name: str
+    category_name: str | None
+    section: str | None
+    company_name: str | None
+    vehicle_name: str | None
+    size: str | None
+    slug: str | None
+    url_store: str | None
+    last_verified_patch: int | None
+    confidence: str
+
+
+class PriceAtTerminalOut(BaseModel):
+    """One terminal's price for one item. D2's row shape."""
+
+    terminal_id: int
+    terminal_uex_id: int
+    terminal_name: str
+    terminal_type: str | None
+    location: str | None
+    # Separate, always. Either may be null, and null means no data (§3.1).
+    price_buy: int | None
+    price_sell: int | None
+    # Provenance, per E4: every row must be able to show where it came from
+    # and how old it is.
+    snapshot_key: str
+    snapshot_captured_at: str | None
+    source_date_modified: str | None
+    last_verified_patch: int | None
+
+
+class ItemPricesOut(BaseModel):
+    """D2: one item, and every terminal selling it."""
+
+    item: ShopItemOut
+    prices: list[PriceAtTerminalOut]
+    # Explicit rather than implied by an empty list. "Nobody sells this" is a
+    # real answer (§3.6) and the front end must be able to say it without
+    # guessing whether the query failed.
+    price_count: int
+    sold_anywhere: bool
+
+
+class TerminalItemOut(BaseModel):
+    """One item at one terminal. D3's row shape."""
+
+    item_id: int
+    item_uex_id: int
+    item_uuid: str | None
+    item_name: str
+    source_kind: str
+    category_name: str | None
+    section: str | None
+    price_buy: int | None
+    price_sell: int | None
+    snapshot_key: str
+    source_date_modified: str | None
+    last_verified_patch: int | None
+
+
+class TerminalInventoryOut(BaseModel):
+    """D3: one terminal, and what it sells."""
+
+    terminal: TerminalOut
+    items: list[TerminalItemOut]
+    total: int
+    limit: int
+    offset: int
+
+
+class SearchResultOut(BaseModel):
+    """D4: one search hit, with its price range across all terminals.
+
+    `price_buy_min` / `price_buy_max` are a RANGE, not an average. §3.1 says a
+    blended average is never shown as if it were a price, and a range is an
+    honest summary of many terminals in a way a mean is not - the two numbers
+    are both real prices that really exist somewhere.
+    """
+
+    item: ShopItemOut
+    terminal_count: int
+    price_buy_min: int | None
+    price_buy_max: int | None
+    price_sell_min: int | None
+    price_sell_max: int | None
