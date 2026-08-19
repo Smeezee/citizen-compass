@@ -215,7 +215,7 @@ A5  DONE  b823c56  `item_prices` exists. Migration 2b99ac053efa, additive.
     NOT YET PROVEN: "re-running the same snapshot inserts zero new rows" is
     B3's control, on the importer. Recorded as outstanding.
 
-A7  DONE  <pending>  Hard constraints complete, and every one of them has now
+A7  DONE  cd29cf8  Hard constraints complete, and every one of them has now
     been WATCHED REFUSING a row. 16 refusals observed, each asserted against
     the NAME of the constraint that did the rejecting - "an error was raised"
     would also be satisfied by a misspelled column, and would make a missing
@@ -242,3 +242,43 @@ A7  DONE  <pending>  Hard constraints complete, and every one of them has now
     executed failure path, not an assumed one.
 
 --- PHASE A COMPLETE. Schema exists; A3 and A6 also hold real rows. -----------
+
+B1  DONE  <pending>  import_uex_terminals.py - concrete, hand-written, no
+    abstraction, per §B1. Imports the six location endpoints first (675 rows)
+    then the 823 terminals.
+    ACCEPTANCE, exact: locations 675 source -> 675 stored; terminals 823
+    source -> 823 stored; ALL 823 resolve to a location, zero unplaced.
+    IDEMPOTENT, observed: second run reports inserted 0, updated 0,
+    unchanged 675 / unchanged 823.
+    DRY RUN PROVEN BY BEHAVIOUR: 0/0 rows before, --dry-run claimed 675+823,
+    0/0 rows after.
+    ZERO contaminated resolved_path values - no "None", no "null", no empty
+    segment, in either table. The gap cases resolve correctly against real
+    data:
+      Admin - ARC-L1            -> ARC-L1 Wide Forest Station, ArcCorp, Stanton
+      ArcCorp Mining Area 045   -> ArcCorp Mining Area 045, Wala, ArcCorp, Stanton
+    Terminals per system: Stanton 509, Pyro 211, Nyx 103.
+    WHY LOCATIONS LIVE IN THIS IMPORTER: a terminal without its hierarchy is a
+    row pointing at nothing, and the six endpoints exist only to give
+    terminals a place. Two scripts that must run in a fixed order, with
+    nothing on disk saying so, is worse than one that does both.
+    PARENTS ARE HAND-DECLARED per kind, not derived from a specificity
+    ranking, because containment is not one ladder: an outpost sits on a moon
+    or a planet but never in a city, while 5 space stations DO sit in cities.
+    MEASURED: 55 of 73 moons name no planet at all - they parent straight to
+    their star system. That is precisely the mid-level gap A1's resolver was
+    built for, and it is 75% of moons rather than an edge case.
+    MEASURED: referential integrity is perfect in this snapshot - across all
+    ten parent references in the six location files, and all six location
+    references on all 823 terminals, ZERO dangle. The importer still counts
+    and reports unresolved references rather than assuming, because "it was
+    clean in August" is not a statement about September.
+    CONTROL: checks/_verify_shop_importers.py feeds the shared source guard
+    nine broken files - missing, not JSON, bare list, no 'data' key, data as
+    dict/string/number, empty file, truncated JSON - and OBSERVES each one
+    refused loudly with an explained MALFORMED SOURCE message, not a bare
+    KeyError and not an empty list. Three must-not-fail cases sit alongside,
+    including the one that matters most: `data: null` returns [] and does NOT
+    raise, because 44 real category files look like that and are genuinely
+    empty. A guard that cannot tell "empty" from "broken" is the wrong guard
+    whichever way it errs, so that distinction is asserted directly.
