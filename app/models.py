@@ -835,13 +835,32 @@ class ItemCategory(VerifiableMixin, Base):
 # ---------------------------------------------------------------------------
 
 
+# What kind of UEX record a shop_items row came from. These are separate id
+# spaces upstream, which is why the unique key includes this column.
+SHOP_ITEM_SOURCE_KINDS = ("item", "commodity")
+
+
 class ShopItem(VerifiableMixin, Base):
-    """One buyable thing. Keyed by UEX's own item id, not by uuid - see above."""
+    """One buyable thing - an item or a commodity.
+
+    Keyed by (source_kind, uex_id), not by uuid, and not by uex_id alone.
+    See the unique constraint for why each half of that matters.
+    """
 
     __tablename__ = "shop_items"
     __table_args__ = (
         VerifiableMixin.confidence_check("shop_items"),
-        UniqueConstraint("uex_id", name="uq_shop_items_uex_id"),
+        # (source_kind, uex_id), NOT uex_id alone. Widened at B6, and not for
+        # tidiness: UEX numbers commodities from 1 in their own id space, and
+        # 200 of the 204 commodity ids COLLIDE with item ids while meaning
+        # something completely different. id 1 is the "Omnisky III Cannon" as
+        # an item and "Agricium" as a commodity. Under the old constraint the
+        # second one to arrive would have been refused, or worse, upserted
+        # over the first.
+        UniqueConstraint("source_kind", "uex_id",
+                         name="uq_shop_items_source_kind_uex_id"),
+        CheckConstraint(f"source_kind IN {SHOP_ITEM_SOURCE_KINDS}",
+                        name="ck_shop_items_source_kind_valid"),
         Index(
             "ix_shop_items_name_trgm", "name",
             postgresql_using="gin", postgresql_ops={"name": "gin_trgm_ops"},
@@ -850,8 +869,16 @@ class ShopItem(VerifiableMixin, Base):
 
     uex_id: Mapped[int] = mapped_column(nullable=False)
 
-    # Indexed, NOT unique, NOT the key. 28% of rows have none and 120 values
-    # are shared by up to ten different items.
+    # Which UEX id space `uex_id` belongs to. See the unique constraint above:
+    # item 1 and commodity 1 are different things, and without this column the
+    # table cannot hold both.
+    source_kind: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default="item", index=True
+    )
+
+    # Indexed, NOT unique, NOT the key. 28% of items have none, 120 values are
+    # shared by up to ten different items, and NOT ONE of the 204 commodities
+    # has a uuid at all.
     uuid: Mapped[str | None] = mapped_column(String(64), index=True)
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)

@@ -374,7 +374,7 @@ B4  DONE  4d0063d  app/uex_pipeline.py - extracted from B1-B3 AFTER they
     surfaced as an update on every row of that table. The source-guard control
     still passes all 15 assertions.
 
-B5  DONE  <pending>  import_uex_items_all.py - the B4 pipeline over every
+B5  DONE  90ef4d0  import_uex_items_all.py - the B4 pipeline over every
     category file.
     ACCEPTANCE, EXACT: source files sum to 7,728 items; shop_items holds
     7,728. 100 category files, 56 with rows, 44 empty.
@@ -411,9 +411,60 @@ B5  DONE  <pending>  import_uex_items_all.py - the B4 pipeline over every
     project never deletes and blocks deletion at the engine. A control that
     pollutes the data it checks is worse than no control.
 
-B3  COMPLETED  <pending>  Re-run after B5, and the outstanding half of B3's
+B3  COMPLETED  90ef4d0  Re-run after B5, and the outstanding half of B3's
     acceptance is now met EXACTLY: 23,734 source price rows -> 23,734 stored
     for snapshot 20260801T235530Z. Zero deferred, zero skipped for want of a
     price side, zero duplicate (item, terminal) pairs within the snapshot.
     The 23,683 rows B3 reported as unplaceable landed on the re-run, exactly
     as it said they would.
+
+B6  DONE  <pending>  import_uex_commodities.py - 204 commodities and 2,923
+    commodity price rows from 20260806T033315Z, into the SAME tables as items
+    per §B6. Migration 250bdcd72ac3.
+    *** SCHEMA CHANGE THIS FORCED, and it was not foreseeable from §B6 ***
+    Commodities are numbered from 1 in an id space entirely separate from
+    items, and 200 OF THE 204 COMMODITY IDS COLLIDE WITH ITEM IDS while
+    meaning something completely different: id 1 is the "Omnisky III Cannon"
+    as an item and "Agricium" as a commodity. uq_shop_items_uex_id would have
+    refused the second of every pair. shop_items now carries `source_kind`
+    and the key is (source_kind, uex_id). It is a WIDENING, not a relaxation -
+    all 7,728 existing rows take the 'item' default and nothing that was
+    unique stops being unique. Old and new constraints swap inside one
+    migration, so there is no window where the table is unconstrained.
+    The CHECK on source_kind was added to the migration BY HAND: alembic does
+    not autogenerate CHECK constraints, so a constraint declared only in the
+    model would silently never reach the database - the model would claim an
+    invariant nothing enforces. Small, but the same family of defect.
+    ANOTHER NAIL IN THE UUID QUESTION: not one of the 204 commodities carries
+    a uuid. Had uuid been the join key, the entire commodity catalogue would
+    have been unkeyable.
+    ACCEPTANCE: 204 of 204 commodities. 2,923 of 2,932 price rows across the
+    two price files. IDEMPOTENT, observed: re-run gives 0 and 0.
+    THE 9 ROWS NOT STORED, each investigated rather than written off:
+      6 are genuine duplicates IN THE SOURCE - 5 (commodity, terminal) pairs
+        appear 2-3 times in commodities_prices_all.json. Four of the five are
+        byte-identical repeats. THE FIFTH IS NOT: "Stims" at HUR-L5 appears
+        twice with DIFFERENT sell prices, 5,800 and 4,900. Keeping the first
+        occurrence is therefore a real choice and not a no-op.
+        DECIDED-BY-DEFAULT: first occurrence wins, and the discrepancy is
+        recorded here rather than resolved. Reverses cheaply - both rows are
+        in the source file and nothing has been overwritten. It should
+        probably become a C-phase finding; noting it as such.
+      3 are raw-commodity rows with BOTH prices at 0 - Ammonia at HUR-L1 and
+        HUR-L2, Quantum Fuel at HUR-L2. Not observations about anything, and
+        ck_item_prices_has_at_least_one_side would refuse them anyway.
+    WHAT WENT WHERE: scu_buy/scu_sell/scu_sell_stock, status_buy/status_sell,
+    container_sizes and quality all go to `detail` per §B6. So do
+    price_buy_avg and price_sell_avg - §3.1 forbids showing a blended average
+    as if it were a price, and the cheapest way to guarantee that is for the
+    average to not be in the column the site reads.
+    commodities_raw_prices_all.json (335 rows) is imported too, flagged
+    is_raw_commodity_price in `detail` - without that flag the refined and raw
+    prices for one commodity are indistinguishable once stored.
+    commodities_status.json is a LEGEND, not data (status codes 1-7 ->
+    "Out of Stock (Empty)" ... "Maximum Inventory (Full)"). It is not
+    duplicated onto 2,597 price rows.
+
+--- PHASE B COMPLETE. -------------------------------------------------------
+    locations 675 | terminals 823 | item_categories 100 | snapshots 2
+    shop_items 7,932 (7,728 items + 204 commodities) | item_prices 26,657
