@@ -243,7 +243,7 @@ A7  DONE  cd29cf8  Hard constraints complete, and every one of them has now
 
 --- PHASE A COMPLETE. Schema exists; A3 and A6 also hold real rows. -----------
 
-B1  DONE  <pending>  import_uex_terminals.py - concrete, hand-written, no
+B1  DONE  ff3d2c4  import_uex_terminals.py - concrete, hand-written, no
     abstraction, per §B1. Imports the six location endpoints first (675 rows)
     then the 823 terminals.
     ACCEPTANCE, exact: locations 675 source -> 675 stored; terminals 823
@@ -282,3 +282,23 @@ B1  DONE  <pending>  import_uex_terminals.py - concrete, hand-written, no
     raise, because 44 real category files look like that and are genuinely
     empty. A guard that cannot tell "empty" from "broken" is the wrong guard
     whichever way it errs, so that distinction is asserted directly.
+
+B2  DONE  <pending>  import_uex_items_category20.py - category 20 only,
+    hardcoded, deliberately not generic per §B2 ("Concrete. Not generic.
+    Resist.").
+    ACCEPTANCE, exact: 1,099 source rows -> 1,099 stored.
+    IDEMPOTENT, observed: second run reports inserted 0, unchanged 1,099.
+    DRY RUN PROVEN BY BEHAVIOUR: 0 rows, --dry-run claimed 1,099, 0 rows.
+    MEASURED: 299 of the 1,099 (27.2%) carry no uuid. This is category 20 on
+    its own reproducing the catalogue-wide 28% figure that drove the A4
+    decision - the uuid gap is not concentrated in odd corners, it is
+    everywhere.
+    WHAT CATEGORY 20 TURNED OUT TO BE, written down because B4 needs it:
+    Liveries - ship paints. `size` is "" on nearly every row and is not a
+    number. `color`/`color2` exist here and in almost no other category.
+    `id_vehicle`/`vehicle_name` are populated, which is unusual. `wiki` and
+    `notification` are null on every single row.
+    ONE THING ALREADY SHARED RATHER THAN COPIED: load_envelope()/clean()/
+    to_dt() are imported from B1 instead of re-implemented. That is not the
+    B4 abstraction arriving early - it is declining to maintain two copies of
+    a guard that has already been proven.
