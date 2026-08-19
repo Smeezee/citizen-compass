@@ -722,7 +722,7 @@ C6  DONE  8b61f66  checks/_verify_shop_checks.py - the negative control for
 
 --- PHASE C COMPLETE. ------------------------------------------------------
 
-D1  DONE  <pending>  app/routers/shop.py - list + filter + detail over
+D1  DONE  e94ded1  app/routers/shop.py - list + filter + detail over
     ItemCategory, Terminal and ShopItem, mounted at /api/v1/shop.
     THE ENVELOPE IS LOCKED, AND THE RIGHT WAY TO LOCK IT WAS NOT TO INVENT
     ONE. §D1 says lock it "before there are three consumers" - `Page`
@@ -736,7 +736,7 @@ D1  DONE  <pending>  app/routers/shop.py - list + filter + detail over
     ALWAYS carries a unique tiebreaker, because paginating an unordered query
     silently repeats and skips rows and looks fine until page 4.
 
-D2  DONE  <pending>  /api/v1/shop/items/{identifier}/prices - one item, every
+D2  DONE  e94ded1  /api/v1/shop/items/{identifier}/prices - one item, every
     terminal selling it, with resolved location and buy/sell SEPARATE.
     §D2 SAYS "item uuid ->" AND THAT ENDPOINT CANNOT WORK AS WRITTEN, for the
     A4 reasons: 2,162 items have no uuid (unreachable) and 120 uuids are worn
@@ -755,10 +755,10 @@ D2  DONE  <pending>  /api/v1/shop/items/{identifier}/prices - one item, every
     collision causes upstream, and this is the last layer that can catch it
     before it reaches a page.
 
-D3  DONE  <pending>  /api/v1/shop/terminals/{uex_id}/inventory - the reverse.
+D3  DONE  e94ded1  /api/v1/shop/terminals/{uex_id}/inventory - the reverse.
     Paginated, filterable by category and source_kind.
 
-D4  DONE  <pending>  /api/v1/shop/search - name/slug substring, category,
+D4  DONE  e94ded1  /api/v1/shop/search - name/slug substring, category,
     section, source_kind, buy-price range, priced_only.
     Results carry a price RANGE (min/max buy and sell), never an average -
     §3.1, and the surest way to never render an average as a price is for the
