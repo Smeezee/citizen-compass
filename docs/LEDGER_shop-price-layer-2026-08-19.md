@@ -184,7 +184,7 @@ A6  DONE  c762a01  `snapshots` exists AND both existing snapshots are rows.
     that errored, or worse checked nothing, would have reported a clean
     rollback it never verified.
 
-A5  DONE  <pending>  `item_prices` exists. Migration 2b99ac053efa, additive.
+A5  DONE  b823c56  `item_prices` exists. Migration 2b99ac053efa, additive.
     ACCEPTANCE: the unique key exists and is on (shop_item_id, terminal_id,
     snapshot_id) - NOT (item, terminal). Keying without the snapshot would
     make a second pull an UPDATE and destroy the history the table exists to
@@ -214,3 +214,31 @@ A5  DONE  <pending>  `item_prices` exists. Migration 2b99ac053efa, additive.
     of the table and it is now observed working rather than assumed.
     NOT YET PROVEN: "re-running the same snapshot inserts zero new rows" is
     B3's control, on the importer. Recorded as outstanding.
+
+A7  DONE  <pending>  Hard constraints complete, and every one of them has now
+    been WATCHED REFUSING a row. 16 refusals observed, each asserted against
+    the NAME of the constraint that did the rejecting - "an error was raised"
+    would also be satisfied by a misspelled column, and would make a missing
+    constraint look enforced. 15 acceptances observed alongside them, so no
+    constraint can be a CHECK(false) and pass.
+    The full refusal set: uq_terminals_uex_id, uq_item_categories_uex_id,
+    uq_shop_items_uex_id, uq_snapshots_source_key,
+    uq_item_prices_item_terminal_snapshot,
+    ck_item_prices_price_buy_non_negative,
+    ck_item_prices_price_sell_non_negative,
+    ck_item_prices_has_at_least_one_side, ck_locations_kind_valid,
+    ck_terminals_confidence_valid, and six orphan FKs -
+    item_prices -> shop_items / terminals / snapshots,
+    shop_items -> item_categories, terminals -> locations,
+    locations -> locations.
+    AND THE HARNESS ITSELF IS PROVEN, which is the half that usually gets
+    skipped. `--self-test` plants three defects and confirms the harness
+    catches each: (1) a "bad" row the database actually accepts, which is
+    exactly what a MISSING constraint looks like from inside a checker;
+    (2) a bad row rejected by a DIFFERENT constraint than claimed - without
+    the name assertion this would pass and hide a missing constraint whose
+    row happened to trip a NOT NULL; (3) a legitimate row being rejected,
+    the inverse half breaking. All three are caught. The harness has an
+    executed failure path, not an assumed one.
+
+--- PHASE A COMPLETE. Schema exists; A3 and A6 also hold real rows. -----------

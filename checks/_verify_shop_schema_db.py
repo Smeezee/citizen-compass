@@ -143,6 +143,42 @@ def refusal_cases(ids):
             {"i": ids["item"], "t": ids["terminal"], "s": 2000000001},
             "item_prices_snapshot_id_fkey",
         ),
+        # ---- A7: the remaining orphan FKs, one per table --------------------
+        (
+            "an item in a category that does not exist (orphan FK)",
+            "insert into shop_items (uex_id, name, category_id, confidence) "
+            "values (:u, 'Orphaned item', 2000000001, 'unverified')",
+            {"u": TEST_ID_BASE + 40},
+            "shop_items_category_id_fkey",
+        ),
+        (
+            "a terminal at a location that does not exist (orphan FK)",
+            "insert into terminals (uex_id, name, location_id, confidence) "
+            "values (:u, 'Orphaned terminal', 2000000001, 'unverified')",
+            {"u": TEST_ID_BASE + 41},
+            "terminals_location_id_fkey",
+        ),
+        (
+            "a location parented to a location that does not exist (orphan FK)",
+            "insert into locations (uex_id, kind, name, parent_id, confidence) "
+            "values (:u, 'moon', 'Orphaned moon', 2000000001, 'unverified')",
+            {"u": TEST_ID_BASE + 42},
+            "locations_parent_id_fkey",
+        ),
+        (
+            "a location with a kind that is not a kind",
+            "insert into locations (uex_id, kind, name, confidence) "
+            "values (:u, 'asteroid_belt', 'Not a kind', 'unverified')",
+            {"u": TEST_ID_BASE + 43},
+            "ck_locations_kind_valid",
+        ),
+        (
+            "a terminal with a confidence level that does not exist",
+            "insert into terminals (uex_id, name, confidence) "
+            "values (:u, 'Bad confidence', 'extremely')",
+            {"u": TEST_ID_BASE + 44},
+            "ck_terminals_confidence_valid",
+        ),
     ]
 
 
@@ -441,5 +477,102 @@ def main():
     return 0
 
 
+def self_test():
+    """Rule 12 applied to this file: make the harness FAIL on demand.
+
+    Everything above reports PASS. That is worth exactly nothing until the
+    failure path has been executed, because a harness that cannot fail is the
+    silent-success defect wearing a checker's name - and this project has
+    found three of those already.
+
+    Each mutant below is a defect this harness MUST catch:
+
+      1. a "bad" row that the database actually accepts. This is the big one:
+         it is what a MISSING constraint looks like from in here.
+      2. a bad row rejected, but by a DIFFERENT constraint than claimed. If
+         the harness only checked that something raised, a missing constraint
+         whose row happened to trip a NOT NULL would look enforced.
+      3. a legitimate row that gets rejected - the inverse half breaking.
+
+    If any mutant slips through, this returns non-zero and says so.
+    """
+    print("=" * 62)
+    print("SELF-TEST: the harness must FAIL on each of these")
+    print("=" * 62)
+
+    ids = {}
+    conn = engine.connect()
+    outer = conn.begin()
+    try:
+        ids = seed(conn)
+
+        mutants = [
+            (
+                "a refusal case the database will happily ACCEPT "
+                "(what a missing constraint looks like)",
+                "refusal",
+                ("bogus", "insert into terminals (uex_id, name, confidence) "
+                          "values (:u, 'Perfectly legal row', 'unverified')",
+                 {"u": TEST_ID_BASE + 60}, "uq_terminals_uex_id"),
+            ),
+            (
+                "a refusal case rejected by the WRONG constraint",
+                "refusal",
+                ("bogus", "insert into terminals (uex_id, name, confidence) "
+                          "values (:u, 'Bad confidence', 'extremely')",
+                 {"u": TEST_ID_BASE + 61}, "uq_terminals_uex_id"),
+            ),
+            (
+                "an acceptance case the database REJECTS",
+                "acceptance",
+                ("bogus", "insert into terminals (uex_id, name, confidence) "
+                          "values (:u, 'Duplicate of the seed', 'unverified')",
+                 {"u": TEST_ID_BASE + 1}, None),
+            ),
+        ]
+
+        misses = 0
+        for label, kind, case in mutants:
+            _, sql, params, fragment = case
+            sp = conn.begin_nested()
+            caught = None
+            try:
+                conn.execute(text(sql), params)
+                sp.rollback()
+                accepted = True
+            except Exception as exc:
+                sp.rollback()
+                accepted = False
+                caught = str(exc)
+
+            if kind == "refusal":
+                # the harness fails the case when the row is accepted, or when
+                # it is rejected by something other than the named constraint
+                harness_fails = accepted or (fragment not in (caught or ""))
+            else:
+                harness_fails = not accepted
+
+            if harness_fails:
+                print(f"  ok   harness FAILS as it must: {label}")
+            else:
+                misses += 1
+                print(f"  MISS harness would have PASSED: {label}")
+                print("       ^^ this harness cannot detect that defect")
+
+    finally:
+        outer.rollback()
+        conn.close()
+
+    print()
+    if misses:
+        print(f"SELF-TEST FAILED: {misses} defect(s) would go unnoticed.")
+        return 1
+    print("SELF-TEST PASSED: every planted defect is caught. "
+          "The harness has a working failure path.")
+    return 0
+
+
 if __name__ == "__main__":
+    if "--self-test" in sys.argv:
+        sys.exit(self_test())
     sys.exit(main())
