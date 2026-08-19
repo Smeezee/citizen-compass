@@ -940,3 +940,100 @@ class Snapshot(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(
         server_default=func.now(), nullable=False
     )
+
+
+# ---------------------------------------------------------------------------
+# A5. ITEM PRICE.
+#
+# 23,734 rows in 20260801T235530Z. APPEND-ONLY, KEYED BY SNAPSHOT (§3.4): the
+# unique key includes snapshot_id, so pulling UEX again next month ADDS a
+# second set of rows rather than overwriting the first. "What did this cost in
+# August" stays answerable. The roadmap watcher overwrote history once on this
+# project and it cost a rebuild.
+#
+# ZERO IS NOT A PRICE. UEX writes price_buy = 0 to mean "this terminal does not
+# sell this", not "this terminal sells this for nothing". Stored as 0 the site
+# would render "0 aUEC", which is a false statement about a real shop. §3.1
+# already rules the display side - "if only one side exists, show that side and
+# leave the other blank - blank means no data, and blank is honest" - and the
+# storage has to agree with it, because a NULL is the only value the front end
+# can distinguish from a real price.
+#
+# So 0 becomes NULL on the way in, and the untouched source values are kept in
+# `detail` so the transformation is reversible and auditable. Measured first:
+# ZERO rows in the snapshot have both sides absent, so this never blanks a row
+# entirely.
+#
+# NON-NEGATIVE IS A DATABASE CONSTRAINT, not an importer convention (A7). An
+# importer can be bypassed; a CHECK cannot. Measured: the snapshot contains no
+# negative prices today, which is exactly when it is cheap to add the
+# constraint - before the first one arrives.
+# ---------------------------------------------------------------------------
+
+
+class ItemPrice(Base):
+    """What one terminal charged for one item, in one snapshot.
+
+    Deliberately NOT a VerifiableMixin table. A price is not a curated
+    statement with a confidence level attached - it is an observation, and its
+    provenance is entirely carried by `snapshot_id`. Adding a `confidence`
+    column here would invite someone to set it, and there is nothing to set it
+    from.
+    """
+
+    __tablename__ = "item_prices"
+    __table_args__ = (
+        # §3.4 made structural. Not (item, terminal): that would make a second
+        # pull an UPDATE and destroy the history this table exists to keep.
+        UniqueConstraint("shop_item_id", "terminal_id", "snapshot_id",
+                         name="uq_item_prices_item_terminal_snapshot"),
+        CheckConstraint("price_buy IS NULL OR price_buy >= 0",
+                        name="ck_item_prices_price_buy_non_negative"),
+        CheckConstraint("price_sell IS NULL OR price_sell >= 0",
+                        name="ck_item_prices_price_sell_non_negative"),
+        # A row with neither side is not an observation about anything. It
+        # would also defeat §3.6's "absence is data" design, which records a
+        # priceless item as a shop_items row with no price rows - not as a
+        # price row full of nulls.
+        CheckConstraint("price_buy IS NOT NULL OR price_sell IS NOT NULL",
+                        name="ck_item_prices_has_at_least_one_side"),
+        Index("ix_item_prices_price_buy", "price_buy"),
+        Index("ix_item_prices_price_sell", "price_sell"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    shop_item_id: Mapped[int] = mapped_column(
+        ForeignKey("shop_items.id"), nullable=False, index=True
+    )
+    terminal_id: Mapped[int] = mapped_column(
+        ForeignKey("terminals.id"), nullable=False, index=True
+    )
+    snapshot_id: Mapped[int] = mapped_column(
+        ForeignKey("snapshots.id"), nullable=False, index=True
+    )
+
+    # Whole aUEC (§3.7 - no conversion, ever). Integer because UEX sends
+    # integers; a Numeric here would invite a blended average to be written
+    # into it, and §3.1 forbids showing one as if it were a price.
+    price_buy: Mapped[int | None] = mapped_column()
+    price_sell: Mapped[int | None] = mapped_column()
+
+    # UEX's own id for this price row, and its own last-modified. The second
+    # is what C5 buckets staleness on, so it is indexed.
+    uex_price_id: Mapped[int | None] = mapped_column(index=True)
+    source_date_modified: Mapped[datetime.datetime | None] = mapped_column(
+        index=True
+    )
+
+    # Holds the raw pre-transformation values, so turning 0 into NULL above is
+    # reversible and can be audited rather than taken on trust.
+    detail: Mapped[dict | None] = mapped_column(JSONB)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        server_default=func.now(), nullable=False
+    )
+
+    shop_item: Mapped["ShopItem"] = relationship()
+    terminal: Mapped["Terminal"] = relationship()
+    snapshot: Mapped["Snapshot"] = relationship()

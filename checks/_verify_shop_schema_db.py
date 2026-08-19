@@ -51,7 +51,7 @@ SHOP_TABLES = ("item_prices", "shop_items", "item_categories", "terminals",
 TEST_ID_BASE = 990000
 
 
-def refusal_cases():
+def refusal_cases(ids):
     """(label, sql, params, constraint_fragment) - each MUST be rejected."""
     return [
         # ---- A2 terminals -------------------------------------------------
@@ -86,10 +86,67 @@ def refusal_cases():
             {"key": "CONTROL_TEST_SNAPSHOT"},
             "uq_snapshots_source_key",
         ),
+        # ---- A5 item prices, and the A7 constraints on them -----------------
+        (
+            "the same (item, terminal, snapshot) twice",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy) "
+            "values (:i, :t, :s, 250)",
+            {"i": ids["item"], "t": ids["terminal"], "s": ids["snapshot"]},
+            "uq_item_prices_item_terminal_snapshot",
+        ),
+        (
+            "a NEGATIVE buy price",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy) "
+            "values (:i, :t, :s, -1)",
+            {"i": ids["item2"], "t": ids["terminal"], "s": ids["snapshot"]},
+            "ck_item_prices_price_buy_non_negative",
+        ),
+        (
+            "a NEGATIVE sell price",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_sell) "
+            "values (:i, :t, :s, -5000)",
+            {"i": ids["item2"], "t": ids["terminal"], "s": ids["snapshot"]},
+            "ck_item_prices_price_sell_non_negative",
+        ),
+        (
+            "a price row with NEITHER side - not an observation about anything",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy, price_sell) "
+            "values (:i, :t, :s, null, null)",
+            {"i": ids["item2"], "t": ids["terminal"], "s": ids["snapshot"]},
+            "ck_item_prices_has_at_least_one_side",
+        ),
+        (
+            "a price pointing at an item that does not exist (orphan FK)",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy) "
+            "values (:i, :t, :s, 100)",
+            {"i": 2000000001, "t": ids["terminal"], "s": ids["snapshot"]},
+            "item_prices_shop_item_id_fkey",
+        ),
+        (
+            "a price pointing at a terminal that does not exist (orphan FK)",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy) "
+            "values (:i, :t, :s, 100)",
+            {"i": ids["item"], "t": 2000000001, "s": ids["snapshot"]},
+            "item_prices_terminal_id_fkey",
+        ),
+        (
+            "a price pointing at a snapshot that does not exist (orphan FK)",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy) "
+            "values (:i, :t, :s, 100)",
+            {"i": ids["item"], "t": ids["terminal"], "s": 2000000001},
+            "item_prices_snapshot_id_fkey",
+        ),
     ]
 
 
-def acceptance_cases():
+def acceptance_cases(ids):
     """(label, sql, params) - each MUST be accepted. The inverse half."""
     return [
         (
@@ -171,11 +228,50 @@ def acceptance_cases():
             "values ('uexcorp', :key, '/tmp/whatever', null)",
             {"key": "CONTROL_TEST_SNAPSHOT_2"},
         ),
+        # ---- A5 acceptances: the constraints must not be refusing all -------
+        (
+            "a price with only a BUY side is ACCEPTED (sell blank = no data)",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy, price_sell) "
+            "values (:i, :t, :s, 15461, null)",
+            {"i": ids["item2"], "t": ids["terminal"], "s": ids["snapshot"]},
+        ),
+        (
+            "a price with only a SELL side is ACCEPTED",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy, price_sell) "
+            "values (:i, :t, :s, null, 28)",
+            {"i": ids["item2"], "t": ids["terminal"], "s": ids["snapshot"]},
+        ),
+        (
+            "a price of exactly 0 is ACCEPTED - the constraint is "
+            "non-NEGATIVE and not non-zero, and an off-by-one there would "
+            "silently drop every genuinely free item",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy) "
+            "values (:i, :t, :s, 0)",
+            {"i": ids["item2"], "t": ids["terminal"], "s": ids["snapshot"]},
+        ),
+        (
+            "THE APPEND-ONLY CASE: same item and terminal, DIFFERENT "
+            "snapshot, is ACCEPTED - this is what keeps price history "
+            "instead of overwriting it",
+            "insert into item_prices "
+            "(shop_item_id, terminal_id, snapshot_id, price_buy) "
+            "values (:i, :t, :s, 999)",
+            {"i": ids["item"], "t": ids["terminal"], "s": ids["snapshot2"]},
+        ),
     ]
 
 
 def seed(conn):
-    """Rows the refusal cases collide with. Inserted once per run."""
+    """Rows the refusal cases collide with, and the ids they need.
+
+    Returns a dict of real primary keys, because the A5 price cases have to
+    point at genuine shop_items / terminals / snapshots rows - a foreign key
+    cannot be observed refusing an orphan unless the non-orphan case is built
+    from real ids first.
+    """
     conn.execute(
         text("insert into terminals (uex_id, name, type, confidence) "
              "values (:uex_id, :name, 'item', 'unverified')"),
@@ -197,6 +293,46 @@ def seed(conn):
              "values ('uexcorp', :key, '/tmp/whatever')"),
         {"key": "CONTROL_TEST_SNAPSHOT"},
     )
+    conn.execute(
+        text("insert into shop_items (uex_id, name, confidence) "
+             "values (:uex_id, 'Second seed item', 'unverified')"),
+        {"uex_id": TEST_ID_BASE + 4},
+    )
+    conn.execute(
+        text("insert into snapshots (source, snapshot_key, path) "
+             "values ('uexcorp', 'CONTROL_TEST_SNAPSHOT_LATER', '/tmp/x')")
+    )
+
+    ids = {
+        "item": conn.execute(
+            text("select id from shop_items where uex_id = :u"),
+            {"u": TEST_ID_BASE + 3},
+        ).scalar(),
+        "item2": conn.execute(
+            text("select id from shop_items where uex_id = :u"),
+            {"u": TEST_ID_BASE + 4},
+        ).scalar(),
+        "terminal": conn.execute(
+            text("select id from terminals where uex_id = :u"),
+            {"u": TEST_ID_BASE + 1},
+        ).scalar(),
+        "snapshot": conn.execute(
+            text("select id from snapshots "
+                 "where snapshot_key = 'CONTROL_TEST_SNAPSHOT'")
+        ).scalar(),
+        "snapshot2": conn.execute(
+            text("select id from snapshots "
+                 "where snapshot_key = 'CONTROL_TEST_SNAPSHOT_LATER'")
+        ).scalar(),
+    }
+    # The row the A5 duplicate case collides with.
+    conn.execute(
+        text("insert into item_prices "
+             "(shop_item_id, terminal_id, snapshot_id, price_buy) "
+             "values (:i, :t, :s, 100)"),
+        {"i": ids["item"], "t": ids["terminal"], "s": ids["snapshot"]},
+    )
+    return ids
 
 
 def main():
@@ -211,13 +347,14 @@ def main():
             failed.append(f"{label} {detail}".strip())
             print(f"  FAIL {label} {detail}")
 
+    ids = {}
     conn = engine.connect()
     outer = conn.begin()
     try:
-        seed(conn)
+        ids = seed(conn)
 
         print("--- REFUSED: every constraint observed rejecting a bad row ---")
-        for label, sql, params, fragment in refusal_cases():
+        for label, sql, params, fragment in refusal_cases(ids):
             sp = conn.begin_nested()
             try:
                 conn.execute(text(sql), params)
@@ -236,7 +373,7 @@ def main():
                            f"rejected, but NOT by {fragment}: {message[:150]}")
 
         print("\n--- ACCEPTED: the constraints are not simply refusing all ---")
-        for label, sql, params in acceptance_cases():
+        for label, sql, params in acceptance_cases(ids):
             sp = conn.begin_nested()
             try:
                 conn.execute(text(sql), params)
@@ -299,8 +436,8 @@ def main():
             print("  -", x)
         return 1
     print(f"All {passed} constraint assertions passed "
-          f"({len(refusal_cases())} refusals observed, "
-          f"{len(acceptance_cases())} acceptances observed).")
+          f"({len(refusal_cases(ids))} refusals observed, "
+          f"{len(acceptance_cases(ids))} acceptances observed).")
     return 0
 
 

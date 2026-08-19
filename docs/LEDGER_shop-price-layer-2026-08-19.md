@@ -150,7 +150,7 @@ A4  DONE  40254f0  `shop_items` exists. Migration c5f93160bd87, additive.
     empty. So B5's denominator is 7,728 items across 56 non-empty files, not
     "~99 category files" of data.
 
-A6  DONE  <pending>  `snapshots` exists AND both existing snapshots are rows.
+A6  DONE  c762a01  `snapshots` exists AND both existing snapshots are rows.
     Built BEFORE A5 rather than after, because A5's UNIQUE(item, terminal,
     snapshot) cannot reference a table that does not exist yet. Not a
     decision, just the dependency order.
@@ -183,3 +183,34 @@ A6  DONE  <pending>  `snapshots` exists AND both existing snapshots are rows.
     information_schema which marker column each table actually has - a sweep
     that errored, or worse checked nothing, would have reported a clean
     rollback it never verified.
+
+A5  DONE  <pending>  `item_prices` exists. Migration 2b99ac053efa, additive.
+    ACCEPTANCE: the unique key exists and is on (shop_item_id, terminal_id,
+    snapshot_id) - NOT (item, terminal). Keying without the snapshot would
+    make a second pull an UPDATE and destroy the history the table exists to
+    keep, which is §3.4 turned from an intention into a structure.
+    Indexed on item, terminal, snapshot, price_buy, price_sell,
+    uex_price_id and source_date_modified.
+    DECIDED-BY-DEFAULT, and it is the second real call of this run: UEX writes
+    price_buy = 0 to mean "this terminal does not sell this", not "it sells
+    for nothing". Stored as 0 the site would render "0 aUEC", a false
+    statement about a real shop. §3.1 already rules the display side - blank
+    means no data - so the storage agrees with it: 0 becomes NULL on the way
+    in, and the untouched source values are kept in `detail` so the
+    transformation is reversible and auditable. MEASURED FIRST: zero rows in
+    the snapshot have both sides absent, so this never blanks a row entirely.
+    Reverses cheaply - the raw values are in `detail`.
+    CONTROL, all OBSERVED firing:
+      duplicate (item, terminal, snapshot) -> uq_item_prices_item_terminal_snapshot
+      negative buy   -> ck_item_prices_price_buy_non_negative
+      negative sell  -> ck_item_prices_price_sell_non_negative
+      neither side   -> ck_item_prices_has_at_least_one_side
+      orphan item / terminal / snapshot -> the three FKs, each named
+    And the acceptances that stop those being vacuous: buy-only accepted,
+    sell-only accepted, a price of exactly 0 accepted (the constraint is
+    non-NEGATIVE, not non-zero - an off-by-one there would silently drop
+    every genuinely free item), and THE APPEND-ONLY CASE - same item, same
+    terminal, different snapshot, accepted. That last one is the whole point
+    of the table and it is now observed working rather than assumed.
+    NOT YET PROVEN: "re-running the same snapshot inserts zero new rows" is
+    B3's control, on the importer. Recorded as outstanding.
