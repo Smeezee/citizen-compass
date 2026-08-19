@@ -154,6 +154,21 @@ def main():
                     session.close()
                     session = None
             _collect(_run_group("db", DB_CHECKERS, REPO_ROOT, session), DB_CHECKERS)
+
+            # The shop/price layer auditors (Phase C, 2026-08-19). Same
+            # signature and same session as db_checks, so they ride in the
+            # same group rather than needing a group of their own - they are
+            # ordinary DB checkers, not a separate subsystem.
+            try:
+                from checks.shop_checks import CHECKERS as SHOP_CHECKERS
+            except ImportError as e:
+                print(f"--group {args.group}: checks/shop_checks.py not "
+                      f"importable here ({e}) - skipping the shop auditors.",
+                      file=sys.stderr)
+            else:
+                _collect(_run_group("db", SHOP_CHECKERS, REPO_ROOT, session),
+                         SHOP_CHECKERS)
+
             if session is not None:
                 session.close()
 

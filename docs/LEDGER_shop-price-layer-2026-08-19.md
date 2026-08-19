@@ -418,7 +418,7 @@ B3  COMPLETED  90ef4d0  Re-run after B5, and the outstanding half of B3's
     The 23,683 rows B3 reported as unplaceable landed on the re-run, exactly
     as it said they would.
 
-B6  DONE  <pending>  import_uex_commodities.py - 204 commodities and 2,923
+B6  DONE  0ca407d  import_uex_commodities.py - 204 commodities and 2,923
     commodity price rows from 20260806T033315Z, into the SAME tables as items
     per §B6. Migration 250bdcd72ac3.
     *** SCHEMA CHANGE THIS FORCED, and it was not foreseeable from §B6 ***
@@ -468,3 +468,256 @@ B6  DONE  <pending>  import_uex_commodities.py - 204 commodities and 2,923
 --- PHASE B COMPLETE. -------------------------------------------------------
     locations 675 | terminals 823 | item_categories 100 | snapshots 2
     shop_items 7,932 (7,728 items + 204 commodities) | item_prices 26,657
+
+C1  DONE  <pending>  checks/shop_checks.py:price_outlier_check. Per category
+    AND per side - buy and sell are never pooled, because a category bought at
+    100 and sold at 20,000 makes a bimodal blob that flags nothing.
+    JUDGED IN LOG SPACE, and that was changed AFTER the first real run rather
+    than guessed. Run 1, linear, flagged 590 of 26,657 rows (2.2%), and
+    reading them showed the detector was asking the wrong question: "Scourge
+    Railgun Magazine, 5,888 aUEC, 16.8x the Attachments median of 350" is a
+    perfectly ordinary expensive magazine. Game prices are MULTIPLICATIVE -
+    a category genuinely spans 200 to 3,000,000 aUEC - so on a linear scale
+    the whole upper half of any such category falls outside a fence built
+    from its lower half. A detector that flags 590 ordinary rows is one
+    nobody reads, which is worse than none. In log space: 205 rows, 0.77%.
+    The linear number is left in the code as the evidence for the log one.
+    Reports WARNING, never DEFECT: an expensive gun is not a confirmed error,
+    and calling it one teaches the reader to ignore the word.
+    Categories below 8 priced rows report LIMITATION, NOT pass - "we could
+    not judge this" and "we judged it fine" are different answers.
+
+C2  DONE  <pending>  checks/shop_checks.py:orphan_check. Currently PASS on
+    all four conditions: every price row resolves to a real item and a real
+    terminal, every terminal has a location, every item has a category.
+    THE HARD-ORPHAN BRANCH IS UNREACHABLE WHILE THE FOREIGN KEYS EXIST, which
+    would normally make it exactly the kind of check rule 12 says not to
+    trust. It is proven anyway - see C6.
+
+C3  DONE  <pending>  checks/shop_checks.py:name_collision_check.
+    *** THE NUMBERS THE ORDER ASKED FOR ***
+      item display names colliding WITHIN items:  7 of 7,721, worst case 2
+      commodity display names colliding:          0 of 204 - all unique
+      terminal names colliding:                  20 of 803, worst case 2
+      names existing as BOTH item and commodity: 193
+      uuids shared by >1 item:                   120, WORST CASE 10
+      items carrying no uuid at all:           2,162 of 7,932
+    So display-name collision is NOT the problem the order expected. "Up to
+    12 records per display name" is not true here - it is 2. THE UUID IS THE
+    PROBLEM, by an order of magnitude, which is the A4 finding arriving again
+    from a different direction.
+    The 193 item/commodity name overlaps are reported SEPARATELY and as
+    LIMITATION, not lumped in: an "Agricium" item and an "Agricium" commodity
+    are UEX describing one real thing through two endpoints, which is a
+    completely different situation from two distinct guns sharing a name.
+    Pooling them would have reported 200 collisions and buried the 7 that
+    actually matter.
+    The uuid finding is a DEFECT **in the source data**, explicitly not in
+    this database - nothing here is broken by it and nothing is auto-fixed.
+
+C5  DONE  <pending>  checks/shop_checks.py:price_staleness_check.
+      0-30 days     4,754  (17.8%)
+      31-90 days   18,246  (68.4%)
+      91-180 days   3,060  (11.5%)
+      181-365 days    248   (0.9%)
+      over a year     349   (1.3%)  -> WARNING, must be visibly flagged
+      no source date at all: 0
+      dated in the future:   0
+    Measured against UEX's own date_modified, NOT the snapshot capture time.
+    Those answer different questions: the snapshot says when we pulled, and
+    date_modified says when a human last confirmed the price in game. A price
+    pulled yesterday can be two years old, and it is the second number a
+    player needs.
+
+C4  DONE  <pending>  checks/shop_checks.py:category_coverage_check.
+    *** THIS IS THE TABLE. It answers the thruster/armour/fuel-tank
+    question with numbers instead of an opinion, per §3.3. ***
+    Driven from item_categories so ALL 100 categories appear - grouping
+    the items instead would have silently omitted the 44 that hold none,
+    and those are exactly the rows whose absence looks like an oversight.
+
+       cat  section            category                    items  priced   cover  game
+      --------------------------------------------------------------------------------
+         1  Armor              Arms                          486     161   33.1%  y
+         2  Armor              Backpacks                     150      26   17.3%  y
+         7  Armor              Full Set                      109       0    0.0%  y
+         3  Armor              Helmets                       670     201   30.0%  y
+         4  Armor              Legs                          475     161   33.9%  y
+         5  Armor              Torso                         476     161   33.8%  y
+        82  Avionics           Flight Blade                   80      46   57.5%  y
+        83  Avionics           Radar                          56      51   91.1%  y
+        72  Clothing           Dresses                         0       0       -  N
+        68  Clothing           Eyeware                        14       0    0.0%  y
+         8  Clothing           Footwear                      307     237   77.2%  y
+        15  Clothing           Full Set                        3       0    0.0%  N
+         9  Clothing           Gloves                        131      57   43.5%  y
+        10  Clothing           Hats                          187      79   42.2%  y
+        11  Clothing           Jackets                       453     282   62.3%  y
+        12  Clothing           Jumpsuits                       0       0       -  y
+        13  Clothing           Legwear                       347     214   61.7%  y
+        14  Clothing           Shirts                        367     186   50.7%  y
+        36  Commodities        Commodities                   158       0    0.0%  N
+        87  Commodities        Harvestables                   17       0    0.0%  N
+        69  Consumable         Consumable                      0       0       -  y
+       111  Data               Cards                           0       0       -  N
+        37  Data               Points of Interest              0       0       -  N
+       112  Data               Storage                         0       0       -  N
+        75  Decorations        Decorations                    77      15   19.5%  y
+       107  Flair              Surface                        31       2    6.5%  y
+        91  General            Bounty Hunter                   0       0       -  N
+        49  General            Construction                    0       0       -  N
+        56  General            Datarunning                     0       0       -  N
+        93  General            Delivery                        0       0       -  N
+        92  General            ECN                             0       0       -  N
+        71  General            Engineering                     0       0       -  N
+        48  General            Exploration                     0       0       -  N
+        54  General            Gunner                          0       0       -  N
+        40  General            Hauling                         0       0       -  N
+        94  General            Hauling                         0       0       -  N
+        96  General            Maintenance                     0       0       -  N
+        58  General            Mass Transit                    0       0       -  N
+        44  General            Medical                         0       0       -  N
+        55  General            Mercenary                       0       0       -  N
+        97  General            Mercenary                       0       0       -  N
+        41  General            Mining                          0       0       -  N
+       100  General            Mining                          0       0       -  N
+       101  General            Other                           0       0       -  N
+        50  General            Private Pilot                   0       0       -  N
+        51  General            Racing                          0       0       -  N
+        98  General            Racing                          0       0       -  N
+        42  General            Refining                        0       0       -  N
+        45  General            Refueling                       0       0       -  N
+        46  General            Repairing                       0       0       -  N
+        99  General            Salvage                         0       0       -  N
+        43  General            Salvaging                       0       0       -  N
+        47  General            Scanning                        0       0       -  N
+        57  General            Science                         0       0       -  N
+        53  General            Security                        0       0       -  N
+        95  General            Service Beacon                  0       0       -  N
+        59  General            Tourism                         0       0       -  N
+        52  General            Towing                          0       0       -  N
+        39  General            Trading                         0       0       -  N
+        20  Liveries           Liveries                     1099      19    1.7%  y
+        16  Miscellaneous      Consumables                    13       8   61.5%  y
+        65  Miscellaneous      Container                       9       8   88.9%  y
+        62  Miscellaneous      Drinks                         55      42   76.4%  y
+        63  Miscellaneous      Foods                         102      68   66.7%  y
+        61  Miscellaneous      Miscellaneous                 325      31    9.5%  y
+        74  Module             Module                         23      10   43.5%  y
+        38  Other              Other                          41       0    0.0%  N
+        60  Other              Other                           0       0       -  N
+        17  Personal Weapons   Attachments                   170      76   44.7%  y
+        18  Personal Weapons   Personal Weapons              388      81   20.9%  y
+        86  Propulsion         Jump Modules                    3       3  100.0%  y
+        81  Systems            Batteries                       0       0       -  N
+        19  Systems            Coolers                        73      50   68.5%  y
+        84  Systems            Gravity Generator               0       0       -  N
+       103  Systems            Life Support Generator          3       0    0.0%  N
+        21  Systems            Power Plants                   75      42   56.0%  y
+        22  Systems            Quantum Drives                 57      45   78.9%  y
+        23  Systems            Shield Generators              64      42   65.6%  y
+        73  Technology         Mobiglas                       20      20  100.0%  y
+        24  Undersuits         Undersuits                    199     105   52.8%  y
+        64  Utility            Container                       8       4   50.0%  y
+        25  Utility            Docking Collars                 7       7  100.0%  y
+        26  Utility            External Fuel Tanks             8       8  100.0%  y
+       109  Utility            Fabricator                      1       1  100.0%  y
+        27  Utility            Fuel Nozzle                     0       0       -  N
+        28  Utility            Gadgets                         6       6  100.0%  y
+        29  Utility            Mining Laser Heads             17      16   94.1%  y
+        30  Utility            Mining Modules                 27      26   96.3%  y
+       110  Utility            Salvage Beams                   4       4  100.0%  y
+        31  Utility            Scraper Beams                   4       4  100.0%  y
+        67  Utility            Tractor Beams                   9       8   88.9%  y
+        90  Vehicle Weapons    Bomb Racks                      8       8  100.0%  y
+        70  Vehicle Weapons    Bombs                           3       3  100.0%  y
+        32  Vehicle Weapons    Guns                          154      85   55.2%  y
+        33  Vehicle Weapons    Missile Racks                  56      19   33.9%  y
+        34  Vehicle Weapons    Missiles                       55      51   92.7%  y
+        79  Vehicle Weapons    Point Defense Cannon           11       0    0.0%  y
+        80  Vehicle Weapons    Torpedo Tubes                   2       0    0.0%  N
+        35  Vehicle Weapons    Turrets                        35      19   54.3%  y
+       102  Vehicles           Vehicles                        0       0       -  N
+            Commodities        (no category FK)              204     147  72.1%  y
+  
+      TOTAL 2,945 of 7,932 priced (37.1%)
+      categories at 100% coverage : 10
+      categories partially covered: 37
+      categories with items but NO prices: 9
+        -> Commodities, Eyeware, Full Set, Full Set, Harvestables, Life Support Generator, Other, Point Defense Cannon, Torpedo Tubes
+      categories with no items at all: 44
+
+    THE THREE ANSWERS SLEVEN ASKED FOR, from the table above:
+
+      FUEL TANKS   -> YES, comprehensively. "Utility / External Fuel Tanks",
+                      8 items, 8 priced, 100% coverage. Not a gap at all.
+
+      ARMOUR       -> YES. 2,366 armour items, 710 priced, roughly 30%
+                      across Arms / Helmets / Legs / Torso, and 17% on
+                      Backpacks. The one hole is "Armor / Full Set" - 109
+                      items, ZERO priced. Sets appear to be a UEX grouping
+                      rather than a thing a shop sells individually.
+
+      THRUSTERS    -> THE QUESTION CANNOT BE ANSWERED FROM THIS SOURCE, and
+                      that is the honest result rather than a "no". UEX has
+                      NO thruster category among its 100, and NOT ONE of the
+                      7,932 items has "thruster" anywhere in its name. The
+                      nearest thing in the whole taxonomy is
+                      "Propulsion / Jump Modules" (3 items, all priced).
+                      So this is not "thrusters are not sold" - it is "UEX
+                      does not model thrusters as a purchasable item at all",
+                      and answering the original question needs a different
+                      source, not a different query. Reported as a gap
+                      (rule 11) rather than filled with a plausible zero.
+
+    OTHER THINGS THE TABLE SAYS THAT ARE WORTH A LOOK:
+      * Liveries: 1,099 items, 19 priced, 1.7%. Confirms the B3 observation
+        - liveries are pledge-store goods, not in-game shop stock. A low
+        number here is not missing data.
+      * "Commodities / Commodities" (category 36) holds 158 ITEMS with zero
+        prices, while the separate commodity import has 147 of 204 priced at
+        72%. Those are two different UEX representations of commodities and
+        only one of them carries prices. Worth Sleven deciding which the site
+        should show; both are stored and neither is guessed at.
+      * 44 categories hold no items whatsoever. All returned HTTP 200 with
+        envelope "ok". They are genuinely empty, not failed pulls.
+      * 10 categories are at 100% coverage, 37 partial, 9 have items but no
+        prices at all.
+
+C6  DONE  <pending>  checks/_verify_shop_checks.py - the negative control for
+    all five auditors, BOTH halves, 24 assertions.
+    Silence is measured as a DELTA, not as an absolute, because these run
+    against 26,657 real rows that already legitimately trip C1, C3 and C5.
+    For each auditor: run it and assert the planted subject is ABSENT, plant
+    exactly one row that must trip it, run again and assert the subject is
+    PRESENT. That is stronger than "it produced findings" - an auditor that
+    fires on everything fails the first assertion, one that fires on nothing
+    fails the second.
+      C1  a 999,999,999 aUEC price in a ~100 aUEC category   -> FIRED
+      C2  a terminal with a NULL location                    -> FIRED
+      C2  a price row whose item does not exist              -> FIRED as DEFECT
+      C3  two items sharing a display name                   -> FIRED
+      C3  two items sharing a uuid                           -> FIRED
+      C4  a category with items and no prices                -> FIRED, as
+          LIMITATION rather than DEFECT
+      C5  a price dated in the future                        -> FIRED as DEFECT
+      C5  a 1,200-day-old price moves the over-a-year bucket -> FIRED
+    C2'S HARD-ORPHAN BRANCH NEEDED THE FOREIGN KEY REMOVED to be observable
+    at all - A7's FK makes the condition impossible to create, so the branch
+    could never fire and an unobservable branch is precisely what rule 12
+    says not to trust. The control drops the key, plants the orphan, watches
+    C2 catch it, and rolls back. Postgres DDL is transactional so the rollback
+    restores it fully, and a killed process rolls back too. The script then
+    CONFIRMS from pg_constraint that all three FKs are back, and fails loudly
+    if not. Verified: all three present afterwards, zero planted rows left.
+    *** C6 FOUND A REAL DEFECT IN C3, which is the entire point of doing it.
+    C3's per-kind branch reported only "worst case 2 share X" - so a NEW
+    collision was INVISIBLE unless it happened to become the worst one, and
+    the reader was handed a number they could not act on. The control failed
+    on exactly that. C3 now lists the colliding names. The auditor was fixed;
+    the control was not weakened to match it. ***
+
+    WIRED IN: run_checks.py --group db now runs all five. Verified against the
+    real findings store - 185 findings written, 11 checkers ok, 0 errored.
+
+--- PHASE C COMPLETE. ------------------------------------------------------
