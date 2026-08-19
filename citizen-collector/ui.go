@@ -249,6 +249,7 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 			liveStore.MineLive(line, "", "LIVE")
 		},
 		onGameExit: func() {
+			Activity("Star Citizen closed. Reading the session and tidying up.")
 			logf("live: %d transactions, %d deaths, %d ships seen while playing",
 				len(liveStore.Txns), len(liveStore.Deaths), len(liveStore.Ships))
 
@@ -262,8 +263,11 @@ func runUI(cfg autoConfig, outDir, exeDir, autoLogPath, hotkeySpec, localURL, lo
 			// It stays on this computer - see diary.go. The scrubbed dataset is
 			// what travels.
 			if lp, _ := findLogFromRunningGame(); lp != "" {
-				if _, _, err := KeepDiary(exeDir, lp, "game-exit",
-					ReadGameLog(lp, "diary"), logf); err != nil {
+				if dest, kept, err := KeepDiary(exeDir, lp, "game-exit",
+					ReadGameLog(lp, "diary"), logf); kept && err == nil {
+					Activity("Kept this session's whole log on this computer: %s",
+						filepath.Base(dest))
+				} else if err != nil {
 					logf("diary: this session was NOT kept (%v) - the session is "+
 						"lost when the game next overwrites its log", err)
 				}

@@ -1002,11 +1002,20 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 					out, err := deps.capture(*first)
 					if err != nil {
 						deps.logf("hotkey capture FAILED: %v", err)
+						Activity("You pressed %s - but the picture could not be taken: %v",
+							deps.hotkeyName, err)
+						Activity("You pressed %s - but the picture could not be "+
+							"taken: %v", deps.hotkeyName, err)
 						continue
 					}
 					captures++
 					runner.noteCapture(now())
 					deps.logf("captured %s  <- %s (manual)", filepath.Base(out), first.Reason())
+					// §7: the person sees WHICH KEYS did this, in the window,
+					// as it happens. Somebody who hit Alt+F3 by accident should
+					// learn it here rather than find a mystery picture later.
+					ActivityCapture(deps.hotkeyName, filepath.Base(out),
+						"holding it keeps taking pictures while you scroll")
 				}
 				continue
 			}
@@ -1016,6 +1025,8 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			out, err := deps.capture(t)
 			if err != nil {
 				deps.logf("hotkey capture FAILED: %v", err)
+				Activity("You pressed %s - but the picture could not be taken: %v",
+					deps.hotkeyName, err)
 				continue
 			}
 			captures++
@@ -1024,6 +1035,7 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			// on a scene that was just photographed.
 			runner.noteCapture(now())
 			deps.logf("captured %s  <- %s (manual)", filepath.Base(out), t.Reason())
+			ActivityCapture(deps.hotkeyName, filepath.Base(out), "")
 			continue
 
 		case <-ticker.C:
@@ -1198,6 +1210,7 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		// simply no longer take pictures.
 		for _, r := range runner.keys.Released() {
 			deps.logf("finished recording %s", r)
+			ActivityHeldKeyEnd(r, 0)
 		}
 
 		// THE ONLY REMAINING SOURCE OF A PICTURE: a key the person pressed.
@@ -1213,6 +1226,8 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 			captures++
 			runner.noteCapture(now())
 			deps.logf("captured %s  <- %s", filepath.Base(out), bt.Reason())
+			ActivityCapture(deps.hotkeyName, filepath.Base(out),
+				"still holding - frame "+itoaSmall(bt.Index))
 		} else if why != "" {
 			deps.logf("burst ended: %s", why)
 		}

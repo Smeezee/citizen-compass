@@ -528,6 +528,7 @@ func selftest(outDir string) int {
 	runHotkeyBurstSelftest(check)
 	runNoAutoCaptureSelftest(check)
 	runDiarySelftest(check)
+	runActivitySelftest(check)
 	runCombatSelftest(check)
 	runMergeSelftest(check)
 	runKeyWatchSelftest(check)

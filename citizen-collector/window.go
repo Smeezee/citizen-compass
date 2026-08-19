@@ -76,6 +76,21 @@ const (
 
 	esAutoHScroll = 0x00000080
 
+	// LISTBOX styles and messages, for the activity list.
+	//
+	// LBS_NOINTEGRALHEIGHT: without it Windows silently SHRINKS the control to a
+	// whole number of rows, so a list sized to the layout comes out shorter than
+	// the space reserved for it and the window has a gap nobody put there.
+	// LBS_NOSEL: this is a read-only account of what happened, not a chooser -
+	// a selection highlight would invite a click that does nothing.
+	lbsNoIntegralHeight = 0x00000100
+	lbsNoSel            = 0x00004000
+
+	lbAddString    = 0x0180
+	lbResetContent = 0x0184
+	lbSetTopIndex  = 0x0197
+	lbGetCount     = 0x018B
+
 	swShow = 5
 
 	wmDestroy        = 0x0002
@@ -116,6 +131,7 @@ const (
 	idHotkey
 	idSaveSettings
 	idRevert
+	idActivity
 )
 
 // collectorWindow is the window and everything it needs to refresh itself.
@@ -133,6 +149,13 @@ type collectorWindow struct {
 	chkAutostart uintptr
 	chkShowWin   uintptr
 	edHotkey     uintptr
+
+	// THE ACTIVITY LIST (§7). A listbox rather than a static or an edit box:
+	// it scrolls back over the session on its own, and a person can select a
+	// line to read it without the window having to grow.
+	activity     uintptr
+	activitySeen uint64 // the feed version last drawn, so idle costs nothing
+	activityCap  int    // how many lines are in the control now
 
 	exeDir string
 	outDir string
@@ -320,6 +343,20 @@ func (w *collectorWindow) buildControls() {
 	}
 	y += px(gap * 2)
 
+	// THE ACTIVITY LIST (§7) - what the program has done, in words.
+	//
+	// Placed ABOVE the buttons and below the status rows, because it is the
+	// answer to "what is it doing?", which is the question the rest of this
+	// window only answers in counts. NOTHING THE PROGRAM DOES IS INVISIBLE TO
+	// THE PERSON IT IS HAPPENING TO.
+	w.mk("STATIC", "What has happened", ssLeft, x, y, fullW, px(rowH), 0)
+	y += px(rowH)
+	w.activity = w.mk("LISTBOX", "",
+		wsVScroll|lbsNoIntegralHeight|lbsNoSel|wsTabStop|0x00800000, /*WS_BORDER*/
+		x, y, fullW, px(120), idActivity)
+	procSendMessageW.Call(w.activity, wmSetFont, w.font, 1)
+	y += px(120 + gap*2)
+
 	// Buttons - what a person came here to do.
 	bw, bh := px(150), px(32)
 	w.mk("BUTTON", "Send my data", bsPushButton|wsTabStop, x, y, bw, bh, idSend)
@@ -440,6 +477,53 @@ func (w *collectorWindow) refresh() {
 			v = "! " + v
 		}
 		w.setText(w.values[i], v)
+	}
+
+	w.refreshActivity()
+}
+
+// refreshActivity redraws the list, and does nothing at all when nothing has
+// happened.
+//
+// COMPARED BY VERSION, NOT BY CONTENT. refresh() runs on a timer; rebuilding a
+// thousand-line listbox every tick would flicker, fight the scrollbar and burn
+// CPU on a machine that is also running a game. The feed counts its own
+// additions, so an idle second costs one integer comparison.
+func (w *collectorWindow) refreshActivity() {
+	if w.activity == 0 {
+		return
+	}
+	v := theActivity.Version()
+	if v == w.activitySeen {
+		return
+	}
+	entries, ver := theActivity.Snapshot()
+
+	// APPEND WHAT IS NEW rather than rebuilding.
+	//
+	// A rebuild would jump the scrollbar to the top on every new line, which is
+	// precisely when somebody is reading back over the session. Only when the
+	// feed has dropped old lines - past activityMax - is a rebuild unavoidable,
+	// and then it is honest about it.
+	if len(entries) < w.activityCap {
+		procSendMessageW.Call(w.activity, lbResetContent, 0, 0)
+		w.activityCap = 0
+	}
+	for i := w.activityCap; i < len(entries); i++ {
+		p, err := syscall.UTF16PtrFromString(entries[i].Line())
+		if err != nil {
+			continue
+		}
+		procSendMessageW.Call(w.activity, lbAddString, 0, uintptr(unsafe.Pointer(p)))
+	}
+	w.activityCap = len(entries)
+	w.activitySeen = ver
+
+	// Follow the newest line. A person scrolled back to read something will be
+	// pulled forward by this, which is the lesser of the two annoyances: the
+	// alternative is a window that looks frozen while the program works.
+	if n, _, _ := procSendMessageW.Call(w.activity, lbGetCount, 0, 0); n > 0 {
+		procSendMessageW.Call(w.activity, lbSetTopIndex, n-1, 0)
 	}
 }
 
