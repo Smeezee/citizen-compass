@@ -883,3 +883,60 @@ class ShopItem(VerifiableMixin, Base):
 
     category: Mapped["ItemCategory | None"] = relationship()
     verified_patch: Mapped["Patch | None"] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# A6. SNAPSHOT.
+#
+# One row per sealed UEX snapshot directory. This is the table that makes §3.4
+# - "prices are append-only, keyed by snapshot" - a real thing rather than a
+# good intention: a price row points at the snapshot it came from, so a later
+# pull ADDS rows instead of overwriting them, and "what did this cost in
+# August" stays answerable.
+#
+# The roadmap watcher on this project overwrote history once already and it
+# cost a rebuild. A price is a fact with a date attached.
+#
+# `row_counts` is JSONB rather than columns because the set of files differs
+# per snapshot: 20260801T235530Z holds items/terminals/categories, and
+# 20260806T033315Z holds commodities and nothing else. Columns would mean a
+# migration every time UEX gains an endpoint.
+# ---------------------------------------------------------------------------
+
+
+class Snapshot(Base):
+    """A sealed capture of an external source, at a moment, on disk.
+
+    Deliberately NOT a VerifiableMixin table: a snapshot is not community-
+    sourced data with a confidence level, it is a record of a file that
+    exists. Its trustworthiness is the sha256 in its own pull manifest.
+    """
+
+    __tablename__ = "snapshots"
+    __table_args__ = (
+        UniqueConstraint("source", "snapshot_key",
+                         name="uq_snapshots_source_key"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # "uexcorp" today. Named rather than assumed, because scunpacked and the
+    # wiki land snapshots the same way and will want rows here.
+    source: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    # The directory name, e.g. "20260801T235530Z".
+    snapshot_key: Mapped[str] = mapped_column(String(64), nullable=False)
+    # Repo-relative, so the row survives the repo being moved or restored to a
+    # different path from a backup.
+    path: Mapped[str] = mapped_column(Text, nullable=False)
+
+    # Parsed from the directory name, which is the only capture time this
+    # project actually holds. If it cannot be parsed it stays NULL rather than
+    # being filled with the row's own insert time - that would be a fabricated
+    # provenance date, which is worse than an absent one (rule 11).
+    captured_at: Mapped[datetime.datetime | None] = mapped_column(index=True)
+
+    row_counts: Mapped[dict | None] = mapped_column(JSONB)
+    notes: Mapped[str | None] = mapped_column(Text)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        server_default=func.now(), nullable=False
+    )

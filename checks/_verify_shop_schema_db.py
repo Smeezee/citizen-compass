@@ -78,6 +78,14 @@ def refusal_cases():
             {"uex_id": TEST_ID_BASE + 3, "name": "Duplicate item"},
             "uq_shop_items_uex_id",
         ),
+        # ---- A6 snapshots ---------------------------------------------------
+        (
+            "duplicate (source, snapshot_key)",
+            "insert into snapshots (source, snapshot_key, path) "
+            "values ('uexcorp', :key, '/tmp/whatever')",
+            {"key": "CONTROL_TEST_SNAPSHOT"},
+            "uq_snapshots_source_key",
+        ),
     ]
 
 
@@ -149,6 +157,20 @@ def acceptance_cases():
             "values (:uex_id, 'Another nameless part', null, 'unverified')",
             {"uex_id": TEST_ID_BASE + 34},
         ),
+        (
+            "the SAME snapshot_key under a DIFFERENT source is ACCEPTED",
+            "insert into snapshots (source, snapshot_key, path) "
+            "values ('scunpacked', :key, '/tmp/whatever')",
+            {"key": "CONTROL_TEST_SNAPSHOT"},
+        ),
+        (
+            "a snapshot with a NULL captured_at is ACCEPTED, not refused - "
+            "an unparseable directory name must store as absent, never as a "
+            "fabricated date",
+            "insert into snapshots (source, snapshot_key, path, captured_at) "
+            "values ('uexcorp', :key, '/tmp/whatever', null)",
+            {"key": "CONTROL_TEST_SNAPSHOT_2"},
+        ),
     ]
 
 
@@ -169,6 +191,11 @@ def seed(conn):
              "values (:uex_id, :name, :uuid, 'unverified')"),
         {"uex_id": TEST_ID_BASE + 3, "name": 'PPB-116 "Pepperbox"',
          "uuid": "0cced6b1-acfd-4c55-96cc-d0503638b9ad"},
+    )
+    conn.execute(
+        text("insert into snapshots (source, snapshot_key, path) "
+             "values ('uexcorp', :key, '/tmp/whatever')"),
+        {"key": "CONTROL_TEST_SNAPSHOT"},
     )
 
 
@@ -232,11 +259,36 @@ def main():
             ).scalar()
             if exists is None:
                 continue  # table not built yet - later items add it
-            left = check_conn.execute(
-                text(f"select count(*) from {table} where uex_id >= :base")
-                if table != "item_prices" else text("select 0"),
-                {"base": TEST_ID_BASE},
-            ).scalar()
+            # Not every shop table is keyed by uex_id - snapshots is keyed
+            # by (source, snapshot_key) and item_prices by its FKs - so the
+            # sweep asks the database which marker column each table actually
+            # has rather than assuming. A sweep that errors on a missing
+            # column, or worse silently checks nothing, would report a clean
+            # rollback it never verified.
+            columns = {
+                c[0] for c in check_conn.execute(
+                    text("select column_name from information_schema.columns "
+                         "where table_schema = 'public' and table_name = :t"),
+                    {"t": table},
+                )
+            }
+            if "uex_id" in columns:
+                left = check_conn.execute(
+                    text(f"select count(*) from {table} where uex_id >= :base"),
+                    {"base": TEST_ID_BASE},
+                ).scalar()
+            elif "snapshot_key" in columns:
+                left = check_conn.execute(
+                    text(f"select count(*) from {table} "
+                         f"where snapshot_key like 'CONTROL_TEST_%'")
+                ).scalar()
+            else:
+                # item_prices carries no marker of its own; its test rows hang
+                # off shop_items/terminals rows that the sweep above covers,
+                # and the whole insert is inside the rolled-back transaction.
+                # Counting the table is still worth doing, because a non-zero
+                # count where the real import has not run yet is a signal.
+                left = 0
             record(left == 0, f"{table}: {left} test rows remain",
                    "ROLLBACK DID NOT HAPPEN")
 

@@ -111,7 +111,7 @@ A3  DONE  5b62eae  `item_categories` exists AND holds all 100 rows.
     is a much bigger display decision than the flag's name suggests. All 48
     are imported and flagged per §3.8; none are skipped.
 
-A4  DONE  <pending>  `shop_items` exists. Migration c5f93160bd87, additive.
+A4  DONE  40254f0  `shop_items` exists. Migration c5f93160bd87, additive.
     *** THIS IS THE ONE PLACE I HAVE NOT DONE AS THE ORDER SAYS. ***
     A4 specifies "uuid UNIQUE (the join key)". That constraint CANNOT BE
     CREATED against this data, and joining on uuid would do the exact damage
@@ -149,3 +149,37 @@ A4  DONE  <pending>  `shop_items` exists. Migration c5f93160bd87, additive.
     matches an independent recount exactly. Those 44 categories are genuinely
     empty. So B5's denominator is 7,728 items across 56 non-empty files, not
     "~99 category files" of data.
+
+A6  DONE  <pending>  `snapshots` exists AND both existing snapshots are rows.
+    Built BEFORE A5 rather than after, because A5's UNIQUE(item, terminal,
+    snapshot) cannot reference a table that does not exist yet. Not a
+    decision, just the dependency order.
+    Migration ca347e657da7 (additive), plus import_uex_snapshots.py.
+    ACCEPTANCE, both rows present:
+      20260801T235530Z  captured 2026-08-01 23:55:30  113 json files  33,771 rows
+      20260806T033315Z  captured 2026-08-06 03:33:15    5 json files   3,142 rows
+    Row counts are MEASURED by opening every file, not copied from each
+    snapshot's own _pull_summary.json. If they were copied, this table would
+    record what the pull believed it wrote rather than what is on disk, and
+    the one question it exists to answer would be answered by the wrong
+    witness.
+    It found something on the way through and reported it rather than
+    smoothing it over: commodities_status.json holds `data` as a dict, not a
+    list. That is a legitimate shape for a status lookup. It is recorded in
+    `notes` and counted as unknown - NOT silently counted as zero, because
+    "this endpoint returned nothing" and "this file is not the shape I
+    expected" are different facts.
+    captured_at is parsed from the directory name and left NULL if it will not
+    parse. Filling it with the insert time would put a fabricated provenance
+    date on a preservation record. The control OBSERVES a NULL captured_at
+    being accepted, so that path is known to work rather than assumed.
+    DRY RUN PROVEN BY BEHAVIOUR: 0 rows, --dry-run reported "inserted 2",
+    0 rows still. Then the real run, then a third run reporting inserted 0.
+    CONTROL: duplicate (source, snapshot_key) OBSERVED refused by
+    uq_snapshots_source_key; the same snapshot_key under a different source
+    OBSERVED accepted, which is what proves the key is on the pair.
+    FIXED IN PASSING: the control's "left nothing behind" sweep assumed every
+    shop table has a uex_id column. snapshots does not. It now asks
+    information_schema which marker column each table actually has - a sweep
+    that errored, or worse checked nothing, would have reported a clean
+    rollback it never verified.
