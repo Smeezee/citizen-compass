@@ -87,7 +87,7 @@ A2  DONE  c49cd1d  `terminals` exists: uex_id UNIQUE, the four different
     NOT YET PROVEN: the "823 rows import" half of A2's acceptance is B1's
     work. Recording that as outstanding rather than implying it is done.
 
-A3  DONE  <pending>  `item_categories` exists AND holds all 100 rows.
+A3  DONE  5b62eae  `item_categories` exists AND holds all 100 rows.
     Migration e6b3d0ad40b4 (additive only), plus import_uex_categories.py -
     this loader lives at A3 rather than phase B because A3's acceptance is
     stated in rows, not DDL.
@@ -110,3 +110,42 @@ A3  DONE  <pending>  `item_categories` exists AND holds all 100 rows.
     it is nearly half the taxonomy, and it means "hide non-game categories"
     is a much bigger display decision than the flag's name suggests. All 48
     are imported and flagged per §3.8; none are skipped.
+
+A4  DONE  <pending>  `shop_items` exists. Migration c5f93160bd87, additive.
+    *** THIS IS THE ONE PLACE I HAVE NOT DONE AS THE ORDER SAYS. ***
+    A4 specifies "uuid UNIQUE (the join key)". That constraint CANNOT BE
+    CREATED against this data, and joining on uuid would do the exact damage
+    §3.2 exists to prevent. Measured against 20260801T235530Z:
+      7,728 item rows, 7,728 distinct UEX `id`   <- a perfect key, 0 collisions
+      5,566 rows carry a uuid; 2,162 (27.98%) carry NONE
+      5,356 distinct uuids, of which 120 are SHARED BY MORE THAN ONE ITEM
+      worst case TEN different items on one uuid
+    The shared ones are different products, not duplicate rows:
+    7bd374e9-... is worn by "Attrition-4 Repeater" AND "BRRA LaserCannon AP
+    Automated Turret", in two different categories. 0cced6b1-... is worn by
+    "Jericho", "Jericho X" and "Jericho XL".
+    Joining prices on uuid MERGES DISTINCT PRODUCTS, and loses others:
+      items with >=1 price row, joined on id:   2,798
+      items with >=1 price row, joined on uuid: 2,424   (374 lost, 13%)
+    SO: `uex_id` is the key and the upsert target; `uuid` is kept, indexed and
+    exposed but is never identity. Same call CC-12 made for
+    components.class_name - the key is the field that is actually unique, and
+    a unique constraint over a nullable column is the hole, not the fix.
+    §3.2's real instruction, "never join on display name", is untouched.
+    CONTROL: duplicate uex_id OBSERVED refused by uq_shop_items_uex_id. The
+    order's own stated control passes - two items sharing a display name both
+    import and stay distinct, and so does a third. Plus the two cases that
+    justify the deviation: two different items sharing one uuid are both
+    accepted, and an item with no uuid at all is accepted.
+    REVERSES CHEAPLY: the uuid column is there and indexed; C3 enumerates the
+    120 collisions; making it the key is a constraint plus a re-run.
+    MEASURED, correcting a figure in the order: display-name collisions are
+    7 of 7,721 item names, worst case 2 records - not "up to 12". Terminal
+    names: 20 of 803 collide, worst case 2. The 12 may be true of something
+    else in this project, but it is not true of items or terminals here.
+    MEASURED, and it changes B5: 44 of the 100 category files carry
+    `data: null`. NOT a failed pull - all 100 returned HTTP 200 with envelope
+    status "ok", and the pull manifest's own record_count totals 7,728, which
+    matches an independent recount exactly. Those 44 categories are genuinely
+    empty. So B5's denominator is 7,728 items across 56 non-empty files, not
+    "~99 category files" of data.

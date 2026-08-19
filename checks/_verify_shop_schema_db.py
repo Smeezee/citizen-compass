@@ -70,6 +70,14 @@ def refusal_cases():
             {"uex_id": TEST_ID_BASE + 2, "name": "Duplicate category"},
             "uq_item_categories_uex_id",
         ),
+        # ---- A4 shop items --------------------------------------------------
+        (
+            "duplicate item uex_id",
+            "insert into shop_items (uex_id, name, confidence) "
+            "values (:uex_id, :name, 'unverified')",
+            {"uex_id": TEST_ID_BASE + 3, "name": "Duplicate item"},
+            "uq_shop_items_uex_id",
+        ),
     ]
 
 
@@ -101,6 +109,46 @@ def acceptance_cases():
             "values (:uex_id, :name, false, 'unverified')",
             {"uex_id": TEST_ID_BASE + 23, "name": "Non-game category"},
         ),
+        # ---- A4's stated control, verbatim from the order -------------------
+        # "two items sharing a display name both import and stay distinct".
+        # Measured in the source: 7 display names of 7,721 do this.
+        (
+            "item sharing a display name with the seed row is ACCEPTED",
+            "insert into shop_items (uex_id, name, section, confidence) "
+            "values (:uex_id, 'PPB-116 \"Pepperbox\"', 'Turrets', 'unverified')",
+            {"uex_id": TEST_ID_BASE + 30},
+        ),
+        (
+            "a THIRD row with the same display name is still ACCEPTED",
+            "insert into shop_items (uex_id, name, confidence) "
+            "values (:uex_id, 'PPB-116 \"Pepperbox\"', 'unverified')",
+            {"uex_id": TEST_ID_BASE + 31},
+        ),
+        # ---- and the case that justifies keying on uex_id, not uuid ---------
+        # 120 uuids in the source are shared by up to TEN different items.
+        # If uuid were UNIQUE, this insert would be refused and the import
+        # would stop dead. It must be accepted.
+        (
+            "two DIFFERENT items sharing one uuid are both ACCEPTED",
+            "insert into shop_items (uex_id, name, uuid, confidence) "
+            "values (:uex_id, 'Jericho XL', "
+            "'0cced6b1-acfd-4c55-96cc-d0503638b9ad', 'unverified')",
+            {"uex_id": TEST_ID_BASE + 32},
+        ),
+        (
+            "an item with NO uuid at all is ACCEPTED (28% of the source)",
+            "insert into shop_items (uex_id, name, uuid, confidence) "
+            "values (:uex_id, 'Nameless part', null, 'unverified')",
+            {"uex_id": TEST_ID_BASE + 33},
+        ),
+        (
+            "a SECOND item with no uuid is ACCEPTED "
+            "(nullable-unique would not have allowed this either way, "
+            "but the pair is what proves it)",
+            "insert into shop_items (uex_id, name, uuid, confidence) "
+            "values (:uex_id, 'Another nameless part', null, 'unverified')",
+            {"uex_id": TEST_ID_BASE + 34},
+        ),
     ]
 
 
@@ -115,6 +163,12 @@ def seed(conn):
         text("insert into item_categories (uex_id, name, section, confidence) "
              "values (:uex_id, :name, 'Armor', 'unverified')"),
         {"uex_id": TEST_ID_BASE + 2, "name": "Seed category"},
+    )
+    conn.execute(
+        text("insert into shop_items (uex_id, name, uuid, confidence) "
+             "values (:uex_id, :name, :uuid, 'unverified')"),
+        {"uex_id": TEST_ID_BASE + 3, "name": 'PPB-116 "Pepperbox"',
+         "uuid": "0cced6b1-acfd-4c55-96cc-d0503638b9ad"},
     )
 
 

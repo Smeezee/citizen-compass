@@ -787,3 +787,99 @@ class ItemCategory(VerifiableMixin, Base):
     )
 
     verified_patch: Mapped["Patch | None"] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# A4. SHOP ITEM.
+#
+# THE ORDER SAYS "uuid UNIQUE (the join key)". THE DATA SAYS OTHERWISE, AND
+# THIS IS THE ONE PLACE IN THE SHOP LAYER WHERE I HAVE NOT DONE AS TOLD.
+# Everything below is measured against 20260801T235530Z, not remembered:
+#
+#   7,728 item rows across the 100 category files
+#   7,728 distinct UEX `id` values          <- a perfect key, zero collisions
+#   5,566 rows carry a uuid; 2,162 (27.98%) carry NONE
+#   5,356 distinct uuids, of which 120 are SHARED BY MORE THAN ONE ITEM
+#   worst case: TEN different items share one uuid
+#
+# The shared ones are not duplicate rows of the same product. uuid
+# 7bd374e9-9d2f-4659-94cf-840e79d23b34 is worn by "Attrition-4 Repeater" AND
+# "BRRA LaserCannon AP Automated Turret (Point Defense Turret)", across two
+# different categories. uuid 0cced6b1-... is worn by "Jericho", "Jericho X"
+# and "Jericho XL" - three different guns.
+#
+# So a UNIQUE constraint on uuid cannot be created against this data at all,
+# and joining prices on uuid would do the precise damage §3.2 was written to
+# prevent: it MERGES DISTINCT PRODUCTS. Measured both ways -
+#
+#   items with at least one price row, joined on id:    2,798
+#   items with at least one price row, joined on uuid:  2,424
+#
+# - joining on uuid also silently loses 374 priced items, because a quarter of
+# the catalogue has no uuid to join on.
+#
+# WHAT IS BUILT INSTEAD: `uex_id` is the key and the upsert target. `uuid` is
+# kept, indexed, and exposed - it is what other UEX-derived data cross-
+# references - but it is never identity. This is the same call CC-12 made for
+# components.class_name: the key is the field that is actually unique, and a
+# unique constraint over a nullable column is the hole, not the fix.
+#
+# §3.2's real instruction - "never join on display name" - is untouched and
+# still right. Measured there too: 7 display names of 7,721 map to more than
+# one item, worst case 2. (The order's "up to 12 records" is not true of items
+# in this snapshot; it may well be true of something else.)
+#
+# REVERSES CHEAPLY: the uuid column is present and indexed. If Sleven wants
+# uuid as the key, the 120 collisions are already enumerated by the C3
+# auditor and the change is a constraint plus a re-run.
+# ---------------------------------------------------------------------------
+
+
+class ShopItem(VerifiableMixin, Base):
+    """One buyable thing. Keyed by UEX's own item id, not by uuid - see above."""
+
+    __tablename__ = "shop_items"
+    __table_args__ = (
+        VerifiableMixin.confidence_check("shop_items"),
+        UniqueConstraint("uex_id", name="uq_shop_items_uex_id"),
+        Index(
+            "ix_shop_items_name_trgm", "name",
+            postgresql_using="gin", postgresql_ops={"name": "gin_trgm_ops"},
+        ),
+    )
+
+    uex_id: Mapped[int] = mapped_column(nullable=False)
+
+    # Indexed, NOT unique, NOT the key. 28% of rows have none and 120 values
+    # are shared by up to ten different items.
+    uuid: Mapped[str | None] = mapped_column(String(64), index=True)
+
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    category_id: Mapped[int | None] = mapped_column(
+        ForeignKey("item_categories.id"), index=True
+    )
+    # UEX ships the category and section as strings on the item too. Kept
+    # alongside the FK because they are what the source said, and because a
+    # row whose category id does not resolve still knows what it called itself.
+    category_name: Mapped[str | None] = mapped_column(String(150))
+    section: Mapped[str | None] = mapped_column(String(100), index=True)
+
+    company_name: Mapped[str | None] = mapped_column(String(255))
+    vehicle_name: Mapped[str | None] = mapped_column(String(255))
+    # A STRING, not an int. UEX sends "1", "" and "S3" in this field depending
+    # on the category, and coercing that to an integer would either crash or
+    # invent a number. §3.5 - store what was sent.
+    size: Mapped[str | None] = mapped_column(String(50))
+    slug: Mapped[str | None] = mapped_column(String(255), index=True)
+    url_store: Mapped[str | None] = mapped_column(Text)
+
+    source_date_modified: Mapped[datetime.datetime | None] = mapped_column(
+        index=True
+    )
+    detail: Mapped[dict | None] = mapped_column(JSONB)
+    last_verified_patch: Mapped[int | None] = mapped_column(
+        ForeignKey("patches.id")
+    )
+
+    category: Mapped["ItemCategory | None"] = relationship()
+    verified_patch: Mapped["Patch | None"] = relationship()
