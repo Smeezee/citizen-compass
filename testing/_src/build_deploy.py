@@ -1,4 +1,6 @@
 import base64, json, os, re, glob, sys
+import datetime as _dt
+import re as _re
 
 # ---------------------------------------------------------------------------
 # Repo-relative build. This script used to hardcode a cloud-sandbox path, which
@@ -385,6 +387,30 @@ layer = layer.replace(
   addEventListener('resize',size);""")
 
 # ---- 5. inject into the real site -----------------------------------------
+# ---- THE TESTING SITE SAYS IT IS THE TESTING SITE ---------------------------
+#
+# testing/_deploy carried the live site's version string verbatim, so both said
+# v0.3.9 and a week of work was invisible. Sleven read that as the loadout and
+# hardpoint work never having shipped - which is the worst possible reading, and
+# it was the honest one from what the page said.
+#
+# So the testing build stamps itself. DERIVED FROM THE CLOCK, not typed: a
+# hand-written build label is a version string with the same failure mode one
+# level down, and this one goes stale in a day rather than a month.
+_stamp = _dt.datetime.now(_dt.timezone.utc).strftime('%Y-%m-%d')
+_before = site
+site = _re.sub(r'(<title>Citizen Compass v[0-9.]+)(</title>)',
+               r'\1 - testing ' + _stamp + r'\2', site, count=1)
+site = _re.sub(r'(<span class="version">v[0-9.]+)(</span>)',
+               r'\1 <span style="opacity:.6;font-weight:400">testing '
+               + _stamp + r'</span>\2', site, count=1)
+if site == _before:
+    raise SystemExit(
+        'BUILD REFUSED: could not stamp the testing build - the version '
+        'markup in releases/latest.html changed shape. An unstamped '
+        'testing site is indistinguishable from the live one, which is '
+        'the defect this exists to prevent.')
+
 k = site.lower().rindex('</body>')
 out = site[:k] + '\n<!-- Citizen Compass portable concept build -->\n' + libs + layer + '\n' + site[k:]
 
