@@ -54,6 +54,11 @@ DEFAULT_ALLOWED_FILES = {
     "holo.html",
     # /loadout's real ship data, added 2026-08-13 with build_loadout_data.py.
     "loadout_data.gen.js",
+    # /find's price data, added 2026-08-20 with build_find_data.py. The page
+    # reads this instead of calling an API, so without it /find has nothing to
+    # search - and this guard, running standalone before a deploy, is the last
+    # thing that would notice.
+    "find_data.gen.js",
     "holo_data.gen.js",
     "stick-test.html",
     # The public collector download page, added 2026-08-15 with

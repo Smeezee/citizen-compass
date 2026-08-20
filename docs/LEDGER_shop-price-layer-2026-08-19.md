@@ -1572,3 +1572,47 @@ CONTROL  <sha>  checks/_verify_find_page.mjs, rewritten - 57 assertions, THE
     behaviour. There is no browser on this machine and none was installed
     (rule 7).
 
+H3  DONE  <sha>  THE BANNER IS OFF, AND IT CAME OFF THE ONLY WAY IT WAS EVER
+    ALLOWED TO: a fetch of the deployed URL that returned real rows.
+    G6 was BLOCKED on this three days running. It is unblocked because the
+    source changed, exactly as C1 predicted - not because Railway came back.
+    Railway was never asked. The deployed page now carries its own data.
+    THE SEQUENCE, in the order it happened, because the order is the evidence:
+      1. Dry run first. deploy_testing.ps1 -WhatIf. Its deploy guard REFUSED -
+         find_data.gen.js was an unknown file that would have been published.
+         Correct refusal: check_deploy_clean.py keeps a standalone allow-list
+         that does not derive from PAGES, by design, and it had not been told
+         about the new file. Added, with the reason, beside the other entries.
+      2. Second dry run: guard clean, 495 files, 350.7 MB, "Nothing was
+         uploaded".
+      3. THE -WhatIf NO-OP PROVEN FROM OUTSIDE, not read off the script.
+         Fetched /find_data.gen.js from the deployed origin: HTTP 404. The dry
+         run published nothing, and that is established by the served site
+         rather than by the flag's own claim (rule 12, the setup_checks_task
+         lesson).
+      4. Real deploy. 3 files changed, 492 already uploaded.
+      5. VERIFIED FROM THE SERVED BYTES. 26,657 price rows came back over
+         HTTPS, and the page's own script - sliced out of the SERVED html, run
+         against the SERVED data - rendered the Omnisky III Cannon at 6 named
+         terminals with prices in aUEC and the snapshot date on every row.
+      6. ONLY THEN the banner came off, and the page was deployed again.
+    WHAT REPLACED IT is not a reassurance, it is the provenance: a badge
+    reading "UEX player reports - snapshots taken 2026-08-01 and 2026-08-06",
+    WRITTEN FROM THE DATA FILE rather than typed into the markup, so it cannot
+    describe a snapshot the page is not holding. Its DEFAULT text - the one
+    sitting in the HTML, shown if the data file fails to load - is "price data
+    not loaded". The failure case makes no claim at all.
+    RULE 8 UNTOUCHED. The Fan Kit disclaimer and the trademark footer were not
+    edited, and both are asserted present in the SERVED bytes.
+
+CONTROL  <sha>  checks/_verify_find_deployed.mjs - 21 assertions, every one of
+    them against https://citizencompasstesting.citizencompass-contact.workers.dev
+    over the wire. Nothing is read off local disk and there is NO FALLBACK to a
+    local copy: if the fetch fails the harness reports NOT VERIFIED and exits
+    non-zero, because "we could not look" must never be recorded as "we looked
+    and it was fine".
+    It does not accept a 200 as evidence - a mockup returns 200 too. It loads
+    the served script, feeds it the served data, and requires a named item at a
+    named terminal with a price and a snapshot date. --self-test inverts every
+    expectation and exits 1.
+
