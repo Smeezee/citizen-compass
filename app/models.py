@@ -19,6 +19,11 @@ from app.database import Base
 CONFIDENCE_LEVELS = ("unverified", "low", "medium", "high", "verified")
 SHIP_STATUSES = ("purchasable", "pledge_only")
 
+# How a G5 commodity cross-reference link was established. Stored per row:
+# "the same words in a different order" is a weaker claim than "the same
+# name", and a reader who cannot tell them apart cannot judge either.
+XREF_MATCH_METHODS = ("exact_name", "token_set")
+
 # LIFECYCLE_STATUSES answers "does this still exist in the game?".
 # SHIP_STATUSES above answers "can you buy it?". They are ORTHOGONAL and must
 # never be merged: the Aurora Mk I was pledge_only AND is now retired, and
@@ -1064,3 +1069,94 @@ class ItemPrice(Base):
     shop_item: Mapped["ShopItem"] = relationship()
     terminal: Mapped["Terminal"] = relationship()
     snapshot: Mapped["Snapshot"] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# G5 / R1. THE COMMODITY CROSS-REFERENCE.
+#
+# UEX describes the same tradeable substance TWICE, in two id spaces that do
+# not know about each other:
+#
+#   * as an ITEM, in category 36 "Commodities" - 158 rows, and every one of
+#     them carries ZERO prices.
+#   * as a COMMODITY, from the commodities endpoint - 204 rows, 147 priced.
+#
+# Sleven ruled that the SITE shows the commodity import, because a price site
+# showing a commodity with no price is worse than not showing it. He also ruled
+# that BOTH STAY STORED. Nothing is deleted - standing preservation rule.
+#
+# WHY A TABLE AND NOT A COLUMN, AND CERTAINLY NOT A MERGE
+# -------------------------------------------------------
+# Merging the two rows would destroy the evidence that they DIFFER, which is
+# the one thing this pair is actually informative about: the item side calls it
+# "Aslarite (Raw)" and the commodity side calls it "Aslarite (Ore)", the item
+# side has no prices and the commodity side does. A merge would silently pick a
+# winner for both facts.
+#
+# A column on shop_items would have meant editing 158 existing rows to record a
+# relationship that is not a property of either of them. This table records the
+# LINK, leaves both rows exactly as UEX sent them, and can be dropped whole if
+# the ruling is reversed.
+#
+# ONE-TO-ONE, ENFORCED, AND DELIBERATELY STRICT
+# ----------------------------------------------
+# Both sides carry their own UNIQUE constraint, so this is a true 1:1 and not a
+# join table. Measured against today's data that is exactly right - no name on
+# either side maps to two rows on the other. If UEX ever produces an ambiguity,
+# the database REFUSES the second link rather than quietly recording two, which
+# is the failure this project wants: loud, at insert, naming the row.
+# ---------------------------------------------------------------------------
+
+
+class ShopItemCommodityXref(Base):
+    """One item-side row and one commodity-side row that are the same thing.
+
+    A link, not a merge. Neither shop_items row is modified by its existence.
+    """
+
+    __tablename__ = "shop_item_commodity_xref"
+    __table_args__ = (
+        # 1:1 from both directions. See the note above - an ambiguity must be
+        # refused at insert rather than stored twice and averaged later.
+        UniqueConstraint("item_shop_item_id",
+                         name="uq_shop_item_commodity_xref_item"),
+        UniqueConstraint("commodity_shop_item_id",
+                         name="uq_shop_item_commodity_xref_commodity"),
+        # A row cannot be its own counterpart. Cheap, and it is the one
+        # corruption a name-based matcher could produce all by itself if it
+        # were ever pointed at a single population instead of two.
+        CheckConstraint("item_shop_item_id <> commodity_shop_item_id",
+                        name="ck_shop_item_commodity_xref_distinct"),
+        CheckConstraint(f"match_method IN {XREF_MATCH_METHODS}",
+                        name="ck_shop_item_commodity_xref_method_valid"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    item_shop_item_id: Mapped[int] = mapped_column(
+        ForeignKey("shop_items.id"), nullable=False, index=True
+    )
+    commodity_shop_item_id: Mapped[int] = mapped_column(
+        ForeignKey("shop_items.id"), nullable=False, index=True
+    )
+
+    # HOW the link was established, stored per row rather than assumed.
+    #
+    # "exact_name"  - the two names are identical once case and punctuation
+    #                 are normalised. 156 of the 158.
+    # "token_set"   - the same words in a different order: "Raw Ice" against
+    #                 "Ice (Raw)". Exactly one row, and it is recorded as a
+    #                 weaker tier rather than folded in with the others so that
+    #                 dropping it is one WHERE clause and not an argument.
+    match_method: Mapped[str] = mapped_column(String(30), nullable=False)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        server_default=func.now(), nullable=False
+    )
+
+    item: Mapped["ShopItem"] = relationship(
+        foreign_keys=[item_shop_item_id]
+    )
+    commodity: Mapped["ShopItem"] = relationship(
+        foreign_keys=[commodity_shop_item_id]
+    )
