@@ -1034,3 +1034,435 @@ SWEEP  273ea61  Ran every control written in this session, back to back,
       TOTAL 193 assertions, all passing.
     E2 re-checked at the end of the run: the deployed API still answers 502
     on /health and on /api/v1/shop/search. Still BLOCKED, banner still on.
+
+=== ORDER 2: docs/ORDER_the-502-the-rulings-and-the-ship-panels-2026-08-19.md ===
+    Same run, same ledger, per that order's header. Items G1-G9.
+
+G1  DONE  a2005ad  An absent database URL no longer takes the app down.
+    app/database.py had `os.environ["RAILWAY_DATABASE_URL"]` as its fallback -
+    a KeyError AT IMPORT, so uvicorn never binds and every route 502s. Now the
+    app boots unconfigured, /health answers 200 with
+    {"status":"degraded","database":"unconfigured","checked":[both names]},
+    and every database-backed route answers 503 carrying that same reason.
+    One change did all the routes: get_db() raises DatabaseUnconfigured and
+    main.py registers a handler for it, so all 20-odd Depends(get_db) routes
+    inherit the 503 without being edited.
+    THREE ANSWERS, NEVER TWO: unconfigured / unreachable / ok. A wrong URL is
+    not made silent - it reads "unreachable" and names the host that failed.
+    /health issues SELECT 1 rather than inferring health from a string being
+    present in the environment, because a health check that does not touch the
+    database is a check that cannot fail.
+    DECIDED-BY-DEFAULT: /health returns HTTP 200 even when degraded. A non-200
+    is what platform health checks restart on, and a restart loop turns a
+    diagnosable degraded boot straight back into the uniform 502 this item
+    exists to remove. The status is in the body where something can read it.
+    Reverses in one line if Sleven wants 503.
+    Also: the URL password is redacted out of driver error strings before they
+    go over HTTP. /health is public and unauthenticated, and per L1 this run
+    has already leaked one credential.
+
+G2  DONE  a2005ad  One line at import to stderr naming which variable supplied
+    the URL, or that none did. Once, not per request.
+    DECIDED-BY-DEFAULT: stderr directly, not the logging module. At import time
+    the root logger has no handlers, so an INFO record goes nowhere - a startup
+    diagnostic that can be silently swallowed is precisely the failure G1
+    exists to remove. stderr rather than stdout so scripts that emit parseable
+    output on stdout stay clean; platform collectors capture both. One line to
+    swap if a logger is wanted.
+
+CONTROL  a2005ad  checks/_verify_degraded_database.py - 31 assertions, all
+    passing. Three real subprocesses, three environments, three REQUIRED
+    DIFFERENT answers:
+      CASE 1 neither variable set  -> boots (returncode 0), /health 200
+             degraded/unconfigured naming BOTH variables, db route 503 with
+             the same reason in its body, /docs still 200, ONE startup line.
+      CASE 2 real DATABASE_URL     -> /health ok, SELECT 1 came back, and the
+             db route returned REAL ROWS. This is the load-bearing one: a
+             degraded mode that never leaves degraded is worse than the crash.
+      CASE 3 dead host             -> degraded/UNREACHABLE, not unconfigured,
+             names the failing host, and does NOT echo the URL password back.
+    --self-test inverts every assertion and exits 1. The failure path has run.
+    NOTE ON THE CONTROL'S OWN TRAP, because it nearly was a silent success:
+    the subprocesses set the variables to "" rather than unsetting them.
+    app/database.py calls load_dotenv() and this repo HAS a .env with a real
+    DATABASE_URL, so unsetting would let dotenv put it back and CASE 1 would
+    have tested nothing while reporting green. Empty and unset take the
+    identical branch, and CASE 0 asserts that equivalence against a cleared
+    os.environ rather than assuming it.
+    C1'S POINT IS CONFIRMED AND WORTH RESTATING: the previous test simulated an
+    UNREACHABLE url. create_engine is lazy, so that case always booted fine and
+    never could have caught this. CASE 3 now asserts that boot explicitly, so
+    the distinction is written down in the harness rather than in a memory.
+
+G3  DONE  0b8e700  The Ares matcher runs both ways, and the 25 are asserted BY
+    NAME rather than by count.
+    THE FIX: the rule was directional - every word of the mount-data KEY had to
+    appear, in order, inside the MODEL name - so a key LONGER than the filename
+    was refused. "Ares Star Fighter Inferno" vs Ares_Inferno went looking for
+    "star" and "fighter" in a two-word name. Second pass added, run ONLY where
+    the first found nothing: the model name's words inside the key, SHORTEST key
+    winning (the mirror of longest winning in pass 1 - in both, the winner is
+    the candidate with the fewest words the other side did not account for).
+    WHY IT IS A FALLBACK AND NOT A WIDENING: loosening pass 1 would put every
+    currently-resolving ship back in play. Running pass 2 only where pass 1
+    found nothing makes the set of ships whose answer CAN change exactly the set
+    that matched nothing. Structural, not a hope.
+    THE ACCEPTANCE NUMBER DID NOT COME OUT AS 31/37 AND HERE IS WHY. Re-running
+    the build gave 35 placed / 8 refused / 25 skipped. That is NOT the matcher
+    over-reaching. Two things changed at once: the geometry directory had to be
+    regenerated (it is 30MB of derived vertex data, not in the repo, and the
+    previous run's copy was MISSING TWELVE MODELS - which is why twelve ships
+    were skipped for "no decoded geometry", a cause no matcher touches). All 235
+    models are now decoded via testing/_src/decode_glb_points.js.
+    So the acceptance was established by EXPERIMENT rather than by comparing
+    against a remembered number - checks/_verify_g3_matcher_delta.py runs the
+    SAME BUILD over the SAME GEOMETRY twice, once per matcher, and diffs:
+        bucket           pass 1    both   delta
+        placed               33      35      +2
+        skipped              27      25      -2
+        refused               8       8      +0
+        rule                 20      22      +2
+    gained = exactly {Ares_Inferno, Ares_Ion}; lost = nothing. THE MATCHER'S
+    CONTRIBUTION IS EXACTLY TWO. C1's "not 12" is satisfied and so is "not 27".
+    THE 8 REFUSED are the newly-decodable ships failing the SHAPE check with
+    measured errors - ATLS_GEO 0.51, Clipper 0.66, Defender 0.60, Eclipse 0.54,
+    Nova 0.37, Pulse and Pulse_LX 0.53, and Javelin for having no published
+    dimensions at all. That is the guard working on data it had never seen, not
+    a regression. They are reported, not placed.
+
+CONTROL  0b8e700  checks/_verify_hardpoint_join.py - 73 assertions, all passing
+    (was 46). What is new:
+      * The two Ares flipped from "must resolve to NOTHING" to "must resolve".
+        THAT ASSERTION WAS ALWAYS WRONG and the build's own docstring said so
+        in the same repo - it records that "Ares Inferno" and "Starfighter
+        Inferno" ARE the same ship. Flipped deliberately and noted, not quietly
+        relaxed.
+      * All 25 must-not-match ships named individually. Where the list comes
+        from, so it is checkable: 39 skipped = 12 "no decoded geometry" (a
+        different cause) + 27 name refusals; 27 - 2 Ares = 25.
+      * A whole-disk diff of old matcher vs new over all 235 models, requiring
+        every changed answer to have moved FROM NOTHING - pass 2 can never
+        override an answer pass 1 already gave.
+    checks/_verify_g3_matcher_delta.py - 8 assertions, all passing. Reports NOT
+    PERFORMED (exit 2) when CC_GEO_DIR is unset rather than passing quietly, and
+    restores all three build artifacts afterwards so an A/B cannot leave the
+    repo holding the losing arm of its own experiment.
+
+G3-FINDING  0b8e700  PASS 2 INDEPENDENTLY DERIVES 11 OF THE 13 HAND-WRITTEN E1
+    MAPPINGS - every Aurora, all three Hercules, the M50, the Mercury, the C8R
+    Pisces - AND AGREES WITH ALL ELEVEN. E1 still wins because the build checks
+    it first, so nothing about today's output depends on this.
+    NOT ACTED ON. Deleting E1 entries is not what G3 asked for, and a mapping
+    that agrees with the rule costs nothing while it agrees. But the rule now
+    covers most of what E1 was written for, and that is worth knowing before
+    anyone adds a fourteenth line by hand. The two it does NOT derive are
+    600i_Explorer (pass 1 already had it) and Khartu-Al (a capitalisation the
+    tokeniser already flattens) - so E1's remaining unique value is close to
+    zero. Sleven's call, not mine.
+
+G4  DONE  f9da271  C7 exists - the Stims conflict is now a CHECK rather than a
+    line in this ledger, per R3.
+    checks/shop_checks.py gains source_duplicate_check, registered in CHECKERS
+    as "shop_source_duplicate". It reads the LANDED SOURCE FILES, not the
+    database: by the time the rows reach item_prices the importer has already
+    resolved the duplicate, so no database-side checker could ever see this.
+    FIRES on a (item|commodity, terminal) pair listed more than once in ONE
+    file at DIFFERING prices. DOES NOT FIRE on a byte-identical repeat, and
+    that distinction is the whole design - four of the five repeats in the
+    08-06 commodity file are byte-identical, so flagging them would bury the
+    one that matters four deep. WARNING, never DEFECT: neither price is
+    knowably the wrong one.
+    ON REAL DATA RIGHT NOW: exactly one finding across every landed price file.
+      20260806T033315Z/commodities_prices_all.json  WARNING
+        'Stims' at 'HUR-L5' twice: buy 0 / sell 5800, buy 0 / sell 4900.
+      20260801T235530Z/items_prices_all.json        PASS  23,734 rows, 0 repeats
+    FLAG ONLY. It never resolves a conflict, never picks a price, never writes.
+
+CONTROL  f9da271  checks/_verify_source_duplicate_check.py - 22 assertions, all
+    passing; --self-test exits 1. Both halves per G4: a planted conflict fires
+    it once and reports BOTH prices; a planted byte-identical repeat does not
+    fire, and the PASS still SAYS the repeat was seen and dismissed rather than
+    pretending the file was clean.
+    THE MUST-NOT-FIRE CASES ARE THE LOAD-BEARING ONES, because the realistic
+    failure of a duplicate detector is not missing a conflict - it is calling
+    everything one:
+      * same commodity, two DIFFERENT terminals, different prices  -> silent
+        (that is the normal state of the universe)
+      * two different commodities at one terminal                  -> silent
+      * a repeat agreeing on buy/sell but differing on a rolling AVERAGE
+        -> silent. An average is not a price and S3.1 forbids showing one as
+        if it were, so a disagreement about one is not a conflict about
+        anything a visitor sees.
+    Also proven: it scans the ITEMS file and not only commodities; two
+    snapshots do not contaminate each other and the clean one is named clean;
+    a valid envelope whose `data` is null does not crash it; and NO SNAPSHOT
+    DIRECTORY reports NOT PERFORMED, never PASS - the landed snapshots are
+    gitignored, so on a fresh clone this checker sees nothing, and "saw
+    nothing" reporting PASS is exactly SILENT SUCCESS.
+    Separate file from _verify_shop_checks.py because C7 needs no database. It
+    plants files in a temp directory, so it still runs where postgres does not.
+
+G5  DONE  7146474  R1's commodity cross-reference exists. LINKED, NOT MERGED,
+    NOTHING DELETED.
+    New table shop_item_commodity_xref (migration d3115d32c70d, additive - one
+    new table, no column touched on shop_items, nothing dropped). A TABLE and
+    not a column because a link is not a property of either row; and not a
+    merge because collapsing the two would destroy the evidence they DIFFER,
+    which is the one thing this pair is informative about - the item side says
+    "Aslarite (Raw)" and the commodity side says "Aslarite (Ore)".
+    Backup taken first per rule 4: C:\cc-backup\20260819-220221, exit 0,
+    0 failures, bundle verified 42.4MB, dump 1982.2KB and RESTORE-TESTED. The
+    "232 ships, expected 254" warning is the pre-existing one from L3 - the
+    live database genuinely holds 232 and the expectation constant is stale.
+    MATCHED ON NAME, because there is nothing else: not one of the 204
+    commodities carries a uuid and the two id spaces COLLIDE rather than
+    correspond. Two tiers, recorded per row in match_method so dropping the
+    weaker one is a WHERE clause rather than an argument:
+        exact_name  156   identical once case and punctuation are normalised
+        token_set     1   the same words reordered: "Raw Ice" / "Ice (Raw)"
+    THE NUMBER R1 ASKED FOR - 157 of 158 linked, and THE ONE THAT DID NOT is:
+        Boron
+    That is the whole unmatched list. It is not a near-miss either: the
+    commodity side has no name containing "oron" anywhere, so Boron exists as a
+    category-36 item and does not exist as a commodity at all.
+    THE OTHER DIRECTION, since it answers a different question: 47 of the 204
+    commodities have NO item-side counterpart - Aphorite, Hadanite, the Kopion
+    Horns, the Luminalia and Year-of-the-X gift items, and 40 more.
+    AND THE POINT OF THE EXERCISE AS A NUMBER: 118 of the 157 links reach at
+    least one price row. That is what a category-36 item gains by being linked,
+    since not one of them carries a price of its own.
+    DECIDED-BY-DEFAULT: the token_set tier exists at all. "Raw Ice" and "Ice
+    (Raw)" are the same substance and a rule (same words, any order) catches it
+    without guessing, but it IS a weaker claim than an identical name, so it is
+    stored as a separate method rather than folded in. Reverses with
+    DELETE ... WHERE match_method='token_set' - or by ignoring it in a query,
+    which touches nothing at all.
+    NO FUZZY MATCHING BEYOND THOSE TWO RULES. A wrong link would put one
+    substance's prices under another substance's name, which is the same class
+    of error as a Gladius wearing a Hammerhead's hardpoints. Ambiguity would be
+    reported and NOT linked - same reasoning as the D2 409.
+
+CONTROL  7146474  checks/_verify_commodity_xref.py - 27 assertions, all
+    passing; --self-test exits 1.
+      * The matcher driven BOTH ways. The load-bearing negative is
+        "Aslarite (Raw)" vs "Aslarite (Ore)" under the TOKEN rule: if that ever
+        collapses, every raw ore inherits its refined twin's prices. Also
+        proven the rule is not collapsing everything to one key.
+      * All four constraints OBSERVED REFUSING, each naming the constraint that
+        must do the rejecting rather than settling for "an error was raised":
+        uq_..._item, uq_..._commodity, ck_..._distinct, ck_..._method_valid,
+        plus the foreign key. Two acceptance cases alongside, because every
+        constraint could be CHECK(false) and the refusals would still pass.
+      * R1's OWN REQUIREMENT, which is the half worth being careful about:
+        158 category-36 items and 204 commodities still counted afterwards,
+        every link pointing at one surviving ITEM and one surviving COMMODITY,
+        and the item side still carrying ZERO prices - the link copied nothing
+        across, which is what "link, do not merge" has to mean to be checkable.
+    THE --dry-run FLAG WAS PROVEN BY BEHAVIOUR, not by reading it: row count
+    before the dry run 0, after the dry run 0, after the real run 157.
+
+L4  NOTE  2026-08-19  RULE 3, AND I DID IT BEFORE I CAUGHT IT. The first draft
+    of _verify_commodity_xref.py ran `DELETE FROM shop_item_commodity_xref`
+    against the REAL database, inside a transaction it then rolled back, so the
+    unique constraints would collide with its own rows instead of production
+    ones. It rolled back correctly and no data was lost - verified, 157 links
+    still held afterwards.
+    It was still a hard-rule-3 violation. The rule says never DELETE FROM a
+    database this process did not create, and it makes NO exception for "inside
+    a transaction I meant to roll back" - a script that dies between the DELETE
+    and the rollback is exactly the accident the rule is written against.
+    REWRITTEN: the control now seeds its own four throwaway shop_items rows at
+    sentinel uex_ids and drives the constraints against those, the way
+    _verify_shop_schema_db.py already did. No DELETE remains anywhere in it.
+    Reported rather than quietly fixed, per rule 11.
+
+G6  BLOCKED  (no commit - nothing changed, deliberately)  The deployed API is
+    STILL 502. Fetched twice just now:
+        GET https://citizen-compass-production.up.railway.app/api/v1/shop/search?q=omnisky
+            -> HTTP 502 Bad Gateway, no body
+        GET https://citizen-compass-production.up.railway.app/health
+            -> HTTP 502 Bad Gateway, no body
+    THE BANNER STAYS ON. No real rows came back, so nothing is removed. Not on
+    a build, not on a deploy, not on a local server, not on a good feeling.
+    testing/_deploy/find.html line 92 still reads
+    "MOCKUP - prices and shops are invented" and I did not touch it.
+    Not retried through curl, a proxy, a cache or an archive - rule 9. Two
+    fetches, both 502, that is the answer.
+    WHAT WOULD UNBLOCK IT: a deploy of the current main to Railway. Note that
+    G1 CANNOT have fixed tonight's 502 by itself, because G1 is only in git -
+    the running service is still the old code. What G1 buys is that the NEXT
+    time this happens, /health answers instead of 502-ing, and says whether the
+    fault is an absent variable or an unreachable database. Tonight it cannot
+    tell us anything, because the process that would answer is the one that is
+    not running.
+    Which also means the two candidates from the order's S2 are still both
+    live: a missing DATABASE_URL, or the service simply not running. I have no
+    Railway access and did not look for any.
+
+G7  DONE  a521689  THE COLLECTOR BUILDS, AND THE BYTE SAYS 2.
+    `build.ps1 -Both` exit 0. Both binaries built clean off 9271f6d's 1,073
+    lines of Win32 registry and shortcut code, which nobody had compiled.
+      collector.exe          PE subsystem 2  WINDOWS_GUI (no console)
+      collector-master.exe   PE subsystem 2  WINDOWS_GUI (no console)
+    READ BY A SECOND READER, NOT TAKEN FROM THE BUILD SCRIPT. build.ps1 already
+    reads the byte and refuses to finish if it is not 2 - right design, and it
+    is why this cannot ship again - but that is the build script grading its own
+    homework, and the whole history of this defect is a claim about a build flag
+    nobody checked against the artifact. checks/_verify_pe_subsystem.py reads
+    the bytes again in a different language.
+    AND THE READER IS PROVEN. It builds a deliberately CONSOLE binary into a
+    temp directory (outside the repo, never installed, never released) and
+    requires the reader to return 3. A reader that returned 2 for everything
+    would have "confirmed" every binary ever built, including the two broken
+    ones that shipped.
+    -selftest ON collector.exe: PASS. 0 failures across 584 checks.
+    ONE THING WORTH KNOWING BEFORE SOMEBODY MISREADS IT, because I did for
+    about a minute: running `collector.exe -selftest` from a shell prints
+    NOTHING and exits 0. That is not a silent success - a subsystem-2 binary
+    has no console, so the selftest writes collector-selftest-results.txt
+    instead, 70KB of it, ending "selftest PASS". The empty terminal is the
+    correct behaviour of the fix, not a symptom.
+    NOTHING RELEASED, NOTHING INSTALLED, NOTHING PACKAGED. The previous
+    collector.exe and collector-master.exe were COPIED ASIDE to
+    *.pre-G7-20260819 before the rebuild rather than overwritten - rule 1
+    applies to a build output as much as to anything else.
+
+G7-FINDING  a521689  FOUR SELFTEST CHECKS ARE INTERMITTENT, AND AN INTERMITTENT
+    CHECK IS NOT ONE. The console-subsystem control binary failed 5 checks on
+    its FIRST run and 1 on its second. The one that repeats is correct and
+    welcome: "CONSOLE: this binary is a GUI build (PE subsystem 2)" fails on a
+    console build, which is the selftest's own subsystem guard firing on
+    demand - a third independent confirmation that the guard works.
+    The other four did not recur:
+      staleness warning fires on a dead log
+      staleness warning names the fix
+      staleness warns once per stall, not every poll   (NOT PERFORMED)
+      a log that starts growing again is NOT reported stale  (NOT PERFORMED)
+    They pass in the real collector.exe and passed on the control's second run,
+    so this is timing sensitivity in the staleness fixture, not a subsystem
+    difference - nothing in that code path reads the subsystem. Reported, not
+    fixed: touching the collector is explicitly out of scope for this run, and
+    a check that passes or fails depending on how busy the machine is cannot be
+    trusted in either direction. Worth an order of its own.
+    A third run of the control selftest HUNG and was killed at 10 minutes,
+    which may be the same fixture. Recorded as observed; not investigated,
+    same scope reason.
+
+G8  DONE  e78a71e  The Loadout panel stops saying "awaiting data" and the text
+    above it stops being false.
+    FIRST, A CORRECTION TO THE ORDER, and it is the same one F3 already made:
+    there is ONE cc-pending panel, not two. G8's wording ("the two cc-pending
+    panels") carried the original miscount forward. The `.cc-pending` CSS rule
+    is a style, not a panel.
+    SECOND, THE ORDER'S PREMISE WAS NOT QUITE RIGHT EITHER. G8 says "there is
+    now an API to give it to them - wire them." There was not. F3's finding was
+    that the hardpoint SLOTS were not in PostgreSQL at all - the components
+    are, the slots were two derived JSON files on disk, and app/models.py had
+    no hardpoint table of any kind. Wiring the shop API to this panel would
+    have filled nothing. So the work was the whole chain, in the order F3 said:
+    import, then endpoint, then panel, then text.
+    WHAT NOW EXISTS:
+      ship_hardpoints          2,195 slots across 202 models
+      ship_hardpoint_coverage    235 models - 198 placed, 25 skipped,
+                                 8 refused, 4 present-but-mountless
+      GET /api/v1/ships/models/{model}/hardpoints
+    Migration 71d65b7b4026, additive: two new tables, nothing dropped, no
+    column added to anything that existed. Backup from G5 still current - no
+    further destructive step was taken.
+    THE COVERAGE TABLE IS THE HONEST HALF. Without it "we have not measured
+    this hull" and "this hull has no mounts" are the same blank panel, and
+    showing the same nothing for both is the polite version of making something
+    up. Every absence carries the build's OWN reason, verbatim, so the panel
+    can say why it is empty.
+    KEYED BY MODEL, NOT BY SHIP. The positions were measured off a mesh; ships
+    share meshes (that is the whole shared-hulls ruling); and the page already
+    resolves ship -> model to load the 3D view. It asks with the key it is
+    already holding, so NO new ship-to-model matching is invented anywhere.
+    THIS IS NOT THE LOADOUT SYSTEM, and I checked before building rather than
+    after. ARCHITECTURE_DECISIONS defers Priority 9 - specifically
+    "compatibility rule placement" - deliberately. Nothing here expresses a
+    compatibility rule and no slot carries a component FK. The locked decision
+    says such a reference must point at the components BASE table's primary
+    key; this shape takes that as an added column, not a rewrite.
+    THREE ANSWERS, AND THEY STAY THREE: 200 with slots / 200 with none plus a
+    reason / 404 for a model nobody has heard of. Collapsing the middle one
+    into either neighbour is the entire failure the endpoint exists to avoid -
+    a 404 for "no data" tells the page the ship does not exist, and a bare
+    empty 200 gives it nothing to say.
+    EDITED IN THE SOURCE, per rule 14: testing/_src/_layer.src.html, then
+    rebuilt through build_deploy.py. The build's own gates passed, including
+    its inline-JS parse of all 12 blocks and its deploy guard. testing/_deploy
+    is gitignored so the built page is not in the commit - re-run the build.
+
+CONTROL  e78a71e  checks/_verify_ship_hardpoint_panel.mjs - 16 assertions
+    against a REAL running API, driving the G8 block sliced VERBATIM out of the
+    BUILT page rather than a re-implementation.
+    G8'S NAMED CONTROL, both halves of it:
+      Kraken (no slot data) -> "No hardpoint data for this hull - neither this
+      model's name nor any mount-data key contains the other's words in order."
+      A sentence, carrying the build's own reason. NOT a spinner: the loading
+      message is asserted GONE. NOT invented values: asserted against
+      awaiting/pending/coming-soon/TBD/em-dash filler.
+    And the distinctions that matter next to it:
+      an UNKNOWN model reads differently from a known-but-unmeasured one
+      a ship with no model folder says that, rather than querying for ''
+      an UNREACHABLE API resolves to a sentence naming the API - not
+        hypothetical, the deployed API has been 502 all evening
+      no mount renders as "S0" - an unstated size is omitted, never zeroed
+    STATED LIMIT, not glossed: this proves the panel's LOGIC and the HTML it
+    produces. It does not prove layout, CSS, or a browser's CORS enforcement.
+    Same limit and same reason as _verify_find_page.mjs - no browser on this
+    machine and nothing was installed to get one (rule 7).
+
+G9  DONE  (ledger commit)  SWEEP - every control in checks/ re-run back to
+    back, 31 of them, WITH a live API server up so the HTTP and page controls
+    ran for real rather than skipping.
+    31 CONTROLS RUN, 0 NON-ZERO. Full list, in run order:
+      _verify_absence_pass                 22 assertions
+      _verify_broken_checker_end_to_end    12
+      _verify_commodity_xref               27   (G5, new)
+      _verify_degraded_database            31   (G1/G2, new)
+      _verify_find_page.mjs                30   against the live server
+      _verify_findings_store               36
+      _verify_fingerprint_history          PASSED
+      _verify_g3_matcher_delta              8   (G3, new)
+      _verify_hardpoint_alignment          PASSED
+      _verify_hardpoint_join               73   (G3, was 46)
+      _verify_items_import_b5              10
+      _verify_lifecycle                    PASSED
+      _verify_location_hierarchy           31
+      _verify_location_hierarchy_db         8
+      _verify_missing_encoding             19   (7 bad caught, 11 good ignored)
+      _verify_never_delete_guard           15
+      _verify_node_checks                  PASSED
+      _verify_pe_subsystem                  3   (G7, new)
+      _verify_pull_and_clear               PASSED
+      _verify_schema_checks                PASSED
+      _verify_ship_configurations          PASSED
+      _verify_ship_hardpoint_panel.mjs     16   (G8, new) against the server
+      _verify_shop_api                     36   against a real HTTP server
+      _verify_shop_checks                  24
+      _verify_shop_importers               15
+      _verify_shop_schema_db               39   (17 refusals, 16 acceptances)
+      _verify_snapshot_shape               PASSED
+      _verify_source_checks                24
+      _verify_source_duplicate_check       22   (G4, new)
+      _verify_testing_stamp                PASSED
+      _verify_unreleased_content           PASSED
+    G1 CHANGED THE ENGINE - app/database.py - which every check that opens a
+    session imports. That is exactly the change that breaks things far away,
+    and it is why this sweep mattered more than usual. Nothing broke. The
+    degraded path is inert when a URL is present: engine, SessionLocal and the
+    preservation guard are all constructed exactly as before.
+    AND THE SWEEP ITSELF WAS PROVEN NOT TO BE A MASS SILENT SUCCESS. Every
+    harness carrying a self-test was run in that mode:
+      _verify_degraded_database     --self-test  exit 1  (assertions inverted)
+      _verify_source_duplicate_check --self-test exit 1
+      _verify_commodity_xref        --self-test  exit 1
+      _verify_shop_schema_db        --self-test  exit 0 - DIFFERENT CONVENTION,
+        not a defect: that one plants three specific harness defects (a refusal
+        the database accepts, a refusal by the WRONG constraint, an acceptance
+        the database rejects) and exits 0 when it CATCHES all three. Its output
+        says so in as many words. Noted rather than "fixed" - it is arguably
+        the better design, since it names the failure modes instead of flipping
+        every boolean.
