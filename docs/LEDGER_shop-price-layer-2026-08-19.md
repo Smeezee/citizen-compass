@@ -2024,3 +2024,97 @@ H8-NOT-DONE  Deliberately: NO RELEASE CUT, NOTHING INSTALLED, AND THE REPO'S
     therefore now behind this source, and that is Sleven's call to close, not
     mine.
 
+H9  DONE  <sha>  SWEEP. 36 controls, 36 ok, 0 failed, 0 skipped, 0 NOT RUN,
+    in 180 seconds - WITH a live API server up so the HTTP and page controls
+    ran for real, and WITH the deployed control included so the live site was
+    checked too.
+    H7 changed app/preservation.py, which every session that opens a database
+    connection inherits. That is exactly the change that breaks things far
+    away, and it is why this sweep mattered more than the last one. One thing
+    broke, it was a control asking the old question, and it is written up under
+    H7 rather than buried here.
+
+    THE SWEEP IS NOW A FILE, NOT A LIST SOMEBODY TYPED. checks/run_all_controls.py.
+    G9's sweep was 31 controls run by hand and the list of what exists lived in
+    the ledger entry afterwards - a list nobody can re-derive, and one a control
+    added next week is silently absent from. This DISCOVERS every
+    checks/_verify_*.py and _verify_*.mjs on disk. A control added tomorrow is
+    swept tomorrow with nobody having remembered anything.
+    That is not a tidy-up. It is the same defect class as the allowlist H7 just
+    inverted: a register that has to be maintained by hand fails silently and
+    is discovered afterwards.
+
+    AND THE SWEEP ITSELF HAS TO BE ABLE TO REPORT A FAILURE. It did, twice,
+    for real, before either was fixed:
+      _verify_g3_matcher_delta.py exited 2 - "NOT PERFORMED, CC_GEO_DIR is not
+      set". Correct refusal, and the sweep counted it AGAINST the run rather
+      than shrugging. Answered properly rather than excused: 235 models decoded
+      through testing/_src/decode_glb_points.js and the control re-run for
+      real. It passes, and it still says the two ships the second pass gains
+      are the two Ares, by name.
+      _verify_shop_schema_db.py --self-test exited 0, which my blanket "every
+      self-test must exit non-zero" read as a failure. It is not: that harness
+      plants three specific defects and exits 0 when it CATCHES all three, and
+      G9 already noted the convention. Recorded in the sweep with its reason -
+      and NOT taken on trust: a zero exit is only accepted when the output
+      actually shows all three planted defects being caught, so a self-test
+      that had quietly stopped testing anything would still be reported.
+    AND AN EMPTY SWEEP IS A FAILED SWEEP. Without that, a discover() returning
+    nothing - a renamed directory, a changed prefix, a typo in --only - prints
+    "0 ok, 0 failed" and exits 0. That is the shape of every silent success in
+    this project's history. Proven by running it with a filter that matches
+    nothing: exit 1, "NOTHING WAS SWEPT".
+
+    THE 36, in run order. Six are new this run:
+      _verify_absence_pass              22 assertions
+      _verify_broken_checker_end_to_end
+      _verify_commodity_xref            27
+      _verify_degraded_database         31
+      _verify_find_build_step           21   (H6, new)
+      _verify_find_data                 34   (H1, new)
+      _verify_find_deployed.mjs         27   (H3/H5, new) against the LIVE site
+      _verify_find_page.mjs             56   (H2, rewritten) network blocked
+      _verify_find_wording.mjs          29   (H4, new)
+      _verify_findings_store            36
+      _verify_fingerprint_history       PASSED
+      _verify_g3_matcher_delta           8   with geometry, for real
+      _verify_hardpoint_alignment       PASSED
+      _verify_hardpoint_join            PASSED
+      _verify_items_import_b5           10
+      _verify_lifecycle                 PASSED
+      _verify_location_hierarchy        31
+      _verify_location_hierarchy_db      8
+      _verify_missing_encoding          19   (7 bad caught, 11 good ignored)
+      _verify_never_delete_guard        16   (H7, one assertion rewritten)
+      _verify_node_checks               PASSED
+      _verify_pe_subsystem               3
+      _verify_preservation_inversion    45   (H7, new)
+      _verify_pull_and_clear            PASSED
+      _verify_schema_checks             PASSED
+      _verify_ship_configurations       PASSED
+      _verify_ship_hardpoint_panel.mjs  16   against the live server
+      _verify_shop_api                  36   against a real HTTP server
+      _verify_shop_checks               24
+      _verify_shop_importers            15
+      _verify_shop_schema_db            39   (17 refusals, 16 acceptances)
+      _verify_snapshot_shape            14
+      _verify_source_checks             24
+      _verify_source_duplicate_check    22
+      _verify_testing_stamp             PASSED
+      _verify_unreleased_content        19
+
+    AND THE INVERSION PASS: every control carrying --self-test was run in that
+    mode and required to FAIL. 10 ok, 0 failed, 26 skipped for having no
+    --self-test mode. A suite of 36 green controls whose failure paths have
+    never executed is 36 untested gates wearing a reassuring name.
+
+    THE AUDITOR SUITE TOO. run_checks.py --group db: 13 checkers ok, 0 errored.
+      schema_ownership                all 28 tables claimed by exactly one
+                                      authority (24 in models.py, 3 externally
+                                      owned, 1 alembic-internal)
+      preservation_classification     PASS - 24 preserved, 4 ephemeral
+    WITH ONE NICE MOMENT WORTH RECORDING: checker_health flagged
+    preservation_classification as "never-reported - either it never ran, or it
+    runs and says nothing" on the first pass, then cleared once it produced a
+    finding. The auditor noticed a new checker before I told it about one.
+
