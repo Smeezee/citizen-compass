@@ -1466,3 +1466,58 @@ G9  DONE  (ledger commit)  SWEEP - every control in checks/ re-run back to
         says so in as many words. Noted rather than "fixed" - it is arguably
         the better design, since it names the failure modes instead of flipping
         every boolean.
+
+---
+
+# H RUN - docs/ORDER_generated-price-data-and-the-guard-2026-08-20.md
+# Same ledger, per the order. Appended below the G run, nothing above rewritten.
+
+H1  DONE  <sha>  THE GENERATOR. build_find_data.py reads PostgreSQL and writes
+    ONE file, testing/_src/find_data.gen.js, in the same style and place as
+    holo_data.gen.js and loadout_data.gen.js.
+    THE NUMBER THE ORDER ASKED FOR: 969.8 KB raw -> 188.7 KB GZIPPED.
+    Under the 250 KB ceiling, and 18% over C1's measured 160 KB. The miss is
+    explained rather than waved at, and it is not a shape change:
+      * C1 measured 23,734 price rows. The database holds 26,657 - the extra
+        2,923 are the commodity prices imported at B6 and cross-referenced at
+        G5, which did not exist when C1 measured.
+      * Every price row carries its SNAPSHOT INDEX, per R6. C1's stated row
+        shape was (terminal, buy, sell).
+      * Every terminal carries its resolved_path, so the page can name a place
+        without a second lookup.
+    I DID NOT SHARD IT. One file, as ruled.
+    IT WENT OVER FIRST, AND I MEASURED RATHER THAN GUESSED WHY. The first
+    render was 333.5 KB gzipped - a 108% miss, which by the order's own test
+    means the shape changed, and it had: I had added the item UUID, which is
+    not in H1's field list. 5,566 uuids of random hex are INCOMPRESSIBLE BY
+    CONSTRUCTION and cost 138 KB gzipped on their own - 80% of the final file
+    for a field no route uses. Every link on the page is keyed on
+    (source_kind, uex_id), which is the actual database key, and the API still
+    serves the uuid. Dropped from the file, and the docstring records the
+    measurement so the next person does not re-add it and re-discover this.
+    The second trim is not a trim at all: UEX's per-row last-modified date is
+    127 distinct values across 26,657 rows, so the row carries an index into a
+    date table instead of a 12-byte string. Same fact, a fifth of the bytes.
+    NO GENERATION TIMESTAMP. Nothing in the output is read from a clock, so two
+    runs against an unchanged database are byte-identical - that is H6's
+    negative half and it is asserted on every run by --verify-stable, not left
+    to be noticed a year later in a churning diff.
+
+CONTROL  <sha>  checks/_verify_find_data.py - 34 assertions, and every gate is
+    run against something that MUST fail it.
+    H1'S NAMED CONTROL is "row counts in the file equal row counts in the
+    database. Assert it." It is asserted, and then it is BROKEN ON PURPOSE
+    three ways - one price row removed, one item removed, one terminal removed -
+    and required to catch each and to NAME the table it caught. The count is
+    taken by walking the emitted structure, not by reading back the number the
+    collector remembered, so it cannot pass by comparing a variable with
+    itself.
+    THE SIZE CEILING IS PROVEN THE SAME WAY: run with --max-gzip-kb 1, the
+    generator must refuse, must say TOO BIG, must report the actual number, and
+    must have written NOTHING. A ceiling that has never fired is a number in a
+    comment.
+    THE STALENESS GATE TOO: a file on disk that does not match the database is
+    caught, and so is a file that is absent entirely - reported as STALE rather
+    than crashing on the open.
+    --self-test inverts every expectation and exits 1.
+
