@@ -797,6 +797,52 @@ type autoDeps struct {
 	// be tested in milliseconds instead of in minutes.
 	now func() time.Time
 
+	// pollNow is a TEST-ONLY second reason to wake, and it acknowledges.
+	//
+	// The staleness and heartbeat fixtures drive this loop with a fake clock.
+	// fakeClock.Advance sets a variable; it notifies nothing and wakes nothing,
+	// so the loop only discovers that five fake minutes have passed the next
+	// time its REAL ticker fires. The fixture used to bridge that with a
+	// four-second wall-clock wait, which is a race - and it lost that race
+	// roughly one run in five on an idle machine, measured, before this
+	// existed.
+	//
+	// A poll requested through here carries a channel that the loop CLOSES once
+	// that poll's body has finished. So the fixture can say "advance the clock,
+	// run one poll, and tell me when it is done" instead of advancing a
+	// variable and hoping. No assertion then depends on how many real seconds
+	// elapsed.
+	//
+	// Nil in production, and a nil channel blocks forever in a select, so this
+	// case simply is not there when nobody injected one. It adds no branch to
+	// the running collector beyond one more select arm that never fires.
+	pollNow <-chan chan struct{}
+
+	// sabotage deliberately BREAKS the staleness bookkeeping. Test-only, and it
+	// is here rather than simulated because of hard rule 12: a check that has
+	// never been observed failing is not known to work, and the two negative
+	// staleness checks - "warns once per stall" and "growth clears the
+	// warning" - had never been observed failing on demand.
+	//
+	// There is no way to break either of those from outside the loop. The
+	// alternative was a fixture that feeds its own assertion a fake log and
+	// calls that a control, which proves the ASSERTION can fail and says
+	// nothing about the loop. This proves the loop.
+	//
+	// Zero value is sabotageNone, so production gets exactly the behaviour it
+	// had before this field existed. The selftest asserts that default.
+	sabotage stalenessSabotage
+
+	// stalenessAfter overrides the package constant, for tests only.
+	//
+	// It exists so a control can BREAK the staleness warning on demand - set it
+	// absurdly high and every staleness check must fail. A check that has never
+	// been observed failing is not known to work (hard rule 12), and there is
+	// no other way to break this one from outside without editing the loop.
+	//
+	// Zero means the constant, which is what production always gets.
+	stalenessAfter time.Duration
+
 	// onLogLine receives every appended Game.log line as it is written, so the
 	// dataset is current during play rather than at exit. See logTailer.onLine.
 	onLogLine func(string)
@@ -854,6 +900,32 @@ const heartbeatEvery = 3 * time.Minute
 // cause. Watching a dead file should not look like a quiet game.
 const stalenessAfter = 5 * time.Minute
 
+// stalenessSabotage names the ways the staleness bookkeeping can be broken on
+// purpose, so the checks that exist to catch each one can be seen catching it.
+// Never set outside a selftest. See autoDeps.sabotage.
+type stalenessSabotage int
+
+const (
+	// sabotageNone is the zero value and the only thing production ever uses.
+	sabotageNone stalenessSabotage = iota
+	// sabotageWarnEveryPoll drops the warn-once suppression, so a stalled log
+	// is reported on every single poll. "warns once per stall" must fail.
+	sabotageWarnEveryPoll
+	// sabotageNeverReset clears the warned flag on growth but NOT the staleness
+	// clock, so the loop re-warns about a file that has started working again.
+	// "a log that starts growing again is NOT reported stale" must fail.
+	//
+	// WHY THAT SHAPE AND NOT "SKIP THE WHOLE RESET". Skipping both leaves
+	// staleWarned latched at true, so the loop stays silent, the count never
+	// moves, and the check PASSES - which is what the first version of this
+	// control did, and it is worth writing down: that check cannot detect a
+	// broken reset on its own. It detects a reset that clears the flag without
+	// clearing the clock, which is the version of this bug that produces a
+	// visible symptom - a collector complaining every poll about a log that is
+	// moving.
+	sabotageNeverReset
+)
+
 // runAuto is the unattended loop.
 //
 // It is written to SURVIVE. Every recoverable problem - game not running, log
@@ -896,6 +968,13 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 	} else {
 		deps.logf("startup: watching %s (%s)", p, how)
 		reportedPath = p
+	}
+
+	// The staleness window. The constant unless a test overrode it - see
+	// autoDeps.stalenessAfter for why that override exists.
+	staleWindow := deps.stalenessAfter
+	if staleWindow <= 0 {
+		staleWindow = stalenessAfter
 	}
 
 	// Heartbeat and staleness bookkeeping.
@@ -941,11 +1020,29 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 	}
 	defer stopBurstTick()
 
+	// pendingAck belongs to the poll that is currently being processed, and it
+	// is closed at the TOP of the next iteration - which is precisely the
+	// moment that poll's body has finished, including every `continue` path
+	// through it. Closing it at the bottom of the body would miss those, and a
+	// "poll complete" signal that skips the early-exit paths is worse than
+	// none: a fixture would wait for a signal that never comes.
+	var pendingAck chan struct{}
+
 	for {
+		if pendingAck != nil {
+			close(pendingAck)
+			pendingAck = nil
+		}
+
 		select {
 		case <-stop:
 			deps.logf("auto mode stopping")
 			return nil
+
+		case ack := <-deps.pollNow:
+			// Test-only. See autoDeps.pollNow. Nil in production, so this arm
+			// never fires there.
+			pendingAck = ack
 
 		case via := <-deps.hotkeys:
 			// A human asked for THIS frame. It deliberately bypasses the
@@ -1172,13 +1269,21 @@ func runAuto(cfg autoConfig, logPath string, deps autoDeps, stop <-chan struct{}
 		// five minutes would bury the log it is trying to make readable.
 		if tailer.off != lastSize {
 			lastSize = tailer.off
-			lastGrowth = now()
+			// deps.sabotage is sabotageNone everywhere except in the selftest
+			// controls that have to watch these checks fail. Under
+			// sabotageNeverReset the WARNED FLAG still clears but the CLOCK
+			// does not - see the constant's comment for why that, and not
+			// "skip the whole branch", is the failure worth reproducing.
+			if deps.sabotage != sabotageNeverReset {
+				lastGrowth = now()
+			}
 			staleWarned = false
-		} else if !staleWarned && now().Sub(lastGrowth) >= stalenessAfter {
+		} else if (!staleWarned || deps.sabotage == sabotageWarnEveryPoll) &&
+			now().Sub(lastGrowth) >= staleWindow {
 			deps.logf("WARNING: %s has not grown in %s while a game window is open. "+
 				"This is usually the wrong install - if the session is on PTU or EPTU, "+
 				"start with --gamelog pointing at that Game.log.",
-				lastLogPath, stalenessAfter)
+				lastLogPath, staleWindow)
 			staleWarned = true
 		}
 

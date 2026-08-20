@@ -999,6 +999,43 @@ func containsFloat(xs []float64, v float64) bool {
 // restores it in a defer.
 var mineTargets = MineTargets
 
+// isolateArchiveForSelftest stops `-selftest` reading the operator's real Star
+// Citizen logs. Returns the restore func.
+//
+// FOUND 2026-08-20, chasing the ten-minute selftest "hang" recorded in section
+// 5 of docs/ORDER_collector-staleness-selftest-flake-2026-08-20.md. It was not
+// a deadlock and it was not the staleness fixture. Two fixtures reached
+// MineAll without stubbing this variable:
+//
+//	runMineSchemaSelftest        MineAll x3, to test a schema-version guard
+//	runSendIncludesCapturesSelftest -> buildExport -> MineAll, by design
+//
+// mineTargets() scans C:, D:, E: and F: for every Game.log and every file in
+// every logbackups folder. On this machine that is 243 files and 208 MB, and
+// the selftest read all of it. Measured back to back on the same machine:
+// 61ms with this isolation, over 240 SECONDS without it.
+//
+// SO IT WAS NEVER A FLAKE. It is unbounded work whose duration is proportional
+// to how much the person has played, which means it gets slower every session
+// and eventually crosses whoever is watching's patience. "Ran fine twice, hung
+// the third time" is what that looks like from outside.
+//
+// IT IS DONE ONCE, AT THE TOP OF THE SELFTEST, NOT PER FIXTURE. Two fixtures
+// had this defect and the second was only found because the first was fixed.
+// A rule that depends on every future fixture author remembering to stub a
+// package variable is a convention; this is the constraint. A fixture that
+// genuinely wants targets sets them itself, deliberately, and that shows up in
+// a diff.
+//
+// AND IT IS NOT ONLY ABOUT SPEED. A selftest that reads a person's entire
+// Star Citizen log archive is a surprise nobody asked for, whatever it does
+// with the contents.
+func isolateArchiveForSelftest() func() {
+	saved := mineTargets
+	mineTargets = func() []string { return nil }
+	return func() { mineTargets = saved }
+}
+
 func MineTargets() []string {
 	var out []string
 	seen := map[string]bool{}

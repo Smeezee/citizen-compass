@@ -23,6 +23,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -100,6 +101,11 @@ func runInstallIDSelftest(check func(name string, ok bool, detail string)) {
 }
 
 func runMineSchemaSelftest(check func(name string, ok bool, detail string)) {
+	// This fixture calls MineAll three times. That is safe ONLY because the
+	// selftest runner isolates the log archive for the whole run - see
+	// isolateArchiveForSelftest in gamelog_mine.go, and read its comment before
+	// changing anything here. Unisolated, these three calls read 208 MB of the
+	// operator's real logs and this fixture alone takes over four minutes.
 	tmp, err := os.MkdirTemp("", "mineschema-")
 	if err != nil {
 		check("schema: temp dir", false, err.Error())
@@ -266,4 +272,57 @@ func itoaSmall(n int) string {
 		return "-" + string(b)
 	}
 	return string(b)
+}
+
+// runSelftestArchiveIsolationSelftest proves `-selftest` does not read the
+// operator's real Star Citizen logs.
+//
+// WHY THIS EXISTS. Section 5 of the flake order recorded a selftest run that
+// produced no output and was killed at ten minutes. It was not a deadlock and
+// it was not the staleness fixture: two fixtures reached MineAll, which asks
+// mineTargets() for every Game.log and every logbackups file on four drives.
+// On this machine that is 243 files and 208 MB. Measured back to back:
+// 61ms isolated, over 240 SECONDS not.
+//
+// So this is a permanent check rather than a fixed line of code. It gets slower
+// every session the operator plays, which means it degrades silently and looks
+// like a hang long before anyone connects the two. And a selftest that reads a
+// person's whole log archive is a surprise nobody asked for, whatever it does
+// with the contents.
+//
+// PROVEN IN BOTH DIRECTIONS, because a check that cannot fail is not a check:
+// the isolation is lifted and mineTargets() must come back with real files,
+// then reinstated and it must come back empty. If this machine has no Star
+// Citizen logs at all the first half cannot be performed, and it says so
+// rather than passing.
+func runSelftestArchiveIsolationSelftest(check func(name string, ok bool, detail string)) {
+	// The selftest runner already installed the isolation. Lift it to see what
+	// is really out there, then put it back - by construction, not by trusting
+	// this function to be tidy.
+	restore := func() func() {
+		saved := mineTargets
+		mineTargets = MineTargets
+		return func() { mineTargets = saved }
+	}()
+
+	real := len(mineTargets())
+	restore()
+
+	isolated := len(mineTargets())
+
+	if real == 0 {
+		check("archive isolation: real log files exist to isolate FROM", false,
+			"NOT PERFORMED - this machine has no Star Citizen logs, so an "+
+				"empty result proves nothing about the isolation")
+	} else {
+		check("archive isolation: real log files exist to isolate FROM", true,
+			fmt.Sprintf("%d file(s) on disk - without isolation the selftest "+
+				"reads every one of them, which is what the ten-minute hang was",
+				real))
+	}
+
+	check("archive isolation: the selftest sees NONE of them",
+		isolated == 0,
+		fmt.Sprintf("mineTargets() returns %d file(s) during the selftest "+
+			"(want 0; %d exist on this machine)", isolated, real))
 }

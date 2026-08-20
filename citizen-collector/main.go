@@ -419,6 +419,19 @@ func lookupFlagExists(name string) bool {
 
 func selftest(outDir string) int {
 	fmt.Printf("citizen-collector %s (%s) selftest\n", Version, BuildVariant)
+	// THE OPERATOR'S LOG ARCHIVE IS OFF LIMITS FOR THE WHOLE RUN.
+	//
+	// Two fixtures reached MineAll and therefore mineTargets(), which scans
+	// four drives for every Game.log and every logbackups file - 243 files and
+	// 208 MB on this machine. That, and nothing else, is what the ten-minute
+	// selftest "hang" was. Read isolateArchiveForSelftest's comment in
+	// gamelog_mine.go before touching this line.
+	//
+	// Done once, here, rather than in each fixture: the second offender was
+	// only found because the first was fixed, and there is no reason to think
+	// there will not be a third.
+	defer isolateArchiveForSelftest()()
+
 	fail := 0
 	check := func(name string, ok bool, detail string) {
 		status := "ok  "
@@ -521,6 +534,9 @@ func selftest(outDir string) int {
 	// three extractors that compiled for months while reaching nothing.
 	runInstallIDSelftest(check)
 	runMineSchemaSelftest(check)
+	// Proves the fixture above reads none of the operator's real logs. See its
+	// comment: an unstubbed MineAll is what the ten-minute "hang" was.
+	runSelftestArchiveIsolationSelftest(check)
 	runMineWiredParsersSelftest(check)
 
 	// The capture-value gate and the two triggers that were missing. This group

@@ -1872,3 +1872,155 @@ H7-FINDING  <sha>  THE E2E HARNESS FAILS AT STEP 7, AND IT IS NOT H7'S DOING.
     the alembic subprocess raises FileNotFoundError at step 1. It cleaned up
     its throwaway database correctly both times.
 
+H8  DONE  <sha>  THE STALENESS FLAKE, AND THE HANG - WHICH TURNED OUT TO BE A
+    COMPLETELY DIFFERENT DEFECT AND A MUCH WORSE ONE.
+    H8's amendment was right to promote the hang. Taking it seriously is what
+    found it, and it is not in the staleness fixture at all.
+
+    ---- SECTION 1: MEASURED FIRST, AS ORDERED ----
+    citizen-collector/staleness_flake_test.go runs the REAL fixture in a loop
+    under a per-run watchdog. A _test.go file: not in the shipped binary,
+    nothing built into collector.exe, nothing installed.
+
+      BEFORE, idle,   120 runs   38 failed   31.7%   0 hangs
+      BEFORE, loaded,  60 runs    1 failed    1.7%   0 hangs
+      AFTER,  idle,  2000 runs    0 failed    0.0%   0 hangs
+      AFTER,  loaded, 2000 runs   0 failed    0.0%   0 hangs
+      AFTER,  loaded, 1000 runs of the WHOLE entry point including its four
+                                  new controls: 0 failed, 0 hangs
+
+    DO THE FOUR FAIL TOGETHER OR SEPARATELY? TOGETHER, ALWAYS. 39 failing runs
+    across the two before-measurements produced exactly ONE failure set, every
+    time, all four names in it. Not once did "names the fix" fail while "fires"
+    passed. So this is ONE defect with three dependants, the order was right
+    about the shape, and the fix is one change.
+
+    AND SECTION 2 WAS WRONG ABOUT LOAD, WHICH IS EXACTLY WHY SECTION 1 EXISTS.
+    §2 predicts the flake gets worse under load: "a 1s ticker drifts and a
+    goroutine may simply not be scheduled - and four seconds stops being
+    enough." MEASURED, IT IS THE OTHER WAY ROUND - 31.7% idle against 1.7%
+    loaded, a factor of nearly twenty in the direction nobody expected.
+    I DID NOT CHASE THE MECHANISM AND I AM NOT GOING TO GUESS AT IT. What can
+    be said is that "a busy machine misses a four-second window" does not
+    explain a rate twenty times higher on an idle one, so §2's account of WHY
+    is not established even though its account of WHAT (a fake clock racing a
+    real ticker) plainly is. The fix removes the timing dependence entirely
+    rather than widening it, which is why the after-measurement is decisive: if
+    the cause had been something the deterministic driver does not touch, 2000
+    clean runs would not have happened.
+
+    ---- S1: THE LOOP'S OBSERVATION OF THE CLOCK IS NOW DETERMINISTIC ----
+    autoDeps.pollNow is a test-only wake channel carrying an acknowledgement
+    the loop CLOSES once that poll's body has finished - closed at the top of
+    the next iteration, so every `continue` path through the body counts as
+    completed. A signal that skipped the early exits would be worse than none:
+    the fixture would wait for something that never arrives.
+    cfg.PollSeconds is 3600 in the fixture, so the real ticker never fires and
+    EVERY poll is requested. NO ASSERTION IN THE FIXTURE DEPENDS ON HOW MANY
+    REAL SECONDS ELAPSE. The only remaining timeouts are watchdogs on the loop
+    being alive at all, and hitting one is reported NOT PERFORMED with the
+    reason (S3), never as a pass.
+    A SIDE EFFECT WORTH THE SPACE: the fixture went from ~6 seconds a run to
+    ~9 MILLISECONDS. 2000 runs now take 18 seconds. That is why the after
+    numbers are 2000 and not 200 - a flake that reproduces once in three can be
+    shown fixed by 2000 runs and cannot be by twenty.
+
+    ---- S1's CONTROL, AND S2's TWO, ALL THREE OBSERVED FAILING ON DEMAND ----
+    None of these four checks had ever been seen to fail. They break the LOOP,
+    not the assertion: autoDeps.sabotage and autoDeps.stalenessAfter are
+    test-only knobs, zero-valued in production, and the selftest asserts that
+    default.
+      S1  staleness window set to 1000h -> all four checks FAIL, and the two
+          dependants report NOT PERFORMED rather than passing on 0 == 0.
+      S2a warn on every poll -> "warns once per stall" FAILS, while "fires on a
+          dead log" still PASSES, so the control proves the right thing.
+      S2b growth clears the warned flag but not the clock -> "a log that starts
+          growing again is NOT reported stale" FAILS.
+
+    AND S2b TAUGHT ME SOMETHING ABOUT THE CHECK ITSELF. My first version of
+    that sabotage skipped the whole reset - flag and clock. The check PASSED,
+    because with staleWarned latched at true the loop stays silent and the
+    count never moves. So: "a log that starts growing again is NOT reported
+    stale" CANNOT, ON ITS OWN, DETECT A RESET THAT NEVER HAPPENS. It detects a
+    reset that clears the flag without clearing the clock. That is written into
+    the constant's comment rather than left for the next person to rediscover
+    by watching a control fail to fire.
+
+    ---- S3 ---- Every unreachable path reports NOT PERFORMED with the reason.
+    ---- THE GATE AT firstCount == 0 IS UNTOUCHED, as ordered. The race under
+    it is gone; the gate is not, because the gate is what makes a genuinely
+    broken warning report honestly instead of green.
+
+    ---- SECTION 5: THE HANG. IT RECURS, AND IT IS NOT A FLAKE ----
+    It reproduced on the FIRST attempt and on every attempt after it. Six
+    consecutive runs of a console control binary, all killed at 240 seconds.
+    Not intermittent. Not the staleness fixture - the run died long before that
+    section printed.
+    NOT A DEADLOCK EITHER. A Go stack dump shows `goroutine [runnable]`, busy
+    inside mineLineInto. It is unbounded WORK, not a wait.
+    WHAT IT ACTUALLY IS: `-selftest` was reading the operator's entire Star
+    Citizen log archive. mineTargets() scans C:, D:, E: and F: for every
+    Game.log and every file in every logbackups folder. ON THIS MACHINE THAT IS
+    243 FILES AND 208 MB. Two fixtures reached it:
+      runMineSchemaSelftest             MineAll x3, to test a schema-version
+                                        guard that needs no logs at all
+      runSendIncludesCapturesSelftest   -> buildExport -> MineAll, by design
+    MEASURED, back to back on the same machine:
+      runMineSchemaSelftest    isolated 61ms      unisolated 240+ SECONDS
+      whole selftest           isolated 13-15s    unisolated never returned
+    SO "RAN FINE TWICE, HUNG THE THIRD TIME" WAS NEVER RANDOM. The duration is
+    proportional to how much the person has played. It gets slower every
+    session and eventually crosses whoever is watching's patience. That is what
+    an intermittent hang looks like from outside when it is actually a straight
+    line.
+    AND IT IS NOT ONLY A SPEED PROBLEM. A selftest that reads a person's whole
+    log archive is a surprise nobody asked for, whatever it does with the
+    contents.
+
+    FIXED BY CONSTRUCTION, NOT PER FIXTURE. isolateArchiveForSelftest() is
+    installed once at the top of selftest() and restored on the way out. The
+    second offender was only found because the first was fixed, and there is no
+    reason to think there will not be a third - a rule that depends on every
+    future fixture author remembering to stub a package variable is a
+    convention, which is the same argument app/preservation.py makes about
+    itself.
+    AFTER: six consecutive full selftest runs, 13-15 seconds each, 574 checks
+    each, IDENTICAL every time, one failure each - and that one failure is the
+    CONSOLE subsystem check correctly refusing a console build, which is the
+    control binary's entire purpose. Nothing else failed.
+
+CONTROL  <sha>  runSelftestArchiveIsolationSelftest, in the collector's own
+    selftest. Proven in both directions: the isolation is lifted and
+    mineTargets() must return real files - 243 on this machine - then
+    reinstated and it must return none. If a machine has no Star Citizen logs
+    at all the first half is reported NOT PERFORMED, because an empty result
+    would prove nothing about the isolation there.
+
+    ---- S4: THE SWEEP FOR THE SAME PATTERN ELSEWHERE ----
+    `grep -n "time.Sleep" citizen-collector/*_selftest.go`, classified. Per the
+    order, REPORTED and not fixed - §1 measured only gamelog_selftest.go.
+      SAME DEFECT, ASSERTS A NEGATIVE AFTER A BARE SLEEP - these can PASS
+      because nothing ran, which is invisible:
+        no_auto_capture_selftest.go:113,122  the worst of them. It asserts the
+          collector took NO automatic captures. On a machine where the loop has
+          not polled, that is true because nothing happened. This is the check
+          that proves the collector never photographs anything on its own.
+        hotkey_selftest.go:147  "no press means no receipt line", same shape.
+      SAME DEFECT, BUT FAILS RATHER THAN PASSES - an annoyance, not a danger:
+        mine_selftest.go:295,297  sleeps 1200ms then 2500ms and asserts the
+          game-exit hook fired exactly once. A loop that never polled while the
+          game was "alive" reports 0 and fails.
+        activity_selftest.go:102,104  positive assertion after two sleeps.
+      NOT THIS PATTERN, checked rather than assumed:
+        hotkey_poll_selftest.go:181  the 450ms sleep is measuring a real-time
+          dedup window, so real time is the subject rather than a proxy for it.
+        hotkey_e2e_selftest.go:46 and gamelog_selftest.go:112 are backoffs
+          inside polling loops, not assertions after a sleep.
+
+H8-NOT-DONE  Deliberately: NO RELEASE CUT, NOTHING INSTALLED, AND THE REPO'S
+    collector.exe / collector-master.exe WERE NOT REBUILT. Every measurement
+    above used a console probe binary built into the scratchpad OUTSIDE the
+    repo, exactly as _verify_pe_subsystem.py does. The shipped binaries are
+    therefore now behind this source, and that is Sleven's call to close, not
+    mine.
+
