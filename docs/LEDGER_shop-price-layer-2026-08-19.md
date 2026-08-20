@@ -1521,3 +1521,54 @@ CONTROL  <sha>  checks/_verify_find_data.py - 34 assertions, and every gate is
     than crashing on the open.
     --self-test inverts every expectation and exits 1.
 
+H2  DONE  <sha>  FIND READS THE FILE. Every fetch() is gone from this page's
+    read path. Search, the category filter and the price range all run in the
+    browser over find_data.gen.js.
+    WHAT IS GONE: API_BASE, the Railway hostname, the ?api= override, the four
+    api() calls, the apiDown() handler and the "Looking..." placeholder that
+    existed because a network round trip could be slow. None of it has a job
+    any more - the answer is already in memory when the page loads.
+    WHAT REPLACED IT: indexes built once at load. 7,932 items keyed by
+    "item:1234" / "commodity:12" (the same route shape the API used, so no link
+    changes), a lowercased name array for search, per-item aggregates, and a
+    terminal -> rows map. Search ranks exact name, then prefix, then
+    word-start, then substring - and the ranking is stated on the page rather
+    than left as a mystery.
+    THE FILTERS RIDE IN THE HASH, so a filtered search is a link somebody can
+    send. #s/omnisky?c=12&min=100&max=5000.
+    THE PAGE STILL HAS ONE FAILURE MODE AND IT SAYS SO: if find_data.gen.js is
+    missing from the deploy, the page says exactly that. It does not render a
+    blank screen, and it does not report it as a search that found nothing -
+    those are different sentences and a visitor deserves the right one.
+
+CONTROL  <sha>  checks/_verify_find_page.mjs, rewritten - 57 assertions, THE
+    NETWORK BLOCKED THROUGHOUT.
+    H2's named control is "with the network blocked after first load, search
+    still works", so the network is blocked properly rather than hoped about:
+    fetch, XMLHttpRequest, WebSocket, EventSource and navigator.sendBeacon are
+    all replaced with functions that THROW. And then - because a blocker that
+    does not block is precisely the silent success this project keeps
+    finding - the harness CALLS the poisoned fetch itself and requires the
+    throw. Without that, this suite would pass just as happily for a page that
+    fetched.
+    The page's own script is sliced out of the BUILT find.html and run against
+    the shipped find_data.gen.js. No re-implementation.
+    ONE REAL DEFECT FOUND IN THE CONTROL ITSELF AND FIXED RATHER THAN WORKED
+    AROUND: "no fetch( in the page" was reading the page's own header comment,
+    which says "every fetch() is gone", and failing the page for explaining
+    itself. The fix strips comments for the code-shape assertions - and the
+    stripper is ITSELF asserted, because a stripper that removed everything
+    would also hide a real fetch somebody had commented out.
+    ALSO PROVEN: the category filter and the price range actually narrow the
+    set (7,932 -> 136 under 100 aUEC, 147 over 100,000, and the two are not the
+    same set); every price row carries the snapshot date and not just the page
+    header, counted row for row; a missing data file produces a sentence rather
+    than a blank; and the MOCKUP banner and both pieces of legal text are still
+    byte-for-byte present, because H3 has not happened yet.
+    --self-test inverts every expectation and exits 1.
+
+    STATED LIMIT, unchanged and not glossed: this proves the page's logic and
+    the HTML it produces. It does not prove layout, CSS or real browser
+    behaviour. There is no browser on this machine and none was installed
+    (rule 7).
+

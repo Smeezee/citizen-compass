@@ -20,7 +20,7 @@ a:hover{text-decoration:underline}
 
 /* ---------- search ---------- */
 .searchwrap{max-width:760px;margin:0 auto 8px}
-.searchwrap.hero{margin-top:8vh}
+.searchwrap.hero{margin-top:6vh}
 .hero h1{font:800 32px/1.2 inherit;text-align:center;margin:0 0 6px}
 .hero p{text-align:center;color:var(--muted);margin:0 0 22px;font-size:17px}
 .sbox{display:flex;gap:9px}
@@ -32,6 +32,19 @@ a:hover{text-decoration:underline}
 .egs{margin-top:10px;color:var(--muted);font-size:14.5px;text-align:center}
 .egs b{color:var(--text);font-weight:600}
 .egs a{margin:0 4px;color:var(--accent2)}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:11px;
+ padding:11px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.filters label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;
+ font-weight:700}
+.filters select,.filters input{background:var(--panel2);color:var(--text);
+ border:1px solid var(--line);border-radius:7px;padding:7px 9px;font:15px inherit}
+.filters input{width:104px}
+.filters select{max-width:280px}
+.filters .clear{background:none;border:0;color:var(--accent);cursor:pointer;font:600 14px inherit;
+ padding:6px 4px}
+.filters .note{color:var(--muted);font-size:13.5px;flex-basis:100%}
 
 /* ---------- answer line ---------- */
 .answer{background:var(--panel2);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;
@@ -49,6 +62,7 @@ a:hover{text-decoration:underline}
 .hdr .mfr{color:var(--muted);font-size:16px}
 .crumb{color:var(--muted);font-size:14.5px;margin-bottom:14px}
 
+.tablewrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:16px}
 th{text-align:left;color:var(--muted);font-size:12.5px;text-transform:uppercase;
  letter-spacing:.05em;padding:7px 8px;border-bottom:1px solid var(--line);font-weight:700}
@@ -60,6 +74,8 @@ td.sell{color:var(--warn);font-weight:700;white-space:nowrap}
  background:rgba(0,201,167,.15);color:var(--accent2);margin-left:7px}
 .conf{display:block;font-size:13px;color:var(--muted);margin-top:2px}
 .conf.old{color:var(--warn)}
+.reported{display:block;font-size:12.5px;color:var(--muted);line-height:1.45}
+.reported b{color:#B8C9D6;font-weight:600}
 
 .res{display:block;padding:13px 15px;border:1px solid var(--line);border-radius:10px;
  background:var(--panel);margin-bottom:9px;color:var(--text)}
@@ -74,6 +90,7 @@ td.sell{color:var(--warn);font-weight:700;white-space:nowrap}
 
 .warn{background:#1A1206;border:1px solid #4A3410;border-radius:9px;padding:12px 15px;
  font-size:15px;color:#E8C9A0;margin-bottom:14px}
+.warn strong{color:#FFD9A0}
 .none{text-align:center;padding:34px 16px;color:var(--muted)}
 .none b{display:block;color:var(--text);font-size:19px;margin-bottom:6px}
 .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
@@ -82,6 +99,10 @@ td.sell{color:var(--warn);font-weight:700;white-space:nowrap}
 .chips a:hover{border-color:var(--accent);color:var(--text);text-decoration:none}
 .mock2{margin:14px 0;padding:11px 14px;background:#1A1206;border:1px solid #4A3410;
  border-radius:9px;font-size:14px;color:#E8C9A0}
+.srcbox{max-width:760px;margin:16px auto 0;padding:12px 15px;background:var(--panel);
+ border:1px solid var(--line);border-radius:10px;font-size:14px;color:var(--muted)}
+.srcbox b{color:var(--text)}
+.srcbox code{font-size:12.5px;word-break:break-all;color:var(--accent2)}
 footer{margin:26px -16px 0;padding:16px;background:#0B1626;border-top:1px solid var(--line);
  color:#6B8091;font:400 13px/1.6 inherit}
 </style>
@@ -102,58 +123,130 @@ Star Citizen&reg;, Roberts Space Industries&reg; and Cloud Imperium&reg; are reg
 trademarks of Cloud Imperium Rights LLC.
 </footer>
 
+<script src="find_data.gen.js"></script>
 <script>
-/* ================= real data, from the shop API =================
+/* ============ FIND reads a file, not a server ============
  *
- * E1 of the 2026-08-19 order. The block that used to sit here was labelled
- * "invented data" - 17 made-up items across 9 made-up shops - and it is gone.
- * Every number on this page now comes from /api/v1/shop, which is backed by
- * 26,657 real price rows across 823 real terminals.
+ * H2 of the 2026-08-20 order. Every fetch() is gone from this page's read
+ * path. Search, the category filter and the price range all run here, in the
+ * browser, over find_data.gen.js - which build_find_data.py generated from
+ * PostgreSQL, the system of record.
  *
- * WHY THE MOCKUP BANNER IS STILL AT THE TOP OF THIS PAGE
- * ------------------------------------------------------
- * E2 says the banner comes off ONLY after fetching the deployed URL and
- * reading real rows back from it - "not after a successful build, not after
- * a successful deploy". At the time of writing, the deployed API answers 502
- * (Application failed to respond) on every path, so that confirmation cannot
- * be made and the banner stays exactly as it was. It is not edited, softened
- * or reworded. The home-page explainer below IS updated, because it described
- * the data ("seventeen invented items") and the data has changed - leaving
- * that would be false in the other direction.
+ * WHY: this page shipped reading a live API and broke on its first day. The
+ * deployed service answered 502 all evening and the page had nothing to show.
+ * Every other page on this site - holo, loadout, keybinds - reads a generated
+ * file, and this was the first one to break that pattern.
  *
- * PRICES: buy and sell are separate columns, always (E3 / §3.1). A blank is
- * a blank - it means "no data" and is never rendered as 0, and there is no
- * blended average anywhere on this page.
+ * The prices are a snapshot with a date on them. They do not change between
+ * UEX pulls. A page searching them needs a file, not a database.
  *
- * PROVENANCE: every price row shows its snapshot and the age of its own
- * source date, and anything unverified is visibly flagged (E4).
+ * THE API IS NOT GONE. PostgreSQL is still the system of record and the API
+ * still serves the bench and every write path. It is simply not on the road
+ * between a visitor and an answer any more.
+ *
+ * WHAT THIS PAGE MAY CLAIM (R8 / H4)
+ * ----------------------------------
+ * "UEX reported this price at this terminal in the snapshot taken <date>."
+ * NOT "this is the price". These figures are submitted by players and rated
+ * by UEX for confidence - that is why the commodity rows carry a quality
+ * field, averaged buy/sell figures and stock levels at all. Nothing here is
+ * read out of the game, and no wording on this page says or implies it is.
+ *
+ * PRICES: buy and sell are separate columns, always. A blank is a blank - it
+ * means "nobody reported this side here", and it is never rendered as 0.
+ * There is no blended average anywhere on this page.
  */
 
-/* Where the API lives. Overridable with ?api=http://127.0.0.1:8077 so this
- * page can be driven against a local server without editing the file - which
- * is how it was verified before deployment. */
-const API_BASE = (new URLSearchParams(location.search).get("api")
-  || "https://citizen-compass-production.up.railway.app").replace(/\/$/, "");
+/* ---- the file, decoded by its own schema ----
+ * The generated file ships FIND_SCHEMA, so the slot meanings are read from the
+ * data rather than duplicated here as magic indexes that drift. */
+const D = (typeof FIND_DATA !== "undefined") ? FIND_DATA : null;
+const COUNTS = (typeof FIND_COUNTS !== "undefined") ? FIND_COUNTS : {};
+const IX = (() => {
+  const at = (list, name) => list.indexOf(name);
+  const S = (typeof FIND_SCHEMA !== "undefined") ? FIND_SCHEMA : null;
+  if (!S) return null;
+  return {
+    it: { kind: at(S.items, "kind"), uex: at(S.items, "uex_id"),
+          name: at(S.items, "name"), cat: at(S.items, "cat_ix"),
+          size: at(S.items, "size"), co: at(S.items, "co_ix"),
+          prices: at(S.items, "prices") },
+    pr: { term: at(S.price, "term_ix"), buy: at(S.price, "price_buy"),
+          sell: at(S.price, "price_sell"), snap: at(S.price, "snap_ix"),
+          date: at(S.price, "date_ix") },
+    tm: { uex: at(S.terms, "uex_id"), name: at(S.terms, "name"),
+          path: at(S.terms, "resolved_path"), type: at(S.terms, "type") },
+    ct: { uex: at(S.cats, "uex_id"), name: at(S.cats, "name"),
+          section: at(S.cats, "section"), game: at(S.cats, "is_game_related") },
+    sn: { id: at(S.snaps, "snapshot_id"), key: at(S.snaps, "key"),
+          date: at(S.snaps, "captured_date") },
+    kind: S.kind,
+  };
+})();
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmt = n => (n == null ? null : Number(n).toLocaleString("en-US"));
 
+/* ---- derived indexes, built once at load ----
+ * 7,932 items and 26,657 price rows. Built once so a keystroke does not walk
+ * the whole file, and built HERE rather than baked into the generated data,
+ * because an index is a thing a reader can rebuild and a thing that would
+ * otherwise have to be kept in step with the rows it points at. */
+const REF = new Map();          /* "item:1234" -> item                        */
+const BY_TERMINAL = new Map();  /* terminal index -> [[item, priceRow], ...]  */
+const AGG = new Map();          /* item -> {buyMin, sellMax, terminals}       */
+let LOWER = [];                 /* lowercased names, positionally aligned     */
+
+function buildIndexes() {
+  if (!D) return;
+  LOWER = new Array(D.items.length);
+  D.items.forEach((it, i) => {
+    LOWER[i] = String(it[IX.it.name]).toLowerCase();
+    REF.set(IX.kind[it[IX.it.kind]] + ":" + it[IX.it.uex], it);
+    let buyMin = null, sellMax = null;
+    const terminals = new Set();
+    it[IX.it.prices].forEach(p => {
+      terminals.add(p[IX.pr.term]);
+      if (p[IX.pr.buy] != null && (buyMin == null || p[IX.pr.buy] < buyMin))
+        buyMin = p[IX.pr.buy];
+      if (p[IX.pr.sell] != null && (sellMax == null || p[IX.pr.sell] > sellMax))
+        sellMax = p[IX.pr.sell];
+      let bucket = BY_TERMINAL.get(p[IX.pr.term]);
+      if (!bucket) BY_TERMINAL.set(p[IX.pr.term], bucket = []);
+      bucket.push([it, p]);
+    });
+    AGG.set(it, { buyMin, sellMax, terminals: terminals.size });
+  });
+}
+
+const catOf = it => (it[IX.it.cat] < 0 ? null : D.cats[it[IX.it.cat]]);
+const catName = it => {
+  const c = catOf(it);
+  if (c) return c[IX.ct.name];
+  /* An item whose category id did not resolve still knows what UEX called it,
+   * and the generator carries that string rather than dropping it. */
+  const key = (it[IX.it.kind] === 0 ? "" : "c") + it[IX.it.uex];
+  return D.orphan_cats[key] || null;
+};
+const coName = it => (it[IX.it.co] < 0 ? null : D.cos[it[IX.it.co]]);
+const refOf = it => IX.kind[it[IX.it.kind]] + ":" + it[IX.it.uex];
+
 /* A price cell. null is a BLANK, never a zero and never a dash pretending to
  * be a number - blank means "nobody reported this side here". */
-function priceCell(value, cls) {
+function priceCell(value) {
   const shown = fmt(value);
   return shown === null
     ? `<span class="conf">—<span class="conf"> no data</span></span>`
-    : `<span class="${cls}">${shown}</span>`;
+    : `<span>${shown}</span>`;
 }
 
-/* How old a source date is, in words, plus a class so old data looks old. */
+/* How old a date is, in words, plus a class so old data looks old. */
 function age(iso) {
-  if (!iso) return { text: "age unknown", cls: "old" };
-  const days = Math.floor((Date.now() - new Date(iso + "Z").getTime()) / 86400000);
-  if (isNaN(days)) return { text: "age unknown", cls: "old" };
+  if (!iso) return { text: "date unknown", cls: "old" };
+  const days = Math.floor((Date.now() - new Date(iso + "T00:00:00Z").getTime()) / 86400000);
+  if (isNaN(days)) return { text: "date unknown", cls: "old" };
   if (days <= 0) return { text: "today", cls: "" };
   if (days === 1) return { text: "yesterday", cls: "" };
   if (days < 30) return { text: days + " days ago", cls: "" };
@@ -161,34 +254,46 @@ function age(iso) {
   return { text: "over a year ago", cls: "old" };
 }
 
-/* E4: the standing rule is that the front end flags unverified data. It is
- * flagged rather than hidden, and the words say what is actually unknown. */
-function verifiedNote(patch) {
-  return patch
-    ? `<span class="conf">verified in patch ${esc(patch)}</span>`
-    : `<span class="conf old">not verified against a patch</span>`;
+/* R6: the snapshot date goes on EVERY price row, not once at the top. The
+ * clutter is the point - a number with no date is a claim, a number with a
+ * date is evidence. */
+function reported(p) {
+  const snap = D.snaps[p[IX.pr.snap]];
+  const taken = snap[IX.sn.date];
+  const uexDate = p[IX.pr.date] < 0 ? null : D.dates[p[IX.pr.date]];
+  const a = age(uexDate);
+  return `<span class="reported">UEX reported this in the snapshot taken
+      <b>${esc(taken || "date unknown")}</b>
+      <span class="conf">${esc(snap[IX.sn.key])}</span>
+      <span class="conf ${a.cls}">UEX last updated the row
+        ${esc(uexDate || "on an unknown date")} · ${a.text}</span></span>`;
 }
 
-function provenance(row) {
-  const a = age(row.source_date_modified);
-  return `<span class="conf ${a.cls}">snapshot ${esc(row.snapshot_key)} ·
-    reported ${a.text}</span>`;
-}
-
-async function api(path) {
-  const response = await fetch(API_BASE + path, { headers: { Accept: "application/json" } });
-  let body = null;
-  try { body = await response.json(); } catch (e) { body = null; }
-  return { ok: response.ok, status: response.status, body };
-}
-
-/* Honest failure. Not a spinner that never stops, and not an empty results
- * list that reads as "there is nothing" when the truth is "we could not ask". */
-function apiDown(status) {
-  return `<div class="none"><b>We can't reach the price data right now.</b>
-    The shop API answered ${status ? "HTTP " + status : "not at all"}.
-    That is a problem at our end, not with what you typed — nothing here is
-    missing, we just could not look it up.</div>`;
+/* H4, in the voice README-FOR-TESTERS.txt uses: say what we can prove and
+ * nothing beyond it. This is the paragraph a visitor reads next to a number
+ * they might spend real time on. */
+function whatThisIs() {
+  const snapList = D.snaps.map(s => `${esc(s[IX.sn.key])} (taken ${esc(s[IX.sn.date])})`)
+    .join(" and ");
+  const unverified = (COUNTS.shop_items_verified === 0)
+    ? `None of the ${fmt(COUNTS.shop_items)} items here has been checked against a
+       specific game patch yet, so nothing on this page can tell you whether it
+       still holds in the build you are playing.`
+    : `${fmt(COUNTS.shop_items_verified)} of ${fmt(COUNTS.shop_items)} items have
+       been checked against a game patch; the rest have not.`;
+  return `<div class="warn"><strong>What these numbers actually are.</strong>
+    UEX reported this price at this terminal in the snapshot taken on the date
+    shown against each row. That is the whole claim, and this page does not make
+    a bigger one — it does not say this <em>is</em> the price.
+    <br><br>
+    The figures come from UEX, where <b>players submit what they saw at a
+    terminal</b> and UEX rates the submissions for confidence. That is why the
+    commodity records carry a quality score, averaged buy and sell figures and
+    stock levels at all — those are fields you only need when the numbers are
+    estimates. <b>Nothing here is read out of the game.</b> A row can be out of
+    date, or simply wrong, and the date on it is how you judge that.
+    <br><br>
+    Everything on this page comes from ${snapList}. ${unverified}</div>`;
 }
 
 /* ================= views ================= */
@@ -207,26 +312,88 @@ function searchBox(val, hero) {
       <a href="#s/agricium">agricium</a></div></div>`;
 }
 
-function home() {
-  return searchBox("", true) + `<div class="mock2" style="max-width:760px;margin:22px auto 0">
-    <strong>Reading live data.</strong> The invented items and shops that used to be here are
-    gone — this page now queries the real shop API. The banner at the top stays until that API
-    has been confirmed answering from its deployed address, which it is not yet doing.</div>`;
+/* The category filter and the price range. Both live in the hash, so a
+ * filtered search is a link somebody can send. */
+function filterBar(f) {
+  const cats = D.cats.map((c, i) => [i, c[IX.ct.name], c[IX.ct.section]])
+    .sort((a, b) => (a[2] || "").localeCompare(b[2] || "")
+      || a[1].localeCompare(b[1]));
+  const opts = cats.map(([i, name, section]) =>
+    `<option value="${i}"${f.cat === i ? " selected" : ""}>${
+      esc(section ? section + " · " + name : name)}</option>`).join("");
+  const active = f.cat >= 0 || f.min != null || f.max != null;
+  return `<div class="filters">
+    <label for="fcat">Category</label>
+    <select id="fcat" onchange="applyFilters()">
+      <option value="-1">any of ${fmt(D.cats.length)}</option>${opts}</select>
+    <label for="fmin">Buy price</label>
+    <input id="fmin" type="number" min="0" placeholder="min"
+      value="${f.min == null ? "" : f.min}" onchange="applyFilters()">
+    <input id="fmax" type="number" min="0" placeholder="max"
+      value="${f.max == null ? "" : f.max}" onchange="applyFilters()">
+    ${active ? `<button class="clear" onclick="clearFilters()">clear filters</button>` : ""}
+    <span class="note">The price range filters on what a terminal
+      <b>charges</b> — an item nobody sells has no buy price and is filtered
+      out by any range, which is not the same as it not existing.</span></div>`;
 }
 
-async function results(q) {
-  const view = $("#view");
-  const r = await api("/api/v1/shop/search?limit=20&q=" + encodeURIComponent(q));
-  let h = searchBox(q) + `<div style="max-width:900px;margin:18px auto 0">`;
+/* Ranked, and the ranking is stated rather than implied: an exact name first,
+ * then a name that starts with what you typed, then a word that starts with
+ * it, then anything containing it. */
+function search(q, f) {
+  const needle = q.trim().toLowerCase();
+  const out = [];
+  for (let i = 0; i < D.items.length; i++) {
+    const name = LOWER[i];
+    let rank;
+    if (!needle) rank = 4;
+    else if (name === needle) rank = 0;
+    else if (name.startsWith(needle)) rank = 1;
+    else {
+      const at = name.indexOf(needle);
+      if (at < 0) continue;
+      rank = /[\s\-(]/.test(name[at - 1] || " ") ? 2 : 3;
+    }
+    const it = D.items[i];
+    if (f.cat >= 0 && it[IX.it.cat] !== f.cat) continue;
+    const agg = AGG.get(it);
+    if (f.min != null && (agg.buyMin == null || agg.buyMin < f.min)) continue;
+    if (f.max != null && (agg.buyMin == null || agg.buyMin > f.max)) continue;
+    out.push([rank, name, it]);
+  }
+  out.sort((a, b) => a[0] - b[0] || a[1].localeCompare(b[1]));
+  return out.map(r => r[2]);
+}
 
-  if (!r.ok) return view.innerHTML = h + apiDown(r.status) + "</div>";
+function home() {
+  return searchBox("", true) + filterBarWrapper({ cat: -1, min: null, max: null })
+    + `<div class="mock2" style="max-width:760px;margin:22px auto 0">
+    <strong>${fmt(COUNTS.item_prices)} price rows, read from a file.</strong>
+    The invented items and shops that used to be here are gone. This page holds
+    ${fmt(COUNTS.shop_items)} items across ${fmt(COUNTS.terminals)} terminals
+    and ${fmt(COUNTS.item_categories)} categories, generated from our database
+    and shipped with the page — so it works whether or not our server is up.
+    <br><br>Every figure is a <b>UEX report</b>, dated. See what that means
+    below.</div>`
+    + `<div style="max-width:760px;margin:14px auto 0">${whatThisIs()}</div>`;
+}
 
-  const items = (r.body && r.body.items) || [];
-  /* The control: a search that matches nothing shows an honest empty state.
-   * Not a spinner, and not filler. */
+function filterBarWrapper(f) {
+  return `<div class="searchwrap">${filterBar(f)}</div>`;
+}
+
+function results(q, f) {
+  const items = search(q, f);
+  let h = searchBox(q) + filterBarWrapper(f)
+    + `<div style="max-width:900px;margin:18px auto 0">`;
+
+  /* A search that matches nothing shows an honest empty state. Not a spinner,
+   * and not filler. */
   if (!items.length) {
-    return view.innerHTML = h + `<div class="none"><b>Nothing matched "${esc(q)}"</b>
-      We looked through ${fmt(7932)} items and found none with that in the name.
+    return h + `<div class="none"><b>Nothing matched "${esc(q)}"</b>
+      We looked through all ${fmt(D.items.length)} items
+      ${f.cat >= 0 || f.min != null || f.max != null
+        ? "that pass the filters above" : ""} and found none.
       That might be our gap rather than your typo.
       <div class="chips" style="justify-content:center">
         <a href="#s/omnisky">omnisky</a><a href="#s/medpen">medpen</a>
@@ -234,222 +401,256 @@ async function results(q) {
         <a href="#s/agricium">agricium</a></div></div></div>`;
   }
 
-  h += `<p style="color:var(--muted);font-size:15px">${fmt(r.body.total)}
-    result${r.body.total > 1 ? "s" : ""} for
-    <b style="color:var(--text)">${esc(q)}</b>${r.body.total > items.length
-      ? ` · showing the first ${items.length}` : ""}</p>`;
+  const shown = items.slice(0, 40);
+  h += `<p style="color:var(--muted);font-size:15px">${fmt(items.length)}
+    result${items.length > 1 ? "s" : ""} for
+    <b style="color:var(--text)">${esc(q)}</b>${items.length > shown.length
+      ? ` · showing the first ${shown.length}` : ""}</p>`;
 
-  items.forEach(row => {
-    const it = row.item;
-    const ref = `${it.source_kind}:${it.uex_id}`;
+  shown.forEach(it => {
+    const agg = AGG.get(it);
     let price;
-    if (row.terminal_count === 0) {
-      /* §3.6 - absence is data, and the page has to be able to say it. */
+    if (agg.terminals === 0) {
+      /* Absence is data, and the page has to be able to say it. */
       price = `<b style="color:var(--muted)">no shop sells it</b>
         <small>not stocked anywhere we hold</small>`;
-    } else if (row.price_buy_min != null) {
-      price = `<b>${fmt(row.price_buy_min)} aUEC</b><small>cheapest of
-        ${row.terminal_count} shop${row.terminal_count > 1 ? "s" : ""}</small>`;
+    } else if (agg.buyMin != null) {
+      price = `<b>${fmt(agg.buyMin)} aUEC</b><small>lowest UEX reported, of
+        ${agg.terminals} terminal${agg.terminals > 1 ? "s" : ""}</small>`;
     } else {
-      price = `<b style="color:var(--warn)">sells for ${fmt(row.price_sell_max)}</b>
+      price = `<b style="color:var(--warn)">sells for ${fmt(agg.sellMax)}</b>
         <small>not bought in shops</small>`;
     }
-    h += `<a class="res" href="#i/${encodeURIComponent(ref)}">
+    h += `<a class="res" href="#i/${encodeURIComponent(refOf(it))}">
       <span class="rp">${price}</span>
-      <span class="rt">${esc(it.name)}</span>
-      ${it.source_kind === "commodity" ? `<span class="why">commodity</span>` : ""}
-      <div class="rs">${esc(it.category_name || "uncategorised")}${
-        it.company_name ? " · " + esc(it.company_name) : ""}</div></a>`;
+      <span class="rt">${esc(it[IX.it.name])}</span>
+      ${it[IX.it.kind] === 1 ? `<span class="why">commodity</span>` : ""}
+      <div class="rs">${esc(catName(it) || "uncategorised")}${
+        coName(it) ? " · " + esc(coName(it)) : ""}${
+        it[IX.it.size] ? " · size " + esc(it[IX.it.size]) : ""}</div></a>`;
   });
-  view.innerHTML = h + "</div>";
+  return h + "</div>";
 }
 
-async function item(ref) {
-  const view = $("#view");
-  const r = await api("/api/v1/shop/items/" + encodeURIComponent(ref) + "/prices");
-
-  if (r.status === 404) {
-    return view.innerHTML = searchBox("") +
+function item(ref) {
+  const it = REF.get(ref);
+  if (!it) {
+    return searchBox("") +
       `<div style="max-width:900px;margin:18px auto 0"><div class="none">
         <b>We don't have that item.</b> Nothing in the catalogue matches
         "${esc(ref)}".</div></div>`;
   }
-  /* An ambiguous identifier is a real answer, not an error to swallow: this
-   * dataset has 120 uuids worn by up to ten different products, and picking
-   * one for the reader would be inventing an answer. */
-  if (r.status === 409) {
-    const d = (r.body && r.body.detail) || {};
-    const list = (d.candidates || []).map(c =>
-      `<a href="#i/${encodeURIComponent(c.source_kind + ":" + c.uex_id)}">
-        ${esc(c.name)} <span class="conf">${esc(c.category || "")}</span></a>`).join("");
-    return view.innerHTML = searchBox("") +
-      `<div style="max-width:900px;margin:18px auto 0"><div class="none">
-        <b>That identifier means more than one thing.</b>
-        ${(d.candidates || []).length} different items share it, so we won't
-        guess which you meant.
-        <div class="chips" style="justify-content:center">${list}</div></div></div>`;
-  }
-  if (!r.ok) return view.innerHTML = searchBox("") +
-    `<div style="max-width:900px;margin:18px auto 0">${apiDown(r.status)}</div>`;
 
-  const it = r.body.item;
-  const rows = r.body.prices || [];
-  const buys = rows.filter(x => x.price_buy != null).sort((a, b) => a.price_buy - b.price_buy);
-  const sells = rows.filter(x => x.price_sell != null).sort((a, b) => b.price_sell - a.price_sell);
+  const rows = it[IX.it.prices];
+  const buys = rows.filter(x => x[IX.pr.buy] != null)
+    .sort((a, b) => a[IX.pr.buy] - b[IX.pr.buy]);
+  const sells = rows.filter(x => x[IX.pr.sell] != null)
+    .sort((a, b) => b[IX.pr.sell] - a[IX.pr.sell]);
+  const term = i => D.terms[i];
 
   let ans;
   if (buys.length) {
-    ans = `Sold at <b>${buys.length} terminal${buys.length > 1 ? "s" : ""}</b>. Cheapest is
-      <span class="cheap">${esc(buys[0].terminal_name)}</span> at
-      <b>${fmt(buys[0].price_buy)} aUEC</b>.`;
-    if (sells.length) ans += ` Best price to sell it back is
-      <b>${fmt(sells[0].price_sell)}</b>.`;
+    ans = `UEX has reports from <b>${buys.length}
+      terminal${buys.length > 1 ? "s" : ""}</b> selling this. The lowest
+      reported is <span class="cheap">${esc(term(buys[0][IX.pr.term])[IX.tm.name])}</span>
+      at <b>${fmt(buys[0][IX.pr.buy])} aUEC</b>.`;
+    if (sells.length) ans += ` The highest reported buy-back is
+      <b>${fmt(sells[0][IX.pr.sell])}</b>.`;
   } else if (sells.length) {
-    ans = `No shop sells this — you find it out in the world. Best price to
-      <b>sell</b> it is <span class="cheap">${esc(sells[0].terminal_name)}</span>
-      at <b>${fmt(sells[0].price_sell)} aUEC</b>.`;
+    ans = `No terminal in this data sells it — you find it out in the world.
+      The highest reported buy-back is
+      <span class="cheap">${esc(term(sells[0][IX.pr.term])[IX.tm.name])}</span>
+      at <b>${fmt(sells[0][IX.pr.sell])} aUEC</b>.`;
   } else {
-    /* §3.6 again. "Nobody sells this" is an answer, and a real one. */
+    /* "Nobody sells this" is an answer, and a real one. */
     ans = `<b>No terminal we hold buys or sells this.</b> That is what the data
-      says rather than a gap in it — the item exists, and nowhere stocks it.`;
+      says rather than a gap in it — the item exists, and nothing in this
+      snapshot stocks it.`;
   }
 
   let h = `<div style="max-width:960px;margin:0 auto">${searchBox("")}
     <div class="crumb" style="margin-top:16px"><a href="#">Home</a> ›
-      <a href="#s/${encodeURIComponent(it.category_name || "")}">${esc(it.category_name
-        || "uncategorised")}</a> › ${esc(it.name)}</div>
-    <div class="hdr"><h1>${esc(it.name)}</h1>
-      <span class="cat">${esc(it.category_name || "uncategorised")}</span>
-      ${it.company_name ? `<span class="mfr">${esc(it.company_name)}</span>` : ""}</div>
+      <a href="#s/${encodeURIComponent(catName(it) || "")}">${esc(catName(it)
+        || "uncategorised")}</a> › ${esc(it[IX.it.name])}</div>
+    <div class="hdr"><h1>${esc(it[IX.it.name])}</h1>
+      <span class="cat">${esc(catName(it) || "uncategorised")}</span>
+      ${coName(it) ? `<span class="mfr">${esc(coName(it))}</span>` : ""}</div>
     <p style="color:var(--muted);margin:0 0 6px;font-size:15px">
-      UEX ${esc(it.source_kind)} #${esc(it.uex_id)}${it.uuid
-        ? ` · uuid ${esc(it.uuid)}` : " · no uuid in the source"}
-      · ${verifiedNote(it.last_verified_patch)}</p>
+      UEX ${esc(IX.kind[it[IX.it.kind]])} #${esc(it[IX.it.uex])}${
+        it[IX.it.size] ? ` · size ${esc(it[IX.it.size])}` : ""}</p>
     <div class="answer">${ans}</div>`;
 
-  /* E3: buy and sell are SEPARATE columns. They are never combined and never
+  /* Buy and sell are SEPARATE columns. They are never combined and never
    * averaged into one figure. */
   if (rows.length) {
-    h += `<div class="card"><h2>Every terminal that lists it</h2><table>
-      <tr><th>Terminal</th><th>Where</th><th>Buy</th><th>Sell</th><th>Source</th></tr>`;
+    h += `<div class="card"><h2>Every terminal UEX has a report from</h2>
+      <div class="tablewrap"><table>
+      <tr><th>Terminal</th><th>Where</th><th>Buy</th><th>Sell</th>
+        <th>What this row is</th></tr>`;
     const cheapest = buys.length ? buys[0] : null;
     rows.forEach(x => {
-      const best = cheapest && x.terminal_id === cheapest.terminal_id
-        && x.price_buy === cheapest.price_buy;
+      const t = term(x[IX.pr.term]);
+      const best = cheapest && x === cheapest;
       h += `<tr class="${best ? "best" : ""}">
-        <td><a href="#p/${x.terminal_uex_id}">${esc(x.terminal_name)}</a>
-          ${best ? '<span class="pill">CHEAPEST</span>' : ""}</td>
-        <td>${esc(x.location || "location unknown")}</td>
-        <td class="price">${priceCell(x.price_buy, "")}</td>
-        <td class="sell">${priceCell(x.price_sell, "")}</td>
-        <td>${provenance(x)}</td></tr>`;
+        <td><a href="#p/${t[IX.tm.uex]}">${esc(t[IX.tm.name])}</a>
+          ${best ? '<span class="pill">LOWEST REPORTED</span>' : ""}</td>
+        <td>${esc(t[IX.tm.path] || "location unknown")}</td>
+        <td class="price">${priceCell(x[IX.pr.buy])}</td>
+        <td class="sell">${priceCell(x[IX.pr.sell])}</td>
+        <td>${reported(x)}</td></tr>`;
     });
-    h += `</table></div>`;
+    h += `</table></div></div>`;
   }
 
-  h += `<div class="warn"><strong>How sure are we?</strong> These prices come from UEX, where
-    players report what they saw in game — not from the game itself. Each row shows which
-    sealed snapshot it came from and how old the player report behind it is. Anything not
-    verified against a patch says so.</div>`;
-
-  return view.innerHTML = h + "</div>";
+  return h + whatThisIs() + "</div>";
 }
 
-async function terminal(uexId) {
-  const view = $("#view");
-  const r = await api("/api/v1/shop/terminals/" + encodeURIComponent(uexId)
-    + "/inventory?limit=200");
-
-  if (r.status === 404) {
-    return view.innerHTML = searchBox("") +
+function terminal(uexId) {
+  const i = D.terms.findIndex(t => String(t[IX.tm.uex]) === String(uexId));
+  if (i < 0) {
+    return searchBox("") +
       `<div style="max-width:900px;margin:18px auto 0"><div class="none">
         <b>We don't have that terminal.</b></div></div>`;
   }
-  if (!r.ok) return view.innerHTML = searchBox("") +
-    `<div style="max-width:900px;margin:18px auto 0">${apiDown(r.status)}</div>`;
-
-  const t = r.body.terminal;
-  const rows = r.body.items || [];
-  const buys = rows.filter(x => x.price_buy != null);
-  const sells = rows.filter(x => x.price_sell != null);
+  const t = D.terms[i];
+  const rows = BY_TERMINAL.get(i) || [];
+  const buys = rows.filter(([, p]) => p[IX.pr.buy] != null);
+  const sells = rows.filter(([, p]) => p[IX.pr.sell] != null);
 
   let h = `<div style="max-width:960px;margin:0 auto">${searchBox("")}
     <div class="crumb" style="margin-top:16px"><a href="#">Home</a> ›
-      ${esc(t.resolved_path || "location unknown")}</div>
-    <div class="hdr"><h1>${esc(t.name)}</h1>
-      <span class="cat">${esc(t.type || "terminal")}</span></div>
+      ${esc(t[IX.tm.path] || "location unknown")}</div>
+    <div class="hdr"><h1>${esc(t[IX.tm.name])}</h1>
+      <span class="cat">${esc(t[IX.tm.type] || "terminal")}</span></div>
     <p style="color:var(--muted);margin:0 0 6px;font-size:17px">
-      ${esc(t.resolved_path || "location unknown")}</p>
+      ${esc(t[IX.tm.path] || "location unknown")}</p>
     <p style="color:var(--muted);margin:0 0 16px;font-size:15px">
-      UEX terminal #${esc(t.uex_id)} · ${verifiedNote(t.last_verified_patch)}</p>
-    <div class="answer">Lists <b>${fmt(r.body.total)}</b> price
-      row${r.body.total !== 1 ? "s" : ""} — ${buys.length} to buy,
-      ${sells.length} they'll buy off you.</div>`;
+      UEX terminal #${esc(t[IX.tm.uex])}</p>
+    <div class="answer">UEX has <b>${fmt(rows.length)}</b> price
+      row${rows.length !== 1 ? "s" : ""} for this terminal — ${buys.length}
+      with something to buy, ${sells.length} they'll buy off you.</div>`;
 
   if (!rows.length) {
     h += `<div class="none"><b>Nothing is listed here.</b> The terminal exists in
       the data; no prices have been reported at it.</div>`;
   } else {
-    h += `<div class="card"><h2>What it lists</h2><table>
-      <tr><th>Item</th><th>Category</th><th>Buy</th><th>Sell</th><th>Source</th></tr>`;
-    rows.forEach(x => {
+    const shown = rows.slice()
+      .sort((a, b) => a[0][IX.it.name].localeCompare(b[0][IX.it.name]))
+      .slice(0, 300);
+    h += `<div class="card"><h2>What UEX has reports for</h2>
+      <div class="tablewrap"><table>
+      <tr><th>Item</th><th>Category</th><th>Buy</th><th>Sell</th>
+        <th>What this row is</th></tr>`;
+    shown.forEach(([it, p]) => {
       h += `<tr>
-        <td><a href="#i/${encodeURIComponent(x.source_kind + ":" + x.item_uex_id)}">
-          ${esc(x.item_name)}</a></td>
-        <td style="color:var(--muted)">${esc(x.category_name || "—")}</td>
-        <td class="price">${priceCell(x.price_buy, "")}</td>
-        <td class="sell">${priceCell(x.price_sell, "")}</td>
-        <td><span class="conf ${age(x.source_date_modified).cls}">snapshot
-          ${esc(x.snapshot_key)} · reported ${age(x.source_date_modified).text}</span></td>
-        </tr>`;
+        <td><a href="#i/${encodeURIComponent(refOf(it))}">${esc(it[IX.it.name])}</a></td>
+        <td style="color:var(--muted)">${esc(catName(it) || "—")}</td>
+        <td class="price">${priceCell(p[IX.pr.buy])}</td>
+        <td class="sell">${priceCell(p[IX.pr.sell])}</td>
+        <td>${reported(p)}</td></tr>`;
     });
-    h += `</table></div>`;
+    h += `</table></div></div>`;
+    if (rows.length > shown.length) {
+      h += `<p style="color:var(--muted);font-size:15px">Showing ${shown.length}
+        of ${fmt(rows.length)} rows.</p>`;
+    }
   }
-
-  if (r.body.total > rows.length) {
-    h += `<p style="color:var(--muted);font-size:15px">Showing ${rows.length}
-      of ${fmt(r.body.total)} rows.</p>`;
-  }
-  return view.innerHTML = h + "</div>";
+  return h + whatThisIs() + "</div>";
 }
 
 /* ================= routing ================= */
-function go() {
-  const v = document.getElementById("q").value.trim();
-  if (v) location.hash = "s/" + encodeURIComponent(v);
+/* Filters ride in the hash so a filtered search is a link. */
+function parseHash() {
+  const raw = location.hash.slice(1);
+  const cut = raw.indexOf("?");
+  const path = decodeURIComponent(cut < 0 ? raw : raw.slice(0, cut));
+  const p = new URLSearchParams(cut < 0 ? "" : raw.slice(cut + 1));
+  const num = k => (p.get(k) === null || p.get(k) === "" ? null : Number(p.get(k)));
+  return { path, f: { cat: p.get("c") === null ? -1 : Number(p.get("c")),
+                      min: num("min"), max: num("max") } };
 }
 
-function wireBox() {
+function hashFor(q, f) {
+  const p = new URLSearchParams();
+  if (f.cat >= 0) p.set("c", f.cat);
+  if (f.min != null && !isNaN(f.min)) p.set("min", f.min);
+  if (f.max != null && !isNaN(f.max)) p.set("max", f.max);
+  const qs = p.toString();
+  return "s/" + encodeURIComponent(q) + (qs ? "?" + qs : "");
+}
+
+function currentQuery() {
+  const box = document.getElementById("q");
+  if (box) return box.value.trim();
+  const { path } = parseHash();
+  return path.startsWith("s/") ? path.slice(2) : "";
+}
+
+function go() {
+  location.hash = hashFor(currentQuery(), parseHash().f);
+}
+
+function applyFilters() {
+  const val = id => {
+    const el = document.getElementById(id);
+    return el && el.value !== "" ? Number(el.value) : null;
+  };
+  const cat = document.getElementById("fcat");
+  location.hash = hashFor(currentQuery(), {
+    cat: cat ? Number(cat.value) : -1, min: val("fmin"), max: val("fmax"),
+  });
+}
+
+function clearFilters() {
+  location.hash = hashFor(currentQuery(), { cat: -1, min: null, max: null });
+}
+
+function wireBox(focus) {
   const q = document.getElementById("q");
-  if (q) q.onkeydown = e => { if (e.key === "Enter") go(); };
+  if (q) {
+    q.onkeydown = e => { if (e.key === "Enter") go(); };
+    if (focus) { q.focus(); q.selectionStart = q.value.length; }
+  }
   window.scrollTo(0, 0);
 }
 
-async function route() {
-  const h = decodeURIComponent(location.hash.slice(1));
-  const view = $("#view");
-
-  /* Something on screen immediately, so a slow API never looks like a hang -
-   * and it is replaced by a real answer or an honest failure, never left. */
-  if (h) view.innerHTML = searchBox(h.startsWith("s/") ? h.slice(2) : "")
-    + `<div style="max-width:900px;margin:18px auto 0;color:var(--muted)">Looking…</div>`;
-
-  try {
-    if (h.startsWith("i/")) await item(h.slice(2));
-    else if (h.startsWith("p/")) await terminal(h.slice(2));
-    else if (h.startsWith("s/")) await results(h.slice(2));
-    else view.innerHTML = home();
-  } catch (err) {
-    /* A thrown fetch (DNS failure, offline, CORS) must land somewhere the
-     * reader can see. The alternative is the spinner that never stops. */
-    view.innerHTML = searchBox("") +
-      `<div style="max-width:900px;margin:18px auto 0">${apiDown(null)}
-       <p class="conf">${esc(err && err.message)}</p></div>`;
-  }
-  wireBox();
+/* The one failure this page can still have is the DATA FILE not loading -
+ * which is a deploy fault, not a network fault, since it ships beside the
+ * page. It gets a sentence rather than a blank screen. */
+function noData() {
+  return `<div class="none" style="max-width:760px;margin:8vh auto">
+    <b>The price data did not load.</b>
+    This page reads find_data.gen.js, which ships alongside it. If you are
+    seeing this, that file is missing from the deploy — nothing you typed
+    caused it, and nothing here is a search that found nothing.</div>`;
 }
 
+function route() {
+  const view = $("#view");
+  if (!D || !IX) { view.innerHTML = noData(); return; }
+  const { path, f } = parseHash();
+  const hadFocus = document.activeElement
+    && document.activeElement.id === "q";
+
+  if (path.startsWith("i/")) view.innerHTML = item(path.slice(2));
+  else if (path.startsWith("p/")) view.innerHTML = terminal(path.slice(2));
+  else if (path.startsWith("s/")) view.innerHTML = results(path.slice(2), f);
+  else view.innerHTML = home();
+
+  wireBox(hadFocus);
+}
+
+buildIndexes();
 addEventListener("hashchange", route);
 route();
+
+/* Exposed for checks/_verify_find_page.mjs, which drives these functions
+ * directly. The harness slices this block out of the BUILT page rather than
+ * re-implementing it, so what it tests is what ships. */
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { search, item, terminal, results, home, buildIndexes,
+                     parseHash, hashFor, reported, whatThisIs, priceCell,
+                     AGG, REF, BY_TERMINAL };
+}
 </script>
 </html>

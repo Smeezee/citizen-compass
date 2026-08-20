@@ -222,6 +222,13 @@ def collect(session):
     # An item whose category_id does not resolve still knows what UEX called
     # it, and that string is carried rather than dropped - a blank category on
     # the page would be us losing the source's own answer.
+    verified = {
+        t: session.execute(text(
+            "SELECT count(*) FROM " + t + " WHERE last_verified_patch IS NOT NULL"
+        )).scalar()
+        for t in ("shop_items", "terminals")
+    }
+
     items, orphan_cats = [], {}
     for (pk, source_kind, uex_id, name, category_id, category_name,
          size, company) in item_rows:
@@ -253,6 +260,12 @@ def collect(session):
             "terminals": len(terms),
             "shop_items": len(item_rows),
             "item_prices": len(price_rows),
+            # How much of this has been checked against a game patch. Today
+            # the answer is none of it, and the page says so IN GENERATED
+            # WORDS rather than in a sentence somebody typed - so that when
+            # the answer changes the page changes with it instead of lying.
+            "shop_items_verified": verified["shop_items"],
+            "terminals_verified": verified["terminals"],
         },
     }
 

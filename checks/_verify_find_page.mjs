@@ -1,30 +1,34 @@
 /**
- * E1/E3/E4 acceptance for testing/_deploy/find.html, driven against a REAL API.
+ * H2 acceptance for testing/_deploy/find.html: FIND reads a FILE, not a server.
  *
- * No browser is available on this machine and nothing was installed to get one
- * (rule 7 - downloaded code is data, not something to run). So instead of a
- * reimplementation of the page, this loads THE PAGE'S OWN SCRIPT, verbatim,
- * out of find.html, gives it the handful of browser globals it touches
- * (document / location / fetch / addEventListener), and calls its real view
- * functions against the running API.
+ * THE CONTROL THE ORDER NAMES, AND THE ONLY ONE THAT PROVES THE CHANGE:
+ * "with the network blocked after first load, search still works."
  *
- * That is weaker than a browser in one specific way, stated plainly rather
- * than glossed: it proves the page's LOGIC and the HTML it generates, and it
- * does NOT prove layout, CSS, or that a browser's CORS enforcement is
- * satisfied. The CORS headers are checked separately, over real HTTP, in
- * checks/_verify_shop_api.py's sibling run - see the ledger.
+ * So the network is blocked - properly, not by hoping. Every network global a
+ * browser would offer (fetch, XMLHttpRequest, WebSocket, EventSource,
+ * navigator.sendBeacon, import) is replaced with something that THROWS on
+ * call, and the harness then proves the poison is live by calling it itself
+ * and requiring the throw. A "network blocked" test whose blocker is a no-op
+ * is exactly the silent success this project keeps finding: it would pass for
+ * a page that fetched happily.
  *
- * What it does prove, which is what E1/E3/E4 actually ask for:
- *   - the invented-data block is gone and nothing references it
- *   - real rows come back and are rendered
- *   - buy and sell land in SEPARATE columns (E3)
- *   - every price row shows its snapshot and its age, and unverified data is
- *     visibly flagged (E4)
- *   - a search matching nothing produces an honest empty state, not a spinner
- *     and not filler (the E control)
- *   - an unreachable API produces a visible failure, not a hang
+ * Then the page's real view functions are driven and required to render real
+ * rows anyway.
  *
- * Usage:  node checks/_verify_find_page.mjs [apiBase]
+ * HOW THE PAGE IS LOADED. No browser is available on this machine and nothing
+ * was installed to get one (rule 7). So this loads THE PAGE'S OWN SCRIPT,
+ * verbatim, sliced out of the BUILT find.html, plus the generated data file
+ * exactly as the page's <script src> would - and gives them the handful of
+ * browser globals they touch. What is tested is what ships; there is no
+ * re-implementation of the page in here.
+ *
+ * STATED LIMIT, not glossed: this proves the page's LOGIC and the HTML it
+ * produces. It does not prove layout, CSS, or a browser's own enforcement of
+ * anything. Same limit and same reason as before.
+ *
+ * --self-test inverts every expectation and must exit non-zero.
+ *
+ * Usage:  node checks/_verify_find_page.mjs [--self-test]
  */
 
 import { readFileSync } from "node:fs";
@@ -33,163 +37,289 @@ import { dirname, join } from "node:path";
 import vm from "node:vm";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const PAGE = join(HERE, "..", "testing", "_deploy", "find.html");
-const API = process.argv[2] || "http://127.0.0.1:8077";
+const DEPLOY = join(HERE, "..", "testing", "_deploy");
+const PAGE = join(DEPLOY, "find.html");
+const DATA = join(DEPLOY, "find_data.gen.js");
+const SELFTEST = process.argv.includes("--self-test");
 
 let passed = 0;
 const failures = [];
-function record(ok, label, detail = "") {
-  if (ok) { passed++; console.log(`  ok   ${label}`); }
+function record(got, label, detail = "") {
+  const want = SELFTEST ? !got : got;
+  if (want) { passed++; console.log(`  ok   ${label}`); }
   else { failures.push(`${label} ${detail}`.trim()); console.log(`  FAIL ${label} ${detail}`); }
 }
 
 const html = readFileSync(PAGE, "utf-8");
+const dataJs = readFileSync(DATA, "utf-8");
 
-// ---------------------------------------------------------------- static
-console.log("--- E1: the invented data is gone ---");
-record(!/const LOC\s*=/.test(html), "the invented LOC table is gone");
-record(!/const SHOP\s*=/.test(html), "the invented SHOP table is gone");
-record(!/const ITEM\s*=/.test(html), "the invented ITEM table is gone");
-record(!/Seventeen invented items/.test(html),
-  "the 'seventeen invented items' explainer is gone");
-record(/api\/v1\/shop/.test(html), "the page calls /api/v1/shop");
+// Comments stripped for the code-shape assertions below. The page's own header
+// comment says "every fetch() is gone", and a check that read that sentence as
+// a fetch call would fail the page for explaining itself. The stripper is
+// proven live a few lines down - otherwise it would also hide a real fetch
+// somebody had commented out and forgotten to delete.
+const code = html.replace(/\/\*[\s\S]*?\*\//g, "")
+                 .replace(/^\s*\/\/.*$/gm, "");
 
-console.log("\n--- E2: the banner and the legal text are UNTOUCHED ---");
+// ------------------------------------------------------------- static
+console.log("--- H2: the API is off the read path, in the SHIPPED bytes ---");
+record(/fetch\(\)/.test(html) && !/fetch/.test(code),
+  "the comment stripper works: the page's prose mentions fetch(), the code "
+  + "does not", "if this fails, every assertion below it is checking nothing");
+record(!/\bfetch\s*\(/.test(code), "no fetch( call anywhere in the built page");
+record(!/XMLHttpRequest/.test(code), "no XMLHttpRequest either");
+record(!/API_BASE/.test(code), "the API_BASE constant is gone");
+record(!/railway\.app/.test(code), "the Railway hostname is gone from the page");
+record(!/\/api\/v1\/shop/.test(code), "no /api/v1/shop path is referenced");
+record(/<script src="find_data\.gen\.js">/.test(html),
+  "the page loads the generated data file instead");
+
+console.log("\n--- the data file shipped beside it ---");
+record(/const FIND_DATA=/.test(dataJs), "find_data.gen.js is in _deploy");
+record(/GENERATED by build_find_data\.py/.test(dataJs),
+  "and names the generator that wrote it");
+record(!/generated at/i.test(dataJs.split("const FIND_SCHEMA")[0]),
+  "and carries no generation timestamp (H6)");
+
+console.log("\n--- the banner and the legal text are UNTOUCHED ---");
 record(/MOCKUP — prices and shops are invented/.test(html),
-  "the MOCKUP banner is still present, because the deployed API is not "
-  + "confirmed (E2)");
+  "the MOCKUP banner is still present - H3 removes it, and only after a live "
+  + "fetch of the deployed page");
 record(/Cloud Imperium Rights LLC/.test(html),
   "the trademark footer is intact (rule 8 - never edited)");
 record(/unofficial Star Citizen fan site/.test(html),
   "the Fan Kit disclaimer is intact (rule 8)");
 
-// ------------------------------------------------------- load the real JS
-const script = html.match(/<script>([\s\S]*)<\/script>/)[1];
+// -------------------------------------------- the sandbox, network poisoned
+const NETWORK_ERROR = "NETWORK BLOCKED BY THE HARNESS - the page touched it";
+function poison(name) {
+  return function blocked() {
+    throw new Error(`${NETWORK_ERROR}: ${name}()`);
+  };
+}
 
 let currentHash = "";
 const view = { innerHTML: "" };
-const qBox = { value: "", onkeydown: null };
+const qBox = { value: "", onkeydown: null, focus() {}, selectionStart: 0 };
+const controls = new Map();
 
-const sandbox = {
-  console,
-  fetch,
-  URLSearchParams,
-  Date,
-  Number,
-  Math,
-  String,
-  encodeURIComponent,
-  decodeURIComponent,
-  isNaN,
-  addEventListener() {},
-  scrollTo() {},
-  location: { get hash() { return currentHash; }, set hash(v) { currentHash = v; }, search: `?api=${API}` },
-  document: {
-    querySelector: (s) => (s === "#view" ? view : s === "#q" ? qBox : null),
-    getElementById: (id) => (id === "view" ? view : id === "q" ? qBox : null),
-  },
-};
-sandbox.window = sandbox;
-sandbox.globalThis = sandbox;
-vm.createContext(sandbox);
+function makeSandbox() {
+  const sandbox = {
+    console, URLSearchParams, Date, Number, Math, String, Array, Object, Map,
+    Set, JSON, RegExp, Error, isNaN, parseInt, parseFloat,
+    encodeURIComponent, decodeURIComponent,
+    // EVERY door to the network, nailed shut and audibly so.
+    fetch: poison("fetch"),
+    XMLHttpRequest: poison("XMLHttpRequest"),
+    WebSocket: poison("WebSocket"),
+    EventSource: poison("EventSource"),
+    navigator: { sendBeacon: poison("navigator.sendBeacon"), onLine: false },
+    addEventListener() {},
+    scrollTo() {},
+    location: {
+      get hash() { return currentHash; },
+      set hash(v) { currentHash = v; },
+      search: "",
+    },
+    document: {
+      activeElement: null,
+      querySelector: (s) => (s === "#view" ? view : s === "#q" ? qBox : null),
+      getElementById: (id) => (
+        id === "view" ? view : id === "q" ? qBox : controls.get(id) || null),
+    },
+  };
+  sandbox.window = sandbox;
+  sandbox.globalThis = sandbox;
+  vm.createContext(sandbox);
+  return sandbox;
+}
+
+const script = html.match(/<script>([\s\S]*)<\/script>/)[1];
+const sandbox = makeSandbox();
+// `const FIND_DATA = ...` inside a vm script is SCRIPT-scoped, not a property
+// of the context object - so sandbox.FIND_DATA is undefined even though the
+// page can see it perfectly well. Read it the way the page does, by
+// evaluating the name in the same context.
+const g = (name) => vm.runInContext(name, sandbox);
+vm.runInContext(dataJs, sandbox, { filename: "find_data.gen.js" });
 vm.runInContext(script, sandbox, { filename: "find.html:script" });
-record(typeof sandbox.route === "function", "the page's own script loaded and exposes route()");
 
-async function render(hash) {
+console.log("\n--- THE POISON IS LIVE (a blocker that does not block is not one) ---");
+let threw = false;
+try { sandbox.fetch("http://example.invalid/"); } catch (e) {
+  threw = e.message.includes(NETWORK_ERROR);
+}
+record(threw, "calling fetch() inside the sandbox throws, so 'network blocked' "
+  + "means blocked");
+let xhrThrew = false;
+try { new sandbox.XMLHttpRequest(); } catch (e) {
+  xhrThrew = e.message.includes(NETWORK_ERROR);
+}
+record(xhrThrew, "and so does XMLHttpRequest");
+record(typeof sandbox.route === "function",
+  "the page's own script loaded and exposes route()");
+record(g("FIND_COUNTS") && g("FIND_COUNTS").item_prices > 0,
+  "the data file loaded and reports a price-row count",
+  `counts=${JSON.stringify(g("FIND_COUNTS"))}`);
+
+function render(hash) {
   // The leading "#" matters: route() does location.hash.slice(1), because a
-  // real browser hash always carries it. Without it every route fell through
-  // to home() and the first version of this control "passed" the search test
-  // only because the home page's hint text happens to contain the word
-  // "Omnisky". A control that green-lights the wrong page is worse than none.
+  // real browser hash always carries it.
   currentHash = "#" + hash;
   view.innerHTML = "";
-  await sandbox.route();
+  sandbox.route();
   return view.innerHTML;
 }
 
-function reload(apiBase) {
-  // A FRESH context. Re-running the script in the same one throws on the
-  // const API_BASE redeclaration, which is a harness bug rather than a page
-  // bug - the page is only ever loaded once in a browser.
-  const fresh = { ...sandbox, location: { ...sandbox.location, search: `?api=${apiBase}` } };
-  fresh.window = fresh;
-  fresh.globalThis = fresh;
-  vm.createContext(fresh);
-  vm.runInContext(script, fresh, { filename: "find.html:script(reload)" });
-  return fresh;
-}
-
-// -------------------------------------------------------------- live runs
-console.log("\n--- E1: real rows come back and render ---");
-const health = await fetch(`${API}/health`).then(r => r.ok).catch(() => false);
-if (!health) {
-  console.log(`  FAIL the API at ${API} is not answering - cannot verify`);
-  process.exit(1);
-}
-
-const search = await render("s/omnisky");
+// ------------------------------------------------- the whole point of H2
+console.log("\n--- H2's NAMED CONTROL: search works with the network blocked ---");
+const search = render("s/omnisky");
 record(/Omnisky/.test(search), "a search for 'omnisky' renders real item names");
 record(/result/.test(search), "and states how many results there were");
+record(!/could not|can't reach|unreachable/i.test(search),
+  "and no network-failure message appears");
 record(!/invented/i.test(search.replace(/<!--[\s\S]*?-->/g, "")),
   "and the word 'invented' appears nowhere in the rendered output");
 
-const item = await render("i/item:1");
+const item = render("i/item:1");
 record(/Omnisky III Cannon/.test(item), "an item page renders the real item");
 record(/aUEC/.test(item), "with real prices in aUEC");
 
-console.log("\n--- E3: buy and sell are SEPARATE columns ---");
+console.log("\n--- prices: buy and sell are SEPARATE columns ---");
 record(/<th>Buy<\/th>/.test(item) && /<th>Sell<\/th>/.test(item),
   "the price table has a Buy column AND a Sell column");
-record(!/average|blended|avg/i.test(item),
-  "and no averaged or blended figure appears anywhere on the page");
-// A row where one side has no data must render blank, never 0.
+// Scoped to the TABLE, because the page's own honesty paragraph uses the word
+// "averaged" to explain what UEX's commodity records contain - and forbidding
+// the explanation would be the opposite of what H4 asks for.
+const priceTable = item.slice(item.indexOf("<table>"), item.indexOf("</table>"));
+record(!/average|blended|avg/i.test(priceTable),
+  "and no averaged or blended figure appears in the price table");
+record(!/<th>(Average|Avg|Price)<\/th>/i.test(priceTable),
+  "and there is no single combined Price column");
 record(/—<span class="conf"> no data<\/span>/.test(item),
   "a missing side renders as a blank marked 'no data', not as 0",
   "no blank cell was produced - check an item with a one-sided price");
 record(!/>0<\/span>/.test(item), "and no price cell contains a bare 0");
 
-console.log("\n--- E4: provenance and the unverified flag ---");
-record(/snapshot 20260801T235530Z/.test(item),
-  "every price row names the snapshot it came from");
-record(/reported /.test(item), "and how old the underlying report is");
-record(/not verified against a patch/.test(item),
-  "unverified data is VISIBLY FLAGGED rather than shown as though confirmed");
+console.log("\n--- R6: the snapshot date is on EVERY price row ---");
+const rowCount = (item.match(/<tr class=/g) || []).length;
+const datedRows = (item.match(/UEX reported this in the snapshot taken/g) || []).length;
+record(rowCount > 0, `the item page rendered ${rowCount} price rows`);
+record(datedRows === rowCount,
+  "and EVERY one of them carries the snapshot date, not just the page header",
+  `${datedRows} dated rows vs ${rowCount} rows`);
+record(/20260801T235530Z/.test(item), "the snapshot key itself is on the row");
+record(/UEX last updated the row/.test(item),
+  "and so is UEX's own last-modified date for that row");
 
-console.log("\n--- D3 via the page: a terminal renders its stock ---");
-const terminal = await render("p/111");
+console.log("\n--- H4: what the page claims, and what it does not ---");
+const claims = [item, search, render("")].join("\n");
+record(!/\bis the price\b/i.test(claims), "the page never says 'is the price'");
+record(!/measured (from|in) the game/i.test(claims),
+  "nor 'measured from the game'");
+// The page SAYS "Nothing here is read out of the game", which is the honest
+// statement H4 wants. Strip the negated forms before looking for an
+// affirmative one, so the check tests the claim and not the vocabulary.
+const affirmative = claims
+  .replace(/not\s+read\s+out\s+of\s+the\s+game/gi, "")
+  .replace(/nothing\s+here\s+is\s+read\s+out\s+of\s+the\s+game/gi, "")
+  .replace(/are\s+NOT\s+read\s+out\s+of\s+the\s+game/gi, "");
+record(!/(read|taken)\s+(straight\s+)?(out of|from)\s+the\s+game(?! files)/i
+  .test(affirmative),
+  "nor claims the figures are read out of the game");
+record(!/\b(official|confirmed|verified) price/i.test(claims),
+  "nor calls a price official, confirmed or verified");
+record(/players submit what they saw/i.test(item),
+  "it says plainly that players submit these figures");
+record(/rates the submissions for confidence/i.test(item),
+  "and that UEX rates them for confidence");
+record(/UEX reported this price at this terminal in the snapshot taken/i.test(item),
+  "and states the provable claim in the order's own words");
+
+console.log("\n--- a terminal renders its stock, still with no network ---");
+const terminal = render("p/111");
 record(/Ship Weapons/.test(terminal), "the terminal page renders the real terminal");
 record(/<th>Buy<\/th>/.test(terminal) && /<th>Sell<\/th>/.test(terminal),
   "with buy and sell separate here too");
 record(/Orison, Crusader, Stanton/.test(terminal),
   "and a resolved location with no 'None' in it");
-record(!/None/.test(terminal.replace(/no data/g, "")),
+// The original point of this one: a Python `None` leaking into a string. The
+// page's own generated sentence legitimately begins "None of the 7,932
+// items...", so that phrase is excluded by name rather than by loosening the
+// check into something that would miss a real leak.
+record(!/None/.test(terminal.replace(/no data/g, "")
+                            .replace(/None of the/g, "")),
   "no literal 'None' anywhere in the rendered terminal page");
 
+console.log("\n--- H2: the category filter and the price range run in the browser ---");
+const filtered = render("s/?c=0");
+record(/<select id="fcat"/.test(filtered), "the category filter renders");
+record(/<input id="fmin"/.test(filtered) && /<input id="fmax"/.test(filtered),
+  "and so does the price range");
+// Filters have to actually filter. An unfiltered count and a filtered count
+// that are equal would mean the control is decorative.
+const search_ = g("search");
+const all = search_("", { cat: -1, min: null, max: null }).length;
+const inCat = search_("", { cat: 0, min: null, max: null }).length;
+record(all === g("FIND_COUNTS").shop_items,
+  "an empty search with no filters returns every item",
+  `${all} vs ${g("FIND_COUNTS").shop_items}`);
+record(inCat > 0 && inCat < all,
+  "a category filter narrows it to a real, smaller set",
+  `category 0 -> ${inCat} of ${all}`);
+const cheap = search_("", { cat: -1, min: null, max: 100 }).length;
+const dear = search_("", { cat: -1, min: 100000, max: null }).length;
+record(cheap > 0 && cheap < all, `a max price of 100 narrows it (${cheap})`);
+record(dear > 0 && dear < all, `a min price of 100,000 narrows it (${dear})`);
+record(cheap + dear < all, "and the two ranges are not the same set");
+
+console.log("\n--- absence is data ---");
+const noShop = render("i/item:" + (() => {
+  // An item the data says nothing stocks. Found from the data, not typed in,
+  // so this stays true when the snapshot changes.
+  const items = g("FIND_DATA").items;
+  const prices = g("FIND_SCHEMA").items.indexOf("prices");
+  const uex = g("FIND_SCHEMA").items.indexOf("uex_id");
+  const kind = g("FIND_SCHEMA").items.indexOf("kind");
+  const hit = items.find(it => it[prices].length === 0 && it[kind] === 0);
+  return hit ? hit[uex] : "0";
+})());
+record(/No terminal we hold buys or sells this/.test(noShop),
+  "an item nothing stocks says so, as an answer rather than as a gap");
+record(!/aUEC/.test(noShop.split('class="answer"')[1].split("</div>")[0]),
+  "and invents no price for it");
+
 console.log("\n--- THE CONTROL: a search matching nothing ---");
-const empty = await render("s/zzzz_no_such_item_zzzz");
+const empty = render("s/zzzz_no_such_item_zzzz");
 record(/Nothing matched/.test(empty), "shows an honest empty state");
-record(!/Looking…/.test(empty), "and is NOT left on the loading placeholder");
+record(!/Looking…/.test(empty), "and is NOT left on a loading placeholder");
 record(!/aUEC/.test(empty), "and invents no filler rows");
 
-console.log("\n--- THE OTHER CONTROL: an unreachable API ---");
-// A dead port. The page must SAY so - the failure this guards against is a
-// spinner that never resolves, which looks identical to a slow network.
-const offlineSandbox = reload("http://127.0.0.1:9");
+console.log("\n--- THE OTHER CONTROL: the data file missing ---");
+// The one failure this page can still have. It must SAY so rather than render
+// a blank screen that reads as "there is nothing".
+const bare = makeSandbox();
+vm.runInContext(script, bare, { filename: "find.html:script(no data)" });
 currentHash = "#s/omnisky";
 view.innerHTML = "";
-await offlineSandbox.route();
-const offline = view.innerHTML;
-record(/can't reach the price data/.test(offline),
-  "an unreachable API produces a visible, explained failure");
-record(!/Looking…/.test(offline), "and not a spinner left running forever");
+bare.route();
+const missing = view.innerHTML;
+record(/The price data did not load/.test(missing),
+  "a missing data file produces a visible, explained failure");
+record(!/Nothing matched/.test(missing),
+  "and is NOT reported as a search that found nothing");
 
 console.log("\n" + "=".repeat(62));
+if (SELFTEST) {
+  console.log("--self-test: expectations were inverted, so a non-zero exit is");
+  console.log("the correct outcome. A zero here means the assertions are inert.");
+}
 if (failures.length) {
   console.log(`FAILED ${failures.length} of ${passed + failures.length}:`);
   failures.forEach(f => console.log("  -", f));
   process.exit(1);
 }
-console.log(`All ${passed} assertions passed against ${API}.`);
+console.log(`All ${passed} assertions passed with the network blocked.`);
 console.log("NOT PROVEN HERE (stated rather than implied): browser layout, CSS,");
-console.log("and real browser CORS enforcement. No browser is available on this");
+console.log("and how a real browser behaves. No browser is available on this");
 console.log("machine and none was installed to get one.");
