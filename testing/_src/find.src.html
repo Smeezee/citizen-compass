@@ -130,6 +130,7 @@ trademarks of Cloud Imperium Rights LLC.
 </footer>
 
 <script src="find_data.gen.js"></script>
+<script src="find_checksum.gen.js"></script>
 <script>
 /* ============ FIND reads a file, not a server ============
  *
@@ -168,6 +169,7 @@ trademarks of Cloud Imperium Rights LLC.
  * data rather than duplicated here as magic indexes that drift. */
 const D = (typeof FIND_DATA !== "undefined") ? FIND_DATA : null;
 const COUNTS = (typeof FIND_COUNTS !== "undefined") ? FIND_COUNTS : {};
+const SUM = (typeof FIND_CHECKSUM !== "undefined") ? FIND_CHECKSUM : null;
 const IX = (() => {
   const at = (list, name) => list.indexOf(name);
   const S = (typeof FIND_SCHEMA !== "undefined") ? FIND_SCHEMA : null;
@@ -324,6 +326,41 @@ function whatThisIs() {
     Everything here comes from ${snapList}. ${unverified}</div>`;
 }
 
+/* R7/H5. The file this page actually read, downloadable, with its checksum
+ * printed beside it.
+ *
+ * This costs nothing and it is the strongest form of "we can prove it": a
+ * visitor does not have to take a single number here on trust. They can pull
+ * the file down, hash it, confirm it is the one described, and read every row
+ * themselves.
+ *
+ * The hash is GENERATED beside the data in the same pass, never typed, and the
+ * generator's --check refuses a checksum that describes a previous version of
+ * the file - a correct data file beside a stale checksum would tell a visitor
+ * it had been tampered with when it had not. */
+function sourceBox() {
+  if (!SUM) {
+    return `<div class="srcbox"><b>The download is not available.</b>
+      The checksum file did not load, and we will not offer a file to download
+      without the hash that lets you check it.</div>`;
+  }
+  const kb = Math.round(SUM.bytes / 1024).toLocaleString("en-US");
+  return `<div class="srcbox">
+    <b>Check it yourself.</b> This is the exact file the page just read —
+    ${fmt(COUNTS.item_prices)} price rows, ${kb} KB. Download it, hash it, and
+    confirm it matches what is printed here.
+    <br><br>
+    <a href="${esc(SUM.file)}" download>${esc(SUM.file)}</a>
+    &nbsp;·&nbsp; <code>${esc(SUM.algorithm)}: ${esc(SUM.sha256)}</code>
+    <br><br>
+    Windows: <code>certutil -hashfile ${esc(SUM.file)} SHA256</code><br>
+    Linux or macOS: <code>sha256sum ${esc(SUM.file)}</code>
+    <br><br>
+    It is a JavaScript file only because that is how the page loads it without
+    a server. The data inside it is plain JSON, and
+    <code>FIND_SCHEMA</code> at the top says what every column means.</div>`;
+}
+
 /* ================= views ================= */
 function searchBox(val, hero) {
   return `<div class="searchwrap${hero ? " hero" : ""}">
@@ -403,7 +440,8 @@ function home() {
     and shipped with the page — so it works whether or not our server is up.
     <br><br>Every figure is a <b>UEX report</b>, dated. See what that means
     below.</div>`
-    + `<div style="max-width:760px;margin:14px auto 0">${whatThisIs()}</div>`;
+    + `<div style="max-width:760px;margin:14px auto 0">${whatThisIs()}</div>`
+    + sourceBox();
 }
 
 function filterBarWrapper(f) {

@@ -59,6 +59,10 @@ DEFAULT_ALLOWED_FILES = {
     # search - and this guard, running standalone before a deploy, is the last
     # thing that would notice.
     "find_data.gen.js",
+    # Its published sha256, added 2026-08-20 (R7/H5). Without it the page
+    # refuses to offer the download at all, rather than offering a file with
+    # no way to check it.
+    "find_checksum.gen.js",
     "holo_data.gen.js",
     "stick-test.html",
     # The public collector download page, added 2026-08-15 with

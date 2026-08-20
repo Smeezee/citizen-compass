@@ -591,6 +591,9 @@ PAGES = [
     # the gate above runs before anything here is copied - so a stale copy
     # cannot ship.
     ('find_data.gen.js', 'find_data.gen.js'),
+    # Its published sha256 (R7/H5). A file cannot carry its own hash, so this
+    # is a second file - generated in the same pass, never typed.
+    ('find_checksum.gen.js', 'find_checksum.gen.js'),
     ('kb_modes.gen.js',  'kb_modes.gen.js'),
     # The exporter ships as its own file rather than inlined into the page:
     # inlining would create a second copy of code that already has an owner in

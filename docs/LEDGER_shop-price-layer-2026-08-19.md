@@ -1677,3 +1677,47 @@ CONTROL  <sha>  checks/_verify_find_wording.mjs - 29 assertions, and it is a
     a file. _verify_find_page.mjs keeps only the structural half: that the
     provable claim is present at all.
 
+H5  DONE  <sha>  THE FILE THE PAGE READ, DOWNLOADABLE, WITH ITS CHECKSUM
+    PRINTED BESIDE IT.
+    AN INTERPRETATION, STATED RATHER THAN ASSUMED. R7 says "the raw snapshot".
+    The UEX snapshot directories are several MB of JSON and are gitignored;
+    what R7's own reason sentence asks for is that "a visitor can check every
+    number against THE FILE THE PAGE ACTUALLY READ". So what is published is
+    find_data.gen.js - the exact bytes the page loaded - not the upstream JSON.
+    The page names the upstream snapshots it came from, so the chain is
+    followable either way. If Sleven meant the UEX files themselves, that is a
+    second download and a bigger deploy, and it is his call.
+    THE CHECKSUM IS GENERATED, NEVER TYPED. build_find_data.py writes
+    find_checksum.gen.js in the same pass, from the same bytes. A second file
+    for one unavoidable reason: a file cannot contain its own sha256.
+    AND --check REFUSES A STALE CHECKSUM. A correct data file beside a checksum
+    describing the previous one is WORSE than no checksum - it tells a visitor
+    the file was tampered with when it was not.
+    IF THE CHECKSUM FILE FAILS TO LOAD, THE PAGE WITHHOLDS THE DOWNLOAD
+    ENTIRELY and says why. Offering a file with no way to check it is the
+    opposite of the point.
+    The panel gives the commands: certutil -hashfile on Windows, sha256sum
+    elsewhere. And it says why the file has a .js extension - that is how the
+    page loads it without a server; the data inside is plain JSON and
+    FIND_SCHEMA at the top says what every column means.
+
+CONTROL  <sha>  checks/_verify_find_deployed.mjs, extended - now 27 assertions.
+    H5's named control is "download it, hash it, confirm it matches what the
+    page claims", so all three happen against the DEPLOYED origin:
+      downloaded  993,157 bytes
+      sha256      dce035da5b436b6180833ff0b127ae27485d101366c49eab4edefc9045040f5f
+      page claims 993,157 bytes, same sha256
+    DOWNLOADED AS BYTES, not re-encoded from a string. The last time this
+    project compared a served file with a local one it compared a re-encoded
+    string, produced a mismatch, and the mismatch was the check's fault rather
+    than the deploy's.
+    AND THE COMPARISON IS PROVEN ABLE TO FAIL: one byte in the middle of the
+    downloaded buffer is flipped and the hash must stop matching. Without that
+    this is a string compared with itself.
+    ONE THING WORTH KNOWING: the first run after the deploy got HTTP 404 on
+    find_checksum.gen.js and the harness refused - NOT VERIFIED, exit 1, "the
+    banner stays on". The asset appeared a moment later. That is the harness
+    behaving correctly on a propagation gap rather than papering over it, and
+    it is recorded because a 404 that resolves on its own is exactly the kind
+    of thing that gets quietly retried out of a ledger.
+

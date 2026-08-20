@@ -19,12 +19,17 @@
  * price in aUEC and the snapshot date on the row. A 200 with a plausible byte
  * count is not evidence - a mockup returns that too.
  *
+ * H5 rides along here for the same reason: "download it, hash it, confirm it
+ * matches what the page claims" is a statement about the DEPLOYED site, and
+ * hashing a local copy would prove nothing about what a visitor receives.
+ *
  * --self-test inverts every expectation and must exit non-zero.
  *
  * Usage:  node checks/_verify_find_deployed.mjs [origin] [--self-test]
  */
 
 import vm from "node:vm";
+import { createHash } from "node:crypto";
 
 const args = process.argv.slice(2);
 const SELFTEST = args.includes("--self-test");
@@ -153,6 +158,48 @@ record(/result/.test(search), "and says how many");
 const terminal = render("p/111");
 record(/Ship Weapons/.test(terminal), "a terminal page renders from served data");
 record(/Orison, Crusader, Stanton/.test(terminal), "with its resolved location");
+
+// ---------------------------------------------------------------------------
+// H5's NAMED CONTROL: "download it, hash it, confirm it matches what the page
+// claims."
+//
+// Downloaded over HTTP from the deployed origin as BYTES - not re-encoded from
+// a string. The last time this project compared a served file against a local
+// one it compared a re-encoded string, got a mismatch, and the mismatch was
+// the check's fault rather than the deploy's.
+// ---------------------------------------------------------------------------
+console.log("\n--- H5: download the file, hash it, check the published sum ---");
+const sumJs = await get("/find_checksum.gen.js");
+if (!sumJs.ok) die(`/find_checksum.gen.js answered HTTP ${sumJs.status}`);
+vm.runInContext(sumJs.body, sandbox, { filename: "served:find_checksum.gen.js" });
+const published = g("FIND_CHECKSUM");
+record(!!published && /^[0-9a-f]{64}$/.test(published.sha256),
+  "the page publishes a sha256 for the data file",
+  JSON.stringify(published));
+
+const dl = await fetch(ORIGIN + "/" + published.file,
+                       { headers: { "Cache-Control": "no-cache" } })
+  .catch(e => die(`downloading ${published.file} threw: ${e.message}`));
+if (!dl.ok) die(`downloading ${published.file} gave HTTP ${dl.status}`);
+const bytes = Buffer.from(await dl.arrayBuffer());
+const actual = createHash("sha256").update(bytes).digest("hex");
+console.log(`      downloaded ${bytes.length} bytes, sha256 ${actual}`);
+console.log(`      page claims ${published.bytes} bytes, sha256 ${published.sha256}`);
+record(actual === published.sha256,
+  "the downloaded file hashes to exactly what the page claims");
+record(bytes.length === published.bytes,
+  "and its byte count matches too", `${bytes.length} vs ${published.bytes}`);
+
+// The hash comparison must be capable of failing. One flipped byte has to
+// change the answer - otherwise this is a string compared with itself.
+const tampered = Buffer.from(bytes);
+tampered[Math.floor(tampered.length / 2)] ^= 0x01;
+record(createHash("sha256").update(tampered).digest("hex") !== published.sha256,
+  "and a single flipped byte breaks the match, so the check can fail");
+record(published.file === "find_data.gen.js",
+  "the checksum describes the file the page actually reads, not some other one");
+record(/download/.test(page.body) && page.body.includes(published.file),
+  "and the served page offers that file for download");
 
 console.log("\n" + "=".repeat(62));
 if (SELFTEST) {
