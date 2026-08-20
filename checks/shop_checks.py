@@ -10,6 +10,11 @@ Phase C of docs/ORDER_shop-and-price-layer-RUN-CONTINUOUSLY-2026-08-19.md:
     C4  category price coverage how many items per category carry a price
     C5  staleness               age of each row's source date_modified
 
+and, from docs/ORDER_the-502-the-rulings-and-the-ship-panels-2026-08-19.md:
+
+    C7  source duplicates       one source file listing the same (item,
+                                terminal) pair twice with DIFFERENT prices
+
 Each takes a SQLAlchemy Session and returns list[Finding], matching
 checks/db_checks.py. Registered in CHECKERS at the bottom.
 
@@ -30,6 +35,9 @@ a price row pointing at an item that does not exist, for instance.
 """
 
 import datetime
+import io
+import json
+import os
 import statistics
 from collections import defaultdict
 
@@ -683,10 +691,151 @@ def price_staleness_check(session: Session, repo_root=None) -> list[Finding]:
     return findings
 
 
+
+# ---------------------------------------------------------------------------
+# C7 - the same pair, twice, in one source file, at two different prices
+#
+# WHY THIS IS A CHECKER AND NOT THE LEDGER LINE IT STARTED AS
+# -----------------------------------------------------------
+# The commodity import found "Stims" listed twice at HUR-L5 in one file, once
+# at 5,800 and once at 4,900. The import keeps the first occurrence, which is
+# correct STORAGE behaviour and overwrites nothing - but the discrepancy was
+# written into a ledger, and a one-off note in a ledger is not a check. If the
+# source did it once it will do it again, and nobody will be reading that
+# ledger on the day it happens.
+#
+# WHAT COUNTS AS A FINDING, AND WHAT DELIBERATELY DOES NOT
+# --------------------------------------------------------
+# A repeated pair whose prices AGREE is noise: the same observation listed
+# twice, nothing lost whichever one you keep, nothing for anyone to decide.
+# Four of the five repeats in the 08-06 commodity file are exactly that, and
+# flagging them would bury the one that matters four deep.
+#
+# A repeated pair whose prices DISAGREE is a real conflict. The importer has to
+# pick one, and picking one means the site shows a number while an equally
+# well-sourced different number sat next to it in the same file, in the same
+# pull, from the same upstream. That is worth someone's attention.
+#
+# THIS IS THE SOURCE FILE, NOT THE DATABASE. By the time the rows are in
+# `item_prices` the duplicate is already gone - the importer resolved it - so a
+# database-side checker could not see this at all. It has to read what UEX
+# actually sent.
+#
+# FLAG ONLY. It never resolves a conflict, never picks a price and never
+# touches the files. Standing rule, and the reason here is that neither price
+# is knowably the wrong one.
+# ---------------------------------------------------------------------------
+
+SNAPSHOT_ROOT = os.path.join("data-layer", "external-sources", "uexcorp",
+                             "snapshots")
+
+# (filename, the column holding the thing being priced, its display name)
+PRICE_SOURCES = [
+    ("items_prices_all.json", "id_item", "item_name"),
+    ("commodities_prices_all.json", "id_commodity", "commodity_name"),
+]
+
+
+def _price_pair(row):
+    """What has to differ before this is a conflict rather than a repeat.
+
+    The buy and sell columns only. NOT price_buy_avg / price_sell_avg, which
+    commodity rows also carry: those are blended averages, section 3.1 forbids
+    showing one as if it were a price, and two rows that agree on what the
+    terminal charges while disagreeing on a rolling average are not a conflict
+    about anything a visitor ever sees.
+    """
+    return (row.get("price_buy"), row.get("price_sell"))
+
+
+def source_duplicate_check(session: Session, repo_root=None) -> list[Finding]:
+    """C7 - one source file, one (thing, terminal) pair, two different prices.
+
+    `session` is unused and that is deliberate: this reads the landed snapshot
+    files, because the duplicate does not survive the import. The signature
+    matches every other checker so the runner needs no special case.
+    """
+    findings = []
+    root = str(repo_root) if repo_root else "."
+    snap_root = os.path.join(root, SNAPSHOT_ROOT)
+
+    if not os.path.isdir(snap_root):
+        return [Finding(
+            "shop_source_duplicate", SNAPSHOT_ROOT, "LIMITATION",
+            f"NOT PERFORMED - no snapshot directory at {snap_root}. The landed "
+            f"snapshots are gitignored (only their manifests are tracked), so "
+            f"on a fresh clone there is nothing here to read. Reported as not "
+            f"performed rather than as a pass, because a check that found no "
+            f"files has not established that there are no duplicates.",
+        )]
+
+    scanned = 0
+    for snapshot in sorted(os.listdir(snap_root)):
+        snap_dir = os.path.join(snap_root, snapshot)
+        if not os.path.isdir(snap_dir):
+            continue
+        for fname, id_col, name_col in PRICE_SOURCES:
+            path = os.path.join(snap_dir, fname)
+            if not os.path.exists(path):
+                continue
+            with io.open(path, "r", encoding="utf-8") as fh:
+                payload = json.load(fh)
+            rows = payload.get("data") or []
+            scanned += 1
+
+            groups = defaultdict(list)
+            for row in rows:
+                groups[(row.get(id_col), row.get("id_terminal"))].append(row)
+
+            conflicts, repeats = [], 0
+            for key, members in groups.items():
+                if len(members) < 2:
+                    continue
+                if len({_price_pair(r) for r in members}) > 1:
+                    conflicts.append((key, members))
+                else:
+                    repeats += 1
+
+            subject = f"{snapshot}/{fname}"
+            for key, members in sorted(
+                    conflicts, key=lambda c: str(c[1][0].get(name_col) or "")):
+                shown = members[0]
+                prices = ", ".join(
+                    f"buy {r.get('price_buy')} / sell {r.get('price_sell')}"
+                    for r in members)
+                findings.append(Finding(
+                    "shop_source_duplicate", subject, "WARNING",
+                    f"{shown.get(name_col)!r} at {shown.get('terminal_name')!r} "
+                    f"appears {len(members)} times in this one file at "
+                    f"DIFFERENT prices: {prices}. The importer keeps the first "
+                    f"occurrence, so one of these is what the site shows and "
+                    f"the other is not. Neither is knowably wrong - this is "
+                    f"flagged, never resolved.",
+                ))
+
+            if not conflicts:
+                findings.append(Finding(
+                    "shop_source_duplicate", subject, "PASS",
+                    f"{len(rows):,} rows, no pair listed twice at differing "
+                    f"prices. ({repeats} pair(s) repeat with IDENTICAL prices, "
+                    f"which is not a finding - nothing is lost whichever copy "
+                    f"the importer keeps.)",
+                ))
+
+    if not scanned:
+        findings.append(Finding(
+            "shop_source_duplicate", SNAPSHOT_ROOT, "LIMITATION",
+            "NOT PERFORMED - the snapshot directory exists but holds no price "
+            "files. Nothing was examined, so nothing is being asserted.",
+        ))
+    return findings
+
+
 CHECKERS = [
     ("shop_price_outlier", price_outlier_check),
     ("shop_orphan", orphan_check),
     ("shop_name_collision", name_collision_check),
     ("shop_category_coverage", category_coverage_check),
     ("shop_price_staleness", price_staleness_check),
+    ("shop_source_duplicate", source_duplicate_check),
 ]
