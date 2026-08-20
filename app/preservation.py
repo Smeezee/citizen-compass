@@ -36,6 +36,13 @@ worth nothing:
 
 A wholesale "replace" is DELETE-then-INSERT, so blocking DELETE catches it too.
 
+PROTECT BY DEFAULT, NOT BY LIST (H7, 2026-08-20)
+------------------------------------------------
+Every table is protected unless it is explicitly named as ephemeral. See the
+comment above EPHEMERAL_TABLES for what that replaced and why. The short
+version: an allowlist was silently off for nine tables built in a single week,
+and nothing reported it.
+
 WHAT THIS DOES NOT DO
 ---------------------
 It does not mark the absent row retired - that needs the lifecycle columns in
@@ -57,6 +64,11 @@ from sqlalchemy.sql import Delete
 __all__ = [
     "PreservationViolation",
     "PRESERVED_TABLES",
+    "EPHEMERAL_TABLES",
+    "EPHEMERAL_PREFIXES",
+    "is_ephemeral",
+    "is_protected",
+    "classification_problems",
     "install_never_delete_guard",
     "remove_never_delete_guard",
     "preservation_guard_installed",
@@ -64,14 +76,83 @@ __all__ = [
 
 
 class PreservationViolation(RuntimeError):
-    """Raised when something tries to remove a row from a preserved table."""
+    """Raised when something tries to remove a row from a protected table."""
 
 
-# Tables holding history that can never be re-derived once dropped. The
-# auditor's own tables are deliberately NOT here: pipeline_check_results is an
-# append-only observation log that is allowed to be flushed and archived, and
-# guarding it would break checks_flush_fallback.py.
+# ---------------------------------------------------------------------------
+# H7, 2026-08-20. THIS USED TO BE AN ALLOWLIST, AND IT WAS SILENTLY OFF FOR
+# EVERYTHING BUILT IN THE WEEK BEFORE THAT DATE.
+#
+# Sixteen tables were named here and protected. Every table added by the A-G
+# runs - shop_items, item_prices, terminals, locations, item_categories,
+# snapshots, shop_item_commodity_xref, ship_hardpoints,
+# ship_hardpoint_coverage - was not. 26,657 prices and 2,195 slots sat
+# unguarded and nothing said so. That is how a control DELETE reached a real
+# table during G5.
+#
+# The failure is not that somebody forgot nine names. It is that forgetting was
+# possible AND SILENT - the same defect this module docstring argues against a
+# few paragraphs above: "a rule that depends on every future importer author
+# remembering it is a convention". An allowlist depends on every future TABLE
+# author remembering it, which is that same convention wearing a different hat.
+#
+# SO IT IS INVERTED. Protection is the default. A table is unprotected only if
+# it is named below as genuinely ephemeral. A table added to app/models.py
+# tomorrow is protected from the moment it exists, by construction, with nobody
+# having done anything.
+#
+# WHY BOTH LISTS STILL EXIST. The guard needs only EPHEMERAL_TABLES; everything
+# else is protected. PRESERVED_TABLES is the CLASSIFICATION, and it exists so
+# that "protected because somebody decided it should be" and "protected because
+# nobody has looked at it yet" are different states. The
+# preservation_classification checker requires every mapped table to appear in
+# exactly one of the two, so an unclassified table is protected AND reported
+# rather than protected and unnoticed.
+#
+# That distinction matters the day somebody adds a genuinely ephemeral table:
+# under the old allowlist they would have got the right behaviour by accident
+# and never learned the question existed.
+# ---------------------------------------------------------------------------
+
+# The only tables anything may remove rows from. Each entry carries WHY,
+# because an unexplained name here is a hole nobody can audit later.
+EPHEMERAL_TABLES = frozenset({
+    # The auditor own output. pipeline_check_results is an append-only
+    # observation log that is deliberately flushed and archived, and
+    # checks_flush_fallback.py exists to do exactly that. A finding is
+    # re-derived by re-running the checker; nothing here is unrecoverable.
+    "pipeline_check_results",
+    "pipeline_check_runs",
+    "pipeline_findings",
+    # alembic bookkeeping. It holds a POINTER to the current revision, not a
+    # record of anything, and alembic rewrites it on every migration. Guarding
+    # it would mean guarding a value that is meant to change. Note that alembic
+    # runs on its own engine - alembic/env.py builds one with
+    # engine_from_config - so this guard never sees those statements anyway.
+    # The entry is here so the classification is honest rather than accidental.
+    "alembic_version",
+})
+
+# Throwaway tables created and destroyed inside a single harness run.
+#
+# THE RISK, STATED RATHER THAN BURIED: a prefix is a bypass. Anybody who names
+# a real table cc_scratch_prices loses its protection. That is closed for
+# anything that is actually a table in app/models.py - the classification
+# checker treats a mapped table wearing this prefix as a DEFECT - and it is NOT
+# closed for a raw-SQL table nobody declared. The alternative was requiring an
+# edit to this file for every harness temp table, and a guard that is annoying
+# to work with is a guard people find ways around.
+EPHEMERAL_PREFIXES = ("cc_scratch_",)
+
+# The classification. Not consulted by the guard - protection is the default -
+# but required to be complete by the preservation_classification checker.
+#
+# Every one of these holds rows we could never re-derive if they went: an
+# entity absent from a patch has not stopped having existed. Port Olisar is the
+# proof. It resolves to nothing in the location gazetteer and survives only as
+# a decoration item and a T-shirt description.
 PRESERVED_TABLES = frozenset({
+    # Ships and the things that describe them.
     "ships",
     "ship_registry",
     "manufacturers",
@@ -87,7 +168,94 @@ PRESERVED_TABLES = frozenset({
     "missile_rack_details",
     "turret_details",
     "gimbal_mount_details",
+    # The shop and price layer, built over the A-G runs on 2026-08-19. A price
+    # is a fact with a date attached and the table is append-only by design -
+    # the unique key includes snapshot_id precisely so that a later pull ADDS
+    # rows. Deleting one destroys the only record of what something cost in
+    # August.
+    "shop_items",
+    "item_prices",
+    "terminals",
+    "locations",
+    "item_categories",
+    "snapshots",
+    "shop_item_commodity_xref",
+    # Hardpoints, G8. Derived from mesh measurement, and the coverage table
+    # records WHY a hull has no slots - a reason that took a build to produce
+    # and cannot be recovered from the slots themselves.
+    "ship_hardpoints",
+    "ship_hardpoint_coverage",
 })
+
+
+def is_ephemeral(table):
+    """True if rows may be removed from this table.
+
+    The single definition. The guard, the checker and every caller ask this
+    rather than testing membership themselves, so there is one answer to the
+    question instead of three that can drift apart.
+    """
+    if not table:
+        return False
+    name = str(table).lower()
+    return name in EPHEMERAL_TABLES or name.startswith(EPHEMERAL_PREFIXES)
+
+
+def is_protected(table):
+    """True if rows may NOT be removed. The default for anything unclassified."""
+    return not is_ephemeral(table)
+
+
+def classification_problems(metadata=None):
+    """Every mapped table must appear in exactly one of the two lists.
+
+    This is what makes forgetting LOUD. Protection already happens by default,
+    so an unclassified table is safe - but "safe because nobody looked" and
+    "safe because somebody decided" are different states, and only one of them
+    is a decision. Returns a list of strings; empty means fully classified.
+    """
+    if metadata is None:
+        from app.database import Base
+        from app import models  # noqa: F401 - importing registers the models
+        metadata = Base.metadata
+
+    mapped = {name.lower() for name in metadata.tables}
+    problems = []
+
+    for name in sorted(mapped - PRESERVED_TABLES - EPHEMERAL_TABLES):
+        if name.startswith(EPHEMERAL_PREFIXES):
+            continue  # reported below, with a sharper message
+        problems.append(
+            "table %r is mapped in app/models.py but classified in NEITHER "
+            "PRESERVED_TABLES nor EPHEMERAL_TABLES. It is protected by "
+            "default, so nothing is at risk - but nobody has decided whether "
+            "it should be. Add it to one of the two lists in "
+            "app/preservation.py." % name)
+
+    for name in sorted(mapped & PRESERVED_TABLES & EPHEMERAL_TABLES):
+        problems.append(
+            "table %r is in BOTH PRESERVED_TABLES and EPHEMERAL_TABLES. One of "
+            "those is wrong, and the guard will treat it as ephemeral - which "
+            "is the dangerous reading of an ambiguity." % name)
+
+    for name in sorted(n for n in mapped if n.startswith(EPHEMERAL_PREFIXES)):
+        problems.append(
+            "table %r is a real mapped table wearing an ephemeral prefix (%s). "
+            "The prefix exists for harness throwaways; a declared table using "
+            "it silently loses its protection. Rename it." % (
+                name, ", ".join(EPHEMERAL_PREFIXES)))
+
+    # A name in a list that is not a table any more. Not dangerous, but the
+    # classification then describes something that does not exist - usually a
+    # rename nobody finished - and a list nobody trusts is a list nobody reads.
+    for name in sorted(PRESERVED_TABLES - mapped):
+        problems.append(
+            "%r is named in PRESERVED_TABLES but is not a mapped table. Either "
+            "it was renamed and the list was not, or it is owned by another "
+            "authority and belongs in that authority own record." % name)
+
+    return problems
+
 
 # TRUNCATE and DELETE in raw text. Matched case-insensitively; the table name is
 # extracted so the message can name what was about to be lost.
@@ -108,6 +276,10 @@ def _violation(table, how):
         "of things CIG has removed - Port Olisar is already lost this way.\n"
         "If the entity is gone from the game, update the row (status/"
         "last_seen_patch) instead of deleting it.\n"
+        "PROTECTION IS THE DEFAULT HERE (H7). If this table is genuinely "
+        "ephemeral - an auditor log, a harness throwaway - say so by adding it "
+        "to EPHEMERAL_TABLES in app/preservation.py, with the reason. Do not "
+        "reach around the guard.\n"
         "See docs/WORKORDER_preservation-model-and-never-delete-rule.md" % (table, how)
     )
 
@@ -129,13 +301,13 @@ def install_never_delete_guard(target):
             if m:
                 table = m.group("table")
                 how = m.group("verb").upper().split()[0]
-        if table and table.lower() in PRESERVED_TABLES:
+        if table and is_protected(table):
             raise _violation(table, how)
 
     def _before_flush(session, flush_context, instances):
         for obj in session.deleted:
             t = getattr(getattr(obj, "__table__", None), "name", None)
-            if t and t.lower() in PRESERVED_TABLES:
+            if t and is_protected(t):
                 raise _violation(t, "session.delete()")
 
     # Core/SQL layer, on whatever was passed in.

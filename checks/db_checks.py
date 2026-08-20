@@ -30,7 +30,10 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models import CONFIDENCE_LEVELS, Dealer, Manufacturer, Ship, ShipDealerListing
-from checks.schema_checks import schema_ownership_check
+from checks.schema_checks import (
+    preservation_classification_check,
+    schema_ownership_check,
+)
 from checks.framework import Finding
 
 REGISTRY_PATH = Path("data-layer") / "ship_registry.json"
@@ -376,4 +379,9 @@ CHECKERS = [
     # authority". A table claimed by neither is the next unregistered
     # pipeline_* nobody declared; claimed by both is ambiguous ownership.
     ("schema_ownership", schema_ownership_check),
+    # H7. Protection is the default in app/preservation.py, so an unclassified
+    # table is safe - but "safe because nobody looked" and "safe because
+    # somebody decided" are different states, and this is what makes the
+    # difference visible.
+    ("preservation_classification", preservation_classification_check),
 ]

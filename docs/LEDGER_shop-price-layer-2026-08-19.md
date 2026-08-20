@@ -1775,3 +1775,100 @@ BACKUP  2026-08-20 16:46:54, per rule 4, taken BEFORE the first row change.
     short dump. Mirrors to D: and E: skipped by request and reported as
     skipped, not as done.
 
+H7  DONE  <sha>  THE NEVER-DELETE GUARD IS NO LONGER AN ALLOWLIST. Protection
+    is the default; a table is unprotected only if it is named as ephemeral.
+    WHAT WAS ACTUALLY UNGUARDED, confirmed rather than taken from the order:
+    all nine tables C1 named - shop_items, item_prices, terminals, locations,
+    item_categories, snapshots, shop_item_commodity_xref, ship_hardpoints,
+    ship_hardpoint_coverage. 26,657 price rows and 2,195 hardpoint slots.
+    THE EPHEMERAL LIST, and why each one is on it:
+      pipeline_check_results  the auditor's append-only observation log. It is
+      pipeline_check_runs     DESIGNED to be flushed and archived, and
+      pipeline_findings       checks_flush_fallback.py exists to do it. A
+                              finding is re-derived by re-running the checker.
+      alembic_version         a POINTER to the current revision, not a record.
+                              alembic rewrites it on every migration, so
+                              guarding it would guard a value meant to change.
+                              Worth knowing: alembic builds its own engine in
+                              env.py, so this guard never sees those statements
+                              anyway - the entry is here so the classification
+                              is honest rather than accidental.
+    AND ONE PREFIX, cc_scratch_, FOR HARNESS THROWAWAYS - with its risk stated
+    in the code rather than buried: a prefix IS a bypass. Anyone naming a real
+    table cc_scratch_prices loses its protection. That is closed for anything
+    declared in app/models.py, because the classification checker treats a
+    mapped table wearing the prefix as a DEFECT, and it is NOT closed for a raw
+    SQL table nobody declared. The alternative was an edit to preservation.py
+    for every harness temp table, and a guard that is annoying to work with is
+    a guard people find ways around.
+    BOTH LISTS STILL EXIST, DELIBERATELY. The guard needs only the ephemeral
+    one. PRESERVED_TABLES is the CLASSIFICATION, and it exists so that
+    "protected because somebody decided" and "protected because nobody looked"
+    are different states. Today: 24 preserved, 4 ephemeral, 0 unclassified.
+
+    THE ARGUMENT C1 ASKED FOR - I looked for a case where protect-by-default
+    breaks something legitimate, and I found exactly one, in our own controls:
+      checks/_verify_never_delete_guard.py had an assertion reading "a
+      NON-PRESERVED table is NOT blocked", using a temp table called
+      scratch_notes. It passed because scratch_notes was not on the old
+      sixteen-name allowlist. Under the inversion scratch_notes is protected
+      like every other unclassified name, and that assertion FAILED the moment
+      the inversion landed.
+      THAT IS THE INVERSION WORKING, not a case against it. The whole change is
+      that an unnamed table is guarded rather than open. The assertion was
+      asking the old question; it now asks the right one - an EPHEMERAL table
+      is still deletable - and a second assertion was added beside it proving
+      an unclassified one is refused.
+    NOTHING ELSE BROKE. Every importer in this repo upserts; not one deletes
+    rows. import_ship_hardpoints.py explicitly rewrites its own rows by UPDATE
+    and says so. checks/findings_store.py reaches the pipeline_* tables through
+    raw psycopg2, so the guard never saw them in the first place - the ephemeral
+    entries are correctness rather than a rescue.
+
+CONTROL  <sha>  checks/_verify_preservation_inversion.py - 45 assertions.
+    H7's NAMED CONTROL, BOTH HALVES, in the order the order gives them:
+      "a new table added to the models with no classification FAILS the check.
+       Observe it failing." - a table is added to a THROWAWAY MetaData, the
+       checker reports exactly one problem, and the message names the table and
+       says it is protected anyway so nobody panics.
+      "Then classify it and observe it pass." - classified, re-run, clean. And
+       the real classification is asserted restored afterwards, so the harness
+       cannot leave the project's own lists altered.
+    AND THE GUARD IS PROVEN AT THE ENGINE, not by reading frozensets: real
+    DELETE and TRUNCATE statements against TEMPORARY tables inside one
+    connection. An unclassified name is refused; an ephemeral one goes through;
+    DELETE-with-WHERE, lowercase delete and TRUNCATE are all refused; and with
+    the guard REMOVED the same delete succeeds, which is what makes it
+    load-bearing rather than coincidental.
+    THREE MORE WAYS THE CLASSIFICATION CAN BE WRONG, each proven: a table in
+    BOTH lists, a real mapped table wearing the ephemeral prefix, and a name in
+    PRESERVED_TABLES that is no longer a table at all.
+    NO REAL ROW IS TOUCHED. Temp tables only, rolled back, and the
+    classification half runs on throwaway MetaData objects.
+    --self-test inverts every expectation and exits 1.
+
+CHECKER  <sha>  preservation_classification, registered in checks/db_checks.py
+    and checks/schema_checks.py, so it runs with every session-opening check
+    rather than only when somebody remembers this harness exists.
+
+H7-FINDING  <sha>  THE E2E HARNESS FAILS AT STEP 7, AND IT IS NOT H7'S DOING.
+    Run deliberately, because the order says to take care with it. Steps 1-6
+    passed under the inverted guard - throwaway database created, migrations
+    applied, importers run, API exercised - and NOT ONE preservation violation
+    was raised. That is the answer H7 needed.
+    Step 7, `alembic check`, fails: "Detected added table 'ship_registry'".
+    PRE-EXISTING AND UNRELATED. ship_registry is declared in app/models.py and
+    deliberately NOT in alembic/env.py's EXCLUDED_TABLES - env.py says so in as
+    many words - but NO MIGRATION CREATES IT. Its DDL comes from
+    registry-builder/main.go. So on a fresh database `alembic upgrade head`
+    does not create it, autogenerate sees a table in the models that is not in
+    the schema, and the drift check fails. Nothing in this run touched any of
+    that.
+    REPORTED, NOT FIXED. Deciding whether ship_registry gets a migration or
+    joins EXCLUDED_TABLES is a schema-authority call - it is exactly the
+    "one writer per artifact" question env.py's own comment is arguing about -
+    and it is not in this order.
+    ALSO WORTH KNOWING: run_e2e_test.py needs venv/Scripts on PATH. Without it
+    the alembic subprocess raises FileNotFoundError at step 1. It cleaned up
+    its throwaway database correctly both times.
+

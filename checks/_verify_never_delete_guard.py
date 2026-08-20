@@ -91,14 +91,35 @@ def main():
                 check("%s refused (got %s)" % (label, type(e).__name__), False)
         check("row survived every attempt", rows(conn) == 1)
 
-        print("\n--- a non-preserved table is NOT blocked (guard is targeted) ---")
+        # H7, 2026-08-20: THIS SECTION CHANGED MEANING, AND THE CHANGE IS THE
+        # POINT. It used to read "a non-preserved table is NOT blocked", using
+        # a table called scratch_notes - and it passed because scratch_notes
+        # was not on the old sixteen-name allowlist. Under protect-by-default
+        # scratch_notes is protected, exactly like every other table nobody has
+        # classified, and this assertion FAILED the moment the inversion
+        # landed. That failure is the guard working: the whole change is that
+        # an unnamed table is now guarded rather than open.
+        #
+        # So the question it asks is now the right one: an EPHEMERAL table is
+        # still deletable. If this ever fails, the auditor cannot flush its own
+        # log and checks_flush_fallback.py stops working.
+        print("\n--- an EPHEMERAL table is NOT blocked (the guard is targeted) ---")
         try:
-            conn.execute(text("CREATE TEMP TABLE scratch_notes (id int)"))
-            conn.execute(text("INSERT INTO scratch_notes VALUES (1)"))
-            conn.execute(text("DELETE FROM scratch_notes"))
-            check("delete on an unguarded table still works", True)
+            conn.execute(text("CREATE TEMP TABLE cc_scratch_notes (id int)"))
+            conn.execute(text("INSERT INTO cc_scratch_notes VALUES (1)"))
+            conn.execute(text("DELETE FROM cc_scratch_notes"))
+            check("delete on an ephemeral table still works", True)
         except PreservationViolation:
-            check("delete on an unguarded table still works", False)
+            check("delete on an ephemeral table still works", False)
+
+        print("\n--- and an UNCLASSIFIED table now IS blocked (H7) ---")
+        try:
+            conn.execute(text("CREATE TEMP TABLE unclassified_notes (id int)"))
+            conn.execute(text("INSERT INTO unclassified_notes VALUES (1)"))
+            conn.execute(text("DELETE FROM unclassified_notes"))
+            check("a table nobody classified is refused by default", False)
+        except PreservationViolation:
+            check("a table nobody classified is refused by default", True)
 
         # ================= WITHOUT THE GUARD ==================
         # If the row disappears now, the guard above is what was stopping it.

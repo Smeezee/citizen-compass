@@ -148,6 +148,71 @@ def schema_ownership_check(session, repo_root: Path) -> list:
     return findings
 
 
+
+
+# ---------------------------------------------------------------------------
+# H7. EVERY MAPPED TABLE IS CLASSIFIED - PRESERVED OR EPHEMERAL, EXACTLY ONE.
+#
+# app/preservation.py protects by default as of 2026-08-20, so an unclassified
+# table is already safe. This checker exists because SAFE BECAUSE NOBODY LOOKED
+# and SAFE BECAUSE SOMEBODY DECIDED are different states, and only one of them
+# is a decision.
+#
+# The failure it closes is the one that had already happened: nine tables built
+# in a single week were outside the old allowlist, 26,657 price rows and 2,195
+# hardpoint slots were unguarded, and nothing anywhere said so. Under the
+# inversion those tables are protected - but if the classification is allowed
+# to fall behind the models again, the next genuinely ephemeral table gets the
+# wrong default silently, which is the same class of defect pointing the other
+# way.
+#
+# FINDINGS ONLY. It reads two frozensets and the SQLAlchemy metadata.
+# ---------------------------------------------------------------------------
+
+
+def preservation_classification_check(session, repo_root: Path) -> list:
+    """Assert every mapped table is classified in exactly one list."""
+    try:
+        from app.preservation import classification_problems
+    except Exception as e:                       # pragma: no cover - reported
+        return [Finding("preservation_classification", None, "WARNING",
+                        f"could not import app.preservation: "
+                        f"{type(e).__name__}: {e}")]
+
+    try:
+        problems = classification_problems()
+    except Exception as e:                       # pragma: no cover - reported
+        return [Finding("preservation_classification", None, "WARNING",
+                        f"classification could not be computed: "
+                        f"{type(e).__name__}: {e}")]
+
+    findings = [
+        Finding("preservation_classification", _subject_of(text), "DEFECT", text)
+        for text in problems
+    ]
+
+    if not findings:
+        from app.preservation import EPHEMERAL_TABLES, PRESERVED_TABLES
+        findings.append(Finding(
+            "preservation_classification", None, "PASS",
+            f"every mapped table is classified: {len(PRESERVED_TABLES)} "
+            f"preserved, {len(EPHEMERAL_TABLES)} ephemeral. Protection is the "
+            f"default, so anything unclassified would be guarded anyway - this "
+            f"says somebody decided, rather than that nobody looked."))
+    return findings
+
+
+def _subject_of(problem: str):
+    """The table name a problem line is about, so a finding has a subject.
+
+    The problem strings are built by app.preservation.classification_problems
+    and all of them open with a quoted table name.
+    """
+    m = re.search(r"'([A-Za-z_][A-Za-z0-9_]*)'", problem)
+    return m.group(1) if m else None
+
+
 CHECKERS = [
     ("schema_ownership", schema_ownership_check),
+    ("preservation_classification", preservation_classification_check),
 ]
