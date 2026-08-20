@@ -23,20 +23,37 @@ Rule 15: encodings stated.
 
 import io
 import json
+import math
 import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from build_hardpoint_join import (  # noqa: E402
-    resolve_by_rule, resolve_frame, mount_signature, hull_matches, E1,
+    resolve_by_rule, resolve_frame, mount_signature, hull_matches,
+    align_to_sibling, E1, MODELS, _resolve_by_rule_pass1_only,
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MOUNTS = os.path.join(HERE, "..", "data-layer", "derived", "holo-hardpoints",
                       "ship_mounts.json")
+# What place_fleet.py already placed. build_hardpoint_join.py only ever looks at
+# models ABSENT from this file, so it is what separates "the matcher changed its
+# mind" from "the build changed its output".
+FLEET = os.path.join(HERE, "..", "data-layer", "derived", "holo-hardpoints",
+                     "hardpoints_fleet.json")
 
 failures = []
+
+
+def model_stems():
+    """Every model on disk, named the way the build names them.
+
+    The G3 diff runs over ALL of them rather than a chosen sample: a
+    hand-written list can only test what somebody thought of, and the whole
+    risk of loosening a matcher is the ship nobody thought of.
+    """
+    return [f[:-4] for f in os.listdir(MODELS) if f.lower().endswith(".glb")]
 
 
 def check(name, ok, detail):
@@ -51,6 +68,8 @@ def main():
     with io.open(MOUNTS, "r", encoding="utf-8") as fh:
         mounts = json.load(fh)
     keys = list(mounts.keys())
+    with io.open(FLEET, "r", encoding="utf-8") as fh:
+        fleet = json.load(fh)
 
     print("the join, driven with input that must fail it")
     print()
@@ -91,16 +110,139 @@ def main():
         check("      and it is not in the written mapping",
               made_up not in E1, "it would prove nothing if it were")
 
+    # ---- 2b. G3: THE ABBREVIATION RUNS BOTH WAYS -----------------------
+    #
+    # The rule used to be directional - every word of the mount-data KEY had to
+    # appear in the MODEL name - so a key LONGER than the filename was refused.
+    # Two ships were sitting on that: the data calls it "Ares Star Fighter
+    # Inferno" and the model is Ares_Inferno, so the matcher went looking for
+    # "star" and "fighter" in a two-word name.
+    #
+    # These two used to be negative controls in this very file, asserting they
+    # must resolve to NOTHING. That assertion was wrong and the docstring of
+    # build_hardpoint_join.py said so at the same time - it records that "Ares
+    # Inferno" and "Starfighter Inferno" ARE the same ship. The assertion is
+    # flipped here deliberately, not quietly relaxed.
+    for stem, want in (
+        ("Ares_Inferno", "Ares Star Fighter Inferno"),
+        ("Ares_Ion", "Ares Star Fighter Ion"),
+    ):
+        got, why = resolve_by_rule(stem, keys, mounts)
+        check("rule G3: %r resolves to %r (the key is the LONGER name)"
+              % (stem, want), got == want, "got %r (%s)" % (got, why))
+
     # ---- 3. NEGATIVE CONTROL: A NAME THAT IS NOT AN EDITION ------------
     #
     # Without this, a rule that resolved everything to something would pass all
     # of the above and put a random hull's hardpoints on 40 bare ships.
-    for stem in ("Zeus_Mk_II_MR", "Ares_Inferno", "Kraken_Privateer",
+    for stem in ("Zeus_Mk_II_MR", "Kraken_Privateer",
                  "Wobbly_Nonsense_Hull", "Galaxy"):
         got, why = resolve_by_rule(stem, keys, mounts)
         check("rule: NEGATIVE CONTROL - %r resolves to NOTHING" % stem,
               got is None, "it resolved to %r (%s) - that is a wrong hull's "
                            "hardpoints on a ship" % (got, why))
+
+    # ---- 3b. G3'S TRAP, ASSERTED BY NAME -------------------------------
+    #
+    # THIS IS THE LOAD-BEARING PART OF G3. Loosening a matcher to catch 2 ships
+    # is exactly how you silently join the wrong 25 - so the 25 are named, one
+    # at a time, rather than counted.
+    #
+    # Where the list comes from, so it is checkable and not a vibe: the join
+    # report before this change skipped 39 ships, of which 12 were "no decoded
+    # geometry" (a different cause entirely, untouched by any matcher) and 27
+    # were name refusals. 27 minus the two Ares is 25. If any of these starts
+    # matching, the fix is wrong and gets reverted rather than accepted at 27.
+    STILL_REFUSED = [
+        "Crucible", "E1_Spirit", "Endeavor", "Expanse", "G12", "G12a", "G12r",
+        "Galaxy", "Genesis", "Hull_D", "Hull_E", "Kraken", "Kraken_Privateer",
+        "Legionnaire", "Liberator", "Nautilus", "Nautilus_Solstice_Edition",
+        "Odyssey", "Orion", "Pioneer", "Ranger_CV", "Ranger_RC", "Ranger_TR",
+        "Vulcan", "Zeus_Mk_II_MR",
+    ]
+    check("G3 trap: the must-not-match list is the expected 25",
+          len(STILL_REFUSED) == 25 and len(set(STILL_REFUSED)) == 25,
+          "got %d (%d unique) - the list itself is wrong before it tests "
+          "anything" % (len(STILL_REFUSED), len(set(STILL_REFUSED))))
+    for stem in STILL_REFUSED:
+        got, why = resolve_by_rule(stem, keys, mounts)
+        check("G3 trap: %r STILL resolves to nothing after the loosening" % stem,
+              got is None,
+              "it resolved to %r (%s). The fix caught more than the two it was "
+              "for - REVERT it rather than accept 27." % (got, why))
+
+    # AND THE DIFFERENCE IS EXACTLY THOSE TWO, measured rather than asserted.
+    #
+    # The two lists above are hand-written, so on their own they prove only what
+    # somebody thought to write down. This diffs the old matcher against the new
+    # one across EVERY model stem on disk - 235 of them - and then splits the
+    # result by whether the build can actually see the ship.
+    #
+    # WHAT THE FIRST RUN OF THIS TURNED UP, because it is the interesting part:
+    # at the matcher level pass 2 changes 31 answers, not 2. Twenty-nine of them
+    # are ships place_fleet.py ALREADY placed, so build_hardpoint_join.py never
+    # asks about them - it iterates only models absent from
+    # hardpoints_fleet.json. That is why the report moves by 2 while the matcher
+    # moves by 31, and it is worth writing down rather than explaining away.
+    #
+    # Those 29 are also not wrong: they are manufacturer prefixes and full
+    # names - Freelancer against "MISC Freelancer", Scythe against "Vanduul
+    # Scythe", Hull_A against "MISC Hull A". Pass 2 handles them correctly and
+    # they simply are not this build's business today.
+    fleet_stems = {v.get("model", "")[:-4] for v in fleet.values()}
+    in_scope = [s for s in sorted(model_stems()) if s not in fleet_stems]
+
+    changed = []
+    for stem in sorted(model_stems()):
+        before, _ = _resolve_by_rule_pass1_only(stem, keys, mounts)
+        after, _ = resolve_by_rule(stem, keys, mounts)
+        if before != after:
+            changed.append((stem, before, after))
+
+    # And of the in-scope ships, the build asks the MATCHER only about those the
+    # written E1 mapping does not already name - it checks `stem in E1` first.
+    asked = [s for s in in_scope if s not in E1]
+    in_scope_changed = sorted(c[0] for c in changed if c[0] in asked)
+    check("G3: of the ships this build actually asks the matcher about, pass 2 "
+          "changed EXACTLY the two Ares",
+          in_scope_changed == ["Ares_Inferno", "Ares_Ion"],
+          "it changed %d: %s" % (len(in_scope_changed), in_scope_changed))
+
+    # THE SECOND THING THE FULL DIFF TURNED UP, and it is a finding rather than
+    # a failure: pass 2 now derives, BY RULE, eleven of the thirteen names E1
+    # spells out by hand - every Aurora, all three Hercules, the M50, the
+    # Mercury and the C8R Pisces. E1 still wins because the build consults it
+    # first, so nothing about today's output depends on this. It is recorded
+    # because "the written mapping is now mostly redundant" is worth knowing
+    # before somebody adds a fourteenth line to it.
+    #
+    # NOT ACTED ON. Deleting entries from E1 is not what G3 asked for, and a
+    # mapping that agrees with the rule costs nothing while it agrees.
+    derived_now = sorted(c[0] for c in changed if c[0] in E1)
+    check("G3 finding: pass 2 independently derives 11 of E1's 13 hand-written "
+          "mappings (recorded, not acted on)",
+          len(derived_now) == 11,
+          "expected 11, got %d: %s" % (len(derived_now), derived_now))
+    for stem in derived_now:
+        got, _ = resolve_by_rule(stem, keys, mounts)
+        check("G3 finding: the rule agrees with the hand-written E1 entry for "
+              "%r" % stem, got == E1[stem],
+              "rule says %r, E1 says %r - they DISAGREE, which means one of "
+              "them is putting the wrong mounts on a ship" % (got, E1[stem]))
+
+    out_of_scope = [c for c in changed if c[0] not in in_scope]
+    check("G3: every OTHER answer pass 2 changed belongs to a ship already "
+          "placed by place_fleet.py, so it cannot reach this build",
+          all(c[0] in fleet_stems for c in out_of_scope),
+          "a changed answer is neither in scope nor already placed: %s"
+          % [c for c in out_of_scope if c[0] not in fleet_stems])
+
+    check("G3: and pass 2 changed them all FROM NOTHING, never from one hull "
+          "to another",
+          all(c[1] is None for c in changed),
+          "pass 2 overrode an answer pass 1 had already given, which the "
+          "fallback structure is supposed to make impossible: %s"
+          % [c for c in changed if c[1] is not None])
 
     # The Zeus is the sharpest of those: its ES and CL siblings ARE in the data,
     # so a fuzzy matcher hands the MR its sibling's mounts. C3's first pass did
@@ -170,7 +312,69 @@ def main():
           "got %r - the Javelin is in this state and must stay bare rather than "
           "be placed in a frame nobody checked" % (err,))
 
-    # ---- 5. THE MOUNT CHECK COMPARES WHAT IT CLAIMS TO ------------------
+    # ---- 5. SAME HULL, SAME POSITIONS -----------------------------------
+    #
+    # The alignment pass takes an already-placed sibling's positions as targets
+    # and re-snaps them to this hull. Driven here on a synthetic hull whose
+    # vertices are known, so "it moved to the right place AND stayed on the
+    # mesh" is checked rather than assumed - a copied position that floats off
+    # the hull would be a worse defect than the one this replaces.
+    #
+    # A flat slab of vertices: a wing, essentially, which is where the problem
+    # showed up in the first place.
+    pts = []
+    for i in range(41):
+        for j in range(9):
+            pts.extend([-1.0 + i * 0.05, 0.0, -1.0 + j * 0.25])
+    geo = {"pts": pts, "min": [-1.0, 0.0, -1.0], "max": [1.0, 0.0, 1.0]}
+
+    wrong = [{"port": "rack", "where": "Rack", "pos_model": [-0.5, 0.0, -0.75],
+              "unit": [-0.5, 0.0, -0.75]}]
+    sibling = [{"port": "rack", "unit": [0.5, 0.0, 0.5]}]
+    moved, worst = align_to_sibling(wrong, geo, sibling)
+    check("align: a marker is moved to where the same hull already has it",
+          moved == 1 and abs(wrong[0]["unit"][2] - 0.5) < 0.1
+          and abs(wrong[0]["unit"][0] - 0.5) < 0.1,
+          "moved=%d worst=%s ended at %s" % (moved, worst, wrong[0]["unit"]))
+
+    # AND IT LANDED ON THE MESH, not at the sibling's coordinates in mid-air.
+    q = wrong[0]["pos_model"]
+    near = min(math.sqrt((pts[i * 3] - q[0]) ** 2 + (pts[i * 3 + 1] - q[1]) ** 2 +
+                         (pts[i * 3 + 2] - q[2]) ** 2)
+               for i in range(len(pts) // 3))
+    size = math.sqrt(sum((geo["max"][k] - geo["min"][k]) ** 2 for k in range(3)))
+    check("align: and it is snapped to this hull's own geometry",
+          near <= size * 0.02,
+          "it sits %.3f from the nearest vertex (%.1f%% of hull size) - a copied "
+          "position that floats is worse than the misplacement it replaced"
+          % (near, near / size * 100))
+
+    # NEGATIVE CONTROL: a marker already in the right place must STAY there.
+    #
+    # Not "must not move at all" - that expectation was wrong and this check
+    # caught me writing it. The pass re-snaps every marker and push_out lifts
+    # each one 1.2% clear of the surface, so a correct marker comes back a hair
+    # away from where it started. What must be true is that it does not get
+    # RELOCATED, and that is what is asserted.
+    already = [{"port": "rack", "where": "Rack", "pos_model": [0.5, 0.0, 0.5],
+                "unit": [0.5, 0.0, 0.5]}]
+    align_to_sibling(already, geo, sibling)
+    shift = math.sqrt((already[0]["unit"][0] - 0.5) ** 2 +
+                      already[0]["unit"][1] ** 2 +
+                      (already[0]["unit"][2] - 0.5) ** 2)
+    check("align: NEGATIVE CONTROL - a marker already in place stays there",
+          shift < 0.05,
+          "it shifted by %.3f, which is a relocation rather than a re-snap" % shift)
+
+    # NEGATIVE CONTROL: a port the sibling does not have is left alone.
+    orphan = [{"port": "nothing_like_it", "where": "X", "pos_model": [-0.5, 0.0, -0.5],
+               "unit": [-0.5, 0.0, -0.5]}]
+    moved, _ = align_to_sibling(orphan, geo, sibling)
+    check("align: NEGATIVE CONTROL - a port the sibling lacks is untouched",
+          moved == 0 and orphan[0]["unit"] == [-0.5, 0.0, -0.5],
+          "it was moved to a position no sibling ever stated")
+
+    # ---- 6. THE MOUNT CHECK COMPARES WHAT IT CLAIMS TO ------------------
     a = {"mounts": [{"port": "p1"}, {"port": "p2"}]}
     b = {"mounts": [{"port": "p1"}, {"port": "p2"}]}
     c = {"mounts": [{"port": "p1"}, {"port": "p3"}]}

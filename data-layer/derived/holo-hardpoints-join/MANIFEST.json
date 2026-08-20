@@ -10,8 +10,8 @@
   "frame_matches": true
  },
  "counts": {
-  "placed": 29,
-  "refused": 0,
-  "skipped": 39
+  "placed": 35,
+  "refused": 8,
+  "skipped": 25
  }
 }

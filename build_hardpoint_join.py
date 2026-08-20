@@ -39,6 +39,29 @@ resolves to its base BY RULE:
                                                (an inserted word, which a
                                                drop-the-tail rule would miss)
 
+**E2b - the abbreviation runs the other way, and the rule above could not see
+it (G3, 2026-08-19).** That rule is DIRECTIONAL: it requires every word of the
+mount-data KEY to appear in the MODEL name. Where the key is the longer of the
+two it therefore refuses a ship it plainly has data for -
+
+    Ares_Inferno   vs the key "Ares Star Fighter Inferno"
+
+- because it goes looking for "star" and "fighter" inside a two-word filename.
+So there is now a SECOND PASS, run only where the first found nothing:
+
+    the model name's words all appear, in order, inside the mount-data key,
+    and the SHORTEST such key wins
+
+Shortest is the mirror of longest: in both passes the winner is the candidate
+with the fewest words the other side did not account for.
+
+The fallback shape is the point. Loosening pass 1 to catch two ships is exactly
+how you silently join the wrong twenty-five, so pass 2 cannot touch any model
+that pass 1 already resolves - the set of ships whose outcome can change is
+exactly the set that matched nothing. `checks/_verify_hardpoint_join.py` asserts
+that difference is precisely {Ares_Inferno, Ares_Ion} and names all 25
+still-refused ships individually.
+
 The next Best In Show edition and every future Wikelo livery resolve with no
 line added anywhere. That is the whole point, and it is tested by feeding this a
 fabricated edition name that has never existed.
@@ -486,29 +509,113 @@ def norm_tokens(s):
     return tokens(s)
 
 
+def _is_subsequence(needle, haystack):
+    """Every word of `needle`, in order, somewhere inside `haystack`."""
+    i = 0
+    for w in haystack:
+        if i < len(needle) and w == needle[i]:
+            i += 1
+    return i == len(needle)
+
+
+def _tie_break(best, stem, mounts, how):
+    """Shared ending for both passes: one hit wins, several must agree.
+
+    AN AMBIGUITY ONLY MATTERS IF THE ANSWERS DIFFER.
+
+    F7C-M_Super_Hornet_Heartseeker_Mk_I matches both "F7C-M Super Hornet Mk I"
+    and "F7C-M Hornet Heartseeker Mk I" - five words each, neither more
+    specific than the other, and no tie-break between them that is not
+    arbitrary. But both carry the SAME ten mounts on the same ports with the
+    same published dimensions, so picking either produces exactly the same page.
+
+    So the tie is broken by asking whether it is a tie about anything. If the
+    candidates disagree on their mounts it stays a refusal, because then the
+    choice decides what a visitor sees.
+    """
+    if len(best) > 1:
+        sigs = {json.dumps(mount_signature(mounts.get(k) or {})) for k in best} \
+            if mounts else {"?"}
+        if len(sigs) == 1 and "?" not in sigs:
+            return best[0], ("%d keys match equally well (%s) and they carry "
+                             "identical mount data, so the choice changes nothing"
+                             % (len(best), ", ".join(best)))
+        return None, "ambiguous: %s all match equally well and their mount data " \
+                     "differs" % ", ".join(best)
+    return best[0], how(best[0], stem)
+
+
 def resolve_by_rule(stem, mount_keys, mounts=None):
     """An edition or paint model -> its base hull, BY RULE.
 
-    The base is the LONGEST mount-data key whose words all appear, in order,
-    inside the model's name. Longest wins so that Carrack_Expedition_w_C8X
-    resolves to "Carrack Expedition" and not to "Carrack".
+    TWO PASSES, TRIED IN ORDER, BECAUSE THE ABBREVIATION RUNS BOTH WAYS.
+
+    PASS 1 - the model name is the longer one. The base is the LONGEST
+    mount-data key whose words all appear, in order, inside the model's name.
+    Longest wins so that Carrack_Expedition_w_C8X resolves to "Carrack
+    Expedition" and not to "Carrack".
+
+    PASS 2 (G3, 2026-08-19) - THE KEY is the longer one. The model name's words
+    all appear, in order, inside the mount-data KEY. This is the direction that
+    was missing: the mount data calls it "Ares Star Fighter Inferno" and the
+    model is called Ares_Inferno, so pass 1 asks for "star" and "fighter" in a
+    two-word name and refuses a ship it plainly has data for.
+
+    SHORTEST wins in pass 2, which is the mirror of longest winning in pass 1 -
+    in both passes the winner is the candidate with the FEWEST words the other
+    side did not account for. If a hypothetical "Ares Star Fighter Inferno Best
+    In Show 2953" existed, longest-wins would hand Ares_Inferno the show paint.
+
+    WHY PASS 2 IS A FALLBACK AND NOT A WIDENING OF PASS 1: loosening a matcher
+    to catch 2 ships is exactly how you silently join the wrong 25. Running it
+    only where pass 1 found nothing means the set of ships whose outcome can
+    change is EXACTLY the set that currently matches nothing. Every ship that
+    resolves today resolves the same way, by the same rule, for the same
+    reason - that is not an assumption, it is the control structure.
 
     Returns (key, why) or (None, why-not). An ambiguous match - two keys of
     equal length - returns None, because a match that could be two ships is not
     a match.
     """
     want = norm_tokens(stem)
-    hits = []
-    for key in mount_keys:
-        kt = norm_tokens(key)
-        if not kt:
-            continue
-        i = 0
-        for w in want:
-            if i < len(kt) and w == kt[i]:
-                i += 1
-        if i == len(kt):
-            hits.append(key)
+
+    # ---- PASS 1: key's words inside the model name ------------------------
+    hits = [k for k in mount_keys
+            if norm_tokens(k) and _is_subsequence(norm_tokens(k), want)]
+    if hits:
+        longest = max(len(norm_tokens(k)) for k in hits)
+        best = sorted(k for k in hits if len(norm_tokens(k)) == longest)
+        return _tie_break(
+            best, stem, mounts,
+            lambda k, m: "words of %r appear in order inside %r" % (k, m))
+
+    # ---- PASS 2: the model name's words inside the key --------------------
+    if want:
+        hits = [k for k in mount_keys
+                if norm_tokens(k) and _is_subsequence(want, norm_tokens(k))]
+        if hits:
+            shortest = min(len(norm_tokens(k)) for k in hits)
+            best = sorted(k for k in hits if len(norm_tokens(k)) == shortest)
+            return _tie_break(
+                best, stem, mounts,
+                lambda k, m: "words of the model name %r appear in order "
+                             "inside the longer mount-data key %r" % (m, k))
+
+    return None, ("neither this model's name nor any mount-data key contains "
+                  "the other's words in order")
+
+
+def _resolve_by_rule_pass1_only(stem, mount_keys, mounts=None):
+    """PASS 1 ALONE. Kept so the G3 control can prove pass 2 is what changed.
+
+    Not used by the build. It exists so `checks/_verify_hardpoint_join.py` can
+    diff the two matchers over every model and require the difference to be
+    exactly Ares_Inferno and Ares_Ion - rather than requiring the reader to
+    take on trust that a fallback only ever fires where nothing matched.
+    """
+    want = norm_tokens(stem)
+    hits = [k for k in mount_keys
+            if norm_tokens(k) and _is_subsequence(norm_tokens(k), want)]
     if not hits:
         return None, "no mount-data key's words appear in this model's name"
     longest = max(len(norm_tokens(k)) for k in hits)
@@ -535,6 +642,72 @@ def resolve_by_rule(stem, mount_keys, mounts=None):
         return None, "ambiguous: %s all match equally well and their mount data " \
                      "differs" % ", ".join(best)
     return best[0], "words of %r appear in order inside %r" % (best[0], stem)
+
+
+def from_unit(u, mn, mx):
+    """The inverse of to_unit: a normalised position back into this model."""
+    span = max(mx[k] - mn[k] for k in range(3)) or 1.0
+    centre = [(mn[k] + mx[k]) / 2.0 for k in range(3)]
+    return [centre[k] + u[k] * (span / 2.0) for k in range(3)]
+
+
+def align_to_sibling(hps, geo, sibling_hps):
+    """Put a hull's markers where the SAME HULL already has them.
+
+    ===================================================================
+    WHY THIS EXISTS - Sleven, on the Gladius Pirate Edition, 2026-08-16
+    ===================================================================
+
+    Its four missile racks sat 0.27 to 0.38 further forward than the same four
+    racks on the Gladius Valiant, which C3 had already placed. Same hull class,
+    same twelve ports, same mount order, same target table - and a third of a
+    hull apart.
+
+    The cause is not a bug in either run. A wing is a large flat surface, so
+    "snap to the nearest vertex" is badly under-determined ALONG the wing: two
+    meshes that differ by a few per cent send the same target to points a long
+    way apart. Measured across the 17 recovered ships that share a port set with
+    an already-placed ship, the disagreement runs to 1.165 on the Reclaimer -
+    more than a hull half-length.
+
+    Two ships on one page showing the same hull with its hardpoints in different
+    places is the contradiction this project keeps paying for, one page in. And
+    the shared-hull ruling already answers it: if the hull is the same, the
+    positions are the same.
+
+    So the sibling's positions are taken as TARGETS and re-snapped to THIS
+    hull's own vertices. Not copied outright - copied positions can float off a
+    mesh that differs slightly, and a marker in mid-air is the failure this
+    replaces, not a new one. Same technique as the mirroring pass, which has
+    done exactly this since the original run.
+
+    Returns (moved, worst) - how many markers moved and by how much, in unit
+    space, so the report can say what changed rather than changing it quietly.
+    """
+    pts, mn, mx = geo["pts"], geo["min"], geo["max"]
+    n = len(pts) // 3
+    by_port = {h["port"]: h for h in sibling_hps}
+    moved, worst = 0, 0.0
+    for h in hps:
+        want = by_port.get(h["port"])
+        if not want:
+            continue
+        before = list(h["unit"])
+        tgt = from_unit(want["unit"], mn, mx)
+        bi, bd = -1, None
+        for i in range(n):
+            d = dist2(pts, i, tgt[0], tgt[1], tgt[2])
+            if bd is None or d < bd:
+                bd, bi = d, i
+        snapped = [pts[bi * 3], pts[bi * 3 + 1], pts[bi * 3 + 2]]
+        newp = push_out(snapped, mn, mx)
+        h["pos_model"] = [round(float(c), 3) for c in newp]
+        h["unit"] = to_unit(newp, mn, mx)
+        d = math.sqrt(sum((h["unit"][k] - before[k]) ** 2 for k in range(3)))
+        if d > 0.001:
+            moved += 1
+            worst = max(worst, d)
+    return moved, round(worst, 3)
 
 
 def extents(geo):
@@ -649,7 +822,8 @@ def main():
     missing = [m for m in have_model if m not in placed_models]
 
     out, report = {}, {"placed": [], "refused": [], "skipped": [], "rule": [],
-                       "mapped": [], "unchecked_hull": []}
+                       "mapped": [], "unchecked_hull": [], "aligned": [],
+                       "align_ambiguous": []}
 
     for stem in missing:
         key, why, how = None, "", ""
@@ -704,6 +878,45 @@ def main():
             report["refused"].append([stem, key, frame])
             continue
 
+        # ---- SAME HULL, SAME POSITIONS -------------------------------
+        #
+        # If an already-placed ship carries exactly this port set, it is this
+        # hull, and the ruling says its hardpoints are in the same places. Its
+        # positions become the targets and are re-snapped to this mesh.
+        #
+        # The sibling is preferred to be the ship this one resolved FROM, so a
+        # Carrack Expedition aligns to the Expedition and not to the Carrack.
+        # Where several siblings could serve and they disagree with each other,
+        # nothing is aligned and the disagreement is reported - picking one
+        # silently is how the wrong hull's layout gets copied.
+        mine_ports = frozenset(h["port"] for h in hps)
+        sibs = [k for k, v in fleet.items()
+                if frozenset(h["port"] for h in v["hardpoints"]) == mine_ports
+                and v.get("hardpoints")]
+        align_note = "no already-placed ship shares this port set"
+        if sibs:
+            pick = key if key in sibs else None
+            if pick is None:
+                spread = 0.0
+                base = {h["port"]: h["unit"] for h in fleet[sibs[0]]["hardpoints"]}
+                for other in sibs[1:]:
+                    for h in fleet[other]["hardpoints"]:
+                        b = base.get(h["port"])
+                        if b:
+                            spread = max(spread, math.sqrt(
+                                sum((h["unit"][t] - b[t]) ** 2 for t in range(3))))
+                if len(sibs) == 1 or spread <= 0.05:
+                    pick = sibs[0]
+                else:
+                    align_note = ("%d candidate siblings disagree by up to %.3f - "
+                                  "not aligned" % (len(sibs), spread))
+                    report["align_ambiguous"].append([stem, sibs, round(spread, 3)])
+            if pick:
+                moved, worst = align_to_sibling(hps, geo, fleet[pick]["hardpoints"])
+                align_note = ("aligned to %r: %d marker(s) moved, worst %.3f"
+                              % (pick, moved, worst))
+                report["aligned"].append([stem, pick, moved, worst])
+
         out[stem] = {
             "maker": rec.get("maker"),
             "bare": stem,
@@ -711,6 +924,7 @@ def main():
             "resolved_from": key,
             "resolved_by": how,
             "why": why,
+            "aligned": align_note,
             "hull_check": hull_check if how == "rule" else
                           "not applicable - this model IS that ship, under a "
                           "shorter file name",
@@ -762,6 +976,17 @@ def main():
         say("  REFUSED (%d) - reported rather than rendered:" % len(report["refused"]))
         for row in report["refused"]:
             say("    %-40s %s" % (row[0], row[2]))
+    if report["aligned"]:
+        say("  ALIGNED TO AN ALREADY-PLACED SHIP OF THE SAME HULL (%d):"
+            % len(report["aligned"]))
+        for stem, sib, moved, worst in sorted(report["aligned"]):
+            say("    %-40s <- %-24s %2d marker(s), worst %.3f"
+                % (stem, sib, moved, worst))
+    if report["align_ambiguous"]:
+        say("  NOT ALIGNED - candidate siblings disagree (%d):"
+            % len(report["align_ambiguous"]))
+        for stem, sibs, spread in report["align_ambiguous"]:
+            say("    %-40s %s disagree by %.3f" % (stem, sibs, spread))
     if report["unchecked_hull"]:
         say("  HULL CHECK NOT PERFORMED for %d pair(s) - the base hull has no "
             "model on disk to compare against. Reported, not counted as passed:"

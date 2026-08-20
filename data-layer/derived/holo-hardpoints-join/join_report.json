@@ -13,6 +13,12 @@
    7
   ],
   [
+   "ATLS",
+   0,
+   0.327,
+   0
+  ],
+  [
    "Anvil_Ballista_Dunestalker",
    5,
    0.012,
@@ -22,6 +28,18 @@
    "Anvil_Ballista_Snowblind",
    5,
    0.012,
+   0
+  ],
+  [
+   "Ares_Inferno",
+   9,
+   0.034,
+   0
+  ],
+  [
+   "Ares_Ion",
+   9,
+   0.023,
    0
   ],
   [
@@ -151,6 +169,12 @@
    0
   ],
   [
+   "MDC",
+   0,
+   0.084,
+   0
+  ],
+  [
    "Mercury",
    13,
    0.1,
@@ -160,6 +184,18 @@
    "Mustang_Alpha_Vindicator",
    7,
    0.201,
+   0
+  ],
+  [
+   "ROC",
+   0,
+   0.313,
+   0
+  ],
+  [
+   "ROC-DS",
+   0,
+   0.026,
    0
   ],
   [
@@ -175,166 +211,156 @@
    15
   ]
  ],
- "refused": [],
- "skipped": [
-  [
-   "ATLS",
-   "no decoded geometry"
-  ],
+ "refused": [
   [
    "ATLS_GEO",
-   "no decoded geometry"
-  ],
-  [
-   "Ares_Inferno",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Ares_Ion",
-   "no mount-data key's words appear in this model's name"
+   "ATLS GEO",
+   "proportions do not match published dims (err 0.51, ext [1.76, 2.91, 2.63], want [3.2, 1.6, 1.6])"
   ],
   [
    "Clipper",
-   "no decoded geometry"
-  ],
-  [
-   "Crucible",
-   "no mount-data key's words appear in this model's name"
+   "Clipper",
+   "proportions do not match published dims (err 0.66, ext [49.48, 13.02, 27.24], want [26.5, 21, 18])"
   ],
   [
    "Defender",
-   "no decoded geometry"
-  ],
-  [
-   "E1_Spirit",
-   "no mount-data key's words appear in this model's name"
+   "Defender",
+   "proportions do not match published dims (err 0.60, ext [16.85, 5.86, 37.79], want [24.5, 24.5, 5])"
   ],
   [
    "Eclipse",
-   "no decoded geometry"
-  ],
-  [
-   "Endeavor",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Expanse",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "G12",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "G12a",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "G12r",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Galaxy",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Genesis",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Hull_D",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Hull_E",
-   "no mount-data key's words appear in this model's name"
+   "Eclipse",
+   "proportions do not match published dims (err 0.54, ext [36.92, 3.97, 20.5], want [24.5, 24.5, 5])"
   ],
   [
    "Javelin",
-   "no decoded geometry"
-  ],
-  [
-   "Kraken",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Kraken_Privateer",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Legionnaire",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Liberator",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "MDC",
-   "no decoded geometry"
-  ],
-  [
-   "Nautilus",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Nautilus_Solstice_Edition",
-   "no mount-data key's words appear in this model's name"
+   "Javelin",
+   "no published dimensions"
   ],
   [
    "Nova",
-   "no decoded geometry"
-  ],
-  [
-   "Odyssey",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Orion",
-   "no mount-data key's words appear in this model's name"
-  ],
-  [
-   "Pioneer",
-   "no mount-data key's words appear in this model's name"
+   "Nova",
+   "proportions do not match published dims (err 0.37, ext [7.3, 5.13, 15.91], want [20, 12, 11])"
   ],
   [
    "Pulse",
-   "no decoded geometry"
+   "Pulse",
+   "proportions do not match published dims (err 0.53, ext [0.79, 0.89, 2.75], want [3.5, 2.5, 1.5])"
   ],
   [
    "Pulse_LX",
-   "no decoded geometry"
+   "Pulse LX",
+   "proportions do not match published dims (err 0.53, ext [0.79, 0.89, 2.75], want [3.5, 2.5, 1.5])"
+  ]
+ ],
+ "skipped": [
+  [
+   "Crucible",
+   "neither this model's name nor any mount-data key contains the other's words in order"
   ],
   [
-   "ROC",
-   "no decoded geometry"
+   "E1_Spirit",
+   "neither this model's name nor any mount-data key contains the other's words in order"
   ],
   [
-   "ROC-DS",
-   "no decoded geometry"
+   "Endeavor",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Expanse",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "G12",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "G12a",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "G12r",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Galaxy",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Genesis",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Hull_D",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Hull_E",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Kraken",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Kraken_Privateer",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Legionnaire",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Liberator",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Nautilus",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Nautilus_Solstice_Edition",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Odyssey",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Orion",
+   "neither this model's name nor any mount-data key contains the other's words in order"
+  ],
+  [
+   "Pioneer",
+   "neither this model's name nor any mount-data key contains the other's words in order"
   ],
   [
    "Ranger_CV",
-   "no mount-data key's words appear in this model's name"
+   "neither this model's name nor any mount-data key contains the other's words in order"
   ],
   [
    "Ranger_RC",
-   "no mount-data key's words appear in this model's name"
+   "neither this model's name nor any mount-data key contains the other's words in order"
   ],
   [
    "Ranger_TR",
-   "no mount-data key's words appear in this model's name"
+   "neither this model's name nor any mount-data key contains the other's words in order"
   ],
   [
    "Vulcan",
-   "no mount-data key's words appear in this model's name"
+   "neither this model's name nor any mount-data key contains the other's words in order"
   ],
   [
    "Zeus_Mk_II_MR",
-   "no mount-data key's words appear in this model's name"
+   "neither this model's name nor any mount-data key contains the other's words in order"
   ]
  ],
  "rule": [
+  [
+   "ATLS",
+   "ATLS",
+   0
+  ],
   [
    "Anvil_Ballista_Dunestalker",
    "Ballista Dunestalker",
@@ -344,6 +370,16 @@
    "Anvil_Ballista_Snowblind",
    "Ballista Snowblind",
    5
+  ],
+  [
+   "Ares_Inferno",
+   "Ares Star Fighter Inferno",
+   9
+  ],
+  [
+   "Ares_Ion",
+   "Ares Star Fighter Ion",
+   9
   ],
   [
    "Argo_Mole_Carbon_Edition",
@@ -401,9 +437,24 @@
    20
   ],
   [
+   "MDC",
+   "MDC",
+   0
+  ],
+  [
    "Mustang_Alpha_Vindicator",
    "Mustang Alpha",
    7
+  ],
+  [
+   "ROC",
+   "ROC",
+   0
+  ],
+  [
+   "ROC-DS",
+   "ROC-DS",
+   0
   ],
   [
    "Reclaimer_Best_In_Show_Edition_2949",
@@ -485,6 +536,14 @@
  ],
  "unchecked_hull": [
   [
+   "ATLS",
+   "ATLS"
+  ],
+  [
+   "ATLS_GEO",
+   "ATLS GEO"
+  ],
+  [
    "Anvil_Ballista_Dunestalker",
    "Ballista Dunestalker"
   ],
@@ -493,16 +552,36 @@
    "Ballista Snowblind"
   ],
   [
+   "Ares_Inferno",
+   "Ares Star Fighter Inferno"
+  ],
+  [
+   "Ares_Ion",
+   "Ares Star Fighter Ion"
+  ],
+  [
    "Caterpillar_Pirate_Edition",
    "Caterpillar Pirate"
+  ],
+  [
+   "Clipper",
+   "Clipper"
   ],
   [
    "Cutlass_Black_Best_In_Show_Edition_2949",
    "Cutlass Black"
   ],
   [
+   "Defender",
+   "Defender"
+  ],
+  [
    "Dragonfly_Black",
    "Dragonfly"
+  ],
+  [
+   "Eclipse",
+   "Eclipse"
   ],
   [
    "F7C-M_Super_Hornet_Heartseeker_Mk_I",
@@ -511,6 +590,139 @@
   [
    "Gladius_Pirate_Edition",
    "Gladius Pirate"
+  ],
+  [
+   "Javelin",
+   "Javelin"
+  ],
+  [
+   "MDC",
+   "MDC"
+  ],
+  [
+   "Nova",
+   "Nova"
+  ],
+  [
+   "Pulse",
+   "Pulse"
+  ],
+  [
+   "Pulse_LX",
+   "Pulse LX"
+  ],
+  [
+   "ROC",
+   "ROC"
+  ],
+  [
+   "ROC-DS",
+   "ROC-DS"
   ]
- ]
+ ],
+ "aligned": [
+  [
+   "600i_Explorer",
+   "600i Touring",
+   14,
+   0.127
+  ],
+  [
+   "Anvil_Ballista_Dunestalker",
+   "Ballista",
+   4,
+   0.024
+  ],
+  [
+   "Anvil_Ballista_Snowblind",
+   "Ballista",
+   4,
+   0.024
+  ],
+  [
+   "Argo_Mole_Carbon_Edition",
+   "MOLE",
+   4,
+   0.053
+  ],
+  [
+   "Argo_Mole_Talus_Edition",
+   "MOLE",
+   4,
+   0.053
+  ],
+  [
+   "C8R_Pisces",
+   "C8 Pisces",
+   5,
+   0.047
+  ],
+  [
+   "Carrack_Expedition_w_C8X",
+   "Carrack Expedition",
+   10,
+   0.443
+  ],
+  [
+   "Carrack_w_C8X",
+   "Carrack",
+   10,
+   0.443
+  ],
+  [
+   "Caterpillar_Best_In_Show_Edition_2949",
+   "Caterpillar",
+   11,
+   0.33
+  ],
+  [
+   "Caterpillar_Pirate_Edition",
+   "Caterpillar",
+   11,
+   0.33
+  ],
+  [
+   "Dragonfly_Black",
+   "Dragonfly Yellowjacket",
+   6,
+   0.307
+  ],
+  [
+   "F7C-M_Super_Hornet_Heartseeker_Mk_I",
+   "F7C-M Super Hornet Mk I",
+   7,
+   0.079
+  ],
+  [
+   "Gladius_Pirate_Edition",
+   "Gladius Valiant",
+   12,
+   0.393
+  ],
+  [
+   "Hammerhead_Best_In_Show_Edition_2949",
+   "Hammerhead",
+   20,
+   0.594
+  ],
+  [
+   "Mustang_Alpha_Vindicator",
+   "Mustang Alpha",
+   3,
+   0.042
+  ],
+  [
+   "Reclaimer_Best_In_Show_Edition_2949",
+   "Reclaimer",
+   16,
+   1.166
+  ],
+  [
+   "Valkyrie_Liberator_Edition",
+   "Valkyrie",
+   32,
+   0.785
+  ]
+ ],
+ "align_ambiguous": []
 }
