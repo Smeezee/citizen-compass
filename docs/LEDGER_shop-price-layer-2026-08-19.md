@@ -1721,3 +1721,57 @@ CONTROL  <sha>  checks/_verify_find_deployed.mjs, extended - now 27 assertions.
     it is recorded because a 404 that resolves on its own is exactly the kind
     of thing that gets quietly retried out of a ledger.
 
+H6  DONE  <sha>  THE GENERATOR IS A BUILD STEP, NOT A THING SOMEBODY REMEMBERS.
+    build_deploy.py runs build_find_data.py --verify-stable before anything is
+    copied into _deploy, and refuses to build if it fails.
+    WHAT THAT COSTS, SAID OUT LOUD RATHER THAN DISCOVERED LATER: the testing
+    build now needs the database. Deliberate. The alternative is a build that
+    skips its own data generation and still prints "safe to deploy", which is
+    the same shape as a build that skips its own tests - and this build already
+    refuses to run when node is absent, for the same reason.
+    A REAL DEFECT FOUND AND CLOSED WHILE DOING IT: core.autocrlf is true on
+    this machine, so git rewrites LF to CRLF on checkout. --check compares the
+    bytes it would write against the bytes on disk, so on a fresh clone it
+    would have reported STALE for a perfectly current file, on line endings
+    alone. A stale-detector that fires on something it was not built to catch
+    is one people learn to ignore, and then it is not a check. Closed with a
+    .gitattributes pinning *.gen.js to eol=lf end to end. These files are
+    machine-written and machine-read; there is nothing to gain from a
+    platform-native ending.
+
+CONTROL  <sha>  checks/_verify_find_build_step.py - 21 assertions, and it runs
+    the REAL build four times rather than reasoning about it.
+    BOTH HALVES OF H6'S NAMED CONTROL, and the negative half first because it
+    is the one that is easy to skip:
+      NEGATIVE - three builds with no database change, and the data file and
+      the published checksum are BYTE-IDENTICAL every time. A generator that
+      regenerated correctly AND stamped the time into its output would pass the
+      positive half on every single run, forever, and churn git while doing it.
+      POSITIVE - item_prices id=26, price_buy 23,500 -> 23,507. Rebuild. The
+      file changed, the new value is in it, the checksum changed with it, and
+      the checksum describes the NEW file rather than the old one.
+    AND THAT THE BUILD RUNS THE GENERATOR AT ALL, proved by behaviour: damage
+    is planted in find_data.gen.js, the build is run, and the damage must be
+    gone. Grepping build_deploy.py for the filename would prove only that
+    somebody typed the filename.
+    AND THE STALE CASE, made real rather than simulated: the database is put
+    back while the FILE is left as it was, so the file on disk genuinely
+    disagrees with the database, and --check must refuse it and say STALE.
+    WHAT IT DID TO THE DATABASE, stated plainly: one UPDATE, one column, one
+    row, put back in a finally block. Not a DELETE, not a TRUNCATE, not a
+    migration - none of the operations rule 3 forbids. The old value is read
+    first and the restore SQL is printed before the change is made, so a
+    harness that died mid-run leaves the fix on screen.
+    THE RESTORE IS PROVEN, NOT MERELY ATTEMPTED: the final build must hash back
+    to the baseline sha256 taken before anything was touched. If it does not,
+    the harness says so and prints the SQL.
+
+BACKUP  2026-08-20 16:46:54, per rule 4, taken BEFORE the first row change.
+    Backup-CitizenCompass.ps1 -NonInteractive -SkipMirror. Failures: 0.
+    Postgres dump 2.06 MB written and restore-tested, 44.8 MB git bundle,
+    10,425 files hashed. The "restore returned 232 ships, expected 254"
+    warning is the known one already investigated at L3 - the live database
+    holds 232 ships and the 254 is a stale expectation in the checker, not a
+    short dump. Mirrors to D: and E: skipped by request and reported as
+    skipped, not as done.
+

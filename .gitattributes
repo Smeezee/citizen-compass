@@ -1,0 +1,16 @@
+# Generated data files keep LF on checkout, on every platform.
+#
+# WHY THIS FILE EXISTS: core.autocrlf is true on the project machine, so git
+# rewrites LF to CRLF when it checks a text file out. build_find_data.py's
+# --check compares the bytes it would write against the bytes on disk, which is
+# how a STALE generated file is detected (H6). With autocrlf converting on
+# checkout, a freshly cloned repo would fail that comparison on line endings
+# alone - a stale-detector reporting stale for a file that is perfectly current.
+#
+# A check that fires on something it was not built to catch is as useless as one
+# that never fires: people learn to ignore it, and then it is not a check.
+#
+# So the generated files are pinned to LF end to end. They are machine-written
+# and machine-read; nobody hand-edits them, so there is nothing to gain from a
+# platform-native ending.
+*.gen.js text eol=lf
