@@ -275,31 +275,53 @@ function reported(p) {
         ${esc(uexDate || "on an unknown date")} · ${a.text}</span></span>`;
 }
 
-/* H4, in the voice README-FOR-TESTERS.txt uses: say what we can prove and
- * nothing beyond it. This is the paragraph a visitor reads next to a number
- * they might spend real time on. */
+/* H4 / R8. Say what we can prove, and not more.
+ *
+ * The voice is README-FOR-TESTERS.txt's: short sentences, addressed to the
+ * person reading, no salesmanship. It is written for whoever is about to spend
+ * forty minutes flying somewhere, not for the person who built the page.
+ *
+ * These are the words the order calls the deliverable, so they are not
+ * paraphrased into something smoother anywhere else in this file. */
+
+/* One line, directly under the answer, where a visitor cannot miss it. */
+function provableClaim() {
+  return `<p style="color:var(--muted);font-size:14.5px;margin:-8px 0 16px">
+    Every number below is what a player told UEX they saw at that terminal, on
+    the date beside it. Nothing here is read out of the game.</p>`;
+}
+
+/* The fuller version, sitting directly above the price table rather than at
+ * the bottom of the page - a caveat somebody has to scroll to is a caveat that
+ * was written to be skipped. */
 function whatThisIs() {
   const snapList = D.snaps.map(s => `${esc(s[IX.sn.key])} (taken ${esc(s[IX.sn.date])})`)
     .join(" and ");
   const unverified = (COUNTS.shop_items_verified === 0)
-    ? `None of the ${fmt(COUNTS.shop_items)} items here has been checked against a
-       specific game patch yet, so nothing on this page can tell you whether it
+    ? `None of the ${fmt(COUNTS.shop_items)} items here has been checked against
+       a particular game patch, so nothing on this page can tell you whether it
        still holds in the build you are playing.`
-    : `${fmt(COUNTS.shop_items_verified)} of ${fmt(COUNTS.shop_items)} items have
-       been checked against a game patch; the rest have not.`;
-  return `<div class="warn"><strong>What these numbers actually are.</strong>
-    UEX reported this price at this terminal in the snapshot taken on the date
-    shown against each row. That is the whole claim, and this page does not make
-    a bigger one — it does not say this <em>is</em> the price.
+    : `${fmt(COUNTS.shop_items_verified)} of ${fmt(COUNTS.shop_items)} items
+       have been checked against a game patch. The rest have not.`;
+  return `<div class="warn"><strong>Where these numbers come from.</strong>
     <br><br>
-    The figures come from UEX, where <b>players submit what they saw at a
-    terminal</b> and UEX rates the submissions for confidence. That is why the
-    commodity records carry a quality score, averaged buy and sell figures and
-    stock levels at all — those are fields you only need when the numbers are
-    estimates. <b>Nothing here is read out of the game.</b> A row can be out of
-    date, or simply wrong, and the date on it is how you judge that.
+    Star Citizen does not publish its prices. Players do.
     <br><br>
-    Everything on this page comes from ${snapList}. ${unverified}</div>`;
+    Somebody stood at that terminal, saw that number, and typed it into UEX.
+    UEX rates how much it trusts each submission — that is why its records
+    carry a quality score, averaged buy and sell figures and stock levels at
+    all. Those are fields you only need when the numbers are estimates.
+    <br><br>
+    So here is the whole of what this page can honestly say:
+    <b>UEX reported this price at this terminal in the snapshot taken on the
+    date beside the row.</b> Not "this is the price". We have not been into the
+    game to check, and neither has UEX.
+    <br><br>
+    A row can be out of date. A row can be wrong. The date next to it is how
+    you tell, which is why every single row carries one rather than one date
+    sitting at the top of the page.
+    <br><br>
+    Everything here comes from ${snapList}. ${unverified}</div>`;
 }
 
 /* ================= views ================= */
@@ -484,11 +506,12 @@ function item(ref) {
     <p style="color:var(--muted);margin:0 0 6px;font-size:15px">
       UEX ${esc(IX.kind[it[IX.it.kind]])} #${esc(it[IX.it.uex])}${
         it[IX.it.size] ? ` · size ${esc(it[IX.it.size])}` : ""}</p>
-    <div class="answer">${ans}</div>`;
+    <div class="answer">${ans}</div>${provableClaim()}`;
 
   /* Buy and sell are SEPARATE columns. They are never combined and never
    * averaged into one figure. */
   if (rows.length) {
+    h += whatThisIs();
     h += `<div class="card"><h2>Every terminal UEX has a report from</h2>
       <div class="tablewrap"><table>
       <tr><th>Terminal</th><th>Where</th><th>Buy</th><th>Sell</th>
@@ -506,9 +529,11 @@ function item(ref) {
         <td>${reported(x)}</td></tr>`;
     });
     h += `</table></div></div>`;
+  } else {
+    h += whatThisIs();
   }
 
-  return h + whatThisIs() + "</div>";
+  return h + "</div>";
 }
 
 function terminal(uexId) {
@@ -534,7 +559,8 @@ function terminal(uexId) {
       UEX terminal #${esc(t[IX.tm.uex])}</p>
     <div class="answer">UEX has <b>${fmt(rows.length)}</b> price
       row${rows.length !== 1 ? "s" : ""} for this terminal — ${buys.length}
-      with something to buy, ${sells.length} they'll buy off you.</div>`;
+      with something to buy, ${sells.length} they'll buy off you.</div>
+    ${provableClaim()}${whatThisIs()}`;
 
   if (!rows.length) {
     h += `<div class="none"><b>Nothing is listed here.</b> The terminal exists in
@@ -561,7 +587,7 @@ function terminal(uexId) {
         of ${fmt(rows.length)} rows.</p>`;
     }
   }
-  return h + whatThisIs() + "</div>";
+  return h + "</div>";
 }
 
 /* ================= routing ================= */

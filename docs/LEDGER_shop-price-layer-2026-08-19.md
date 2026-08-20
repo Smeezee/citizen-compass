@@ -1616,3 +1616,64 @@ CONTROL  <sha>  checks/_verify_find_deployed.mjs - 21 assertions, every one of
     named terminal with a price and a snapshot date. --self-test inverts every
     expectation and exits 1.
 
+H4  DONE  <sha>  SAY WHAT IS PROVABLE, AND NOT MORE. The order says this is the
+    one item where the wording IS the deliverable, so it is not paraphrased
+    into something smoother anywhere on the page.
+    THE WORDS, in README-FOR-TESTERS.txt's voice - short sentences, addressed
+    to the person reading, no salesmanship:
+      "Star Citizen does not publish its prices. Players do.
+       Somebody stood at that terminal, saw that number, and typed it into
+       UEX. UEX rates how much it trusts each submission - that is why its
+       records carry a quality score, averaged buy and sell figures and stock
+       levels at all. Those are fields you only need when the numbers are
+       estimates.
+       So here is the whole of what this page can honestly say: UEX reported
+       this price at this terminal in the snapshot taken on the date beside
+       the row. Not "this is the price". We have not been into the game to
+       check, and neither has UEX.
+       A row can be out of date. A row can be wrong. The date next to it is
+       how you tell, which is why every single row carries one rather than one
+       date sitting at the top of the page."
+    AND IT SITS ABOVE THE TABLE, NOT UNDER IT. It used to trail the page. A
+    caveat a visitor has to scroll past the numbers to reach was written to be
+    skipped, so the position is asserted rather than left to taste: the control
+    fails if the caveat's offset is greater than the table's.
+    A one-line version sits directly under the answer on every item and
+    terminal page: "Every number below is what a player told UEX they saw at
+    that terminal, on the date beside it. Nothing here is read out of the
+    game."
+
+CONTROL  <sha>  checks/_verify_find_wording.mjs - 29 assertions, and it is a
+    SCANNER rather than a human read, because a human read passes once on the
+    day somebody does it and this runs on every build.
+    NINE FORBIDDEN CLAIMS, each carrying the sentence that must trip it, and
+    EVERY PATTERN IS RUN AGAINST ITS OWN BAD EXAMPLE BEFORE IT IS POINTED AT
+    THE PAGE. "Prices are read straight out of the game", "This is the official
+    price", "Live prices, updated in real-time", "The average price across all
+    shops is 2,900 aUEC" - all nine must be caught, and an honest sentence must
+    NOT be. A wording checker whose patterns never match anything reports a
+    clean page forever.
+    A NEGATED MENTION IS NOT A CLAIM. The page says "Nothing here is read out
+    of the game", which is the sentence H4 asked for; a scanner that failed the
+    page for saying it would be pushing the page toward saying less.
+    AND ONE REAL DEFECT IN THE SCANNER, FOUND AND FIXED RATHER THAN WORKED
+    AROUND: inside a block comment that sentence wraps across lines with " * "
+    through the middle of it, so the negation did not match and the forbidden
+    pattern did. The page failed for containing exactly what it was told to
+    contain. Fixed by flattening comment leaders before scanning - and the
+    flattener is itself proven, with a forbidden sentence planted across a
+    comment break that must still be caught.
+    SIX REQUIRED SENTENCES, checked on the item page, the terminal page and
+    the home page - so the caveat is not present on one route and missing on
+    the next.
+    STATED LIMIT: this catches the claims we know are wrong to make. A novel
+    overclaim would pass. The answer to that is a new pattern here, not a claim
+    that this is comprehension.
+
+    AND THE WORDING NOW HAS ONE OWNER. The three H4 assertions that had been
+    living in _verify_find_page.mjs were removed rather than updated. Two
+    copies of the same claim in two suites drift the moment either is edited -
+    the same one-writer problem as rule 14, applied to an assertion instead of
+    a file. _verify_find_page.mjs keeps only the structural half: that the
+    provable claim is present at all.
+

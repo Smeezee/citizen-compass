@@ -221,29 +221,17 @@ record(/20260801T235530Z/.test(item), "the snapshot key itself is on the row");
 record(/UEX last updated the row/.test(item),
   "and so is UEX's own last-modified date for that row");
 
-console.log("\n--- H4: what the page claims, and what it does not ---");
-const claims = [item, search, render("")].join("\n");
-record(!/\bis the price\b/i.test(claims), "the page never says 'is the price'");
-record(!/measured (from|in) the game/i.test(claims),
-  "nor 'measured from the game'");
-// The page SAYS "Nothing here is read out of the game", which is the honest
-// statement H4 wants. Strip the negated forms before looking for an
-// affirmative one, so the check tests the claim and not the vocabulary.
-const affirmative = claims
-  .replace(/not\s+read\s+out\s+of\s+the\s+game/gi, "")
-  .replace(/nothing\s+here\s+is\s+read\s+out\s+of\s+the\s+game/gi, "")
-  .replace(/are\s+NOT\s+read\s+out\s+of\s+the\s+game/gi, "");
-record(!/(read|taken)\s+(straight\s+)?(out of|from)\s+the\s+game(?! files)/i
-  .test(affirmative),
-  "nor claims the figures are read out of the game");
-record(!/\b(official|confirmed|verified) price/i.test(claims),
-  "nor calls a price official, confirmed or verified");
-record(/players submit what they saw/i.test(item),
-  "it says plainly that players submit these figures");
-record(/rates the submissions for confidence/i.test(item),
-  "and that UEX rates them for confidence");
+// H4's WORDING is owned by checks/_verify_find_wording.mjs, and only by it. A
+// second copy of those assertions living here would drift from the first the
+// moment either the page or one of the two suites was edited - the same
+// one-writer problem as anywhere else in this repo, applied to a claim rather
+// than to a file. What stays here is the structural fact this suite is the
+// right place for: that the provable claim is present at all.
+console.log("\n--- H4: the provable claim is present (wording owned elsewhere) ---");
 record(/UEX reported this price at this terminal in the snapshot taken/i.test(item),
-  "and states the provable claim in the order's own words");
+  "the item page states the provable claim in the order's own words");
+record(/UEX reported this in the snapshot taken/.test(item),
+  "and each row repeats the date, per R6");
 
 console.log("\n--- a terminal renders its stock, still with no network ---");
 const terminal = render("p/111");
