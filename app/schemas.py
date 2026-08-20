@@ -275,3 +275,34 @@ class SearchResultOut(BaseModel):
     price_buy_max: int | None
     price_sell_min: int | None
     price_sell_max: int | None
+
+
+# ---------------------------------------------------------------------------
+# G8 - hardpoint slot structure for one model.
+#
+# Every optional field here is optional because the SOURCE may not state it,
+# not because the API is being lenient. `size` in particular is None rather
+# than 0 for a mount with no published size: 0 would render as "size 0" on the
+# page, which is a value nobody measured.
+# ---------------------------------------------------------------------------
+
+
+class ShipHardpointSlotOut(BaseModel):
+    port: str
+    kind: str | None = None
+    size: int | None = None
+    stock_item_name: str | None = None
+    stock_item_type: str | None = None
+    where: str | None = None
+
+
+class ShipHardpointsOut(BaseModel):
+    model: str
+    model_key: str
+    # "placed" | "absent" | "refused" | "skipped". The last three all mean the
+    # slot list is empty, and they mean it for different reasons.
+    status: str
+    reason: str | None = None
+    slot_count: int
+    source_dataset: str | None = None
+    slots: list[ShipHardpointSlotOut]

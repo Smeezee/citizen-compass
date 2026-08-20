@@ -24,6 +24,10 @@ SHIP_STATUSES = ("purchasable", "pledge_only")
 # name", and a reader who cannot tell them apart cannot judge either.
 XREF_MATCH_METHODS = ("exact_name", "token_set")
 
+# Why a model has, or does not have, hardpoint slot data. "absent" is a
+# first-class answer here and not a missing row - see ShipHardpointCoverage.
+HARDPOINT_COVERAGE_STATUSES = ("placed", "refused", "skipped", "absent")
+
 # LIFECYCLE_STATUSES answers "does this still exist in the game?".
 # SHIP_STATUSES above answers "can you buy it?". They are ORTHOGONAL and must
 # never be merged: the Aurora Mk I was pledge_only AND is now retired, and
@@ -1160,3 +1164,128 @@ class ShopItemCommodityXref(Base):
     commodity: Mapped["ShopItem"] = relationship(
         foreign_keys=[commodity_shop_item_id]
     )
+
+
+# ---------------------------------------------------------------------------
+# G8. SHIP HARDPOINT SLOTS.
+#
+# WHAT THIS IS, AND JUST AS IMPORTANTLY WHAT IT IS NOT
+# ----------------------------------------------------
+# This is SLOT STRUCTURE: which mounts a hull has, where they sit on it, what
+# size they are, and what the mount data says is fitted as stock. It is what
+# the ship page's Loadout panel has always promised - "slot structure shown, no
+# invented values" - and until now that panel could not keep the promise,
+# because the data was on disk in
+# data-layer/derived/holo-hardpoints*/ and the panel's own text claimed it was
+# in PostgreSQL. F3 caught that. This is the half that makes the text true.
+#
+# THIS IS NOT THE LOADOUT SYSTEM. ARCHITECTURE_DECISIONS defers Priority 9 -
+# specifically "compatibility rule placement", deliberately, until component
+# data exists to design against. Nothing here expresses a compatibility rule,
+# and nothing here lets a user fit anything to anything. A slot does not even
+# carry a foreign key to `components` yet: when that arrives the locked
+# decision says it points at the components BASE table's primary key, and this
+# table is shaped so that is an added column rather than a rewrite.
+#
+# WHY IT IS KEYED BY MODEL AND NOT BY SHIP
+# -----------------------------------------
+# The underlying facts are about a MESH: these positions were measured off the
+# .glb file's own vertices. Several ships share one mesh - that is the whole
+# subject of the shared-hulls ruling - and a paint or an edition is a
+# configuration of a hull rather than a hull of its own. Keying by ship would
+# either duplicate identical geometry per variant or force a choice about which
+# variant "owns" it. The site already resolves ship -> model to load the 3D
+# view, so the panel asks by the key it is already holding, and no new
+# name-matching is invented anywhere.
+# ---------------------------------------------------------------------------
+
+
+class ShipHardpointCoverage(Base):
+    """One row per model, saying whether it has slot data AND WHY NOT.
+
+    THE REASON THIS EXISTS AT ALL: without it, "no hardpoints" and "no such
+    model" are the same empty answer, and the ship page cannot tell a visitor
+    which one they are looking at. A blank panel that means "we have not
+    measured this hull" and a blank panel that means "this hull genuinely has
+    no mounts" are different statements, and showing the same nothing for both
+    is the polite version of making something up.
+
+    Absence is data - it gets a row.
+    """
+
+    __tablename__ = "ship_hardpoint_coverage"
+    __table_args__ = (
+        UniqueConstraint("model_key", name="uq_ship_hardpoint_coverage_model"),
+        CheckConstraint(f"status IN {HARDPOINT_COVERAGE_STATUSES}",
+                        name="ck_ship_hardpoint_coverage_status_valid"),
+        # A model reported as carrying slots must actually carry some, and one
+        # reported as carrying none must not have any. Without this the two
+        # tables can disagree and the page believes whichever it read first.
+        CheckConstraint(
+            "(status = 'placed' AND slot_count > 0) OR "
+            "(status <> 'placed' AND slot_count = 0)",
+            name="ck_ship_hardpoint_coverage_count_matches_status",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    # The model's own name, normalised the way the site names it.
+    model_key: Mapped[str] = mapped_column(String(150), nullable=False,
+                                           index=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+
+    # Verbatim from the build report. A visitor never sees this, but whoever
+    # asks "why is this panel empty" gets an answer instead of a shrug.
+    reason: Mapped[str | None] = mapped_column(Text)
+
+    slot_count: Mapped[int] = mapped_column(nullable=False, server_default="0")
+
+    # Which derived dataset this came from - the fleet placement or the name
+    # join. Two datasets, one table, and the row says which, because they were
+    # produced by different code on different days.
+    source_dataset: Mapped[str | None] = mapped_column(String(50), index=True)
+
+    detail: Mapped[dict | None] = mapped_column(JSONB)
+
+
+class ShipHardpoint(Base):
+    """One mount on one model.
+
+    Real columns for everything the page filters, groups or sorts on - model,
+    port, kind, size. JSONB for the tail, which genuinely differs per mount:
+    the measured position, the frame it was resolved in, and the stock items
+    the mount data lists. Per the hybrid-schema rule, and note that nothing
+    here is a price, a count, or anything a visitor reads as a number.
+    """
+
+    __tablename__ = "ship_hardpoints"
+    __table_args__ = (
+        # One row per (model, port). A model listing the same port twice would
+        # double every count the panel shows.
+        UniqueConstraint("model_key", "port",
+                         name="uq_ship_hardpoints_model_port"),
+        Index("ix_ship_hardpoints_model_kind", "model_key", "kind"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    model_key: Mapped[str] = mapped_column(String(150), nullable=False,
+                                           index=True)
+    port: Mapped[str] = mapped_column(String(150), nullable=False)
+
+    # "gun", "missile", "mount", "countermeasure" - what KIND lives here.
+    kind: Mapped[str | None] = mapped_column(String(50), index=True)
+
+    # Nullable on purpose: plenty of mounts carry no published size, and a
+    # zero would read as "size 0" rather than "not stated".
+    size: Mapped[int | None] = mapped_column(index=True)
+
+    # What the mount data says is fitted as stock, flattened for display. The
+    # full item list lives in `detail` - a mount can hold more than one.
+    stock_item_name: Mapped[str | None] = mapped_column(String(255))
+    stock_item_type: Mapped[str | None] = mapped_column(String(100))
+
+    source_dataset: Mapped[str | None] = mapped_column(String(50), index=True)
+
+    detail: Mapped[dict | None] = mapped_column(JSONB)

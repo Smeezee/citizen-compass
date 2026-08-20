@@ -566,7 +566,7 @@ body{padding-top:30px}
     </div>
     <div class="cc-col">
       <div class="cc-panel"><h3>Loadout</h3>
-        <div class="cc-pending">Hardpoint and component data is not in the site file yet. It lives in PostgreSQL and reaches this panel once the API is wired in. Slot structure shown, no invented values.</div>
+        <div class="cc-pending" id="cc-slotnote">Slot structure is measured from this hull's own model geometry and read from the game's mount data. Nothing here is estimated, and a hull we have not measured says so rather than showing a blank.</div>
         <div class="cc-slots" id="cc-slots"></div></div>
       <div class="cc-panel"><h3>Classification</h3>
         <div class="cc-kv"><span class="k">Role</span><span class="v" id="cc-role2"></span></div>
@@ -584,6 +584,126 @@ body{padding-top:30px}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 const CC_MODELS = {"129": "100i", "130": "125a", "131": "135c", "132": "300i", "133": "315p", "134": "325a", "135": "350r", "136": "400i", "137": "600i Explorer", "138": "600i Touring", "139": "85X", "140": "890 Jump", "61": "A1 Spirit", "62": "A2 Hercules", "145": "Apollo Medivac", "146": "Apollo Triage", "63": "Ares Inferno", "64": "Ares Ion", "203": "Arrastra", "21": "Asgard", "44": "ATLS", "45": "ATLS GEO", "147": "Aurora CL", "148": "Aurora ES", "149": "Aurora LN", "150": "Aurora LX", "151": "Aurora MR", "1": "Avenger Stalker", "2": "Avenger Titan", "3": "Avenger Titan Renegade", "4": "Avenger Warlock", "22": "Ballista", "86": "Blade", "70": "Buccaneer", "65": "C1 Spirit", "66": "C2 Hercules", "23": "C8 Pisces", "24": "C8R Pisces", "25": "C8X Pisces Expedition", "26": "Carrack", "71": "Caterpillar", "27": "Centurion", "72": "Clipper", "152": "Constellation Andromeda", "154": "Constellation Phoenix", "155": "Constellation Taurus", "73": "Corsair", "191": "Crucible", "46": "CSV-SM", "74": "Cutlass Black Best In Show Edition 2949", "75": "Cutlass Blue", "76": "Cutlass Red", "77": "Cutlass Steel", "78": "Cutter", "79": "Cutter Rambler", "80": "Cutter Scout", "168": "Cyclone", "173": "Cyclone AA", "174": "Cyclone MT", "175": "Cyclone RC", "176": "Cyclone RN", "177": "Cyclone TR", "54": "Defender", "81": "Dragonfly Black", "204": "E1 Spirit", "5": "Eclipse", "196": "Endeavor", "198": "Expanse", "31": "F7C-M Super Hornet Mk I", "32": "F7C-R Hornet Tracker Mk I", "33": "F7C-R Hornet Tracker Mk II", "34": "F7C-S Hornet Ghost Mk I", "35": "F7C-S Hornet Ghost Mk II", "28": "F7C Hornet Mk I", "29": "F7C Hornet Mk II", "30": "F7C Hornet Wildfire Mk I", "214": "F8C Lightning", "103": "Fortune", "104": "Freelancer", "105": "Freelancer DUR", "106": "Freelancer MAX", "107": "Freelancer MIS", "119": "Fury", "120": "Fury LX", "121": "Fury MX", "211": "G12", "212": "G12a", "213": "G12r", "182": "Galaxy", "197": "Genesis", "36": "Gladiator", "6": "Gladius Valiant", "7": "Gladius Valiant", "230": "Glaive", "82": "Golem", "224": "Golem OX", "122": "Guardian", "123": "Guardian MX", "232": "Guardian QI", "8": "Hammerhead", "37": "Hawk", "83": "Herald", "55": "HoverQuad", "108": "Hull A", "222": "Hull B", "109": "Hull C", "199": "Hull D", "200": "Hull E", "38": "Hurricane", "188": "Idris-M", "189": "Idris-P", "67": "Intrepid", "218": "Ironclad", "219": "Ironclad Assault", "187": "Javelin", "165": "Khartu-Al", "181": "Kraken", "202": "Kraken Privateer", "100": "L-21 Wolf", "229": "L-22 Alpha Wolf", "195": "Legionnaire", "183": "Liberator", "170": "Lynx", "68": "M2 Hercules", "141": "M50", "157": "Mantis", "94": "MDC", "186": "Merchantman", "69": "Mercury", "158": "Meteor", "47": "MOLE", "49": "MPUV Cargo", "50": "MPUV Personnel", "51": "MPUV Tractor", "95": "MTC", "84": "Mule", "56": "Mustang Alpha", "57": "Mustang Beta", "58": "Mustang Delta", "59": "Mustang Gamma", "190": "Nautilus", "60": "Nomad", "169": "Nova", "166": "Nox", "201": "Odyssey", "193": "Orion", "101": "P-52 Merlin", "102": "P-72 Archimedes", "39": "Paladin", "159": "Perseus", "184": "Pioneer", "221": "Polaris", "110": "Prospector", "87": "Prowler", "88": "Prowler Utility", "96": "PTV", "124": "Pulse", "125": "Pulse LX", "52": "RAFT", "228": "Railen", "206": "Ranger CV", "207": "Ranger RC", "208": "Ranger TR", "126": "Razor", "127": "Razor EX", "128": "Razor LX", "9": "Reclaimer", "10": "Redeemer", "111": "Reliant Kore", "112": "Reliant Mako", "113": "Reliant Sen", "114": "Reliant Tana", "11": "Retaliator", "97": "ROC", "98": "ROC-DS", "12": "Sabre", "13": "Sabre Comet", "14": "Sabre Firebird", "15": "Sabre Peregrine", "160": "Salvation", "167": "San'tok.yāi", "161": "Scorpius", "171": "Scorpius Antares", "231": "Scythe", "93": "Shiv", "40": "Spartan", "53": "SRV", "115": "Starfarer", "116": "Starfarer Gemini", "117": "Starlancer MAX", "118": "Starlancer TAC", "89": "Stinger", "178": "Storm", "179": "Storm AA", "99": "STV", "92": "Syulen", "90": "Talon", "91": "Talon Shrike", "41": "Terrapin", "42": "Terrapin Medic", "162": "Ursa", "163": "Ursa Medivac", "43": "Valkyrie", "16": "Vanguard Harbinger", "17": "Vanguard Hoplite", "18": "Vanguard Sentinel", "19": "Vanguard Warden", "194": "Vulcan", "85": "Vulture", "142": "X1", "143": "X1 Force", "144": "X1 Velocity", "164": "Zeus Mk II CL", "172": "Zeus Mk II ES", "205": "Zeus Mk II MR", "234": "ATLS", "235": "ATLS", "236": "ATLS", "237": "Ballista", "238": "Ballista", "239": "Carrack Expedition", "240": "Constellation Phoenix Emerald", "241": "F7A Hornet Mk I", "242": "F7A Hornet Mk II", "244": "F7C-M Super Hornet Heartseeker Mk I", "245": "F7C-M Super Hornet Mk II", "246": "F8C Lightning Executive Edition", "248": "Gladius Pirate Edition", "249": "Mustang Alpha Vindicator", "250": "Mustang Omega", "251": "P-72 Archimedes Emerald", "252": "Sabre Raven", "253": "Ursa Fortuna", "254": "Valkyrie"};
+/* ==========================================================================
+   G8 - the Loadout panel stops saying "awaiting data".
+
+   WHY THIS IS THE FIRST NETWORK CALL ON THIS PAGE
+   ------------------------------------------------
+   The panel promised "slot structure shown, no invented values" and then
+   rendered eight hardcoded category rows that all said "awaiting data". That
+   was honest while there was nothing to show, and it would have become a lie
+   the moment there was. F3 found why it could never fill: the hardpoint SLOTS
+   were not in PostgreSQL at all - they were two derived JSON files on disk -
+   and no endpoint existed. Both halves are now built, so the panel asks.
+
+   IT ASKS BY MODEL, NOT BY SHIP, using the same `dir` the page already
+   resolved to load the 3D view. No ship-to-model matching is invented here;
+   the page hands over the key it is already holding.
+
+   FOUR OUTCOMES, AND NONE OF THEM IS A SPINNER THAT NEVER RESOLVES
+   -----------------------------------------------------------------
+     slots        render them, grouped by kind
+     known, none  say so, and say WHY - the API carries the build's own reason
+     404          say this model is not in the dataset
+     unreachable  say the data could not be reached, and say it is the API
+
+   The last one matters more than it looks: the API has spent this evening
+   returning 502, and a panel that spins forever during an outage tells a
+   visitor nothing while looking like it is about to. It resolves to a
+   sentence, every time.
+
+   NOTHING IS INVENTED IN ANY BRANCH. There is no placeholder row, no "0"
+   standing in for an unmeasured size, and no category list fabricated to make
+   the panel look populated.
+   ========================================================================== */
+const CC_API=(new URLSearchParams(location.search).get("api")
+  ||"https://citizen-compass-production.up.railway.app").replace(/\/$/,"");
+
+const CC_ESC=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* One sentence in the slot area. Used for every non-slot outcome, so no branch
+   can accidentally leave the panel mid-load. */
+function ccSlotMessage(text){
+  const el=$('cc-slots'); if(!el) return;
+  el.innerHTML='<div class="cc-slot" style="grid-column:1/-1">'+
+    '<span class="sv">'+CC_ESC(text)+'</span></div>';
+}
+
+const CC_KIND_LABEL={gun:'Guns',missile:'Missile racks',mount:'Turrets and mounts',
+  countermeasure:'Countermeasures'};
+
+let _ccHpToken=0;
+async function loadHardpoints(dir){
+  const token=++_ccHpToken;                 /* a fast click must not let an
+                                               earlier ship's answer land in a
+                                               later ship's panel */
+  if(!dir){ ccSlotMessage('No model folder matched for this ship, so there is '+
+    'no hull to read hardpoints from.'); return; }
+  ccSlotMessage('Reading hardpoint data\u2026');
+  let res;
+  try{
+    res=await fetch(CC_API+'/api/v1/ships/models/'+encodeURIComponent(dir)+
+      '/hardpoints',{headers:{Accept:'application/json'}});
+  }catch(e){
+    if(token===_ccHpToken) ccSlotMessage('Could not reach the hardpoint data. '+
+      'The API did not answer, so nothing is shown rather than something '+
+      'guessed.');
+    return;
+  }
+  if(token!==_ccHpToken) return;
+  if(res.status===404){
+    ccSlotMessage('This model is not in the hardpoint dataset yet.'); return;
+  }
+  if(!res.ok){
+    ccSlotMessage('Could not reach the hardpoint data (the API answered '+
+      res.status+'). Nothing is shown rather than something guessed.');
+    return;
+  }
+  let data;
+  try{ data=await res.json(); }
+  catch(e){ ccSlotMessage('The hardpoint data came back unreadable.'); return; }
+  if(token!==_ccHpToken) return;
+
+  const slots=(data&&data.slots)||[];
+  if(!slots.length){
+    ccSlotMessage('No hardpoint data for this hull'+
+      (data&&data.reason?' \u2014 '+data.reason:'')+'.');
+    return;
+  }
+
+  const groups=new Map();
+  slots.forEach(s=>{
+    const k=CC_KIND_LABEL[s.kind]||(s.kind?s.kind:'Other mounts');
+    if(!groups.has(k)) groups.set(k,[]);
+    groups.get(k).push(s);
+  });
+
+  let html='';
+  groups.forEach((rows,label)=>{
+    html+='<div class="cc-slot" style="grid-column:1/-1"><span class="sn">'+
+      CC_ESC(label)+'</span><span class="sv">'+rows.length+'</span></div>';
+    rows.forEach(s=>{
+      /* size is null, never 0, when the source does not state one - a 0 here
+         would read as "size zero", which is a value nobody measured. */
+      const bits=[];
+      if(s.size!=null) bits.push('S'+s.size);
+      if(s.stock_item_name) bits.push(s.stock_item_name);
+      html+='<div class="cc-slot"><span class="sn">'+
+        CC_ESC(s.where||s.port)+'</span><span class="sv">'+
+        (bits.length?CC_ESC(bits.join(' \u00b7 ')):'not stated')+'</span></div>';
+    });
+  });
+  $('cc-slots').innerHTML=html;
+
+  const note=$('cc-slotnote');
+  if(note&&data.source_dataset){
+    note.textContent='Slot structure measured from this hull\u2019s own model '+
+      'geometry and the game\u2019s mount data ('+data.slot_count+' mounts, '+
+      'source: '+data.source_dataset+'). Nothing here is estimated.';
+  }
+}
+
 const CC_DIR="../sc-ships/", CC_FILE="model_scaled.glb";
 const $=id=>document.getElementById(id);
 const hex2rgb=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16)).join(',')};
@@ -889,9 +1009,7 @@ function open(ship){
   $('cc-prov').innerHTML='<span>Confidence <b>'+(ship.confidence||'unrecorded')+
     '</b></span><span>Last verified <b>'+(ship.last_verified_patch||'not recorded')+
     '</b></span><span>Record <b>#'+ship.id+'</b></span>';
-  $('cc-slots').innerHTML=[['Pilot weapons'],['Missile racks'],['Turrets'],['Shield generators'],
-    ['Power plants'],['Coolers'],['Quantum drive'],['Fuel']].map(([n])=>
-    '<div class="cc-slot"><span class="sn">'+n+'</span><span class="sv">awaiting data</span></div>').join('');
+  loadHardpoints(dir);
   $('cc-mfile').textContent=dir||'none matched';
   const rel=SHIPS.filter(s=>s.id!==ship.id&&(s.manufacturer===ship.manufacturer||s.role===ship.role)).slice(0,14);
   const ri=$('cc-relitems');ri.innerHTML='';
