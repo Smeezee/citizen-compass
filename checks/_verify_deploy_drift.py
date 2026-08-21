@@ -83,7 +83,18 @@ def read_bytes(path):
         return fh.read()
 
 
-def read_text(path):
+def text_of(path):
+    """Deliberately NOT named after pathlib's read-text method.
+
+    checks/file_checks.py's missing_encoding checker matches on the CALL SITE
+    NAME, so a helper with that name makes every use of it look like a
+    pathlib call with no encoding= - four false findings in this file alone,
+    on lines that do specify utf-8 one frame down.
+
+    A checker that cries wolf is a checker somebody eventually silences, and
+    this one is what makes hard rule 15 machine-enforced. Shadowing its
+    subject's name is not worth it.
+    """
     with open(path, "r", encoding="utf-8", newline="") as fh:
         return fh.read()
 
@@ -99,7 +110,7 @@ def build_pages():
     living in a checker is a second writer for the same fact (rule 14), and it
     would drift the first time a page was added.
     """
-    tree = ast.parse(read_text(BUILD), filename=BUILD)
+    tree = ast.parse(text_of(BUILD), filename=BUILD)
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
             for target in node.targets:
@@ -156,12 +167,12 @@ def main():
         if not os.path.exists(d_path):
             drifted.append("%s is MISSING from _deploy" % out_name)
             continue
-        s_text = read_text(s_path) if src_name.endswith(".html") else None
+        s_text = text_of(s_path) if src_name.endswith(".html") else None
         if s_text is not None and VENDOR_MARKER in s_text:
             # TRANSFORMED: three.js is inlined at the marker. Everything either
             # side of it must still be the source, verbatim.
             head, tail = s_text.split(VENDOR_MARKER, 1)
-            d_text = read_text(d_path)
+            d_text = text_of(d_path)
             if not (d_text.startswith(head) and d_text.endswith(tail)):
                 drifted.append("%s does not match %s either side of the vendor "
                                "marker" % (out_name, src_name))
@@ -204,7 +215,7 @@ def main():
                         "deploy_drift_plant_%s" % time.strftime("%Y%m%d%H%M%S"))
     try:
         with open(victim, "w", encoding="utf-8", newline="") as fh:
-            fh.write(read_text(os.path.join(SRC, victim_src))
+            fh.write(text_of(os.path.join(SRC, victim_src))
                      + "\n<!-- typed straight into _deploy, by hand -->\n")
         found = read_bytes(victim) != read_bytes(os.path.join(SRC, victim_src))
         check("the plant really did change the file - otherwise the assertion "

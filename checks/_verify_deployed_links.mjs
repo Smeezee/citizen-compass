@@ -59,8 +59,9 @@ const SELFTEST = SELFTEST_ARG;
 // the one expectation this sweep's trustworthiness rests on: the canary comes
 // back 200, the canary assertion must therefore fire, and the run must fail
 // BECAUSE OF IT. If it does not fire, the assertion is dead and the sweep has
-// been reporting a green light with no bulb in it - which exits 2, distinctly
-// from the exit 1 that means "the self-test worked".
+// been reporting a green light with no bulb in it - and the run exits ZERO, so
+// that run_all_controls.py's "every self-test must exit non-zero" is what
+// catches it.
 const CANARY = SELFTEST_ARG
   ? "/"
   : "/this-page-is-the-canary-and-must-404-8f3a91.html";
@@ -324,9 +325,12 @@ async function main() {
     if (canaryReported) {
       console.log("--self-test NOT PROVEN: the canary pointed at a page that "
         + "EXISTS and the assertion still passed it. The canary check is dead, "
-        + "so a clean sweep means nothing. Exit 2 = the proof did not run, "
-        + "which is not the same as a failing test.");
-      process.exit(2);
+        + "so a clean sweep means nothing.");
+      // Exit ZERO deliberately. run_all_controls.py requires every --self-test
+      // to exit NON-zero, so a zero here is exactly what makes the sweep report
+      // this control's inverted mode as broken. Inventing a distinct exit code
+      // would have hidden it from the one thing that checks.
+      process.exit(0);
     }
     console.log(`--self-test: the canary assertion fired as required `
       + `(${failures} failure(s) in total). A non-zero exit is the correct `

@@ -72,6 +72,9 @@ NEEDS = {
     "_verify_find_deployed.mjs":
         "fetches the DEPLOYED origin - it is a statement about the live site, "
         "not about this working tree",
+    "_verify_deployed_links.mjs":
+        "sweeps the DEPLOYED origin for dead links - same reason, and it makes "
+        "~450 network requests, so it is opt-in rather than part of every run",
 }
 
 
