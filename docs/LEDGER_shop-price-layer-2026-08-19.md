@@ -2328,3 +2328,49 @@ I4  DONE  6ef55fc  THE VERSION NUMBER IS WRITTEN IN ONE PLACE. VERSION at the
     afterwards by hand: VERSION 0.4.0, --check clean, built page carrying
     v0.4.0 twice and the probe number nowhere.
     --self-test exits 1, and leaves the repo restored too.
+
+I5  DONE  ebb3a07  WHAT CHANGES WHEN LIVE FLIPS - measured by fetching the live
+    site, not remembered. Written into section 6 of docs/RELEASING-THE-SITE.md
+    and summarised here.
+    THE FINDING THAT REFRAMES THE WHOLE RELEASE: releases/latest.html is
+    BYTE-IDENTICAL to the page being served live right now except for the
+    version string. Two lines differ - the <title> and the header. The ship
+    matrix, all 254 ships, the 233 RSI links, the text, the layout: identical.
+    So "three weeks behind" does not mean the page drifted. It means everything
+    since v0.3.9 is ADDED ON TOP of an unchanged page, or is a new page beside
+    it. That is a much easier release to approve than it sounded.
+    THE NUMBERS, both sides:
+      live now   1 file, 205 KB, one page, v0.3.9, no models, no other paths -
+                 /find /keybinds /loadout /holo /download /stick-test and
+                 /models/Hammerhead.glb all 404 on citizencompass.netlify.app,
+                 checked one by one
+      would ship 497 files, 350.8 MB, v0.4.0, seven pages, 235 .glb models
+                 (341.8 MB), 241 images (4.0 MB), 6 font files (0.1 MB, OFL,
+                 with the licence shipped beside them), 15 files at the root
+                 (4.9 MB). Every one of those seven paths returns 200 on the
+                 testing site today.
+    WHAT A RETURNING VISITOR WOULD NOTICE, ten items, in the order they would
+    hit them. THE FIRST ONE IS THE DISRUPTIVE ONE AND SLEVEN SHOULD BE TOLD
+    ABOUT IT BEFORE HE APPROVES, not after: ship names in the matrix stop being
+    links straight to RSI and instead open an in-page ship view, with the RSI
+    link offered inside that view. Anybody who has been clicking through to RSI
+    meets this on their first click. It is a build decision, not a deploy
+    decision, so it can be changed before the flip - and it cannot be changed
+    after without a second release.
+    Then: the 3D viewer for the 235 hulls that have a model (and a 3D badge
+    only on those, with the rest saying so rather than showing an empty stage);
+    the Loadout panel with 2,195 real mounts, which as of I1 needs no server;
+    the FIND tab over 7,932 items, 26,657 prices and 823 terminals from two
+    dated UEX snapshots, which also needs no server; the keybinds overlay and
+    its 691-action page; /loadout knowing 316 ships, offered by 221 of the 254
+    and correctly not offered by the other 33; /holo; /download, whose two
+    outbound links were checked and resolve (the GitHub release redirects to
+    collector-v0.3.3 and returns 200); the HELP drawer; and /stick-test.
+    WHAT IS REMOVED: nothing. No page, no feature, no data.
+    WHAT IS NOT IN IT: the password gate, the testing stamp, and - as of I1 -
+    any dependency on the API at all. If Railway is down the public site does
+    not notice.
+    THE OTHER THING WORTH SAYING OUT LOUD: this is the first time the public
+    site would serve anything but a single HTML page. 497 files against
+    Cloudflare's 20,000 limit and a largest file of 5.22 MB against its 25 MiB
+    limit, so both are comfortable - but it is a change in kind, not in degree.
