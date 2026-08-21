@@ -188,8 +188,88 @@ that file appeared, which is exactly what it is for.
 
 ## 6. What changes when live flips
 
-*(Filled in by I5. If you are reading this well after 2026-08-21, treat the
-figures as a snapshot and regenerate them before quoting them at anybody.)*
+**Measured 2026-08-21 by fetching the live site and comparing it against the
+built payload. If you are reading this much later, re-measure before quoting
+any of it at anybody.**
+
+### The short version
+
+The live site is **one HTML page**. The payload is **a site**.
+
+|  | **live now** (`citizencompass.netlify.app`) | **what would ship** (`testing/_deploy`) |
+|---|---|---|
+| Files served | 1 | **497** |
+| Size | 205 KB | **350.8 MB** |
+| Pages | `/` only | `/`, `/find`, `/keybinds`, `/loadout`, `/holo`, `/download`, `/stick-test` |
+| 3D models | none | **235** `.glb`, 341.8 MB |
+| Ship images | none | 241, 4.0 MB |
+| Version | v0.3.9 | v0.4.0 |
+| Needs a server | no | **no** — and that is new, see below |
+
+### The base page has not changed at all
+
+This is worth saying plainly, because it is the opposite of what "three weeks
+behind" sounds like. `releases/latest.html` is **byte-identical to the page
+being served live right now, except for the version string.** Two lines differ:
+the `<title>` and the header. The ship matrix, all 254 ships, the 233 RSI links,
+the text, the layout — identical.
+
+Everything below is **added on top** of that page, or is a new page beside it.
+
+### What a returning visitor would notice, in the order they would hit it
+
+1. **Ship names in the matrix become clickable and open a detail panel.**
+   Today a ship name is a link straight to its RSI page. After the flip it opens
+   an in-page ship view, and **the RSI link is offered inside that view instead**.
+   Anybody who has been clicking through to RSI will notice this immediately. It
+   is the single most disruptive change in the release and it is not a bug.
+2. **A 3D model viewer**, for the 235 hulls that have one. Ships that have one
+   are marked with a `3D` badge in the matrix; ships that do not are not marked,
+   and say so rather than showing an empty stage.
+3. **A Loadout panel on the ship view**, listing that hull's real mounts —
+   2,195 slots across 235 models, grouped by kind, with sizes and fitted items
+   where the source states them. **New today (I1): this reads a generated file
+   and no longer needs the API to be up.**
+4. **A `FIND IT` tab**, floating on the page, opening `/find`: 7,932 items and
+   commodities, 26,657 prices, 823 terminals, from two dated UEX snapshots.
+   Every price row carries the snapshot it came from and UEX's own last-modified
+   date. **This also needs no server.**
+5. **A keybinds overlay** on the ship page, and a full `/keybinds` page behind
+   it — a 691-action browser, an axis evidence table, and profile import/export.
+6. **`/loadout`** — a component bench keyed on the game's class ids, knowing 316
+   ships. 221 of the 254 ships in the matrix offer a link into it; the other 33
+   correctly do not, because there is no bench data for them.
+7. **`/holo`** — the hardpoint placement viewer.
+8. **`/download`** — the public collector download page, which describes the
+   SmartScreen warning before somebody meets it. Its two outbound links resolve
+   (checked: the GitHub release redirects to `collector-v0.3.3` and returns 200).
+9. **A HELP drawer** with the keybind troubleshooting walkthrough and the vendor
+   support table.
+10. **`/stick-test`** — a standalone gamepad diagnostic that shares no code with
+    the rest of the site, deliberately.
+
+### What is removed
+
+Nothing. No page, no feature, and no data is taken away by this release.
+
+### What is NOT in it
+
+- **The password gate.** It is a testing-only thing and `deploy_live.ps1`
+  refuses a payload carrying it.
+- **The `testing <date>` stamp.** Same.
+- **Any dependency on the API.** As of I1 the public site calls no server at
+  all. `/find` and the hardpoint panel both read generated files. If Railway is
+  down, nothing on the public site notices.
+
+### The two things to tell Sleven before he approves
+
+1. **Item 1 above.** Clicking a ship name stops going to RSI. If that is not
+   wanted, it is a build change, not a deploy change, and it should be settled
+   before the flip rather than after.
+2. **350.8 MB and 497 files.** Cloudflare's limits are 20,000 files and 25 MiB
+   per file, so both are comfortable — the largest single file is
+   `Starfarer_Gemini.glb` at 5.22 MB. But this is the first time the public site
+   has served anything but one HTML page.
 
 ---
 
