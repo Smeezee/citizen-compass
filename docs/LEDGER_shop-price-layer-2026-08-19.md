@@ -2186,3 +2186,73 @@ I1  DONE  a05a021  THE PUBLIC SITE NOW NEEDS NO SERVER AT ALL. The ship page's
     as "not in the hardpoint dataset yet" - the API's own 404 wording - rather
     than falling through to the network. Falling through would put a server
     back on the read path for exactly the hulls that need it least.
+
+I2  DONE  0a4d5ed  THE LIVE SITE HAS A DEPLOY SCRIPT FOR THE FIRST TIME, and it
+    has NOT been run. scripts/deploy_live.ps1 + wrangler.live.toml, mirroring
+    the testing pair: the same check_deploy_clean.py guard on the same bytes,
+    the same fail-closed treatment when the guard cannot run at all, the same
+    payload sanity checks and Cloudflare ceilings, the same scoped-token
+    handling, the same -WhatIf.
+    THE ROOT DEFECT WAS NOT THAT LIVE IS BEHIND. It is that the live site had
+    no button - three weeks of work sat unshipped because moving it was a
+    manual act only one person knew.
+    DIFFERENT WORKER, ITS OWN FILE, AND THE NAMES ARE CHECKED AGAINST EACH
+    OTHER. citizencompass vs citizencompasstesting. The script reads `name` out
+    of BOTH toml files and refuses when they match - structural, so it cannot
+    be evaded by editing one file, and it refuses BEFORE looking at the payload
+    so a perfect payload does not sail past it. Each config now states which
+    URL it publishes to, in a comment, at the top.
+    BOTH SCRIPTS PUBLISH testing/_deploy, deliberately: Sleven reviews the
+    testing site and that exact payload goes live. Two build directories would
+    mean the thing reviewed and the thing shipped were never the same bytes.
+    The two payloads differ in exactly two things, and build_deploy.py --live
+    omits both - the private-preview password gate and the "testing <date>"
+    stamp. EACH SCRIPT REFUSES THE OTHER'S PAYLOAD, on the bytes about to be
+    uploaded rather than on which flag somebody believes they used (rule 12,
+    second half). deploy_testing.ps1 gained the inverse refusal in the same
+    commit: without that half, a --live build left sitting in _deploy would
+    publish an UNGATED private preview to the testing URL and report a clean
+    deploy.
+    -WhatIf ACCEPTANCE, RUN FOR REAL: against the live payload it exits 0 and
+    reports worker citizencompass, url
+    https://citizencompass.citizencompass-contact.workers.dev, 497 files,
+    350.8 MB, 235 models, version v0.4.0 read out of the payload itself.
+    THE CONTROL, AND IT IS THE ONE I2 NAMES - PROVEN FROM OUTSIDE, NOT FROM THE
+    FLAG. After the dry run:
+      https://citizencompass.citizencompass-contact.workers.dev/            404
+      https://citizencompass.citizencompass-contact.workers.dev/index.html  404
+      https://citizencompasstesting.citizencompass-contact.workers.dev/     200
+    The worker still does not exist, so nothing was published, and the testing
+    site was not touched on the way past.
+    EVERY REFUSAL OBSERVED FIRING, BY HAND FIRST AND THEN AS A CONTROL:
+      the testing payload offered to deploy_live.ps1  -> refused, names the gate
+      the live payload offered to deploy_testing.ps1  -> refused, names the gate
+      the testing name planted into wrangler.live.toml -> refused, names it
+      (planted and restored; the restore is verified in the file)
+    checks/_verify_deploy_guards.py, 43 assertions, runs THE REAL SCRIPTS with
+    -WhatIf against tiny throwaway project trees - one per defect - so this is
+    swept from now on rather than being something that was checked once by
+    hand. Nothing uploaded, nothing in the repo touched, an obviously fake
+    token in the temp .env. It covers both directions, both live refusals
+    SEPARATELY (a stamped-but-ungated payload is refused for the stamp and NOT
+    for the gate, which proves they are two refusals and not one), the name
+    collision, an undeclared file, a payload with no models, a payload with no
+    index.html, and the build's own refusal of a MISSPELLED --live.
+    --self-test exits 1.
+    WHAT THIS DOES NOT PROVE, said rather than glossed: that a real deploy
+    works. The worker does not exist and only Sleven creates it.
+    DECIDED-BY-DEFAULT: the live worker is named `citizencompass`, giving
+    citizencompass.citizencompass-contact.workers.dev. Confirmed 404 before
+    choosing it, so nothing is being trodden on. Cheap to reverse while it has
+    never been deployed - one line - and expensive afterwards, which is exactly
+    why it is written down here rather than left implicit.
+    DECIDED-BY-DEFAULT: --live is a build flag rather than a second output
+    directory. A second directory would be another 350 MB of models on disk and
+    would let the reviewed payload and the shipped payload drift. The cost is
+    that _deploy holds one of the two at a time, and that cost is paid by the
+    two refusals above rather than by anybody remembering which build ran last.
+    NOTHING HERE TOUCHES NETLIFY, and the control asserts neither script names
+    a netlify command. citizencompass.netlify.app is still serving (200) and
+    retiring it is a separate manual decision - written up in I3.
+    RESTING STATE, left deliberately: _deploy holds the TESTING payload, gate
+    present, stamped testing 2026-08-21.
