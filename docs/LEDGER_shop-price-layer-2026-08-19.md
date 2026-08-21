@@ -2374,3 +2374,56 @@ I5  DONE  ebb3a07  WHAT CHANGES WHEN LIVE FLIPS - measured by fetching the live
     site would serve anything but a single HTML page. 497 files against
     Cloudflare's 20,000 limit and a largest file of 5.22 MB against its 25 MiB
     limit, so both are comfortable - but it is a change in kind, not in degree.
+
+I6  DONE  7245ec9  404 SWEEP OF THE DEPLOYED TESTING SITE. CLEAN: 449 internal
+    references across all seven shipped pages, every one 200. Plus 11 external
+    links, every one 200 - including both outbound links on /download (the
+    GitHub release redirects to collector-v0.3.3).
+    checks/_verify_deployed_links.mjs.
+    FROM THE ORIGIN IN BOTH DIRECTIONS - the references are discovered by
+    FETCHING THE DEPLOYED PAGES, not by reading testing/_deploy. That is not
+    pedantry: the local build is usually ahead of the deployed one, so a
+    disk-driven sweep reports "missing" for files that have simply not shipped
+    yet, and reports NOTHING AT ALL about a file that was deployed and then
+    removed. Today it matters concretely - hardpoint_data.gen.js exists locally
+    from I1 and is not deployed, and a disk-driven sweep would have called that
+    a dead link.
+    WHAT IT SWEEPS: every href and src in markup, every url() in CSS, every 3D
+    model read out of the page's OWN CC_EMBED map, and every ship thumbnail
+    DERIVED WITH THE PAGE'S OWN CC_SAFE RULE - because those paths are computed
+    at runtime and appear nowhere in the markup for a link checker to find. 235
+    models and 241 thumbnails are most of the 449. HEAD rather than GET for
+    assets; nobody needs to download 341 MB to learn the files are there.
+    THE CONTROL I6 NAMES: a URL known to be absent is mixed in with the real
+    ones and the sweep must report it. It does - 404, reported. And --self-test
+    points that canary at a page that DOES exist and requires the assertion to
+    FIRE: it does, exit 1. If it had not fired the run exits 2, "the proof did
+    not run", deliberately distinct from the exit 1 that means the self-test
+    worked - because a self-test that cannot tell those apart is itself a check
+    that cannot fail.
+    THE FIRST VERSION CRIED WOLF AND THAT WAS FIXED RATHER THAN TOLERATED. It
+    read the whole page and reported THIRTEEN dead links that were not links:
+    src="${logo}" inside a template literal, URL.createObjectURL(new Blob(...))
+    matched by the CSS url() pattern, an href being built at runtime. Every one
+    404s if you ask a server for it and every one is fine. A checker that cries
+    wolf gets switched off, which is worse than not having one - so <script>
+    blocks are stripped before the markup patterns run, and CC_EMBED, the one
+    thing genuinely needed from a script, is read from the raw page. Preconnect
+    and dns-prefetch hrefs are dropped too: their href is an ORIGIN, not a
+    document, so https://fonts.gstatic.com/ correctly 404s while the preconnect
+    works perfectly.
+    FOUND AND REPORTED, NOT FIXED - three of the seven pages are reachable by
+    URL alone:
+      /find, /keybinds   linked in the markup
+      /loadout           linked from JAVASCRIPT only (the ship view builds
+                         link.href='loadout.html#'+cls) - which is why the
+                         sweep names the three cases separately rather than
+                         calling this an orphan, since saying so would be a
+                         checker stating something false
+      /holo, /download, /stick-test   NOTHING on the site references them
+    Not a failure and they serve. But a visitor cannot find them, and that is
+    Sleven's call to make deliberately rather than to discover after the flip.
+    ALSO WORTH KNOWING: /find.html, /index.html and /keybinds.html reach 200
+    VIA A 307 to their extensionless form. Cloudflare's static assets do that.
+    Not a failure; reported because a redirect somebody did not know about is
+    the kind of thing that looks like a bug the first time it is noticed.
