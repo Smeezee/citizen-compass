@@ -2256,3 +2256,28 @@ I2  DONE  0a4d5ed  THE LIVE SITE HAS A DEPLOY SCRIPT FOR THE FIRST TIME, and it
     retiring it is a separate manual decision - written up in I3.
     RESTING STATE, left deliberately: _deploy holds the TESTING payload, gate
     present, stamped testing 2026-08-21.
+
+I3  DONE  05f6a0c  docs/RELEASING-THE-SITE.md, written for somebody who is not
+    the person who has been doing this by hand.
+    THE ROOT DEFECT NAMED IN ITS OWN OPENING: not that live is behind, but that
+    how to update it existed only in one head - so it stopped whenever that
+    person was busy and nobody else could tell whether it had been followed.
+    Ten sections: the two sites side by side with THREE ways to tell them apart
+    (URL, password prompt, version string), which command publishes which, why
+    both publish the same directory and what the two refusals do about it, what
+    the deploy guard is and what to do when it stops you - including the
+    2026-08-06 .wrangler leak that is why it runs inside the deploy and not
+    only inside the build - the release run-through end to end, what ONLY
+    SLEVEN CAN DO before the first live deploy, what to check afterwards, where
+    everything lives, and what to do when something goes wrong.
+    THE VERIFY SECTION LEADS WITH THE RIGHT SENTENCE: wrangler exiting 0 means
+    the upload succeeded, not that the site works. Seven checks, and the second
+    is "there is NO password prompt, in a clean browser context", because a
+    gate on the public site looks like an outage from outside and nobody
+    reports an outage as a mistake.
+    IT ALSO WRITES DOWN THE THING NOBODY CAN AUTOMATE: after the Cloudflare
+    live site is up there will be TWO public URLs until somebody takes
+    citizencompass.netlify.app down by hand, in the Netlify dashboard. Nothing
+    in this repo can do that or check it, so it is a numbered step rather than
+    an assumption.
+    Section 6 - what changes when live flips - is filled in by I5.
