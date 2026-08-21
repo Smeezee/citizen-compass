@@ -2281,3 +2281,50 @@ I3  DONE  05f6a0c  docs/RELEASING-THE-SITE.md, written for somebody who is not
     in this repo can do that or check it, so it is a numbered step rather than
     an assumption.
     Section 6 - what changes when live flips - is filled in by I5.
+
+I4  DONE  6ef55fc  THE VERSION NUMBER IS WRITTEN IN ONE PLACE. VERSION at the
+    repo root holds it; set_version.py is the only thing that writes it
+    anywhere else; build_deploy.py runs `set_version.py --check` and FAILS
+    CLOSED, so a page whose header disagrees with VERSION is never built.
+    WHAT WAS ACTUALLY WRONG, and it was not the stale comment: the number was
+    typed by hand in FOUR rendered places - the title and the header of
+    static/preview.html and of releases/latest.html - plus a comment in
+    _layer.src.html quoting a fifth, stale at v0.3.9 while everything else said
+    v0.4.0. The comment was harmless. The mechanism is not, and this project
+    has already shipped a release whose source said one number and whose feed
+    said another with nothing able to notice.
+    MEASURED RATHER THAN ASSUMED: static/preview.html (286,228 bytes) and
+    releases/latest.html (205,362 bytes) are NOT the same file, despite
+    CLAUDE.md describing one as mirrored into the other - preview.html carries
+    inlined @font-face payloads the release copy does not. So both really did
+    need writing, and a script that only wrote one would have looked correct.
+    THE COMMENT NOW STATES NO VERSION AT ALL, deliberately - it explains the
+    defect without quoting a number, so a grep for a stale one finds nothing
+    there to find. The first draft of that comment DID quote both numbers and
+    they shipped into the built page; caught by the control below, which is
+    what it is for.
+    NOT TOUCHED, BY NAME RATHER THAN BY LUCK: releases/citizen-compass-v0.3.*
+    are archived releases. Their version strings are correct history and
+    rewriting them would be falsifying the record. testing/_deploy/index.html
+    is not a location either - it is BUILT, and writing to it would create a
+    second writer for a generated file (rule 14).
+    A LOCATION THAT MATCHES NOTHING IS A HARD FAILURE, not a silent skip. If
+    the markup moves, set_version.py says that location has stopped being
+    covered and refuses to write - a substitution that quietly matches nothing
+    is precisely the check that cannot fail.
+    THE CONTROL IS THE GREP THE ORDER ASKS FOR, NOT A SUBSTITUTION COUNT.
+    checks/_verify_version_single_source.py, 20 assertions: set VERSION to
+    77.88.99, run the real build, and require that NO built page carries the
+    old number anywhere - counting substitutions would only prove the places
+    the script already knows about, and the defect being guarded against is a
+    place nobody knew about. Then it hand-tampers one page's title and
+    requires BOTH set_version.py --check AND the build to refuse, naming the
+    file and both numbers.
+    IT MUTATES THE REPO AND PUTS IT BACK: VERSION, static/preview.html and
+    releases/latest.html are snapshotted byte for byte, restored in a finally,
+    and THE RESTORATION IS VERIFIED by comparing bytes - a failed restore is
+    reported loudly and by name, never as a pass. The payload is rebuilt from
+    the restored sources so _deploy is left exactly as it was found. Confirmed
+    afterwards by hand: VERSION 0.4.0, --check clean, built page carrying
+    v0.4.0 twice and the probe number nowhere.
+    --self-test exits 1, and leaves the repo restored too.
