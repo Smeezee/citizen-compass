@@ -3229,8 +3229,15 @@ main section > h2 + .callout{ margin-top:.35rem }
 </script>
 
 <style>
-/* The header already shows "Citizen Compass v0.3.9". Without a label, the
-   4.9.0 / 4.10.0 in this banner read like more site versions. Name the game. */
+/* The header already shows the site version. Without a label, the
+   4.9.0 / 4.10.0 in this banner read like more site versions. Name the game.
+
+   THIS COMMENT USED TO QUOTE THE NUMBER, and it had been quoting the wrong
+   one for a release and a half. It was only a comment, which is exactly why
+   nobody caught it. The version now lives in VERSION at the repo root and
+   set_version.py is the only thing that writes it anywhere else; NOTHING in
+   this file states a site version, deliberately, so that a grep for a stale
+   one finds nothing here to find (I4, 2026-08-21). */
 .cc-scgame{font:700 calc(14px * var(--cc-scale,1))/1 inherit;
   letter-spacing:.055em;color:var(--cc-text,#C8D6E5);opacity:.9;
   margin-right:calc(4px * var(--cc-scale,1));white-space:nowrap}

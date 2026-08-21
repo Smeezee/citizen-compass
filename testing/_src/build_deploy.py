@@ -270,6 +270,36 @@ for _pg in (LAYER, os.path.join(SRC, "keybinds.src.html")):
     print("inline JS parses: %s (%d blocks)"
           % (os.path.basename(_pg), _check_inline_js(_pg)))
 
+# ---------------------------------------------------------------------------
+# I4. THE VERSION AGREES WITH VERSION, OR THIS BUILD DOES NOT HAPPEN.
+#
+# The site's version used to be typed into four rendered places by hand. It now
+# lives in VERSION at the repo root, and set_version.py is the only thing that
+# writes it anywhere else. This runs that script's --check before the page is
+# assembled, so a page whose header disagrees with VERSION is never built - the
+# disagreement is caught here rather than by somebody eventually noticing the
+# header looks wrong.
+#
+# THIS PROJECT HAS ALREADY SHIPPED A RELEASE WHOSE SOURCE SAID ONE NUMBER AND
+# WHOSE FEED SAID ANOTHER. Nothing noticed, because there was nothing that
+# could. This is the thing that can.
+#
+# FAIL CLOSED, including when the script cannot be run at all: an unverifiable
+# version is refused, never recorded as agreeing.
+# ---------------------------------------------------------------------------
+_ver = os.path.join(REPO, 'set_version.py')
+if not os.path.exists(_ver):
+    sys.exit("MISSING: set_version.py. The site's version could not be checked "
+             "against VERSION, and an unverified version is refused rather "
+             "than assumed correct.")
+_r = _sp.run([sys.executable, _ver, '--check'],
+             capture_output=True, text=True, cwd=REPO)
+sys.stdout.write(_r.stdout)
+if _r.returncode != 0:
+    sys.stderr.write(_r.stderr)
+    sys.exit("VERSION CHECK FAILED - refusing to build. Fix it in ONE place:\n"
+             "    python set_version.py --set <N.N.N>")
+
 site  = rd(SITE)
 layer = rd(LAYER)
 
