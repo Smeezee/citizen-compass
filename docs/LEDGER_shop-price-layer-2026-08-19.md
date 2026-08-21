@@ -2521,3 +2521,60 @@ I8  DONE  1f44a14  SWEEP. 42 controls, 42 ok, 0 failed, 0 skipped, 0 NOT RUN,
     RESTING STATE, checked rather than assumed: VERSION 0.4.0, set_version.py
     --check clean, _deploy holding the TESTING payload (gate present, stamped
     testing 2026-08-21), and the live worker URL still 404.
+
+I9  DONE  0e866b8  TESTING SITE DEPLOYED, on Sleven's say-so and at his request.
+    NOT the live site - nothing in this went near deploy_live.ps1 or
+    wrangler.live.toml, and the live worker URL still 404s.
+    Followed docs/RELEASING-THE-SITE.md section 5: rebuild (default, no
+    --live), -WhatIf, then the real run.
+    THE PAYLOAD GUARD PASSED AND SAID WHY: "payload : TESTING - password gate
+    present, testing stamp present". 497 files, 350.8 MB, 235 models.
+    WHAT ACTUALLY MOVED: TWO FILES. wrangler uploaded /index.html and
+    /hardpoint_data.gen.js and left 495 already-uploaded assets alone - which
+    is exactly and only what I1 changed. A deploy whose diff matches the work
+    is worth recording; one that does not is the thing to worry about.
+    VERIFIED FROM THE ORIGIN RATHER THAN FROM THE EXIT CODE:
+      /                       200, 1,626,034 bytes, title carries the testing
+                              stamp for 2026-08-21
+      id="cc-kb"              present   cc-ship::after  present (x2)
+      id="cc-gate"            present, and so is the whole gate mechanism -
+                              root.classList.add('cc-locked'),
+                              localStorage.getItem('ccGate'), and the CSS that
+                              hides every sibling of #cc-gate
+      /models/Hammerhead.glb  200, 3,608,636 bytes
+      /hardpoint_data.gen.js  200, 152,564 bytes, sha256 IDENTICAL to the file
+                              the build wrote
+    STATED LIMIT: the gate's markup and script are proven present in the served
+    bytes. Whether a browser then blocks is NOT proven from here - there is no
+    browser on this machine and none was installed (rule 7). That is check 4 on
+    the deploy script's own list and it is Sleven's to do.
+    CONTROLS AGAINST THE NEWLY DEPLOYED SITE: _verify_find_deployed.mjs 27 of
+    27 against the DEPLOYED origin, including that the published checksum
+    describes the file the page actually reads.
+    AND THE DEPLOY FOUND A DEFECT IN MY OWN I6 SWEEP, which is the entry that
+    matters here. checks/_verify_deployed_links.mjs reported 449 internal
+    references BEFORE the deploy and 449 AFTER - despite index.html having
+    gained a <script src="hardpoint_data.gen.js">. A SWEEP THAT REPORTS THE
+    SAME NUMBER AFTER YOU ADD A FILE IS NOT REPORTING ON THAT FILE.
+    The cause: the stripper that removes inline JavaScript matched whole
+    <script> ELEMENTS, so a self-closing <script src="..."></script> was
+    deleted along with its src. The sweep was therefore blind to EVERY
+    generated data file on the site - find_data.gen.js, find_checksum.gen.js,
+    hardpoint_data.gen.js, kb_actions.gen.js, kb_modes.gen.js,
+    loadout_data.gen.js, holo_data.gen.js and sc_export.js. Those are precisely
+    the files whose absence breaks a page while the page still serves 200,
+    which is the failure the sweep exists to catch.
+    I6's clean result was therefore true but narrower than it read, and this
+    corrects it rather than leaving it standing. Fixed by preserving the tags
+    and removing only the inline body: 449 -> 457 references, ALL 200. So the
+    deployed site was in fact fine; the sweep was not.
+    AND A NAMED FLOOR SO IT CANNOT COME BACK QUIETLY: the four <script src>
+    data files must appear in the swept set or the sweep FAILS and says the
+    extractor has stopped seeing script tags. A blind spot that was only found
+    by coincidence needs something that finds it on purpose next time.
+    UNEXPLAINED AND RECORDED RATHER THAN GUESSED AT: wrangler reported "Read
+    500 files from the assets directory" while every local count - python,
+    PowerShell with and without -Force, and the deploy guard - says 497, and
+    wrangler's own arithmetic agrees with 497 (495 already uploaded + 2 new).
+    No dot-entries exist in _deploy. I do not know what the other three are and
+    am not going to invent a reason.
