@@ -2118,3 +2118,71 @@ H9  DONE  <sha>  SWEEP. 36 controls, 36 ok, 0 failed, 0 skipped, 0 NOT RUN,
     runs and says nothing" on the first pass, then cleared once it produced a
     finding. The auditor noticed a new checker before I told it about one.
 
+---
+
+    The I-run begins here. Order:
+    docs/ORDER_the-public-site-needs-no-server-and-live-gets-a-deploy-script-2026-08-21.md
+    Same ledger, same rules, appended rather than started fresh - per that
+    order's `ledger` line.
+
+I1  DONE  a05a021  THE PUBLIC SITE NOW NEEDS NO SERVER AT ALL. The ship page's
+    Loadout panel was the last thing on it that called one.
+    build_hardpoint_data.py generates testing/_src/hardpoint_data.gen.js from
+    PostgreSQL - 235 models, 2,195 slots, positional arrays with kinds, stock
+    item names, datasets and coverage reasons interned. Same discipline as H1:
+    no generation timestamp, --verify-stable, --check, and a ceiling the
+    generator ENFORCES. Run by build_deploy.py before anything is copied, so a
+    stale copy cannot ship, and added to the deploy guard's allow-list in both
+    places (the build passes PAGES in; the standalone guard keeps its own copy).
+    SIZE, MEASURED: 149.0 KB raw -> 14.2 KB GZIPPED, against H1's 188 KB and a
+    60 KB ceiling. No large miss to explain - the shape did not change.
+    ACCEPTANCE: the slots in the file equal the slots in the database, counted
+    out of the EMITTED structure rather than out of a number collect()
+    remembered, so the gate cannot compare a variable with itself.
+    THE CONTROL THAT MATTERS, and it passes: 35 assertions in
+    checks/_verify_hardpoint_panel_offline.mjs, driving the panel's code AS
+    SHIPPED (sliced out of the built _deploy/index.html, not the source) with
+    fetch, XMLHttpRequest, WebSocket, EventSource and sendBeacon all replaced
+    by throwers - and the poison proven live by calling it. 600i Explorer fills
+    with all 15 of its mounts grouped, the provenance note names the mount count
+    and the dataset, and no failure sentence and no spinner appears.
+    THE FALLBACK IS KEPT AND IS PROVEN TO STILL BE THE FALLBACK.
+    checks/_verify_ship_hardpoint_panel.mjs drives the same shipped code in a
+    context with NO HP_DATA - which IS the "the file did not load" case - and
+    now ASSERTS that rather than merely happening to be true: it requires
+    HP_DATA to be absent from its own context and COUNTS the fetch calls the
+    panel makes. Proven by planting `const HP_DATA={models:[]}` into a copy in
+    _to_delete/: both new assertions fired, 5 of 18 failed, exit 1.
+    checks/_verify_hardpoint_data.py, 41 assertions, runs every gate twice -
+    once on real data, once on data damaged in the exact way the gate exists to
+    catch: a dropped slot, a dropped model, a slot_count disagreeing with its
+    own rows, an orphaned model_key, a 1 KB ceiling, a stale file, an absent
+    file. --self-test exits 1.
+    ONE RENDERER FOR BOTH PATHS (rule 14 applied to markup): the file's records
+    are expanded into the SAME object the API returns and handed to one
+    ccRenderHardpoints(), so the two cannot render differently.
+    AND ONE model_key RULE. The API normalises with
+    re.sub(r"[^a-z0-9]+", " ", raw.lower()).strip(); the page implements the
+    same rule once, the generated file STATES it in HP_SCHEMA.model_key_rule,
+    and the control checks the page's answer against the API's own imported
+    function - including San'tok.yāi, which both spell "san tok y i".
+    FOUND WHILE DOING IT, AND FIXED - it was already live on the API path since
+    G8, so this is a fix to what the site shows rather than a difference
+    between the two paths: 8 mounts (HoverQuad, X1, X1 Force) carry size 0, and
+    167 carry '<= PLACEHOLDER =>' as their stock item name. That string is the
+    GAME'S placeholder, not a component. The panel was printing "S0" and
+    "<= PLACEHOLDER =>" to visitors as though they were a size and a fitted
+    item. Neither is invented away - the mount is still listed and reads "not
+    stated" when nothing is left to say - but a non-value is no longer
+    displayed as a value. The match is anchored (^<=\s*PLACEHOLDER\s*=>$) so a
+    real component whose name contains the word is not swallowed, and the
+    control proves the suppression is narrow by requiring the 300i to still
+    show real sizes and real item names.
+    DECIDED-BY-DEFAULT: no published sha256 beside this file, unlike
+    find_checksum.gen.js. That checksum exists because /find OFFERS its data
+    file as a download and a visitor needs a way to check it; nothing offers
+    this one. Cheap to reverse - it is one more render call in the same pass.
+    DECIDED-BY-DEFAULT: a model MISSING from the file is answered from the file
+    as "not in the hardpoint dataset yet" - the API's own 404 wording - rather
+    than falling through to the network. Falling through would put a server
+    back on the read path for exactly the hulls that need it least.
