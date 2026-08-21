@@ -579,6 +579,7 @@ body{padding-top:30px}
   <div id="cc-rel"><span class="lbl">Related</span><span id="cc-relitems" style="display:contents"></span></div>
 </div>
 
+<script src="hardpoint_data.gen.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -633,6 +634,149 @@ function ccSlotMessage(text){
 const CC_KIND_LABEL={gun:'Guns',missile:'Missile racks',mount:'Turrets and mounts',
   countermeasure:'Countermeasures'};
 
+/* --------------------------------------------------------------------------
+   I1 - THE HARDPOINTS BECOME A FILE, AND THE API BECOMES THE FALLBACK.
+
+   This panel was the LAST thing on this site that needed a live server. Prices
+   stopped needing one at H1 and became a generated file; 2,195 hardpoint slots
+   is a smaller fact than 26,657 price rows, so they became one too.
+   hardpoint_data.gen.js is generated from PostgreSQL by build_hardpoint_data.py
+   on every build, and this page reads it.
+
+   THE ORDER OF PREFERENCE, AND WHY IT IS THIS WAY ROUND:
+
+     1. the generated file, if it loaded
+     2. the API, exactly as before, if it did not
+
+   The API path below is UNCHANGED and its failure sentences are UNTOUCHED. If
+   hardpoint_data.gen.js is missing - a 404, a build that did not copy it, a
+   browser that blocked it - this page behaves precisely as it did before this
+   change, including "The API did not answer, so nothing is shown rather than
+   something guessed". That is not a courtesy; it is the acceptance line, and
+   checks/_verify_ship_hardpoint_panel.mjs proves it by driving this same
+   shipped code with no HP_DATA defined.
+
+   THE FILE LOADING AND THE MODEL BEING ABSENT FROM IT ARE DIFFERENT FACTS.
+   A file that loaded and does not list this hull is the API's 404 - "not in
+   the dataset yet" - and is answered from the file, NOT by falling through to
+   a server to be told the same thing slowly. Falling through on a miss would
+   put the network back on the read path for exactly the ships that need it
+   least.
+
+   ONE RENDERER. Both paths hand the same object to ccRenderHardpoints(), so
+   the file and the API cannot render differently. The alternative - two copies
+   of the grouping and the S-badge logic - is the one-writer defect (rule 14)
+   applied to markup.
+   -------------------------------------------------------------------------- */
+
+/* The API's own spelling rule, in JavaScript:
+     re.sub(r"[^a-z0-9]+", " ", raw.lower()).strip()
+   It is stated in HP_SCHEMA.model_key_rule in the generated file so that this
+   is not the only place it exists. A second, differently-spelled matcher is
+   the join this project has already paid for elsewhere. */
+const CC_MODEL_KEY=raw=>String(raw==null?'':raw).toLowerCase()
+  .replace(/[^a-z0-9]+/g,' ').trim();
+
+/* null when the file did not load - which is the ONLY condition that puts the
+   API back on the read path. */
+function ccHpFile(){
+  return (typeof HP_DATA!=='undefined' && HP_DATA && Array.isArray(HP_DATA.models))
+    ? HP_DATA : null;
+}
+
+let _ccHpIndex=null;
+function ccHpRow(hp,dir){
+  if(!_ccHpIndex){
+    _ccHpIndex=new Map();
+    hp.models.forEach(m=>_ccHpIndex.set(m[0],m));
+  }
+  return _ccHpIndex.get(CC_MODEL_KEY(dir))||null;
+}
+
+/* Positional arrays back into the SAME object the API returns, so everything
+   downstream is identical. -1 means the source stated none, and it becomes
+   null rather than an empty string: "not stated" and "" are different. */
+function ccHpExpand(hp,dir,row){
+  const s=(t,i)=>(i==null||i<0)?null:t[i];
+  return {
+    model:dir,
+    model_key:row[0],
+    status:row[1],
+    reason:s(hp.reasons,row[2]),
+    slot_count:row[3],
+    source_dataset:s(hp.datasets,row[4]),
+    slots:row[5].map(x=>({
+      port:x[0],
+      kind:s(hp.kinds,x[1]),
+      size:x[2],            /* null, never 0 - see the generator's header */
+      stock_item_name:s(hp.stock,x[3]),
+      where:x[4],
+    })),
+  };
+}
+
+/* The game's own placeholder loadout entry, matched exactly rather than by
+   the word "placeholder" - a real component could legitimately be called
+   something containing it, and this must not swallow one. */
+const CC_HP_PLACEHOLDER=/^<=\s*PLACEHOLDER\s*=>$/;
+
+/* The one renderer. Called with the API's JSON or with the file's expansion of
+   the same record; it cannot tell them apart, which is the point. */
+function ccRenderHardpoints(data){
+  const slots=(data&&data.slots)||[];
+  if(!slots.length){
+    ccSlotMessage('No hardpoint data for this hull'+
+      (data&&data.reason?' \u2014 '+data.reason:'')+'.');
+    return;
+  }
+
+  const groups=new Map();
+  slots.forEach(s=>{
+    const k=CC_KIND_LABEL[s.kind]||(s.kind?s.kind:'Other mounts');
+    if(!groups.has(k)) groups.set(k,[]);
+    groups.get(k).push(s);
+  });
+
+  let html='';
+  groups.forEach((rows,label)=>{
+    html+='<div class="cc-slot" style="grid-column:1/-1"><span class="sn">'+
+      CC_ESC(label)+'</span><span class="sv">'+rows.length+'</span></div>';
+    rows.forEach(s=>{
+      /* TWO NON-VALUES THAT THE SOURCE SPELLS AS VALUES, FOUND 2026-08-21
+         WHILE MOVING THIS PANEL ONTO A FILE - and present on the API path
+         since G8, so this is a fix to what the site shows rather than a
+         difference between the two paths.
+
+         size 0. Eight countermeasure mounts carry it (HoverQuad, X1, X1
+         Force). "S0" reads as "size zero", which is a size nobody measured.
+         An unstated size is shown as nothing at all.
+
+         '<= PLACEHOLDER =>'. 167 mounts carry it as their stock item name -
+         it is the GAME'S own placeholder, not a component. Printing it puts
+         a string that names nothing where a visitor expects the fitted item.
+
+         Neither is invented away: the mount is still listed, and a mount with
+         nothing left to say renders 'not stated' rather than a blank. What is
+         dropped is a non-value being displayed as a value. */
+      const bits=[];
+      if(s.size!=null&&s.size>0) bits.push('S'+s.size);
+      if(s.stock_item_name&&!CC_HP_PLACEHOLDER.test(s.stock_item_name))
+        bits.push(s.stock_item_name);
+      html+='<div class="cc-slot"><span class="sn">'+
+        CC_ESC(s.where||s.port)+'</span><span class="sv">'+
+        (bits.length?CC_ESC(bits.join(' \u00b7 ')):'not stated')+'</span></div>';
+    });
+  });
+  $('cc-slots').innerHTML=html;
+
+  const note=$('cc-slotnote');
+  if(note&&data.source_dataset){
+    note.textContent='Slot structure measured from this hull\u2019s own model '+
+      'geometry and the game\u2019s mount data ('+data.slot_count+' mounts, '+
+      'source: '+data.source_dataset+'). Nothing here is estimated.';
+  }
+}
+
 let _ccHpToken=0;
 async function loadHardpoints(dir){
   const token=++_ccHpToken;                 /* a fast click must not let an
@@ -640,6 +784,20 @@ async function loadHardpoints(dir){
                                                later ship's panel */
   if(!dir){ ccSlotMessage('No model folder matched for this ship, so there is '+
     'no hull to read hardpoints from.'); return; }
+
+  /* ---- 1. the generated file, when it loaded ---------------------------- */
+  const hp=ccHpFile();
+  if(hp){
+    const row=ccHpRow(hp,dir);
+    if(!row){
+      /* the API's 404, answered from the file and worded identically */
+      ccSlotMessage('This model is not in the hardpoint dataset yet.'); return;
+    }
+    ccRenderHardpoints(ccHpExpand(hp,dir,row));
+    return;
+  }
+
+  /* ---- 2. the API, unchanged, when the file is absent ------------------- */
   ccSlotMessage('Reading hardpoint data\u2026');
   let res;
   try{
@@ -665,43 +823,7 @@ async function loadHardpoints(dir){
   catch(e){ ccSlotMessage('The hardpoint data came back unreadable.'); return; }
   if(token!==_ccHpToken) return;
 
-  const slots=(data&&data.slots)||[];
-  if(!slots.length){
-    ccSlotMessage('No hardpoint data for this hull'+
-      (data&&data.reason?' \u2014 '+data.reason:'')+'.');
-    return;
-  }
-
-  const groups=new Map();
-  slots.forEach(s=>{
-    const k=CC_KIND_LABEL[s.kind]||(s.kind?s.kind:'Other mounts');
-    if(!groups.has(k)) groups.set(k,[]);
-    groups.get(k).push(s);
-  });
-
-  let html='';
-  groups.forEach((rows,label)=>{
-    html+='<div class="cc-slot" style="grid-column:1/-1"><span class="sn">'+
-      CC_ESC(label)+'</span><span class="sv">'+rows.length+'</span></div>';
-    rows.forEach(s=>{
-      /* size is null, never 0, when the source does not state one - a 0 here
-         would read as "size zero", which is a value nobody measured. */
-      const bits=[];
-      if(s.size!=null) bits.push('S'+s.size);
-      if(s.stock_item_name) bits.push(s.stock_item_name);
-      html+='<div class="cc-slot"><span class="sn">'+
-        CC_ESC(s.where||s.port)+'</span><span class="sv">'+
-        (bits.length?CC_ESC(bits.join(' \u00b7 ')):'not stated')+'</span></div>';
-    });
-  });
-  $('cc-slots').innerHTML=html;
-
-  const note=$('cc-slotnote');
-  if(note&&data.source_dataset){
-    note.textContent='Slot structure measured from this hull\u2019s own model '+
-      'geometry and the game\u2019s mount data ('+data.slot_count+' mounts, '+
-      'source: '+data.source_dataset+'). Nothing here is estimated.';
-  }
+  ccRenderHardpoints(data);
 }
 
 const CC_DIR="../sc-ships/", CC_FILE="model_scaled.glb";

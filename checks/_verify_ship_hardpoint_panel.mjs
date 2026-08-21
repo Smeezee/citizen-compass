@@ -25,6 +25,23 @@
  *   - the eight hardcoded "awaiting data" rows are gone
  *   - nothing renders a size of 0 for a mount whose size the source omits
  *
+ * WHAT THIS SUITE OWNS AFTER I1 (2026-08-21)
+ * ------------------------------------------
+ * The hardpoint data became a generated file and the API became the FALLBACK.
+ * This suite is the proof that the fallback still works, because its sandbox
+ * defines NO HP_DATA - which is exactly the "the data file did not load" case,
+ * and therefore exactly what a visitor gets if hardpoint_data.gen.js 404s.
+ *
+ * THAT IS ASSERTED RATHER THAN ASSUMED. A suite that merely happens not to
+ * define HP_DATA would silently stop testing the fallback the day somebody
+ * added it, and would go on reporting 16 passes. So this suite now requires
+ * HP_DATA to be absent from its own context AND counts the fetch calls the
+ * panel makes, so "it used the API" is a measured fact rather than an
+ * inference from the output looking right.
+ *
+ * The file path - the panel filling with the network blocked - is owned by
+ * checks/_verify_hardpoint_panel_offline.mjs, and only by it.
+ *
  * Usage:  node checks/_verify_ship_hardpoint_panel.mjs [apiBase]
  */
 
@@ -73,12 +90,15 @@ function makeEl() {
 }
 const els = { "cc-slots": makeEl(), "cc-slotnote": makeEl() };
 
+// Counted, so that "the panel went to the API" is measured rather than
+// inferred from output that happens to look right.
+let fetches = 0;
 const sandbox = {
   console,
   URLSearchParams,
   Map,
   encodeURIComponent,
-  fetch: (...a) => fetch(...a),
+  fetch: (...a) => { fetches++; return fetch(...a); },
   location: { search: `?api=${API}` },
   $: (id) => els[id] || null,
 };
@@ -88,8 +108,18 @@ vm.runInContext(shipped, sandbox);
 const slots = () => els["cc-slots"].innerHTML;
 
 async function run() {
+  // ---- 0. THIS SUITE IS TESTING THE FALLBACK, AND SAYS SO ---------------
+  record(vm.runInContext("typeof HP_DATA", sandbox) === "undefined",
+    "no HP_DATA is defined in this context, so the panel is on its FALLBACK " +
+    "path - the same one a visitor gets when hardpoint_data.gen.js does not " +
+    "load");
+
   // ---- 1. A SHIP WITH DATA ----------------------------------------------
+  const before = fetches;
   await sandbox.loadHardpoints("600i Explorer");
+  record(fetches > before,
+    `and it really did call the API (${fetches - before} fetch call(s)), ` +
+    "rather than answering from somewhere else");
   record(/Countermeasure|Guns|Missile racks|Turrets/i.test(slots()),
     "a ship WITH slot data renders grouped mounts", slots().slice(0, 120));
   record(!/awaiting data/.test(slots()),

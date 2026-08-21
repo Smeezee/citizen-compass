@@ -63,6 +63,11 @@ DEFAULT_ALLOWED_FILES = {
     # refuses to offer the download at all, rather than offering a file with
     # no way to check it.
     "find_checksum.gen.js",
+    # The ship page's hardpoint data, added 2026-08-21 with
+    # build_hardpoint_data.py (I1). index.html loads it with a <script src>;
+    # without it the Loadout panel falls back to the API, which is the exact
+    # outage this file exists to end.
+    "hardpoint_data.gen.js",
     "holo_data.gen.js",
     "stick-test.html",
     # The public collector download page, added 2026-08-15 with
