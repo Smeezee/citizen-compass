@@ -2427,3 +2427,52 @@ I6  DONE  7245ec9  404 SWEEP OF THE DEPLOYED TESTING SITE. CLEAN: 449 internal
     VIA A 307 to their extensionless form. Cloudflare's static assets do that.
     Not a failure; reported because a redirect somebody did not know about is
     the kind of thing that looks like a bug the first time it is noticed.
+
+I7  DONE  e089b02  _deploy IS BUILT FROM _src, AND NOTHING WAS TYPED INTO IT.
+    checks/_verify_deploy_drift.py, 10 assertions, clean.
+    WHY THIS ONE MATTERS MORE THAN IT LOOKS: a hand edit in _deploy WORKS. It
+    deploys, it serves, it looks right - and then somebody runs the build and it
+    is gone, with no error, no warning and nothing in the diff to explain why a
+    working feature stopped working.
+    THREE KINDS OF FILE, PROVEN THREE WAYS, because lumping them together would
+    mean proving the easy ones and quietly assuming the hard one:
+      COPIED VERBATIM  12 of the 14 PAGES entries - compared byte for byte
+                       against their _src source, NON-DESTRUCTIVELY, so a hand
+                       edit is reported rather than overwritten by the very
+                       check that found it.
+      TRANSFORMED      holo.html, which has three.js inlined at a marker. It
+                       must still begin and end with the _src text either side
+                       of that marker, so an edit anywhere outside the injected
+                       block is caught.
+      ASSEMBLED        index.html, built from releases/latest.html plus the
+                       layer plus a dozen substitutions. There is no source to
+                       compare it to, so it is proven the only honest way -
+                       rebuild, and require the sha256 not to move. It did not.
+    AND ONE KIND STATED AS UNPROVEN RATHER THAN COUNTED AS CHECKED: models/ 235
+    files, images/ 241, fonts/ 6. These have NO generator. models/ is even a
+    build INPUT - build_deploy.py globs it to decide which ships have a 3D view.
+    Nothing here can prove where they came from, and saying they passed would be
+    a check that never looked.
+    THE LIST OF WHAT SHOULD BE THERE IS READ OUT OF build_deploy.py's OWN PAGES,
+    parsed with ast rather than executed and rather than copied. A copy of that
+    list living in a checker is a second writer for the same fact (rule 14) and
+    would drift the first time a page was added.
+    THE PLANT: a file typed straight into _deploy, existing nowhere in _src.
+    Reported. The planted copy was MOVED to _to_delete/ (hard rule 1 - nothing
+    here deletes) and the real file restored byte for byte, verified.
+    --self-test exits 1.
+    THE PRE-RUN STATE, ANSWERED SEPARATELY AND HONESTLY. This run's first build
+    (I1) overwrote _deploy, so the local directory can no longer answer "was
+    anything hand-edited into _deploy before today". The DEPLOYED SITE can, and
+    it is a record I cannot have touched: all twelve verbatim-copied files were
+    fetched from the origin and compared against _src AT THIS RUN'S STARTING
+    COMMIT (67e441a). ALL TWELVE BYTE-IDENTICAL - find, keybinds, loadout,
+    download, stick-test, kb_modes.gen.js, sc_export.js, kb_actions.gen.js,
+    holo_data.gen.js, loadout_data.gen.js, find_data.gen.js,
+    find_checksum.gen.js.
+    index.html cannot be compared that way, so it was probed rather than
+    proven: its CC_MODELS map is character-identical to _layer.src.html at
+    67e441a (4,858 chars), and both HELP data payloads are embedded verbatim
+    from data-layer/processed at that commit (11,441 and 6,756 bytes). That is
+    strong evidence and it is not the same as the byte comparison above - said
+    plainly rather than rounded up to "verified".
