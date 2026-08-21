@@ -2476,3 +2476,48 @@ I7  DONE  e089b02  _deploy IS BUILT FROM _src, AND NOTHING WAS TYPED INTO IT.
     from data-layer/processed at that commit (11,441 and 6,756 bytes). That is
     strong evidence and it is not the same as the byte comparison above - said
     plainly rather than rounded up to "verified".
+
+I8  DONE  1f44a14  SWEEP. 42 controls, 42 ok, 0 failed, 0 skipped, 0 NOT RUN,
+    in 147 seconds - WITH a live API server so the HTTP and panel controls ran
+    for real, WITH the deployed origin included, and WITH CC_GEO_DIR pointing
+    at 235 freshly decoded models so the geometry control ran for real instead
+    of refusing.
+    SIX ARE NEW THIS RUN: _verify_hardpoint_data (41), _verify_hardpoint_panel_
+    offline.mjs (35), _verify_deploy_guards (43), _verify_version_single_source
+    (20), _verify_deployed_links.mjs (449 URLs), _verify_deploy_drift (10).
+    They were swept without anybody adding them to a list, which is what H9's
+    discover() was for.
+    THE INVERSION PASS: 16 ok, 0 failed, 26 skipped for having no --self-test.
+    Up from 10 at H9 - every control written this run carries one.
+    THE FIRST PASS FAILED, AND CORRECTLY. _verify_g3_matcher_delta.py exited 2,
+    "NOT PERFORMED, CC_GEO_DIR is not set", exactly as it did at H9. Answered
+    the same way rather than excused: 235 models decoded through
+    testing/_src/decode_glb_points.js and the control re-run for real. It
+    passes, and it still names the two ships the second pass gains as the two
+    Ares. _verify_hardpoint_alignment ran with real geometry too.
+    THE EMPTY-SWEEP GUARD STILL FIRES: --only with a filter matching nothing
+    exits 1, "NOTHING WAS SWEPT".
+    TWO DEFECTS THE SWEEP ITSELF FORCED OUT, both of them mine, both from this
+    run:
+      _verify_deployed_links.mjs exited 2 when its self-test's proof did not
+      run - a code I invented to distinguish "the proof did not run" from "the
+      test worked". run_all_controls.py only requires NON-ZERO, so exit 2 would
+      have been recorded as a working self-test. That is the same shape as
+      every silent success in this project: a distinction that exists only in
+      the place nothing reads. It now exits ZERO in that case, so the sweep's
+      own rule is what catches it.
+      THE missing_encoding CHECKER CAUGHT ME. Four call sites in
+      _verify_deploy_drift.py, because its local helper was named read_text.
+      The helper does specify utf-8 - the findings were false. They were fixed
+      anyway, by renaming the helper: a checker that cries wolf is a checker
+      somebody eventually silences, and this is the one that makes hard rule 15
+      machine-enforced. Worth more than four saved keystrokes.
+    THE AUDITOR SUITE TOO.
+      run_checks.py --group db    13 checkers ok, 0 errored. 188 findings,
+                                  1 reopened, 1 closed, 187 unchanged.
+      run_checks.py --group file  18 checkers ok, 0 errored. 287 findings, all
+                                  unchanged - and NOT ONE of them names a file
+                                  written in this run.
+    RESTING STATE, checked rather than assumed: VERSION 0.4.0, set_version.py
+    --check clean, _deploy holding the TESTING payload (gate present, stamped
+    testing 2026-08-21), and the live worker URL still 404.
