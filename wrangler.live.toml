@@ -1,0 +1,67 @@
+# Cloudflare Workers static-assets config for the LIVE (public) site.
+#
+# ==========================================================================
+# WHICH URL DOES EACH CONFIG PUBLISH TO? Written here because getting this
+# wrong does not fail - it SUCCEEDS, at the wrong address.
+#
+#   this file                 -> https://citizencompass.citizencompass-contact.workers.dev
+#   testing/wrangler.toml     -> https://citizencompasstesting.citizencompass-contact.workers.dev
+#
+# THE WORKER NAME IS THE SUBDOMAIN. A wrong `name` here does not update an
+# existing site; it CREATES A SECOND ONE at a second URL and reports a
+# completely successful deploy. This project has already done that once -
+# testing/wrangler.toml carries the note - and two URLs in circulation for one
+# project is the failure that cost it.
+#
+# So the two names are also checked AGAINST EACH OTHER at deploy time:
+# scripts/deploy_live.ps1 reads the name out of BOTH files and refuses to run
+# if they match. That is structural rather than a rule somebody remembers, and
+# it is why this file must keep its `name` on a line of its own.
+# ==========================================================================
+#
+# STATUS, 2026-08-21: THE WORKER NAMED HERE DOES NOT EXIST YET.
+# https://citizencompass.citizencompass-contact.workers.dev returns 404 as of
+# this writing - checked, not assumed. Only Sleven creates it, and nothing
+# ships to it without his say-so. scripts/deploy_live.ps1 can be dry-run today;
+# it has never been run for real.
+#
+# WHERE THE LIVE SITE IS TODAY: citizencompass.netlify.app, hand-deployed by
+# Netlify Drop from releases/latest.html, frozen at v0.3.9. Sleven ruled on
+# 2026-08-21 that it moves to Cloudflare. Until that move happens this file
+# describes a destination rather than a deployment, and NOTHING here touches
+# Netlify - nothing in this project can.
+#
+# WHY WORKERS AND NOT PAGES: Cloudflare moved static hosting from Pages to
+# Workers static assets. Same reasoning as the testing config.
+#
+# NO CUSTOM DOMAIN YET - deliberately. Stays on *.workers.dev until a domain is
+# actually bought. If citizencompass.net is acquired later, the apex belongs to
+# THIS worker and the testing site belongs on testing.<domain>. Do not add a
+# route here before that decision is made.
+
+name = "citizencompass"
+account_id = "ad974500ce73c9694e94213c4d762f3e"
+compatibility_date = "2026-08-01"
+
+# Publish on <name>.<subdomain>.workers.dev. No routes, no custom domain.
+workers_dev = true
+
+[assets]
+# Relative to this file, which is the repo root: citizen-compass/testing/_deploy
+#
+# THE SAME DIRECTORY THE TESTING SITE PUBLISHES, AND THAT IS THE POINT. Sleven
+# reviews the testing site and then that exact payload goes live. Two build
+# directories would mean the thing he reviewed and the thing that shipped were
+# never the same bytes.
+#
+# The two payloads differ in exactly two ways, and the build makes them:
+#
+#   python testing/_src/build_deploy.py           gated, "testing <date>" stamp
+#   python testing/_src/build_deploy.py --live    neither
+#
+# So the directory holds ONE of the two at any moment, and each deploy script
+# REFUSES THE OTHER ONE by looking at the bytes - deploy_live.ps1 refuses a
+# payload carrying the gate or the stamp, deploy_testing.ps1 refuses one
+# without them. A forgotten --live cannot reach the public site, and a
+# remembered one cannot lock the private preview open.
+directory = "./testing/_deploy"

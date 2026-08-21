@@ -8,9 +8,18 @@
    powershell -ExecutionPolicy Bypass -File .\scripts\deploy_testing.ps1 -WhatIf
 
  SCOPE - READ THIS BEFORE CHANGING ANYTHING
-   Deploys testing/_deploy/ to Cloudflare Workers static assets.
-   It does NOT touch the live site. citizencompass.netlify.app stays on
-   Netlify, hand-deployed. Nothing in this script can reach it.
+   Deploys testing/_deploy/ to Cloudflare Workers static assets, under the
+   worker name in testing/wrangler.toml, at
+   citizencompasstesting.citizencompass-contact.workers.dev.
+
+   IT DOES NOT TOUCH THE LIVE SITE. citizencompass.netlify.app is where the
+   live site is today, hand-deployed on Netlify. Nothing in this script can
+   reach it.
+
+   THE LIVE SITE HAS ITS OWN SCRIPT AND ITS OWN CONFIG, added 2026-08-21:
+   scripts/deploy_live.ps1 with wrangler.live.toml. Different worker name,
+   different URL, checked against each other at deploy time. See
+   docs/RELEASING-THE-SITE.md for which command publishes which site.
 
  ------------------------------------------------------------------------------
  API TOKEN - SCOPED, NEVER A GLOBAL API KEY
@@ -65,6 +74,54 @@ if (-not (Test-Path $assetsDir)) { Fail "missing $assetsDir - nothing to deploy"
 if (-not (Test-Path (Join-Path $assetsDir 'index.html'))) {
     Fail "$assetsDir has no index.html - refusing to publish a site with no entry point"
 }
+
+# --- TESTING-ONLY: this payload must be the TESTING payload ------------------
+# The pair to the two refusals in scripts/deploy_live.ps1, added 2026-08-21
+# with it. That script refuses a payload carrying the private-preview gate or
+# the "testing <date>" stamp; this one refuses a payload carrying neither,
+# because such a payload is the LIVE build.
+#
+# WITHOUT THIS HALF THE PAIR DOES NOT WORK. A `--live` build left sitting in
+# _deploy would publish an UNGATED private preview to the testing URL and
+# report a completely clean deploy - the private preview open to anyone who
+# knows the address, discovered later or never.
+#
+# Checked on the BYTES about to be uploaded rather than on which build flag
+# somebody believes they used (rule 12, second half).
+$indexFile = Join-Path $assetsDir 'index.html'
+$index = Get-Content $indexFile -Raw -Encoding utf8
+if (-not $index) { Fail "could not read $indexFile - refusing to deploy unverified content" }
+
+if ($index -notmatch 'id="cc-gate"') {
+    Fail @"
+THIS PAYLOAD HAS NO PRIVATE-PREVIEW PASSWORD GATE.
+
+That makes it the LIVE build. Publishing it to the testing URL would leave the
+private preview open to anyone who knows the address, and the deploy would
+report complete success.
+
+Rebuild for testing - the default, no flag:
+
+    python testing\_src\build_deploy.py
+
+then run this script again.
+"@
+}
+
+if ($index -notmatch '>testing 20[0-9][0-9]-') {
+    Fail @"
+THIS PAYLOAD CARRIES NO "testing <date>" STAMP, so it is the LIVE build.
+
+An unstamped testing site is indistinguishable from the live one - which is
+the exact defect that made a week of work look like it had never shipped.
+
+Rebuild for testing - the default, no flag:
+
+    python testing\_src\build_deploy.py
+"@
+}
+
+Write-Host "payload : TESTING - password gate present, testing stamp present" -ForegroundColor Green
 
 # --- deploy guard: refuse anything that is not a known asset ----------------
 # WHY THIS IS HERE AND NOT ONLY IN THE BUILD

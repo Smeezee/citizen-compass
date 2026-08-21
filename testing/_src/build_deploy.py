@@ -3,6 +3,42 @@ import datetime as _dt
 import re as _re
 
 # ---------------------------------------------------------------------------
+# I2. WHICH SITE IS THIS PAYLOAD FOR?
+#
+# Two sites are built from these same sources, and they differ in exactly two
+# ways: the TESTING payload carries a private-preview password gate and a
+# "testing <date>" stamp beside the version, and the LIVE payload carries
+# neither. Everything else - every page, every model, every generated file - is
+# identical, which is the point: what Sleven reviews on testing is what goes
+# live.
+#
+#   python testing/_src/build_deploy.py           -> testing payload (default)
+#   python testing/_src/build_deploy.py --live    -> live payload
+#
+# THE DEFAULT IS THE SAFE ONE. A forgotten flag produces a gated testing build,
+# never an ungated public one.
+#
+# AND THE FLAG IS NOT TRUSTED TO SURVIVE (rule 12, second half). Both deploy
+# scripts check the BYTES they are about to upload rather than believing which
+# mode was asked for: scripts/deploy_testing.ps1 refuses a payload with no
+# gate, and scripts/deploy_live.ps1 refuses one carrying a gate or a testing
+# stamp. So a flag lost on the way here is caught where it would do damage, by
+# something that cannot be lost with it.
+#
+# The mode is PRINTED FIRST, so a build's own output says which site it just
+# made a payload for.
+# ---------------------------------------------------------------------------
+LIVE = '--live' in sys.argv
+_unknown = [a for a in sys.argv[1:] if a != '--live']
+if _unknown:
+    sys.exit("UNKNOWN ARGUMENT(S): %s\n"
+             "This build takes --live and nothing else. Refusing rather than "
+             "ignoring a flag somebody meant something by - a MISSPELLED "
+             "--live would otherwise build a TESTING payload and report "
+             "success." % ', '.join(_unknown))
+print('BUILDING THE %s PAYLOAD' % ('LIVE' if LIVE else 'TESTING'))
+
+# ---------------------------------------------------------------------------
 # Repo-relative build. This script used to hardcode a cloud-sandbox path, which
 # made testing/_deploy/index.html unreproducible on the project machine - the
 # artifact existed but nothing here could regenerate it. Everything now
@@ -457,19 +493,40 @@ layer = layer.replace(
 # So the testing build stamps itself. DERIVED FROM THE CLOCK, not typed: a
 # hand-written build label is a version string with the same failure mode one
 # level down, and this one goes stale in a day rather than a month.
-_stamp = _dt.datetime.now(_dt.timezone.utc).strftime('%Y-%m-%d')
-_before = site
-site = _re.sub(r'(<title>Citizen Compass v[0-9.]+)(</title>)',
-               r'\1 - testing ' + _stamp + r'\2', site, count=1)
-site = _re.sub(r'(<span class="version">v[0-9.]+)(</span>)',
-               r'\1 <span style="opacity:.6;font-weight:400">testing '
-               + _stamp + r'</span>\2', site, count=1)
-if site == _before:
+#
+# THE LIVE PAYLOAD IS NOT STAMPED, because on the live site the stamp would
+# be the lie - it would tell a visitor they are looking at a test build.
+#
+# The version markup is still REQUIRED TO BE PRESENT in BOTH modes. If it
+# has changed shape, a testing build cannot stamp itself and a live build
+# cannot tell which version it is about to publish, and neither should
+# proceed on a guess. Skipping the check in live mode would have made the
+# live build the one place this never gets noticed.
+_VERSION_TITLE = r'(<title>Citizen Compass v[0-9.]+)(</title>)'
+_VERSION_HEAD = r'(<span class="version">v[0-9.]+)(</span>)'
+if not (_re.search(_VERSION_TITLE, site) and _re.search(_VERSION_HEAD, site)):
     raise SystemExit(
-        'BUILD REFUSED: could not stamp the testing build - the version '
-        'markup in releases/latest.html changed shape. An unstamped '
-        'testing site is indistinguishable from the live one, which is '
-        'the defect this exists to prevent.')
+        'BUILD REFUSED: the version markup in releases/latest.html changed '
+        'shape, so this build cannot tell which version it is publishing. '
+        'For a testing payload that also means it cannot stamp itself, and '
+        'an unstamped testing site is indistinguishable from the live one - '
+        'the defect this check exists to prevent.')
+
+if LIVE:
+    print('live payload: NOT stamped - the version reads exactly as '
+          'releases/latest.html states it')
+else:
+    _stamp = _dt.datetime.now(_dt.timezone.utc).strftime('%Y-%m-%d')
+    _before = site
+    site = _re.sub(_VERSION_TITLE,
+                   r'\1 - testing ' + _stamp + r'\2', site, count=1)
+    site = _re.sub(_VERSION_HEAD,
+                   r'\1 <span style="opacity:.6;font-weight:400">testing '
+                   + _stamp + r'</span>\2', site, count=1)
+    if site == _before:
+        raise SystemExit(
+            'BUILD REFUSED: the version markup matched but substituting the '
+            'testing stamp changed nothing. Nothing was written.')
 
 k = site.lower().rindex('</body>')
 out = site[:k] + '\n<!-- Citizen Compass portable concept build -->\n' + libs + layer + '\n' + site[k:]
@@ -540,11 +597,19 @@ def _gh(pw):
     for ch in s:
         x ^= ord(ch); x = (x * 16777619) & 0xFFFFFFFF
     return x
-GATE = GATE.replace('__GATEHASH__', str(_gh('apples')))
-# the gate must be the first thing in <body>
-_b = out.lower().index('<body')
-_b = out.index('>', _b) + 1
-out = out[:_b] + '\n' + GATE + out[_b:]
+#
+# THE LIVE PAYLOAD CARRIES NO GATE. citizencompass is a PUBLIC site;
+# shipping the private-preview gate to it would lock the public out of
+# their own site behind a password they were never given, and from the
+# outside it would look like an outage rather than like a mistake.
+if LIVE:
+    print('live payload: NO password gate - this is the public site')
+else:
+    GATE = GATE.replace('__GATEHASH__', str(_gh('apples')))
+    # the gate must be the first thing in <body>
+    _b = out.lower().index('<body')
+    _b = out.index('>', _b) + 1
+    out = out[:_b] + '\n' + GATE + out[_b:]
 
 # newline='' is what makes this build REPRODUCIBLE ACROSS PLATFORMS. Not
 # optional, and it has already been lost once to a concurrent edit.
