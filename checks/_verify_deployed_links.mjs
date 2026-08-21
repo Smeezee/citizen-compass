@@ -114,8 +114,18 @@ function refsIn(html, pageUrl) {
   const out = new Set();
   const add = (r) => { const u = resolve(r, pageUrl); if (u) out.add(u); };
 
+  // THE TAGS SURVIVE; ONLY THE INLINE CODE GOES. Getting this wrong the first
+  // time made the sweep blind to EVERY <script src="...">, which is every
+  // .gen.js file on this site - find_data, hardpoint_data, kb_actions,
+  // loadout_data, holo_data, sc_export and the published checksum. Those are
+  // precisely the files whose absence breaks a page while the page still
+  // serves 200, and the sweep was not looking at a single one of them.
+  //
+  // Found on 2026-08-21, and only because adding hardpoint_data.gen.js to
+  // index.html did not move the swept count. A sweep that reports the same
+  // number after you add a file is not reporting on that file.
   const markup = html
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/(<script\b[^>]*>)[\s\S]*?(<\/script>)/gi, "$1$2")
     .replace(/<link\b[^>]*\brel\s*=\s*["'](?:preconnect|dns-prefetch)["'][^>]*>/gi, " ");
 
   for (const m of markup.matchAll(/\b(?:href|src)\s*=\s*"([^"]*)"/gi)) add(m[1]);
@@ -253,6 +263,25 @@ async function main() {
   // travels the same code path they do.
   const canaryUrl = BASE + CANARY;
   internal.add(canaryUrl);
+
+  // A NAMED FLOOR, so the blind spot above cannot come back unnoticed. These
+  // are loaded by <script src> and nothing else points at them; if the
+  // extractor ever stops seeing script tags again, the swept set loses them
+  // silently and the sweep goes on reporting clean.
+  const MUST_BE_SWEPT = ["find_data.gen.js", "hardpoint_data.gen.js",
+                         "kb_actions.gen.js", "loadout_data.gen.js"],
+        swept = [...internal];
+  const missedFromSet = MUST_BE_SWEPT.filter(
+    (f) => !swept.some((u) => u.endsWith("/" + f)));
+  if (missedFromSet.length) {
+    fail(`these files are loaded by <script src> and were NOT in the swept `
+      + `set: ${missedFromSet.join(", ")}. The reference extractor has `
+      + `stopped seeing script tags, so a missing data file would not be `
+      + `reported.`);
+  } else {
+    console.log(`\nfloor: every <script src> data file is in the swept set `
+      + `(${MUST_BE_SWEPT.join(", ")})`);
+  }
 
   const list = [...internal].sort();
   console.log(`\ninternal references to check: ${list.length} `
