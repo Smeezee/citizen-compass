@@ -211,6 +211,18 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .stat.explained:focus-within .why{display:block}
 .relay:focus .where{color:var(--accent2)}
 
+/* N7: the fixed ports, folded. Closed by default and labelled with its count,
+   so somebody can see there is something there without it being in the way. */
+.fixed-group{border-top:1px solid var(--line)}
+.fixed-group > summary{list-style:none;cursor:pointer;padding:9px 13px;
+ font:600 12.5px inherit;color:var(--muted);display:flex;align-items:center;gap:7px}
+.fixed-group > summary::-webkit-details-marker{display:none}
+.fixed-group > summary::before{content:"\25B8";font-size:11px;transition:transform .15s}
+.fixed-group[open] > summary::before{transform:rotate(90deg)}
+.fixed-group > summary:hover{color:var(--text)}
+.fixed-group > summary:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
+.fixed-note{padding:0 13px 8px;font-size:12px;color:var(--muted);line-height:1.45}
+
 /* N5: one build means one column, and the grid says so rather than leaving a
    gap where the second one used to be. */
 .wrap.one{grid-template-columns:1fr 330px}
@@ -441,6 +453,11 @@ let A={}, B={};
    of numbers, and NO A/B LETTERS ANYWHERE - before a second build exists there
    is just the ship. */
 let twoUp=false;
+/* Whether the reader has opened the fixed group. Remembered while they are on
+   the page - having to reopen it on every re-render would make it useless -
+   and NOT remembered across ships, because it opens closed by default and that
+   is the state N7 asks for. */
+let fixedOpen=false;
 
 /* N10: WHAT MOVED, AND FOR HOW LONG.
    Keyed by the stat's own label, holding the delta that stat just took. It is
@@ -500,7 +517,7 @@ function isStock(b){
   return (ship().slots||[]).every(s=>!swappable(s)||b[s.id]===s.stock);
 }
 /* Changing ship starts over: one build, nothing marked, nothing to undo. */
-function resetView(){ twoUp=false; editing="A"; changedStats=new Map(); }
+function resetView(){ twoUp=false; editing="A"; changedStats=new Map(); fixedOpen=false; }
 
 /* A DISPLAY NAME IS NOT AN IDENTITY IN THIS DATASET.
    22 names are shared by 51 records: `AEGS_Hammerhead` and
@@ -1023,10 +1040,20 @@ function renderCol(which){
       ${twoUp&&which==="B"?'<button class="btn tiny" id="dropB">Discard this one</button>':""}</div>
       <div class="colsub">${sh.slots.length} ports · ${ned} can be changed ·
       ${sh.slots.length-ned} fixed</div>`;
+  /* N7 + N8: FIXED PORTS FOLD AWAY, AND THE GROUPING IS `Editable`.
+     THIS IS THE LOAD-BEARING HALF, and it is Sleven's own reasoning: "if ever
+     it changes, we already have a foundation built for it." The split below is
+     `swappable(s)`, which is `!!s.fit`, which the generator sets from the
+     port's own `Editable` flag. There is NO LIST OF TYPES anywhere in it.
+     The day CIG makes fuel tanks swappable, those ports leave this collapsed
+     group ON THE NEXT DATA BUILD, with nobody editing code.
+     THEY STILL COUNT TOWARD THE READOUT - a thruster affects mass whether or
+     not you chose it. calc() walks every slot; only the RENDERING is folded. */
+  const open = sh.slots.filter(swappable);
+  const shut = sh.slots.filter(x=>!swappable(x));
+
   let lastG=null;
-  sh.slots.forEach(s=>{
-    const g=tgroup(s.t);
-    if(g!==lastG){h+=`<div class="grp"><h3>${g}</h3></div>`;lastG=g;}
+  const renderSlot=(s)=>{
     const label=portLabel(s.h), size=(s.s==null?"—":"S"+s.s);
 
     if(!swappable(s)){
@@ -1055,7 +1082,34 @@ function renderCol(which){
       <b>${p?p.n:"empty"}</b><small>${p?p.m+" · ":""}${label} — ${n} fit
       ${s.turret?'<span class="tag">GUNNER</span>':''}</small></span>
       <span class="pr"><b>${changed?"changed":"stock"}</b>${changed?"swapped":"fitted"}</span></div>`;
+  };
+
+  /* The ports somebody can act on, grouped as before. */
+  open.forEach(s=>{
+    const g=tgroup(s.t);
+    if(g!==lastG){h+=`<div class="grp"><h3>${g}</h3></div>`;lastG=g;}
+    renderSlot(s);
   });
+
+  /* And the ones they cannot, behind one closed disclosure that says how many.
+     `<details>` rather than a scripted toggle: it opens with a click OR with a
+     keyboard, it is announced as a disclosure by a screen reader, and it needs
+     no state of ours to remember. */
+  if(shut.length){
+    h+=`<details class="fixed-group"${fixedOpen?" open":""}>
+      <summary>Fixed &middot; not swappable in game (${shut.length})</summary>
+      <div class="fixed-note">These are part of the ship and they still count
+        toward every number above &mdash; a thruster changes its mass whether or
+        not you chose it. The game does not allow them to be changed, so there
+        is nothing to click.</div>`;
+    let lastF=null;
+    shut.forEach(s=>{
+      const g=tgroup(s.t);
+      if(g!==lastF){h+=`<div class="grp"><h3>${g}</h3></div>`;lastF=g;}
+      renderSlot(s);
+    });
+    h+=`</details>`;
+  }
   $('col'+which).innerHTML=h;
 }
 
@@ -1679,6 +1733,8 @@ document.addEventListener('click',e=>{
   const rl=e.target.closest('.related a[data-ship]');
   if(rl){ e.preventDefault(); shipId=rl.dataset.ship; reset(); resetView();
     tab="loadout"; renderAll(); return; }
+  const fg=e.target.closest('.fixed-group > summary');
+  if(fg){ fixedOpen=!fg.parentNode.open; return; }   /* pre-toggle state */
   if(e.target.closest('#dropB')){ dropB(); return; }
   const tb=e.target.closest('.tabs a[data-tab]');
   if(tb){ e.preventDefault(); openTab(tb.dataset.tab); return; }

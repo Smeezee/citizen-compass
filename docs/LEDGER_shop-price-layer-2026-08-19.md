@@ -3464,7 +3464,7 @@ N4  DONE  cc83101  ONE VIEWER INSTANCE, ONE MODEL LOAD PER SHIP.
     geometry is fetched when the SHIP changes and not when a TAB does.
     All three asserted on the built page.
 
-N5  DONE  <sha>  THE PAGE OPENS ON ONE BUILD. The second does not exist until
+N5  DONE  9581ff7  THE PAGE OPENS ON ONE BUILD. The second does not exist until
     somebody asks for it.
     THE BUTTON READS EXACTLY `Try another alongside`, and the control asserts
     the STRING rather than "a button exists" - the wording is Sleven's and the
@@ -3482,7 +3482,7 @@ N5  DONE  <sha>  THE PAGE OPENS ON ONE BUILD. The second does not exist until
     it empty would make them rebuild what they already had.
     DECIDED-BY-DEFAULT and cheap to reverse.
 
-N6  DONE  <sha>  THE DOUBLED READOUT IS GONE. With one build there is one
+N6  DONE  9581ff7  THE DOUBLED READOUT IS GONE. With one build there is one
     number.
     Every stat rendered TWICE with `same` beside it, fourteen times over.
     THE ARGUMENT IS NOT SPACE, and the order is right about which one matters:
@@ -3495,7 +3495,7 @@ N6  DONE  <sha>  THE DOUBLED READOUT IS GONE. With one build there is one
     second value again - asserted, because removing it permanently would pass
     the same assertions and is the wrong fix.
 
-N10 DONE  <sha>  THE SWAP ANNOUNCES WHAT MOVED, FOR A BEAT.
+N10 DONE  9581ff7  THE SWAP ANNOUNCES WHAT MOVED, FOR A BEAT.
     A swap measures the readout BEFORE and AFTER and marks only what actually
     changed - not what we expected to change - with a left edge and a delta
     chip that says which way it went. It clears itself after 2.2 seconds.
@@ -3518,7 +3518,7 @@ N10 DONE  <sha>  THE SWAP ANNOUNCES WHAT MOVED, FOR A BEAT.
     and turning it to 0 leaves a page that works exactly as it does now minus
     the mark. That is deliberately the cheapest thing in this change to undo.
 
-N11 DONE  <sha>  BACK TO STOCK IS ONE VISIBLE CLICK, never in a menu.
+N11 DONE  9581ff7  BACK TO STOCK IS ONE VISIBLE CLICK, never in a menu.
     A `Back to stock` button in the header, shown the moment there is anything
     to undo and stood down again when there is not - a control that never does
     anything teaches somebody to stop looking at it.
@@ -3528,3 +3528,36 @@ N11 DONE  <sha>  BACK TO STOCK IS ONE VISIBLE CLICK, never in a menu.
     that the build "looks stock".
     And the restore itself goes through markChanges, so undoing a swap
     announces what moved back exactly as the swap announced what moved.
+
+N7  DONE  <sha>  FIXED PORTS FOLD AWAY, and they still count.
+    One closed `<details>` per column, labelled with its count -
+    `Fixed · not swappable in game (36)` on the driving hull. A real
+    `<details>/<summary>`, not a scripted toggle: it opens by keyboard as well
+    as by click, a screen reader announces it as a disclosure, and it needs no
+    state of ours to remember.
+    FOLDED, NOT DROPPED. All 57 of the hull's ports are still rendered - the
+    control counts them - and they still contribute to the readout, proven the
+    same way L4 proved it: remove them and the totals move. A thruster changes
+    the ship's mass whether or not you chose it.
+    The disclosure says that in its own words, so nobody has to wonder whether
+    the numbers above include what is folded below.
+    The open/closed state is remembered while somebody is on the page, and
+    RESET when they change ship - it opens closed by default and that is the
+    state N7 asks for.
+
+N8  DONE  <sha>  THE GROUPING IS `Editable`. THERE IS NO LIST OF TYPES.
+    The split is `sh.slots.filter(x=>!swappable(x))`, and `swappable` is
+    `!!s.fit`, which the generator sets from the port's own `Editable` flag.
+    Asserted three ways: no hardcoded type list exists in the page, the split
+    is that expression and nothing else, and `swappable` is that rule.
+    AND THE CONTROL THE ORDER NAMES, RUN FOR REAL: a fixed port on the driving
+    hull was given a fitment rule - which is exactly what the generator does
+    when a port says `Editable` - and NOTHING ELSE WAS TOUCHED. No code edited.
+    The port MOVED OUT of the collapsed group, the disclosure's count dropped
+    from 36 to 35, and flipping it back put it where it was.
+    That last half matters: a one-way move would pass the first assertion just
+    as well, and would not prove the page follows the data.
+    THIS IS SLEVEN'S REASONING BUILT RATHER THAN AGREED WITH - "if ever it
+    changes, we already have a foundation built for it." The day CIG makes fuel
+    tanks swappable, those 509 ports leave the collapsed group on the next data
+    build, with nobody editing anything.

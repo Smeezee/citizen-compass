@@ -1170,6 +1170,104 @@ console.log("\n--- N11: back to stock is always one visible click ---");
     `${SHIPS[shipKey].slots.filter((x) => x.fit).length} editable ports to stock`);
 }
 
+console.log("\n--- N7: fixed ports fold away, and still count ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+  const colA = el("colA").innerHTML;
+  const nFixed = SH.slots.filter((x) => !x.fit).length;
+
+  record(/<details class="fixed-group"/.test(colA),
+    "the fixed ports sit behind a disclosure");
+  record(!/<details class="fixed-group" open/.test(colA),
+    "which is CLOSED by default");
+  record(colA.includes(`not swappable in game (${nFixed})`),
+    `and is labelled with its count (${nFixed})`);
+  record(/<summary/.test(colA),
+    "as a real <details>/<summary>, so it opens by keyboard as well as click");
+
+  /* STILL RENDERED, just folded. A disclosure that dropped them would satisfy
+     "they are out of the way" and lose them. */
+  const rendered = (colA.match(/class="slot/g) || []).length;
+  record(rendered === SH.slots.length,
+    "every port is still rendered - folded, not dropped",
+    `${rendered} of ${SH.slots.length}`);
+
+  /* AND THEY STILL COUNT. The order is explicit: a thruster affects mass
+     whether or not you chose it. Proven the same way L4 proved it - remove
+     them and watch the totals move. */
+  const withFixed = g("JSON.stringify(calc(A))");
+  vm.runInContext(
+    `__save=SHIPS[${JSON.stringify(shipKey)}].slots;` +
+    `SHIPS[${JSON.stringify(shipKey)}].slots=__save.filter(s=>s.fit);`, sandbox);
+  const withoutFixed = g("JSON.stringify(calc(A))");
+  vm.runInContext(`SHIPS[${JSON.stringify(shipKey)}].slots=__save;`, sandbox);
+  record(withFixed !== withoutFixed,
+    "and they still contribute to the readout - dropping them moves it");
+  record(/still count/.test(colA),
+    "and the page says so, rather than leaving somebody to wonder");
+  notes.push(`N7: ${nFixed} of ${SH.slots.length} ports folded into a closed ` +
+    `disclosure on ${SH.n}; all still rendered and all still counted`);
+}
+
+console.log("\n--- N8: the grouping is Editable, never a list of types ---");
+{
+  /* THE LOAD-BEARING CONTROL, and the order names it: flip `Editable` on a
+     fixed port and confirm it moves out of the collapsed group WITH NO CODE
+     CHANGE. Sleven's reasoning is "if ever it changes, we already have a
+     foundation built for it" - so the thing to prove is that the page follows
+     the DATA rather than a list somebody typed. */
+
+  // First: no type list anywhere in the split.
+  const src = script;
+  record(!/FIXED_TYPES|NOT_SWAPPABLE|\[["'](?:FuelTank|ManneuverThruster|Armor)/.test(src),
+    "no hardcoded list of fixed component types exists in the page");
+  record(/const\s+shut\s*=\s*sh\.slots\.filter\(x=>!swappable\(x\)\)/.test(src.replace(/\s+/g, "")) ||
+         /shut=sh\.slots\.filter\(x=>!swappable\(x\)\)/.test(src.replace(/\s+/g, "")),
+    "the split is `!swappable(slot)` and nothing else");
+  record(/const swappable\s*=\s*s\s*=>\s*!!s\.fit/.test(src),
+    "and `swappable` is the port's own fit rule, set from its Editable flag");
+
+  /* NOW FLIP IT. A fixed port on the driving hull is given a fitment rule -
+     which is what the generator does when a port says Editable - and NOTHING
+     ELSE IS TOUCHED. No code is edited; the data changes and the page follows. */
+  const fixedSlot = SH.slots.find((x) => !x.fit && x.stock);
+  record(!!fixedSlot, "found a fixed port to flip");
+  const donorRule = Object.keys(FITS).find((k) => (FITS[k] || []).length > 2);
+
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+  const beforeHtml = el("colA").innerHTML;
+  const beforeShut = beforeHtml.split('class="fixed-group"')[1] || "";
+  record(beforeShut.includes(`data-slot="${fixedSlot.id}"`) ||
+         beforeHtml.includes(`data-port="${fixedSlot.h}"`),
+    `the port starts in the collapsed group (${fixedSlot.id})`);
+
+  vm.runInContext(
+    `__slot=SHIPS[${JSON.stringify(shipKey)}].slots.find(s=>s.id===${JSON.stringify(fixedSlot.id)});` +
+    `__slot.fit=${JSON.stringify(donorRule)};reset();renderAll();`, sandbox);
+  const afterHtml = el("colA").innerHTML;
+  const parts = afterHtml.split('<details class="fixed-group"');
+  const afterOpen = parts[0];
+  const afterShut = parts[1] || "";
+
+  record(afterOpen.includes(`data-slot="${fixedSlot.id}"`),
+    "flipping Editable moves it OUT of the collapsed group - with no code change");
+  record(!afterShut.includes(`data-slot="${fixedSlot.id}"`),
+    "and it is no longer in the folded half");
+  const nowFixed = SH.slots.filter((x) => !x.fit).length;
+  record(afterHtml.includes(`not swappable in game (${nowFixed})`),
+    "and the disclosure's count follows it down", `now ${nowFixed}`);
+  notes.push(`N8: flipping one port's Editable flag moved it out of the ` +
+    `collapsed group and dropped the count to ${nowFixed} - no code edited, ` +
+    `the page follows the data`);
+
+  // put it back, and confirm it goes back - a one-way move would also pass above
+  vm.runInContext(`delete __slot.fit;reset();renderAll();`, sandbox);
+  const restored = el("colA").innerHTML.split('<details class="fixed-group"')[1] || "";
+  record(restored.includes(`data-slot="${fixedSlot.id}"`),
+    "and flipping it back returns it to the collapsed group");
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+}
+
 /* ---------------------------------------------- rule 8: never touch these */
 console.log("\n--- rule 8: the trademark and Fan Kit text is untouched ---");
 record(/Cloud Imperium Rights LLC/.test(html), "the trademark footer is intact");
