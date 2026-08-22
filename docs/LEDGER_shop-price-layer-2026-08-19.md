@@ -2578,3 +2578,49 @@ I9  DONE  0e866b8  TESTING SITE DEPLOYED, on Sleven's say-so and at his request.
     wrangler's own arithmetic agrees with 497 (495 already uploaded + 2 new).
     No dot-entries exist in _deploy. I do not know what the other three are and
     am not going to invent a reason.
+
+L1  DONE  <sha>  THE COMPONENT CATALOGUE IS DERIVED NOW, NOT WRITTEN.
+    `build_loadout_data.py` carried a hand-typed list of FIVE component types.
+    That is the by-type rule the order forbids, and it is now gone: every port
+    on every ship is scanned and a type is kept when BOTH conditions hold - the
+    port says `Editable`, AND its `CompatibleTypes` names a type with real
+    items. 5 types -> 27. When CIG opens a port later, the next generation
+    picks it up with no code change.
+    THE FOUNDATION REPRODUCED EXACTLY, so §1 was not taken on trust:
+    26,182 editable ports; stock ClassName resolves on 7,764; CompatibleTypes
+    resolves on 8,544. C1's three figures, measured independently here.
+    TYPES SELECTED (editable ports each): Missile 2488, WeaponGun 2046,
+    Turret 773, Shield 532, Cooler 531, PowerPlant 401, MissileLauncher 379,
+    Paints 306, Radar 297, QuantumDrive 253, JumpDrive 252, FlightController
+    136, BombLauncher 100, WeaponAttachment 97, Container 69,
+    LifeSupportGenerator 63, ManneuverThruster 30, CargoGrid 26,
+    ExternalFuelTank 20, TractorBeam 19, Bomb 18, WeaponMining 17,
+    SalvageHead 15, QuantumInterdictionGenerator 6, MainThruster 5,
+    WeaponDefensive 4, EMP 2.
+    Armor, FuelTank, FuelIntake and QuantumFuelTank are NOT excluded by name -
+    they have zero editable ports, so the scan never selects them. That is the
+    difference between a rule and a list, and it is why ExternalFuelTank (20
+    editable, every one on a refueller) survives while plain FuelTank does not.
+    SIZE, both figures because the order names one: 431,269 -> 2,583,573 bytes
+    raw; 37.3 KB -> 191.9 KB GZIPPED. It grew 5.1x gzipped and the reason is
+    not bloat, it is scope: the file now carries 25,875 ports instead of ~4,300
+    slots of five types, because L4 says a fixed port is SHOWN. 18,001 of those
+    are fixed. Four things were done to stop it being worse: `g` dropped (the
+    group is already in LOADOUT_TYPES - 360 KB of the same eleven words),
+    hardpoint names deduplicated into LOADOUT_HP (2,372 distinct for 25,875
+    slots), fitment lists deduplicated by RULE (8,180 ports share 131 lists -
+    3,662 entries instead of 552,310), and parts filtered to the 1,833 that
+    some real port can actually take, of 5,384.
+    AND THAT LAST FILTER IS THE ANSWER TO "DO NOT BUILD PICKERS FOR THRUSTERS".
+    I did not exclude thrusters by type, because the game says 30 manoeuvre
+    ports and 5 main ports ARE editable and a by-type exclusion is the exact
+    mistake §1 is about. What the order was actually protecting against - 1,504
+    thruster records shipped to serve 35 ports - is prevented by carrying only
+    items some editable port accepts. Nobody gets a dead picker; nobody gets a
+    false "cannot be changed" either. DECIDED-BY-DEFAULT, and cheap to reverse
+    if Sleven wants the ports shown as fixed instead.
+    CONTROL: checks/_verify_loadout_fitment.py, 40 assertions, and SEVEN
+    MUTANTS ALL CAUGHT - type list reverted to the old five, an oversize part
+    leaked into a list, every quantum picker emptied, fixed ports hidden, one
+    resistance profile for every hull, every livery on every hull, and a port
+    that stopped offering the part CIG fits in it.
