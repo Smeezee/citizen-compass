@@ -2639,7 +2639,7 @@ L2  DONE  f858214  THE STOCK LOADOUT IS THE SHIP'S OWN DEFAULTS, PROVEN PORT FOR
     ship that opens empty. That mutant is planted and caught too.
     Mutants now 9, all caught.
 
-L3  DONE  <sha>  EVERY SLOT IS CLICKABLE AND THE PICKER READS THE PORT, NOT THE
+L3  DONE  9d86082  EVERY SLOT IS CLICKABLE AND THE PICKER READS THE PORT, NOT THE
     TYPE. The page's `fits()` was `P[k].t===slot.t && P[k].s===slot.s` - every
     part of the type at that size, on every ship. That is the false claim L3
     exists to stop. It now reads `FITS[slot.fit]`, the port's own
@@ -2688,7 +2688,7 @@ L3  DONE  <sha>  EVERY SLOT IS CLICKABLE AND THE PICKER READS THE PORT, NOT THE
     list no part for them. They do NOT open an empty picker, because an empty
     picker looks exactly like a broken one.
 
-L4  DONE  <sha>  A FIXED PORT IS SHOWN, COUNTS, AND OPENS NO PICKER - three
+L4  DONE  9d86082  A FIXED PORT IS SHOWN, COUNTS, AND OPENS NO PICKER - three
     separable failures, asserted separately.
     SHOWN: all 57 of the Avenger Stalker's ports render, 36 of them fixed, and
     each NAMES the part in it ("Aegis Avenger - Decoy Launcher") rather than
@@ -2707,3 +2707,49 @@ L4  DONE  <sha>  A FIXED PORT IS SHOWN, COUNTS, AND OPENS NO PICKER - three
     name, so the control PLANTS a real override, regenerates, confirms it
     reached the named slot, removes it and confirms it is gone. When CIG opens
     a port, that is a data edit and nothing else.
+
+L5  DONE  <sha>  ARMOUR. FIXED, NO PICKER, AND IT MOVES TWO THINGS THE PAGE HAD
+    NO WAY TO SAY BEFORE.
+    HOW THE 77 UNTAGGED ARMOUR ITEMS ATTACH - the order asked, and the answer
+    is that THE QUESTION HAS A DIFFERENT SHAPE THAN EXPECTED. `RequiredTags` is
+    NOT the attachment mechanism: 0 of 210 armour items carry a top-level
+    `requiredTags` in this snapshot, so the "133 tagged, 77 not" split does not
+    reproduce here at all. Armour attaches exactly the way every other
+    component does - through the ship's OWN `Loadout`, at a port whose Type is
+    `Armor`. That resolves for 305 of 316 records and there is NO PARTIAL
+    RESOLUTION: every ship that has an armour port resolves it.
+    CAN A HULL'S RESISTANCE BE RESOLVED FOR EVERY SHIP OR ONLY SOME? For every
+    ship that has any. The 11 without an armour port are named rather than
+    waved at: nine are exosuits (the ATLS family and the Power Suit, which CIG
+    models as vehicles), and the other two are the Greycat PTV buggy and the
+    AEGIS IDRIS-P. Those last two are a real gap and go on the punch list. 31
+    of the 210 armour items are never fitted by any ship and are not carried.
+    SURVIVABILITY IS NOT ONE NUMBER, and the page now says which. Ten distinct
+    damage-multiplier profiles across the 210 armour items - the Avenger
+    Stalker takes Physical at 0.8 and Energy at 0.65; the Eclipse takes Energy
+    at 0.6. Signal multipliers are shown too, so armour visibly moves stealth.
+    Deflection and PenetrationResistance are shown where non-trivial, and the
+    ship's own `PenetrationMultiplier` says what reaches fuses and components.
+    AND THE HALF THE ORDER'S CONTROL ACTUALLY DEMANDS - "a weapon strong
+    against one is visibly weaker against the other" - is a NEW PANEL, because
+    showing resistances and DPS as two unrelated numbers leaves the reader to
+    multiply them in their head, which is the entire point of armour.
+    `Damage.Dps` splits a weapon across the SAME six channels armour resists,
+    so 179 parts now carry a damage MIX rather than only a total, and the page
+    computes effective DPS against the most common armour profiles IN THE DATA
+    - derived, so it stays right when 4.10 rebalances.
+    NAMED, FROM THE RENDERED TABLE: the PyroBurst Scattergun does 166 DPS
+    against a hull like the Aegis Eclipse and 139 against one like the Aegis
+    Hammerhead. Same gun, 17% apart.
+    The panel says in words that this is a matchup and not a rating - a
+    ballistic loadout that looks weak against an energy-resistant hull is the
+    stronger choice against a physical-resistant one, and both facts are on the
+    table at once. Section 0 says the page has no opinion; this is what having
+    no opinion looks like when two numbers interact.
+    SCHEMA: `app/models.py` still has no hull-resistance dimension. Not built
+    here - the page reads generated data, not the database - and it goes on the
+    L16 punch list as the order asks.
+    CONTROL: 6 more assertions in checks/_verify_ship_page.mjs, now 59 total,
+    including one that SEARCHES for a weapon and two hulls that differ by more
+    than 5% and FAILS if no such pair exists - so the claim cannot pass while
+    being empty.

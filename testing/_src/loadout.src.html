@@ -183,6 +183,8 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
 
 <div class="panel" id="armour"></div>
 
+<div class="panel" id="matchup"></div>
+
 <div class="buy" id="buy"></div>
 
 <div class="panel" id="liveries"></div>
@@ -351,7 +353,7 @@ function reset(){A=stockBuild();B=stockBuild();sel=null;}
 function calc(build,over){
   const sh=ship();
   let r={dps:0,alpha:0,ehp:0,regen:0,ir:0,em:0,pw:0,cap:0,ht:0,cool:0,qt:0,
-         scu:0,mass:0,parts:0};
+         scu:0,mass:0,parts:0,mix:{}};
   sh.slots.forEach(s=>{
     let id = swappable(s) ? build[s.id] : s.stock;
     if(over&&over.slot===s.id) id=over.part;
@@ -361,7 +363,13 @@ function calc(build,over){
        from the DPS total by the same proven rule the generator uses - see
        FINDING_ship-aggregation-rules-proven-2026-08-08 §2. Counting it put the
        RSI Perseus at 16,596 DPS against CIG's 1,494. */
-    if(!s.turret){ r.dps+=p.dps||0; r.alpha+=p.alpha||0; }
+    if(!s.turret){
+      r.dps+=p.dps||0; r.alpha+=p.alpha||0;
+      /* THE DAMAGE MIX, not just the total. Armour resists six channels
+         separately, so a total DPS cannot be matched against a hull at all -
+         it has to be carried apart to be put back together. */
+      if(p.dmg) for(const k in p.dmg) r.mix[k]=(r.mix[k]||0)+p.dmg[k];
+    }
     r.ehp+=p.ehp||0; r.regen+=p.regen||0;
     r.ir+=p.ir||0; r.em+=p.em||0;
     r.pw+=p.pw||0; r.cap+=p.cap||0; r.ht+=p.ht||0; r.cool+=p.cool||0;
@@ -529,6 +537,69 @@ function renderArmour(){
       hull reaches internals at these rates:
       ${Object.keys(p).map(k=>`<b>${k} ${Math.round(p[k]*100)}%</b>`).join(" · ")}.</p>`;
   }
+  el.innerHTML=h;
+}
+
+/* L5's OTHER HALF: A WEAPON STRONG AGAINST ONE HULL IS WEAKER AGAINST ANOTHER.
+   Showing a hull's resistances and this build's DPS as two unrelated numbers
+   would leave the reader to multiply them in their head, and the whole reason
+   armour matters is that the two interact.
+
+   Effective DPS against a hull = sum over damage channels of
+   (this build's DPS in that channel x that hull's multiplier for it).
+
+   The comparison hulls are chosen from the DATA - the most common resistance
+   profiles actually fitted to ships - not from a list anybody picked, so it
+   stays right when CIG rebalances. 4.10 does a balance pass on exactly this. */
+function armourProfiles(){
+  const seen={};
+  Object.keys(SHIPS).forEach(k=>{
+    const a=SHIPS[k].arm && ARMOR[SHIPS[k].arm];
+    if(!a||!a.dm) return;
+    const key=JSON.stringify(a.dm);
+    (seen[key]=seen[key]||{dm:a.dm,n:0,ships:[]});
+    seen[key].n++;
+    if(seen[key].ships.length<3) seen[key].ships.push(SHIPS[k].n);
+  });
+  return Object.keys(seen).map(k=>seen[k]).sort((a,b)=>b.n-a.n);
+}
+function effectiveDps(mix,dm){
+  let t=0; for(const k in mix) t += mix[k] * (dm[k]==null?1:dm[k]);
+  return t;
+}
+function renderMatchup(){
+  const el=$('matchup'); if(!el) return;
+  const rb=calc(B), sh=ship();
+  const mix=rb.mix, chan=Object.keys(mix).filter(k=>mix[k]>0);
+  if(!chan.length){
+    el.innerHTML=`<h2>What this build's guns do against armour</h2>
+      <p class="gap">This build has no pilot-fired weapon with a stated damage
+      type, so there is nothing to match against a hull.</p>`;
+    return;
+  }
+  const profs=armourProfiles().slice(0,5);
+  const raw=chan.reduce((t,k)=>t+mix[k],0);
+  let h=`<h2>What this build's guns do against armour</h2>
+    <p class="sub2">This build fires
+    ${chan.map(k=>`<b>${Math.round(mix[k])} ${k.toLowerCase()}</b>`).join(" + ")}
+    DPS. Armour multiplies each channel separately, so the same guns do
+    different work against different hulls — which is why survivability cannot
+    be one number and neither can damage.</p>
+    <table><tr><th>Against a hull like</th><th>Takes</th>
+    <th>Effective DPS</th><th>vs. unarmoured</th></tr>`;
+  profs.forEach(pr=>{
+    const eff=effectiveDps(mix,pr.dm);
+    const pct=Math.round(eff/Math.max(raw,1)*100);
+    const cls=pct<95?"down":pct>105?"up":"flat";
+    h+=`<tr><td>${pr.ships.join(", ")}${pr.n>pr.ships.length?` +${pr.n-pr.ships.length} more`:""}</td>
+      <td class="conf">${chan.map(k=>`${k} ${Math.round((pr.dm[k]==null?1:pr.dm[k])*100)}%`).join(" · ")}</td>
+      <td class="p">${fmt(eff)}</td>
+      <td><span class="d ${cls}">${pct}%</span></td></tr>`;
+  });
+  h+=`</table><div class="trip"><strong>Read this as a matchup, not a rating.</strong>
+    Nothing here says one gun is better. A ballistic loadout that looks weak
+    against an energy-resistant hull is the stronger choice against a
+    physical-resistant one, and both facts are on this table at once.</div>`;
   el.innerHTML=h;
 }
 
@@ -733,7 +804,7 @@ function renderShipState(){
 
 function renderAll(){
   renderStats();renderCol("A");renderCol("B");renderPicker();renderBuy();
-  renderLiveries();renderShipState();writeHash();
+  renderMatchup();renderLiveries();renderShipState();writeHash();
 }
 fillShipList();fillProvenance();
 

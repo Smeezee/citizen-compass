@@ -400,12 +400,20 @@ def part_record(it, type_name):
         # Sustained is the honest one for a DPS comparison: DpsTotal is the
         # burst figure and would flatter every weapon with a small magazine.
         rec["dps"] = r2(num(dmg.get("Sustained")))
-        rec["alpha"] = r2(num(dmg.get("Alpha")))
-        # WHICH damage, not just how much - it is the other half of L5. A
-        # ballistic gun against an energy-resistant hull is a different fight.
-        dt = w.get("DamageType") or (dict_or_none(w.get("Damage")) or {}).get("Type")
-        if isinstance(dt, str) and dt and dt != UNDEFINED:
-            rec["dt"] = dt
+        rec["alpha"] = r2(num(dmg.get("AlphaTotal")))
+        # WHICH DAMAGE, NOT JUST HOW MUCH - the other half of L5, and the half
+        # without which armour resistance cannot be applied to anything.
+        #
+        # `Damage.Dps` splits a weapon's output across the SAME six channels
+        # armour resists: Physical, Energy, Distortion, Thermal, Biochemical,
+        # Stun. A ballistic gun is Physical, a repeater is Energy, and a hull
+        # that takes Physical at 0.75 and Energy at 0.6 turns those into two
+        # different fights. Only the non-zero channels are carried - most
+        # weapons use exactly one.
+        split = dict_or_none(dmg.get("Dps")) or {}
+        mix = {k: r2(num(v)) for k, v in split.items() if num(v)}
+        if mix:
+            rec["dmg"] = mix
 
     sh = dict_or_none(st.get("Shield"))
     if sh:

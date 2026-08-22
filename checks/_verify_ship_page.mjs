@@ -351,6 +351,58 @@ record(arm2 !== arm, "a different hull shows DIFFERENT resistance on the page");
 }
 vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();renderAll();`, sandbox);
 
+/* ------------------- L5's other half: the weapon-vs-hull matchup, rendered */
+console.log("\n--- L5: a weapon strong against one hull is WEAKER against another ---");
+vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();renderAll();`, sandbox);
+const match = el("matchup").innerHTML;
+record(match.length > 200, "the matchup panel rendered");
+
+// The build must carry a damage MIX, not just a total. Without it there is
+// nothing for armour to multiply and the whole panel would be arithmetic on
+// one number.
+const mix = JSON.parse(g("JSON.stringify(calc(B).mix)"));
+record(Object.keys(mix).length > 0,
+  "the build's DPS is carried BY DAMAGE CHANNEL, not as one total",
+  JSON.stringify(mix));
+
+// THE ORDER'S ACCEPTANCE, COMPUTED RATHER THAN ASSERTED: find a weapon and two
+// hulls where the SAME weapon does measurably different work. If no such pair
+// exists the claim is empty, so this fails rather than passing quietly.
+const profs = JSON.parse(g("JSON.stringify(armourProfiles())"));
+record(profs.length > 1, "there is more than one armour profile to compare",
+  `${profs.length} profiles`);
+let matchup = null;
+for (const wk of Object.keys(PARTS)) {
+  const w = PARTS[wk];
+  if (!w.dmg) continue;
+  for (let i = 0; i < profs.length && !matchup; i++) {
+    for (let j = i + 1; j < profs.length; j++) {
+      const a = g(`effectiveDps(${JSON.stringify(w.dmg)},${JSON.stringify(profs[i].dm)})`);
+      const b = g(`effectiveDps(${JSON.stringify(w.dmg)},${JSON.stringify(profs[j].dm)})`);
+      if (Math.abs(a - b) > Math.max(a, b) * 0.05) {
+        matchup = { w, a, b, pa: profs[i], pb: profs[j] };
+        break;
+      }
+    }
+  }
+  if (matchup) break;
+}
+record(!!matchup,
+  "a named weapon is measurably WEAKER against one hull than another");
+if (matchup) {
+  notes.push(`L5 matchup: ${matchup.w.n} does ${Math.round(matchup.a)} DPS ` +
+    `against a hull like ${matchup.pa.ships[0]} and ${Math.round(matchup.b)} ` +
+    `against one like ${matchup.pb.ships[0]} - same gun, ` +
+    `${Math.round(Math.abs(matchup.a - matchup.b) / Math.max(matchup.a, matchup.b) * 100)}% apart`);
+}
+// And the page SHOWS the difference rather than only being able to compute it.
+const effs = [...match.matchAll(/class="p">([\d,\.]+)</g)].map(m => m[1]);
+record(new Set(effs).size > 1,
+  "the rendered table shows DIFFERENT effective DPS against different hulls",
+  `values ${JSON.stringify(effs)}`);
+record(/matchup, not a rating/i.test(match),
+  "and says it is a matchup rather than a rating - neither gun is 'better'");
+
 /* ----------------------------------------------------- L7: liveries here */
 console.log("\n--- L7: liveries live on the ship page, and not on the model ---");
 const liv = el("liveries").innerHTML;
