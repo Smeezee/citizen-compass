@@ -16,7 +16,15 @@ a{color:var(--accent)}
 .top h1{font-size:21px;margin:0}
 .top select{background:var(--panel2);color:var(--text);border:1px solid var(--line);
  border-radius:7px;padding:9px 12px;font:600 15px inherit}
-.prov{margin-left:auto;background:#0E2A22;border:1px solid #1F5A48;color:#8FE3C8;
+/* L11: THE RSI LINK MOVES ONTO THE PAGE AND STAYS CLEARLY AVAILABLE.
+   It is not removed and it is not hidden - it is just no longer the first
+   thing a ship name does. */
+.rsi{margin-left:auto;background:var(--panel2);border:1px solid var(--line);
+ border-radius:7px;padding:8px 12px;font:700 13px inherit;color:var(--text);
+ text-decoration:none}
+.rsi:hover{border-color:var(--accent);color:var(--accent)}
+.rsi[hidden]{display:none}
+.prov{background:#0E2A22;border:1px solid #1F5A48;color:#8FE3C8;
  padding:5px 11px;border-radius:6px;font-size:12.5px;font-weight:600}
 .btn{background:var(--panel2);color:var(--muted);border:1px solid var(--line);
  border-radius:7px;padding:9px 13px;font:700 13.5px inherit;cursor:pointer}
@@ -207,6 +215,7 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
   <button class="btn orange" id="edB">Editing B</button>
   <button class="btn" id="copyA">Copy A &rarr; B</button>
   <button class="btn" id="share">Copy share link</button>
+  <a class="rsi" id="rsi" target="_blank" rel="noopener">View on RSI</a>
   <span class="prov" id="prov"></span>
 </div>
 
@@ -968,12 +977,23 @@ function renderShipState(){
   const el=$('shipstate'); if(!el) return;
   const sh=ship();
   let h="";
+  /* CASE 2: NO GAME FILE AT ALL. Announced or pledgeable, not built. Show the
+     ship, say it is not flyable yet, and SAY NOTHING ABOUT ITS LOADOUT. */
   if(sh.why){
     h+=`<p class="gap"><b>${sh.n}</b> — ${sh.why}</p>`;
   }
   if(!sh.slots.length){
     h+=`<p class="gap">Nothing is claimed about this hull's loadout, because
         the game files do not describe one.</p>`;
+  }
+  /* CASE 3: NO MOUNT DATA. The hull has a model but nothing measured its
+     mount positions, so there are no markers on it. List-driven swapping
+     still works and everything below is real - say so plainly rather than
+     leaving somebody wondering why this ship has no dots on it. */
+  if(sh.slots.length && modelUrl(shipId) && !markersFor(shipId).length){
+    h+=`<p class="gap">No mount positions have been measured for this hull, so
+        there are no markers on the model. Every port is still listed below and
+        every one can still be changed — the model just cannot point at them.</p>`;
   }
   el.innerHTML=h;
   el.style.display=h?"":"none";
@@ -1061,6 +1081,15 @@ function showModel(){
    guessing which of two it meant; the list still reaches both.
 
    MARKERS STAY WEAPONS-ONLY. Internal ports are reached from the list. Settled. */
+const RSI=(typeof LOADOUT_RSI!=='undefined')?LOADOUT_RSI:{};
+/* A ship with no pledge page shows NO link rather than a dead one. An empty
+   link that goes nowhere reads as the site being broken. */
+function renderRsi(){
+  const a=$('rsi'); if(!a) return;
+  const u=RSI[shipId];
+  if(u){ a.href=u; a.hidden=false; a.textContent="View "+ship().n+" on RSI"; }
+  else { a.removeAttribute("href"); a.hidden=true; }
+}
 const MARKS=(typeof LOADOUT_MARK!=='undefined')?LOADOUT_MARK:{};
 function markersFor(cls){ return MARKS[cls]||[]; }
 function slotByPort(pid){ return ship().slots.find(s=>s.p===pid)||null; }
@@ -1146,7 +1175,7 @@ function openTab(id,fromHash){
 function renderAll(){
   renderStats();renderCol("A");renderCol("B");renderPicker();renderBuy();
   renderMatchup();renderLiveries();renderShipState();renderSpecs();
-  renderTabs();showModel();renderMarkers();writeHash();
+  renderTabs();showModel();renderMarkers();renderRsi();writeHash();
 }
 
 /* SPECS. Dimensions, mass, career and role - the plain facts, all of them

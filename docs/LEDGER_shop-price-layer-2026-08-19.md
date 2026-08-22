@@ -2936,7 +2936,7 @@ L9  DONE  66b5363  THE SHIP PAGE = THE BENCH PLUS THE MODEL. No third page.
     below are real and only the model is missing. Not a broken viewer, not a
     spinner.
 
-L10 DONE  <sha>  HULL MARKERS - 1,200 on 157 hulls, and they are a SECOND
+L10 DONE  f37c882  HULL MARKERS - 1,200 on 157 hulls, and they are a SECOND
     ROUTE, not a second mechanism.
     `selectPort()` is the ONLY place in the page that selects a port. The list
     row calls it and the marker calls it, and the control asserts BOTH that the
@@ -2967,3 +2967,61 @@ L10 DONE  <sha>  HULL MARKERS - 1,200 on 157 hulls, and they are a SECOND
     loadout_data.gen.js while the page loads four generated files, so MARKS was
     empty. It FAILED rather than passing quietly, which is the only reason it
     was found in the same minute it was written.
+
+L11 DONE  <sha>  THE SHIP NAME OPENS THE SHIP, AND THE RSI LINK MOVED ONTO IT.
+    The matrix row's `<a href>` to robertsspaceindustries.com was already
+    captured rather than discarded - what was missing is that it never reached
+    the SHIP PAGE. It does now: 219 ships carry their pledge link, joined
+    ClassName-to-record-id at build time like everything else here.
+    CONTROL, both halves of "moved": the link is PRESENT on the ship page AND
+    still present on index. A link that left without arriving is not a move.
+    Every one of the 221 matrix rows resolves to a ship the ship page actually
+    holds, and lands on one with something to show - asserted over all of them
+    rather than spot-checked, because 220 working links and one dead one is
+    exactly what a spot check misses.
+    A SHIP WITH NO PLEDGE PAGE SHOWS NO LINK, not a dead one, and that is
+    asserted separately - an href that goes nowhere reads as the site being
+    broken rather than as data being absent.
+
+L12 DONE  <sha>  THE SHARE LINK CARRIES THE WHOLE BUILD.
+    `#<ClassName>|<A>|<B>|<tab>` - the ship, every changed port in each build,
+    and the open tab. A port left at stock encodes as an empty field, so a
+    stock link stays short and a part that later leaves the catalogue falls
+    back to stock rather than to nothing.
+    THE TAB IS LAST AND OPTIONAL, so every link written before tabs existed
+    still reads correctly and lands on Loadout. And a BARE `#engineering` is
+    understood as a tab rather than as a ship that does not exist - somebody
+    linking a layer of the ship they are already on should not be told the ship
+    is missing.
+    CONTROL: paste it into a clean session and get the same build back. Not one
+    port - ALL 20 changed ports on the test hull round-trip, because a
+    positional encoding that drops the last field passes any one-port test.
+
+L13 DONE  <sha>  PROVENANCE SURVIVES THE LAYOUT CHANGE.
+    CIG's own precomputed figure and our sum from the parts are marked
+    differently ON THE STAT ITSELF - a badge reading CIG or summed - rather
+    than explained in a footnote that a column move could separate from its
+    number. A stock build shows CIG's; the moment a part changes, the same
+    stat shows ours and says so.
+    CONTROL: the rendered stats block for a stock build CONTAINS `src cig`; the
+    same block after one swap CONTAINS `src ours`; and the two are not the same
+    string. `last_verified_patch` is on the data and on the page, and the 33
+    unreleased ships are still carried with their reason.
+
+L14 DONE  <sha>  THE THREE KINDS OF INCOMPLETE SHIP, each handled and each
+    proven on a named example.
+      1. A GAME FILE, NO 3D MODEL - 115 hulls, and the ORIGIN M80 is the one
+         the order names. Full readout, full swapping, and an honest "No 3D
+         model available for Origin M80" where the viewer goes. Not a broken
+         viewer. Not a spinner.
+      2. NO GAME FILE AT ALL - 33 of them: Arrastra, Crucible, CSV-FM, E1
+         Spirit, Endeavor and the rest. Listed, disabled, with the reason, and
+         NOTHING claimed about their loadouts. Asserted as an absence, not just
+         as a label.
+      3. NO MOUNT DATA - 44 hulls have a model and no measured mount positions,
+         so no markers. The page says exactly that: every port is still listed,
+         every one can still be changed, the model just cannot point at them.
+         Named: Aegis Eclipse.
+    AND THE STINGRAY IS NOT HERE, asserted rather than assumed: no record in
+    the dataset matches Stingray or S-65. A ship with no verifiable specs is
+    the opposite of what this site is for, and it comes in when it reaches Live.

@@ -84,8 +84,12 @@ function el(id) {
   if (!els.has(id)) {
     els.set(id, {
       id, innerHTML: "", textContent: "", className: "", value: "",
-      style: {}, onclick: null, onchange: null,
-      classList: { add() {}, remove() {} },
+      style: {}, onclick: null, onchange: null, href: "", hidden: false,
+      classList: { add() {}, remove() {}, toggle() {} },
+      removeAttribute(a) { this[a] = ""; },
+      setAttribute(a, v) { this[a] = v; },
+      get childElementCount() { return 0; },
+      get children() { return []; },
     });
   }
   return els.get(id);
@@ -618,6 +622,93 @@ console.log("\n--- L10: marker N selects port N and no other, BY IDENTITY ---");
   record(assigns === 1,
     "there is exactly ONE place in the page that selects a port",
     `${assigns} assignments to sel={...}`);
+}
+
+/* --- L11: the ship name goes to the SHIP PAGE; the RSI link moves onto it -- */
+console.log("\n--- L11: the name opens the ship, and the RSI link travels with it ---");
+{
+  const RSI = g("RSI");
+  record(Object.keys(RSI).length > 100,
+    "pledge links reached the ship page rather than being left behind",
+    `${Object.keys(RSI).length} ships`);
+  // Every one must name a real ship record, or the link is on nothing.
+  const orphan = Object.keys(RSI).filter((k) => !SHIPS[k]);
+  record(orphan.length === 0, "every pledge link names a real ship record",
+    `${orphan.length}: ${orphan.slice(0, 3)}`);
+
+  // ON THE PAGE, CLEARLY, when there is one.
+  const withRsi = Object.keys(RSI)[0];
+  vm.runInContext(`shipId=${JSON.stringify(withRsi)};reset();renderAll();`, sandbox);
+  record(el("rsi").hidden === false, "the link is shown on a ship that has one");
+  record(String(el("rsi").href).includes("robertsspaceindustries"),
+    "and points at RSI", String(el("rsi").href).slice(0, 60));
+  record(/View .* on RSI/.test(el("rsi").textContent),
+    "and says what it is, naming the ship",
+    el("rsi").textContent);
+  notes.push(`L11: ${Object.keys(RSI).length} ships carry their pledge link on ` +
+    `the ship page; e.g. ${SHIPS[withRsi].n}`);
+
+  // A SHIP WITHOUT ONE SHOWS NO LINK, not a dead one. An href that goes
+  // nowhere reads as the site being broken.
+  const noRsi = Object.keys(SHIPS).find((k) => !RSI[k]);
+  record(!!noRsi, "there is a ship with no pledge page, so this is testable");
+  vm.runInContext(`shipId=${JSON.stringify(noRsi)};reset();renderAll();`, sandbox);
+  record(el("rsi").hidden === true,
+    "a ship with no pledge page shows NO link rather than a dead one");
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();renderAll();`, sandbox);
+}
+
+console.log("\n--- L14: the three kinds of incomplete ship, each said out loud ---");
+{
+  const MODELS = g("MODELS"), MARKS = g("MARKS");
+  const UNREL = g("UNRELEASED");
+
+  // CASE 1: a game file, no 3D model. The order names the Origin M80.
+  const case1 = Object.keys(SHIPS).filter((k) => SHIPS[k].slots.length && !MODELS[k]);
+  record(case1.length > 0, "case 1 exists: hulls with a game file and no model",
+    `${case1.length}`);
+  const m80 = Object.keys(SHIPS).find((k) => /M80/.test(SHIPS[k].n));
+  const c1 = MODELS[m80] ? case1[0] : m80;
+  vm.runInContext(`shipId=${JSON.stringify(c1)};reset();renderAll();`, sandbox);
+  record(/No 3D model available/.test(el("cc-empty").innerHTML),
+    `case 1 renders an honest "no model" for ${SHIPS[c1].n}, not a spinner`,
+    el("cc-empty").innerHTML.slice(0, 60));
+  record(el("colA").innerHTML.length > 500,
+    "and its full readout and swapping still work");
+  notes.push(`L14 case 1: ${SHIPS[c1].n} has ${SHIPS[c1].slots.length} ports and ` +
+    `no model; the viewer says so and the readout is unaffected`);
+
+  // CASE 2: no game file at all. 33 of them.
+  record(UNREL.length > 20, "case 2 exists: ships CIG has not built",
+    `${UNREL.length}`);
+  record(UNREL.every((u) => u.why && /not released yet/.test(u.why)),
+    "and every one says why, rather than rendering an empty panel");
+  record(UNREL.every((u) => !u.slots),
+    "and NOTHING is claimed about their loadouts");
+  notes.push(`L14 case 2: ${UNREL.length} announced-but-unbuilt ships, e.g. ` +
+    `${UNREL.slice(0, 3).map((u) => u.n).join(", ")} - shown, disabled, reason given`);
+
+  // CASE 3: a model but no measured mount positions, so no markers.
+  const case3 = Object.keys(SHIPS).filter(
+    (k) => SHIPS[k].slots.length && MODELS[k] && !(MARKS[k] || []).length);
+  record(case3.length > 0, "case 3 exists: a hull with a model and no mount data",
+    `${case3.length}`);
+  vm.runInContext(`shipId=${JSON.stringify(case3[0])};reset();renderAll();`, sandbox);
+  record(/No mount positions have been measured/.test(el("shipstate").innerHTML),
+    `case 3 says so plainly for ${SHIPS[case3[0]].n}`);
+  record(el("colA").innerHTML.length > 500,
+    "and list-driven swapping still works on it");
+  notes.push(`L14 case 3: ${case3.length} hulls have a model but no measured ` +
+    `mount positions; they say so and stay fully usable from the list`);
+
+  // AND THE STINGRAY IS NOT HERE. A ship with no verifiable specs is the
+  // opposite of what this site is for.
+  const stingray = Object.keys(SHIPS).filter((k) => /Stingray|S-65/i.test(SHIPS[k].n));
+  record(stingray.length === 0,
+    "the Kruger S-65 Stingray is NOT in the dataset - PTU-only, no Ship Matrix " +
+    "entry, no published specs", `${stingray.length} found`);
+
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();renderAll();`, sandbox);
 }
 
 /* ------------ ADDENDUM s0: a display name is not an identity here --------- */

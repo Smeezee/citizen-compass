@@ -743,6 +743,15 @@ open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
 # ONE WRITER: this file is written here and nowhere else, and it is generated
 # rather than typed for the same reason hardpoint_data.gen.js is.
 _model_by_class, _model_absent = {}, []
+# L11: the pledge link, carried to the ship page rather than left behind on the
+# matrix row it was stripped from. Same id-to-id join as the model, so it can
+# never attach to the wrong variant of a shared display name.
+_pledge_by_id = {str(_s['id']): _s.get('pledge_url') for _s in _site_ships}
+_rsi_by_class = {}
+for _rid, _cls in _link.items():
+    _u = _pledge_by_id.get(str(_rid))
+    if _u:
+        _rsi_by_class[_cls] = _u
 for _rid, _cls in _link.items():
     _dir = _cc.get(str(_rid))
     if _dir and safe(_dir) + '.glb' in have:
@@ -781,10 +790,19 @@ _model_js = (
     '   viewer. */\n'
     'const LOADOUT_MODEL=%s;\n'
     'const LOADOUT_MODEL_URL=%s;\n'
+    '/* L11: THE RSI LINK MOVES ONTO THE SHIP PAGE, it is not removed.\n'
+    '   The ship name in the matrix opens the ship rather than\n'
+    '   robertsspaceindustries.com - sending somebody off-site the moment they\n'
+    '   click a name means they never see what was built for them. So the link\n'
+    '   travels with the ship and stays clearly available on its page. Keyed on\n'
+    '   ClassName through the same id-to-id join as the model. */\n'
+    'const LOADOUT_RSI=%s;\n'
     % (len(_model_by_class), len(_link),
        json.dumps(_model_by_class, ensure_ascii=True, sort_keys=True,
                   separators=(',', ':')).replace('<', r'<'),
-       json.dumps(_MODEL_DEV)))
+       json.dumps(_MODEL_DEV),
+       json.dumps(_rsi_by_class, ensure_ascii=True, sort_keys=True,
+                  separators=(',', ':')).replace('<', r'<')))
 open(os.path.join(SRC, 'loadout_model.gen.js'), 'w',
      encoding='utf-8', newline='\n').write(_model_js)
 print('ship-page models: %d of %d linked ships carry one, %d correctly do not'

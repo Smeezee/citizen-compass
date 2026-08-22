@@ -154,6 +154,40 @@ notes.push(`L8: ${agree} linked ships resolve to the same model on both pages; `
   + `${Object.keys(LOADOUT_MODEL).length} ship-page entries against `
   + `${Object.keys(CC_MODELS).length} index entries`);
 
+console.log("\n--- L11: every ship name in the list resolves to a page that loads ---");
+{
+  /* The order's control, taken literally. `LOADOUT_LINK` is what turns a matrix
+     row into a ship page, so every entry in it must name a ship the ship page
+     actually holds - otherwise a visitor clicks a name and lands on nothing,
+     which is worse than the RSI link they used to get. */
+  const loData = readFileSync(join(DEPLOY, "loadout_data.gen.js"), "utf-8");
+  const m = loData.match(/^const LOADOUT_SHIPS=(.*);$/m);
+  const LS = m ? JSON.parse(m[1]) : {};
+  record(Object.keys(LS).length > 300, "the ship page's data loaded",
+    `${Object.keys(LS).length} ships`);
+  const dead = Object.values(LOADOUT_LINK || {}).filter((cls) => !LS[cls]);
+  record(dead.length === 0,
+    "every ship the matrix links to exists on the ship page",
+    `${dead.length} dead: ${dead.slice(0, 3)}`);
+  const withSlots = Object.values(LOADOUT_LINK || {})
+    .filter((cls) => LS[cls] && (LS[cls].slots || []).length).length;
+  record(withSlots > 200,
+    "and lands on a ship with something to show",
+    `${withSlots} of ${Object.keys(LOADOUT_LINK || {}).length}`);
+
+  /* THE RSI LINK IS NOT REMOVED - it moves. Asserted on both sides, because
+     "moved" is only true if it arrives as well as leaving. */
+  const rsiJs = readFileSync(join(DEPLOY, "loadout_model.gen.js"), "utf-8");
+  const RSI = pick(rsiJs, "LOADOUT_RSI") || {};
+  record(Object.keys(RSI).length > 100,
+    "the ship page carries the pledge links", `${Object.keys(RSI).length}`);
+  record(/CC_RSI/.test(indexCode),
+    "index still keeps the pledge link too - it moved, it was not deleted");
+  notes.push(`L11: ${Object.keys(LOADOUT_LINK || {}).length} matrix rows link `
+    + `to a ship page that exists; ${Object.keys(RSI).length} of those pages `
+    + `carry the RSI link that used to sit on the row`);
+}
+
 console.log("\n--- 4. THE NEGATIVE HALF: break the module, BOTH pages must fail ---");
 /* Each page's own script, run against a cc_viewer.js whose Viewer constructor
    throws. A page that still produces a working viewer has a second copy. */
