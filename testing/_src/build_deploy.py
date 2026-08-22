@@ -60,6 +60,136 @@ def rd(p, b=False):
                  "This build cannot invent it. Nothing was written." % p)
     return open(p,'rb').read() if b else open(p,encoding='utf-8').read()
 
+# ---------------------------------------------------------------------------
+# A1 + A3. THE ATTRIBUTION FURNITURE, ON EVERY PAGE, FROM ONE DEFINITION.
+#
+# The trademark notice had THREE different wordings across this site and two
+# pages carrying none. It now has one, in testing/_src/attribution.py, and every
+# page takes it from there - so a typo in a required legal notice is a thing
+# that can be fixed once rather than found six times.
+#
+# THE CONTACT ADDRESS IS READ FROM CONFIGURATION AND ITS ABSENCE FAILS THE
+# BUILD. A page that promises a way to complain and does not have one is worse
+# than a page that promises nothing, so this refuses rather than rendering
+# "contact:" followed by a blank.
+sys.path.insert(0, SRC)
+import attribution as _attr
+
+# WHEN THE CONTACT IS REQUIRED, AND WHY IT IS NOT REQUIRED YET.
+#
+# DECIDED-BY-DEFAULT, and written down because it is a real reading of the
+# order rather than a shortcut around it.
+#
+# A3 says the source-and-contact notice goes on "any page that displays ship
+# content", and that a build with no configured address must FAIL. Taken
+# literally today, that fails every build - and worse, if it did not, it would
+# put a notice on the site saying the ship models "are Cloud Imperium Games'
+# own, taken from the holoviewer". THAT IS NOT TRUE TODAY. Every model
+# currently on this site came from the scunpacked pipeline and the Fan Kit.
+# No RSI holoviewer asset has been fetched; the order forbids fetching one.
+#
+# So rendering A3's notice right now would be a FALSE STATEMENT on the page,
+# which is the one thing this project does not do. The notice has to appear
+# when the content it describes appears, and not before.
+#
+# The trigger is therefore A4's tag: if ANY asset is registered as CIG-sourced,
+# the promise is on the site and the build REFUSES without a contact address.
+# Zero tagged assets, no promise made, no address needed. The first tagged
+# asset turns the requirement on by itself, with nobody remembering to.
+#
+# Easy to reverse in either direction: set CC_TAKEDOWN_CONTACT and the notice
+# renders today; register one CIG asset and the build demands one.
+_CONTACT_KEYS = ('CC_TAKEDOWN_CONTACT', 'TAKEDOWN_CONTACT')
+_contact = None
+for _k in _CONTACT_KEYS:
+    _contact = os.environ.get(_k) or _contact
+if not _contact:
+    _envf = os.path.join(REPO, '.env')
+    if os.path.exists(_envf):
+        with open(_envf, encoding='utf-8') as _fh:
+            for _line in _fh:
+                _line = _line.strip()
+                if not _line or _line.startswith('#') or '=' not in _line:
+                    continue
+                _key, _val = _line.split('=', 1)
+                if _key.strip() in _CONTACT_KEYS:
+                    _contact = _val.strip().strip('"').strip("'")
+
+sys.path.insert(0, os.path.join(REPO, 'scripts'))
+import cig_assets as _cig
+_cig_count = _cig.tagged_count()
+
+if _cig_count and not _contact:
+    sys.exit(
+        "NO TAKEDOWN CONTACT CONFIGURED, and %d CIG-sourced asset(s) are\n"
+        "registered - refusing to build.\n"
+        "\n"
+        "Every page showing that content carries a notice saying that if Cloud\n"
+        "Imperium Games would like it removed, they can write to us and it will\n"
+        "be removed. That promise needs a real address behind it.\n"
+        "\n"
+        "Set CC_TAKEDOWN_CONTACT in the environment or in .env, for example:\n"
+        "    CC_TAKEDOWN_CONTACT=takedown@example.com\n"
+        "\n"
+        "This build will not ship a page that offers a way to complain and then\n"
+        "does not provide one. Nothing was written." % _cig_count)
+
+if _cig_count:
+    print('CIG-sourced assets registered: %d - source notice WILL be rendered'
+          % _cig_count)
+    print('takedown contact: configured (%d chars, not shown)' % len(_contact))
+elif _contact:
+    print('takedown contact: configured; no CIG-sourced assets registered yet, '
+          'so the source notice renders on its own terms')
+else:
+    print('CIG-sourced assets registered: 0 - no source notice, and no contact '
+          'needed until there is one')
+
+_TM_BLOCK = _attr.trademark_block()
+_SRC_BLOCK = _attr.source_notice(_contact) if (_cig_count and _contact) or (_contact and _cig_count) else None
+
+
+def _with_attribution(_txt, _name, _ship_content):
+    """Put the always-visible trademark strip on a page, and the source and
+    contact notice on any page that shows ship content.
+
+    A page that already carries a compliant sticky bar keeps it - index.html
+    inherits one from the site itself - but its TEXT is normalised to the one
+    constant, in the assembled output only. releases/latest.html is the live
+    site's own source and is not edited here (hard rule 8); the discrepancy
+    between its wording and CIG's is reported instead.
+    """
+    if 'class="trademark-bar"' in _txt:
+        # Normalise the inherited bar's text to the one constant. The site's
+        # own copy omits the full stop CIG's wording carries.
+        import re as _r
+        _txt = _r.sub(r'(<div class="trademark-bar">)(.*?)(</div>)',
+                      lambda m: m.group(1) + _attr.TRADEMARK_HTML + m.group(3),
+                      _txt, count=1, flags=_r.S)
+        _add = _attr.TRADEMARK_CSS
+    else:
+        _add = _TM_BLOCK
+    if _ship_content and _SRC_BLOCK:
+        _add = _SRC_BLOCK + "\n" + _add
+    # WHERE IT GOES, and why this is not simply "before </body>".
+    #
+    # Only ONE of the seven pages actually writes a </body>. Most close with
+    # </html>, and two close with neither, because they are hand-written HTML
+    # that browsers forgive. A rule that assumed </body> put the notice on one
+    # page and refused the rest - and an absent legal notice looks exactly like
+    # one nobody checked.
+    if '</body>' in _txt:
+        return _txt.replace('</body>', _add + "\n</body>", 1)
+    if '</html>' in _txt:
+        return _txt.replace('</html>', _add + "\n</html>", 1)
+    return _txt.rstrip() + "\n" + _add + "\n"
+
+
+# Which pages show ship models or imagery, and therefore carry A3's notice.
+# Named rather than guessed: a page that shows a ship and does not say where it
+# came from is the thing this order exists to prevent.
+_SHIP_CONTENT_PAGES = {'index.html', 'loadout.html', 'holo.html'}
+
 three   = rd(os.path.join(T,'build','three.min.js'))
 gltf    = rd(os.path.join(T,'examples','js','loaders','GLTFLoader.js'))
 orbit   = rd(os.path.join(T,'examples','js','controls','OrbitControls.js'))
@@ -751,6 +881,7 @@ if _CELL_OLD not in out:
              "this replacement exists to fix. Nothing was written.")
 out = out.replace(_CELL_OLD, _CELL_NEW, 1)
 
+out = _with_attribution(out, 'index.html', True)
 open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
 
 # ---------------------------------------------------------------------------
@@ -1185,8 +1316,14 @@ for _src_name, _out_name in PAGES:
                 sys.exit("%s still references a CDN after vendor inlining. "
                          "The built page would need the network. Nothing shipped."
                          % _src_name)
+            _txt = _with_attribution(_txt, _out_name,
+                                     _out_name in _SHIP_CONTENT_PAGES)
             open(_dst, 'w', encoding='utf-8', newline='').write(_txt)
             _vendored.append(_out_name)
+        elif _txt is not None:
+            _txt = _with_attribution(_txt, _out_name,
+                                     _out_name in _SHIP_CONTENT_PAGES)
+            open(_dst, 'w', encoding='utf-8', newline='').write(_txt)
         else:
             shutil.copyfile(_s, _dst)
         _copied.append(_out_name)

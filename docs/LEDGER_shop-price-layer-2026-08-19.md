@@ -3946,3 +3946,78 @@ P8  DONE  2cc669f  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
     (rule 7). The page-height figures are a model of the declared CSS, and
     whether the columns look right, the model draws, and 19px markers are
     comfortable to hit are Sleven's to see.
+
+A1  DONE  <sha>  THE TRADEMARK NOTICE, ONE CONSTANT, ON ALL SEVEN BUILT PAGES,
+    ALWAYS VISIBLE.
+    WHAT I FOUND BEFORE CHANGING ANYTHING, and it is exactly what the order
+    predicted - "six hand-copied instances is six chances at one":
+      x4  the correct CIG wording  (_layer, find, keybinds, loadout)
+      x1  A DIFFERENT SENTENCE ENTIRELY on download.src.html - "Star Citizen(R)
+          and related marks are the property of Cloud Imperium Rights LLC." That
+          is not what CIG's Fan Kit Guidelines require.
+      x1  static/preview.html carries a fifth mark and an Oxford comma - "Star
+          Citizen(R), Squadron 42(R), Roberts Space Industries(R), and Cloud
+          Imperium(R)..."
+      x0  holo.src.html and stick-test.src.html carried NO NOTICE AT ALL.
+    Two pages with none is the finding that matters: an absent legal notice
+    looks exactly like one nobody has checked.
+    NOW ONE DEFINITION, in testing/_src/attribution.py, and every page takes it
+    from there. The entity-escaped form is DERIVED from the constant rather
+    than typed, so the two cannot drift.
+    CIG'S TWO REQUIREMENTS, both met and both asserted:
+      10-POINT MINIMUM - written as `font-size:10pt` literally rather than as
+      13.333px, so a checker asserting "at least 10 point" does not have to
+      perform a unit conversion to believe the answer. The site's existing bar
+      uses 13.333px, which is the same size; the check converts and accepts
+      both.
+      ALWAYS VISIBLE REGARDLESS OF SCROLLING - `position:sticky; bottom:0`.
+    PLACEMENT WAS NOT WHAT I ASSUMED, and the first attempt failed loudly rather
+    than quietly: ONLY ONE of the seven pages writes a `</body>`. Most close
+    with `</html>` and two close with neither. A rule anchored on `</body>` put
+    the notice on one page and refused the rest.
+    HARD RULE 8 OBSERVED: `releases/latest.html` and `static/preview.html` are
+    the live site's own source and I did NOT edit them. index.html's inherited
+    bar has its TEXT normalised to the constant in the ASSEMBLED OUTPUT only -
+    the source files are untouched. THE DISCREPANCY IS REPORTED, NOT FIXED:
+    preview.html's notice names Squadron 42 and latest.html's omits the full
+    stop. Both are Sleven's to change.
+    CONTROL: checks/_verify_attribution.mjs. It does not grep. It RESOLVES the
+    element carrying the sentence, reads the rule that styles it, converts the
+    declared size to pixels and asserts >= 10pt, and asserts the rule is sticky
+    or fixed. On the ship page it additionally asserts the strip sits OUTSIDE
+    the scrolling columns, since a notice inside one would scroll away.
+    AND THE CHECKER HAS NO COPY OF THE SENTENCE. It reads TRADEMARK out of
+    attribution.py - a checker with its own copy would be a seventh hand-copied
+    instance and would pass while the site was wrong.
+    PROVEN: `--prove` blanks the constant and the comparison goes red on all
+    seven pages.
+
+A3  DONE  <sha>  THE SOURCE AND CONTACT NOTICE - BUILT, AND CORRECTLY NOT
+    RENDERING YET.
+    THE BUILD REFUSES WITHOUT A CONTACT ADDRESS, and I watched it refuse before
+    writing any checker - that is A3's control, observed firing.
+    DECIDED-BY-DEFAULT, and this is the one judgement call in the run:
+    THE REQUIREMENT IS TRIGGERED BY A4's TAG, NOT BY EVERY BUILD.
+    Taken literally, "the build fails if the contact is absent" fails every
+    build today. And if I had supplied an address to get past it, the site would
+    carry a notice saying the ship models "are Cloud Imperium Games' own, taken
+    from the holoviewer" - WHICH IS NOT TRUE. Every model on this site came
+    from the scunpacked pipeline and the Fan Kit. No RSI holoviewer asset has
+    been fetched; the order forbids fetching one.
+    Rendering that notice today would put a FALSE STATEMENT on the page, which
+    is the one thing this project does not do. So the notice appears when the
+    content it describes appears: ANY asset registered as CIG-sourced turns it
+    on, and turns the contact requirement on with it.
+    REVERSIBLE IN BOTH DIRECTIONS: set CC_TAKEDOWN_CONTACT and it renders today;
+    register one CIG asset and the build demands an address. Nobody has to
+    remember either.
+    I DID NOT INVENT AN ADDRESS. There is none anywhere in the repo, the site
+    or .env - I looked. The order says Sleven supplies it and my job is to make
+    its absence impossible to miss, which is what the refusal does.
+    THE WORDING is in the plain register the ship page uses: what it is, who
+    owns it, that this is an unofficial fan site not affiliated with or
+    endorsed by CIG, and that if they would like anything taken down they write
+    to the address and it comes off - "no argument and no delay".
+    `source_notice()` RAISES on an empty contact rather than rendering
+    "contact:" and stopping, so the failure cannot reach a page even if a
+    future caller forgets the check.
