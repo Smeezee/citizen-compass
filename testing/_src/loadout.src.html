@@ -105,6 +105,17 @@ a{color:var(--accent)}
 .pi .buy{float:right;text-align:right;font-size:12px;color:var(--muted)}
 .pi .buy b{display:block;color:var(--accent2);font-size:13.5px}
 .empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:14px}
+/* B0: the fixed port panel. Reading matter, not a list, so it is set
+   left-aligned at body measure rather than centred like .empty - a
+   centred paragraph is what a page shows when it has nothing to say, and
+   this one has something to say. */
+.fixedpanel{padding:13px 15px;overflow:auto;flex:1 1 auto;font-size:13.5px;
+ line-height:1.55;color:var(--text)}
+.fixedpanel p{margin:0 0 11px}
+.fixedpanel p:last-child{margin-bottom:0}
+.fixedpanel b{color:var(--text)}
+.fixedpanel code{font-size:12px;color:var(--muted);word-break:break-all}
+.fixedpanel .pvline{color:var(--muted)}
 
 .buy{margin-top:13px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
 .buy h2{font-size:13px;margin:0 0 9px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
@@ -179,6 +190,20 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
  outline-offset:2px}
 #cc-marks button.sel{background:var(--accent);border-color:var(--accent);
  transform:translate(-50%,-50%) scale(1.25)}
+/* B0: A FIXED PORT'S MARKER LOOKS DIFFERENT BEFORE IT IS CLICKED.
+   NOT BY COLOUR. A person should be able to tell at a glance which dots they
+   can act on, and roughly one man in twelve cannot rely on a hue to tell them
+   - nor can anybody on a dim monitor in a bright room. So the difference is
+   SHAPE: a fixed marker is smaller and its ring is dashed rather than solid,
+   which reads the same in greyscale as it does in colour.
+   It is still a real button, it still takes focus, and it still opens
+   something - see fixedPanel(). It is not disabled, because it is not
+   inert: it has something to say. */
+#cc-marks button.fx{width:15px;height:15px;border-style:dashed;
+ border-width:2px;background:rgba(7,13,22,.55)}
+#cc-marks button.fx:hover,#cc-marks button.fx:focus{
+ background:rgba(7,13,22,.9);border-style:solid}
+#cc-marks button.fx.sel{background:var(--accent);border-style:solid}
 #cc-hint{position:absolute;right:11px;bottom:9px;font-size:11.5px;color:var(--muted);opacity:.7}
 
 /* QUIET TABS. Plain text, no icons, no colour, no badges. The only thing that
@@ -1219,7 +1244,11 @@ function renderPicker(){
     part of the ship — but the game does not allow them to be changed.
     <br><br>Hover an option and the numbers above preview the change.</div>`;return;}
   const sh=ship(), slot=sh.slots.find(x=>x.id===sel.slot);
-  if(!slot||!swappable(slot)){sel=null;return renderPicker();}
+  /* A selection naming a port this ship does not have is a bug, not a state -
+     clear it. A selection naming a FIXED port is a state, and it opens B0's
+     panel in the same place the picker opens. */
+  if(!slot){sel=null;return renderPicker();}
+  if(!swappable(slot)){$('picker').innerHTML=fixedPanel(slot);return;}
   const build=editing==="A"?A:B, cur=build[slot.id];
   let opts=fitsFor(slot).slice();
   opts.sort((x,y)=>{
@@ -1651,8 +1680,18 @@ function renderMarkers(){
   if(box.childElementCount!==list.length){
     box.innerHTML=list.map(m=>{
       const sl=slotByPort(m[0]);
-      const label=sl?`${tname(sl.t)} — ${portLabel(sl.h)}`:"port";
-      return `<button type="button" data-port="${m[0]}" title="${label}"
+      /* B0: THE MARKER SAYS WHICH KIND IT IS BEFORE IT IS CLICKED - in its
+         shape via the `fx` class, and in words via the label a screen reader
+         and a tooltip both read. Neither depends on the other. */
+      const fx = !!(sl && !swappable(sl));
+      const part = sl ? P[sl.stock] : null;
+      const label = sl
+        ? `${part?part.n+" — ":""}${tname(sl.t)} — ${portLabel(sl.h)}`
+          + (fx ? " — fixed in game, click for details"
+                : " — click to change")
+        : "port";
+      return `<button type="button" data-port="${m[0]}"
+        class="${fx?'fx':''}" title="${label}"
         aria-label="${label}"></button>`;
     }).join("");
   }
@@ -1672,13 +1711,18 @@ function renderMarkers(){
    If a second selection path is ever added, this is the function that stops
    being the answer - which is what the control asserts. */
 function selectPort(slot, which){
-  if(!slot) return;
-  if(!swappable(slot)){ sel=null; renderPicker(); return false; }
+  if(!slot) return false;
+  /* B0. A FIXED PORT IS SELECTED LIKE ANY OTHER. It used to be turned away
+     here - `sel=null; renderPicker(); return false;` - and turning it away is
+     what made 782 markers silent. What differs now is only WHAT OPENS: a
+     swappable port opens the picker, a fixed one opens fixedPanel(). Both go
+     through this function, both set `sel`, both return true, and every marker
+     on every hull therefore responds to a click. */
   /* With one build there is nothing to choose between, so a click edits the
      only build there is. The `which` a column passes is honoured only when a
      second build exists to honour it. */
   editing = twoUp ? (which||editing) : "A";
-  sel={slot:slot.id};
+  sel={slot:slot.id, fixed:!swappable(slot)};
   renderAll();
   return true;
 }
@@ -1921,8 +1965,13 @@ document.addEventListener('click',e=>{
   if(sl){
     const s=ship().slots.find(x=>x.id===sl.dataset.slot);
     if(!s) return;
-    if(!swappable(s)){ sel=null; renderPicker(); flashFixed(sl, s); return; }
-    selectPort(s, sl.dataset.col||editing); return;}
+    /* B0/B3: ONE SELECTION PATH. The row used to render the fixed panel
+       itself, which made it a second writer of the picker and meant the row
+       and the marker could drift apart. Now both routes call selectPort() and
+       the only thing the row adds is the bump under the finger. */
+    selectPort(s, sl.dataset.col||editing);
+    if(!swappable(s)) flashFixed(sl);
+    return;}
   const rl=e.target.closest('.related a[data-ship]');
   if(rl){ e.preventDefault(); shipId=rl.dataset.ship; reset(); resetView();
     tab="loadout"; renderAll(); return; }
@@ -1947,15 +1996,52 @@ document.addEventListener('click',e=>{
     markChanges(before, calc(b));
     renderAll();return;}
 });
-function flashFixed(el, s){
-  $('picker').innerHTML=`<div class="empty"><b>${portLabel(s.h)}</b><br><br>
-    ${s.nofit
-      ? "The game files list no part that fits this port, so there is nothing to offer."
-      : "The game does not allow this port to be changed on this ship."}
-    <br><br>It is shown because it is still part of the ship and still counts
-    toward the numbers above.<br><br>
-    <small>Editability last verified against patch
-    ${s.v||META.last_verified_patch||"?"}.</small></div>`;
+/* B0. THE PANEL A FIXED PORT OPENS, AND WHY IT IS A PANEL RATHER THAN A SHRUG.
+   782 of the fleet's 1,200 hull markers - 65% of them, and EVERY marker on 61
+   hulls - did nothing when clicked. Not "did nothing visible": selectPort()
+   opened with `if(!swappable(slot)){ sel=null; renderPicker(); return false; }`
+   so a fixed port cleared the selection and re-rendered the same empty prompt
+   it had been showing all along. From the outside that is indistinguishable
+   from a broken button, which is exactly what Sleven reported on the 400i,
+   where 8 of the 10 dots are fixed.
+   The answer is NOT to delete those markers. The countermeasure launchers on a
+   Vanguard are real and they are where the dot says they are; somebody asking
+   "what is that dot on the wing" deserves an answer. So a fixed port keeps its
+   marker and becomes informative instead of inert - L4's rule, applied to the
+   model instead of only to the list. */
+function fixedPanel(s){
+  const p=P[s.stock], label=portLabel(s.h);
+  const size = (s.s==null) ? "no size recorded" : ("size "+s.s);
+  const why = s.nofit
+    ? `The game files list <b>no part that fits this port</b>, so there is
+       nothing to offer here. That is the game's data, not a gap in ours.`
+    : `<b>The game does not allow this port to be changed on this ship.</b>
+       Its <code>Editable</code> flag is off in the game files, so no loadout
+       screen anywhere - ours or CIG's - can swap it.`;
+  return `<div class="ph">
+    <button class="btn tiny back" id="pickback">&larr; Components</button>
+    <b>${p?p.n:label}</b>
+    <small>${p?p.m+" &middot; ":""}${tname(s.t)} &middot; ${size} &middot;
+    ${label}${s.turret?" &middot; gunner":""}</small></div>
+    <div class="fixedpanel">
+      <p><b>What is fitted here.</b> ${p
+        ? `${p.n}${p.m?", made by "+p.m:""}. ${tname(s.t)}, ${size}.`
+        : `Nothing is fitted to this port.`}</p>
+      <p><b>The port itself.</b> ${label} &mdash; <code>${HPN[s.h]||label}</code>
+        in the game files${s.turret?", crewed by a gunner rather than the pilot":""}.
+        It counts toward every number above: a part changes this ship's mass
+        and its signature whether or not you chose it.</p>
+      <p><b>Why it cannot be changed.</b> ${why}</p>
+      <p class="pvline"><small>Editability last verified against patch
+        <b>${s.v||META.last_verified_patch||"?"}</b>.</small></p>
+    </div>`;
+}
+/* The bump is the only thing left of the old flashFixed: a fixed row that was
+   clicked acknowledges the click where the finger was. The PANEL is now
+   rendered by renderPicker() off `sel`, like every other selection, because
+   two functions writing the picker is two writers for one artifact. */
+function flashFixed(el){
+  if(!el||!el.classList) return;
   el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),260);
 }
 document.addEventListener('mouseover',e=>{
