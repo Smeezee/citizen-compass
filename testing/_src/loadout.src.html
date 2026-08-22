@@ -211,6 +211,19 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .stat.explained:focus-within .why{display:block}
 .relay:focus .where{color:var(--accent2)}
 
+/* N5: one build means one column, and the grid says so rather than leaving a
+   gap where the second one used to be. */
+.wrap.one{grid-template-columns:1fr 330px}
+@media(max-width:1250px){.wrap.one{grid-template-columns:1fr}}
+.btn.tiny{margin-left:auto;padding:4px 9px;font-size:11.5px}
+.btn[hidden]{display:none}
+
+/* N10: what moved, for a beat. A left edge and a delta chip - enough to catch
+   the eye without being something anybody has to wait out. */
+.stat.justmoved{box-shadow:inset 3px 0 0 var(--accent2)}
+.d.moved{animation:pop .22s ease}
+@keyframes pop{from{transform:scale(.82);opacity:.4}to{transform:none;opacity:1}}
+
 /* N2: the acquisition strip. Price first, because it is what a lot of people
    came for and it used to be one page further in. */
 .top .spacer{flex:1 1 auto}
@@ -275,6 +288,15 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
   <h1 id="shipname">Ship</h1>
   <select id="ship"></select>
   <span class="spacer"></span>
+  <!-- N11: BACK TO STOCK IS ALWAYS ONE VISIBLE CLICK. Not in a menu.
+       Failure has to be free or nobody experiments, and experimenting is how
+       this page teaches. Shown only when there is something to undo. -->
+  <button class="btn" id="reset" hidden>Back to stock</button>
+  <!-- N5: THE SECOND BUILD DOES NOT EXIST UNTIL ASKED FOR.
+       The wording is Sleven's and is not to be reworded: `try` is an
+       experiment rather than a decision, and `alongside` promises the current
+       build is not going anywhere. "Compare builds" was explicitly rejected. -->
+  <button class="btn" id="addB">Try another alongside</button>
   <button class="btn" id="share">Copy share link</button>
   <a class="rsi" id="rsi" target="_blank" rel="noopener">View on RSI</a>
 </div>
@@ -313,7 +335,7 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
   <div class="budgets" id="budgets"></div>
 </div>
 
-<div class="wrap">
+<div class="wrap" id="wrap">
   <div class="col a" id="colA"></div>
   <div class="col b" id="colB"></div>
   <div class="picker" id="picker"></div>
@@ -414,6 +436,44 @@ function portLabel(h){
 let shipId = Object.keys(SHIPS).filter(k=>(SHIPS[k].slots||[]).length)[0] || Object.keys(SHIPS)[0];
 let editing="A", sel=null, sort="best", ghost=null;
 let A={}, B={};
+/* N5: ONE BUILD BY DEFAULT. The second does not exist until somebody asks.
+   `twoUp` is the whole switch: while it is false there is one column, one set
+   of numbers, and NO A/B LETTERS ANYWHERE - before a second build exists there
+   is just the ship. */
+let twoUp=false;
+
+/* N10: WHAT MOVED, AND FOR HOW LONG.
+   Keyed by the stat's own label, holding the delta that stat just took. It is
+   populated by a swap and cleared on a timer, so a changed number is visibly
+   different from an unchanged one for a beat and then stops being.
+
+   THE BEAT IS DELIBERATELY SHORT AND DELIBERATELY QUIET - see the ledger for
+   the argument. A swap is something a person does dozens of times in a
+   sitting, and anything that has to be waited out becomes an obstacle by the
+   twentieth. This marks; it does not perform. */
+let changedStats=new Map();
+let changedTimer=null;
+const CHANGED_MS=2200;
+function markChanges(before,after){
+  changedStats=new Map();
+  const WATCH=[["Sustained DPS","dps"],["Alpha strike","alpha"],
+    ["Effective HP","ehp"],["Shield regen","regen"],["IR signature","ir"],
+    ["EM signature","em"],["Total mass","mass"],["Fitted containers","scu"],
+    ["Radar sensitivity","sens"],["Radar piercing","pierce"],
+    ["Mining throughput","mrate"],["Mining range","mrange"],
+    ["Beam range","beam"],["Beam force","force"],["Life support","life"]];
+  const LOWER=new Set(["IR signature","EM signature","Total mass"]);
+  WATCH.forEach(([label,key])=>{
+    const a=before[key]||0, b=after[key]||0;
+    if(a===b) return;
+    changedStats.set(label, delta(a,b,LOWER.has(label)));
+  });
+  if(changedTimer) clearTimeout(changedTimer);
+  if(changedStats.size){
+    changedTimer=setTimeout(()=>{ changedStats=new Map(); renderStats(); },
+                            CHANGED_MS);
+  }
+}
 const $=id=>document.getElementById(id);
 const ship=()=>SHIPS[shipId];
 const fmt=n=>n==null?"—":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1000?Math.round(n).toLocaleString():Math.round(n*100)/100;
@@ -439,6 +499,8 @@ const swappable = s => !!s.fit;
 function isStock(b){
   return (ship().slots||[]).every(s=>!swappable(s)||b[s.id]===s.stock);
 }
+/* Changing ship starts over: one build, nothing marked, nothing to undo. */
+function resetView(){ twoUp=false; editing="A"; changedStats=new Map(); }
 
 /* A DISPLAY NAME IS NOT AN IDENTITY IN THIS DATASET.
    22 names are shared by 51 records: `AEGS_Hammerhead` and
@@ -666,15 +728,36 @@ const EXPLAIN={
   "Beam force":"How heavy a thing the beam can move.",
 };
 function stat(k,a,b,sub,lower,stealth,fmtf,cigA,cigB){
-  const f=fmtf||fmt, d=delta(a,b,lower);
-  const mark = (cigA===undefined) ? "" : badge(cigA&&cigB);
+  const f=fmtf||fmt;
+  const mark = (cigA===undefined) ? "" : badge(twoUp?(cigA&&cigB):cigA);
   const why = EXPLAIN[k]||"";
-  return `<div class="stat${stealth?' stealth':''}${why?' explained':''}"
+  /* N6: WITH ONE BUILD THERE IS ONE NUMBER.
+     Every stat used to render twice with `same` beside it, fourteen times
+     over. That is not only space: WHEN EVERYTHING SAYS `same` ALL THE TIME,
+     NOTHING CATCHES THE EYE WHEN SOMETHING FINALLY IS NOT - which breaks the
+     one thing this page teaches by. */
+  const moved = changedStats.has(k);
+  let body;
+  if(twoUp){
+    const d=delta(a,b,lower);
+    body=`<span class="va">${f(a)}</span>
+      <span class="vb${ghost?' ghost':''}">${f(b)}</span>
+      <span class="d ${d.c}">${d.t}</span>`;
+  }else{
+    /* N10: WHAT MOVED ANNOUNCES ITSELF FOR A BEAT. `moved` is set by the swap
+       and cleared on a timer, so the number that changed is distinguishable
+       from the ones that did not WITHOUT READING THEM. If numbers settle
+       quietly into new values the moment passes and nothing was learned. */
+    body=`<span class="va">${f(a)}</span>`;
+    if(moved){
+      const d=changedStats.get(k);
+      body+=`<span class="d ${d.c} moved">${d.t}</span>`;
+    }
+  }
+  return `<div class="stat${stealth?' stealth':''}${why?' explained':''}${moved?' justmoved':''}"
       ${why?`tabindex="0" title="${why}" aria-label="${k}: ${why}"`:""}>
     <div class="k">${k}${mark}${why?'<span class="ask" aria-hidden="true">?</span>':""}</div>
-    <div class="row"><span class="va">${f(a)}</span>
-    <span class="vb${ghost?' ghost':''}">${f(b)}</span>
-    <span class="d ${d.c}">${d.t}</span></div><div class="sub">${sub}</div>
+    <div class="row">${body}</div><div class="sub">${sub}</div>
     ${why?`<div class="why">${why}</div>`:""}</div>`;
 }
 
@@ -931,8 +1014,13 @@ function renderCol(which){
   const sh=ship(); let h="";
   const nch=sh.slots.filter(x=>swappable(x)&&build[x.id]!==x.stock).length;
   const ned=sh.slots.filter(swappable).length;
-  h+=`<div class="colhead"><span class="name">Build ${which}</span>
-      <span class="cost">${nch?nch+" changed":"stock loadout"}</span></div>
+  /* N5: A AND B LABELS APPEAR ONLY ONCE THE SECOND BUILD EXISTS. Before that
+     there is just the ship - no letters, because a letter with nothing to
+     contrast against is a label for a distinction nobody has made. */
+  const title = twoUp ? ("Build "+which) : ship().n;
+  h+=`<div class="colhead"><span class="name">${title}</span>
+      <span class="cost">${nch?nch+" changed":"stock loadout"}</span>
+      ${twoUp&&which==="B"?'<button class="btn tiny" id="dropB">Discard this one</button>':""}</div>
       <div class="colsub">${sh.slots.length} ports · ${ned} can be changed ·
       ${sh.slots.length-ned} fixed</div>`;
   let lastG=null;
@@ -1396,9 +1484,11 @@ function renderMarkers(){
 function selectPort(slot, which){
   if(!slot) return;
   if(!swappable(slot)){ sel=null; renderPicker(); return false; }
-  editing=which||editing; sel={slot:slot.id};
-  $('edA').className="btn blue"+(editing==="A"?" on":"");
-  $('edB').className="btn orange"+(editing==="B"?" on":"");
+  /* With one build there is nothing to choose between, so a click edits the
+     only build there is. The `which` a column passes is honoured only when a
+     second build exists to honour it. */
+  editing = twoUp ? (which||editing) : "A";
+  sel={slot:slot.id};
   renderAll();
   return true;
 }
@@ -1517,8 +1607,21 @@ function openTab(id,fromHash){
   if(!fromHash) writeHash();
 }
 
+function renderChrome(){
+  /* N5: the second column, and everything that only means something beside
+     it, exist only when the second build does. */
+  const wrap=$('wrap'); if(wrap) wrap.classList.toggle('one', !twoUp);
+  const cb=$('colB'); if(cb) cb.hidden=!twoUp;
+  const add=$('addB'); if(add) add.hidden=twoUp;
+  /* N11: shown when there is something to undo, because a control that never
+     does anything teaches somebody to stop looking at it. */
+  const anyChanged=(ship().slots||[]).some(x=>swappable(x)&&
+    (A[x.id]!==x.stock || (twoUp&&B[x.id]!==x.stock)));
+  const rb=$('reset'); if(rb) rb.hidden=!anyChanged;
+}
 function renderAll(){
-  renderStats();renderCol("A");renderCol("B");renderPicker();renderBuy();
+  renderChrome();
+  renderStats();renderCol("A");if(twoUp)renderCol("B");renderPicker();renderBuy();
   renderMatchup();renderLiveries();renderShipState();renderSpecs();
   renderTabs();showModel();renderMarkers();renderRsi();
   renderAcq();renderRelated();renderRecord();
@@ -1574,8 +1677,9 @@ document.addEventListener('click',e=>{
     if(!swappable(s)){ sel=null; renderPicker(); flashFixed(sl, s); return; }
     selectPort(s, sl.dataset.col||editing); return;}
   const rl=e.target.closest('.related a[data-ship]');
-  if(rl){ e.preventDefault(); shipId=rl.dataset.ship; reset(); tab="loadout";
-    renderAll(); return; }
+  if(rl){ e.preventDefault(); shipId=rl.dataset.ship; reset(); resetView();
+    tab="loadout"; renderAll(); return; }
+  if(e.target.closest('#dropB')){ dropB(); return; }
   const tb=e.target.closest('.tabs a[data-tab]');
   if(tb){ e.preventDefault(); openTab(tb.dataset.tab); return; }
   const es=e.target.closest('.sortrow button[data-e]');
@@ -1583,7 +1687,14 @@ document.addEventListener('click',e=>{
   const so=e.target.closest('.sortrow button[data-s]');
   if(so){sort=so.dataset.s;renderPicker();return;}
   const pi=e.target.closest('.pi[data-part]');
-  if(pi&&sel){const b=editing==="A"?A:B; b[sel.slot]=pi.dataset.part; ghost=null; renderAll();return;}
+  if(pi&&sel){
+    const b=editing==="A"?A:B;
+    /* N10: measured BEFORE and AFTER the swap, so what announces itself is
+       what actually moved rather than what we expected to. */
+    const before=calc(b);
+    b[sel.slot]=pi.dataset.part; ghost=null;
+    markChanges(before, calc(b));
+    renderAll();return;}
 });
 function flashFixed(el, s){
   $('picker').innerHTML=`<div class="empty"><b>${portLabel(s.h)}</b><br><br>
@@ -1603,9 +1714,25 @@ document.addEventListener('mouseover',e=>{
 document.addEventListener('mouseout',e=>{
   if(e.target.closest('.pi[data-part]')){ghost=null;renderStats();}
 });
-$('edA').onclick=()=>{editing="A";$('edA').className="btn blue on";$('edB').className="btn orange";renderAll();};
-$('edB').onclick=()=>{editing="B";$('edB').className="btn orange on";$('edA').className="btn blue";renderAll();};
-$('copyA').onclick=()=>{B=Object.assign({},A);renderAll();};
+/* N5: the second build arrives when asked for, and leaves the same way.
+   It starts as a COPY of the one on screen, because the question somebody is
+   asking is "what if I changed this one thing" - starting it at stock would
+   make them redo the build they already have. */
+$('addB').onclick=()=>{ twoUp=true; B=Object.assign({},A); editing="B"; renderAll(); };
+function dropB(){ twoUp=false; editing="A"; sel=null; B=Object.assign({},A); renderAll(); }
+
+/* N11: BACK TO STOCK, always one visible click, never in a menu.
+   It returns the build being edited to the ship's OWN stock loadout, port for
+   port - not to "empty" and not to some default we chose. */
+$('reset').onclick=()=>{
+  const b=editing==="A"?A:B;
+  const before=calc(b);
+  const st=stockBuild();
+  Object.keys(b).forEach(k=>delete b[k]);
+  Object.assign(b, st);
+  markChanges(before, calc(b));
+  sel=null; renderAll();
+};
 $('share').onclick=()=>{writeHash();
   navigator.clipboard&&navigator.clipboard.writeText(location.href);
   $('share').textContent="Link copied";setTimeout(()=>$('share').textContent="Copy share link",1400);};
@@ -1648,7 +1775,7 @@ function readHash(){
   return true;
 }
 
-$('ship').onchange=e=>{shipId=e.target.value;reset();tab="loadout";renderAll();};
+$('ship').onchange=e=>{shipId=e.target.value;reset();resetView();tab="loadout";renderAll();};
 
 if(!readHash()) reset();
 $('ship').value=shipId;

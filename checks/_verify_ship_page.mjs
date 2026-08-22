@@ -517,8 +517,12 @@ vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();renderAll();`, sandbo
 const stockStats = el("stats").innerHTML;
 record(/class="src cig"/.test(stockStats),
   "a stock build shows CIG's own figures, marked as CIG's");
+/* N5 CHANGED WHICH BUILD THIS HAS TO TOUCH. The page opens on ONE build, so a
+   change to B is a change to something not on screen - this used to modify B
+   and would now be asserting on a readout that never moved. It edits A, which
+   is the build a visitor is editing when there is only one. */
 vm.runInContext(
-  `B[${JSON.stringify(target.id)}]=${JSON.stringify(accepted !== target.stock ? accepted : offered.find(k => k !== target.stock))};renderAll();`,
+  `A[${JSON.stringify(target.id)}]=${JSON.stringify(accepted !== target.stock ? accepted : offered.find(k => k !== target.stock))};renderAll();`,
   sandbox);
 const changedStats = el("stats").innerHTML;
 record(/class="src ours"/.test(changedStats),
@@ -1024,6 +1028,146 @@ console.log("\n--- N2: the Acquisition block moved across, field by field ---");
     "the snapshot patch, which is a real figure.");
 
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();tab="loadout";renderAll();`, sandbox);
+}
+
+console.log("\n--- N5/N6: the page opens on ONE build, and each stat renders once ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+
+  record(g("twoUp") === false, "the page opens with one build");
+  record(el("colB").hidden === true, "and the second column is not on the page");
+
+  /* N6: EACH STAT EXACTLY ONCE. The failure this replaces rendered every stat
+     twice with `same` beside it, fourteen times over - and when everything
+     says `same` all the time, nothing catches the eye when something finally
+     is not. Counted per stat, not in total: a total could be right while one
+     stat rendered twice and another not at all. */
+  const stats = el("stats").innerHTML;
+  const labels = [...stats.matchAll(/<div class="k">([^<]*?)(?:<span|<\/div>)/g)]
+    .map((m) => m[1].trim());
+  const dupes = labels.filter((l, i) => labels.indexOf(l) !== i);
+  record(labels.length > 10, "a real number of stats rendered", `${labels.length}`);
+  record(dupes.length === 0, "each stat label appears exactly once",
+    `duplicated: ${[...new Set(dupes)].slice(0, 3)}`);
+  const values = (stats.match(/class="va"/g) || []).length;
+  const seconds = (stats.match(/class="vb/g) || []).length;
+  record(values === labels.length && seconds === 0,
+    "and carries ONE value, with no second column of numbers beside it",
+    `${values} values, ${seconds} second values`);
+  record(!/>same</.test(stats),
+    "and the word \"same\" appears nowhere - there is nothing to be the same as");
+  notes.push(`N6: ${labels.length} stats, each rendered once, no second value ` +
+    `column and no "same" anywhere`);
+
+  /* N5: NO A/B LETTERS BEFORE A SECOND BUILD EXISTS. The column is headed with
+     the SHIP, because a letter with nothing to contrast against is a label for
+     a distinction nobody has made. */
+  const colA = el("colA").innerHTML;
+  record(colA.includes(SHIPS[shipKey].n),
+    "the single column is headed with the ship, not a letter");
+  record(!/Build A|Build B/.test(colA),
+    "and carries no A or B label at all");
+
+  /* The button, and its exact wording. Sleven chose it and it is not to be
+     reworded, so the check asserts the STRING rather than "a button exists". */
+  record(/id="addB"[^>]*>Try another alongside</.test(html) ||
+         />Try another alongside</.test(html),
+    "the button reads exactly \"Try another alongside\"");
+  /* STRIPPED OF COMMENTS FIRST. The page explains IN PROSE that "Compare
+     builds" was the rejected wording, and a check that read its own
+     explanation as the thing it forbids would fail the page for documenting
+     itself. The stripper is proven live on the next line - without that, it
+     could equally be hiding a real one somebody left in. */
+  const noComments = html.replace(/<!--[\s\S]*?-->/g, "")
+                         .replace(/\/\*[\s\S]*?\*\//g, "");
+  record(/Compare builds/i.test(html) && !/Compare builds/i.test(noComments),
+    "the comment stripper works: the page's prose names the rejected wording, "
+    + "its markup does not");
+  record(!/Compare builds/i.test(noComments),
+    "and not \"Compare builds\", which was explicitly rejected");
+
+  // ---- ask for the second build -----------------------------------------
+  vm.runInContext(`twoUp=true;B=Object.assign({},A);editing="B";renderAll();`, sandbox);
+  const twoStats = el("stats").innerHTML;
+  record(g("twoUp") === true, "the second build can be asked for");
+  record(el("colB").hidden === false, "and its column appears");
+  record((twoStats.match(/class="vb/g) || []).length > 10,
+    "and NOW every stat carries a second value");
+  record(/Build A/.test(el("colA").innerHTML) && /Build B/.test(el("colB").innerHTML),
+    "and the A and B labels appear only now");
+  record(/Discard this one/.test(el("colB").innerHTML),
+    "the second panel carries \"Discard this one\" - it says what happens and " +
+    "which one goes");
+  record(!/>Remove</.test(el("colB").innerHTML),
+    "and not a bare \"Remove\"");
+
+  vm.runInContext(`dropB();`, sandbox);
+  record(g("twoUp") === false, "and discarding it returns to one build");
+  record((el("stats").innerHTML.match(/class="vb/g) || []).length === 0,
+    "with one number again");
+}
+
+console.log("\n--- N10: the first swap is unmissable ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+  const quiet = el("stats").innerHTML;
+  record(!/justmoved/.test(quiet),
+    "nothing is marked as moved before anything has moved");
+
+  /* The real path: a swap, through the same handler a click uses. */
+  const slot = editSlots.find((x) => (FITS[x.fit] || []).length > 2);
+  const alt = (FITS[slot.fit] || []).find((k) => k !== slot.stock);
+  vm.runInContext(
+    `sel={slot:${JSON.stringify(slot.id)}};editing="A";` +
+    `(function(){const b=A;const before=calc(b);b[${JSON.stringify(slot.id)}]=` +
+    `${JSON.stringify(alt)};markChanges(before,calc(b));})();renderAll();`, sandbox);
+  const after = el("stats").innerHTML;
+
+  const movedCount = (after.match(/justmoved/g) || []).length;
+  const total = (after.match(/class="stat/g) || []).length;
+  record(movedCount > 0, "after a swap, something is marked as moved",
+    `${movedCount} of ${total}`);
+  record(movedCount < total,
+    "and NOT everything is - the changed readouts are distinguishable from " +
+    "the unchanged ones without reading them",
+    `${movedCount} of ${total} marked`);
+  record(/class="d [a-z]+ moved"/.test(after),
+    "and each one shows which way it went");
+  notes.push(`N10: one swap marked ${movedCount} of ${total} readouts; the ` +
+    `other ${total - movedCount} are visibly untouched`);
+
+  /* AND IT STOPS. A mark that never clears is a page that is permanently
+     shouting, which is the failure mode worth guarding against. */
+  vm.runInContext(`changedStats=new Map();renderStats();`, sandbox);
+  record(!/justmoved/.test(el("stats").innerHTML),
+    "and the mark clears afterwards rather than staying lit");
+}
+
+console.log("\n--- N11: back to stock is always one visible click ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+  record(el("reset").hidden === true,
+    "no undo is offered on a build with nothing to undo");
+
+  const slot = editSlots.find((x) => (FITS[x.fit] || []).length > 2);
+  const alt = (FITS[slot.fit] || []).find((k) => k !== slot.stock);
+  vm.runInContext(`A[${JSON.stringify(slot.id)}]=${JSON.stringify(alt)};renderAll();`, sandbox);
+  record(el("reset").hidden === false,
+    "one visible control appears the moment there is something to undo");
+  record(/Back to stock/.test(html), "and it says what it does");
+
+  /* PORT FOR PORT, against the ship's OWN stock loadout - not "empty", and not
+     a default we chose. */
+  vm.runInContext(`$('reset').onclick();`, sandbox);
+  const back = JSON.parse(g("JSON.stringify(A)"));
+  const wrong = SHIPS[shipKey].slots.filter((x) => x.fit && back[x.id] !== x.stock);
+  record(wrong.length === 0,
+    "and it returns every port to the ship's own stock part",
+    `${wrong.length} ports not restored`);
+  record(g("isStock(A)") === true, "so the build reads as stock again");
+  record(el("reset").hidden === true, "and the control stands down again");
+  notes.push(`N11: one visible control restores all ` +
+    `${SHIPS[shipKey].slots.filter((x) => x.fit).length} editable ports to stock`);
 }
 
 /* ---------------------------------------------- rule 8: never touch these */

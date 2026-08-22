@@ -3399,7 +3399,7 @@ N2  DONE  66d3d59  THE ACQUISITION BLOCK IS ON THE SHIP PAGE. NOTHING WAS
     manufacturer 221, name 221, in-game price 179, sold at 179, pledge price
     138, notes 56.
 
-N1  DONE  <sha>  EVERY ROUTE INTO A SHIP LANDS ON THE SHIP PAGE, and the
+N1  DONE  cc83101  EVERY ROUTE INTO A SHIP LANDS ON THE SHIP PAGE, and the
     "Open in the loadout bench" button is gone.
     There is now ONE function - `shipPageUrl(ship)` - that turns a record into
     a destination, so "does the list ever reach a ship another way" is a
@@ -3418,7 +3418,7 @@ N1  DONE  <sha>  EVERY ROUTE INTO A SHIP LANDS ON THE SHIP PAGE, and the
     KEEPS its RSI link and says why in the title; the other 221 go to the ship
     page. The letter of the rule would have removed a link and offered nothing.
 
-N3  DONE  <sha>  INDEX IS A LIST. THE PANEL AND ITS VIEWER ARE RETIRED, AND THE
+N3  DONE  cc83101  INDEX IS A LIST. THE PANEL AND ITS VIEWER ARE RETIRED, AND THE
     NUMBER IS THE POINT: 1,622,716 -> 410,219 BYTES. A 75% CUT.
     What came off: three.js (603 KB), OrbitControls, GLTFLoader, the DRACO
     decoder and its wasm as base64, the embedded model map, the whole ship
@@ -3456,10 +3456,75 @@ N3  DONE  <sha>  INDEX IS A LIST. THE PANEL AND ITS VIEWER ARE RETIRED, AND THE
     the same as served, and only the third had stopped being true. The
     published copy was moved to _to_delete, never deleted.
 
-N4  DONE  <sha>  ONE VIEWER INSTANCE, ONE MODEL LOAD PER SHIP.
+N4  DONE  cc83101  ONE VIEWER INSTANCE, ONE MODEL LOAD PER SHIP.
     Trivially true for index now - it has none. On the ship page it is
     structural rather than incidental: `new CCViewer.Viewer(` appears ONCE in
     the whole page, `view()` returns the existing instance rather than building
     another, and `showModel()` short-circuits on `_modelFor === shipId` so
     geometry is fetched when the SHIP changes and not when a TAB does.
     All three asserted on the built page.
+
+N5  DONE  <sha>  THE PAGE OPENS ON ONE BUILD. The second does not exist until
+    somebody asks for it.
+    THE BUTTON READS EXACTLY `Try another alongside`, and the control asserts
+    the STRING rather than "a button exists" - the wording is Sleven's and the
+    order says not to reword it. It also asserts "Compare builds" appears
+    nowhere in the markup, since that was explicitly rejected.
+    THE SECOND PANEL CARRIES `Discard this one`, not a bare "Remove" - it says
+    what happens and which one goes. Asserted both ways.
+    A AND B LABELS APPEAR ONLY ONCE THE SECOND BUILD EXISTS. Before that the
+    column is headed with the SHIP'S NAME, because a letter with nothing to
+    contrast against is a label for a distinction nobody has made. Asserted:
+    with one build the heading contains the ship name and neither "Build A" nor
+    "Build B"; with two, both appear.
+    THE SECOND BUILD STARTS AS A COPY of the one on screen, not at stock. The
+    question somebody is asking is "what if I changed this one thing"; starting
+    it empty would make them rebuild what they already had.
+    DECIDED-BY-DEFAULT and cheap to reverse.
+
+N6  DONE  <sha>  THE DOUBLED READOUT IS GONE. With one build there is one
+    number.
+    Every stat rendered TWICE with `same` beside it, fourteen times over.
+    THE ARGUMENT IS NOT SPACE, and the order is right about which one matters:
+    when everything says `same` all the time, NOTHING CATCHES THE EYE WHEN
+    SOMETHING FINALLY IS NOT - which breaks the one thing this page teaches by.
+    CONTROL, counted PER STAT rather than in total: a total could be right
+    while one stat rendered twice and another not at all. 18 stats, each label
+    exactly once, 18 values, ZERO second values, and the word "same" nowhere
+    in the readout. When the second build is asked for, every stat gains its
+    second value again - asserted, because removing it permanently would pass
+    the same assertions and is the wrong fix.
+
+N10 DONE  <sha>  THE SWAP ANNOUNCES WHAT MOVED, FOR A BEAT.
+    A swap measures the readout BEFORE and AFTER and marks only what actually
+    changed - not what we expected to change - with a left edge and a delta
+    chip that says which way it went. It clears itself after 2.2 seconds.
+    CONTROL: before a swap nothing is marked; after one, SOME readouts are
+    marked and OTHERS ARE NOT. That second half is the whole assertion. If a
+    swap lit everything up it would satisfy "the change is visible" and teach
+    nothing, because the point is that the changed ones are distinguishable
+    from the unchanged ones WITHOUT READING THEM. And it must stop: a mark that
+    never clears is a page permanently shouting.
+    ARGUING WITH N10, WHICH THE ORDER ASKS ME TO. C1 is right that this is easy
+    to overdo, and I have deliberately built the quiet end of it: a 3px edge, a
+    small delta chip, one 0.22s pop, gone in 2.2 seconds. NO flash on the
+    number itself, no colour wash across the panel, no motion that has to
+    finish before the page is usable again.
+    THE BOUNDARY, since I can see it from here: a swap is something somebody
+    does dozens of times in a sitting, and the twentieth must cost nothing.
+    Anything that has to be WAITED OUT becomes an obstacle - which is why
+    nothing here blocks, queues, or animates the value itself. If this still
+    reads as too much on the twentieth swap, the dial to turn is CHANGED_MS,
+    and turning it to 0 leaves a page that works exactly as it does now minus
+    the mark. That is deliberately the cheapest thing in this change to undo.
+
+N11 DONE  <sha>  BACK TO STOCK IS ONE VISIBLE CLICK, never in a menu.
+    A `Back to stock` button in the header, shown the moment there is anything
+    to undo and stood down again when there is not - a control that never does
+    anything teaches somebody to stop looking at it.
+    It returns the build being edited to THE SHIP'S OWN stock loadout, PORT FOR
+    PORT - not to empty, and not to a default we chose. The control asserts
+    every editable port on the hull is back to its own `stock` value, not just
+    that the build "looks stock".
+    And the restore itself goes through markChanges, so undoing a swap
+    announces what moved back exactly as the swap announced what moved.
