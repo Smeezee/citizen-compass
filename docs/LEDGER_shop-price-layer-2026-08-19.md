@@ -4351,3 +4351,47 @@ B2  DONE  4f062da  ONE COMPACT ROW PER SLOT, THE PICKER INLINE BENEATH IT, AND
     "the picker takes the left column" became the STRONGER claim that the
     column is not taken over. 240 ok; its --mutate still catches the widened
     fitsFor.
+
+B3  DONE  fd37ae8  TWO HOMES, SPLIT BY WHETHER THE THING IS ON THE HULL.
+    Sleven's own scoping: guns, missiles, gimbals go on the hardpoint
+    attachments in their own specialised place; components cannot, because
+    there is no proper way to hardpoint them.
+    THE TEST IS THE MARKER, which is the only honest one available: a port the
+    model carries a dot for HAS a position; a power plant does not. So a marked
+    port opens a panel over the model stage, anchored near its dot, and an
+    internal component opens inline in the list. No invented markers.
+    pickerHome() is the SINGLE answer to "where does this open", asked by
+    everything that renders a picker. Two places deciding that is how one of
+    them ends up writing into a hidden pane, which is what B2 had to undo.
+    IT MUST NOT COVER ITS OWN MARKER - a panel hiding the dot you just clicked
+    removes the one piece of context that made the click mean anything. It sits
+    beside the marker, FLIPS when there is no room, and clamps inside the
+    stage. panelPlacement() is a PURE FUNCTION of numbers precisely so the
+    geometry can be driven with input chosen to break it rather than reasoned
+    about in a browser nobody opens.
+    PANEL_W / PANEL_MAXH / PANEL_GAP are declared once in JS and the CSS is
+    told. Two copies of 328 would drift the first time somebody widened it, and
+    the panel would begin covering the marker with nothing reporting it.
+    Escape closes it. The model background closes it. A click INSIDE it does
+    NOT - otherwise the picker would shut on first use, which is the negative
+    half and it is asserted.
+    CONTROL  checks/_verify_stage_panel.mjs, 47 assertions.
+      placement: goes right with room; FLIPS with none; clamps top and bottom;
+      a stage narrower than the panel still yields a placement inside it
+      Origin 400i, hardpoint_weapon_left: panel open, computed position inside
+      the 960x540 stage, marker NOT under it (panel 296..624, marker at 640)
+      the ROW opens a BYTE-IDENTICAL panel at IDENTICAL coordinates - one
+      selection path, two entrances, asserted as identity rather than as "both
+      did something"
+      a power plant on a hull that HAS markers opens inline and no panel opens
+      FLEET: 3,985 port selections, every one in the home its marker decides
+    RULE 12. --mutate-cover returns the marker's own position and the placement
+    assertions fail; --mutate-internal treats every port as hull-mounted and
+    the power plant grows a panel. Both exit non-zero, as does --self-test.
+    ONE ASSERTION IN THE FIRST DRAFT COMPARED g("sel") WITH ITSELF. A check
+    that cannot fail, in the control written to enforce rule 12. Caught on
+    re-reading, replaced with the two captured selections. Recorded because the
+    lesson is that writing the rule down does not exempt you from it.
+    STATED LIMIT: the 960x540 stage is a STUB, not a measurement. Nothing here
+    proves the panel fits a real viewport - only that the arithmetic places it
+    inside the box it was given. Real viewports are B8's job.
