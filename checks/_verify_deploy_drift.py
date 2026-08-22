@@ -122,14 +122,29 @@ def sha(path):
     return hashlib.sha256(read_bytes(path)).hexdigest()
 
 
+PAGES_SRC = os.path.join(SRC, "deploy_pages.py")
+
+
 def build_pages():
-    """The build's own PAGES list, read WITHOUT running the build.
+    """The one PAGES list, read WITHOUT running the build.
 
     Parsed out of the source rather than duplicated here. A copy of this list
     living in a checker is a second writer for the same fact (rule 14), and it
     would drift the first time a page was added.
+
+    IT MOVED ON 2026-08-22, and this function moved with it. PAGES used to be
+    declared in build_deploy.py and hand-mirrored in check_deploy_clean.py's
+    allow-list; those two drifted twice, so the list was extracted to
+    testing/_src/deploy_pages.py and both now import it. This parser followed.
+
+    Note what happened in between, because it is the point of writing checks
+    this way: when the list moved, THIS CHECK REPORTED "NOT PERFORMED" rather
+    than finding nothing and calling _deploy clean. A parser that returned an
+    empty list would have passed every assertion below it vacuously.
     """
-    tree = ast.parse(text_of(BUILD), filename=BUILD)
+    if not os.path.exists(PAGES_SRC):
+        return None
+    tree = ast.parse(text_of(PAGES_SRC), filename=PAGES_SRC)
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
             for target in node.targets:
@@ -142,12 +157,12 @@ def main():
     print("\n1. THE BUILD'S OWN LIST OF WHAT IT COPIES")
     pages = build_pages()
     if not pages:
-        print("NOT PERFORMED: could not read PAGES out of build_deploy.py, so "
-              "there is no list of what _deploy should contain. Reported as "
-              "not performed, never as passed.")
+        print("NOT PERFORMED: could not read PAGES out of %s, so there is no "
+              "list of what _deploy should contain. Reported as not performed, "
+              "never as passed." % os.path.relpath(PAGES_SRC, ROOT))
         return 1
-    check("PAGES read from build_deploy.py without running it (%d entries)"
-          % len(pages), len(pages) > 5)
+    check("PAGES read from deploy_pages.py without running the build "
+          "(%d entries)" % len(pages), len(pages) > 5)
     check("and every source it names exists in _src",
           all(os.path.exists(os.path.join(SRC, s)) for s, _ in pages))
 

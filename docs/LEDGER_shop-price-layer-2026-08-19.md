@@ -3256,3 +3256,107 @@ L17 SWEEP FINAL  837796d  45 controls discovered, 42 ok, 1 failed, 2 skipped,
     THE THREE NEW CONTROLS FROM THIS RUN WERE SWEPT WITHOUT BEING ADDED TO
     ANYTHING - the runner discovers checks/_verify_* from disk, which is why a
     control written today is in today's sweep.
+
+D1  DONE  <sha>  TESTING SITE DEPLOYED, and the standing rule that says to do it
+    without asking is now in ARCHITECTURE_DECISIONS.md.
+    URL: https://citizencompasstesting.citizencompass-contact.workers.dev
+    Version ID 9618dd8d-24fb-4eb6-8827-7cc5b648a43b. NOT the live site -
+    nothing here went near deploy_live.ps1 or wrangler.live.toml.
+    THE RULING (docs/RULING_testing-deploys-are-automatic-2026-08-22.md) is
+    folded into docs/ARCHITECTURE_DECISIONS.md as a LOCKED entry: every run
+    that changes what the site serves ENDS BY DEPLOYING TO TESTING, no
+    permission; the live site is Sleven's alone. He is right about the cost and
+    I caused it - L1-L17 and M0-M6 finished and sat undeployed while he looked
+    at a five-hour-old build and judged work he could not see. WORK THAT IS NOT
+    DEPLOYED TO TESTING HAS NOT BEEN DELIVERED.
+
+    THE DEPLOY GUARD REFUSED THE FIRST ATTEMPT, AND IT WAS RIGHT.
+    `check_deploy_clean.py` rejected cc_viewer.js, loadout_model.gen.js,
+    loadout_marker.gen.js and loadout_eng.gen.js as unknown files that would be
+    PUBLISHED. The build had said "safe to deploy" in the same minute, because
+    the build derives its allow-list from PAGES and the standalone guard
+    carried its own HAND-MIRRORED copy.
+    THE GUARD'S OWN COMMENT HAD PREDICTED THIS EXACTLY: "Letting the two drift
+    produces a standalone 'unexpected file' failure that flatly contradicts a
+    clean build, which is worse than either alone." It had already happened
+    once - download.html was live while the guard called it unexpected.
+    FIXED BY CONSTRUCTION, NOT BY ADDING FOUR NAMES (rule 14). The list moved to
+    `testing/_src/deploy_pages.py`; build_deploy.py imports PAGES from it and
+    check_deploy_clean.py derives ALLOWED_FILES from the same list. There is
+    nothing left to keep in step. Adding a page is now ONE edit.
+    PROVEN, not assumed: a planted `_plant_probe.txt` in _deploy is still
+    REFUSED by name, and the refusal now lists all 19 permitted files. The probe
+    was moved to _to_delete, never deleted.
+
+    THAT CHANGE THEN BROKE TWO CONTROLS, AND BOTH FAILED HONESTLY RATHER THAN
+    QUIETLY - which is the argument for writing them the way this project does:
+      `_verify_deploy_drift.py` parsed PAGES out of build_deploy.py. When the
+      list moved it reported "NOT PERFORMED: could not read PAGES", rather than
+      finding nothing and calling _deploy clean. A parser returning an empty
+      list would have passed every assertion below it VACUOUSLY. Pointed at
+      deploy_pages.py; 10 passed, 0 failed.
+      `_verify_deploy_guards.py` builds a synthetic project and copied only
+      check_deploy_clean.py into it. That guard now imports deploy_pages.py, so
+      the import failed, the guard subprocess died, and the deploy script FAILED
+      CLOSED - correct behaviour, showing up as three unrelated-looking
+      assertion failures. The fixture now copies the guard AND its dependency,
+      copied rather than stubbed for the same reason the guard itself is.
+      43 passed, 0 failed.
+
+    DEPLOYED TWICE, and the second run is itself a verification: the first
+    uploaded SEVEN files and they were exactly the seven my work changed -
+    cc_viewer.js, loadout.html, loadout_data.gen.js, loadout_model.gen.js,
+    loadout_marker.gen.js, loadout_eng.gen.js and index.html. After the guard
+    rework the second run reported "No updated asset files to upload", which
+    proves the allow-list change altered not one served byte. A deploy whose
+    diff matches the work is worth recording; one that does not is the thing to
+    worry about.
+
+    VERIFIED FROM THE SERVED BYTES, NOT FROM THE EXIT CODE:
+      /                       200  1,622,716 bytes
+      /loadout                200  1,247,526 bytes  (/loadout.html 307s to it)
+      /cc_viewer.js           200     14,055 bytes
+      /loadout_data.gen.js    200  3,636,252 bytes
+      /loadout_marker.gen.js  200     42,542 bytes
+      /loadout_model.gen.js   200     26,393 bytes
+      /loadout_eng.gen.js     200     22,986 bytes
+      /models/Hammerhead.glb  200  3,608,636 bytes
+    All five generated files are sha256 IDENTICAL to what the build wrote.
+    THE SHIP PAGE CARRIES cc_viewer.js: `<script src="cc_viewer.js">` present,
+    and `new THREE.WebGLRenderer` appears in the served page only inside the
+    inlined three.js library - the page constructs no renderer of its own, so
+    L8's one-implementation rule survived the deploy.
+    THE TAB SHELL IS IN THE SERVED BYTES: id="tabs" and all six panes
+    (loadout, engineering, liveries, crew, buy, specs), plus `const TABS=`,
+    `openTab`, `loadLayer`, the `href="#${t.id}"` template that makes each tab
+    an addressable fragment, and `engineering:{file:"loadout_eng.gen.js"}`.
+    AND THE STRONGEST CHECK - THE SERVED PAGE WAS DRIVEN, not grepped. The
+    served HTML's own six script blocks were run against the four SERVED data
+    files in a vm:
+      316 ships loaded from the served data
+      1,200 hull markers
+      305 hulls with engineering relays
+      tabs rendered: loadout, engineering, liveries, buy, specs - CREW CORRECTLY
+        ABSENT, because it has no data behind it
+      the build column rendered 19,796 characters and the readout 18 values
+    Grepping proves the bytes contain the feature. This proves the bytes RUN.
+
+    STATED LIMIT, unchanged and worth repeating: no browser was involved. There
+    is none on this machine and none was installed (rule 7). Whether the 3D
+    viewer draws, the markers land in the right place on the hull, or the CSS
+    holds is Sleven's to see. That is item 3 on the pre-live punch list.
+
+    AND ONE THING THE VERIFICATION FOUND THAT IS NOT MINE: THE PASSWORD GATE IS
+    ON index.html ONLY. Measured against the deployed origin - `/` carries
+    id="cc-gate"; /loadout, /find, /keybinds, /holo, /download and /stick-test
+    do not, and every one serves 200 to a direct request. Pre-existing: the
+    gate has been index-only since it was introduced, and every page in PAGES is
+    copied verbatim. Recorded in ARCHITECTURE_DECISIONS.md beside the standing
+    rule and on the punch list, because "private preview" is doing real work in
+    the reasoning for automatic deploys and the preview is less private than
+    the phrase implies.
+
+    SWEEP AFTER ALL OF IT: 45 controls discovered, 42 ok, 1 failed, 2 skipped,
+    0 NOT RUN. The one failure is `_verify_g3_matcher_delta.py` reporting NOT
+    PERFORMED because CC_GEO_DIR is unset - pre-existing, unrelated, and
+    correctly refusing to claim a pass.

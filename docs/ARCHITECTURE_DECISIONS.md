@@ -136,3 +136,74 @@ you can get rid of and one you have to look up how to get rid of.
 
 See `citizen-collector/autostart.go`, which carries the same reasoning at the
 point of use.
+
+---
+
+## LOCKED — the testing site deploys automatically. The live site never does.
+
+**Ruled by Sleven, 2026-08-22.** Standing, and it governs every run from now on
+rather than the order it arrived during. Source:
+`docs/RULING_testing-deploys-are-automatic-2026-08-22.md`.
+
+> "Make it a standing rule that everything goes to the test site. It needs to be
+> pushed without permission, and that's only for the testing site. The actual
+> live site will be human taken care of."
+
+### The rule
+
+**Every run that changes anything the site serves ENDS BY DEPLOYING TO TESTING.**
+No permission, no asking, no waiting. It is the last item of the run, every
+time — the same standing as filing the handoff.
+
+**The live site is untouched by this.** `deploy_live.ps1` is run only when
+Sleven says so, explicitly, that time. Nothing here weakens that, and the two
+scripts already refuse each other's payloads by inspecting the bytes rather
+than trusting a flag.
+
+### Why the old behaviour was wrong
+
+The ask-first rule protects **people who are not in the conversation** — the
+live site's visitors, and the machines the collector installs on. **The testing
+site's audience is one person, and he is the person the rule was asking.**
+
+The cost was concrete and this session caused it: L1–L17 and M0–M6 finished and
+sat undeployed. Sleven opened the testing site, saw a build five hours old, and
+formed a judgement about work he could not see.
+
+**Work that is not deployed to testing has not been delivered.** The review
+surface is the deliverable, not the commit.
+
+### What this does NOT relax
+
+- **The deploy guard still applies.** `check_deploy_clean.py` refuses unknown
+  files in `_deploy`, and everything in that directory is served publicly.
+  **Automatic does not mean unguarded.** It refused `find_data.gen.js` at H3
+  and it refused four ship-page files on 2026-08-22; both refusals were correct
+  and both were fixed by declaring the files, not by loosening the guard.
+- **Dry run first, always.** `-WhatIf`, read what it says it would publish —
+  worker name, file count, payload kind — then deploy.
+- **Verify from the SERVED BYTES.** Fetch the URL and confirm the change is
+  actually in what came back. Not "the deploy exited 0". This project has been
+  burned three times by a successful deploy that published nothing to the URL
+  anybody was looking at.
+- **A failed deploy is a BLOCKED item in the ledger, with the reason.** Never a
+  silent skip.
+- **The ledger records the URL and what was verified**, so the next session
+  knows what is actually standing on the web.
+
+### The one-line version
+
+> Every run ends with a testing deploy: dry run, guard, deploy, verify from the
+> served bytes, record it. The live site waits for Sleven.
+
+### A known limit of the testing site, recorded here because this rule leans on it
+
+**The password gate is on `index.html` only.** Measured 2026-08-22 against the
+deployed origin: `/` carries `id="cc-gate"`; `/loadout`, `/find`, `/keybinds`,
+`/holo`, `/download` and `/stick-test` do not, and all serve 200 to a direct
+request. The gate is a front door, not a fence.
+
+This is **pre-existing** — the gate has been index-only since it was introduced
+— and it is not a reason to stop deploying automatically. It is recorded because
+"private preview" is doing work in the reasoning above, and it is less private
+than the phrase implies. On the pre-live punch list.

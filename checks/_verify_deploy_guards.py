@@ -133,8 +133,18 @@ def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
     # subprocess and fail closed if it is missing, so a stub would be testing
     # the stub.
     os.makedirs(os.path.join(proj, "testing", "_src"), exist_ok=True)
-    shutil.copyfile(os.path.join(ROOT, "testing", "_src", "check_deploy_clean.py"),
-                    os.path.join(proj, "testing", "_src", "check_deploy_clean.py"))
+    # THE GUARD AND EVERYTHING IT IMPORTS. `check_deploy_clean.py` derives its
+    # allow-list from `deploy_pages.py` (rule 14 - one list, imported by both
+    # the build and the guard, so they cannot drift). Copying the guard alone
+    # left the import unresolvable, the guard subprocess died, and the deploy
+    # script FAILED CLOSED - which is correct behaviour and looked like three
+    # unrelated assertion failures until somebody read why.
+    #
+    # Copied rather than stubbed, for the same reason the guard itself is: a
+    # stub would be testing the stub.
+    for _dep in ("check_deploy_clean.py", "deploy_pages.py"):
+        shutil.copyfile(os.path.join(ROOT, "testing", "_src", _dep),
+                        os.path.join(proj, "testing", "_src", _dep))
 
     # An obviously fake token. -WhatIf returns before wrangler is invoked, so
     # this is never used for anything - but without SOMETHING here the scripts

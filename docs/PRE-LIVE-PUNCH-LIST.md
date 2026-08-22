@@ -115,6 +115,33 @@ its beds and its bay, not because of anything you bolt on. So the ship page
 must **say that** rather than offer a dead control — and today it offers no
 control at all, which is correct but silent. **Saying it is the work.**
 
+### The testing site's password gate is on index.html only
+
+Measured 2026-08-22 against the deployed origin:
+
+| path | gate present | serves |
+|---|---:|---:|
+| `/` | **yes** | 200 |
+| `/loadout` | no | 200 |
+| `/find` | no | 200 |
+| `/keybinds` | no | 200 |
+| `/holo` | no | 200 |
+| `/download` | no | 200 |
+| `/stick-test` | no | 200 |
+
+**Pre-existing** — the gate has been index-only since it was introduced, and
+`build_deploy.py` injects it into the assembled `index.html` and nowhere else.
+Every page in `PAGES` is copied verbatim and none of them has ever carried it.
+
+**It matters more now** than it did, because the ship page is the largest thing
+behind that "private preview" and it is reachable by anyone with the URL.
+
+**DOES NOT BLOCK the live site** — the gate is a testing-site device and the
+live payload deliberately carries none. It is on this list because the phrase
+"private preview" is doing work in the standing testing-deploy rule
+(`docs/ARCHITECTURE_DECISIONS.md`) and the preview is less private than it
+sounds.
+
 ### Ship-page layers that exist as shells
 
 The ship page is tabbed layers with per-layer lazy loading. Some layers are

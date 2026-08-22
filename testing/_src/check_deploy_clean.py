@@ -39,46 +39,19 @@ import sys
 # The only files permitted at the top level of _deploy. Keep this in step with
 # PAGES in build_deploy.py - build_deploy passes its own list in, so the two
 # cannot drift when the check runs as part of a build.
-DEFAULT_ALLOWED_FILES = {
-    "index.html",
-    "keybinds.html",
-    "loadout.html",
-    "find.html",
-    "kb_modes.gen.js",
-    # Kept in step with PAGES in build_deploy.py BY HAND - this set is only
-    # used when the guard runs standalone, and it does not derive from PAGES.
-    # Letting the two drift produces a standalone "unexpected file" failure
-    # that flatly contradicts a clean build, which is worse than either alone.
-    "sc_export.js",
-    "kb_actions.gen.js",
-    "holo.html",
-    # /loadout's real ship data, added 2026-08-13 with build_loadout_data.py.
-    "loadout_data.gen.js",
-    # /find's price data, added 2026-08-20 with build_find_data.py. The page
-    # reads this instead of calling an API, so without it /find has nothing to
-    # search - and this guard, running standalone before a deploy, is the last
-    # thing that would notice.
-    "find_data.gen.js",
-    # Its published sha256, added 2026-08-20 (R7/H5). Without it the page
-    # refuses to offer the download at all, rather than offering a file with
-    # no way to check it.
-    "find_checksum.gen.js",
-    # The ship page's hardpoint data, added 2026-08-21 with
-    # build_hardpoint_data.py (I1). index.html loads it with a <script src>;
-    # without it the Loadout panel falls back to the API, which is the exact
-    # outage this file exists to end.
-    "hardpoint_data.gen.js",
-    "holo_data.gen.js",
-    "stick-test.html",
-    # The public collector download page, added 2026-08-15 with
-    # download.src.html. IT WAS ALREADY LIVE and this list had not been told -
-    # /download returns 200 on the testing site while this guard called the file
-    # unexpected. Exactly the drift the note above warns about: the standalone
-    # guard flatly contradicting a clean build, which is worse than either
-    # alone. Recorded here rather than fixed silently, because the next person
-    # to add a page will hit it the same way.
-    "download.html",
-}
+# DERIVED FROM THE ONE PAGE LIST, NOT HAND-MIRRORED (rule 14).
+#
+# This set used to be typed out here and kept in step with PAGES in
+# build_deploy.py by somebody remembering. The file's own comment named the
+# failure - "a standalone 'unexpected file' failure that flatly contradicts a
+# clean build, which is worse than either alone" - and it then happened twice:
+# download.html was already live while this list called it unexpected, and on
+# 2026-08-22 four generated ship-page files passed the build and were refused
+# here in the same minute.
+#
+# So it derives. Adding a page to testing/_src/deploy_pages.py permits it here
+# and copies it there, in one edit, and the two CANNOT disagree.
+from deploy_pages import ALLOWED_FILES as DEFAULT_ALLOWED_FILES
 
 # The only directories permitted. Their CONTENTS are asset payloads (347 MB of
 # ship models and images) and are not enumerated - but they are still checked
