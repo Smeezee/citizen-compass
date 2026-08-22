@@ -743,7 +743,7 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
     slots, counts = [], {}
     ship_paint_tags = set()
     armor_key = None
-    for entry, pilot, _parent in ports:
+    for entry, pilot, parent in ports:
         etype = (entry.get("Type") or "").split(".")[0]
         stock_cls = entry.get("ClassName")
         stock_key = part_keys.get((stock_cls or "").lower())
@@ -857,11 +857,36 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
         # L10 requires a hull marker to select "port N and no other, BY
         # IDENTITY, never by screen position". A name cannot do that. This can,
         # and it is what any marker join must be made on.
+        # B5: THE PARENT'S HARDPOINT NAME, CARRIED RATHER THAN DROPPED.
+        #
+        # `Loadout[]` is a nested tree: a turret is a port, and the guns inside
+        # it are ports in ITS loadout. walk_ports() has always known the parent
+        # - it passes one down - and this record has always thrown it away.
+        #
+        # It matters because a child's own name often says nothing about where
+        # it is. A gun inside a turret is called `hardpoint_class_2`, and the
+        # position it needs is on its parent. Anything deriving a position from
+        # a name needs the chain, and until now the chain stopped here.
+        #
+        # `hp` IS AN INDEX INTO THE SAME NAME TABLE `h` USES, so it costs a few
+        # bytes per slot rather than a repeated string, and it resolves the
+        # same way.
+        #
+        # NO PARENT IS AN EXPLICIT null, never an absent key. "This port is
+        # top-level" and "nobody looked" are different facts and they must not
+        # arrive as the same value - which is the whole reason this field is
+        # being added rather than inferred later.
+        parent_name = (parent or {}).get("HardpointName") if parent else None
+        if parent_name:
+            if parent_name not in hp_index:
+                hp_index[parent_name] = len(hp_names)
+                hp_names.append(parent_name)
         slot = {
             "id": "%s%d" % (code, counts[code]),
             "t": code,
             "s": num(entry.get("MaxSize")),
             "h": hp_index[hp_name],
+            "hp": hp_index[parent_name] if parent_name else None,
             "p": strip_port_prefix(entry.get("PortId")),
         }
         if slot["s"] is None:
