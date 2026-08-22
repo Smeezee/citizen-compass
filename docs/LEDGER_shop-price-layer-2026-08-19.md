@@ -2968,7 +2968,7 @@ L10 DONE  f37c882  HULL MARKERS - 1,200 on 157 hulls, and they are a SECOND
     empty. It FAILED rather than passing quietly, which is the only reason it
     was found in the same minute it was written.
 
-L11 DONE  <sha>  THE SHIP NAME OPENS THE SHIP, AND THE RSI LINK MOVED ONTO IT.
+L11 DONE  9cd1a02  THE SHIP NAME OPENS THE SHIP, AND THE RSI LINK MOVED ONTO IT.
     The matrix row's `<a href>` to robertsspaceindustries.com was already
     captured rather than discarded - what was missing is that it never reached
     the SHIP PAGE. It does now: 219 ships carry their pledge link, joined
@@ -2983,7 +2983,7 @@ L11 DONE  <sha>  THE SHIP NAME OPENS THE SHIP, AND THE RSI LINK MOVED ONTO IT.
     asserted separately - an href that goes nowhere reads as the site being
     broken rather than as data being absent.
 
-L12 DONE  <sha>  THE SHARE LINK CARRIES THE WHOLE BUILD.
+L12 DONE  9cd1a02  THE SHARE LINK CARRIES THE WHOLE BUILD.
     `#<ClassName>|<A>|<B>|<tab>` - the ship, every changed port in each build,
     and the open tab. A port left at stock encodes as an empty field, so a
     stock link stays short and a part that later leaves the catalogue falls
@@ -2997,7 +2997,7 @@ L12 DONE  <sha>  THE SHARE LINK CARRIES THE WHOLE BUILD.
     port - ALL 20 changed ports on the test hull round-trip, because a
     positional encoding that drops the last field passes any one-port test.
 
-L13 DONE  <sha>  PROVENANCE SURVIVES THE LAYOUT CHANGE.
+L13 DONE  9cd1a02  PROVENANCE SURVIVES THE LAYOUT CHANGE.
     CIG's own precomputed figure and our sum from the parts are marked
     differently ON THE STAT ITSELF - a badge reading CIG or summed - rather
     than explained in a footnote that a column move could separate from its
@@ -3008,7 +3008,7 @@ L13 DONE  <sha>  PROVENANCE SURVIVES THE LAYOUT CHANGE.
     string. `last_verified_patch` is on the data and on the page, and the 33
     unreleased ships are still carried with their reason.
 
-L14 DONE  <sha>  THE THREE KINDS OF INCOMPLETE SHIP, each handled and each
+L14 DONE  9cd1a02  THE THREE KINDS OF INCOMPLETE SHIP, each handled and each
     proven on a named example.
       1. A GAME FILE, NO 3D MODEL - 115 hulls, and the ORIGIN M80 is the one
          the order names. Full readout, full swapping, and an honest "No 3D
@@ -3025,3 +3025,27 @@ L14 DONE  <sha>  THE THREE KINDS OF INCOMPLETE SHIP, each handled and each
     AND THE STINGRAY IS NOT HERE, asserted rather than assumed: no record in
     the dataset matches Stingray or S-65. A ship with no verifiable specs is
     the opposite of what this site is for, and it comes in when it reaches Live.
+
+L15 DONE  <sha>  THE PARKED IDEAS ARE WRITTEN DOWN AND NOTHING IS BUILT FOR
+    THEM. `docs/IDEA_recommended-builds.md` and `docs/IDEA_unused-ship-data.md`.
+    THE TENSION IS NAMED RATHER THAN SOFTENED, which is what the order asked
+    for: §0 says the page has no opinion and a recommendation IS an opinion.
+    Those point in opposite directions and pretending otherwise is how it gets
+    built badly. So the tension is written as the DESIGN CONSTRAINT, and what
+    it rules out is stated: not a default, not a ranking, not anonymous, and
+    not silent about whether it rests on CIG's figures or our sums.
+    EVERY FIGURE IN THE SECOND DOCUMENT WAS RE-MEASURED HERE rather than copied
+    out of the order, and where mine disagrees I say so and say why. The order
+    says 241 pilot seats and 22 bedding; I count 387 and 140 by hardpoint name
+    across every record including variants. Neither is wrong - they count
+    different things - and anyone building it should count again for their own
+    definition. Doors 770, fuse slots 1,419, relays 692 on 305 hulls, seats
+    802, module ports 43, room ports 73: all reproduce.
+    THE UNRESOLVED THING IS MARKED UNRESOLVED, LOUDLY. 21,175 ports carry no
+    CompatibleTypes and many are tagged VEN / MEC / POW / BAR1. They LOOK like
+    engineering resource nodes. That is a guess, the pattern is equally
+    consistent with ventilation geometry or an internal naming convention, and
+    the document says DO NOT BUILD ON IT.
+    Also recorded there: the `WeaponPersonal` gap - 1,092 ports accept them and
+    the catalogue to fill them is not in ship-items.json. Racks are swappable
+    and there is nothing to offer in them. A gap in a different dataset.
