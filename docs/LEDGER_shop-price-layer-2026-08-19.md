@@ -4495,3 +4495,52 @@ B5  DONE  2654263  THE PARENT IS CARRIED AND CAN BE INHERITED FROM - AND ON
     Also untracked and left that way: hardpoints_fleet.json, ship_mounts.json
     and matched.json are working-tree data in an untracked directory. Adding
     1.8 MB of data to the repo is Sleven's call, not mine.
+
+B6  DONE  cb300c8  PLACED AGAINST THIS HULL'S MEASURED EXTREMITY, NOT AGAINST A
+    FRACTION OF EVERY HULL.
+    TARGET put a wing mount at 88% of half-beam on a Vulture and on a Polaris
+    alike. The hull's actual outermost vertex is in the geometry, so the guess
+    can stop being one.
+    STILL DERIVED FROM A NAME, and the page still says so. The name says
+    "wing"; this finds where THIS hull's wing is instead of assuming 0.88. It
+    does NOT read a mount position out of the model - there is none to read.
+    renderMarkerNote() is untouched, and the control asserts that it is.
+    ONE AXIS, AND ONLY FOR A LONE MOUNT - BOTH NARROWINGS FORCED BY
+    MEASUREMENT, NOT CHOSEN:
+      two axes pinned         crowding 118 -> 120 markers   FAILED acceptance
+      one axis pinned         crowding 118 -> 121 markers   FAILED acceptance
+      one axis, lone mounts   crowding 118 -> 117 markers   PASSES
+    Siblings sharing a target group are held apart BY the fraction and the
+    spread. Aiming all of them at one measured vertex puts them in the same
+    place and the separation pass then has to undo it. A lone mount has nothing
+    to be held apart from. Worth recording that the first two attempts failed
+    the item's own acceptance criterion and the criterion is what found it -
+    reading the code would not have.
+    Every point records `aimed_at` (extremity | fraction), so which points were
+    treated as extremities is checkable rather than asserted.
+    THE 7 SKIPPED HULLS STAY SKIPPED. resolve_frame is untouched and the
+    control drives it with proportions that MUST fail it, and with no published
+    dimensions at all.
+    FLEET, GEOMETRY HELD CONSTANT:
+      143 points aimed at a measured extremity, 118 moved
+      55 of 167 ships moved at all; 112 did not move a marker
+      median move 0.074 of half-extent, p90 0.275, 3 points above 0.70
+      crowding 118 markers on 19 ships -> 117 on 19
+    THAT DISTRIBUTION IS THE NEGATIVE CONTROL the order names: a hull already
+    close to the fixed fractions barely moves, and if every ship had moved a
+    long way the NEW measurement would be the wrong one rather than the old.
+    CONTROL  checks/_verify_extremity_placement.py, 23 assertions.
+    The load-bearing geometric one is a hull WIDE AT THE FRONT AND NARROW AT
+    THE BACK: a fraction of the bounding box lands in the fuselage, the
+    measurement finds the wing. A body mount and a nameless port get NO
+    measured target at all, so "we measured it" cannot quietly become "we
+    measured everything".
+    ONE ASSERTION WAS WRONG FIRST TIME and is recorded rather than deleted: it
+    used `hardpoint_turret_roof`, which read_location resolves to 'turret'
+    because it breaks on the first part it matches. Old precedence, not new
+    code, and it looked exactly like a bug in the new code.
+    NOT PROMOTED, same as B5: a local run does not byte-reproduce the committed
+    hardpoints_fleet.json, so promoting the staged result would move ~1,788
+    markers for reasons that have nothing to do with this item. The deployed
+    markers are therefore UNCHANGED by B5 and B6, and B9's census reflects
+    that.
