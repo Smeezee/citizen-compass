@@ -90,11 +90,11 @@ record(!!(fittedKey && PARTS[fittedKey]),
   "the game data names what is fitted there",
   fittedKey ? (PARTS[fittedKey] || {}).n : "nothing");
 
-const openPicker = () => {
-  const col = el("colA").innerHTML;
-  const i = col.indexOf('class="inlinepick"');
-  return i === -1 ? "" : col.slice(i);
-};
+/* WHEREVER IT OPENED. B3 gave a hull-mounted port a panel over the stage, and
+   the turret mount below is hull-mounted - so the pinning half of this item is
+   asserted through the harness's pickerNow(), which reads every home. Pinning
+   is a property of the LIST, not of where the list is drawn. */
+const openPicker = () => H.pickerNow().any;
 
 for (const mode of ["best", "quiet", "light"]) {
   run(`sort=${JSON.stringify(mode)};sel={slot:${JSON.stringify(turret.id)}};`
@@ -134,19 +134,30 @@ for (const mode of ["best", "quiet", "light"]) {
 
 /* ------------------------ 2. THE ROWS STAY. ONE OPENS. THE OTHERS CLOSE. --- */
 console.log("\n--- 2. the rows stay, and only one is open ---");
+/* DRIVEN WITH INTERNAL COMPONENTS. After B3 a hull-mounted port's picker is a
+   panel over the model, so the inline container is the home of exactly the
+   things with no honest position on a hull - power plants, coolers, shields.
+   Those are the rows this half is about. B3's own control asserts the other
+   side of the same split. */
 run(`sel=null;renderAll();`);
 const rowIds = [...el("colA").innerHTML.matchAll(/data-slot="([^"]+)"/g)]
   .map((m) => m[1]);
+const inlineIds = rowIds.filter((id) => g("pickerHome")(
+  SH.slots.find((s) => s.id === id)) === "inline");
 record(rowIds.length === swap.length,
   `the column lists all ${swap.length} ports that can be changed`,
   `${rowIds.length}`);
-record(rowIds.length > 5, "and there are enough of them to open a fifth",
-  `${rowIds.length}`);
+record(inlineIds.length > 5,
+  "and enough of them are internal components to open a fifth inline",
+  `${inlineIds.length} of ${rowIds.length} open inline`);
+state.notes.push(`inline half driven with ${inlineIds.length} internal `
+  + `components; the other ${rowIds.length - inlineIds.length} rows are `
+  + `hull-mounted and open over the stage (B3)`);
 
 const clickRow = (id) => dispatch([".slot[data-slot]"],
   { dataset: { slot: id, col: "A" } });
 
-const threw1 = clickRow(rowIds[0]);
+const threw1 = clickRow(inlineIds[0]);
 record(!threw1, "clicking row 1 does not throw", threw1 || "");
 {
   const col = el("colA").innerHTML;
@@ -159,7 +170,7 @@ record(!threw1, "clicking row 1 does not throw", threw1 || "");
   record((col.match(/class="inlinepick"/g) || []).length === 1,
     "exactly one picker is open",
     `${(col.match(/class="inlinepick"/g) || []).length}`);
-  record(col.includes(`data-for="${rowIds[0]}"`),
+  record(col.includes(`data-for="${inlineIds[0]}"`),
     "and it is the one belonging to row 1");
   record(!/id="pickback"|&larr; Components/.test(col),
     "there is no ← Components button - the list never went anywhere");
@@ -167,13 +178,13 @@ record(!threw1, "clicking row 1 does not throw", threw1 || "");
 
 /* THE NEGATIVE HALF, and the order names it: without it, a build that opens
    every row also passes everything above. */
-const threw5 = clickRow(rowIds[4]);
+const threw5 = clickRow(inlineIds[4]);
 record(!threw5, "clicking row 5 does not throw", threw5 || "");
 {
   const col = el("colA").innerHTML;
-  record(!col.includes(`data-for="${rowIds[0]}"`),
+  record(!col.includes(`data-for="${inlineIds[0]}"`),
     "row 1's picker is GONE - opening a second closes the first");
-  record(col.includes(`data-for="${rowIds[4]}"`),
+  record(col.includes(`data-for="${inlineIds[4]}"`),
     "and row 5's is open in its place");
   record((col.match(/class="inlinepick"/g) || []).length === 1,
     "still exactly one open, fleet-wide invariant on this page",
@@ -185,14 +196,15 @@ record(!threw5, "clicking row 5 does not throw", threw5 || "");
   const threw = dispatch(["#pickclose"]);
   record(!threw, "the close control does not throw", threw || "");
   const col = el("colA").innerHTML;
-  record(!/class="inlinepick"/.test(col), "closing leaves no picker open");
+  record(!/class="inlinepick"/.test(col) && el("cc-panel").hidden === true,
+    "closing leaves no picker open, in any home");
   record([...col.matchAll(/data-slot="([^"]+)"/g)].map((m) => m[1]).length
     === swap.length,
     "and every row is still there - closing is going back, in place");
 }
 
 /* ------------------------------------ 3. FLEET: the invariant everywhere --- */
-console.log("\n--- 3. one open picker at most, on every hull ---");
+console.log("\n--- 3. exactly one picker, in exactly one home, on every hull ---");
 {
   let checked = 0, bad = 0;
   const offenders = [];
@@ -202,7 +214,15 @@ console.log("\n--- 3. one open picker at most, on every hull ---");
     if (!ed.length) continue;
     openShip(k);
     run(`sel={slot:${JSON.stringify(ed[0].id)}};renderAll();`);
-    const n = (el("colA").innerHTML.match(/class="inlinepick"/g) || []).length;
+    /* ONE PICKER, IN ONE HOME. Counting only the inline container would have
+       scored every hull-mounted port as zero after B3 - so this counts the
+       inline containers AND the stage panel together, and requires exactly
+       one across both. Two homes open at once is the failure this catches. */
+    const inlineN = (el("colA").innerHTML.match(/class="inlinepick"/g) || []).length;
+    const panelN = el("cc-panel").hidden ? 0 : 1;
+    const paneN = /data-part=|class="fixedpanel"/
+      .test(el("picker").innerHTML || "") ? 1 : 0;
+    const n = inlineN + panelN + paneN;
     checked++;
     if (n !== 1) { bad++; if (offenders.length < 6) offenders.push(`${k}:${n}`); }
   }
@@ -210,10 +230,10 @@ console.log("\n--- 3. one open picker at most, on every hull ---");
   record(checked > 300, "every hull with an editable port was checked",
     `${checked}`);
   record(bad === 0,
-    "selecting a port opens exactly ONE inline picker on every one of them",
+    "selecting a port opens exactly ONE picker, in ONE home, on every one of them",
     bad ? `${bad} wrong, e.g. ${offenders.join(", ")}` : "");
-  state.notes.push(`fleet: ${checked} hulls, exactly one inline picker open `
-    + `when a port is selected`);
+  state.notes.push(`fleet: ${checked} hulls, exactly one picker open in one `
+    + `home when a port is selected`);
 }
 
 finish(

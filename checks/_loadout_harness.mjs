@@ -56,6 +56,13 @@ export function loadPage({ mutate = [] } = {}) {
         setAttribute(a, v) { this[a] = v; },
         get childElementCount() { return 0; },
         get children() { return []; },
+        /* A STATED STAGE SIZE, so B3's placement maths runs on real numbers
+           rather than on zero. 960x540 is a plausible desktop stage and it is
+           a STUB, not a measurement: nothing here proves the panel fits a real
+           viewport, only that the arithmetic places it inside the box it was
+           given. The pure function is driven separately with its own numbers,
+           including numbers chosen to make it flip. */
+        clientWidth: 960, clientHeight: 540,
       });
     }
     return els.get(id);
@@ -152,8 +159,22 @@ export function loadPage({ mutate = [] } = {}) {
     return threw;
   };
 
+  /* WHERE A PICKER ACTUALLY IS, after B2 and B3 gave it three possible homes.
+     Reading one of them and calling the other two silent is precisely the
+     mistake B0 exists to prevent, so this reads all three and says which. */
+  const pickerNow = () => {
+    const pane = el("picker").innerHTML || "";
+    const panel = el("cc-panel").hidden ? "" : (el("cc-panel").innerHTML || "");
+    const col = el("colA").innerHTML || "";
+    const i = col.indexOf('class="inlinepick"');
+    const inline = i === -1 ? "" : col.slice(i);
+    return { pane, panel, inline,
+             any: panel || inline || pane,
+             where: panel ? "stage" : inline ? "inline" : pane ? "pane" : "none" };
+  };
+
   return {
-    g, run, el, openShip, dispatch, key, clickHandlers, keyHandlers,
+    g, run, el, openShip, dispatch, key, clickHandlers, keyHandlers, pickerNow,
     SHIPS: g("SHIPS"), PARTS: g("P"), MARKS: g("MARKS"), HPN: g("HPN"),
     META: g("META"),
     /* A slot's `h` is an INDEX into the hardpoint-name table, not the name.

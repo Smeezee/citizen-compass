@@ -205,6 +205,22 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
  background:rgba(7,13,22,.9);border-style:solid}
 #cc-marks button.fx.sel{background:var(--accent);border-style:solid}
 #cc-hint{position:absolute;right:11px;bottom:9px;font-size:11.5px;color:var(--muted);opacity:.7}
+/* B3: THE PANEL OVER THE STAGE.
+   Its WIDTH AND HEIGHT ARE SET FROM JAVASCRIPT, not from here, and that is
+   deliberate: the placement maths has to know the box it is placing, so the
+   numbers live in one place and the CSS is told. Two copies of 320 would drift
+   the first time somebody widened it, and the panel would start covering the
+   marker it is anchored to with nothing reporting it. */
+#cc-panel{position:absolute;z-index:6;background:var(--panel);
+ border:1px solid var(--accent2);border-radius:10px;overflow:hidden;
+ box-shadow:0 14px 34px rgba(0,0,0,.55);display:flex;flex-direction:column}
+#cc-panel[hidden]{display:none}
+#cc-panel .plist{overflow:auto;flex:1 1 auto}
+#cc-panel .ph{display:grid;grid-template-columns:1fr auto;
+ grid-template-areas:"title close" "sub sub";align-items:start;gap:4px 10px}
+#cc-panel .ph > b{grid-area:title}
+#cc-panel .ph > .close{grid-area:close}
+#cc-panel .ph > small{grid-area:sub}
 
 /* QUIET TABS. Plain text, no icons, no colour, no badges. The only thing that
    marks the open one is a rule under it - anything louder competes with the
@@ -471,6 +487,9 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
     <div id="cc-stage">
       <canvas id="cc-canvas"></canvas>
       <div id="cc-marks"></div>
+      <!-- B3: the picker, over the model, anchored near the dot it belongs to.
+           Choosing a gun happens where the gun is. -->
+      <div id="cc-panel" hidden></div>
       <button type="button" id="cc-spin" aria-pressed="false"
               title="Stop the ship rotating">Stop spin</button>
       <div id="cc-hint">drag to rotate &middot; scroll to zoom</div>
@@ -1230,7 +1249,7 @@ function renderCol(which){
        model stage and adds the condition; an internal component has no honest
        position on a hull and stays here, which is why the container survives
        that change rather than being replaced by it. */
-    if(active){
+    if(active && pickerHome(s)==="inline"){
       h+=`<div class="inlinepick" data-for="${s.id}">${pickerHTML(s)}</div>`;
     }
   };
@@ -1267,14 +1286,15 @@ function renderPicker(){
      clear it. A selection naming a FIXED port is a state, and it opens B0's
      panel in the same place the picker opens. */
   if(!slot){sel=null;return renderPicker();}
-  if(!swappable(slot)){$('picker').innerHTML=fixedPanel(slot);return;}
-  /* B2: AND NOTHING GOES IN THE PANE FOR A SWAPPABLE PORT ANY MORE.
-     Its picker is rendered inline, under its own row, by renderCol(). Writing
-     it here as well would put a second copy in a pane renderChrome() keeps
-     hidden - two writers for one artifact, and the hidden one is the copy
-     nobody would notice going wrong. Cleared rather than left stale, because a
-     stale copy is exactly what a later reader would find and trust. */
-  $('picker').innerHTML="";
+  /* B2/B3: THE PANE RENDERS ONLY WHAT NEITHER OTHER HOME WILL TAKE.
+     An inline picker is written by renderCol(), a stage panel by
+     renderStagePanel(). Writing either of them here as well would put a second
+     copy in a pane renderChrome() keeps hidden - two writers for one artifact,
+     and the hidden copy is the one nobody would notice going wrong. Cleared
+     rather than left stale, because a stale copy is what a later reader finds
+     and trusts. */
+  if(pickerHome(slot)!=="pane"){ $('picker').innerHTML=""; return; }
+  $('picker').innerHTML = swappable(slot) ? pickerHTML(slot) : fixedPanel(slot);
 }
 
 /* ONE PART, ONE ROW. Pulled out of renderPicker so the pinned entry and the
@@ -1735,6 +1755,103 @@ function onStage(slot){
   if(!slot) return false;
   return (MARKS[shipId]||[]).some(m=>m[0]===slot.p);
 }
+
+/* B3: TWO HOMES, SPLIT BY WHETHER THE THING IS PHYSICALLY ON THE HULL.
+   Sleven's own scoping: "the guns and missiles and stuff, and the gimbals and
+   stuff, that can go on the hardpoint attachments with its own specialized
+   place... I understand the components can't go in there, we don't have a
+   proper way to hardpoint them."
+
+     stage    anything with a hull marker - guns, turrets, gimbals, missile
+              racks, countermeasures. Choosing a gun happens where the gun is.
+     inline   everything internal - power plants, coolers, shields, quantum
+              drives, radar, flight blades. These have NO honest position on
+              the hull, and this project has already ruled that they get a menu
+              rather than invented markers. They do not get one here either.
+     pane     a fixed port with no marker. NOT REACHABLE TODAY - B1 moved fixed
+              ports to Specs as reading matter, so the only way to select one
+              is its marker. It is answered anyway rather than falling through
+              to nothing, because "cannot happen" is how the 782 silent markers
+              happened.
+
+   ONE FUNCTION ANSWERS THIS, and everything that renders a picker asks it. Two
+   places deciding where a picker goes is how one of them ends up rendering
+   into a hidden pane. */
+function pickerHome(slot){
+  if(!slot) return "none";
+  if(onStage(slot)) return "stage";
+  if(swappable(slot)) return "inline";
+  return "pane";
+}
+
+/* THE PANEL'S BOX, in one place, because the placement maths below needs it
+   and the CSS is told rather than asked. */
+const PANEL_W=328, PANEL_MAXH=340, PANEL_GAP=16;
+
+/* WHERE THE PANEL GOES, as a pure function of numbers.
+   IT MUST NOT COVER ITS OWN MARKER. A panel that hides the dot you just
+   clicked removes the one piece of context that made the click mean anything -
+   so it sits beside the marker, and FLIPS to the other side when there is no
+   room on the first. Everything is then clamped inside the stage, because a
+   panel half off the edge is not better than one on the wrong side.
+   Pure, and separately driven with known-bad input by the control: geometry
+   reasoned about in a browser is geometry nobody ever checks. */
+function panelPlacement(px, py, sw, sh, pw, ph, gap){
+  gap = gap==null ? PANEL_GAP : gap;
+  let side = "right";
+  let left = px + gap;
+  if(left + pw > sw){
+    /* No room on the right. Try the left. */
+    const alt = px - gap - pw;
+    if(alt >= 0){ left = alt; side = "left"; }
+    else {
+      /* No room either side - the stage is narrower than the panel plus the
+         marker's margins. Pin to whichever edge leaves the marker visible,
+         which is the far side of it. */
+      side = (px > sw/2) ? "left" : "right";
+      left = (side === "left") ? 0 : Math.max(0, sw - pw);
+    }
+  }
+  let top = py - ph/2;
+  if(top < 0) top = 0;
+  if(top + ph > sh) top = Math.max(0, sh - ph);
+  return {left: Math.round(left), top: Math.round(top), side: side};
+}
+
+/* THE PANEL ITSELF. Its contents are pickerHTML() or fixedPanel() - the same
+   two functions the inline route uses, so the row and the dot cannot show
+   different things. That identity is what B3's control asserts. */
+function renderStagePanel(){
+  const el=$('cc-panel'); if(!el) return;
+  const sh=ship(), slot=sel?sh.slots.find(x=>x.id===sel.slot):null;
+  if(!slot || pickerHome(slot)!=="stage"){
+    el.hidden=true; el.innerHTML=""; return;
+  }
+  el.innerHTML = swappable(slot) ? pickerHTML(slot) : fixedPanel(slot);
+  el.hidden=false;
+  const stage=$('cc-stage');
+  const sw=(stage&&stage.clientWidth)||0, sy=(stage&&stage.clientHeight)||0;
+  const mk=(MARKS[shipId]||[]).find(m=>m[0]===slot.p);
+  const v=_view;
+  let pt=null;
+  if(mk && v && v.project && v.unitScale){
+    const us=v.unitScale();
+    pt=v.project(mk[1]*us, mk[2]*us, mk[3]*us);
+  }
+  /* NO PROJECTION MEANS NO ANCHOR, and guessing one would put the panel
+     somewhere with no relationship to the marker. It goes to a stated corner
+     and says nothing about being anchored. */
+  const px = pt ? pt.x : (sw/2), py = pt ? pt.y : (sy/2);
+  const ph = Math.min(PANEL_MAXH, sy||PANEL_MAXH);
+  const box = panelPlacement(px, py, sw, sy, PANEL_W, ph, PANEL_GAP);
+  el.style.width = PANEL_W+"px";
+  el.style.maxHeight = ph+"px";
+  el.style.left = box.left+"px";
+  el.style.top = box.top+"px";
+  el.setAttribute("data-side", box.side);
+  el.setAttribute("data-for", slot.id);
+  el.setAttribute("data-anchor", pt ? (Math.round(px)+","+Math.round(py)) : "none");
+}
 function markersFor(cls){ return MARKS[cls]||[]; }
 function slotByPort(pid){ return ship().slots.find(s=>s.p===pid)||null; }
 function renderMarkers(){
@@ -1969,7 +2086,8 @@ function renderChrome(){
      picker now opens inline under its row and the column never disappears.
      The picker PANE is still here for the one thing that is not a row - B0's
      panel for a fixed port, which is reached from its marker on the model. */
-  const showPane = !!(sel && sel.fixed);
+  const _selSlot = sel ? (ship().slots||[]).find(x=>x.id===sel.slot) : null;
+  const showPane = !!(_selSlot && pickerHome(_selSlot)==="pane");
   const A_ = $('colA'), B_ = $('colB'), P_ = $('picker');
   if(A_) A_.hidden = false;
   if(B_) B_.hidden = !twoUp;
@@ -1985,7 +2103,7 @@ function renderAll(){
   renderChrome();
   renderStats();renderCol("A");if(twoUp)renderCol("B");renderPicker();renderBuy();
   renderMatchup();renderLiveries();renderShipState();renderSpecs();
-  renderTabs();showModel();renderMarkers();renderMarkerNote();renderRsi();
+  renderTabs();showModel();renderMarkers();renderStagePanel();renderMarkerNote();renderRsi();
   renderAcq();renderRelated();renderRecord();
   $('shipname').textContent=shipLabel(shipId);
   writeHash();
@@ -2080,6 +2198,12 @@ fillShipList();fillProvenance();
    without behave identically when clicked. A FIXED slot is still clickable in
    the sense that it responds - it just says why nothing opens, rather than
    being inert and leaving the visitor wondering whether the page is broken. */
+/* B3: ESCAPE CLOSES THE PANEL. A thing that opened over the model has to be
+   dismissable without hunting for a control, and Escape is what everybody
+   already tries. */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape' && sel){ sel=null; renderAll(); }
+});
 document.addEventListener('click',e=>{
   const mk=e.target.closest('#cc-marks button[data-port]');
   if(mk){
@@ -2115,6 +2239,12 @@ document.addEventListener('click',e=>{
   /* The sort lives inside the inline picker now, so re-rendering the picker
      pane alone would leave the visible list untouched. */
   if(so){sort=so.dataset.s;renderAll();return;}
+  /* B3: CLICKING THE MODEL BACKGROUND CLOSES IT. Checked AFTER the marker and
+     the panel's own contents, so clicking inside the panel or on another dot
+     does what it says rather than being swallowed as a background click. */
+  if(sel && e.target.closest('#cc-stage')
+     && !e.target.closest('#cc-panel') && !e.target.closest('#cc-marks')){
+    sel=null; renderAll(); return; }
   const pi=e.target.closest('.pi[data-part]');
   if(pi&&sel){
     const b=editing==="A"?A:B;

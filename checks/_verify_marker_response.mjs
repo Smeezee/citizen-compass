@@ -32,7 +32,11 @@
  *     fixed    B0's informative panel opened - a fixed port
  *     SILENT   neither                       - the defect
  *
- * A click is "responded to" only if it lands in one of the first two.
+ * A click is "responded to" only if it lands in one of the first two - read
+ * across ALL THREE places a picker can now live: the panel over the model
+ * stage (B3), the inline container under a row (B2), and the picker pane. A
+ * control that read one of them would call the other two silent, which is the
+ * same defect wearing a different hat.
  *
  * PROVEN TWO WAYS, because an inversion alone is a weak proof.
  *
@@ -89,6 +93,7 @@ function el(id) {
       setAttribute(a, v) { this[a] = v; },
       get childElementCount() { return 0; },
       get children() { return []; },
+      clientWidth: 960, clientHeight: 540,
     });
   }
   return els.get(id);
@@ -186,14 +191,16 @@ function clickMarker(portId) {
      every swappable marker silent - so this reads both, which is what a person
      looking at the page does. */
   const pane = el("picker").innerHTML || "";
+  const panelEl = el("cc-panel");
+  const panel = panelEl.hidden ? "" : (panelEl.innerHTML || "");
   const col = el("colA").innerHTML || "";
   const inline = col.includes('class="inlinepick"')
     ? col.slice(col.indexOf('class="inlinepick"')) : "";
-  const picker = pane + inline;
+  const picker = panel + pane + inline;
   const sel = JSON.parse(g("JSON.stringify(sel)") || "null");
   let outcome = "silent";
-  if (pane.includes('class="fixedpanel"')) outcome = "fixed";
-  else if (inline.includes('class="sortrow"') || inline.includes('class="pi'))
+  if (picker.includes('class="fixedpanel"')) outcome = "fixed";
+  else if (picker.includes('class="sortrow"') || picker.includes('class="pi'))
     outcome = "picker";
   return { outcome, picker, sel, threw };
 }

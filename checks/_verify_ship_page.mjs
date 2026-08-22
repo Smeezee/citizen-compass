@@ -91,6 +91,7 @@ function el(id) {
       setAttribute(a, v) { this[a] = v; },
       get childElementCount() { return 0; },
       get children() { return []; },
+      clientWidth: 960, clientHeight: 540,
     });
   }
   return els.get(id);
@@ -106,6 +107,13 @@ function el(id) {
    Slicing to the end of the column is safe: `data-part` appears only inside
    the picker's own rows, never on a slot row. */
 function pickerNow() {
+  /* THREE HOMES SINCE B3. A hull-mounted port's picker is a panel over the
+     model stage, an internal component's is inline under its row, and the pane
+     is the fallback neither takes. Reading one and calling the rest empty is
+     the mistake B0 exists to prevent. */
+  const panel = el("cc-panel");
+  if (!panel.hidden && /data-part=|class="fixedpanel"/.test(panel.innerHTML || ""))
+    return panel.innerHTML;
   const pane = el("picker").innerHTML || "";
   if (/data-part=|class="fixedpanel"/.test(pane)) return pane;
   const col = el("colA").innerHTML || "";
@@ -1513,11 +1521,13 @@ console.log("\n--- P5: a marker CLICK opens the picker for THAT port ---");
   record(el("colA").hidden === false,
     "the component list is still on screen with the picker open - it is not "
     + "taken over any more");
-  record(el("colA").innerHTML.includes('class="inlinepick"'),
-    "and the picker opened inside that column, under its own row");
+  /* B3: THIS PORT HAS A MARKER, so its picker is a panel over the stage rather
+     than an inline row - which is the whole point of the item. What P5 cared
+     about survives and is asserted: the list is still there behind it. */
+  record(el("cc-panel").hidden === false,
+    "and the picker opened as a panel over the model, where the marker is");
   vm.runInContext(`sel=null;renderAll();`, sandbox);
-  record(el("colA").hidden === false
-    && !el("colA").innerHTML.includes('class="inlinepick"'),
+  record(el("colA").hidden === false && el("cc-panel").hidden === true,
     "and closing it leaves the list exactly where it was");
 }
 
