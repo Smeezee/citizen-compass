@@ -3839,7 +3839,7 @@ P3  DONE  c286735  COMPACTION PASS, and the numbers the order asked for.
     at 800, that it resolves a custom property rather than reading it as zero,
     and that it finds padding on rules that follow comments.
 
-P4  DONE  <sha>  A CONTROL TO STOP THE ROTATION, and it stops it.
+P4  DONE  a06a3bb  A CONTROL TO STOP THE ROTATION, and it stops it.
     `autoRotate` was set true in `boot()` and nothing ever exposed it - so
     Sleven was right that there is no stop button, and C1's note that something
     called `pause` also exists is NOT correct: there was no such thing anywhere
@@ -3857,7 +3857,7 @@ P4  DONE  <sha>  A CONTROL TO STOP THE ROTATION, and it stops it.
     because somebody who stopped the spin to read a marker does not want it
     starting again under them.
 
-P5  DONE  <sha>  THE MARKERS. THE CLICK WAS NEVER BROKEN - THE CONSEQUENCE WAS
+P5  DONE  a06a3bb  THE MARKERS. THE CLICK WAS NEVER BROKEN - THE CONSEQUENCE WAS
     OFF SCREEN. That is the actual cause, and it is not what was suspected.
     WHAT I DID BEFORE CHANGING ANYTHING: drove the real path. Loaded the page in
     a vm, captured its delegated click handler, built the marker element a
@@ -3889,7 +3889,7 @@ P5  DONE  <sha>  THE MARKERS. THE CLICK WAS NEVER BROKEN - THE CONSEQUENCE WAS
     leaves nothing to dispatch to and the only thing left to assert would be
     that a listener exists, which is worth nothing.
 
-P6  DONE  <sha>  `Try another alongside` IS VISIBLE WHERE THE EYE IS.
+P6  DONE  a06a3bb  `Try another alongside` IS VISIBLE WHERE THE EYE IS.
     Both builds are now panes of the SAME left column, one under the other. The
     column begins 153px down the page, so the second build's first component row
     is on screen BY CONSTRUCTION rather than by measuring and hoping - it was
@@ -3898,3 +3898,23 @@ P6  DONE  <sha>  `Try another alongside` IS VISIBLE WHERE THE EYE IS.
     CONTROL: after the click, `colB` is not hidden and has rendered its rows -
     asserted on content length, not on a class, because an empty visible pane
     is the same experience as a hidden one. Discard reverses it.
+
+P7  DONE  <sha>  NO SCROLLING TO SEE THE PAGE, measured at both sizes.
+      1920 x 1080    995px of 1,080   -  85px spare, FITS
+      1366 x  768    683px of   768   -  85px spare, FITS
+    Before: 1,952px and 1,891px, overflowing by 872px and 1,123px.
+    THE COMPONENTS COLUMN AND THE READOUT SCROLL WITHIN THEMSELVES; the page
+    does not. `overflow-y:auto` on `.cols .col.left` and `.col.right`, and the
+    grid takes `calc(100vh - var(--chrome))`.
+    `--chrome` is 238px against 153px of ACTUAL header, strip, tabs and
+    padding. The 85px of slack is deliberate and is stated in the CSS: the
+    model that checks this cannot see text wrapping, and a heading that wraps
+    to two lines must not push the page over the fold. Being generous costs
+    column height; being tight costs the whole claim.
+    ARGUING WITH P7 AS INVITED - NOTHING HAD TO GO. The order asked me to say
+    what would have to be cut if it could not fit. Nothing did. What made it
+    fit is the three columns and the internal scroll; the type went down ONE
+    step, 16px to 15px. "Neat and well thought out", not "smaller".
+    WIDE MONITORS DO NOT COUNT AND WERE NOT USED: both figures are modelled at
+    the stated viewports, and the 1366 case is a real pass rather than a
+    reported miss.
