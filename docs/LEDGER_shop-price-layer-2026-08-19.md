@@ -4544,3 +4544,48 @@ B6  DONE  cb300c8  PLACED AGAINST THIS HULL'S MEASURED EXTREMITY, NOT AGAINST A
     markers for reasons that have nothing to do with this item. The deployed
     markers are therefore UNCHANGED by B5 and B6, and B9's census reflects
     that.
+
+B7  DONE  b1bb24b  THREE FIGURES, AND ONLY THE ONES A SHIP ACTUALLY HAS.
+    Measured populations, and they match the order's within one count:
+      214 pilot guns only      the old readout was the whole truth
+       61 pilot AND turrets    it was half the truth
+       11 turrets only         it said 0 - actively wrong
+      206 carry missiles       counted nowhere at all
+    (The order recorded 208 missile carriers. Measured here, counting only
+    records that have slots, it is 206. Reported rather than rounded to the
+    number that was expected.)
+    PILOT UNTOUCHED. The IsPilotSlaveable outermost-lock figure agrees with
+    CIG's own on 275 of 275, and B7 does not go near it. A fleet-wide
+    assertion confirms every one of 316 hulls still counts exactly its
+    non-turret guns.
+    TURRET is what gunners add, labelled as needing crew, shown only where
+    there are turrets. The exclusion was always right; what was wrong is that
+    the excluded half was then DISCARDED. 72 hulls now report turret DPS that
+    was previously counted nowhere.
+    MISSILES COULD NOT BE COUNTED AT ALL - and not by anyone's decision. A
+    missile record held its name, size and mass and nothing else, so there was
+    nothing to add up. The generator now emits `dmgt` from the snapshot's
+    Missile.DamageTotal, plus the channel split. All 57 missile parts carry it.
+    IT IS A ONE-SHOT TOTAL, named differently from `dps` so the two cannot be
+    summed by accident, and the control asserts the DPS figure is the pilot's
+    guns and NOTHING else.
+    NO TURRETS MEANS NO TURRET ROW - an absence, not a zero. A zero is a claim
+    and on that hull it is the wrong one.
+    AND ON THE 11 TURRET-ONLY SHIPS the pilot figure is 0 and TRUE, so it is
+    said in words - "every gun on this hull is fired by a gunner, not by the
+    pilot" - rather than shown as a bare 0, which reads as a broken stat
+    rather than as a fact about the ship.
+    CONTROL  checks/_verify_damage_readout.mjs, 23 assertions, all four
+    populations driven BY NAME: Avenger Stalker (pilot only), Idris-M (both),
+    Hammerhead (turret only, and it is one of the eleven), Avenger again for
+    missiles at 6,280 payload.
+    RULE 12. --mutate-merge folds turret DPS back into the pilot figure and
+    puts the Idris-M at 28,283 - the Perseus-at-16,596 mistake reproduced on
+    demand. --mutate-zero renders the turret row on every ship reading 0, which
+    the pilot-only negative half catches. Both exit non-zero, as does
+    --self-test.
+    ONE ASSERTION FAILED AGAINST A PAGE THAT WAS RIGHT: the sentence wraps in
+    the source so the rendered HTML carries a newline mid-sentence, and a
+    literal match missed it. Made whitespace-tolerant - the page was not
+    reflowed to suit the test, which is the tempting direction and the wrong
+    one.
