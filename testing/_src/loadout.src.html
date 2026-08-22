@@ -211,6 +211,15 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .stat.explained:focus-within .why{display:block}
 .relay:focus .where{color:var(--accent2)}
 
+/* N9: said under the model, where somebody looking at the dots will read it.
+   Not a tooltip and not a footnote - the order says do not bury it. */
+.markernote{margin-top:9px;padding:10px 13px;background:#1A1206;
+ border:1px solid #4A3410;border-radius:8px;font-size:13px;line-height:1.5;
+ color:#E8C9A0}
+.markernote:empty{display:none}
+.markernote code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;
+ font-size:12px}
+
 /* N7: the fixed ports, folded. Closed by default and labelled with its count,
    so somebody can see there is something there without it being in the way. */
 .fixed-group{border-top:1px solid var(--line)}
@@ -333,6 +342,9 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
     <div id="cc-marks"></div>
     <div id="cc-hint">drag to rotate &middot; scroll to zoom</div>
   </div>
+  <!-- N9: THE DOT POSITIONS ARE NOT MEASURED, AND THE PAGE SAYS SO.
+       Not buried, not softened, and not in a tooltip somebody has to find. -->
+  <div class="markernote" id="markernote"></div>
 </div>
 
 <!-- ADDENDUM §1: QUIET TABS. Plain text labels, no icons, no colour, nothing
@@ -1363,9 +1375,13 @@ function renderShipState(){
      still works and everything below is real - say so plainly rather than
      leaving somebody wondering why this ship has no dots on it. */
   if(sh.slots.length && modelUrl(shipId) && !markersFor(shipId).length){
-    h+=`<p class="gap">No mount positions have been measured for this hull, so
-        there are no markers on the model. Every port is still listed below and
-        every one can still be changed — the model just cannot point at them.</p>`;
+    /* N9: THE OLD WORDING SAID "no mount positions have been MEASURED", which
+       implied that where markers DO appear, they were. They were not - see
+       renderMarkerNote(). The honest sentence is that this hull has no marker
+       placement at all. */
+    h+=`<p class="gap">There is no marker placement for this hull, so the model
+        has no dots on it. Every port is still listed below and every one can
+        still be changed — the model just cannot point at them.</p>`;
   }
   el.innerHTML=h;
   el.style.display=h?"":"none";
@@ -1547,6 +1563,48 @@ function selectPort(slot, which){
   return true;
 }
 
+/* N9: THE PAGE WAS MAKING A FALSE CLAIM, AND THIS IS THE CORRECTION.
+   It said: "Slot structure measured from this hull's own model geometry and
+   the game's mount data. Nothing here is estimated."
+
+   THE SLOT STRUCTURE IS REAL. Count, size, type and what is fitted all come
+   straight out of the game files and none of it is guessed.
+
+   THE DOT POSITIONS ARE NOT. `place_fleet.py` reads the mount's NAME -
+   `hardpoint_weapon_wing_left` - looks "wing" up in a table of target zones,
+   places a point in that zone of the hull's bounding box, snaps it to the
+   nearest real vertex, and spreads collisions apart. 118 markers across 17
+   hulls were crowded and pushed.
+
+   AND IT CANNOT CURRENTLY BE BETTER. The exported models are ONE NODE with
+   everything welded into a single mesh - no hardpoint nodes, no empties. The
+   real positions are not on disk to read. This is not laziness; it is the only
+   thing possible with these exports.
+
+   TWO THINGS ARE MEASURED and stay described that way: which axis is the
+   ship's length, width and height - checked against CIG's published
+   dimensions, with 7 hulls SKIPPED rather than placed in a frame nobody
+   verified - and which end is the nose. */
+function renderMarkerNote(){
+  const el=$('markernote'); if(!el) return;
+  const n=markersFor(shipId).length;
+  if(!n){ el.innerHTML=""; return; }
+  el.innerHTML=`<b>About the ${n} dot${n===1?"":"s"} on this model.</b>
+    Where they sit is worked out from each mount's <b>name</b> &mdash; a port
+    called <code>hardpoint_weapon_wing_left</code> is placed on a wing &mdash;
+    and then snapped to the nearest point on the hull.
+    <b>They are not measured from the model.</b> The exported models are a
+    single welded mesh with no mount positions in them, so there is nothing to
+    measure; this is the closest honest thing available, not a measurement.
+    <br>
+    What <em>is</em> measured: which axis is this ship's length, width and
+    height &mdash; checked against CIG's published dimensions, and a hull whose
+    proportions disagree is left without markers rather than placed in a frame
+    nobody verified &mdash; and which end is the nose.
+    <b>What each port IS</b> &mdash; its size, its type and what is fitted
+    &mdash; comes from the game files and is not estimated at all.`;
+}
+
 /* ---------- ADDENDUM §1: TABBED LAYERS, SMALL BY DEFAULT ----------
    The default view is the model, the components and the readout. Nothing else.
    That is what somebody came for. Everything else sits behind plain labels.
@@ -1677,7 +1735,7 @@ function renderAll(){
   renderChrome();
   renderStats();renderCol("A");if(twoUp)renderCol("B");renderPicker();renderBuy();
   renderMatchup();renderLiveries();renderShipState();renderSpecs();
-  renderTabs();showModel();renderMarkers();renderRsi();
+  renderTabs();showModel();renderMarkers();renderMarkerNote();renderRsi();
   renderAcq();renderRelated();renderRecord();
   $('shipname').textContent=shipLabel(shipId);
   writeHash();

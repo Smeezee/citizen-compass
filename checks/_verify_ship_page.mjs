@@ -1268,6 +1268,52 @@ console.log("\n--- N8: the grouping is Editable, never a list of types ---");
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
 }
 
+console.log("\n--- N9: the page does not claim a marker position is measured ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+  const note = el("markernote").innerHTML;
+  record(note.length > 200, "a hull with markers carries the note", `${note.length} chars`);
+  record(/not measured from the model/i.test(note),
+    "and says PLAINLY that the positions are not measured");
+  record(/name/i.test(note) && /snapped/i.test(note),
+    "and says what they ARE - the mount's name, snapped to the hull");
+  record(/single welded mesh|nothing to measure/i.test(note),
+    "and why it cannot currently be better");
+
+  /* THE TWO THINGS THAT ARE MEASURED STAY DESCRIBED THAT WAY. Correcting an
+     overclaim into a blanket disclaimer would be a second false statement in
+     the other direction. */
+  record(/is<\/em> measured|is measured/i.test(note) && /nose/i.test(note),
+    "and still says which axis and which end ARE measured");
+  record(/not estimated/.test(note) && /size|type|fitted/i.test(note),
+    "and that what each port IS remains unestimated");
+
+  /* THE OLD SENTENCE MUST BE GONE FROM EVERYWHERE, including index. */
+  const stripped = html.replace(/<!--[\s\S]*?-->/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
+  record(!/Nothing here is estimated/.test(stripped),
+    "the old \"Nothing here is estimated\" claim is gone from the ship page");
+  record(!/measured from this hull/i.test(stripped),
+    "and so is \"measured from this hull's own model geometry\"");
+  record(!/positions have been measured/i.test(stripped),
+    "and the wording that IMPLIED measurement where markers do appear");
+  notes.push("N9: the marker note states the positions come from the mount's " +
+    "name and are not measured, says why that cannot currently be better, and " +
+    "keeps the axis and nose described as measured because they are");
+
+  /* A hull with NO markers says something different and equally honest. */
+  const MARKS2 = g("MARKS"), MODELS2 = g("MODELS");
+  const noMark = Object.keys(SHIPS).find((k) =>
+    SHIPS[k].slots.length && MODELS2[k] && !(MARKS2[k] || []).length);
+  if (noMark) {
+    vm.runInContext(`shipId=${JSON.stringify(noMark)};reset();resetView();renderAll();`, sandbox);
+    record(el("markernote").innerHTML === "",
+      "a hull with no markers carries no note about markers");
+    record(/no marker placement for this hull/i.test(el("shipstate").innerHTML),
+      "and says it has no marker placement, rather than that none was measured");
+  }
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+}
+
 /* ---------------------------------------------- rule 8: never touch these */
 console.log("\n--- rule 8: the trademark and Fan Kit text is untouched ---");
 record(/Cloud Imperium Rights LLC/.test(html), "the trademark footer is intact");

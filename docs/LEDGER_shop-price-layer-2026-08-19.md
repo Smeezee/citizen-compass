@@ -3529,7 +3529,7 @@ N11 DONE  9581ff7  BACK TO STOCK IS ONE VISIBLE CLICK, never in a menu.
     And the restore itself goes through markChanges, so undoing a swap
     announces what moved back exactly as the swap announced what moved.
 
-N7  DONE  <sha>  FIXED PORTS FOLD AWAY, and they still count.
+N7  DONE  badc40a  FIXED PORTS FOLD AWAY, and they still count.
     One closed `<details>` per column, labelled with its count -
     `Fixed · not swappable in game (36)` on the driving hull. A real
     `<details>/<summary>`, not a scripted toggle: it opens by keyboard as well
@@ -3545,7 +3545,7 @@ N7  DONE  <sha>  FIXED PORTS FOLD AWAY, and they still count.
     RESET when they change ship - it opens closed by default and that is the
     state N7 asks for.
 
-N8  DONE  <sha>  THE GROUPING IS `Editable`. THERE IS NO LIST OF TYPES.
+N8  DONE  badc40a  THE GROUPING IS `Editable`. THERE IS NO LIST OF TYPES.
     The split is `sh.slots.filter(x=>!swappable(x))`, and `swappable` is
     `!!s.fit`, which the generator sets from the port's own `Editable` flag.
     Asserted three ways: no hardcoded type list exists in the page, the split
@@ -3561,3 +3561,37 @@ N8  DONE  <sha>  THE GROUPING IS `Editable`. THERE IS NO LIST OF TYPES.
     changes, we already have a foundation built for it." The day CIG makes fuel
     tanks swappable, those 509 ports leave the collapsed group on the next data
     build, with nobody editing anything.
+
+N9  DONE  <sha>  THE FALSE CLAIM IS GONE, AND WHAT REPLACED IT IS SPECIFIC.
+    The page said: "Slot structure is measured from this hull's own model
+    geometry and read from the game's mount data. NOTHING HERE IS ESTIMATED."
+    The first half was true and the last four words were not.
+    CONFIRMED FROM THE SOURCE rather than taken from the order: `place_fleet.py`
+    reads the mount's NAME, looks a token up in a table of target zones, places
+    a point in that zone of the bounding box, snaps to the nearest real hull
+    vertex, and spreads collisions apart. Its own docstring says so - "a mount's
+    NAME says where it sits". The placement report records 167 hulls placed, 7
+    SKIPPED, and 118 crowded markers pushed across 17 hulls.
+    THE PAGE NOW SAYS IT UNDER THE MODEL, where somebody looking at the dots
+    will read it - not a tooltip, not a footnote:
+      where the dots sit is worked out from each mount's NAME and snapped to
+      the hull; THEY ARE NOT MEASURED FROM THE MODEL; the exports are a single
+      welded mesh with no mount positions in them, so there is nothing to
+      measure and this is the closest honest thing available.
+    AND THE TWO THINGS THAT ARE MEASURED STAY DESCRIBED THAT WAY, because
+    correcting an overclaim into a blanket disclaimer is a second false
+    statement pointing the other way: which axis is length/width/height,
+    checked against CIG's published dimensions with 7 hulls left unmarked
+    rather than placed in a frame nobody verified, and which end is the nose.
+    What each port IS - size, type, what is fitted - is still stated as
+    unestimated, because it is.
+    A SECOND, QUIETER FALSE CLAIM FIXED IN THE SAME PASS: the ship page said
+    "No mount positions have been MEASURED for this hull" on hulls without
+    markers - which implies that where markers DO appear, they were. Now: "there
+    is no marker placement for this hull".
+    CONTROL: 11 assertions. Both old sentences are asserted ABSENT from the
+    page with comments stripped first, and the note is asserted to contain the
+    plain statement, the reason, and the two genuinely-measured facts.
+    NOT ATTEMPTED, per the order: no re-export with hardpoints preserved and no
+    hand-placing in Blender. Sleven has not decided which, and it turns on
+    whether the extraction tool can keep hardpoint data.
