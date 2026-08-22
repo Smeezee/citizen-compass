@@ -3784,7 +3784,7 @@ E-N3 DONE  b653aef  SWEEP + DEPLOY + COUNTED ON THE SERVED PAGE.
     BEFORE THIS FIX THAT FIGURE WAS 229, measured the same way by restoring the
     original function - not estimated, reproduced.
 
-P1  DONE  <sha>  THREE COLUMNS. Components left, model centre, readout right,
+P1  DONE  c286735  THREE COLUMNS. Components left, model centre, readout right,
     tabs below. Sleven's sketch, built.
     THE MECHANISM THAT MAKES IT FIT IS ONE LINE, and it is worth naming because
     it is not "make everything smaller": the grid takes a height derived from
@@ -3796,13 +3796,13 @@ P1  DONE  <sha>  THREE COLUMNS. Components left, model centre, readout right,
     and the picker replacing the list is what makes a click's consequence land
     where the eye already is (see P5).
 
-P2  DONE  <sha>  THE VIEWER IS BOUNDED. `#cc-stage` was `height:min(52vh,460px)`
+P2  DONE  c286735  THE VIEWER IS BOUNDED. `#cc-stage` was `height:min(52vh,460px)`
     at full page width - Sleven: "it runs screen to screen on each side". It is
     now the centre grid column, `minmax(0,1fr)` between a 22vw left and a 20vw
     right. At 1920 that is about 1,100px of 1,920 - under 60% - and the columns
     take the rest instead of empty space taking it.
 
-P3  DONE  <sha>  COMPACTION PASS, and the numbers the order asked for.
+P3  DONE  c286735  COMPACTION PASS, and the numbers the order asked for.
     TOTAL DOCUMENT HEIGHT, modelled from the page's own CSS:
                        BEFORE      AFTER
       1920 x 1080      1,952px      995px    (viewport 1,080 - 85px spare)
@@ -3838,3 +3838,63 @@ P3  DONE  <sha>  COMPACTION PASS, and the numbers the order asked for.
     800, that it reads the three-column rule at 1920 and the single-column rule
     at 800, that it resolves a custom property rather than reading it as zero,
     and that it finds padding on rules that follow comments.
+
+P4  DONE  <sha>  A CONTROL TO STOP THE ROTATION, and it stops it.
+    `autoRotate` was set true in `boot()` and nothing ever exposed it - so
+    Sleven was right that there is no stop button, and C1's note that something
+    called `pause` also exists is NOT correct: there was no such thing anywhere
+    in the page or the viewer. Only `autoRotate`.
+    The viewer gained `spinning()` and `setSpin()`, both reading and writing
+    `controls.autoRotate` DIRECTLY rather than keeping a copy - a second copy of
+    a boolean is a second source of truth about what the ship is doing. `boot()`
+    honours a preference set before the model finished loading, because
+    somebody who hits Stop while it is still streaming means it.
+    The control is a real `<button>` on the canvas, so it is reachable by
+    keyboard, it carries `aria-pressed`, and it says what it will do NEXT
+    ("Stop spin" / "Start spin") rather than what state it is in.
+    CONTROL: the ROTATION VALUE is asserted, not the button - `_view.spinning()`
+    true, toggle, false, toggle, true. And it persists across a change of ship,
+    because somebody who stopped the spin to read a marker does not want it
+    starting again under them.
+
+P5  DONE  <sha>  THE MARKERS. THE CLICK WAS NEVER BROKEN - THE CONSEQUENCE WAS
+    OFF SCREEN. That is the actual cause, and it is not what was suspected.
+    WHAT I DID BEFORE CHANGING ANYTHING: drove the real path. Loaded the page in
+    a vm, captured its delegated click handler, built the marker element a
+    browser would hand it, and dispatched. `sel` went to the right slot and the
+    picker rendered 4,919 characters. Every time. There is no raycasting in this
+    page at all - the markers are DOM `<button>` elements, not sprites - so
+    C1's suspicion about the model rotating under a raycast could not apply.
+    THE REAL CAUSE: the picker rendered roughly 1,050px down a 1,952px page, on
+    a 1,080px screen. Sleven clicked a marker, the page updated correctly, and
+    the part that changed was below the fold. A consequence you cannot see has
+    not happened, as far as the person clicking is concerned.
+    IT IS THE SAME DEFECT AS P6, which describes it exactly for a different
+    control: "all it does is kinda refresh the bottom menu... let me scroll down
+    a little bit". One defect - the page was taller than the screen - reported
+    twice as two.
+    SO THE FIX IS P1, NOT A HANDLER. The picker now takes the left column,
+    beside the model, replacing the component list with a way back.
+    ROTATION IS STILL A CONTRIBUTING FACTOR AND I WILL NOT PRETEND OTHERWISE:
+    the markers are 19px and move continuously, and a browser only fires
+    `click` when mousedown and mouseup land on the same element. If the button
+    slides out from under the cursor between the two, no click is generated at
+    all. I CANNOT TEST THAT WITHOUT A BROWSER and I am not going to claim it as
+    proven either way. P4's stop control is what makes it a non-issue.
+    CONTROL, and it is the erratum's lesson applied: a REAL CLICK is dispatched
+    through the page's own delegated handler, and the assertion is that the
+    picker opened for THAT PortId and no other - run twice, once with rotation
+    running and once with it stopped. The harness now CAPTURES document click
+    handlers instead of swallowing them, because a no-op `addEventListener`
+    leaves nothing to dispatch to and the only thing left to assert would be
+    that a listener exists, which is worth nothing.
+
+P6  DONE  <sha>  `Try another alongside` IS VISIBLE WHERE THE EYE IS.
+    Both builds are now panes of the SAME left column, one under the other. The
+    column begins 153px down the page, so the second build's first component row
+    is on screen BY CONSTRUCTION rather than by measuring and hoping - it was
+    previously below a readout block and a 460px stage on a page that ran to
+    1,952px.
+    CONTROL: after the click, `colB` is not hidden and has rendered its rows -
+    asserted on content length, not on a class, because an empty visible pane
+    is the same experience as a hidden one. Discard reverses it.

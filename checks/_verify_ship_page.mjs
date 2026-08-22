@@ -97,6 +97,7 @@ function el(id) {
 }
 
 let currentHash = "";
+const clickHandlers = [];
 const sandbox = {
   console, JSON, Math, Date, Number, String, Array, Object, Map, Set, RegExp,
   Error, isNaN, parseInt, parseFloat, encodeURIComponent, decodeURIComponent,
@@ -107,7 +108,11 @@ const sandbox = {
   navigator: {},
   document: {
     getElementById: (id) => el(id),
-    addEventListener() {},
+    /* CAPTURED, NOT SWALLOWED. P5 has to dispatch a real click through the
+       page's own delegated handler; a no-op addEventListener would leave
+       nothing to dispatch to, and the only thing left to assert would be that
+       the listener exists - which is worth nothing. */
+    addEventListener: (t, fn) => { if (t === "click") clickHandlers.push(fn); },
     querySelector: () => null,
   },
 };
@@ -1373,6 +1378,134 @@ console.log("\n--- N4 (behavioural): one model load per ship, none per tab ---")
     `two ships, three showModel() calls and three tab switches`);
 
   vm.runInContext(`_view=null;_modelFor=null;shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+}
+
+console.log("\n--- P4: the rotation can be stopped, and stopping it stops it ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+  record(/id="cc-spin"/.test(html), "a stop control exists on the canvas");
+  record(/<button[^>]*id="cc-spin"/.test(html),
+    "and it is a real <button>, so it is reachable by keyboard");
+  record(/aria-pressed/.test(html), "and reports its state to a screen reader");
+
+  /* ASSERT THE ROTATION VALUE, NOT THE PRESENCE OF A BUTTON. The order says so
+     explicitly, and it is the erratum's lesson: a control that exists and does
+     nothing is what "I don't see a stop button anywhere" turns into. */
+  vm.runInContext(`_view={_s:true,boot(){},start(){},size(){},cancel(){},clear(){},
+    stop(){},current:{},unitScale(){return 1;},project(){return null;},
+    spinning(){return this._s;},setSpin(v){this._s=!!v;return this._s;},
+    load(){return 1;}};spinOn=true;applySpin();`, sandbox);
+  record(g("_view.spinning()") === true, "the viewer starts rotating");
+  vm.runInContext(`toggleSpin();`, sandbox);
+  record(g("_view.spinning()") === false,
+    "and toggling the control actually HALTS it - the viewer's own rotation "
+    + "value, not a class on a button");
+  record(el("cc-spin").textContent === "Start spin",
+    "the control says what it will do next", el("cc-spin").textContent);
+  vm.runInContext(`toggleSpin();`, sandbox);
+  record(g("_view.spinning()") === true, "and toggling back resumes it");
+
+  /* IT PERSISTS WHILE THEY ARE ON THE PAGE. Somebody who stopped the spin to
+     read a marker does not want it starting again when they change ship. */
+  vm.runInContext(`toggleSpin();`, sandbox);
+  const otherShip = Object.keys(SHIPS).find(k => k !== shipKey && g("MODELS")[k]);
+  vm.runInContext(`shipId=${JSON.stringify(otherShip)};reset();_modelFor=null;showModel();`, sandbox);
+  record(g("spinOn") === false && g("_view.wantSpin") === false,
+    "and a stopped ship stays stopped when the ship changes");
+  notes.push("P4: the stop control halts the viewer's own autoRotate, says " +
+    "what it will do next, and survives a change of ship");
+  vm.runInContext(`spinOn=true;shipId=${JSON.stringify(shipKey)};reset();resetView();_view=null;_modelFor=null;renderAll();`, sandbox);
+}
+
+console.log("\n--- P5: a marker CLICK opens the picker for THAT port ---");
+{
+  /* THE ERRATUM'S LESSON, APPLIED. Asserting that a listener exists is
+     worthless - that is exactly what let every ship name point at RSI. So this
+     builds the marker, projects it to a screen position, and DISPATCHES A REAL
+     CLICK through the page's own delegated handler.
+     `handlers.click` is captured because the harness's document records
+     addEventListener rather than swallowing it. */
+  const MARKS = g("MARKS");
+  const markShip = Object.keys(MARKS).find(k => SHIPS[k] &&
+    MARKS[k].some(m => { const s = SHIPS[k].slots.find(x => x.p === m[0]); return s && s.fit; }));
+  record(!!markShip, "found a hull with a marker on a swappable port");
+  const mark = MARKS[markShip].find(m => {
+    const s = SHIPS[markShip].slots.find(x => x.p === m[0]); return s && s.fit; });
+  const slot = SHIPS[markShip].slots.find(x => x.p === mark[0]);
+
+  const clickMarker = (spinning) => {
+    vm.runInContext(
+      `shipId=${JSON.stringify(markShip)};reset();resetView();` +
+      `spinOn=${spinning};` +
+      `_view={_s:${spinning},boot(){},start(){},size(){},cancel(){},clear(){},stop(){},` +
+      `current:{},unitScale(){return 1;},project(){return{x:640,y:360,depth:0};},` +
+      `spinning(){return this._s;},setSpin(v){this._s=!!v;return this._s;},` +
+      `load(){return 1;}};_modelFor=shipId;sel=null;renderAll();`, sandbox);
+    const box = el("cc-marks").innerHTML;
+    if (!box.includes(`data-port="${mark[0]}"`)) return { rendered: false };
+    /* The element a browser would hand the handler for a click at that point. */
+    const btn = {
+      tagName: "BUTTON", dataset: { port: mark[0] },
+      closest: (s) => (s === "#cc-marks button[data-port]" ? btn : null),
+    };
+    let threw = null;
+    for (const fn of clickHandlers) {
+      try { fn({ target: btn, preventDefault() {} }); } catch (e) { threw = e.message; }
+    }
+    return { rendered: true, threw, sel: JSON.parse(g("JSON.stringify(sel)")),
+             picker: el("picker").innerHTML };
+  };
+
+  for (const spinning of [true, false]) {
+    const r = clickMarker(spinning);
+    const what = spinning ? "with rotation RUNNING" : "with rotation STOPPED";
+    record(r.rendered, `the marker renders ${what}`);
+    record(!r.threw, `and the click handler does not throw ${what}`, r.threw || "");
+    record(r.sel && r.sel.slot === slot.id,
+      `clicking it selects port ${slot.id} and no other, ${what}`,
+      JSON.stringify(r.sel));
+    record(r.picker && r.picker.length > 400,
+      `and the picker for that port is rendered ${what}`,
+      `${(r.picker || "").length} chars`);
+  }
+  notes.push(`P5: a dispatched click on the marker for PortId ${mark[0]} on ` +
+    `${SHIPS[markShip].n} selects slot ${slot.id} and renders its picker, ` +
+    `both with rotation running and with it stopped`);
+
+  /* AND THE CONSEQUENCE IS WHERE THE EYE IS. The click was never broken; the
+     picker rendered ~1,050px down a 1,952px page. It now replaces the list in
+     the LEFT COLUMN, which is on screen. */
+  record(el("picker").hidden === false && el("colA").hidden === true,
+    "the picker takes the left column, which is beside the model rather than "
+    + "a thousand pixels below it");
+  vm.runInContext(`sel=null;renderAll();`, sandbox);
+  record(el("picker").hidden === true && el("colA").hidden === false,
+    "and going back restores the component list in the same place");
+}
+
+console.log("\n--- P6: the second build appears where the eye already is ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+  record(el("colB").hidden === true, "there is one build to start with");
+  vm.runInContext(`$('addB').onclick();`, sandbox);
+  record(g("twoUp") === true, "the button adds a second build");
+  record(el("colB").hidden === false,
+    "and its column is visible immediately");
+  record(el("colB").innerHTML.length > 400,
+    "with its component rows rendered, not empty",
+    `${el("colB").innerHTML.length} chars`);
+  /* WITHIN THE VIEWPORT. Both builds live in the LEFT COLUMN, which starts
+     153px down a 1,080px screen - so the second build's first row is on screen
+     by construction rather than by hoping. It was previously below a readout
+     block and a 460px stage. */
+  record(/class="colpane"/.test(html) && /id="colB"/.test(html),
+    "both builds are panes of the same column, so the second cannot land "
+    + "below the fold while the first is on screen");
+  vm.runInContext(`dropB();`, sandbox);
+  record(g("twoUp") === false && el("colB").hidden === true,
+    "and Discard removes it again");
+  notes.push("P6: the second build renders into the same left column as the " +
+    "first, which begins 153px down the page - not below a readout and a stage");
 }
 
 /* ---------------------------------------------- rule 8: never touch these */
