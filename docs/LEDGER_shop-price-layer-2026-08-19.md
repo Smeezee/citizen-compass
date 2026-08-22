@@ -3700,7 +3700,7 @@ E-N1 DONE  c7fa846  ERRATUM: EVERY SHIP NAME STILL OPENED RSI. N1 WAS NOT DONE
     observer and no text match survive, and that the data arrives before the
     records.
 
-E-N2 DONE  <sha>  §4 AUDIT: WHICH N CONTROLS DROVE SOMETHING, WHICH GREPPED.
+E-N2 DONE  b4e22d4  §4 AUDIT: WHICH N CONTROLS DROVE SOMETHING, WHICH GREPPED.
     246 assertions across the three control files, classified by whether the
     section RUNS page code and reads what comes out, or reads the source text.
       DRIVEN     208
@@ -3757,3 +3757,29 @@ E-N2 DONE  <sha>  §4 AUDIT: WHICH N CONTROLS DROVE SOMETHING, WHICH GREPPED.
     two WEAK-BUT-COVERED greps in shared_viewer sections 1 and 2. Both are
     backed by the negative half, which breaks the module and requires the ship
     page to fail. If that ever stops being true they should become behavioural.
+
+E-N3 DONE  <sha>  SWEEP + DEPLOY + COUNTED ON THE SERVED PAGE.
+    URL: https://citizencompasstesting.citizencompass-contact.workers.dev
+    Version ID 4cdc686b-2a5d-4d62-b7ea-d40bca62b73e. NOT the live site.
+    SWEEP: 44 controls discovered, 41 ok, 1 failed, 2 skipped, 0 NOT RUN.
+    The one failure is `_verify_g3_matcher_delta.py` reporting NOT PERFORMED
+    because CC_GEO_DIR is unset - pre-existing, unrelated, correctly refusing
+    to claim a pass. One control more than the last sweep: the new
+    `_verify_ship_name_route.mjs`, swept the day it landed because the runner
+    discovers from disk.
+    UPLOAD DIFF: ONE FILE, index.html - which is exactly and only what this
+    fix touched.
+    THE COUNT, TAKEN FROM THE SERVED PAGE by fetching it and running its own
+    `nameCellHtml()` over all 254 records:
+      221  point at the ship page
+       27  point at RSI
+        6  point nowhere
+      254  accounted for
+    THE ERRATUM ASKED FOR 33 AND THE HONEST ANSWER IS 27. 33 ships have no
+    ship page; 27 of them have a `pledge_url` and therefore an RSI cell, and
+    six have neither and render as plain text - CSV-FM, RAPTOR, Starlancer BLD,
+    F7C-M Super Hornet Heartseeker Mk I, Mustang Alpha Vindicator and Valkyrie
+    Liberator. 27 + 6 = 33. Reporting 33 would have been reporting the number
+    that was asked for rather than the one that is true.
+    BEFORE THIS FIX THAT FIGURE WAS 229, measured the same way by restoring the
+    original function - not estimated, reproduced.
