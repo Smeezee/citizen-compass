@@ -3257,7 +3257,7 @@ L17 SWEEP FINAL  837796d  45 controls discovered, 42 ok, 1 failed, 2 skipped,
     ANYTHING - the runner discovers checks/_verify_* from disk, which is why a
     control written today is in today's sweep.
 
-D1  DONE  <sha>  TESTING SITE DEPLOYED, and the standing rule that says to do it
+D1  DONE  3156e6b  TESTING SITE DEPLOYED, and the standing rule that says to do it
     without asking is now in ARCHITECTURE_DECISIONS.md.
     URL: https://citizencompasstesting.citizencompass-contact.workers.dev
     Version ID 9618dd8d-24fb-4eb6-8827-7cc5b648a43b. NOT the live site -
