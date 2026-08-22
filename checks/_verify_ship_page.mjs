@@ -1335,6 +1335,11 @@ console.log("\n--- N4 (behavioural): one model load per ship, none per tab ---")
   vm.runInContext(`__loads=[];_view={
       boot(){},start(){},size(){},cancel(){},clear(){},stop(){},
       current:{},unitScale(){return 1;},project(){return null;},
+      /* The stub mirrors the REAL Viewer interface. When cc_viewer.js gained
+         setSpin/spinning for P4, this did not, and the page threw on a method
+         the real viewer has - the stub was lying about the shape of the thing
+         it stands in for. */
+      spinning(){return this._s!==false;},setSpin(v){this._s=!!v;return this._s;},
       load(u){__loads.push(u);return 1;}
     };_modelFor=null;`, sandbox);
 

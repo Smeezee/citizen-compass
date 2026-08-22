@@ -3783,3 +3783,58 @@ E-N3 DONE  b653aef  SWEEP + DEPLOY + COUNTED ON THE SERVED PAGE.
     that was asked for rather than the one that is true.
     BEFORE THIS FIX THAT FIGURE WAS 229, measured the same way by restoring the
     original function - not estimated, reproduced.
+
+P1  DONE  <sha>  THREE COLUMNS. Components left, model centre, readout right,
+    tabs below. Sleven's sketch, built.
+    THE MECHANISM THAT MAKES IT FIT IS ONE LINE, and it is worth naming because
+    it is not "make everything smaller": the grid takes a height derived from
+    the viewport and EACH COLUMN SCROLLS INSIDE ITSELF. A hull with 57 ports
+    cannot be made short enough to fit a screen, so the list is given a BOX
+    rather than being allowed to set the height of the document.
+    The left column has two states - the component list, or the picker for one
+    port with a way back. Both at once needs width this layout does not have,
+    and the picker replacing the list is what makes a click's consequence land
+    where the eye already is (see P5).
+
+P2  DONE  <sha>  THE VIEWER IS BOUNDED. `#cc-stage` was `height:min(52vh,460px)`
+    at full page width - Sleven: "it runs screen to screen on each side". It is
+    now the centre grid column, `minmax(0,1fr)` between a 22vw left and a 20vw
+    right. At 1920 that is about 1,100px of 1,920 - under 60% - and the columns
+    take the rest instead of empty space taking it.
+
+P3  DONE  <sha>  COMPACTION PASS, and the numbers the order asked for.
+    TOTAL DOCUMENT HEIGHT, modelled from the page's own CSS:
+                       BEFORE      AFTER
+      1920 x 1080      1,952px      995px    (viewport 1,080 - 85px spare)
+      1366 x  768      1,891px      683px    (viewport   768 - 85px spare)
+    Before, the page overflowed 1080 by 872px. It now fits at both sizes.
+    18 rules tightened, each one matched and applied - stat tiles from 168px
+    minimum to 132px and 9px padding to 6px, budgets likewise, the acquisition
+    strip from a grid of cards to an inline flex row, body type 16px to 15px,
+    body padding 40px to 10px at the foot, tab strip padding 9px to 6px, slot
+    rows 7px to 5px, and the marker note from 13px/1.5 in a 76px block to
+    11.5px/1.4 capped at 78px with its own scroll.
+    NOTHING DECORATIVE COSTS A ROW: the `.outcome` panel lost its border,
+    background and 13px margin entirely - it is inside a column that already
+    has all three.
+    ARGUING WITH P7, WHICH THE ORDER INVITES: nothing had to be cut. The page
+    fits 1920x1080 with 85px spare and 1366x768 with 85px spare, and the type
+    went down one step (16px to 15px), not four. What made it fit is the
+    COLUMNS and the internal scroll, not shrinking - which is the difference
+    between "neat and well thought out" and "smaller".
+    THE MEASUREMENT IS A MODEL AND SAYS SO. There is no browser on this machine
+    (rule 7), so `checks/_verify_ship_page_fits.mjs` does arithmetic on the
+    page's own declared CSS. It cannot see text wrapping, so every figure is a
+    FLOOR - the real page is at least this tall, never shorter. That is the
+    right direction to be wrong in.
+    AND THE INSTRUMENT HAS ITS OWN CONTROL, because it earned one: while being
+    written it silently measured the wrong thing THREE TIMES - a selector
+    anchored so it never matched a rule following a comment, a selector
+    (`.cols .col`) that does not exist in the page, and the 820px MOBILE media
+    block winning every lookup so the model read a one-column layout while
+    claiming to measure the desktop one. Each produced a confident, plausible,
+    wrong number. It now applies media queries per viewport and asserts, before
+    reporting anything, that the sheet it reads at 1920 differs from the one at
+    800, that it reads the three-column rule at 1920 and the single-column rule
+    at 800, that it resolves a custom property rather than reading it as zero,
+    and that it finds padding on rules that follow comments.

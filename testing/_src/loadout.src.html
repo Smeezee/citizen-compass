@@ -9,10 +9,10 @@
  --good:#3FE3C4;--bad:#FF6B6B}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
- font:16px/1.5 "Segoe UI",system-ui,sans-serif;padding:0 16px 40px}
+ font:15px/1.45 "Segoe UI",system-ui,sans-serif;padding:0 12px 10px}
 a{color:var(--accent)}
-.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 0;
- border-bottom:1px solid var(--line);margin-bottom:13px}
+.top{display:flex;align-items:center;gap:11px;flex-wrap:wrap;padding:7px 0;
+ border-bottom:1px solid var(--line);margin-bottom:8px}
 .top h1{font-size:21px;margin:0}
 .top select{background:var(--panel2);color:var(--text);border:1px solid var(--line);
  border-radius:7px;padding:9px 12px;font:600 15px inherit}
@@ -33,35 +33,33 @@ a{color:var(--accent)}
 .btn.blue.on{background:var(--a);border-color:var(--a);color:#04182B}
 .btn.orange.on{background:var(--b);border-color:var(--b);color:#1A0E04}
 
-.outcome{background:var(--panel);border:1px solid var(--line);border-radius:11px;
- padding:13px 15px;margin-bottom:13px}
+.outcome{background:transparent;border:0;padding:9px 10px;margin:0}
 .outcome h2{font-size:13px;margin:0 0 10px;color:var(--accent);letter-spacing:.06em;
  text-transform:uppercase}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px}
-.stat{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:6px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .stat.stealth{border-color:rgba(0,201,167,.4)}
 .stat .k{font-size:11.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .stat.stealth .k{color:var(--accent2)}
 .stat .row{display:flex;align-items:baseline;gap:8px;margin-top:3px;flex-wrap:wrap}
-.va{font:800 19px/1 inherit;color:var(--a)}
-.vb{font:800 19px/1 inherit;color:var(--b)}
+.va{font:800 17px/1 inherit;color:var(--a)}
+.vb{font:800 17px/1 inherit;color:var(--b)}
 .vb.ghost{opacity:.55;font-style:italic}
 .d{font-size:12.5px;font-weight:700;padding:1px 6px;border-radius:4px}
 .d.up{background:rgba(63,227,196,.14);color:var(--good)}
 .d.down{background:rgba(255,107,107,.14);color:var(--bad)}
 .d.flat{background:rgba(147,167,182,.12);color:var(--muted)}
 .sub{font-size:11.5px;color:var(--muted);margin-top:2px}
-.budgets{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:10px}
-.bud{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.budgets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:6px}
+.bud{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
 .bud .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .bud .v{font:700 15px inherit;margin-top:2px}
 .bar{height:7px;background:#0A1524;border-radius:5px;overflow:hidden;margin-top:6px}
 .bar i{display:block;height:100%;background:var(--accent2);transition:width .18s}
 .bar i.over{background:var(--bad)}
 
-.wrap{display:grid;grid-template-columns:1fr 1fr 330px;gap:12px;align-items:start}
-@media(max-width:1250px){.wrap{grid-template-columns:1fr 1fr}.picker{grid-column:1/-1}}
-@media(max-width:820px){.wrap{grid-template-columns:1fr}}
+@media(max-width:1250px){}
+@media(max-width:820px){}
 .col{background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow:hidden}
 .col.a{border-top:3px solid var(--a)}.col.b{border-top:3px solid var(--b)}
 .colhead{display:flex;align-items:center;gap:9px;padding:10px 13px;background:var(--panel2);
@@ -71,7 +69,7 @@ a{color:var(--accent)}
 .colhead .cost{margin-left:auto;font:700 14px inherit;color:var(--accent2)}
 .grp h3{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
  margin:11px 13px 5px}
-.slot{display:flex;align-items:center;gap:9px;padding:7px 13px;border-top:1px solid #16283D;cursor:pointer}
+.slot{display:flex;align-items:center;gap:8px;padding:5px 10px;border-top:1px solid #16283D;cursor:pointer}
 .slot:hover{background:#122335}
 .slot.sel{background:rgba(255,107,0,.13);box-shadow:inset 3px 0 0 var(--accent)}
 .slot.fixed{opacity:.5;cursor:not-allowed}
@@ -89,8 +87,6 @@ a{color:var(--accent)}
  background:#16283D;color:var(--muted);margin-left:5px}
 .tag.st{background:rgba(0,201,167,.16);color:var(--accent2)}
 
-.picker{background:var(--panel);border:1px solid var(--line);border-radius:11px;
- position:sticky;top:10px;max-height:calc(100vh - 24px);display:flex;flex-direction:column}
 .picker .ph{padding:11px 13px;border-bottom:1px solid var(--line);background:var(--panel2)}
 .picker .ph b{display:block;font-size:15px}
 .picker .ph small{color:var(--muted);font-size:12.5px}
@@ -161,9 +157,11 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    somebody came for, so it sits above everything and stays mounted while the
    tabs change - which is the whole reason the layers are tabs and not
    sub-pages (addendum §1). */
-.stagewrap{margin-bottom:13px}
-#cc-stage{position:relative;height:min(52vh,460px);background:#0A1524;
- border:1px solid var(--line);border-radius:11px;overflow:hidden}
+/* P2: THE VIEWER IS BOUNDED. It used to run edge to edge - Sleven: "it runs
+   screen to screen on each side". The centre column caps its width; this caps
+   its height so the three columns agree on one. */
+#cc-stage{position:relative;height:100%;min-height:260px;background:#0A1524;
+ border:1px solid var(--line);border-radius:10px;overflow:hidden}
 #cc-canvas{width:100%;height:100%;display:block}
 #cc-empty{position:absolute;inset:0;display:flex;flex-direction:column;
  align-items:center;justify-content:center;gap:8px;text-align:center;
@@ -187,9 +185,9 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    marks the open one is a rule under it - anything louder competes with the
    ship, which is what the page is for. */
 .tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--line);
- margin-bottom:13px}
-.tabs a{color:var(--muted);text-decoration:none;font:600 14px inherit;
- padding:9px 13px;border-bottom:2px solid transparent;margin-bottom:-1px}
+ margin:8px 0 9px}
+.tabs a{color:var(--muted);text-decoration:none;font:600 13px inherit;
+ padding:6px 11px;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs a:hover{color:var(--text)}
 .tabs a.on{color:var(--text);border-bottom-color:var(--accent)}
 .tabpane{display:none}
@@ -211,11 +209,75 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .stat.explained:focus-within .why{display:block}
 .relay:focus .where{color:var(--accent2)}
 
+/* P4: the stop control, on the canvas where the spinning is. */
+#cc-spin{position:absolute;top:9px;right:9px;z-index:3;
+ background:rgba(7,13,22,.82);color:var(--text);border:1px solid var(--line);
+ border-radius:7px;padding:5px 10px;font:700 11.5px inherit;cursor:pointer}
+#cc-spin:hover{border-color:var(--accent2);color:var(--accent2)}
+#cc-spin:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+#cc-spin.off{border-color:var(--accent);color:var(--accent)}
+
+/* P6: the second build arrives in the SAME column, directly under the first,
+   so the effect of the button is where the eye already is. */
+.cols.two .col.left .colpane{border-bottom:1px solid var(--line)}
+.picker .ph .back{float:right;margin-left:8px}
+
+/* ==========================================================================
+   P1 - THREE COLUMNS. Components | model | readout.
+   P7 - AND THE PAGE DOES NOT SCROLL.
+
+   The mechanism is one line: the grid gets a height derived from the viewport,
+   and EACH COLUMN scrolls inside itself. A hull with 57 ports cannot be made
+   short enough to fit on a screen, so the list is given a box rather than
+   being allowed to set the height of the document.
+
+   Before this: 1,952px of a 1,080px screen, stacked vertically.
+   ========================================================================== */
+.cols{display:grid;grid-template-columns:minmax(300px,22vw) minmax(0,1fr) minmax(280px,20vw);
+ gap:9px;align-items:stretch;
+ /* Everything above the grid - header, acquisition strip, tab strip and the
+    page's own padding - measured once here rather than guessed per column. */
+ height:calc(100vh - var(--chrome));
+ min-height:420px}
+/* Everything the grid is NOT: the page's own padding, the header, the
+   acquisition strip and the tab strip, plus real headroom. Measured at 153px
+   of actual chrome; the rest is slack, because the layout model that checks
+   this cannot see text wrapping and a heading that wraps must not push the
+   page over the fold. Being generous here costs column height; being tight
+   costs the whole claim. */
+:root{--chrome:238px}
+.cols > .col{min-width:0;min-height:0;display:flex;flex-direction:column}
+/* THE SCROLL LIVES HERE, in the column, and nowhere else. */
+.cols .col.left, .cols .col.right{overflow-y:auto;overflow-x:hidden;
+ background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.cols .col.mid{overflow:hidden}
+.colpane[hidden]{display:none}
+
+@media(max-width:1250px){
+  /* Two columns: the readout drops under the model rather than being squeezed
+     to a width that makes every number wrap. */
+  .cols{grid-template-columns:minmax(280px,34vw) minmax(0,1fr);
+   grid-template-rows:1fr auto;height:auto;min-height:0}
+  .cols .col.right{grid-column:1/-1;max-height:38vh}
+  .cols .col.left{max-height:62vh}
+}
+@media(max-width:820px){
+  .cols{grid-template-columns:1fr}
+  .cols .col.left{max-height:52vh}
+  .cols .col.mid{height:46vh}
+}
+
+/* ---- P3: THE COMPACTION PASS. Nothing decorative may cost a row. -------- */
+.cols .col.left .colhead{position:sticky;top:0;z-index:2}
+.picker{background:transparent;border:0}
+.picker .ph{padding:9px 11px}
+.picker .plist{overflow:visible}
+
 /* N9: said under the model, where somebody looking at the dots will read it.
    Not a tooltip and not a footnote - the order says do not bury it. */
-.markernote{margin-top:9px;padding:10px 13px;background:#1A1206;
- border:1px solid #4A3410;border-radius:8px;font-size:13px;line-height:1.5;
- color:#E8C9A0}
+.markernote{margin-top:6px;padding:6px 10px;background:#1A1206;
+ border:1px solid #4A3410;border-radius:8px;font:400 11.5px/1.4 inherit;
+ color:#E8C9A0;max-height:78px;overflow-y:auto}
 .markernote:empty{display:none}
 .markernote code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;
  font-size:12px}
@@ -234,8 +296,7 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 
 /* N5: one build means one column, and the grid says so rather than leaving a
    gap where the second one used to be. */
-.wrap.one{grid-template-columns:1fr 330px}
-@media(max-width:1250px){.wrap.one{grid-template-columns:1fr}}
+@media(max-width:1250px){}
 .btn.tiny{margin-left:auto;padding:4px 9px;font-size:11.5px}
 .btn[hidden]{display:none}
 
@@ -250,14 +311,13 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .top .spacer{flex:1 1 auto}
 .top h1{font-size:21px;margin:0;white-space:nowrap;overflow:hidden;
  text-overflow:ellipsis;max-width:42vw}
-.acq{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
- gap:10px;margin-bottom:13px}
-.acq .a{background:var(--panel);border:1px solid var(--line);border-radius:9px;
- padding:9px 12px}
+.acq{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
+.acq .a{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+ padding:5px 10px;display:flex;align-items:baseline;gap:7px}
 .acq .a .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;
  letter-spacing:.04em}
-.acq .a .v{font:700 16px inherit;margin-top:3px}
-.acq .a .v.big{font-size:19px;color:var(--accent2)}
+.acq .a .v{font:700 14px inherit;margin:0}
+.acq .a .v.big{font-size:16px;color:var(--accent2)}
 .acq .a .v.amber{color:var(--b)}
 .acq .a .v.none{font-weight:400;font-size:13.5px;color:var(--muted);font-style:italic}
 
@@ -292,9 +352,9 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
  background:var(--accent2)}
 .relay .n{flex:0 0 26px;text-align:right;font:700 13px inherit;color:var(--muted)}
 
-.signote{margin-top:10px;padding:8px 11px;background:var(--panel2);
+.signote{margin-top:6px;padding:6px 9px;background:var(--panel2);
  border-left:3px solid var(--accent2);border-radius:0 7px 7px 0;
- font-size:13px;color:var(--muted)}
+ font-size:11.5px;line-height:1.4;color:var(--muted)}
 .signote:empty{display:none}
 #pools:empty{display:none}
 .shipstate{margin-bottom:13px;padding:11px 13px;background:#1A1206;
@@ -334,38 +394,62 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
      loadout.html is already per-ship, already does A/B and already shares by
      URL, so the model comes here rather than a new ship.html existing to hold
      it. A third place rendering ships is a third place for them to disagree. -->
-<div class="stagewrap" id="stagewrap">
-  <div id="cc-stage">
-    <canvas id="cc-canvas"></canvas>
-    <div id="cc-empty" style="display:none"></div>
-    <div id="cc-status"></div>
-    <div id="cc-marks"></div>
-    <div id="cc-hint">drag to rotate &middot; scroll to zoom</div>
+<!-- P1: THREE COLUMNS. Components left, model centre, readout right.
+     Sleven's sketch, and the reason is his: "we are filling up way too much
+     space with empty space". Stacking these three vertically cost 1,952px of a
+     1,080px screen; side by side they cost one screen.
+
+     EACH COLUMN SCROLLS WITHIN ITSELF. The PAGE does not. That is the whole
+     mechanism - a hull with 57 ports cannot be made short enough to fit, so
+     the list is given a box instead of being allowed to set the page height. -->
+<div class="cols" id="cols">
+
+  <!-- LEFT: the components as clickable boxes, and the picker they open.
+       One column, two states - the list, or the picker for one port with a way
+       back. Keeping both on screen at once would need width this layout does
+       not have, and the picker replacing the list is what makes the click's
+       consequence land WHERE THE EYE ALREADY IS (P5, P6). -->
+  <div class="col left" id="colleft">
+    <div class="colpane" id="colA"></div>
+    <div class="colpane" id="colB" hidden></div>
+    <div class="colpane picker" id="picker"></div>
   </div>
-  <!-- N9: THE DOT POSITIONS ARE NOT MEASURED, AND THE PAGE SAYS SO.
-       Not buried, not softened, and not in a tooltip somebody has to find. -->
-  <div class="markernote" id="markernote"></div>
+
+  <!-- CENTRE: the model, bounded. It used to run edge to edge. -->
+  <div class="col mid" id="colmid">
+    <div id="cc-stage">
+      <canvas id="cc-canvas"></canvas>
+      <div id="cc-marks"></div>
+      <button type="button" id="cc-spin" aria-pressed="false"
+              title="Stop the ship rotating">Stop spin</button>
+      <div id="cc-hint">drag to rotate &middot; scroll to zoom</div>
+      <div id="cc-empty" style="display:none"></div>
+      <div id="cc-status"></div>
+    </div>
+    <!-- N9: THE DOT POSITIONS ARE NOT MEASURED, AND THE PAGE SAYS SO.
+         Not buried, not softened, and not in a tooltip somebody has to find. -->
+    <div class="markernote" id="markernote"></div>
+  </div>
+
+  <!-- RIGHT: the readout. -->
+  <div class="col right" id="colright">
+    <div class="outcome">
+      <h2>Everything that moves</h2>
+      <div class="stats" id="stats"></div>
+      <div class="signote" id="signote"></div>
+      <div class="budgets" id="budgets"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ADDENDUM §1: QUIET TABS. Plain text labels, no icons, no colour, nothing
      competing with the ship. A tab only exists when there is data behind it. -->
 <nav class="tabs" id="tabs" role="tablist"></nav>
 
-<div class="tabpane" id="pane-loadout">
-<div class="outcome">
-  <h2>Everything that moves — A vs B</h2>
-  <div class="stats" id="stats"></div>
-  <div class="signote" id="signote"></div>
-  <div class="budgets" id="budgets"></div>
-</div>
-
-<div class="wrap" id="wrap">
-  <div class="col a" id="colA"></div>
-  <div class="col b" id="colB"></div>
-  <div class="picker" id="picker"></div>
-</div>
-
-</div><!-- /pane-loadout -->
+<!-- P1: the Loadout "tab" is the three columns above, which are always
+     visible. The pane is kept so the tab machinery has something to toggle and
+     so a #loadout fragment still resolves. -->
+<div class="tabpane" id="pane-loadout"></div>
 
 <div class="tabpane" id="pane-specs">
 <div class="panel" id="pools"></div>
@@ -1147,8 +1231,9 @@ function renderPicker(){
     return (py[key]||0)-(px[key]||0);
   });
   const win = (slot.s==null) ? "" : ` · size ${slot.s}`;
-  let h=`<div class="ph"><b>${tname(slot.t)}${win}</b>
-    <small>${portLabel(slot.h)} · editing build ${editing} · ${opts.length}
+  let h=`<div class="ph"><button class="btn tiny back" id="pickback">&larr; Components</button>
+    <b>${tname(slot.t)}${win}</b>
+    <small>${portLabel(slot.h)}${twoUp?" · editing build "+editing:""} · ${opts.length}
     part${opts.length===1?"":"s"} fit this port on this ship</small></div>
     <div class="sortrow">
       <button data-s="best" class="${sort==='best'?'on':''}">Best</button>
@@ -1439,7 +1524,9 @@ function showModel(){
     return;
   }
   empty.style.display='none';
+  v.wantSpin = spinOn;
   v.boot(); v.start(); v.size();
+  applySpin();
   /* Markers move with the camera, so they are repositioned per frame rather
      than on render. The viewer offers one hook for exactly this. */
   v.onFrame=renderMarkers;
@@ -1520,6 +1607,21 @@ function renderRsi(){
   if(u){ a.href=u; a.hidden=false; a.textContent="View "+ship().n+" on RSI"; }
   else { a.removeAttribute("href"); a.hidden=true; }
 }
+/* P4: THE STOP CONTROL. Visible on the canvas, reachable by keyboard because
+   it is a real <button>, and it persists while the person is on the page -
+   somebody who stopped the spin to read a marker does not want it starting
+   again when they change ship. */
+let spinOn = true;
+function applySpin(){
+  const b=$('cc-spin'); if(!b) return;
+  if(_view) _view.setSpin(spinOn);
+  b.textContent = spinOn ? "Stop spin" : "Start spin";
+  b.title = spinOn ? "Stop the ship rotating" : "Start the ship rotating";
+  b.setAttribute("aria-pressed", spinOn ? "false" : "true");
+  b.classList.toggle("off", !spinOn);
+}
+function toggleSpin(){ spinOn=!spinOn; applySpin(); }
+
 const MARKS=(typeof LOADOUT_MARK!=='undefined')?LOADOUT_MARK:{};
 function markersFor(cls){ return MARKS[cls]||[]; }
 function slotByPort(pid){ return ship().slots.find(s=>s.p===pid)||null; }
@@ -1719,18 +1821,33 @@ function openTab(id,fromHash){
   if(!fromHash) writeHash();
 }
 
+/* P5 + P6: THE LEFT COLUMN SHOWS THE LIST OR THE PICKER, never both and never
+   below the fold.
+
+   THIS IS THE ACTUAL FIX FOR "the markers do nothing when clicked". The click
+   was never broken - driving it through the page's own delegated handler sets
+   `sel` to the right slot and renders the picker every time. What was broken is
+   that the picker rendered roughly 1,050px down a 1,952px page, so the thing
+   that changed was off screen. A consequence you cannot see has not happened,
+   as far as the person clicking is concerned.
+
+   Same shape as P6's complaint about `Try another alongside`: "it kinda
+   refreshes the bottom menu... let me scroll down a little bit". Both are one
+   defect - the page was taller than the screen - and both are fixed by the
+   column, not by the handler. */
 function renderChrome(){
-  /* N5: the second column, and everything that only means something beside
-     it, exist only when the second build does. */
-  const wrap=$('wrap'); if(wrap) wrap.classList.toggle('one', !twoUp);
-  const cb=$('colB'); if(cb) cb.hidden=!twoUp;
+  const showPicker = !!sel;
+  const A_ = $('colA'), B_ = $('colB'), P_ = $('picker');
+  if(A_) A_.hidden = showPicker;
+  if(B_) B_.hidden = showPicker || !twoUp;
+  if(P_) P_.hidden = !showPicker;
   const add=$('addB'); if(add) add.hidden=twoUp;
-  /* N11: shown when there is something to undo, because a control that never
-     does anything teaches somebody to stop looking at it. */
   const anyChanged=(ship().slots||[]).some(x=>swappable(x)&&
     (A[x.id]!==x.stock || (twoUp&&B[x.id]!==x.stock)));
   const rb=$('reset'); if(rb) rb.hidden=!anyChanged;
+  const cols=$('cols'); if(cols) cols.classList.toggle('two', twoUp);
 }
+
 function renderAll(){
   renderChrome();
   renderStats();renderCol("A");if(twoUp)renderCol("B");renderPicker();renderBuy();
@@ -1793,6 +1910,8 @@ document.addEventListener('click',e=>{
     tab="loadout"; renderAll(); return; }
   const fg=e.target.closest('.fixed-group > summary');
   if(fg){ fixedOpen=!fg.parentNode.open; return; }   /* pre-toggle state */
+  if(e.target.closest('#pickback')){ sel=null; renderAll(); return; }
+  if(e.target.closest('#cc-spin')){ toggleSpin(); return; }
   if(e.target.closest('#dropB')){ dropB(); return; }
   const tb=e.target.closest('.tabs a[data-tab]');
   if(tb){ e.preventDefault(); openTab(tb.dataset.tab); return; }

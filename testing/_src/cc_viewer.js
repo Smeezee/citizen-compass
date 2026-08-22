@@ -137,6 +137,22 @@ var CCViewer = (function () {
 
   Viewer.prototype.ready = function () { return !!this.renderer; };
 
+  /* P4: THE ROTATION IS SOMETHING THE PERSON CAN STOP.
+     Sleven: "the ship just constantly spins. There's not a way to stop the
+     spin. I don't see a stop button anywhere."
+
+     `autoRotate` was set true in boot() and nothing ever exposed it. These two
+     make it state rather than a constant, and they READ FROM THE CONTROLS
+     rather than from a copy - a second copy of a boolean is a second source of
+     truth about what the ship is doing. */
+  Viewer.prototype.spinning = function () {
+    return !!(this.controls && this.controls.autoRotate);
+  };
+  Viewer.prototype.setSpin = function (on) {
+    if (this.controls) this.controls.autoRotate = !!on;
+    return this.spinning();
+  };
+
   Viewer.prototype.boot = function () {
     if (this.renderer) return this;
     if (typeof THREE === 'undefined' || !this.canvas) return this;
@@ -154,7 +170,9 @@ var CCViewer = (function () {
     this.controls = new THREE.OrbitControls(this.camera, this.canvas);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.08;
-    this.controls.autoRotate = true;
+    /* Honours a choice made before the model finished loading - somebody who
+       hits Stop while it is still streaming means it. */
+    this.controls.autoRotate = (this.wantSpin !== false);
     this.controls.autoRotateSpeed = 0.7;
     this.scene.environment = environment(this.renderer);
     /* Direct lights pulled well back. The old values were high because a fully
