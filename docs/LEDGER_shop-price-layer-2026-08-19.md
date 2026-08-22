@@ -3899,7 +3899,7 @@ P6  DONE  a06a3bb  `Try another alongside` IS VISIBLE WHERE THE EYE IS.
     asserted on content length, not on a class, because an empty visible pane
     is the same experience as a hidden one. Discard reverses it.
 
-P7  DONE  <sha>  NO SCROLLING TO SEE THE PAGE, measured at both sizes.
+P7  DONE  999b5cf  NO SCROLLING TO SEE THE PAGE, measured at both sizes.
       1920 x 1080    995px of 1,080   -  85px spare, FITS
       1366 x  768    683px of   768   -  85px spare, FITS
     Before: 1,952px and 1,891px, overflowing by 872px and 1,123px.
@@ -3918,3 +3918,31 @@ P7  DONE  <sha>  NO SCROLLING TO SEE THE PAGE, measured at both sizes.
     WIDE MONITORS DO NOT COUNT AND WERE NOT USED: both figures are modelled at
     the stated viewports, and the 1366 case is a real pass rather than a
     reported miss.
+
+P8  DONE  <sha>  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
+    URL: https://citizencompasstesting.citizencompass-contact.workers.dev
+    Version ID c3d8559f-1037-441c-bd34-ef8f78410d71. NOT the live site.
+    SWEEP: 45 controls discovered, 42 ok, 1 failed, 2 skipped, 0 NOT RUN, 150s.
+    The one failure is `_verify_g3_matcher_delta.py` reporting NOT PERFORMED
+    because CC_GEO_DIR is unset - pre-existing, unrelated, correctly refusing
+    to claim a pass. One control more than last time: the new
+    `_verify_ship_page_fits.mjs`.
+    UPLOAD DIFF: TWO FILES, loadout.html and cc_viewer.js - exactly and only
+    what P1-P7 touched.
+    DRIVEN ON THE SERVED PAGE, not grepped: the served HTML's own six script
+    blocks run against the four SERVED data files.
+      three columns present    colleft / colmid / colright, overflow-y on two
+      opens with ONE build     twoUp=false
+      18 stat tiles            each once, ZERO second values
+      7 markers rendered       on the Avenger Stalker
+      CLICK A MARKER           sel = {"slot":"blr2"} - the expected port
+      picker opened            4,976 chars, visible, in the LEFT COLUMN
+      component list           hidden behind it, as designed
+      STOP SPIN                _view.spinning() false, button reads "Start spin"
+    That marker line is the one that matters: the thing Sleven reported as
+    doing nothing now demonstrably selects its port and renders its picker
+    somewhere he can see, ON THE DEPLOYED BYTES.
+    STATED LIMIT, unchanged: no browser was involved and none exists here
+    (rule 7). The page-height figures are a model of the declared CSS, and
+    whether the columns look right, the model draws, and 19px markers are
+    comfortable to hit are Sleven's to see.
