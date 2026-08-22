@@ -443,6 +443,29 @@ def part_record(it, type_name, fitted=False):
         if mix:
             rec["dmg"] = mix
 
+    # B7: A MISSILE'S PAYLOAD, WHICH THE PAGE COULD NOT COUNT BECAUSE IT WAS
+    # NEVER EMITTED.
+    #
+    # 208 ships carry missiles and the damage readout counted them NOWHERE -
+    # not because anybody decided to leave them out, but because a missile
+    # record held only its name, size and mass. There was nothing to add up.
+    #
+    # `dmgt` IS A ONE-SHOT TOTAL AND MUST NEVER BE ADDED TO A DPS FIGURE. A
+    # missile is fired once; DPS is per second. Summing them would produce a
+    # number that means nothing at all, and the page names the field
+    # differently from `dps` so the two cannot be confused by accident.
+    #
+    # The channel split comes along for the same reason a gun's does: armour
+    # resists six channels separately, so a total cannot be matched against a
+    # hull on its own.
+    ms = dict_or_none(st.get("Missile"))
+    if ms:
+        rec["dmgt"] = r2(num(ms.get("DamageTotal")))
+        mspl = dict_or_none(ms.get("Damage")) or {}
+        mmix = {k: r2(num(v)) for k, v in mspl.items() if num(v)}
+        if mmix:
+            rec["mdmg"] = mmix
+
     sh = dict_or_none(st.get("Shield"))
     if sh:
         rec["ehp"] = r2(num(sh.get("MaxShieldHealth")))

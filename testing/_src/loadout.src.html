@@ -338,6 +338,9 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
  overflow:hidden}
 .fixedspecs .slot{cursor:default}
 .fixedspecs .grp h3{margin:0}
+/* B7: a stated absence, set like a value so the row keeps its shape,
+   but plainly not a number - because it is not one. */
+.stat .va.nofigure{font-style:italic;color:var(--muted);font-weight:400}
 /* B2: THE PICKER, OPEN UNDER ITS ROW.
    Indented and ruled on the left so it reads as belonging to the row above it
    rather than as the next item in the list - the one thing that would undo the
@@ -813,7 +816,31 @@ function calc(build,over){
   const sh=ship();
   let r={dps:0,alpha:0,ehp:0,regen:0,ir:0,em:0,pw:0,cap:0,ht:0,cool:0,qt:0,
          scu:0,mass:0,parts:0,mix:{},
+         /* B7: THREE DIFFERENT QUESTIONS, THREE DIFFERENT NUMBERS.
+            `dps`/`alpha` are the PILOT's and are not touched - they are the
+            proven IsPilotSlaveable outermost-lock figure that agrees with
+            CIG's own on 275 of 275 ships.
+            `tdps`/`talpha` are what GUNNERS add. One number cannot mean both
+            "what you can do alone" and "what a crew can do", so they are not
+            merged, and Sleven's correction stands: a ship having turrets does
+            not mean the pilot has nothing to shoot.
+            `mdmg` is a ONE-SHOT payload total. It is deliberately not called
+            dps and is never added to one - a missile is fired once, and a
+            per-second missile figure would be a number that means nothing.
+            The three `has*` flags are PRESENCE, not magnitude. A ship with no
+            turret has no turret row at all; a zero is a claim, and it is the
+            wrong one. */
+         tdps:0, talpha:0, mdmg:0, mcount:0,
+         hasTurret:false, hasPilotGun:false, hasMissile:false,
          sens:0,pierce:0,mrate:0,mrange:0,force:0,beam:0,life:0};
+  /* PRESENCE IS ABOUT THE SHIP, NOT ABOUT THIS BUILD. A gunner's port with
+     nothing in it is still a gunner's port, and hiding the row because the
+     build happens to be empty would make the readout change shape as somebody
+     edited it. Read off the slot list before anything is summed. */
+  sh.slots.forEach(s=>{
+    if(s.turret && (s.t==='wpn'||s.t==='tur'||s.t==='mlr')) r.hasTurret=true;
+    if(s.t==='msl') r.hasMissile=true;
+  });
   sh.slots.forEach(s=>{
     let id = swappable(s) ? build[s.id] : s.stock;
     if(over&&over.slot===s.id) id=over.part;
@@ -825,11 +852,19 @@ function calc(build,over){
        RSI Perseus at 16,596 DPS against CIG's 1,494. */
     if(!s.turret){
       r.dps+=p.dps||0; r.alpha+=p.alpha||0;
+      if(p.dps) r.hasPilotGun=true;
       /* THE DAMAGE MIX, not just the total. Armour resists six channels
          separately, so a total DPS cannot be matched against a hull at all -
          it has to be carried apart to be put back together. */
       if(p.dmg) for(const k in p.dmg) r.mix[k]=(r.mix[k]||0)+p.dmg[k];
+    }else{
+      /* B7: COUNTED, AND KEPT APART. The exclusion above was right and stays;
+         what was missing is that the excluded half was then thrown away
+         entirely, so 61 ships showed half their firepower and 11 showed none
+         of it. */
+      r.tdps+=p.dps||0; r.talpha+=p.alpha||0;
     }
+    if(p.dmgt){ r.mdmg+=p.dmgt; r.mcount++; }
     r.ehp+=p.ehp||0; r.regen+=p.regen||0;
     r.ir+=p.ir||0; r.em+=p.em||0;
     r.pw+=p.pw||0; r.cap+=p.cap||0; r.ht+=p.ht||0; r.cool+=p.cool||0;
@@ -889,7 +924,9 @@ const badge = isCig => isCig
    CSS shows the same text on :focus-within as on :hover. A tooltip that only
    answers to a pointer is a feature half the point of which is missing. */
 const EXPLAIN={
-  "Sustained DPS":"How much damage this ship's pilot-fired guns do every second, if you hold the trigger down and never overheat. Turret guns a gunner fires are not counted - the pilot cannot fire them.",
+  "Sustained DPS":"How much damage this ship's pilot-fired guns do every second, if you hold the trigger down and never overheat. Turret guns a gunner fires are not counted here - they have their own figure, because one number cannot mean both what you can do alone and what a crew can do.",
+  "Turret DPS":"What a gunner adds, per second, from the turrets on this hull. It needs somebody in the seat: the pilot cannot fire these. Shown separately rather than added to the pilot figure, and shown only on ships that have turrets.",
+  "Missile payload":"The total damage of every missile this ship is carrying, added up. This is a ONE-SHOT figure - fire them and they are gone - so it is never added to a per-second number. Shown only on ships that carry missiles.",
   "Alpha strike":"The damage of one full volley, everything firing once together. High alpha wins the first exchange; high sustained DPS wins a long one.",
   "Effective HP":"Hull plus shields - roughly how much damage the ship absorbs before it is destroyed. Armour changes what that costs an attacker, by damage type.",
   "Shield regen":"How fast the shields come back per second once they stop being hit.",
@@ -964,8 +1001,35 @@ function renderStats(){
 
   let h="";
   /* --- damage ------------------------------------------------------- */
-  h+= stat("Sustained DPS",dpsA,dpsB,"pilot-fired weapons",false,false,null,dcA,dcB);
-  h+= stat("Alpha strike",ra.alpha,rb.alpha,"one full volley",false,false,null,false,false);
+  /* B7: THE READOUT WAS TELLING THREE DIFFERENT LIES, AND THIS IS ALL THREE.
+       214 ships  pilot guns only        the old readout was the whole truth
+        61 ships  pilot guns AND turrets it was half the truth
+        11 ships  turrets only           it said 0, which is actively wrong
+       208 ships  carry missiles         counted nowhere at all
+     Separate figures, and ONLY the ones a given ship actually has. */
+  if(ra.hasPilotGun || !ra.hasTurret){
+    h+= stat("Sustained DPS",dpsA,dpsB,"what the pilot can fire",
+             false,false,null,dcA,dcB);
+    h+= stat("Alpha strike",ra.alpha,rb.alpha,"one full volley from the pilot's guns",
+             false,false,null,false,false);
+  }else{
+    /* THE 11 TURRET-ONLY SHIPS. The pilot figure is 0 and that is TRUE, so it
+       is said in words rather than shown as a bare 0 - a 0 in a number row
+       reads as a broken stat, and this one is a fact about the ship. */
+    h+=`<div class="stat"><div class="k">Pilot weapons</div>
+      <div class="row"><span class="va nofigure">none</span></div>
+      <div class="sub">every gun on this hull is fired by a gunner, not by the
+      pilot</div></div>`;
+  }
+  if(ra.hasTurret){
+    h+= stat("Turret DPS",ra.tdps,rb.tdps,"what gunners add &mdash; needs crew",
+             false,false,null,false,false);
+  }
+  if(ra.hasMissile){
+    h+= stat("Missile payload",ra.mdmg,rb.mdmg,
+             "total damage of every missile carried &mdash; one shot, not per second",
+             false,false,null,false,false);
+  }
   /* --- survivability, and it is NOT one number (L5) ------------------ */
   h+= stat("Effective HP",ehpA,ehpB,"hull + shields",false,false,null,scA,scB);
   h+= stat("Shield regen",ra.regen,rb.regen,"per second",false,false,null,false,false);
