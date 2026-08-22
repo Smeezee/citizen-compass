@@ -37,12 +37,20 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 export const SRC = join(HERE, "..", "testing", "_src");
 
 export function loadPage({ mutate = [], session = null,
-                           sessionThrows = false } = {}) {
-  const html = readFileSync(join(SRC, "loadout.src.html"), "utf-8");
-  const dataJs = readFileSync(join(SRC, "loadout_data.gen.js"), "utf-8");
+                           sessionThrows = false, srcDir = null,
+                           pageFile = null } = {}) {
+  /* `srcDir` lets a control drive bytes that came from somewhere else. B8
+     fetches the DEPLOYED page and its data files into a temp directory and
+     points this at them, so what is asserted is what the ORIGIN SERVES rather
+     than what the working tree holds. Same harness, same assertions, different
+     bytes - which is the only way "verified from the served bytes" means more
+     than "the deploy exited 0". */
+  const dir = srcDir || SRC;
+  const html = readFileSync(pageFile || join(dir, "loadout.src.html"), "utf-8");
+  const dataJs = readFileSync(join(dir, "loadout_data.gen.js"), "utf-8");
   const EXTRA = ["loadout_model.gen.js", "loadout_marker.gen.js",
                  "loadout_eng.gen.js"]
-    .map((f) => join(SRC, f))
+    .map((f) => join(dir, f))
     .filter((f) => existsSync(f))
     .map((f) => readFileSync(f, "utf-8"));
 
@@ -124,7 +132,21 @@ export function loadPage({ mutate = [], session = null,
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
 
-  let script = html.match(/<script>\n([\s\S]*)<\/script>/)[1];
+  /* THE PAGE'S OWN SCRIPT, PICKED BY WHAT IS IN IT.
+     The _src file has one inline script, so "first <script> to last </script>"
+     worked. The BUILT page has three.js, GLTFLoader, OrbitControls and the
+     DRACO decoder inlined as well - that pattern would swallow all of them and
+     run a megabyte of vendor code against a DOM stub. So every inline block is
+     read and the one carrying the page's entry point is chosen. */
+  const blocks = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map((m) => m[1]);
+  let script = blocks.find((b) => /function renderAll\s*\(/.test(b));
+  if (!script) {
+    console.log("NO PAGE SCRIPT FOUND - none of the " + blocks.length
+      + " inline <script> blocks defines renderAll(). Refusing to assert "
+      + "against a page this cannot drive.");
+    process.exit(2);
+  }
   for (const [pattern, replacement] of mutate) {
     const before = script;
     script = script.replace(pattern, replacement);

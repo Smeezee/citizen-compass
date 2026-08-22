@@ -75,6 +75,10 @@ NEEDS = {
     "_verify_deployed_links.mjs":
         "sweeps the DEPLOYED origin for dead links - same reason, and it makes "
         "~450 network requests, so it is opt-in rather than part of every run",
+    "_verify_picker_deployed.mjs":
+        "drives the DEPLOYED ship page - B8's acceptance, and a statement "
+        "about the served site rather than about this working tree. It also "
+        "clicks all 1,200 hull markers over the wire",
 }
 
 
