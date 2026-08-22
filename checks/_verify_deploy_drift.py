@@ -66,6 +66,25 @@ SELFTEST = "--self-test" in sys.argv
 ASSET_DIRS = ("models", "images", "fonts")
 VENDOR_MARKER = "<!-- CC_VENDOR_THREE -->"
 
+# THE ONE LINE THE BUILD IS ALLOWED TO REWRITE ON THE WAY INTO _deploy.
+#
+# `loadout_model.gen.js` names where a 3D model lives, and that differs between
+# the two worlds: in _src the ship page reads `../sc-ships/`, in _deploy the
+# models are siblings under `models/`. build_deploy.py swaps exactly one line.
+#
+# DECLARED HERE, NARROWLY, AND THE REST STILL COMPARED BYTE FOR BYTE - the same
+# treatment the vendor marker gets. The alternative is exempting the whole file,
+# which would mean a hand edit anywhere in it went unnoticed. What is checked is
+# that the ONLY difference is this line, and that the deployed value is the
+# deploy one rather than something else entirely.
+SEAM_FILES = {
+    "loadout_model.gen.js": (
+        "const LOADOUT_MODEL_URL=",
+        '"../sc-ships/{dir}/model_scaled.glb"',
+        '"models/{file}"',
+    ),
+}
+
 _passed = []
 _failed = []
 
@@ -166,6 +185,27 @@ def main():
         d_path = os.path.join(DEPLOY, out_name)
         if not os.path.exists(d_path):
             drifted.append("%s is MISSING from _deploy" % out_name)
+            continue
+        if out_name in SEAM_FILES:
+            prefix, dev, dep = SEAM_FILES[out_name]
+            s_lines = text_of(s_path).split("\n")
+            d_lines = text_of(d_path).split("\n")
+            if len(s_lines) != len(d_lines):
+                drifted.append("%s has a different number of lines from _src/%s"
+                               % (out_name, src_name))
+                continue
+            bad = [i for i, (a, b) in enumerate(zip(s_lines, d_lines)) if a != b]
+            if len(bad) != 1:
+                drifted.append("%s differs from _src/%s on %d lines - only the "
+                               "model-path seam may differ"
+                               % (out_name, src_name, len(bad)))
+                continue
+            i = bad[0]
+            if not (s_lines[i].startswith(prefix) and dev in s_lines[i]
+                    and d_lines[i].startswith(prefix) and dep in d_lines[i]):
+                drifted.append("%s's one difference is NOT the model-path seam: "
+                               "_src %r vs _deploy %r"
+                               % (out_name, s_lines[i][:60], d_lines[i][:60]))
             continue
         s_text = text_of(s_path) if src_name.endswith(".html") else None
         if s_text is not None and VENDOR_MARKER in s_text:

@@ -913,6 +913,25 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
         "size": r2(num(s.get("Size"))),
         "slots": slots,
     }
+    # ADDENDUM M1: A TAB ONLY EXISTS WHEN THERE IS DATA BEHIND IT, and for a
+    # LAZILY-LOADED layer that has to be answerable BEFORE the layer's file is
+    # fetched. Otherwise every ship shows an Engineering tab and the eleven
+    # without relays open onto an apology - which is the navigation version of
+    # an empty picker.
+    #
+    # So the COUNT ships with the ship (cheap) while the layer itself does not.
+    n_relay = 0
+    for entry, _p, _par in ports:
+        hp = entry.get("HardpointName") or ""
+        if not hp.lower().startswith("hardpoint_relay"):
+            continue
+        if any(isinstance(c, dict)
+               and (c.get("HardpointName") or "").startswith("$slot_fuse")
+               for c in (entry.get("Loadout") or [])):
+            n_relay += 1
+    if n_relay:
+        rec["eng"] = n_relay
+
     seats = s.get("Seats")
     if isinstance(seats, list):
         rec["seats"] = len(seats)
@@ -1344,6 +1363,8 @@ def main():
         % (len(armor_out), len(armor_defs), len(armor_defs) - len(armor_out)))
     say("    hardpoint names %5d distinct, shared by %d slots"
         % (len(hp_names), sum(len(r["slots"]) for r in built.values())))
+    say("    hulls with engineering relays: %d"
+        % sum(1 for r in built.values() if r.get("eng")))
     say("    liveries %5d in %d hull sets  (%d livery ports, %d tagged)"
         % (len(paints), len(paint_sets), stats["paint_ports"],
            stats["paint_tagged"]))

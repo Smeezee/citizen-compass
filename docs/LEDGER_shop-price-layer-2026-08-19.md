@@ -3050,7 +3050,7 @@ L15 DONE  6fe4575  THE PARKED IDEAS ARE WRITTEN DOWN AND NOTHING IS BUILT FOR
     the catalogue to fill them is not in ship-items.json. Racks are swappable
     and there is nothing to offer in them. A gap in a different dataset.
 
-L16 DONE  <sha>  THE PRE-LIVE PUNCH LIST EXISTS, AND `CURRENT-STATE.md` IS BACK
+L16 DONE  a2c822e  THE PRE-LIVE PUNCH LIST EXISTS, AND `CURRENT-STATE.md` IS BACK
     IN LINE. `docs/PRE-LIVE-PUNCH-LIST.md` is new; CURRENT-STATE was last
     written 2026-08-16 and now leads with the ship page and the shop layer.
     EVERY ENTRY CARRIES A NUMBER, because an entry without one is a feeling and
@@ -3086,3 +3086,115 @@ L16 DONE  <sha>  THE PRE-LIVE PUNCH LIST EXISTS, AND `CURRENT-STATE.md` IS BACK
     AND ONE ENTRY IS A CLASS OF DEFECT RATHER THAN AN ITEM: Name-vs-ClassName,
     to be checked wherever ships are grouped anywhere in the project, plus its
     one-level-down twin, hardpoint-name-vs-PortId.
+
+M1  DONE  <sha>  THE TAB SHELL, WITH PER-LAYER LAZY LOADING - and section 5's
+    invitation to argue with section 2 taken up, with numbers.
+    Loadout / Engineering / Liveries / Crew / Where to buy / Specs, as plain
+    text labels, each an addressable fragment, default always Loadout and never
+    remembered. A TAB ONLY EXISTS WHEN THERE IS DATA BEHIND IT: Engineering
+    shows on 305 hulls and is suppressed on 11; CREW HAS NO DATA AND THEREFORE
+    APPEARS ON NONE OF THE 316. A direct link to `#engineering` on a hull
+    without relays lands on Loadout without erroring.
+    THE NETWORK TRACE, WHICH IS THE CONTROL THAT MATTERS: a default ship page
+    fetches ZERO layer files; opening Engineering fetches EXACTLY ONE
+    (loadout_eng.gen.js); reopening it fetches NOTHING.
+    AND THAT TRACE FOUND A REAL BUG NOTHING ELSE COULD HAVE. A top-level
+    `const` in a classic script creates a binding in the global LEXICAL
+    environment - IT IS NOT A PROPERTY OF `globalThis`. So the loader's
+    `globalThis["LOADOUT_ENG"]` read undefined even after the file had loaded
+    and run perfectly, concluded it had failed, RE-FETCHED IT ON EVERY OPEN,
+    and rendered "loading the engineering layer" forever. Nothing about the
+    page looked broken from the outside. Only counting fetches showed it.
+    Layers now REGISTER THEMSELVES into `window.CC_LAYERS`, and the generated
+    file carries the explanation so nobody removes the line.
+    ARGUING WITH SECTION 2, AS ASKED, AND THE LOADER EARNS ALMOST NOTHING
+    TODAY:
+      the engineering layer                     4.4 KB gzipped
+      the page that loads without it          274.8 KB gzipped
+    Per-layer loading saves 1.6% of what a visitor downloads. The order said
+    "if the layers turn out small enough that splitting them costs more than it
+    saves, measure it and say so rather than building a loader that earns
+    nothing". Here is the measurement, and here is why I built it anyway: its
+    value is FUTURE layers, not this one. Every idea in
+    IDEA_unused-ship-data.md is now a label plus a file rather than a rebuild,
+    and that is worth 4.4 KB of nothing today.
+    BUT THE AXIS IS WRONG, AND THIS IS THE PART WORTH READING. The weight is
+    not in the layers, it is in the SHIPS. Measured across all 316:
+      one ship's complete bundle    median 10.1 KB gz  (max 24.5, min 0.8)
+      the ship index for the picker           3.6 KB gz
+      what the page loads today             274.8 KB gz
+    LOADING ONE SHIP INSTEAD OF 316 WOULD TAKE THE PAGE FROM 275 KB TO ABOUT
+    14 KB - a 95% cut, against per-layer's 1.6%. The page shows one ship at a
+    time; loading 316 of them to show one is the actual waste.
+    NOT BUILT, and deliberately: it is 316 generated files, it touches the
+    deploy guard's allowed-file list, and it is a layout-level decision I
+    should not take on my own inside a run about component fitment. Recorded
+    with the numbers so it can be decided rather than rediscovered.
+
+M2  DONE  <sha>  THE ENGINEERING LAYER. 678 relays / 1,419 FUSE SLOTS on 305
+    hulls, reproducing the addendum exactly. Aegis Idris-P 15 relays / 37
+    fuses; Drake Vulture 1 relay / 2 fuses. Both named figures match.
+    THE COUNT IS THE ACTUAL CHILD PORTS, NOT THE `RELAY_Nslot` CLASS NAME.
+    Those agree on all 677 relays that carry such a class - checked, not
+    assumed - but the children are the thing that exists and the name is a
+    label about them. Reading the label works today and breaks silently the
+    first time CIG ships a mismatch, in the direction of drawing slots that are
+    not there.
+    11 relay-NAMED ports carry no fuse children at all - the Caterpillar's bare
+    `hardpoint_relay` and the door-state chip sets. Counted and excluded rather
+    than quietly skipped.
+    NO EMPTY POSITIONS ARE DRAWN, and that is asserted by COUNTING BARS AGAINST
+    THE DATA on a hull whose relays are DIFFERENT SIZES - the Aegis Hammerhead,
+    where a fixed-width track would show up immediately. 14 bars for 14 fuse
+    slots. A greyed slot reads as "a fuse is missing here", which is a real
+    state in the game and is not what this data says. That exact mistake was
+    made and corrected in the prototype.
+    Each relay is bound to its `PortId` like every other port on this page, and
+    each carries the plain-language sentence M3 asks for.
+
+M3  DONE  <sha>  PLAIN LANGUAGE, PAGE-WIDE, AND REACHABLE BY KEYBOARD.
+    23 readout values carry one sentence a person who has never opened a game
+    file can understand - `EM 818` becomes "electromagnetic noise from powered
+    components; turn things off and it drops".
+    NOT HOVER ALONE, which is the half that gets forgotten: every explained
+    value is FOCUSABLE (`tabindex`), carries an `aria-label` as well as a
+    `title`, and the CSS reveals the sentence on `:focus` and `:focus-within`
+    as well as `:hover`. A tooltip that only answers to a pointer does not
+    exist for anybody who does not use one.
+    AND THE SENTENCES ARE CHECKED FOR JARGON: the control FAILS if any
+    explanation contains `CompatibleTypes`, `ClassName`, `stdItem`, `PortId` or
+    `IsPilotSlaveable`. An explanation written in field names explains nothing.
+
+M4  DONE  <sha>  WHAT IS NOT ESTABLISHED IS SAID, AND NOT IMPLIED.
+    The engineering panel states in its own words that fuse RATINGS and failure
+    behaviour are not in the game files - only counts and positions - and that
+    whether a blown relay disables the components near it IS NOT STATED
+    ANYWHERE. Where the hull's `PenetrationMultiplier` exists it is quoted with
+    the word SUGGESTS and nothing more.
+    Asserted four ways: the page says "ratings", says "is not stated anywhere",
+    says "suggest", and CONTAINS NO PHRASE claiming failure behaviour - the
+    control greps for "will disable", "causes ... to fail" and "knocks out" and
+    fails if any of them appears.
+
+L17 DONE  <sha>  SWEEP. `checks/run_all_controls.py` DISCOVERS controls from
+    disk rather than from a typed list, so the three written in this run
+    (_verify_loadout_fitment.py, _verify_ship_page.mjs,
+    _verify_shared_viewer.mjs) were swept the moment they landed.
+    FIRST PASS: 40 ok, 3 failed, 2 skipped, 0 NOT RUN. All three failures were
+    investigated rather than adjusted around:
+      1. `_verify_deploy_drift.py` - TWO real findings. It caught that I had
+         edited loadout.src.html AFTER the last build, so _deploy was stale.
+         That is precisely what the check is for and it worked. And it
+         correctly flagged `loadout_model.gen.js` as differing from _src, which
+         is BY DESIGN: the model path differs between the two worlds. I taught
+         the check that ONE seam, narrowly, the same way it already knows the
+         vendor marker - and PROVED THE NEW BRANCH BOTH WAYS: a second
+         difference anywhere in the file is reported, and a WRONG VALUE on the
+         seam line itself is reported. Neither passes.
+      2. `_verify_ship_hardpoint_panel.mjs` - needs a local API on :8077, which
+         is its own documented argument and was simply not running. Started it;
+         18 of 18 pass. Not a defect, and NOT worked around (rule 9) - the
+         prerequisite was met rather than the check weakened.
+      3. `_verify_g3_matcher_delta.py` - reports NOT PERFORMED because
+         CC_GEO_DIR is unset. Pre-existing, correctly refusing to claim a pass,
+         and out of scope for this order.

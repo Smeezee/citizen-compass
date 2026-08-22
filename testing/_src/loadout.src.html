@@ -195,6 +195,35 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .tabpane{display:none}
 .tabpane.on{display:block}
 
+/* M3: the explanation, shown on hover AND on focus. :focus-within is not
+   decoration - without it the whole feature is invisible to anyone navigating
+   by keyboard, which is the half that usually gets forgotten. */
+.stat.explained{position:relative;cursor:help}
+.stat.explained:focus{outline:2px solid var(--accent2);outline-offset:2px}
+.stat .ask{display:inline-block;margin-left:5px;width:13px;height:13px;
+ line-height:13px;text-align:center;border-radius:50%;background:#1B3247;
+ color:var(--muted);font:700 9px inherit;vertical-align:1px}
+.stat .why{display:none;position:absolute;left:8px;right:8px;top:100%;z-index:5;
+ margin-top:4px;padding:9px 11px;background:#08121F;border:1px solid var(--accent2);
+ border-radius:8px;font:400 12.5px/1.45 inherit;color:var(--text);
+ box-shadow:0 8px 22px rgba(0,0,0,.55)}
+.stat.explained:hover .why,.stat.explained:focus .why,
+.stat.explained:focus-within .why{display:block}
+.relay:focus .where{color:var(--accent2)}
+
+/* THE FUSE GAUGE. One bar per fuse slot that exists - see renderEngineering()
+   for why there are no empty positions. */
+.relays{display:flex;flex-direction:column;gap:5px}
+.relay{display:flex;align-items:center;gap:11px;padding:7px 11px;
+ background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+ cursor:default}
+.relay:hover,.relay:focus{border-color:var(--accent2);outline:none}
+.relay .where{flex:1 1 auto;font-size:14px;font-weight:600}
+.relay .fuses{display:flex;gap:4px}
+.relay .fuses i{display:block;width:22px;height:11px;border-radius:3px;
+ background:var(--accent2)}
+.relay .n{flex:0 0 26px;text-align:right;font:700 13px inherit;color:var(--muted)}
+
 .signote{margin-top:10px;padding:8px 11px;background:var(--panel2);
  border-left:3px solid var(--accent2);border-radius:0 7px 7px 0;
  font-size:13px;color:var(--muted)}
@@ -537,13 +566,54 @@ const badge = isCig => isCig
   ? `<span class="src cig" title="CIG's own precomputed figure for the stock loadout">CIG</span>`
   : `<span class="src ours" title="summed by this page from the fitted parts">summed</span>`;
 
+/* M3: PLAIN LANGUAGE, AND IT IS A PAGE-WIDE PATTERN RATHER THAN A FUSE
+   FEATURE.
+
+   The readout is full of values like `EM 818` and `IR 5,890` that mean nothing
+   to somebody who has never read a game file. One sentence a person can
+   understand is cheaper than a help page nobody reads.
+
+   REACHABLE BY KEYBOARD, NOT HOVER ALONE, or it does not exist for anyone who
+   does not use a mouse. So every explained value is a focusable element
+   carrying both a `title` (mouse) and an `aria-label` (screen reader), and the
+   CSS shows the same text on :focus-within as on :hover. A tooltip that only
+   answers to a pointer is a feature half the point of which is missing. */
+const EXPLAIN={
+  "Sustained DPS":"How much damage this ship's pilot-fired guns do every second, if you hold the trigger down and never overheat. Turret guns a gunner fires are not counted - the pilot cannot fire them.",
+  "Alpha strike":"The damage of one full volley, everything firing once together. High alpha wins the first exchange; high sustained DPS wins a long one.",
+  "Effective HP":"Hull plus shields - roughly how much damage the ship absorbs before it is destroyed. Armour changes what that costs an attacker, by damage type.",
+  "Shield regen":"How fast the shields come back per second once they stop being hit.",
+  "IR signature":"Heat. The hotter you run, the further away somebody can see you. Lower is stealthier.",
+  "EM signature":"Electromagnetic noise from powered components. Turn things off and it drops. Lower is stealthier.",
+  "Distortion pool":"How much distortion damage - the kind that disables rather than destroys - the hull soaks up before systems start failing.",
+  "Quantum range":"How far the ship can travel on one full quantum tank, in gigametres.",
+  "SCM speed":"Combat speed. What the ship does with weapons out.",
+  "Max speed":"Top speed with everything wound out and no weapons.",
+  "Total mass":"The hull plus everything fitted. Heavier turns and stops worse - and because thrusters are almost never swappable, mass is the main handling lever a player actually has.",
+  "Cargo":"How much the ship's own cargo grid holds, in Standard Cargo Units.",
+  "Fitted containers":"Extra capacity from containers you can swap - mining bags and ore pods, mostly.",
+  "Fuel":"Hydrogen for the normal engines. Runs the thrusters, not the quantum drive.",
+  "Quantum fuel":"A separate tank, used only for quantum travel. Running out of this strands you differently from running out of hydrogen.",
+  "Crew":"How many people the ship is built for. Seats says how many places there are to sit.",
+  "Life support":"How many life-support generators are fitted. They keep the air breathable and they draw power to do it.",
+  "Radar sensitivity":"How faint a contact this radar can pick up. Higher sees more.",
+  "Radar piercing":"How much cover it sees through. Higher finds things hiding.",
+  "Mining throughput":"How fast the fitted heads pull material out of a rock. This one adds up across heads.",
+  "Mining range":"How far the best fitted head can reach. This one does not add up - two heads do not reach twice as far.",
+  "Beam range":"How far the salvage or tractor beam reaches.",
+  "Beam force":"How heavy a thing the beam can move.",
+};
 function stat(k,a,b,sub,lower,stealth,fmtf,cigA,cigB){
   const f=fmtf||fmt, d=delta(a,b,lower);
   const mark = (cigA===undefined) ? "" : badge(cigA&&cigB);
-  return `<div class="stat${stealth?' stealth':''}"><div class="k">${k}${mark}</div>
+  const why = EXPLAIN[k]||"";
+  return `<div class="stat${stealth?' stealth':''}${why?' explained':''}"
+      ${why?`tabindex="0" title="${why}" aria-label="${k}: ${why}"`:""}>
+    <div class="k">${k}${mark}${why?'<span class="ask" aria-hidden="true">?</span>':""}</div>
     <div class="row"><span class="va">${f(a)}</span>
     <span class="vb${ghost?' ghost':''}">${f(b)}</span>
-    <span class="d ${d.c}">${d.t}</span></div><div class="sub">${sub}</div></div>`;
+    <span class="d ${d.c}">${d.t}</span></div><div class="sub">${sub}</div>
+    ${why?`<div class="why">${why}</div>`:""}</div>`;
 }
 
 function renderStats(){
@@ -936,6 +1006,72 @@ function renderLiveries(){
   el.innerHTML=h;
 }
 
+/* M2: THE ENGINEERING LAYER. One row per relay, location on the left, one bar
+   per fuse slot on the right.
+
+   ONE BAR MEANS A ONE-SLOT RELAY. NO EMPTY POSITIONS ARE DRAWN. A greyed slot
+   reads as "a fuse is missing here", which is a real state in the game and is
+   NOT what this data says. That exact mistake was made and corrected in the
+   prototype, and it is the kind of thing that looks like a nicer design right
+   up until somebody believes it. */
+let engSort="fuses";
+function renderEngineering(){
+  const el=$('engineering'); if(!el||tab!=="engineering") return;
+  const st=layerState.engineering;
+  if(st==="failed"){
+    el.innerHTML=`<h2>Engineering</h2><p class="gap">The engineering layer did
+      not load, so nothing is shown. Nothing here is a guess at what it would
+      have said.</p>`; return; }
+  const all=layerData("engineering");
+  if(!all){
+    el.innerHTML=`<h2>Engineering</h2><p class="gap">Loading the engineering
+      layer&hellip;</p>`; return; }
+  const rows=(all[shipId]||[]).slice();
+  if(!rows.length){
+    el.innerHTML=`<h2>Engineering</h2><p class="gap">The game files list no
+      relays for this hull.</p>`; return; }
+  if(engSort==="fuses") rows.sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+  else rows.sort((a,b)=>a[0].localeCompare(b[0]));
+  const fuses=rows.reduce((t,r)=>t+r[1],0);
+  const pen=ship().pen||{};
+  let h=`<h2>Engineering &mdash; ${rows.length} relay${rows.length===1?"":"s"},
+    ${fuses} fuse slot${fuses===1?"":"s"}</h2>
+    <p class="sub2">Where the fuses are on this hull, and how many each relay
+    holds. Every fuse is the same part; what varies is how many and where.</p>
+    <div class="sortrow">
+      <button data-e="fuses" class="${engSort==='fuses'?'on':''}">Most fuses</button>
+      <button data-e="name" class="${engSort==='name'?'on':''}">By location</button>
+    </div>
+    <div class="relays">`;
+  rows.forEach(r=>{
+    /* One bar per fuse slot that EXISTS. The count is the loop bound; there is
+       no fixed-width track with empty positions in it. */
+    const bars=Array.from({length:r[1]},()=>'<i></i>').join("");
+    const why=`This relay holds ${r[1]} fuse${r[1]===1?"":"s"}. If one blows, `
+      +`${r[0].toLowerCase()} is where you go to swap it.`;
+    h+=`<div class="relay" data-port="${r[2]}" tabindex="0"
+          aria-label="${r[0]}: ${r[1]} fuse slot${r[1]===1?"":"s"}. ${why}"
+          data-why="${why}">
+      <span class="where">${r[0]}</span>
+      <span class="fuses">${bars}</span>
+      <span class="n">${r[1]}</span></div>`;
+  });
+  h+=`</div>
+    <div class="trip"><strong>What this data does not say.</strong>
+    Fuse <b>ratings</b> and failure behaviour are not in the game files &mdash;
+    only counts and positions. Whether a blown relay disables the components
+    near it <b>is not stated anywhere</b>. The ship's own penetration figures
+    <em>suggest</em> damage reaches fuses before components`
+    +(pen.fuse!=null
+      ? ` &mdash; ${Math.round(pen.fuse*100)}% to fuses against `
+        +`${pen.comp!=null?Math.round(pen.comp*100)+"%":"an unstated share"}`
+        +` to components on this hull`
+      : "")
+    +`. Suggests. That is as far as the data goes and this page will not go
+    further.</div>`;
+  el.innerHTML=h;
+}
+
 function renderBuy(){
   /* THE SHOPPING LIST IS GONE, AND THIS SAYS WHY.
      The mock invented a price, a shop and a location for every component. Those
@@ -1141,9 +1277,72 @@ function selectPort(slot, which){
 
    THE DEFAULT TAB IS ALWAYS LOADOUT. It is never remembered, so somebody
    arriving from a shared link sees what everybody else sees. */
+/* ---------- ADDENDUM SECTION 2: ONE FILE PER LAYER, FETCHED WHEN OPENED ----
+   Tabs alone hide data; they do not make a page light. If everything still
+   downloads, nothing was saved.
+
+   So a layer names its own generated file and its own global, and that file is
+   fetched THE FIRST TIME its tab is opened and never again. The default page
+   ships the loadout layer and nothing else.
+
+   BUILT AS A PATTERN, NOT A ONE-OFF. Every idea in
+   docs/IDEA_unused-ship-data.md becomes another entry in this table plus a
+   generated file - a label and a data file, not a rebuild.
+
+   WHAT IT SAVES TODAY IS SMALL, AND THE LEDGER SAYS SO RATHER THAN THE
+   COMMENT PRETENDING OTHERWISE. The engineering layer is a small fraction of
+   this page; the weight is in the loadout layer, which is the default view.
+   The honest value here is FUTURE layers. The change that would actually cut
+   this page is loading ONE SHIP instead of 316 - measured, argued, recorded. */
+const LAYERS={
+  engineering:{file:"loadout_eng.gen.js"},
+};
+const layerState={};      /* name -> "loading" | "ready" | "failed" */
+
+/* A LAYER FILE REGISTERS ITSELF INTO `window.CC_LAYERS`. It is NOT looked up
+   by name on globalThis, and that distinction cost a real bug.
+
+   A top-level `const` in a classic script creates a binding in the global
+   LEXICAL environment - it is NOT a property of globalThis. So
+   `globalThis["LOADOUT_ENG"]` reads undefined even after the file has loaded
+   and run perfectly. The loader concluded the file had failed, re-fetched it
+   on every open, and rendered "loading the engineering layer" forever.
+
+   Nothing about the page looked broken from the outside. The network-trace
+   control found it by counting fetches, which is the only thing that could
+   have. */
+function layerData(name){
+  if(!LAYERS[name]) return null;
+  const reg=(typeof window!=="undefined"&&window.CC_LAYERS)||null;
+  return (reg&&reg[name])||null;
+}
+function loadLayer(name, then){
+  const L=LAYERS[name];
+  if(!L){ then&&then(); return; }
+  if(layerData(name)){ layerState[name]="ready"; then&&then(); return; }
+  if(layerState[name]==="loading") return;
+  layerState[name]="loading";
+  const el=document.createElement("script");
+  el.src=L.file;
+  el.onload=()=>{
+    /* A FILE THAT LOADED AND DEFINED NOTHING IS A FAILURE, not a success.
+       Trusting onload alone is how a page renders an empty layer and calls it
+       loaded - the same shape as a check that never looked. */
+    layerState[name]=layerData(name)?"ready":"failed";
+    then&&then();
+  };
+  el.onerror=()=>{ layerState[name]="failed"; then&&then(); };
+  document.head.appendChild(el);
+}
+
 const TABS=[
   {id:"loadout",     label:"Loadout",      has:()=>true},
-  {id:"engineering", label:"Engineering",  has:()=>false},
+  /* A TAB ONLY EXISTS WHEN THERE IS DATA BEHIND IT - and for a LAZY layer that
+     must be answerable BEFORE the file is fetched, or every ship shows an
+     Engineering tab and eleven of them open onto an apology. So the ship
+     record carries `eng`, a count, written by the same build that writes the
+     layer file. The count is cheap; the layer is not. */
+  {id:"engineering", label:"Engineering",  has:()=>!!ship().eng, lazy:"engineering"},
   {id:"liveries",    label:"Liveries",     has:()=>!!(ship().pset&&(PSETS[ship().pset]||[]).length)},
   {id:"crew",        label:"Crew",         has:()=>false},
   {id:"buy",         label:"Where to buy", has:()=>true},
@@ -1169,6 +1368,9 @@ function openTab(id,fromHash){
      than erroring or rendering nothing. Not every ship has relays. */
   tab=av.some(t=>t.id===id)?id:"loadout";
   renderTabs();
+  const def=TABS.find(t=>t.id===tab);
+  if(def&&def.lazy) loadLayer(def.lazy, renderEngineering);
+  renderEngineering();
   if(!fromHash) writeHash();
 }
 
@@ -1223,7 +1425,9 @@ document.addEventListener('click',e=>{
     selectPort(s, sl.dataset.col||editing); return;}
   const tb=e.target.closest('.tabs a[data-tab]');
   if(tb){ e.preventDefault(); openTab(tb.dataset.tab); return; }
-  const so=e.target.closest('.sortrow button');
+  const es=e.target.closest('.sortrow button[data-e]');
+  if(es){ engSort=es.dataset.e; renderEngineering(); return; }
+  const so=e.target.closest('.sortrow button[data-s]');
   if(so){sort=so.dataset.s;renderPicker();return;}
   const pi=e.target.closest('.pi[data-part]');
   if(pi&&sel){const b=editing==="A"?A:B; b[sel.slot]=pi.dataset.part; ghost=null; renderAll();return;}

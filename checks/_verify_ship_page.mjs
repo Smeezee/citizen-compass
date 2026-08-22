@@ -70,7 +70,8 @@ const dataJs = readFileSync(DATA, "utf-8");
 /* The page loads four generated files, not one. Loading only the loadout data
    left MARKS empty and the L10 block asserting on nothing - which it correctly
    reported as a failure rather than passing quietly. */
-const EXTRA = ["loadout_model.gen.js", "loadout_marker.gen.js"]
+const EXTRA = ["loadout_model.gen.js", "loadout_marker.gen.js",
+               "loadout_eng.gen.js"]
   .map((f) => join(SRC, f))
   .filter((f) => existsSync(f))
   .map((f) => readFileSync(f, "utf-8"));
@@ -759,6 +760,195 @@ console.log("\n--- addendum s0: Name is a label, ClassName is the key ---");
   record(plain.length > labels.length * 0.8,
     "and the disambiguation touches only the names that need it",
     `${labels.length - plain.length} of ${labels.length} decorated`);
+}
+
+console.log("\n--- M1: tabbed layers, and a tab only exists when there is data ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();renderAll();`, sandbox);
+  const tabs = el("tabs").innerHTML;
+  record(/data-tab="loadout"/.test(tabs), "the Loadout tab exists");
+  record(/href="#loadout"/.test(tabs),
+    "and every tab is a REAL URL FRAGMENT, so a layer can be linked to");
+  record(!/<img|<svg|class="badge/.test(tabs),
+    "the tabs are plain text - no icons, no badges, nothing competing with the ship");
+
+  // THE DEFAULT TAB IS ALWAYS LOADOUT and is never remembered.
+  vm.runInContext(`openTab("specs");`, sandbox);
+  record(g("tab") === "specs", "a tab can be opened");
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();tab="loadout";renderAll();`, sandbox);
+  record(g("tab") === "loadout",
+    "changing ship returns to Loadout - the open tab is never remembered");
+
+  // A TAB WITH NOTHING BEHIND IT DOES NOT EXIST. Crew has no data at all, so
+  // it must be absent on EVERY ship - not present and empty.
+  let crewSeen = 0, engMissing = 0, engPresent = 0;
+  for (const k of Object.keys(SHIPS)) {
+    vm.runInContext(`shipId=${JSON.stringify(k)};reset();renderTabs();`, sandbox);
+    const h = el("tabs").innerHTML;
+    if (/data-tab="crew"/.test(h)) crewSeen++;
+    if (/data-tab="engineering"/.test(h)) engPresent++;
+    else engMissing++;
+  }
+  record(crewSeen === 0,
+    "the Crew tab has no data behind it and therefore appears on NO ship",
+    `${crewSeen} ships show it`);
+  record(engPresent > 250 && engMissing > 0,
+    "the Engineering tab appears where there are relays and NOT where there are none",
+    `${engPresent} with, ${engMissing} without`);
+  notes.push(`M1: Engineering shows on ${engPresent} hulls and is suppressed on ` +
+    `${engMissing}; Crew has no data and appears on none of the 316`);
+
+  // A DIRECT LINK TO A TAB THIS SHIP DOES NOT HAVE LANDS ON LOADOUT.
+  const noEng = Object.keys(SHIPS).find((k) => !SHIPS[k].eng);
+  record(!!noEng, "found a ship with no relays, so this is testable");
+  vm.runInContext(`shipId=${JSON.stringify(noEng)};reset();openTab("engineering");`, sandbox);
+  record(g("tab") === "loadout",
+    `a direct link to #engineering on ${SHIPS[noEng].n} lands on Loadout without erroring`);
+}
+
+console.log("\n--- M1 section 2: the NETWORK TRACE - what a page actually fetches ---");
+{
+  /* THE CONTROL THE ADDENDUM NAMES, and the only one that proves the layers
+     are lazy rather than merely tabbed: watch what gets fetched.
+
+     Every <script> the page appends is counted. A default ship page must add
+     NOTHING; opening Engineering must add EXACTLY ONE file; reopening it must
+     add nothing at all. */
+  const added = [];
+  const realCreate = sandbox.document.createElement;
+  /* THE HARNESS PRE-LOADS EVERY GENERATED FILE, so the layer is already
+     registered and the lazy path would never run. Unregistering it first is
+     what makes this a trace of the LAZY behaviour rather than a trace of a
+     page that had everything already - and getting that wrong is how a
+     "nothing was fetched" result would have looked like a pass. */
+  const stashed = vm.runInContext("window.CC_LAYERS", sandbox);
+  vm.runInContext("window.CC_LAYERS={};layerState.engineering=undefined;", sandbox);
+  sandbox.document.createElement = () => (
+    { tagName: "SCRIPT", src: "", onload: null, onerror: null });
+  sandbox.document.head = {
+    appendChild(node) {
+      added.push(node.src);
+      // Stand in for the browser fetching and running the file: the real one
+      // registers itself, so this does too.
+      vm.runInContext("window.CC_LAYERS.engineering=__stash.engineering;", sandbox);
+      if (node.onload) node.onload();
+    },
+  };
+  vm.runInContext("__stash=" + JSON.stringify({ engineering: stashed.engineering }) + ";", sandbox);
+
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();tab="loadout";renderAll();`, sandbox);
+  const afterDefault = added.length;
+  record(afterDefault === 0,
+    "a DEFAULT ship page fetches no layer file at all",
+    `${afterDefault} fetched: ${added.join(", ")}`);
+
+  vm.runInContext(`openTab("engineering");`, sandbox);
+  const afterOpen = added.length;
+  record(afterOpen - afterDefault === 1,
+    "opening Engineering fetches EXACTLY ONE more file",
+    `${afterOpen - afterDefault}: ${added.slice(afterDefault).join(", ")}`);
+  record(added[added.length - 1] === "loadout_eng.gen.js",
+    "and it is the engineering layer, not something else",
+    added[added.length - 1]);
+
+  vm.runInContext(`tab="loadout";renderTabs();openTab("engineering");`, sandbox);
+  record(added.length === afterOpen,
+    "reopening it fetches NOTHING - the layer is cached, not re-requested",
+    `${added.length - afterOpen} extra`);
+  notes.push(`M1 network trace: default page 0 layer files, opening Engineering ` +
+    `1 (loadout_eng.gen.js), reopening 0`);
+  sandbox.document.createElement = realCreate;
+  vm.runInContext("window.CC_LAYERS=__stash;", sandbox);
+}
+
+console.log("\n--- M2: the engineering layer, and NO empty fuse positions ---");
+{
+  const ENG = g("typeof LOADOUT_ENG!=='undefined' ? LOADOUT_ENG : null");
+  record(!!ENG && Object.keys(ENG).length > 250,
+    "the engineering layer loaded", `${ENG ? Object.keys(ENG).length : 0} hulls`);
+  const relays = Object.values(ENG).reduce((t, v) => t + v.length, 0);
+  const fuses = Object.values(ENG).reduce((t, v) => t + v.reduce((a, r) => a + r[1], 0), 0);
+  record(relays > 600 && fuses > 1300, "with a real number of relays and fuses",
+    `${relays} relays, ${fuses} fuse slots`);
+  notes.push(`M2: ${relays} relays and ${fuses} fuse slots across ` +
+    `${Object.keys(ENG).length} hulls`);
+
+  // Bound to PortId, like everything else at port level.
+  let unbound = 0;
+  for (const [cls, rows] of Object.entries(ENG)) {
+    for (const r of rows) if (!r[2]) unbound++;
+  }
+  record(unbound === 0, "every relay carries the game's own PortId", `${unbound} without`);
+
+  // THE ORDER'S NAMED EXAMPLES.
+  const idris = Object.keys(ENG).find((k) => /Idris-P$/.test((SHIPS[k] || {}).n || ""));
+  const vulture = Object.keys(ENG).find((k) => /Vulture/.test((SHIPS[k] || {}).n || ""));
+  if (idris) {
+    const n = ENG[idris].length, f = ENG[idris].reduce((a, r) => a + r[1], 0);
+    record(n > 10, `the Aegis Idris-P is a big hull: ${n} relays / ${f} fuses`);
+    notes.push(`M2 named: Aegis Idris-P ${n} relays / ${f} fuses`);
+  }
+  if (vulture) {
+    const n = ENG[vulture].length, f = ENG[vulture].reduce((a, r) => a + r[1], 0);
+    record(n <= 3, `and the Drake Vulture a small one: ${n} relays / ${f} fuses`);
+    notes.push(`M2 named: Drake Vulture ${n} relays / ${f} fuses`);
+  }
+
+  // NO EMPTY POSITIONS. One bar per fuse slot that exists - counted against
+  // the data, on a hull with relays of DIFFERENT sizes, so a fixed-width
+  // track would show up immediately.
+  const mixed = Object.keys(ENG).find((k) => {
+    const sizes = new Set(ENG[k].map((r) => r[1]));
+    return SHIPS[k] && sizes.size > 1 && ENG[k].length > 3;
+  });
+  record(!!mixed, "found a hull with relays of different sizes");
+  vm.runInContext(`shipId=${JSON.stringify(mixed)};reset();tab="engineering";renderEngineering();`, sandbox);
+  const engHtml = el("engineering").innerHTML;
+  const bars = (engHtml.match(/<i><\/i>/g) || []).length;
+  const want = ENG[mixed].reduce((a, r) => a + r[1], 0);
+  record(bars === want,
+    `EXACTLY one bar per fuse slot on ${SHIPS[mixed].n} - no empty positions drawn`,
+    `${bars} bars for ${want} fuse slots`);
+  record(!/class="empty"|class="slot-empty"|opacity:\s*\.?[0-4]/.test(engHtml),
+    "and nothing is drawn greyed, which would read as a fuse being MISSING");
+  notes.push(`M2 no-empties: ${SHIPS[mixed].n} renders ${bars} bars for ` +
+    `${want} fuse slots across ${ENG[mixed].length} relays of differing sizes`);
+
+  // M4: what is NOT established must not be implied.
+  record(/not in the game files/.test(engHtml) && /ratings/.test(engHtml),
+    "the page says fuse RATINGS are not in the data");
+  record(/is not stated anywhere/.test(engHtml),
+    "and that whether a blown relay disables anything is NOT stated");
+  record(/suggest/i.test(engHtml),
+    "and that PenetrationMultiplier only SUGGESTS damage reaches fuses first");
+  record(!/will disable|causes .* to fail|knocks out/i.test(engHtml),
+    "and claims no failure behaviour of its own");
+}
+
+console.log("\n--- M3: plain language, reachable by keyboard and not hover alone ---");
+{
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();tab="loadout";renderAll();`, sandbox);
+  const stats = el("stats").innerHTML;
+  record(/class="stat[^"]*explained/.test(stats), "values carry an explanation");
+  record(/title="/.test(stats), "reachable by mouse (title)");
+  record(/aria-label="/.test(stats), "and by screen reader (aria-label)");
+  record(/tabindex="0"/.test(stats),
+    "AND BY KEYBOARD - tabindex, so it exists for somebody with no mouse");
+  // The CSS must reveal it on focus, not only on hover. A tooltip that answers
+  // only to a pointer is a feature with half its point missing.
+  record(/:focus[^{]*\.why|\.why[^{]*:focus/.test(html) || /focus-within/.test(html),
+    "and the CSS reveals it on :focus, not only on :hover");
+  const explained = (stats.match(/tabindex="0"/g) || []).length;
+  record(explained > 5, "a real number of values are explained", `${explained}`);
+  // The sentences are plain: no game-file jargon in the explanation itself.
+  const EX = g("EXPLAIN");
+  const jargon = Object.entries(EX).filter(([k, v]) =>
+    /CompatibleTypes|ClassName|stdItem|PortId|IsPilotSlaveable/.test(v));
+  record(jargon.length === 0,
+    "and no explanation uses a game-file field name",
+    jargon.map(([k]) => k).join(", "));
+  notes.push(`M3: ${explained} values carry a plain-language sentence, each ` +
+    `reachable by mouse, keyboard and screen reader`);
 }
 
 /* ---------------------------------------------- rule 8: never touch these */
