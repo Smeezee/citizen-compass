@@ -2874,7 +2874,7 @@ M0  DONE  3bd90c7  ADDENDUM §0 AUDIT OF L1-L7. The answer is: NOTHING WAS KEYED
     independent encounters with the same defect in one run is the strongest
     argument for the addendum's rule that I can offer.
 
-L8  DONE  <sha>  THE 3D VIEWER IS ONE FILE NOW - testing/_src/cc_viewer.js.
+L8  DONE  66b5363  THE 3D VIEWER IS ONE FILE NOW - testing/_src/cc_viewer.js.
     The renderer, the lights, the environment map, the framing, the load path
     and its cancellation came out of index.html. What did NOT come out is
     badges, prices, dealers, hardpoint panels or tabs - that is what each page
@@ -2916,7 +2916,7 @@ L8  DONE  <sha>  THE 3D VIEWER IS ONE FILE NOW - testing/_src/cc_viewer.js.
     the library, which is exactly what should be there. Now matched on
     CONSTRUCTION - `new THREE.PMREMGenerator(` - not on the identifier.
 
-L9  DONE  <sha>  THE SHIP PAGE = THE BENCH PLUS THE MODEL. No third page.
+L9  DONE  66b5363  THE SHIP PAGE = THE BENCH PLUS THE MODEL. No third page.
     loadout.html was already per-ship, already did A/B and already shared by
     URL, so the model came to it. 201 of 221 linked ships carry one.
     THE MODEL STAYS LOADED WHILE THE READOUT CHANGES, which is L9's control and
@@ -2935,3 +2935,35 @@ L9  DONE  <sha>  THE SHIP PAGE = THE BENCH PLUS THE MODEL. No third page.
     the 221 - gets an honest sentence where the viewer goes, saying the numbers
     below are real and only the model is missing. Not a broken viewer, not a
     spinner.
+
+L10 DONE  <sha>  HULL MARKERS - 1,200 on 157 hulls, and they are a SECOND
+    ROUTE, not a second mechanism.
+    `selectPort()` is the ONLY place in the page that selects a port. The list
+    row calls it and the marker calls it, and the control asserts BOTH that the
+    two produce BYTE-IDENTICAL picker HTML and that the source contains exactly
+    ONE `sel={...}` assignment. The first assertion could pass by coincidence
+    if a second path happened to render the same; the second is what makes it
+    true by construction.
+    NAMED: on the Aegis Avenger Stalker, the marker for
+    `hardpoint_weapon_missilerack_left_wing` and its list row open identical
+    windows.
+    BY IDENTITY, AND THIS IS WHERE THE RUN'S RECURRING DEFECT WOULD HAVE LANDED
+    AGAIN. A marker is bound to the game's own `PortId`. A hardpoint NAME could
+    not have done it: 287 of 316 hulls have slots sharing one, 11,283 slots in
+    all, and the RSI POLARIS HAS THIRTY PORTS CALLED `MEC`. PortId is unique -
+    57,759 ports, 57,759 distinct ids, checked across the whole snapshot.
+    WHERE A NAME WAS AMBIGUOUS, NO MARKER WAS EMITTED. 14 points dropped rather
+    than assigned to whichever of two ports came first, which would have been a
+    coin toss dressed as data. The list still reaches both. 595 further points
+    matched no weapon port at all - they are `other` and `mount` kinds that are
+    not component ports - and markers stay weapons-only per the order.
+    THE VIEWER GAINED TWO THINGS AND NO OPINIONS: `project()` for where a hull
+    point is on screen, and an `onFrame` hook. Markers are REAL DOM BUTTONS,
+    absolutely positioned - not sprites - because a button can be focused,
+    tabbed to and read aloud and a sprite cannot. A point behind the camera
+    returns null and its marker hides, rather than being drawn on the wrong
+    side of the hull.
+    ONE DEFECT IN MY OWN CHECK, worth recording: the harness loaded only
+    loadout_data.gen.js while the page loads four generated files, so MARKS was
+    empty. It FAILED rather than passing quietly, which is the only reason it
+    was found in the same minute it was written.

@@ -192,7 +192,39 @@ var CCViewer = (function () {
       self._raf = requestAnimationFrame(loop);
       if (self.controls) self.controls.update();
       if (self.renderer) self.renderer.render(self.scene, self.camera);
+      /* One hook, called after the frame is drawn. A page that overlays
+         anything on the model - hull markers, labels - needs to move it when
+         the camera does, and giving it a hook is cheaper than giving it the
+         render loop. */
+      if (self.onFrame) self.onFrame(self);
     })();
+  };
+
+  /* WHERE A POINT ON THE HULL IS ON SCREEN.
+     Markers are DOM, not sprites, deliberately: a real element can be focused,
+     tabbed to and read by a screen reader, and a sprite cannot. So the viewer
+     answers "where is this" and the page decides what to put there.
+     Returns null when the point is BEHIND the camera - `z > 1` after
+     projection - because a marker drawn for a gun on the far side of the hull
+     is a marker pointing at the wrong thing. */
+  Viewer.prototype.project = function (x, y, z) {
+    if (!this.camera || !this.canvas) return null;
+    var v = new THREE.Vector3(x, y, z).project(this.camera);
+    if (v.z > 1) return null;
+    var w = this.canvas.clientWidth, h = this.canvas.clientHeight;
+    return { x: (v.x * 0.5 + 0.5) * w, y: (-v.y * 0.5 + 0.5) * h, depth: v.z };
+  };
+
+  /* The scalar that turns a NORMALISED hull position into a world one.
+     `unit` in the hardpoint dataset is normalised against the hull's longest
+     HALF-extent, so this is that half-extent, measured from the mesh actually
+     loaded. There is no fixed multiplier that could be right: the fleet spans
+     10,000x in model units per metre. */
+  Viewer.prototype.unitScale = function () {
+    if (!this.current) return 0;
+    var box = new THREE.Box3().setFromObject(this.current);
+    var s = box.getSize(new THREE.Vector3());
+    return (Math.max(s.x, s.y, s.z) || 1) / 2;
   };
 
   Viewer.prototype.stop = function () {

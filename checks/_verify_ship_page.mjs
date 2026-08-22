@@ -44,7 +44,7 @@
  * Usage:  node checks/_verify_ship_page.mjs [--self-test] [--mutate]
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import vm from "node:vm";
@@ -67,6 +67,13 @@ function record(got, label, detail = "") {
 
 const html = readFileSync(PAGE, "utf-8");
 const dataJs = readFileSync(DATA, "utf-8");
+/* The page loads four generated files, not one. Loading only the loadout data
+   left MARKS empty and the L10 block asserting on nothing - which it correctly
+   reported as a failure rather than passing quietly. */
+const EXTRA = ["loadout_model.gen.js", "loadout_marker.gen.js"]
+  .map((f) => join(SRC, f))
+  .filter((f) => existsSync(f))
+  .map((f) => readFileSync(f, "utf-8"));
 
 /* ---------------------------------------------------------------- DOM stub
    The smallest browser the page actually touches. Elements are plain objects
@@ -123,6 +130,7 @@ if (MUTATE) {
               "ignoring the port. Something below MUST notice. ***");
 }
 vm.runInContext(dataJs, sandbox, { filename: "loadout_data.gen.js" });
+for (const src of EXTRA) vm.runInContext(src, sandbox, { filename: "gen" });
 vm.runInContext(script, sandbox, { filename: "loadout.src.html:script" });
 const g = (expr) => vm.runInContext(expr, sandbox);
 
@@ -514,6 +522,103 @@ record(stockStats !== changedStats,
   "the two are visibly different on the page, not the same badge twice");
 record(el("sourcenote").innerHTML.includes(META.snapshot),
   "the page names the snapshot it was built from");
+
+/* ------ L10: a hull marker is a SECOND ROUTE to the same picker ---------- */
+console.log("\n--- L10: marker N selects port N and no other, BY IDENTITY ---");
+{
+  const MARKS = g("MARKS");
+  record(Object.keys(MARKS).length > 50,
+    "hull markers exist for a real number of hulls",
+    `${Object.keys(MARKS).length} hulls`);
+
+  // A marker's identity is the game's PortId. Every one must resolve to
+  // EXACTLY ONE port on its ship - not zero, and above all not two.
+  let checkedMarks = 0, unresolved = 0, ambiguous = 0;
+  for (const [cls, list] of Object.entries(MARKS)) {
+    const rec = SHIPS[cls];
+    if (!rec) { unresolved += list.length; continue; }
+    for (const m of list) {
+      checkedMarks++;
+      const hits = rec.slots.filter(sl => sl.p === m[0]);
+      if (hits.length === 0) unresolved++;
+      else if (hits.length > 1) ambiguous++;
+    }
+  }
+  record(checkedMarks > 500, "a real number of markers were checked", `${checkedMarks}`);
+  record(unresolved === 0, "every marker resolves to a port on its own ship",
+    `${unresolved} do not`);
+  record(ambiguous === 0,
+    "and to EXACTLY ONE port - never two. This is the assertion a hardpoint " +
+    "name could not pass: 287 of 316 hulls share one between slots",
+    `${ambiguous} ambiguous`);
+  notes.push(`L10: ${checkedMarks} markers across ${Object.keys(MARKS).length} ` +
+    `hulls, every one resolving to exactly one port by PortId`);
+
+  // MARKERS STAY WEAPONS-ONLY, per the order. Internal ports come from the list.
+  const WEAPONY = new Set(["WeaponGun", "Turret", "MissileLauncher",
+    "WeaponDefensive", "WeaponMining", "BombLauncher", "SalvageHead",
+    "TractorBeam", "EMP", "Missile", "Bomb"]);
+  let nonWeapon = 0;
+  for (const [cls, list] of Object.entries(MARKS)) {
+    const rec = SHIPS[cls]; if (!rec) continue;
+    for (const m of list) {
+      const sl = rec.slots.find(x => x.p === m[0]);
+      if (sl && !WEAPONY.has(TYPES[sl.t] && TYPES[sl.t].t)) nonWeapon++;
+    }
+  }
+  record(nonWeapon === 0, "every marker is on a weapon port", `${nonWeapon} are not`);
+
+  // THE SAME WINDOW, NOT A SECOND ONE. Click the port in the list, capture the
+  // picker; reset; click the marker; the picker must be BYTE-IDENTICAL.
+  // Anything less and there are two mechanisms rather than two routes.
+  const markShip = Object.keys(MARKS).find(k => {
+    const rec = SHIPS[k]; if (!rec) return false;
+    return MARKS[k].some(m => {
+      const sl = rec.slots.find(x => x.p === m[0]);
+      return sl && sl.fit && (FITS[sl.fit] || []).length > 1;
+    });
+  });
+  record(!!markShip, "found a hull whose marker points at a swappable port");
+  if (markShip) {
+    const rec = SHIPS[markShip];
+    const mark = MARKS[markShip].find(m => {
+      const sl = rec.slots.find(x => x.p === m[0]);
+      return sl && sl.fit && (FITS[sl.fit] || []).length > 1;
+    });
+    const slot = rec.slots.find(x => x.p === mark[0]);
+    vm.runInContext(`shipId=${JSON.stringify(markShip)};reset();renderAll();`, sandbox);
+
+    vm.runInContext(`sel=null;selectPort(ship().slots.find(s=>s.id===${JSON.stringify(slot.id)}),"A");`, sandbox);
+    const viaList = el("picker").innerHTML;
+    const listSel = JSON.parse(g("JSON.stringify(sel)"));
+
+    vm.runInContext(`sel=null;renderAll();`, sandbox);
+    vm.runInContext(`selectPort(slotByPort(${JSON.stringify(mark[0])}),"A");`, sandbox);
+    const viaMark = el("picker").innerHTML;
+    const markSel = JSON.parse(g("JSON.stringify(sel)"));
+
+    record(viaMark.length > 100, "clicking the marker opened a picker at all");
+    record(viaMark === viaList,
+      "the marker and the list open the IDENTICAL window - same bytes, not a " +
+      "second mechanism that happens to look alike");
+    record(JSON.stringify(markSel) === JSON.stringify(listSel),
+      "and select the same port", `${JSON.stringify(markSel)} vs ${JSON.stringify(listSel)}`);
+    notes.push(`L10 named: on ${rec.n}, the marker for port "${HPN[slot.h]}" ` +
+      `and the list row for it open byte-identical pickers`);
+
+    // AND NO OTHER PORT. Selecting via the marker must not select a second.
+    const others = rec.slots.filter(x => x.id !== slot.id && x.p === mark[0]);
+    record(others.length === 0, "no other port on the hull answers to that id");
+  }
+
+  // ONE SELECTION PATH IN THE SOURCE. If a second appears, the "identical
+  // window" assertion above starts passing by coincidence rather than by
+  // construction.
+  const assigns = (script.match(/\bsel\s*=\s*\{/g) || []).length;
+  record(assigns === 1,
+    "there is exactly ONE place in the page that selects a port",
+    `${assigns} assignments to sel={...}`);
+}
 
 /* ------------ ADDENDUM s0: a display name is not an identity here --------- */
 console.log("\n--- addendum s0: Name is a label, ClassName is the key ---");
