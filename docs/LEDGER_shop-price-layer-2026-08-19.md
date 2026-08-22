@@ -4658,3 +4658,41 @@ B9  DONE  1281c82  THE FLEET MARKER CENSUS, TAKEN BY CLICKING ALL 1,200
     was promoted, because a local placement run does not byte-reproduce the
     committed dataset. So these 1,200 markers are in the same places they were
     this morning - what changed is that all of them now answer.
+
+# H RUN - docs/ORDER_every-ship-is-a-hologram-2026-08-22.md
+# Same ledger. Appended below the B run, nothing above rewritten.
+
+B5/B6 PROMOTED  ef4cf29  THE FLEET PLACEMENT RE-DERIVED AND SHIPPED.
+    Held at the end of the B run because a local run does not byte-reproduce
+    the committed dataset. Promoted on Sleven's instruction: the derivation
+    changed, the dataset did not.
+    The old file was MOVED ASIDE, not overwritten -
+    _to_delete/hardpoints_fleet_pre_B5B6_20260822185204.json, 656,401 bytes.
+    THE DELTA, DECOMPOSED. Two different changes are in this promotion and
+    reporting one number would hide one of them:
+      committed -> promoted   1,788 of 1,798 points moved. median 0.026 of
+                              half-extent, p90 0.251, max 1.981; 811 moved
+                              less than 0.02. DOMINATED BY THE VERTEX
+                              SUBSAMPLE - the hulls were decoded again here,
+                              so each marker snaps to a slightly different
+                              real vertex. This is not B5 and not B6.
+      B6 alone, geometry      118 points on 55 of 167 ships, median 0.074.
+      held constant           112 hulls did not move a marker.
+      B5 alone                0 points, exactly as its control measured.
+    Worst movers committed -> promoted: Ironclad Assault 1.981, F8C Lightning
+    1.879, Prowler Utility 1.764, Vanguard Warden 1.743, Corsair 1.669,
+    Polaris 1.646, Idris-M 1.521.
+    THE B6 CONTROLS HELD, re-run against the promoted derivation:
+      crowding 118 -> 117 markers on 19 ships - NOT worse
+      55 of 167 ships moved; a hull close to the fixed fractions barely moves
+      median move 0.074 of half-extent
+    Markers regenerated: 1,200 on 157 hulls - count unchanged, port bindings
+    unchanged, 1,193 points moved and 7 did not. All eight B-run controls
+    re-run green afterwards.
+    MY ERROR, RECORDED: I preserved hardpoints_fleet.json and did NOT preserve
+    placement_report.json beside it. The sandbox-era report is overwritten and
+    gone, including its list of the 7 hulls skipped with a stated reason -
+    the MANIFEST records only the count. Rule 1 says move aside rather than
+    overwrite and I applied it to one file of the two. The names are
+    re-derivable by running the frame check over the candidate hulls, and that
+    is folded into H5, which needs the same answer.
