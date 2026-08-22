@@ -3758,7 +3758,7 @@ E-N2 DONE  b4e22d4  §4 AUDIT: WHICH N CONTROLS DROVE SOMETHING, WHICH GREPPED.
     backed by the negative half, which breaks the module and requires the ship
     page to fail. If that ever stops being true they should become behavioural.
 
-E-N3 DONE  <sha>  SWEEP + DEPLOY + COUNTED ON THE SERVED PAGE.
+E-N3 DONE  b653aef  SWEEP + DEPLOY + COUNTED ON THE SERVED PAGE.
     URL: https://citizencompasstesting.citizencompass-contact.workers.dev
     Version ID 4cdc686b-2a5d-4d62-b7ea-d40bca62b73e. NOT the live site.
     SWEEP: 44 controls discovered, 41 ok, 1 failed, 2 skipped, 0 NOT RUN.
