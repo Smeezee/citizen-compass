@@ -4255,3 +4255,49 @@ B0  DONE  eef64be  A MARKER THAT DID NOTHING HAS STOPPED EXISTING IN THAT FORM.
     hardpoint-name table, not the name, so comparing it to a string matched
     nothing. The lookup was wrong, not the data.
     NO REGRESSION: _verify_ship_page.mjs still 238 ok, 0 failed.
+
+B1  DONE  a6d28b9  THE LEFT COLUMN NOW HOLDS ONLY WHAT A PERSON CAN ACT ON.
+    Fixed ports left the loadout column for the Specs tab, with L4 intact
+    wherever they are shown: the fitted part, its manufacturer, the port label,
+    the reason it is locked IN THE GAME'S OWN TERMS, and the patch tag. N7's
+    collapsed <details> fold went with them, along with its CSS and the
+    `fixedOpen` state it needed.
+    THEY STAY FINDABLE. "N fixed" in the sub-line is a control that opens
+    Specs. Something moved with no signpost has been hidden, not organised. On
+    a hull with no fixed ports it is plain text and there is no control
+    offering to lead somewhere empty.
+    THE SPECS ROWS ARE READING MATTER, NOT CONTROLS - `data-fixed`, never
+    `data-slot`. A control there would set `sel`, which hides the loadout
+    column and opens the picker pane ON A TAB THE READER IS NOT LOOKING AT.
+    That is P5's "a consequence you cannot see has not happened" and it was
+    cheaper to not build it than to find it later. The clickable route to the
+    same information is the marker, which is on screen when it opens.
+    THE SPLIT IS UNCHANGED and that is the point of the item: `swappable(s)` =
+    `!!s.fit` = the port's own Editable flag, no list of types anywhere.
+    CONTROL  checks/_verify_column_split.mjs, 27 assertions.
+      column holds exactly the 21 swappable ports of the Avenger Stalker
+      Specs holds all 36 fixed, and 21 + 36 = 57, the port total
+      "N fixed" dispatched through the page's own handler opens the Specs tab
+      FLEET: 316 hulls with ports, EVERY port on the side its own flag puts it
+    NEGATIVE, as the order required: driven with the only record in the fleet
+    that has ports and no fixed ones (PowerSuit, 2 ports). Specs still renders,
+    no "Fixed ports" heading over an empty list, sub-line reads plain "0 fixed"
+    with nothing to click.
+    RULE 12, AND IT EARNED ITS KEEP. Two plants, both exit non-zero:
+    --mutate-column puts the fixed rows back in the column, --mutate-heading
+    emits the heading with nothing under it.
+    THE FIRST VERSION OF --mutate-column ONLY UN-FILTERED THE COLUMN, AND THIS
+    CONTROL PASSED. Correctly: renderSlot() still turned a fixed port away at
+    the door, so the page was still right. A real revert needs both halves.
+    Planting it is how that was found; reading the code would not have shown it.
+    _verify_ship_page.mjs's L4, N7 and N8 blocks were moved to the new home and
+    NOT relaxed - same claims, asserted against Specs, plus a new sum assertion
+    that catches a port falling into the gap between the two lists. 239 ok, and
+    its own --mutate still catches the widened fitsFor.
+    ALSO: checks/_loadout_harness.mjs extracts the DOM stub these controls
+    share. Two copies already existed and the B run needs more; a stub
+    duplicated seven times is seven writers for one fact (rule 14).
+    CONVENTION NOTED, NOT CHANGED: _verify_ship_page.mjs's --mutate exits 0
+    when it CATCHES the mutant. The new B-run controls exit 1 instead, because
+    a non-zero exit cannot be mistaken for "the run did nothing". Both are
+    honest; they are different, and this is where that is written down.
