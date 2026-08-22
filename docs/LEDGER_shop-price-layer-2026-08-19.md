@@ -3596,7 +3596,7 @@ N9  DONE  6969fb2  THE FALSE CLAIM IS GONE, AND WHAT REPLACED IT IS SPECIFIC.
     hand-placing in Blender. Sleven has not decided which, and it turns on
     whether the extraction tool can keep hardpoint data.
 
-N12 DONE  <sha>  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
+N12 DONE  feb6879  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
     URL: https://citizencompasstesting.citizencompass-contact.workers.dev
     Version ID f6507a7d-1d99-4565-b3c3-06e360657198. NOT the live site.
     SWEEP: 43 controls discovered, 40 ok, 1 failed, 2 skipped, 0 NOT RUN, 111s.
