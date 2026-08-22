@@ -182,21 +182,35 @@ const fixedSlots = SH.slots.filter(s => !s.fit);
 const editSlots = SH.slots.filter(s => s.fit);
 
 record(colA.length > 500, "the build column rendered something at all");
-// EVERY port appears, fixed and editable alike. Counted, not sampled: a
-// sample would pass while one group silently vanished.
-const rendered = (colA.match(/class="slot/g) || []).length;
-record(rendered === SH.slots.length,
-  `every one of the ${SH.slots.length} ports rendered - fixed and editable alike`,
-  `rendered ${rendered}`);
-const renderedFixed = (colA.match(/class="slot fixed"/g) || []).length;
+/* B1 MOVED THE FIXED PORTS, AND THIS BLOCK MOVED WITH THEM.
+   L4's rule is unchanged and every part of it is still asserted below: a fixed
+   port is SHOWN, it NAMES what is in it, it says WHY it is locked, and it
+   COUNTS toward the totals. What changed on 2026-08-22 is only WHERE it is
+   shown - the Specs tab rather than a fold at the bottom of the loadout
+   column, because the column is for ports somebody can act on.
+   The assertions are NOT relaxed to accommodate that. They are pointed at the
+   new home, and the sum below is what stops a port falling into the gap
+   between the two lists. checks/_verify_column_split.mjs is the item's own
+   control and drives the whole fleet; this stays as the regression guard in
+   the place that noticed. */
+const specsHtml = el("specs").innerHTML;
+const renderedOpen = (colA.match(/class="slot/g) || []).length;
+const renderedFixed = (specsHtml.match(/class="slot fixed"/g) || []).length;
+record(renderedOpen === editSlots.length,
+  `the column holds exactly the ${editSlots.length} ports that can be changed`,
+  `rendered ${renderedOpen}`);
 record(renderedFixed === fixedSlots.length,
-  `all ${fixedSlots.length} FIXED ports rendered rather than being hidden`,
+  `all ${fixedSlots.length} FIXED ports rendered on Specs rather than hidden`,
   `rendered ${renderedFixed}`);
-record(/can'?t be changed|does not allow this to be changed|no part for this port/.test(colA),
+record(renderedOpen + renderedFixed === SH.slots.length,
+  `and the two sum to every one of the ${SH.slots.length} ports - none lost `
+  + `between the lists`,
+  `${renderedOpen} + ${renderedFixed}`);
+record(/can'?t be changed|does not allow this to be changed|no part for this port/.test(specsHtml),
   "a fixed port says plainly that it cannot be changed");
 // It names the part in it. "Fuel tank - LOCKED" tells a visitor nothing.
 const namedFixed = fixedSlots.filter(s => s.stock && PARTS[s.stock])
-  .map(s => PARTS[s.stock].n).filter(n => colA.includes(n));
+  .map(s => PARTS[s.stock].n).filter(n => specsHtml.includes(n));
 record(namedFixed.length > 0,
   "a fixed port NAMES the part fitted in it, not just its type",
   `${namedFixed.length} named`);
@@ -1180,26 +1194,29 @@ console.log("\n--- N11: back to stock is always one visible click ---");
     `${SHIPS[shipKey].slots.filter((x) => x.fit).length} editable ports to stock`);
 }
 
-console.log("\n--- N7: fixed ports fold away, and still count ---");
+console.log("\n--- N7 as B1 left it: fixed ports leave the column, and still count ---");
 {
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
   const colA = el("colA").innerHTML;
+  const specsHtml = el("specs").innerHTML;
   const nFixed = SH.slots.filter((x) => !x.fit).length;
 
-  record(/<details class="fixed-group"/.test(colA),
-    "the fixed ports sit behind a disclosure");
-  record(!/<details class="fixed-group" open/.test(colA),
-    "which is CLOSED by default");
-  record(colA.includes(`not swappable in game (${nFixed})`),
-    `and is labelled with its count (${nFixed})`);
-  record(/<summary/.test(colA),
-    "as a real <details>/<summary>, so it opens by keyboard as well as click");
+  /* N7 FOLDED THEM AWAY. B1 MOVED THEM OUT. The fold is gone and its rules
+     with it, so what is asserted now is that the column is clean and the
+     signpost exists - hiding something with no signpost is not organising it. */
+  record(!/<details class="fixed-group"/.test(colA),
+    "the collapsed fold is gone from the column");
+  record(colA.includes("id=\"tospecs\""),
+    "and the sub-line's fixed count is a control that leads to them");
+  record(specsHtml.includes(`Fixed ports &mdash; ${nFixed}`),
+    `Specs carries them under a heading with its count (${nFixed})`);
 
-  /* STILL RENDERED, just folded. A disclosure that dropped them would satisfy
-     "they are out of the way" and lose them. */
-  const rendered = (colA.match(/class="slot/g) || []).length;
+  /* STILL RENDERED, just elsewhere. A move that dropped them would satisfy
+     "they are out of the column" and lose them. */
+  const rendered = (colA.match(/class="slot/g) || []).length
+    + (specsHtml.match(/class="slot fixed"/g) || []).length;
   record(rendered === SH.slots.length,
-    "every port is still rendered - folded, not dropped",
+    "every port is still rendered - moved, not dropped",
     `${rendered} of ${SH.slots.length}`);
 
   /* AND THEY STILL COUNT. The order is explicit: a thruster affects mass
@@ -1213,10 +1230,10 @@ console.log("\n--- N7: fixed ports fold away, and still count ---");
   vm.runInContext(`SHIPS[${JSON.stringify(shipKey)}].slots=__save;`, sandbox);
   record(withFixed !== withoutFixed,
     "and they still contribute to the readout - dropping them moves it");
-  record(/still count/.test(colA),
+  record(/still count toward/.test(specsHtml),
     "and the page says so, rather than leaving somebody to wonder");
-  notes.push(`N7: ${nFixed} of ${SH.slots.length} ports folded into a closed ` +
-    `disclosure on ${SH.n}; all still rendered and all still counted`);
+  notes.push(`N7/B1: ${nFixed} of ${SH.slots.length} ports moved to Specs on ` +
+    `${SH.n}; all still rendered and all still counted`);
 }
 
 console.log("\n--- N8: the grouping is Editable, never a list of types ---");
@@ -1231,8 +1248,8 @@ console.log("\n--- N8: the grouping is Editable, never a list of types ---");
   const src = script;
   record(!/FIXED_TYPES|NOT_SWAPPABLE|\[["'](?:FuelTank|ManneuverThruster|Armor)/.test(src),
     "no hardcoded list of fixed component types exists in the page");
-  record(/const\s+shut\s*=\s*sh\.slots\.filter\(x=>!swappable\(x\)\)/.test(src.replace(/\s+/g, "")) ||
-         /shut=sh\.slots\.filter\(x=>!swappable\(x\)\)/.test(src.replace(/\s+/g, "")),
+  record(/shut=\(?sh\.slots\)?\.filter\(x=>!swappable\(x\)\)/.test(src.replace(/\s+/g, "")) ||
+         /shut=\(sh\.slots\|\|\[\]\)\.filter\(x=>!swappable\(x\)\)/.test(src.replace(/\s+/g, "")),
     "the split is `!swappable(slot)` and nothing else");
   record(/const swappable\s*=\s*s\s*=>\s*!!s\.fit/.test(src),
     "and `swappable` is the port's own fit rule, set from its Editable flag");
@@ -1245,36 +1262,31 @@ console.log("\n--- N8: the grouping is Editable, never a list of types ---");
   const donorRule = Object.keys(FITS).find((k) => (FITS[k] || []).length > 2);
 
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
-  const beforeHtml = el("colA").innerHTML;
-  const beforeShut = beforeHtml.split('class="fixed-group"')[1] || "";
-  record(beforeShut.includes(`data-slot="${fixedSlot.id}"`) ||
-         beforeHtml.includes(`data-port="${fixedSlot.h}"`),
-    `the port starts in the collapsed group (${fixedSlot.id})`);
+  record(el("specs").innerHTML.includes(`data-fixed="${fixedSlot.id}"`),
+    `the port starts on the Specs tab (${fixedSlot.id})`);
+  record(!el("colA").innerHTML.includes(`data-slot="${fixedSlot.id}"`),
+    "and not in the column of things that can be changed");
 
   vm.runInContext(
     `__slot=SHIPS[${JSON.stringify(shipKey)}].slots.find(s=>s.id===${JSON.stringify(fixedSlot.id)});` +
     `__slot.fit=${JSON.stringify(donorRule)};reset();renderAll();`, sandbox);
-  const afterHtml = el("colA").innerHTML;
-  const parts = afterHtml.split('<details class="fixed-group"');
-  const afterOpen = parts[0];
-  const afterShut = parts[1] || "";
 
-  record(afterOpen.includes(`data-slot="${fixedSlot.id}"`),
-    "flipping Editable moves it OUT of the collapsed group - with no code change");
-  record(!afterShut.includes(`data-slot="${fixedSlot.id}"`),
-    "and it is no longer in the folded half");
+  record(el("colA").innerHTML.includes(`data-slot="${fixedSlot.id}"`),
+    "flipping Editable moves it INTO the column - with no code change");
+  record(!el("specs").innerHTML.includes(`data-fixed="${fixedSlot.id}"`),
+    "and it has left the Specs list");
   const nowFixed = SH.slots.filter((x) => !x.fit).length;
-  record(afterHtml.includes(`not swappable in game (${nowFixed})`),
-    "and the disclosure's count follows it down", `now ${nowFixed}`);
-  notes.push(`N8: flipping one port's Editable flag moved it out of the ` +
-    `collapsed group and dropped the count to ${nowFixed} - no code edited, ` +
+  record(el("colA").innerHTML.includes(`${nowFixed}\n           fixed`) ||
+         el("colA").innerHTML.includes(`>${nowFixed}`),
+    "and the sub-line's fixed count follows it", `now ${nowFixed}`);
+  notes.push(`N8: flipping one port's Editable flag moved it from Specs into ` +
+    `the column and dropped the fixed count to ${nowFixed} - no code edited, ` +
     `the page follows the data`);
 
   // put it back, and confirm it goes back - a one-way move would also pass above
   vm.runInContext(`delete __slot.fit;reset();renderAll();`, sandbox);
-  const restored = el("colA").innerHTML.split('<details class="fixed-group"')[1] || "";
-  record(restored.includes(`data-slot="${fixedSlot.id}"`),
-    "and flipping it back returns it to the collapsed group");
+  record(el("specs").innerHTML.includes(`data-fixed="${fixedSlot.id}"`),
+    "and flipping it back returns it to Specs");
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
 }
 

@@ -307,17 +307,21 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .markernote code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;
  font-size:12px}
 
-/* N7: the fixed ports, folded. Closed by default and labelled with its count,
-   so somebody can see there is something there without it being in the way. */
-.fixed-group{border-top:1px solid var(--line)}
-.fixed-group > summary{list-style:none;cursor:pointer;padding:9px 13px;
- font:600 12.5px inherit;color:var(--muted);display:flex;align-items:center;gap:7px}
-.fixed-group > summary::-webkit-details-marker{display:none}
-.fixed-group > summary::before{content:"\25B8";font-size:11px;transition:transform .15s}
-.fixed-group[open] > summary::before{transform:rotate(90deg)}
-.fixed-group > summary:hover{color:var(--text)}
-.fixed-group > summary:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
-.fixed-note{padding:0 13px 8px;font-size:12px;color:var(--muted);line-height:1.45}
+/* B1: N7's collapsed fold is GONE, and so are its rules. The fixed ports live
+   on the Specs tab now, and what is left here is the signpost that says so.
+   `.tospecs` is a real button inside the sub-line - it reads as part of the
+   sentence rather than as a widget, but it takes focus and answers the
+   keyboard, which a styled <span> would not. */
+.tospecs{background:none;border:0;padding:0;font:inherit;color:var(--accent2);
+ cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.tospecs:hover{color:var(--accent)}
+.tospecs:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+/* And the rows themselves, on Specs. Same row shape as the loadout column, so
+   the two read as the same kind of thing - which they are. */
+.fixedspecs{margin-top:9px;border:1px solid var(--line);border-radius:9px;
+ overflow:hidden}
+.fixedspecs .slot{cursor:default}
+.fixedspecs .grp h3{margin:0}
 
 /* N5: one build means one column, and the grid says so rather than leaving a
    gap where the second one used to be. */
@@ -578,7 +582,6 @@ let twoUp=false;
    the page - having to reopen it on every re-render would make it useless -
    and NOT remembered across ships, because it opens closed by default and that
    is the state N7 asks for. */
-let fixedOpen=false;
 
 /* N10: WHAT MOVED, AND FOR HOW LONG.
    Keyed by the stat's own label, holding the delta that stat just took. It is
@@ -638,7 +641,7 @@ function isStock(b){
   return (ship().slots||[]).every(s=>!swappable(s)||b[s.id]===s.stock);
 }
 /* Changing ship starts over: one build, nothing marked, nothing to undo. */
-function resetView(){ twoUp=false; editing="A"; changedStats=new Map(); fixedOpen=false; }
+function resetView(){ twoUp=false; editing="A"; changedStats=new Map(); }
 
 /* A DISPLAY NAME IS NOT AN IDENTITY IN THIS DATASET.
    22 names are shared by 51 records: `AEGS_Hammerhead` and
@@ -1160,7 +1163,10 @@ function renderCol(which){
       <span class="cost">${nch?nch+" changed":"stock loadout"}</span>
       ${twoUp&&which==="B"?'<button class="btn tiny" id="dropB">Discard this one</button>':""}</div>
       <div class="colsub">${sh.slots.length} ports · ${ned} can be changed ·
-      ${sh.slots.length-ned} fixed</div>`;
+      ${sh.slots.length-ned
+        ? `<button type="button" class="tospecs" id="tospecs">${sh.slots.length-ned}
+           fixed</button>`
+        : `0 fixed`}</div>`;
   /* N7 + N8: FIXED PORTS FOLD AWAY, AND THE GROUPING IS `Editable`.
      THIS IS THE LOAD-BEARING HALF, and it is Sleven's own reasoning: "if ever
      it changes, we already have a foundation built for it." The split below is
@@ -1177,23 +1183,12 @@ function renderCol(which){
   const renderSlot=(s)=>{
     const label=portLabel(s.h), size=(s.s==null?"—":"S"+s.s);
 
-    if(!swappable(s)){
-      /* A FIXED PORT IS SHOWN, NOT HIDDEN (L4). It still names the part that
-         is in it, because "Fuel tank — LOCKED" tells a visitor nothing about
-         their ship. And it says WHY it is locked in the game's own terms, with
-         the patch that was last verified. */
-      const p=P[s.stock];
-      const why = s.nofit
-        ? "the game files list no part for this port"
-        : "the game does not allow this to be changed";
-      h+=`<div class="slot fixed" data-port="${s.h}" data-slot="${s.id}">
-        <span class="sz">${size}</span><span class="nm">
-        <b>${p?p.n:label}</b><small>${p?p.m+" · ":""}${label} — ${why}
-        <span class="tag">${s.nofit?"NO PART":"FIXED"}</span>
-        <span class="tag pv">${s.v||META.last_verified_patch||""}</span></small></span>
-        <span class="pr"><b>&mdash;</b>${s.turret?"gunner":"fitted"}</span></div>`;
-      return;
-    }
+    /* B1: A FIXED PORT NEVER REACHES THIS FUNCTION ANY MORE - the column
+       filters to `open` before calling it. Its row is rendered by
+       fixedSpecRow() on the Specs tab instead. The guard stays as a guard
+       rather than as rendering: if one ever arrives here it is a bug in the
+       caller, and rendering it quietly would hide that. */
+    if(!swappable(s)) return;
     const id=build[s.id], p=P[id];
     const changed=id!==s.stock, active=sel&&sel.slot===s.id&&editing===which;
     const n=fitsFor(s).length;
@@ -1212,25 +1207,14 @@ function renderCol(which){
     renderSlot(s);
   });
 
-  /* And the ones they cannot, behind one closed disclosure that says how many.
-     `<details>` rather than a scripted toggle: it opens with a click OR with a
-     keyboard, it is announced as a disclosure by a screen reader, and it needs
-     no state of ours to remember. */
-  if(shut.length){
-    h+=`<details class="fixed-group"${fixedOpen?" open":""}>
-      <summary>Fixed &middot; not swappable in game (${shut.length})</summary>
-      <div class="fixed-note">These are part of the ship and they still count
-        toward every number above &mdash; a thruster changes its mass whether or
-        not you chose it. The game does not allow them to be changed, so there
-        is nothing to click.</div>`;
-    let lastF=null;
-    shut.forEach(s=>{
-      const g=tgroup(s.t);
-      if(g!==lastF){h+=`<div class="grp"><h3>${g}</h3></div>`;lastF=g;}
-      renderSlot(s);
-    });
-    h+=`</details>`;
-  }
+  /* B1: AND THE ONES THEY CANNOT ARE NOT HERE AT ALL ANY MORE.
+     Sleven: "over on the left should be shrink down and only show what's
+     actually listed." The collapsed <details> fold that used to sit at the
+     bottom of this column has gone to the Specs tab with its contents, so the
+     left column is now exactly the ports somebody can act on and nothing else.
+     THEY MUST STAY FINDABLE, and the sub-line above is how: "N fixed" is a
+     control that opens Specs. A thing moved somewhere with no signpost has
+     been hidden, not organised. */
   $('col'+which).innerHTML=h;
 }
 
@@ -1946,7 +1930,61 @@ function renderSpecs(){
     ${info().note?`<h3>Notes</h3><p class="sub2">${info().note}</p>`:""}
     <h3>Model</h3><p class="sub2">${MODELS[shipId]
       ? `3D model file <b>${MODELS[shipId]}</b>.`
-      : "No 3D model file is matched to this hull."}</p>`;
+      : "No 3D model file is matched to this hull."}</p>
+    ${fixedSpecs(sh)}`;
+}
+
+/* B1: THE FIXED PORTS, IN FULL, ON THE SPECS TAB.
+   They left the loadout column because a person cannot act on them and the
+   column is for acting. They did NOT leave the page: they are part of the
+   ship, they count toward every number on it, and L4's rule holds wherever
+   they are shown - the fitted part, its manufacturer, the port label, the
+   reason it is locked IN THE GAME'S OWN TERMS, and the patch tag.
+
+   NO HEADING WHEN THERE IS NOTHING UNDER IT. A "Fixed" heading over an empty
+   list is the navigation equivalent of an empty picker, and 20-odd hulls in
+   this fleet genuinely have no fixed ports at all. */
+function fixedSpecs(sh){
+  const shut=(sh.slots||[]).filter(x=>!swappable(x));
+  if(!shut.length) return "";
+  let h=`<h3>Fixed ports &mdash; ${shut.length}</h3>
+    <p class="sub2">These are part of the ship and they still count toward
+    every number on the loadout tab &mdash; a thruster changes this ship's mass
+    whether or not you chose it. The game does not allow them to be changed, so
+    they are listed here rather than in the column of things you can change.
+    Their markers on the model are still there, and clicking one says the same
+    as the row below.</p><div class="fixedspecs">`;
+  let lastF=null;
+  shut.forEach(s=>{
+    const g=tgroup(s.t);
+    if(g!==lastF){h+=`<div class="grp"><h3>${g}</h3></div>`;lastF=g;}
+    h+=fixedSpecRow(s);
+  });
+  return h+`</div>`;
+}
+
+/* ONE ROW. Deliberately carries NO data-slot: it is reading matter, not a
+   control. A control here would set `sel`, which hides the loadout column and
+   opens the picker pane - on a tab the reader is not looking at. That is the
+   same "a consequence you cannot see has not happened" defect P5 was about,
+   and it is easier to not build it than to notice it later. The clickable
+   route to this information is the marker on the model, which is on screen
+   when it opens. */
+function fixedSpecRow(s){
+  const label=portLabel(s.h), size=(s.s==null?"—":"S"+s.s), p=P[s.stock];
+  const why = s.nofit
+    ? "the game files list no part for this port"
+    : "the game does not allow this to be changed";
+  /* `data-fixed` rather than `data-slot`: it identifies the row without
+     making it a control, because the click handler matches on
+     `.slot[data-slot]`. A control can therefore assert WHICH ports are
+     here by id rather than counting rows and hoping. */
+  return `<div class="slot fixed" data-port="${s.h}" data-fixed="${s.id}">
+    <span class="sz">${size}</span><span class="nm">
+    <b>${p?p.n:label}</b><small>${p?p.m+" · ":""}${label} — ${why}
+    <span class="tag">${s.nofit?"NO PART":"FIXED"}</span>
+    <span class="tag pv">${s.v||META.last_verified_patch||""}</span></small></span>
+    <span class="pr"><b>&mdash;</b>${s.turret?"gunner":"fitted"}</span></div>`;
 }
 fillShipList();fillProvenance();
 
@@ -1975,8 +2013,8 @@ document.addEventListener('click',e=>{
   const rl=e.target.closest('.related a[data-ship]');
   if(rl){ e.preventDefault(); shipId=rl.dataset.ship; reset(); resetView();
     tab="loadout"; renderAll(); return; }
-  const fg=e.target.closest('.fixed-group > summary');
-  if(fg){ fixedOpen=!fg.parentNode.open; return; }   /* pre-toggle state */
+  /* B1: "N fixed" takes you to where they went. */
+  if(e.target.closest('#tospecs')){ openTab('specs'); return; }
   if(e.target.closest('#pickback')){ sel=null; renderAll(); return; }
   if(e.target.closest('#cc-spin')){ toggleSpin(); return; }
   if(e.target.closest('#dropB')){ dropB(); return; }
