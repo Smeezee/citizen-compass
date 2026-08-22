@@ -322,6 +322,28 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
  overflow:hidden}
 .fixedspecs .slot{cursor:default}
 .fixedspecs .grp h3{margin:0}
+/* B2: THE PICKER, OPEN UNDER ITS ROW.
+   Indented and ruled on the left so it reads as belonging to the row above it
+   rather than as the next item in the list - the one thing that would undo the
+   whole item is somebody losing track of which port they are looking at. It
+   scrolls internally at a bounded height, because a 74-part list that pushed
+   the rest of the column off screen would recreate the takeover B2 removed. */
+.inlinepick{border-left:3px solid var(--accent2);background:var(--panel2);
+ margin:0 0 4px 10px;border-radius:0 9px 9px 0;overflow:hidden}
+.inlinepick .plist{max-height:min(46vh,420px);overflow:auto}
+.inlinepick .ph{display:grid;grid-template-columns:1fr auto;
+ grid-template-areas:"title close" "sub sub";align-items:start;gap:4px 10px}
+.inlinepick .ph > b{grid-area:title}
+.inlinepick .ph > .close{grid-area:close}
+.inlinepick .ph > small{grid-area:sub}
+/* THE FITTED PART, PINNED. It has to be unmistakably the thing already on the
+   ship rather than just the first row of a sorted list, so it is labelled in
+   words and separated by a rule - not merely tinted, which says nothing to
+   somebody who cannot see the tint. */
+.pi.pinned{border-bottom:2px solid var(--accent2);background:var(--panel2)}
+.pinlabel{grid-column:1/-1;font:700 10.5px/1.4 inherit;letter-spacing:.06em;
+ text-transform:uppercase;color:var(--accent2);margin-bottom:3px}
+
 
 /* N5: one build means one column, and the grid says so rather than leaving a
    gap where the second one used to be. */
@@ -1193,11 +1215,24 @@ function renderCol(which){
     const changed=id!==s.stock, active=sel&&sel.slot===s.id&&editing===which;
     const n=fitsFor(s).length;
     h+=`<div class="slot${changed?' changed':''}${active?' sel':''}"
-      data-slot="${s.id}" data-col="${which}" data-port="${s.h}">
+      data-slot="${s.id}" data-col="${which}" data-port="${s.h}"
+      aria-expanded="${active?"true":"false"}">
       <span class="sz">${size}</span><span class="nm">
       <b>${p?p.n:"empty"}</b><small>${p?p.m+" · ":""}${label} — ${n} fit
       ${s.turret?'<span class="tag">GUNNER</span>':''}</small></span>
       <span class="pr"><b>${changed?"changed":"stock"}</b>${changed?"swapped":"fitted"}</span></div>`;
+    /* B2: AND THE PICKER OPENS RIGHT HERE, under the row that was clicked,
+       with the rows above and below still on screen. Only one row is open at
+       a time because `sel` names exactly one slot - the state machine does the
+       work, so "opening a second closes the first" is not something anybody
+       has to remember to do.
+       EVERY open row uses this today. B3 moves hull-mounted ports onto the
+       model stage and adds the condition; an internal component has no honest
+       position on a hull and stays here, which is why the container survives
+       that change rather than being replaced by it. */
+    if(active){
+      h+=`<div class="inlinepick" data-for="${s.id}">${pickerHTML(s)}</div>`;
+    }
   };
 
   /* The ports somebody can act on, grouped as before. */
@@ -1233,6 +1268,41 @@ function renderPicker(){
      panel in the same place the picker opens. */
   if(!slot){sel=null;return renderPicker();}
   if(!swappable(slot)){$('picker').innerHTML=fixedPanel(slot);return;}
+  /* B2: AND NOTHING GOES IN THE PANE FOR A SWAPPABLE PORT ANY MORE.
+     Its picker is rendered inline, under its own row, by renderCol(). Writing
+     it here as well would put a second copy in a pane renderChrome() keeps
+     hidden - two writers for one artifact, and the hidden one is the copy
+     nobody would notice going wrong. Cleared rather than left stale, because a
+     stale copy is exactly what a later reader would find and trust. */
+  $('picker').innerHTML="";
+}
+
+/* ONE PART, ONE ROW. Pulled out of renderPicker so the pinned entry and the
+   sorted list below it cannot drift into two different-looking things. */
+function partRow(k, fit, pinned){
+  const p=P[k]||{};
+  const bits=[];
+  if(p.dps)bits.push(`<span>DPS <b>${p.dps}</b></span>`);
+  if(p.ehp)bits.push(`<span>HP <b>${fmt(p.ehp)}</b></span>`);
+  if(p.qt)bits.push(`<span>Range <b>${p.qt}Gm</b></span>`);
+  if(p.cap)bits.push(`<span>Power <b>${fmt(p.cap)}</b></span>`);
+  if(p.cool)bits.push(`<span>Cooling <b>${p.cool}</b></span>`);
+  if(p.scu)bits.push(`<span>SCU <b>${p.scu}</b></span>`);
+  if(p.ms)bits.push(`<span>Mass <b>${fmt(p.ms)}</b></span>`);
+  bits.push(`<span>IR <b>${p.ir||0}</b></span>`);
+  bits.push(`<span>EM <b>${p.em||0}</b></span>`);
+  return `<div class="pi${fit?' fitted':''}${pinned?' pinned':''}" data-part="${k}">
+    ${pinned?`<div class="pinlabel">Currently fitted</div>`:""}
+    <div class="buy"><b>S${p.s==null?"—":p.s}</b>${fit?"fitted":""}</div>
+    <b>${p.n||k}</b><div class="m">${p.m||""}</div>
+    <div class="st">${bits.join("")}</div></div>`;
+}
+
+/* THE PICKER'S CONTENTS, wherever it is opened. B2 renders this INLINE beneath
+   the row that was clicked; B0's fixed panel is its counterpart for a port
+   that cannot be changed. One function, so the two entrances a port has - its
+   row and its marker - cannot show different lists. */
+function pickerHTML(slot){
   const build=editing==="A"?A:B, cur=build[slot.id];
   let opts=fitsFor(slot).slice();
   opts.sort((x,y)=>{
@@ -1243,9 +1313,25 @@ function renderPicker(){
               slot.t==="pow"?"cap":slot.t==="col"?"cool":"s";
     return (py[key]||0)-(px[key]||0);
   });
+  /* B2: THE FITTED PART IS PINNED TO THE TOP, and this is a real defect rather
+     than a nicety. Sleven opened the Avenger's size-4 turret mount, which
+     offers 74 parts sorted by DPS, and THE PART ALREADY FITTED WAS NOWHERE ON
+     SCREEN. A person cannot see what they are replacing.
+     So the fitted part is lifted out of the list and rendered first, labelled
+     as what is currently fitted, and the sort governs only what follows it. It
+     is removed from the remainder rather than left in as well - the same part
+     twice would be its own small lie about what is on offer. */
+  const pinned = opts.indexOf(cur)>=0 ? cur : null;
+  const rest = pinned ? opts.filter(k=>k!==pinned) : opts;
   const win = (slot.s==null) ? "" : ` · size ${slot.s}`;
-  let h=`<div class="ph"><button class="btn tiny back" id="pickback">&larr; Components</button>
+  /* NO "← Components" BUTTON. The list never went anywhere, so there is
+     nothing to go back to - the picker opens under its row with the rows above
+     and below still on screen. Closing this IS going back, and that is what
+     the close control does. */
+  let h=`<div class="ph">
     <b>${tname(slot.t)}${win}</b>
+    <button class="btn tiny close" id="pickclose" type="button"
+      aria-label="Close this port">Close</button>
     <small>${portLabel(slot.h)}${twoUp?" · editing build "+editing:""} · ${opts.length}
     part${opts.length===1?"":"s"} fit this port on this ship</small></div>
     <div class="sortrow">
@@ -1258,24 +1344,9 @@ function renderPicker(){
       this size. Nothing is offered here rather than something that would not
       mount.</div>`;
   }
-  opts.forEach(k=>{
-    const p=P[k]||{}, fit=k===cur;
-    const bits=[];
-    if(p.dps)bits.push(`<span>DPS <b>${p.dps}</b></span>`);
-    if(p.ehp)bits.push(`<span>HP <b>${fmt(p.ehp)}</b></span>`);
-    if(p.qt)bits.push(`<span>Range <b>${p.qt}Gm</b></span>`);
-    if(p.cap)bits.push(`<span>Power <b>${fmt(p.cap)}</b></span>`);
-    if(p.cool)bits.push(`<span>Cooling <b>${p.cool}</b></span>`);
-    if(p.scu)bits.push(`<span>SCU <b>${p.scu}</b></span>`);
-    if(p.ms)bits.push(`<span>Mass <b>${fmt(p.ms)}</b></span>`);
-    bits.push(`<span>IR <b>${p.ir||0}</b></span>`);
-    bits.push(`<span>EM <b>${p.em||0}</b></span>`);
-    h+=`<div class="pi${fit?' fitted':''}" data-part="${k}">
-      <div class="buy"><b>S${p.s==null?"—":p.s}</b>${fit?"fitted":""}</div>
-      <b>${p.n||k}</b><div class="m">${p.m||""}</div>
-      <div class="st">${bits.join("")}</div></div>`;
-  });
-  $('picker').innerHTML=h+"</div>";
+  if(pinned) h+=partRow(pinned, true, true);
+  rest.forEach(k=>{ h+=partRow(k, k===cur, false); });
+  return h+"</div>";
 }
 
 /* L7: LIVERIES LIVE ON THE SHIP PAGE. If it is part of a ship, it stays with
@@ -1654,6 +1725,16 @@ function applySpin(){
 function toggleSpin(){ spinOn=!spinOn; applySpin(); }
 
 const MARKS=(typeof LOADOUT_MARK!=='undefined')?LOADOUT_MARK:{};
+/* IS THIS PORT PHYSICALLY ON THE HULL? Answered by whether the model carries a
+   marker for it, which is the only honest test available: a port with a marker
+   has a position, and a port without one does not. B3 uses this to decide
+   where a picker opens - over the stage for something you can point at, in the
+   list for something internal. Declared here beside MARKS because that is what
+   it reads. */
+function onStage(slot){
+  if(!slot) return false;
+  return (MARKS[shipId]||[]).some(m=>m[0]===slot.p);
+}
 function markersFor(cls){ return MARKS[cls]||[]; }
 function slotByPort(pid){ return ship().slots.find(s=>s.p===pid)||null; }
 function renderMarkers(){
@@ -1882,11 +1963,17 @@ function openTab(id,fromHash){
    defect - the page was taller than the screen - and both are fixed by the
    column, not by the handler. */
 function renderChrome(){
-  const showPicker = !!sel;
+  /* B2: THE FULL-COLUMN TAKEOVER IS GONE. The list used to be REPLACED by the
+     picker, which fixed P5's "the thing that changed was off screen" by
+     creating a new one: you lost your place in the list you were reading. The
+     picker now opens inline under its row and the column never disappears.
+     The picker PANE is still here for the one thing that is not a row - B0's
+     panel for a fixed port, which is reached from its marker on the model. */
+  const showPane = !!(sel && sel.fixed);
   const A_ = $('colA'), B_ = $('colB'), P_ = $('picker');
-  if(A_) A_.hidden = showPicker;
-  if(B_) B_.hidden = showPicker || !twoUp;
-  if(P_) P_.hidden = !showPicker;
+  if(A_) A_.hidden = false;
+  if(B_) B_.hidden = !twoUp;
+  if(P_) P_.hidden = !showPane;
   const add=$('addB'); if(add) add.hidden=twoUp;
   const anyChanged=(ship().slots||[]).some(x=>swappable(x)&&
     (A[x.id]!==x.stock || (twoUp&&B[x.id]!==x.stock)));
@@ -2015,7 +2102,9 @@ document.addEventListener('click',e=>{
     tab="loadout"; renderAll(); return; }
   /* B1: "N fixed" takes you to where they went. */
   if(e.target.closest('#tospecs')){ openTab('specs'); return; }
-  if(e.target.closest('#pickback')){ sel=null; renderAll(); return; }
+  /* Closing the open row IS going back - the list it would have gone back to
+     never left the screen. */
+  if(e.target.closest('#pickclose')){ sel=null; renderAll(); return; }
   if(e.target.closest('#cc-spin')){ toggleSpin(); return; }
   if(e.target.closest('#dropB')){ dropB(); return; }
   const tb=e.target.closest('.tabs a[data-tab]');
@@ -2023,7 +2112,9 @@ document.addEventListener('click',e=>{
   const es=e.target.closest('.sortrow button[data-e]');
   if(es){ engSort=es.dataset.e; renderEngineering(); return; }
   const so=e.target.closest('.sortrow button[data-s]');
-  if(so){sort=so.dataset.s;renderPicker();return;}
+  /* The sort lives inside the inline picker now, so re-rendering the picker
+     pane alone would leave the visible list untouched. */
+  if(so){sort=so.dataset.s;renderAll();return;}
   const pi=e.target.closest('.pi[data-part]');
   if(pi&&sel){
     const b=editing==="A"?A:B;

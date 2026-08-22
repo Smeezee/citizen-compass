@@ -96,6 +96,23 @@ function el(id) {
   return els.get(id);
 }
 
+/* WHERE THE PICKER IS, AFTER B2.
+   A swappable port's picker is rendered INLINE, under its own row in the
+   column, and the picker PANE is deliberately left empty - it now carries only
+   B0's panel for a fixed port. Reading the pane alone would have made every
+   L3 assertion below read an empty string, which is the shape of a check that
+   passes because it never looked. This reads whichever one the page actually
+   filled, which is what a person looking at the screen does.
+   Slicing to the end of the column is safe: `data-part` appears only inside
+   the picker's own rows, never on a slot row. */
+function pickerNow() {
+  const pane = el("picker").innerHTML || "";
+  if (/data-part=|class="fixedpanel"/.test(pane)) return pane;
+  const col = el("colA").innerHTML || "";
+  const i = col.indexOf('class="inlinepick"');
+  return i === -1 ? "" : col.slice(i);
+}
+
 let currentHash = "";
 const clickHandlers = [];
 const sandbox = {
@@ -236,8 +253,8 @@ record(withFixed !== withoutFixed,
 
 // AND OPENS NO PICKER.
 const fx = fixedSlots[0];
-vm.runInContext(`sel={slot:${JSON.stringify(fx.id)}};renderPicker();`, sandbox);
-const fixedPicker = el("picker").innerHTML;
+vm.runInContext(`sel={slot:${JSON.stringify(fx.id)}};renderAll();`, sandbox);
+const fixedPicker = pickerNow();
 record(!/data-part=/.test(fixedPicker),
   "clicking a fixed port opens NO picker - nothing selectable is offered");
 
@@ -246,8 +263,8 @@ console.log("\n--- L3: a part the port accepts APPEARS; one it does not is ABSEN
 // A port with a real list, chosen by measurement.
 const target = editSlots.find(s => (FITS[s.fit] || []).length > 4);
 record(!!target, "found an editable port with a real list of alternatives");
-vm.runInContext(`editing="A";sel={slot:${JSON.stringify(target.id)}};renderPicker();`, sandbox);
-const picker = el("picker").innerHTML;
+vm.runInContext(`editing="A";sel={slot:${JSON.stringify(target.id)}};renderAll();`, sandbox);
+const picker = pickerNow();
 
 const offered = FITS[target.fit] || [];
 const accepted = offered[0];
@@ -292,8 +309,8 @@ record(inPicker.every(k => offered.includes(k)),
 console.log("\n--- L3 across every editable port on the ship, not one sample ---");
 let bad = 0, checked = 0;
 for (const s of editSlots) {
-  vm.runInContext(`sel={slot:${JSON.stringify(s.id)}};renderPicker();`, sandbox);
-  const h = el("picker").innerHTML;
+  vm.runInContext(`sel={slot:${JSON.stringify(s.id)}};renderAll();`, sandbox);
+  const h = pickerNow();
   const got = [...h.matchAll(/data-part="([^"]+)"/g)].map(m => m[1]);
   const want = (FITS[s.fit] || []).concat(
     s.also && !(FITS[s.fit] || []).includes(s.also) ? [s.also] : []);
@@ -617,12 +634,12 @@ console.log("\n--- L10: marker N selects port N and no other, BY IDENTITY ---");
     vm.runInContext(`shipId=${JSON.stringify(markShip)};reset();renderAll();`, sandbox);
 
     vm.runInContext(`sel=null;selectPort(ship().slots.find(s=>s.id===${JSON.stringify(slot.id)}),"A");`, sandbox);
-    const viaList = el("picker").innerHTML;
+    const viaList = pickerNow();
     const listSel = JSON.parse(g("JSON.stringify(sel)"));
 
     vm.runInContext(`sel=null;renderAll();`, sandbox);
     vm.runInContext(`selectPort(slotByPort(${JSON.stringify(mark[0])}),"A");`, sandbox);
-    const viaMark = el("picker").innerHTML;
+    const viaMark = pickerNow();
     const markSel = JSON.parse(g("JSON.stringify(sel)"));
 
     record(viaMark.length > 100, "clicking the marker opened a picker at all");
@@ -1465,7 +1482,7 @@ console.log("\n--- P5: a marker CLICK opens the picker for THAT port ---");
       try { fn({ target: btn, preventDefault() {} }); } catch (e) { threw = e.message; }
     }
     return { rendered: true, threw, sel: JSON.parse(g("JSON.stringify(sel)")),
-             picker: el("picker").innerHTML };
+             picker: pickerNow() };
   };
 
   for (const spinning of [true, false]) {
@@ -1487,12 +1504,21 @@ console.log("\n--- P5: a marker CLICK opens the picker for THAT port ---");
   /* AND THE CONSEQUENCE IS WHERE THE EYE IS. The click was never broken; the
      picker rendered ~1,050px down a 1,952px page. It now replaces the list in
      the LEFT COLUMN, which is on screen. */
-  record(el("picker").hidden === false && el("colA").hidden === true,
-    "the picker takes the left column, which is beside the model rather than "
-    + "a thousand pixels below it");
+  /* P5 FIXED THIS BY REPLACING THE LIST WITH THE PICKER. B2 replaced that in
+     turn, for the reason P6 gave about the second build: taking the column
+     over fixed "the change was off screen" by creating "you lost your place in
+     the list you were reading". The picker now opens INLINE under its row and
+     THE COLUMN NEVER DISAPPEARS - so what is asserted is the stronger version
+     of the same thing. */
+  record(el("colA").hidden === false,
+    "the component list is still on screen with the picker open - it is not "
+    + "taken over any more");
+  record(el("colA").innerHTML.includes('class="inlinepick"'),
+    "and the picker opened inside that column, under its own row");
   vm.runInContext(`sel=null;renderAll();`, sandbox);
-  record(el("picker").hidden === true && el("colA").hidden === false,
-    "and going back restores the component list in the same place");
+  record(el("colA").hidden === false
+    && !el("colA").innerHTML.includes('class="inlinepick"'),
+    "and closing it leaves the list exactly where it was");
 }
 
 console.log("\n--- P6: the second build appears where the eye already is ---");

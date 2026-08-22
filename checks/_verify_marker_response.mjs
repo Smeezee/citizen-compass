@@ -179,11 +179,21 @@ function clickMarker(portId) {
   for (const fn of clickHandlers) {
     try { fn({ target: btn, preventDefault() {} }); } catch (e) { threw = e.message; }
   }
-  const picker = el("picker").innerHTML || "";
+  /* WHERE THE ANSWER APPEARS MOVED IN B2, AND SO DID THIS.
+     A fixed port's panel is still in the picker pane. A swappable port's
+     picker is now rendered INLINE, under its own row in the column, and the
+     pane is deliberately left empty. Reading only the pane would have called
+     every swappable marker silent - so this reads both, which is what a person
+     looking at the page does. */
+  const pane = el("picker").innerHTML || "";
+  const col = el("colA").innerHTML || "";
+  const inline = col.includes('class="inlinepick"')
+    ? col.slice(col.indexOf('class="inlinepick"')) : "";
+  const picker = pane + inline;
   const sel = JSON.parse(g("JSON.stringify(sel)") || "null");
   let outcome = "silent";
-  if (picker.includes('class="fixedpanel"')) outcome = "fixed";
-  else if (picker.includes('class="sortrow"') || picker.includes('class="pi'))
+  if (pane.includes('class="fixedpanel"')) outcome = "fixed";
+  else if (inline.includes('class="sortrow"') || inline.includes('class="pi'))
     outcome = "picker";
   return { outcome, picker, sel, threw };
 }
