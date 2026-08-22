@@ -699,7 +699,12 @@ console.log("\n--- L14: the three kinds of incomplete ship, each said out loud -
   record(case3.length > 0, "case 3 exists: a hull with a model and no mount data",
     `${case3.length}`);
   vm.runInContext(`shipId=${JSON.stringify(case3[0])};reset();renderAll();`, sandbox);
-  record(/No mount positions have been measured/.test(el("shipstate").innerHTML),
+  /* THE WORDING CHANGED AT N9 AND THIS FOLLOWED IT. It used to grep for "No
+     mount positions have been MEASURED", which was the sentence N9 removed -
+     it implied that where markers DO appear they were measured, and they are
+     not. The claim being checked is unchanged: this hull says it has no marker
+     placement and stays usable from the list. */
+  record(/no marker placement for this hull/i.test(el("shipstate").innerHTML),
     `case 3 says so plainly for ${SHIPS[case3[0]].n}`);
   record(el("colA").innerHTML.length > 500,
     "and list-driven swapping still works on it");

@@ -3562,7 +3562,7 @@ N8  DONE  badc40a  THE GROUPING IS `Editable`. THERE IS NO LIST OF TYPES.
     tanks swappable, those 509 ports leave the collapsed group on the next data
     build, with nobody editing anything.
 
-N9  DONE  <sha>  THE FALSE CLAIM IS GONE, AND WHAT REPLACED IT IS SPECIFIC.
+N9  DONE  6969fb2  THE FALSE CLAIM IS GONE, AND WHAT REPLACED IT IS SPECIFIC.
     The page said: "Slot structure is measured from this hull's own model
     geometry and read from the game's mount data. NOTHING HERE IS ESTIMATED."
     The first half was true and the last four words were not.
