@@ -490,8 +490,12 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
       <!-- B3: the picker, over the model, anchored near the dot it belongs to.
            Choosing a gun happens where the gun is. -->
       <div id="cc-panel" hidden></div>
-      <button type="button" id="cc-spin" aria-pressed="false"
-              title="Stop the ship rotating">Stop spin</button>
+      <!-- B4: the markup opens in the DEFAULT state, not the old one. Until
+           applySpin() runs, this is what a visitor reads - and a button that
+           says "Stop spin" over a ship that is not spinning is the page
+           contradicting itself for as long as that takes. -->
+      <button type="button" id="cc-spin" aria-pressed="true"
+              title="Start the ship rotating">Start spin</button>
       <div id="cc-hint">drag to rotate &middot; scroll to zoom</div>
       <div id="cc-empty" style="display:none"></div>
       <div id="cc-status"></div>
@@ -1733,7 +1737,39 @@ function renderRsi(){
    it is a real <button>, and it persists while the person is on the page -
    somebody who stopped the spin to read a marker does not want it starting
    again when they change ship. */
-let spinOn = true;
+/* B4: THE PAGE OPENS CALM.
+   Sleven: "the ship just constantly spins." A stop control existed, and that
+   is not the same as opening still - it makes the visitor undo something they
+   never asked for, on every ship, before they can look at the thing they came
+   to look at. The default is now NOT spinning.
+   AND THE CHOICE IS REMEMBERED FOR THE SESSION, because the mirror image is
+   just as bad: somebody who likes it spinning should not re-click on every
+   hull. sessionStorage rather than localStorage - it is a preference about
+   this sitting, not a setting, and it should not follow somebody back weeks
+   later having been forgotten about.
+   READ THROUGH A GUARD. sessionStorage throws outright in a browser with
+   storage disabled, and it is absent entirely outside one. A page that fell
+   over because it could not remember a spin preference would be a page broken
+   by its own convenience. */
+const SPIN_KEY = "ccSpin";
+function spinStore(){
+  try{ return (typeof sessionStorage!=="undefined") ? sessionStorage : null; }
+  catch(_e){ return null; }
+}
+function storedSpin(){
+  const s=spinStore(); if(!s) return null;
+  try{ const v=s.getItem(SPIN_KEY); return v==null ? null : v==="1"; }
+  catch(_e){ return null; }
+}
+function rememberSpin(on){
+  const s=spinStore(); if(!s) return;
+  try{ s.setItem(SPIN_KEY, on ? "1" : "0"); }catch(_e){}
+}
+/* THE DEFAULT IS FALSE, and it is the value used when nothing is stored -
+   `storedSpin()` returning null is "no preference", which is NOT the same as
+   "prefers not to spin" even though they produce the same first frame. Keeping
+   them distinct is what lets the negative control below mean something. */
+let spinOn = storedSpin() === true;
 function applySpin(){
   const b=$('cc-spin'); if(!b) return;
   if(_view) _view.setSpin(spinOn);
@@ -1742,7 +1778,7 @@ function applySpin(){
   b.setAttribute("aria-pressed", spinOn ? "false" : "true");
   b.classList.toggle("off", !spinOn);
 }
-function toggleSpin(){ spinOn=!spinOn; applySpin(); }
+function toggleSpin(){ spinOn=!spinOn; rememberSpin(spinOn); applySpin(); }
 
 const MARKS=(typeof LOADOUT_MARK!=='undefined')?LOADOUT_MARK:{};
 /* IS THIS PORT PHYSICALLY ON THE HULL? Answered by whether the model carries a

@@ -36,7 +36,8 @@ import vm from "node:vm";
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const SRC = join(HERE, "..", "testing", "_src");
 
-export function loadPage({ mutate = [] } = {}) {
+export function loadPage({ mutate = [], session = null,
+                           sessionThrows = false } = {}) {
   const html = readFileSync(join(SRC, "loadout.src.html"), "utf-8");
   const dataJs = readFileSync(join(SRC, "loadout_data.gen.js"), "utf-8");
   const EXTRA = ["loadout_model.gen.js", "loadout_marker.gen.js",
@@ -98,6 +99,27 @@ export function loadPage({ mutate = [] } = {}) {
       querySelector: () => null,
     },
   };
+  /* SESSION STORAGE, OPTIONAL AND THREE-WAY.
+     Absent (the default) is a browser that has none, which is also what this
+     harness is. `session` installs a working one seeded with real values.
+     `sessionThrows` installs one that throws on every access, which is what a
+     browser with storage disabled actually does - and is the case a page
+     falls over on if it reads storage without a guard. All three are
+     reachable, because "we handled it" is not the same as "we tried it". */
+  if (sessionThrows) {
+    sandbox.sessionStorage = {
+      getItem() { throw new Error("storage disabled"); },
+      setItem() { throw new Error("storage disabled"); },
+    };
+  } else if (session) {
+    const store = { ...session };
+    sandbox.sessionStorage = {
+      getItem: (k) => (k in store ? store[k] : null),
+      setItem: (k, v) => { store[k] = String(v); },
+      _dump: () => ({ ...store }),
+    };
+  }
+
   sandbox.window = sandbox;
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
@@ -127,9 +149,15 @@ export function loadPage({ mutate = [] } = {}) {
     + `spinning(){return this._s;},setSpin(v){this._s=!!v;return this._s;},`
     + `load(){return 1;}};`;
 
-  const openShip = (key, { spin = false } = {}) => {
-    run(`shipId=${JSON.stringify(key)};reset();resetView();spinOn=${!!spin};`
-      + VIEW + `_view._s=${!!spin};_modelFor=shipId;sel=null;renderAll();`);
+  /* `spin` is deliberately OPTIONAL and unset by default. Forcing spinOn on
+     every openShip() would overwrite whatever the page decided at load, which
+     is exactly the thing B4's control exists to observe - and it did, until
+     this was found: the stored-preference case came up still because the
+     harness had just turned it off. */
+  const openShip = (key, opts = {}) => {
+    const spin = ("spin" in opts) ? `spinOn=${!!opts.spin};` : "";
+    run(`shipId=${JSON.stringify(key)};reset();resetView();${spin}`
+      + VIEW + `_view._s=spinOn;_modelFor=shipId;sel=null;renderAll();`);
   };
 
   /* Dispatch through the page's own delegated handler, with the element a
@@ -175,6 +203,7 @@ export function loadPage({ mutate = [] } = {}) {
 
   return {
     g, run, el, openShip, dispatch, key, clickHandlers, keyHandlers, pickerNow,
+    session: sandbox.sessionStorage || null,
     SHIPS: g("SHIPS"), PARTS: g("P"), MARKS: g("MARKS"), HPN: g("HPN"),
     META: g("META"),
     /* A slot's `h` is an INDEX into the hardpoint-name table, not the name.
