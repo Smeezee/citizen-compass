@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #264 — 2026-08-08 4:54 PM
+# LATEST_HANDOFF.md — Update #578 — 2026-08-22 3:59 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-08 16:54:39 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-22 15:59:35 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -22,1554 +22,658 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 - In progress / not started: constellation-aquila, gladius
 
 **Data layers:**
-- data-layer: 60703 files (10414.22 MB)
+- data-layer: 60732 files (10648.37 MB)
 
-**Scripts:** 17  |  **3D models:** 723  |  **Docs:** 724
+**Scripts:** 37  |  **3D models:** 723  |  **Docs:** 1048
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
 
-### 2026-08-08 16:53:43 — update-never-delete-guard-done-20260808.md
+### 2026-08-22 15:58:15 — update-order-attribution-received-20260822155811.md
 
-# Update — never-delete guard is in and proven; record gap closed (2026-08-08)
+# Update — ORDER received: the attribution furniture and the off switch. Starting A1.
 
-Two things: the preservation rule from
-`WORKORDER_preservation-model-and-never-delete-rule.md` §3 is implemented, and
-this closes a ~3.5 hour gap in the handoff record.
+`docs/ORDER_the-attribution-and-the-off-switch-2026-08-22.md`. A1-A6 in order,
+appending to the ledger per item with the sha.
 
-## The rule is enforced by construction
+Scope: the verbatim trademark notice as ONE constant in always-visible chrome on
+every page; the Made By The Community mark with a refusal for images that lack
+it; the source-and-contact notice driven from config with a loud build failure
+if absent; THE OFF SWITCH (tag at the data layer, one command, exercised for
+real, docs/TAKEDOWN.md); measure the static-asset exposure and REPORT ONLY; then
+sweep, deploy, verify from the served bytes.
 
-`app/preservation.py` blocks row removal on 15 preserved tables at **two**
-layers, because blocking one is worth nothing:
+Explicitly NOT doing: fetching, downloading or touching any RSI asset, and no
+scaffolding "ready for later" for that. A5 is measured and reported, not fixed.
 
-- Core/SQL — `DELETE`, `DELETE ... WHERE`, `TRUNCATE`, including raw text and
-  lowercase
-- ORM — `session.delete()` and cascade deletes at flush
+A4 is the one that matters and I will spend the time there.
 
-A wholesale "replace" is DELETE-then-INSERT, so blocking DELETE catches the
-loader shape §3 warns about.
+### 2026-08-22 13:33:13 — update-P-run-complete-20260822133309.md
 
-**Installed at engine creation in `app/database.py`, not in each importer.**
-Wiring it per-importer works right up until somebody writes a new one. Every
-consumer of that engine now inherits it, including code that does not know the
-rule exists. `import_ship_components.py` also installs it explicitly, so the
-intent is visible at the point of use.
+# Update — one-screen run COMPLETE. P1-P8 all DONE. Deployed and pushed.
 
-`pipeline_check_results` is deliberately NOT preserved — it is an append-only
-observation log that is meant to be flushed and archived, and guarding it would
-break `checks_flush_fallback.py`.
+URL: https://citizencompasstesting.citizencompass-contact.workers.dev
+Version c3d8559f.
 
-## Rule 12 — 15 assertions, every case run twice
+## Page height, before and after
 
-`checks/_verify_never_delete_guard.py`. The guard's claim is "a preserved row
-cannot be removed", so a refused delete proves nothing on its own — it might
-have failed for an unrelated reason. Every case runs **with the guard and
-without it**:
+|            | before  | after | viewport |
+|------------|--------:|------:|---------:|
+| 1920x1080  | 1,952px | 995px |    1,080 |
+| 1366x768   | 1,891px | 683px |      768 |
 
-```
-guard installed  DELETE / DELETE WHERE / TRUNCATE / lowercase  -> all refused, row survives
-guard removed    the same DELETE                               -> row GONE
-```
+Both fit with 85px spare. **Nothing had to be cut** — what made it fit is the
+three columns and their internal scroll, not shrinking. Type went down one
+step, 16px to 15px.
 
-That second line is the proof. Plus: a non-preserved table still deletes
-normally (the guard is targeted, not a blanket ban), **DDL is untouched** so
-alembic and the e2e harness still work, and `app.database.engine` is confirmed
-guarded on import — checked by behaviour, because an import that silently
-no-ops looks identical to one that worked.
+## What the marker click turned out to be
 
-Runs against TEMP tables shadowing the real ones; `public.ships` row count
-asserted unchanged throughout. No destructive statement reached a real table.
+**The click was never broken.** Before changing anything I drove the real path:
+captured the delegated handler, built the element a browser would hand it,
+dispatched. `sel` went to the right slot and the picker rendered 4,919 chars,
+every time. There is no raycasting in the page — the markers are DOM buttons —
+so the suspected cause could not apply.
 
-## Two defects found in my own guard while proving it
+**The picker rendered ~1,050px down a 1,952px page.** Sleven clicked, the page
+updated correctly, and the part that changed was below the fold. That is the
+same defect P6 reports for `Try another alongside` — one defect filed as two.
 
-**1. Half a guard, installed silently.** `before_flush` is a Session event and
-does not exist on an Engine. The first version registered it on the target and
-swallowed the failure with a bare `except`, so passing an Engine installed the
-Core half only — the ORM path stayed open while the code read as covered. The
-ORM test caught it. It now binds to the Session class explicitly.
+Rotation is still a contributing factor and I haven't pretended otherwise: 19px
+targets that move, and a browser only fires `click` when mousedown and mouseup
+share an element. I can't test that without a browser and haven't claimed it.
 
-**2. A test helper that disarmed production.** `remove_never_delete_guard()`
-removed every listener process-wide. The verification called it to disarm its
-own throwaway engine and silently disarmed `app.database.engine` too — a test
-that turns off the live guard is worse than the defect the guard prevents. It
-is now target-scoped.
+## One thing worth flagging
 
-Both are the same shape as the six silent-success cases already on record, and
-neither would have shown up without the negative control.
+My own measuring tool silently measured the wrong thing **three times** while I
+was writing it. It now applies media queries per viewport and asserts its own
+correctness before reporting any number.
 
-## What this does NOT do
+### 2026-08-22 13:15:15 — update-order-one-screen-received-20260822131511.md
 
-It makes the loss impossible; it does not yet make the absence **visible**.
-`status`, `last_seen_patch`, `first_seen_patch`, `successor_id`,
-`removal_note` and `evidence_tier` (§4) are a schema migration against the real
-database — that needs a verified backup under hard rule 4 and an explicit
-go-ahead, so it is not done here.
+# Update — ORDER received: the ship page fits on one screen. Starting P1.
 
-That ordering is deliberate: **a row that is still there can be marked later; a
-row that is gone cannot be recovered.** The deadline was on the deletion half.
+`docs/ORDER_the-ship-page-fits-on-one-screen-2026-08-22.md`. RUN CONTINUOUSLY,
+items P1-P8, appending to the same ledger.
 
-So §3 acceptance is met in part — the row survives — and the `status=retired`
-half waits on the migration.
+Scope: three columns (components / model / readout), a bounded viewer, a
+compaction pass, a visible stop-rotation control, the marker-click bug, the
+second build appearing where the eye is, and the whole thing fitting 1920x1080
+without scrolling. Then sweep, deploy, verify.
 
-## Record gap this closes
+NOT in scope and I will not touch: the material/lighting render pass, hardpoint
+marker POSITIONS (ruled settled), and the two shared-viewer greps.
 
-`LATEST_HANDOFF.md`'s newest entry was **13:04** while nine documents were
-created between **14:18 and 16:37** — holoviewer, fankit, hologram,
-preservation, importer-audit and commlink prompts and findings, none of them
-mentioned in it.
+Starting with P5's diagnosis before the layout work, because if the marker click
+turns out to be "the picker updates below the fold" then P1 and P7 are its fix
+and I should know that before I move anything.
 
-Not a pipeline fault: the watcher is healthy (PID 8856, update #260 at 16:38)
-and correctly classified those as docs rather than updates. No update was
-filed. Recording it here so the next session does not read 13:04 as current, as
-I nearly did.
+### 2026-08-22 12:23:00 — update-erratum-fixed-20260822122256.md
 
-## State
+# Update — ERRATUM fixed, §4 audit done, deployed and verified
 
-- Nothing committed or pushed — no go-ahead given for either work order.
-- Working tree: guard + verification are new; `citizen-collector/` untouched
-  per the sole-writer note.
-- Auditor after the change: 14 findings, **0 DEFECT**.
-- Queued next: `docs/prompt-code-holoviewer-all-ships.md`.
-
-### 2026-08-08 16:43:46 — update-preservation-rule-intake-20260808.md
-
-# Update — never-delete importer rule: intake (2026-08-08)
-
-Filed on intake per rule 13, before any work.
+URL: https://citizencompasstesting.citizencompass-contact.workers.dev
+Version 4cdc686b. Commits c7fa846, b4e22d4, and the deploy record.
 
-Received from Sleven: implement `WORKORDER_preservation-model-and-never-delete-rule.md`
-§3 first, then file a handoff update closing the record gap.
+**The count, from the served page: 229 → 27.** 221 name cells now reach the ship
+page, 27 reach RSI, 6 reach nowhere. The 229 is not an estimate — `--prove`
+restores the original function and the check reports exactly 229.
 
-**Why this jumped the queue:** it is the only outstanding item with a deadline.
-The rule must land *before the next snapshot import*; after that the loss is
-silent and unrecoverable. Port Olisar is already gone — 2,066 gazetteer
-entities and it is not one of them — and the Aurora Mk I survives only because
-a snapshot caught it by luck.
+**27, not 33.** 33 ships have no ship page; 27 have a pledge_url to fall back
+to, six have neither and render plain. 27 + 6 = 33.
 
-Also noting a record gap I will close afterwards: `LATEST_HANDOFF.md`'s newest
-entry is 13:04, while nine documents were created 14:18–16:37. The watcher is
-healthy (PID 8856, update #260 at 16:38) and correctly filed those as docs, not
-updates — the gap is that no update was filed, not a pipeline fault.
+**Fixed at source, not at the glyph.** The build decides per record what the
+cell is; `nameCellHtml()` reads it. `decorate()`, its observer, its two guessed
+timers and the whole text-matching scaffolding are gone. The link data was also
+being injected after `buildMatrix()` had already run — it now arrives before the
+ship records.
 
-Holding off on `docs/prompt-code-holoviewer-all-ships.md` until this lands.
+**§4 audit: 208 driven, 38 grep-only.** Most greps are correct (absences, and
+rule 8's text). One was the erratum's shape — **N4**, which greped for a guard
+rather than proving it. Driven now: one load per ship, none per tab. The feature
+was sound. N1's weak control hid a broken feature and N4's hid a working one,
+and a weak control cannot tell you which you have.
 
-### 2026-08-08 13:04:07 — update-wo-c3-aggregation-rules-received-20260808.md
+**Found in my own harness:** the DOM stub never reflected `textContent` into
+`innerHTML`, which is how the page's `escapeHtml` is built — so it returned ""
+for everything and the cells I was reading had blank names. The harness now
+asserts `escapeHtml` works before reading anything through it.
 
-# Update — C3 aggregation-rules work order received (2026-08-08)
+### 2026-08-22 12:07:22 — update-erratum-rsi-received-20260822120718.md
 
-Received from C1: reverse-engineer the real aggregation rules for
-`ShieldsTotal`, `Power`, `Cooling`, `Emission` (EM and IR), `Distortion.Pool`
-and DPS, by testing candidate formulae against CIG's own computed aggregates in
-`ships.json` across all 316 ships. Then spec (not build) the temporary loadout
-page.
+# Update — ERRATUM received: every ship name still opens RSI. Fixing first.
 
-**Routing flag.** The order is addressed `for C3 (Cowork research session)`, not
-Claude Code. Sleven handed it to this session. Proceeding, with the reasoning
-stated so it can be overridden cheaply: the core of this job is a full
-computation across 316 ships joined against `ship-items.json`, and a full scan
-of that kind is already on record as having **timed out through the Cowork
-bridge** (C2's open item 10, "run it locally"). That part is structurally
-better placed here. If C3 is already on it, this stops.
+`docs/ERRATUM_ship-names-still-go-to-RSI-2026-08-22.md`. This is mine and it is
+serious: N1's whole purpose is defeated and there is currently NO route to any
+ship page. Sleven found it in ten seconds.
 
-**The method, restated so it is not lost:** `ships.json` carries CIG's own
-computed aggregates for each ship's stock loadout, and `ship-items.json` carries
-the components. That is 316 worked examples with the answers in the back of the
-book — every rule gets tested against labelled data rather than guessed at.
+The cause is exactly as C1 diagnosed: `decorate()` matches on the cell's own
+text, `nameCellHtml()` appends a link glyph, so `td.textContent.trim()` is
+"Redeemer 🔗", `CC_LOOKUP` misses, and the function silently bails leaving the
+RSI anchor it was born with. 229 of 254 rows.
 
-**What I owe, per aggregate:** a candidate rule as actual arithmetic, run across
-all 316, reported as a **residual** — exact matches, near misses, misses, and
-what the misses have in common. "Works on 300 of 316" is the finding. "Verified"
-is not. Anything I cannot derive gets marked **unshippable** rather than
-approximated.
+**And my N12 control could not have failed.** It asserted `shipPageUrl` and
+`loadout.html#` appear in the bytes. They do. The feature still does not work.
+That is the seventh instance of this shape in this project's log and I wrote it.
 
-**The discriminating case for shields:** the Zeus Mk II CL shows N-1 (three
-7200 generators, `ShieldsTotal.Hp` 14,400). One example is not a rule. A ship
-fitted with two *different* generators separates N-1 from capacity-weighted
-fast, and finding one is the first thing to do.
+Fixing at source per §2 — one writer, no observer, no timers, no text matching —
+then the §4 audit of the rest of the N-run, then deploy and verify by COUNTING
+served name cells that point at RSI. Must be 33, not 229.
 
-**Constraints:** research and a proposal only, do not build. Stay off
-`citizen-collector/` entirely — C1 is the sole writer and is actively in it.
-Verify against files on disk, not planning docs. Every check gets a case that
-could have failed it.
+### 2026-08-22 01:40:04 — update-N-run-complete-20260822014000.md
 
-### 2026-08-07 21:27:19 — update-items-8-9-committed-not-pushed-20260807.md
+# Update — one-ship-page run COMPLETE. N1-N12 all DONE. Deployed and pushed.
 
-# Update — items 8 and 9 committed, not pushed (2026-08-07)
+9 commits, `c221d18..5632384`. No item BLOCKED. Ledger appended per item.
 
-Commit `8f27c8f` on `main`, 5 files, 664 insertions:
+URL: https://citizencompasstesting.citizencompass-contact.workers.dev
+Version f6507a7d. NOT the live site.
 
-- `checks/source_checks.py` — `snapshot_shape_check` + registration
-- `checks/file_checks.py` — `unreleased_content_check` + registration
-- `checks/_verify_snapshot_shape.py` — 14 assertions, both directions
-- `checks/_verify_unreleased_content.py` — 19 assertions, both directions
-- `scripts/publication_filter.py` — the single definition of "may this be
-  published"
+## The headline
 
-**Staged by name, one path at a time.** `git add -A` was deliberately not used —
-the ~50-file CRLF/LF churn would have buried 664 lines of new work in a diff
-nobody could read. The staged diff was checked before committing: 5 files, no
-churn swept in.
+**index.html: 1,622,716 → 410,219 bytes. A 75% cut.** Three.js, OrbitControls,
+GLTFLoader, the DRACO decoder and its wasm — about 1.07 MB of vendor payload
+downloaded to look at a table — are gone, along with the ship panel, its viewer
+and 46 dead CSS rules.
 
-**Not pushed.** Hard rule 2 — the go-ahead I have covers the commit. A push is a
-separate action and needs its own.
+## The N2 checklist, ticked
 
-## Left alone deliberately
+In-game price, pledge price, sold at, RSI link, confidence, record number,
+notes, status, role, manufacturer, model folder, related ships — all on the ship
+page, each asserted by name against the rendered HTML.
 
-- The five malformed / zero-byte snapshot artifacts. Findings-only auditors, and
-  rule 1 — moving or deleting them is Sleven's.
-- `.uex_snap_name`, still untracked at the repo root from the 03:32 run.
-- `data-layer/derived/**` and the other untracked working-tree content, none of
-  which is mine.
+**One field never existed:** the site's `last_verified_patch` is null on all 254
+records, so index rendered "not recorded" for every ship in the fleet. The ship
+page states the snapshot's patch instead.
 
-## Open, and worth a decision
+## What I nearly got wrong
 
-1. **The zero-byte fsck log** — `scunpacked-data/snapshots/20260731T041451Z.partial.fsck_output.log`.
-   That integrity run's result is unrecoverable. The snapshot it was checking is
-   still there; whether it gets re-fsck'd or marked unverified is a call, not a
-   defect I can close.
-2. **`keybinds.src.html`** — still a second standalone copy of the keybind
-   tester with no HELP drawer, from this morning's work.
-3. **Playwright lives in the scratchpad**, so `testing/_src/test_help_drawer.js`
-   is committed but not runnable from a fresh checkout without
-   `npm i playwright` on `NODE_PATH`.
+33 ships have no ship page and **27 of those carry a pledge_url**. Replacing
+their name cell would have left those rows with no link at all. They keep RSI
+and say why.
 
-### 2026-08-07 21:00:11 — update-item-9-unreleased-content-done-20260807.md
+## The N8 control, run for real
 
-# Update — item 9 done: unreleased-content filter and guard (2026-08-07)
+A fixed port was given a fitment rule — what the generator does when a port says
+`Editable` — and nothing else was touched. It moved out of the collapsed group,
+the count dropped 36→35, and flipping it back put it where it was.
 
-## The correction: this is NOT a live leak
+## Arguing with N10, as asked
 
-C2's list says *"Contract-derived pages may be advertising unreleased missions
-right now."* **They are not, and I checked before building anything.**
+I built the quiet end deliberately: a 3px edge, a small delta chip, one 0.22s
+pop, gone in 2.2s. Nothing blocks, queues or animates the value itself. **The
+boundary is the twentieth swap** — anything that has to be waited out becomes an
+obstacle. If it still reads as too much, the dial is `CHANGED_MS`, and setting
+it to 0 leaves the page working exactly as it does minus the mark.
 
-Nothing published reads the contract tables. The only file in the repo that
-touches contract fields is `scripts/split_craft_pages.py`, which uses
-`mission_type` and writes to `data-layer/processed/` — never to `releases/`,
-`static/` or `testing/_deploy/`. The flagged records sit in `data-layer/derived/`,
-which is not served.
+### 2026-08-22 01:08:20 — update-order-one-ship-page-received-20260822010816.md
 
-So the exposure is **prospective, not live**. Saying otherwise would have been
-easy and wrong. What is true is that this is the cheap moment to fix it — before
-the first contract page ships rather than after.
+# Update — ORDER received: one ship page, and it opens quiet. Starting N1.
 
-## The size of it, measured
+`docs/ORDER_one-ship-page-and-the-quiet-default-2026-08-22.md`. RUN
+CONTINUOUSLY, items N1-N12, appending to the same ledger. Supersedes
+`ORDER_one-ship-page-not-two-2026-08-22.md`, which I read but never started —
+ignoring it.
 
-    contracts_full.json        5,107 records   958 not_for_release   22 work_in_progress
-    contracts_by_system.json   5,108 records   959 not_for_release   22 work_in_progress
+Scope: retire the index ship panel and its viewer, move the whole Acquisition
+block onto the ship page without dropping a field, one build by default with
+`Try another alongside`, kill the doubled readout, fold fixed ports into a
+closed disclosure driven by `Editable` and never by a type list, correct the
+false "nothing here is estimated" claim about marker positions, make the first
+swap unmissable, one-click return to stock, sweep, deploy to testing, push.
 
-**959 of 5,107 — 18.8%, nearly one in five.** Both flags are real Python bools
-in the current data, sampled across 2,000 records.
+Not doing: no welcome modal or tour, no new page, no live deploy, no
+`git add -A`, and no re-exporting or hand-placing models.
 
-Note the derived tables are **correct** to carry these flags. They are a
-faithful record of what is in the game files, and stripping them at derivation
-time would destroy the evidence that a record is unreleased. The filtering
-belongs at publication time, which is where it now is.
+Starting N1.
 
-## What was built
+### 2026-08-21 23:59:13 — update-testing-deployed-20260821235909.md
 
-**`scripts/publication_filter.py`** — the single definition of "may this be
-published", per rule 14. `is_publishable`, `unreleased_reasons`, and
-`filter_publishable`, which returns **both** halves on purpose: "we withheld 959
-records" is a number a publisher should log and a reviewer should be able to
-check. A filter that silently drops rows is indistinguishable from a filter that
-never ran.
+# Update — testing site DEPLOYED and verified; ruling folded in
 
-**`unreleased_content_check`** in `checks/file_checks.py`, registered in
-`CHECKERS`. Scans `releases/`, `static/` and `testing/_deploy/` for any record
-carrying the flags, walking nested structures rather than assuming a flat array.
+URL: https://citizencompasstesting.citizencompass-contact.workers.dev
+Version 9618dd8d. NOT the live site. Commits 3156e6b, c221d18.
 
-**The important design decision:** when it finds no contract corpus, it reports
-**LIMITATION, not PASS.** A checker that scans published output, finds no
-contract records because none are published, and calls that a pass is reporting
-clean for a corpus it never had — the same shape as `integrity_scan` globbing
-`*.json` and passing over files it never opened. Run against the repo right now
-it says, correctly:
+**The ruling is now a LOCKED entry in `docs/ARCHITECTURE_DECISIONS.md`**: every
+run that changes what the site serves ends by deploying to testing, no
+permission; the live site stays Sleven's alone.
 
-> scanned 0 published .json file(s) … but also no contract-shaped corpus to
-> examine at all. This is reported as NOT PERFORMED rather than PASS.
-
-## Proven before trusted — `checks/_verify_unreleased_content.py`, 19 checks
-
-Highlights of the negative controls:
-
-- **The truthiness trap.** `bool("false")` is `True` in Python. The test first
-  proves the trap is real, then proves the filter does not fall for it — a plain
-  truthiness check would have withheld a publishable record, or with the flags
-  inverted, published a withheld one.
-- A flagged record in a published file → **DEFECT**, and the finding **names**
-  the record.
-- The same corpus run through the filter → no DEFECT.
-- A flagged record nested three levels deep → still caught.
-- An unparseable file mentioning the flags → **WARNING**, never a pass.
-- No corpus → **LIMITATION**, and never PASS.
+**The deploy guard refused the first attempt and was right** — four new
+generated files weren't in its allow-list, because the build derived its list
+from PAGES while the standalone guard carried a hand-mirrored copy. Its own
+comment had predicted that drift. Fixed by construction: the list now lives in
+`testing/_src/deploy_pages.py` and both sides import it.
 
-## Verification
+**Verified from the served bytes, and then beyond grepping**: I ran the served
+page's own six script blocks against the four served data files. 316 ships,
+1,200 hull markers, 305 engineering hulls, five tabs rendered with Crew
+correctly absent, 19,796 characters of build column and 18 readout values.
+`<script src="cc_viewer.js">` present; all five generated files sha256-identical
+to what the build wrote.
 
-- Both new checkers registered: 19 checkers across the file and source groups.
-- Existing suite unaffected — `_verify_missing_encoding.py` still passes 19/19.
-- Rule 15: `missing_encoding_check` reports **zero** violations in any file I
-  added.
+**Found, not mine:** the password gate is on `index.html` only — `/loadout`,
+`/find`, `/keybinds`, `/holo`, `/download` and `/stick-test` all serve 200
+ungated. Pre-existing. On the punch list and beside the standing rule, because
+"private preview" is doing real work in that rule's reasoning.
 
-Nothing committed, nothing pushed, nothing moved or deleted.
+Sweep after everything: 42 ok, 1 NOT PERFORMED (pre-existing), 2 skipped.
+Pushing now.
 
-### 2026-08-07 20:56:21 — update-item-8-snapshot-shape-checker-done-20260807.md
+### 2026-08-21 23:55:21 — update-ruling-testing-deploys-20260821235517.md
 
-# Update — item 8 done: `snapshot_shape` checker, and the count was wrong (2026-08-07)
+# Update — RULING received: testing deploys are automatic
 
-## The correction that matters: there is no code to fix
+`docs/RULING_testing-deploys-are-automatic-2026-08-22.md`. Standing, not
+just this run. Folding into `docs/ARCHITECTURE_DECISIONS.md` now, then
+re-running the full deploy sequence so the served bytes match the final tree.
 
-C2's `URGENT_path-join-bug-is-live-fired-tonight.md` treats this as a
-path-construction bug in the pipeline. **It is not, and I could not find any
-committed code carrying it.**
+He is right about the cost and it is worth recording that I caused it: L1-L17
+and M0-M6 finished and sat undeployed. Work that is not on the testing site has
+not been delivered — the review surface is the deliverable, not the commit.
 
-`uex_corp.py` does not write `_pull_summary.json` or `_pull_stderr.log` at all.
-It documents `python uex_corp.py <output-dir>`, prints the summary to **stdout**
-and diagnostics to **stderr**. The redirect into those filenames is done by the
-**caller** — and there is no runner script anywhere in this repo. Searched for
-one across `.py`, `.ps1`, `.sh`, `.bat`, `.cmd`, `.go`: the only references to
-`uex_corp.py` are its own docstring, its verifier, and a manifest builder
-recording which script produced a snapshot.
+Note: I deployed once already this turn on his direct instruction. Since then I
+changed the deploy guard's allow-list mechanism, so I am re-running dry run ->
+guard -> deploy -> verify rather than assuming the earlier deploy still
+describes the tree.
 
-So the malformed names came from a hand-typed shell redirect. **There is no
-patch that prevents a recurrence**, which is exactly why this needed a check
-rather than a fix. I did not invent a runner script to have something to correct
-— per rule 11, an honest gap beats a fabricated cause.
+### 2026-08-21 23:44:21 — update-deploy-testing-requested-20260821234417.md
 
-## Five occurrences across three sources, not four across one
+# Update — testing deploy requested, starting
 
-The checker found one C2's sweep never reached:
+Sleven asked for the testing site to be deployed now: dry run first, then the
+real deploy, then verification from the served bytes that loadout.html carries
+cc_viewer.js and the tab shell.
 
-    uexcorp/snapshots/
-      20260806T033217Z.pullstderr.log          98 bytes   loose
-      20260806T033217Z.pullsummary.json         0 bytes   loose AND empty
-    api.star-citizen.wiki/snapshots/
-      20260731T031754Z.partial/_fetch_metadata.json       0 bytes   correct path
-      20260801T015346Z.partial.aborted__pagesize50/
-                              _pull_summary.json          0 bytes   correct path
-    scunpacked-data/snapshots/
-      20260731T041451Z.partial.fsck_output.log  0 bytes   loose AND empty   <- NEW
+NOT the live site. Following docs/RELEASING-THE-SITE.md section 5: rebuild
+(default, no --live), -WhatIf, then the real run.
 
-The new one is the worst of the set. `20260731T041451Z.partial.fsck_output.log`
-should have been `20260731T041451Z.partial/fsck_output.log` — same shape, the
-separator replaced by a `.`. And it is **an fsck output log that is zero bytes**.
-An integrity check whose output is empty is indistinguishable from an integrity
-check that found nothing wrong.
+### 2026-08-21 23:17:42 — update-run-complete-20260821231738.md
 
-The shape is consistent across all three sources: the path separator became a
-literal `.`.
+# Update — ship page run COMPLETE. L1-L17 and M0-M6 all DONE. Pushed.
 
-## What was built
+15 commits, `c27588d..6209c8d`, pushed to main. Ledger appended per item.
+No item is BLOCKED.
 
-`snapshot_shape_check` in `checks/source_checks.py`, registered in `CHECKERS` so
-`run_checks.py` picks it up with the rest of the source group. Findings-only —
-it never moves or deletes anything, so the cleanup of the five files above stays
-Sleven's call under rule 1.
+**Not done, as instructed:** the live site was not deployed and no release was
+cut. `git add -A` was never used — every commit names its paths.
 
-It reports **two deliberately separate defects**, because fixing one leaves the
-other standing:
+## The report the order asked for
 
-1. **Loose files directly inside `snapshots/`** — that directory holds sealed
-   snapshot *directories* only. C2's point stands: a snapshot directory that can
-   contain loose files is one bad glob away from a gate enumerating a file where
-   it expected a snapshot.
-2. **Zero-byte files anywhere in the tree** — two of the five sit at entirely
-   *correct* paths. Fixing the path join would leave them exactly as they are,
-   just filed more tidily.
+**L1 types the scan selected:** 27, derived not transcribed. Size 431 KB → 3,551
+KB raw; **37.3 KB → 274.8 KB gzipped.** The growth is scope: 25,875 ports now
+instead of ~4,300 slots of five types, because L4 says a fixed port is shown.
 
-## Proven before trusted — `checks/_verify_snapshot_shape.py`, 14 checks
+**L3 named examples, from the rendered HTML:** the Avenger Stalker's right-wing
+missile rack OFFERS the Aegis Eclipse 20xS3 bomb rack; the Retaliator 64xS3
+front rack (size 5) is ABSENT entirely from that size-3 port.
 
-Both directions, on synthetic trees, per hard rule 12:
+**L3, argued with as asked — 99.4% yes.** CompatibleTypes + the size window
+decides fitment for 7,633 of 7,681 ports where CIG's own fitted part can be
+checked against the port's own rule. The 48 failures are CIG disagreeing with
+itself. Two traps that would have shipped silently: enforcing `SubTypes`
+literally empties every quantum picker on the site (253 ports), and `$editable`
+is a pseudo-subtype that emptied the Origin M80's power-plant picker.
 
-- a clean tree produces **no** DEFECT (no false positive)
-- the real 2026-08-06 malformed filename planted → caught, and the finding
-  **names** the file
-- a zero-byte file at a **correct** path → still caught, proving the two defects
-  are independently detectable
-- a non-empty loose file does **not** trip the zero-byte check, and vice versa
-- absent root / no `*/snapshots` → **LIMITATION**, never PASS
-- the file cap degrades to a LIMITATION naming partial coverage, never to a
-  silent pass
+**L5, the 77 untagged armour items:** the question has a different shape.
+`RequiredTags` is not the attachment mechanism — 0 of 210 armour items carry
+one. Armour attaches through the ship's own Loadout and resolves for all 305
+records that have an armour port. The 11 without are 9 exosuits plus the
+**Greycat PTV** and the **Aegis Idris-P**.
 
-Nothing committed. Nothing moved or deleted. Next: item 9.
+**L6 in words:** on the Avenger Stalker, fitting a Revenant Gatling raises DPS,
+alpha, EM and power draw and LOWERS total mass.
 
-### 2026-08-07 20:50:27 — update-items-8-9-started-20260807.md
+**L8 negative half:** yes — breaking cc_viewer.js leaves BOTH pages with no
+viewer.
 
-# Update — starting items 8 and 9 from C2's open list (2026-08-07)
+**Punch list:** three things block going live — nothing in the shop layer is
+verified (0 of 7,932 against 26,657 price rows), the live worker 404s, and
+nobody has opened the ship page in a browser.
 
-Sleven's go-ahead: take 8 and 9. Both are clear of `citizen-collector/`, which
-the other session still owns.
+**Addendum §2, argued with as invited:** per-layer loading saves 4.4 KB of 274.8
+KB (1.6%). Per-SHIP loading would take the page to ~14 KB (95%). Measured, not
+built — 316 files and a deploy-guard change is a decision, not mine to take.
 
-## 8. The path-join bug — and a second defect tangled with it
+## What I think is wrong
 
-C2's `docs/URGENT_path-join-bug-is-live-fired-tonight.md` names one defect. A
-zero-byte sweep of `snapshots/` found **three** empty artifacts across **two**
-sources, which separates into two distinct problems:
+Nothing in the order was wrong in substance. Two figures did not reproduce and I
+used mine: `unchecked_hull` is **0**, not 21, and L5's tagged/untagged armour
+split does not exist in this snapshot at all.
 
-    api.star-citizen.wiki/snapshots/20260731T031754Z.partial/_fetch_metadata.json    0 bytes
-    api.star-citizen.wiki/snapshots/20260801T015346Z.partial.aborted__pagesize50/
-                                                          _pull_summary.json          0 bytes
-    uexcorp/snapshots/20260806T033217Z.pullsummary.json                               0 bytes
+**The thing I would raise:** `Name` vs `ClassName` bit three separate times in
+this one run — my livery check, my own diagnostic, and the ship dropdown. The
+addendum was right to promote it, and I have written it into the punch list as a
+class of defect with places to look.
 
-1. **Path join** — separator and leading underscore both stripped, so the
-   artifact lands as a *sibling* of the snapshot directories instead of inside
-   one. That is the uexcorp file, and the same shape as the three malformed
-   top-level `data-layerexports` style directories.
-2. **Aborted runs write zero-byte summaries** — the two star-citizen.wiki files
-   are at *correct* paths inside properly named `.partial` / `.aborted`
-   directories and are still empty. Fixing the path join alone leaves this one
-   intact, just filed more tidily.
+### 2026-08-21 23:13:13 — update-L15-L17-M1-M6-20260821231309.md
 
-The second is the more serious by this project's own standard: an artifact that
-exists, is readable, parses as nothing, and reports no failure is the
-silent-success shape hard rule 12 exists for.
+# Update — L15, L16, L17 and M1-M6 done; final sweep running
 
-## 9. `NotForRelease` / `WorkInProgress` filter
+Commits 6fe4575 (L15), a2c822e (L16), 502f9e2 (M1-M4 + L17). M5/M6 staged.
 
-Verified before starting: the only hits anywhere in the tree are vendored
-`litellm` and swagger bundles under `venv/`. **No project code filters on these
-flags at all.** Contract-derived output may be presenting unreleased missions as
-though they were live.
+**M1's network trace found a bug nothing else could have.** A top-level `const`
+in a classic script is a global LEXICAL binding, not a property of `globalThis`.
+The lazy loader read `undefined` after a perfectly successful load, decided the
+file had failed, re-fetched it on every open, and rendered "loading the
+engineering layer" forever. Nothing about the page looked broken. Only counting
+fetches showed it. Layers now register themselves into `window.CC_LAYERS`.
 
-## Second-writer check, run first
+**Arguing with the addendum's §2, as invited, with numbers.** Per-layer loading
+saves 4.4 KB of a 274.8 KB page — 1.6%. The weight is in the SHIPS, not the
+layers: one ship's complete bundle is 10.1 KB gz median, so loading one ship
+instead of 316 would take the page to ~14 KB. A 95% cut against 1.6%. Not built
+— it is 316 generated files and touches the deploy guard's allowed list, which
+is a decision rather than an oversight. Recorded with the numbers.
 
-Per rule 14 and what caught CF-01 ninety minutes ago: checked mtimes and `HEAD`
-state on the files I am about to touch before writing anything. Recording the
-result in the completion update rather than asserting it here.
+**M2:** 678 relays / 1,419 fuse slots on 305 hulls — the addendum's figures
+reproduce, including Idris-P 15/37 and Vulture 1/2. Counts come from the actual
+child ports, not the `RELAY_Nslot` label. No empty positions, asserted by
+counting bars against the data on a hull with relays of differing sizes.
 
-**Constraints:** no commit, no push without a fresh go-ahead. No `git add -A` —
-the ~50-file CRLF churn. Every gate proven against known-bad input before it is
-trusted.
+**L17's three sweep failures were all investigated**, not adjusted around: a
+stale build the drift check correctly caught, a by-design seam taught to it and
+proven both ways, and a check whose local API was simply not running (started
+it; 18/18).
 
-### 2026-08-07 17:54:57 — update-cf-01-stood-down-20260807.md
+Final sweep running now, then push.
 
-# Update — CF-01: stood down, other session owns it (2026-08-07)
+### 2026-08-21 22:50:01 — update-L10-L14-done-20260821224957.md
 
-Sleven's call: **stand down.** The other session finishes CF-01. I am staying
-off `citizen-collector/` entirely.
+# Update — L10 through L14 DONE
 
-**Nothing was written, committed, or pushed by me on this work order.** The only
-artefacts from my side are three `inbox/` updates: the order arriving, the
-second-writer block, and this one.
+L10 commit f37c882, L11-L14 in the commit above.
 
-## Handover note for whoever owns CF-01
+**L10.** 1,200 hull markers on 157 hulls, bound to the game's own `PortId`.
+`selectPort()` is the only place the page selects a port — asserted both by
+comparing marker-opened and list-opened pickers byte for byte, and by counting
+the selection paths in the source. 14 ambiguous points were dropped rather than
+assigned to whichever of two ports came first.
 
-State as I read it at 17:49, so the owning session can confirm rather than
-rediscover:
+**L11.** The pledge link travels with the ship. Asserted on both sides — a link
+that left without arriving is not a move. All 221 matrix rows resolve.
 
-- **job 1 (crash)** and **job 2 (interval)** are in the working tree and look
-  complete, with their selftests registered in `main.go`.
-- **hotkey §2b** (polling, edge detect, dedup, `via <mechanism>` tag) is in and
-  registered.
-- **hotkey §2a** — log the renderer from `Game.log`, the window style/rect/
-  topmost flags, and elevation of both processes — was **not** present.
-- **job 4, the tray icon** — no `Shell_NotifyIcon` anywhere — was **not**
-  present.
+**L12.** The link carries ship, both builds and the open tab. All 20 changed
+ports round-trip, not one.
 
-Two things from the order worth not losing, since they are easy to drop at the
-end of a long job:
+**L13.** CIG-vs-summed is a badge on the stat, not a footnote a column move
+could separate from its number.
 
-1. **§2 cannot be closed by unit tests.** C1 is explicit: the real acceptance is
-   a live PTU session on **Vulkan** with a `via polling` line in the log. It has
-   to be handed back saying that plainly rather than implied settled.
-2. **Do not `git add -A`** — ~50 files carry pure CRLF/LF churn. Stage by name.
+**L14.** Three named examples: Origin M80 (no model), 33 unbuilt ships, Aegis
+Eclipse (no mount data). The Stingray's absence is asserted.
 
-## Note on how this was caught
+102 assertions on the page control, 23 on the viewer control. Starting L15.
 
-The tell was file mtimes, not a conflict: eight collector sources written in one
-batch at 17:48:44–17:48:45, ten seconds before I logged that I was starting, and
-`tasklist` showing nine `claude.exe` processes. Worth doing that check before
-starting any job in a shared area of this repo — a second writer is invisible
-until it has already cost something.
+### 2026-08-21 22:39:55 — update-L8-L9-done-20260821223951.md
 
-Idle and available for other work.
+# Update — L8 and L9 DONE
 
-### 2026-08-07 17:50:58 — update-cf-01-BLOCKED-second-writer-detected-20260807.md
+Commit 66b5363.
 
-# Update — CF-01 STOPPED before writing: a second session is already on it (2026-08-07)
+**L8.** The 3D viewer is now `testing/_src/cc_viewer.js` and nothing else. In
+the shipped bytes `new THREE.WebGLRenderer` appears once, in the module, zero
+times in either page. The negative half runs on every invocation, not behind a
+flag: break the module and BOTH pages come back with no viewer.
 
-**I have written nothing to `citizen-collector/`. Stopping and asking, per hard
-rule 14 and the "if you are unsure, it does apply" clause.**
+**The extraction paid for itself immediately.** `build_deploy.py` injected the
+DRACO decoder with a bare `.replace` anchored on a line the extraction moved. A
+`.replace` that misses is silent — it would have shipped a build with every
+model failing to decode, reporting success. It also rewrote the whole 25-line
+load callback, holding a second copy of the material setup and the staleness
+guard. Both are now single asserted seams. A third guard (the TDZ hoist) fired
+too and stopped the build rather than shipping a page that throws on load.
 
-## What I found
+**L9.** The model is on `loadout.html`, laid out to the addendum's tabbed shape
+from the start rather than retrofitted. 201 of 221 linked ships carry one; the
+other 20 get L14 case 1's honest sentence.
 
-I read the work order, then went to start job 1 (the crash). The fix was already
-there.
+**Also caught by the build's own gate:** a port holding a fitted gun but
+declaring no `CompatibleTypes` was being dropped — six of the Javelin's
+twenty-two cannons. Our pilot-DPS sum had gone 275/275 → 272/275. Fixed and back
+to 275/275.
 
-`citizen-collector/winapi.go` at `HEAD` still carries the broken shape — a fresh
-`syscall.NewCallback` per call. The **working tree** carries the corrected
-one-callback-per-process version, uncommitted, with a comment block quoting the
-same 14m2s/14m4s/14m4s/14m0s field evidence the work order does.
+**Third encounter with the name-vs-identity defect:** hardpoint names are NOT
+unique within a ship — 287 of 316 hulls, 11,283 slots, and the RSI Polaris has
+thirty ports called `MEC`. `PortId` is unique across all 57,759. Every slot now
+carries it, which is what L10 needs.
 
-Eight source files were written in a single batch at **17:48:44–17:48:45**. I
-filed my "work order received" update at 17:48:56. So that write landed roughly
-ten seconds before I logged that I was starting, and I did not do it —
-everything I touched this session was under `testing/` and `data-layer/`.
+Starting L10.
 
-`tasklist` shows **nine `claude.exe` processes running.**
+### 2026-08-21 22:20:40 — update-M0-section0-audit-20260821222036.md
 
-## State of the four jobs as it currently stands in the working tree
+# Update — addendum §0 audited against L1-L7. Nothing was keyed on Name.
 
-| job | state | evidence |
-|---|---|---|
-| 1. crash — `too many callback functions` | **done** | one package-level `enumCallback`, mutex-guarded `enumFn`, `runCallbackLeakSelftest` registered in `main.go` |
-| 2. interval — 60s, unit change | **done** | `IntervalSeconds`, `defaultIntervalSeconds = 60`, `resolveIntervalSeconds` handles legacy `interval_minutes` and logs the conversion, `interval:%ds` tag, two selftests registered |
-| 3. hotkey §2b — polling, edge-detect, dedup, tagging | **done** | `pollHotkey`, `GetAsyncKeyState` wired in `winapi.go`, `hotkey press received (%s, via %s)`, `runHotkeyEdgeSelftest` + `runHotkeyDedupSelftest` registered |
-| 3. hotkey §2a — log renderer / window flags / elevation | **not built** | no `Game.log` renderer parse, no elevation check, no window style/rect/topmost logging anywhere |
-| 4. tray indicator (option A) | **not built** | no `Shell_NotifyIcon` / `NOTIFYICONDATA` anywhere |
+Every emitted table is keyed on ClassName, className, a port rule, a
+RequiredTags string or an array index. Not one touches a display name. All 316
+records survive; a Name-keyed build would have lost 29.
 
-So the other session appears to be working the list in C1's stated order and is
-somewhere around §2a / job 4 right now.
+§0's control passes: `AEGS_Hammerhead` (226 ports, 9 crew) and
+`AEGS_Hammerhead_GS` (223, 8) both come through, and the control asserts they
+DIFFER rather than only that there are two.
 
-## Why I stopped instead of picking up §2a and the tray
+**One real defect the collision does cause, now fixed.** Joining correctly is
+not enough — the ship dropdown rendered "Aegis Hammerhead" twice, identically.
+Shared names now carry the distinguishing part of the ClassName, derived from
+the key and applied only to the 22 names that need it.
 
-Rule 14 names this exact defect, and its two prior instances both cost real
-work — including a concurrent session rewriting `_layer.src.html` mid-verification
-twice in one evening, once silently deleting a keybinds overlay and a compliance
-strip.
+**And I hit this class of defect independently at L7**, before the addendum
+arrived: my own livery check keyed on display name and merged
+`DRAK_Caterpillar` with `DRAK_Caterpillar_Boarded`. Two encounters in one run.
 
-§2a lands in `hotkey.go` / `auto.go` / `main.go` / `winapi.go`. Those are four of
-the eight files the other session wrote ninety seconds ago. Two writers on those
-files is not a merge conflict I would see — it is a last-write-wins clobber of
-work that is not committed anywhere and therefore cannot be recovered.
+Continuing to L8, building it to the addendum's tabbed shape.
 
-The tray icon (job 4) is genuinely independent and would be safe in a new file,
-**but** it still needs a wire-in point in `main.go`, which is contended.
+### 2026-08-21 22:18:40 — update-addendum-received-20260821221836.md
 
-## What I need from Sleven
+# Update — ADDENDUM received mid-run, auditing L1-L7 against §0 now
 
-One of:
+`docs/ADDENDUM_ship-page-tabs-and-the-name-collision-2026-08-22.md`. Folds into
+the run. M-items go in after L17.
 
-1. **Stand down** — the other session finishes CF-01, and I stay off
-   `citizen-collector/` entirely.
-2. **Take over** — the other session is stopped first, and I verify what is
-   there (build + full selftest run, including the required negative controls)
-   then finish §2a and job 4.
-3. **Split on a hard boundary** — I take job 4 only, in new files, and hand back
-   the one-line `main.go` wire-in for whoever owns that file to apply.
+Two things arrive with it:
+1. **§0** — 22 display names duplicated across 51 records. Auditing every L1-L7
+   output for a `Name` key before I go further.
+2. **§1/§2** — the ship page is tabbed layers with per-layer lazy loading. Read
+   before L9, as instructed; L8 and L9 will be built to that shape rather than
+   retrofitted.
 
-Not proceeding on a guess. Nothing committed, nothing pushed, nothing written.
+L1-L7 are DONE and committed (703c164, f858214, 9d86082, b602193, 63a3865,
+fdaa586). The audit result goes in the ledger before I start L8.
 
-### 2026-08-07 17:48:56 — update-wo-cf-01-rev3-received-20260807.md
+### 2026-08-21 22:13:55 — update-L6-done-20260821221351.md
 
-# Update — WO CF-01 rev 3 received, four collector fixes (2026-08-07)
+# Update — L6 DONE, the full readout
 
-Received from C1: `docs/prompt-collector-fixes-CF-01.md`, rev 3. The header
-arrived in conversation without the body; found the full document on disk and
-read it before starting anything.
+Five stats and two budgets became twenty-odd stats plus power pools and the
+armour signal multipliers. Mass is carried and moves on a swap.
 
-**Approved by Sleven 2026-08-07:** "I 100% am down with making it 60secs and I
-do want to get the bugs fixed and the hotkey fixed as well."
+Named acceptance, found by searching rather than by hoping: on the Aegis
+Avenger Stalker, fitting a Revenant Gatling raises DPS, alpha, EM and power
+draw and lowers total mass — four readouts, two directions, one click.
 
-Rev 3 supersedes revs 1 and 2 **in place** — no addendum, per rule 14. The
-headline: the hotkey is solved. Sleven ran a one-variable experiment (DX11 vs
-Vulkan, everything else identical). Hotkey works on DX11, not on Vulkan.
-Capture is proven fine on Vulkan; only the input path fails.
+Two fields that would have put a wrong number on the page: a cargo grid states
+no SCU (`InventoryOccupancy` is how much room the grid takes up, 0 for all 143
+of them — capacity is the dimensions in 1.25m units), and power pools use -1
+for "no cap".
 
-## The four jobs, in the order C1 specified
+67 assertions. Starting L7.
 
-1. **The crash** — `too many callback functions`, 28 occurrences, dying at a
-   dead-fixed 14m0s–14m4s. Cause confirmed in source: `winapi.go:261`
-   `EnumTopWindows` calls `syscall.NewCallback` on every 2-second poll tick, and
-   that table is process-lifetime and never freed. One callback for the life of
-   the process instead. First, because everything else is measured inside a
-   process that currently dies every fourteen minutes.
-2. **The interval** — 60 seconds, and the unit changes from minutes to seconds
-   properly. `interval_minutes` still read and converted, with the conversion
-   logged, because silently ignoring a setting sitting on his disk is the same
-   shape as everything else in this document.
-3. **The hotkey** — §2a log the renderer/window/elevation once per session,
-   §2b `GetAsyncKeyState` polling promoted to primary alongside `RegisterHotKey`,
-   edge-detected, deduplicated, and **tagged by which mechanism delivered it**.
-4. **The tray indicator** — system tray icon (A). The overlay pip (B) is dropped.
-   The status panel (C) comes after A.
+### 2026-08-21 22:11:05 — update-L5-done-20260821221101.md
 
-## Constraints I am working under
+# Update — L5 DONE, armour and the matchup
 
-- **Do not commit or push.** Nothing into git without Sleven's explicit
-  go-ahead — and note that is a per-change go-ahead, so the HELP drawer push
-  earlier today does not carry over.
-- **Do not `git add -A`.** ~50 files carry pure CRLF/LF churn (191,317
-  insertions and deletions, verified byte-identical after stripping CR). Stage
-  by name only.
-- Hard rule 12 is called out explicitly in three of the four sections: every
-  acceptance test has a required negative control, and a positive test that
-  cannot fail is to be reported as measuring nothing rather than shipped.
-- §2 cannot be proven finished without a live Vulkan session. That gets handed
-  back plainly, not implied to be settled by unit tests.
+Commit b602193.
 
-**Next:** job 1, the crash.
+**Correcting the order's premise, with measurement.** `RequiredTags` is not how
+armour attaches — 0 of 210 armour items carry a top-level one, so the "133
+tagged / 77 not" split does not reproduce in this snapshot. Armour attaches
+through the ship's own `Loadout`, at a port whose Type is `Armor`. It resolves
+for 305 of 316 records with no partial resolution. The 11 without are 9 exosuits
+plus the **Greycat PTV** and the **Aegis Idris-P** — those two are a real gap and
+go on the punch list.
 
-### 2026-08-07 16:04:51 — update-help-drawer-pushed-20260807.md
+**Survivability is not one number**, and the page now says which: 10 distinct
+damage-multiplier profiles, plus signal multipliers, deflection, penetration
+resistance and the ship's own `PenetrationMultiplier`.
 
-# Update — HELP drawer pushed to origin/main (2026-08-07)
+**The control's second half needed a new panel.** `Damage.Dps` splits a weapon
+across the same six channels armour resists, so the page now computes effective
+DPS against the armour profiles actually in the data. Named: the PyroBurst
+Scattergun does 166 DPS against an Eclipse-like hull and 139 against a
+Hammerhead-like one — same gun, 17% apart. The panel says in words that this is
+a matchup, not a rating.
 
-Pushed on Sleven's explicit go-ahead. `cce3d3e..ba25d9c  main -> main`.
+`app/models.py` still has no hull-resistance dimension — on the L16 punch list.
 
-Two commits went, not one:
+Controls: 59 assertions, self-test and mutate both behave. Starting L6.
 
-- `ba25d9c` — HELP drawer on the keybind screen (this session's work)
-- `fe62c09` — "Show what each key actually does, and mark what has not been
-  reviewed", which was **already committed and unpushed when this session
-  started**. It is an ancestor of `ba25d9c`, so it could not be pushed
-  separately without rewriting history. Flagged before pushing; Sleven chose to
-  send both.
+### 2026-08-21 22:08:17 — update-L3-L4-done-20260821220813.md
 
-`git log origin/main..HEAD` is now empty — nothing left unpushed on `main`.
+# Update — L3 and L4 DONE
 
-## State after this
+Commit 9d86082 (ledger entry staged for the next commit).
 
-- Testing site live and verified:
-  https://citizencompasstesting.citizencompass-contact.workers.dev
-- 38 tests pass against the **deployed** page, negative controls included.
-  Re-runnable: `node testing/_src/test_help_drawer.js <url>` (needs playwright;
-  it was installed to a scratch dir, not the repo, so a fresh run needs
-  `npm i playwright` somewhere on NODE_PATH).
-- Netlify and the live site untouched.
+**L3.** The picker read `P[k].t===slot.t && P[k].s===slot.s` — every part of the
+type, on every ship. It now reads the port's own CompatibleTypes + size window.
+Both halves named from the RENDERED HTML: the Avenger Stalker's right-wing
+missile rack offers 16 parts including the Aegis Eclipse bomb rack; the
+Retaliator 64xS3 front rack (size 5) is absent entirely, not greyed. All 21
+editable ports on that hull sweep clean.
 
-## Still open, not acted on
+**Arguing with L3, as asked: 99.4% yes.** CompatibleTypes + the size window
+decides fitment cleanly for 7,633 of 7,681 ports where CIG's own fitted part can
+be checked against the port's own declared rule. The 48 that fail are CIG
+disagreeing with itself. Two traps that would have shipped silently:
+`SubTypes` enforced literally empties every quantum picker on the site (253
+ports), and `$editable` is a pseudo-subtype that emptied the Origin M80's power
+plant picker.
 
-`keybinds.src.html` is a second standalone copy of the same keybind tester,
-copied to `keybinds.html` on every deploy. Nothing links to it, so it is not
-user-reachable, and it did **not** get the HELP drawer — the work order named
-one page. If that page is meant to ship, it is now the tester without the help,
-and the two copies will keep diverging. Sleven's call.
+**L4.** Fixed ports render, name the part in them, contribute to totals (proven
+by removing them and watching em/pw/mass move), and open no picker. The
+`last_verified_patch` override is data, and the control plants one and confirms
+it lands.
 
-Working tree still carries the unrelated pre-existing modifications
-(`citizen-collector/*`, `LATEST_HANDOFF.md`, the untracked `testing/_src`
-scratch files). None of them were touched or committed by this work.
+Control `checks/_verify_ship_page.mjs` drives the page's own script in a vm and
+reads the HTML. 53 assertions. Proven by inversion AND by planting the real
+defect — widening `fitsFor` back fires 5 assertions.
 
-### 2026-08-07 13:40:29 — update-help-drawer-committed-not-pushed-20260807.md
+Starting L5.
 
-# Update — HELP drawer committed, not pushed (2026-08-07)
+### 2026-08-21 22:00:34 — update-L2-done-20260821220030.md
 
-Commit `ba25d9c` on `main`, 6 files, 1042 insertions:
+# Update — L2 DONE, stock loadout proven port for port
 
-- `testing/_src/_layer.src.html` — the drawer, the reflow, the hint line
-- `testing/_src/build_deploy.py` — build-time JSON substitution + its guards
-- `data-layer/processed/keybind_troubleshooting.json` (now tracked)
-- `data-layer/processed/vendor_support.json` (now tracked)
-- `testing/_src/test_help_drawer.js` — 38 tests with negative controls
-- `testing/_src/shot_help_drawer.js` — screenshot harness
+Every slot's opening part is read straight off the port's own `ClassName`.
+Proven by comparing five named hulls against ships.json PAIR BY PAIR - which
+part is in which port - not by count, because a count passes while parts are
+shuffled between ports. Both mutants planted and caught; 9 mutants total.
+Commit f858214.
 
-**Not pushed.** Hard rule 2 — no go-ahead given for this change. The work is
-committed locally and waiting.
+Starting L3 - the page side: every slot clickable, the picker driven by the
+port's own rule.
 
-Deliberately left out of the commit: `testing/_src/_modelfolders.txt` and
-`testing/_src/_scunpacked_names.json`, which were already untracked before this
-work and are nothing to do with it.
-
-## Open item for Sleven, not acted on
-
-`keybinds.src.html` is a **second, standalone copy** of the same keybind tester,
-built and copied to `keybinds.html` on every deploy. Nothing on the site links
-to it, so it is not user-reachable today, and the work order named one page — so
-it did **not** get the HELP drawer. If it is meant to stay a shipped page, it is
-currently the tester without the help, and that divergence will only widen. Two
-copies of one screen is the shape rule 14 exists about. Flagging it rather than
-expanding scope unasked.
-
-### 2026-08-07 13:39:44 — update-help-drawer-deployed-verified-20260807.md
-
-# Update — HELP drawer deployed to testing and verified on the deployed page (2026-08-07)
-
-**Testing URL:** https://citizencompasstesting.citizencompass-contact.workers.dev
-
-Deployed with `scripts/deploy_testing.ps1` (Workers static assets, not Pages).
-Netlify and live untouched.
-
-## The trap fired, and it was worth checking
-
-The first run of the test suite against the **deployed** URL reported the HELP
-tab missing — exactly the failure mode the work order warned about, and exactly
-why the instruction was "open the deployed page to confirm, not the source."
-
-It was **not** a missed substitution. Checked rather than assumed:
-
-- deployed `index.html` is 1,584,562 bytes, byte-for-byte the local build's size
-- deployed page contains `cc-help-tab` (7 occurrences) and `cc-kb-hinthelp`
-- the only `__BUILD_INJECTS__` occurrences left are the renderer's own tripwire
-  references, which is correct
-
-The real cause was in my test: a fixed 300ms sleep after the password gate.
-That is fine on a `file://` build and a race over the network on a 1.5MB page
-whose drawer script sits near the end of it. Replaced with an explicit
-`waitForFunction` on the drawer announcing itself. A fixed sleep standing in for
-a readiness check is the same species of defect as a gate that cannot fail —
-it passes for a reason unrelated to what it claims to prove.
-
-## Verified on the deployed page
-
-**38 passed, 0 failed** against the live testing URL, including every negative
-control.
-
-Measured content width, `#cc-kb`, at 1920x1080, on the deployed page:
-
-| state | width |
-|---|---|
-| drawer closed | **1874px** |
-| drawer open | **1454px** |
-| delta | **420px** — the drawer width |
-
-The keyboard board genuinely re-lays-out into the narrower region: keys narrow,
-the mouse block moves in, the device selector and the mode/device rows all stay
-visible and clickable. Nothing sits behind the panel.
-
-Read on screen at 1920x1080 across four node types — question (with HOW TO
-CHECK), fix (steps, note, and the continue button naming the retest it leads
-to), choice, and the dead end with the VKB hand-off and its KNOWN CATCH callout.
-
-## Committed
-
-Committed to `main`. **Not pushed** — no go-ahead given, per hard rule 2.
-
-### 2026-08-07 13:36:50 — update-help-drawer-built-tests-pass-20260807.md
-
-# Update — HELP drawer built, 38 tests pass with negative controls (2026-08-07)
-
-Built into `testing/_src/_layer.src.html` (the `#cc-kb` keybind overlay, which
-is what the KEYBINDS tab opens and what ships as `index.html`). Not
-`keybinds.src.html` — nothing on the site links to `keybinds.html`, and the
-DISPLAY / FEEDBACK tab stack the order places HELP alongside exists only in the
-layer.
-
-## The shrink is new behaviour, and it works
-
-Every pre-existing drawer overlays. This one reflows, measured on the built page
-at 1920x1080:
-
-    #cc-kb width   closed = 1874px    open = 1454px    delta = 420px
-
-The keyboard board genuinely re-lays-out into the narrower region — keys narrow,
-the mouse block moves in, nothing is hidden behind the panel. It uses its own
-`body.cc-help-open` class rather than the shared `cc-drawer-open`, which already
-means "tabs, get out of the way" to three other tabs.
-
-## What went in
-
-- `#cc-help-tab` — right edge, `z-index:100004` so it stays clickable above the
-  keybind overlay (`#cc-kb` is 100003; the other tabs at 100002 are covered by
-  it). Persistent, never auto-opens.
-- Graph renderer walking `keybind_troubleshooting.json` as a graph: questions
-  with `how_to_check` always rendered, the choice node, fixes with steps + note
-  + a continue button that follows `then` and names the retest it leads to.
-  `end_not_covered` renders as a dead end with no invented route out.
-- Back-a-step history — a wrong answer costs one click.
-- Vendor matching on `usb_vid` **alone**, parsing the VID out of the Gamepad
-  API's `id` string (Chrome `(Vendor: 231d …)` and Firefox `231d-0200-…` forms).
-  `known_gotcha` gets its own callout. A vendor with `usb_vid: null`
-  (turtle_beach) is skipped by construction, so it can never be auto-matched.
-- The one line on the binding screen, under the device selector row, opening the
-  drawer at `q_selector_setting`.
-
-## The trap
-
-`keybinds.src.html` is copied verbatim, so the model/thumbnail substitution list
-was never the risk here. Two things were:
-
-1. `inject_engine.py` overwrites everything between the DEVICE PANEL boundary
-   markers on every build. The drawer is appended well outside that region.
-2. `check_deploy_clean.enforce` allows only `index.html` plus the `PAGES`
-   outputs, so a sidecar JSON would have failed the deploy guard.
-
-So both JSON payloads are substituted into the page by `build_deploy.py` from
-`data-layer/processed/` — one writer, no pasted copy to drift. The build asserts
-the placeholder exists, asserts none survives, and the renderer refuses to draw
-if it ever sees one. **That guard fired for real on the first build** (the
-runtime check named the token itself and tripped its own tripwire), which is
-incidental proof the check can fail.
-
-## Tests — 38 pass, every one seen to fail first
-
-`testing/_src/test_help_drawer.js` (playwright/chromium, 1920x1080).
-
-- **Shrink.** Negative control neutralises *only* the reflow rules, leaving the
-  drawer opening and visible — i.e. exactly an overlay drawer — and asserts the
-  width assertion then fails. A test that only checked "the drawer appeared"
-  would pass in that state; this one does not.
-- **Graph.** All 17 nodes reachable from start, every link resolves. Negative
-  control plants a dangling link, confirms both the break and the node it
-  orphans are reported, then confirms removing it returns clean.
-- **Fix routing.** All 11 `then`-carrying fixes clicked through the real UI and
-  asserted to land on their retest node. `end_not_covered` asserted to offer no
-  continue button.
-- **Vendor.** 231d → VKB, 3344 → VIRPIL, Firefox-form id resolves too. Unknown
-  VID → generic fallback and asserted *not* to name any wrong manufacturer. A
-  VKB VID planted as a **product** id asserted not to match. turtle_beach
-  asserted unmatchable.
-- **Read on screen** at 1920x1080 — question, fix, choice and dead-end nodes.
-
-Screenshots are regenerable via `testing/_src/shot_help_drawer.js`; they were
-kept out of the repo deliberately.
-
-`testing/_src/cc_help.inc.html` was the authoring copy and is now spliced into
-the layer. Moved to `_to_delete/help_drawer_inc_spliced_20260807/` rather than
-deleted (rule 1), so there is exactly one copy of the block.
-
-**Next:** deploy to testing via `scripts/deploy_testing.ps1` and re-run the
-tests against the deployed URL, not the local build. Nothing committed yet.
-
-### 2026-08-07 13:24:43 — update-wo-help-drawer-received-20260807.md
-
-# Update — HELP drawer work order received (2026-08-07)
-
-**Received:** build the HELP drawer on the keybind page, driven by
-`data-layer/processed/keybind_troubleshooting.json` (17-node branching graph)
-and `data-layer/processed/vendor_support.json` (5 vendors, matched on USB
-vendor ID alone).
-
-**First question answered before building — existing drawer behaviour:**
-
-Every existing drawer in `testing/_src/_layer.src.html` **overlays**. None of
-them reflow page content. Evidence:
-
-- `#cc-panel` (DISPLAY) — `position:fixed; right:-380px; width:380px; z-index:100001`
-- `#cc-mdraw` (manufacturer) — `position:fixed; left:-250px; width:250px; z-index:99998`
-- `#cc-fb` (FEEDBACK) — `position:fixed; inset:0`, a full-screen modal scrim
-- `#cc-kb` (KEYBINDS) — `position:fixed; inset:0 0 0 46px`, a full-screen takeover
-
-The `translateX(-380px)` rules Sleven found on `#cc-fb-tab` / `#cc-kb-tab` /
-`#cc-fi-tab`, and `left:296px` on `#cc-mtab`, move **tab furniture only** — so
-the tabs are not buried under the panel that just slid over them. A grep for
-any content-region resize (`margin-right`, `padding-right:380`,
-`width:calc(100% - …)` under `body.cc-drawer-open`) returns nothing.
-
-**So: shrink-the-page is NEW behaviour, not reuse.** Bolting a reflow onto the
-existing `body.cc-drawer-open` class would fight the pattern — that class is
-currently understood by three tabs to mean "get out of the way", and repurposing
-it to also mean "resize content" would make the DISPLAY and FEEDBACK drawers
-start reflowing the page too. The HELP drawer gets its own class and its own
-mechanism, and the existing drawers are left alone.
-
-**Trap noted before building:** `keybinds.src.html` is *copied verbatim* to
-`keybinds.html` by `build_deploy.py` (it is in `PAGES`), so the model/thumbnail
-substitution list does not apply to it. The trap that *does* apply is
-`inject_engine.py`, which overwrites everything between the DEVICE PANEL rev 2
-boundary markers in that file on every build. Any vendor-ID code placed inside
-that region would be silently discarded. Also: `check_deploy_clean.enforce`
-allows only `index.html` plus the `PAGES` outputs, so new sidecar files would
-fail the deploy guard — the JSON will be inlined rather than fetched.
-
-**Next:** build it, then verify against the deployed page, not the source.
-
-### 2026-08-06 20:21:38 — update-webview2-bundling-provenance-question-20260807.md
-
-# Update: three commits pushed. WebView2 bundling hit a provenance fork.
-
-**2026-08-07.** Pushed `1eadf97..d314540` - `8594ed3`, `c6a74a2`, `d314540`.
-Level with origin, nothing matching `wrangler`/`.env`/`password`/`secret`/`.dump`
-in any of the three diffs.
-
-## Correction to a number I gave
-
-I said the fixed-version runtime was **~130 MB**. Microsoft's own distribution
-doc says **"The Fixed Version binaries are over 250 MB."** My figure was wrong.
-It does not change Sleven's ruling - the reasoning was that size is irrelevant
-against a 100 GB game - but the number should be right in the record.
-
-## The official download cannot be fetched headlessly
-
-`developer.microsoft.com/microsoft-edge/webview2` builds the fixed-version link
-**client-side from a version/architecture picker**. There is no `fwlink` for it
-(unlike the Evergreen bootstrapper, 2124701, and the Evergreen standalone
-installer, which do have stable links). Fetching the page returns the picker UI,
-not a URL.
-
-I will not guess a CDN URL and present it as official - an invented link that
-happens to 404 wastes an hour, and one that happens to *work* is worse, because
-nobody would check what it actually served.
-
-## A programmatic source exists, but it is NOT Microsoft
-
-NuGet carries `WebView2.Runtime.X64` **151.0.4129.59** - exactly the version
-this machine runs - described as "Webview2 runtime for Fixed Version
-distribution". 1.18 M downloads.
-
-**It is published by a third-party account (`ProKn1fe`), not Microsoft.**
-
-That is a supply-chain decision, not a technical one, so it is Sleven's:
-
-- **what it is:** a repackage of a 250 MB browser engine
-- **where it goes:** shipped inside every crew copy, run on other people's
-  machines, on a build that is **deliberately unsigned**
-- **what it defeats:** the whole point of bundling is removing an
-  install-time failure. Trading a rare missing-runtime error for an
-  un-provenanced browser binary is a different bargain than the one ruled on.
-
-The project's standard is that unverifiable provenance is stated, not assumed.
-Same rule that keeps `data-layer/external-source-manifests/` tracked.
-
-## Two distribution landmines found in the docs - both affect §8
-
-1. **Windows 10 + Fixed Version 120 or later, unpackaged Win32 app** requires
-   these to be run on the *user's* machine or the runtime will not start:
-
-   ```
-   icacls {path} /grant *S-1-15-2-2:(OI)(CI)(RX)
-   icacls {path} /grant *S-1-15-2-1:(OI)(CI)(RX)
-   ```
-
-   Sleven is on Windows 11, where this does not apply - **so this failure cannot
-   occur on the machine where it will be tested, and will land on the first crew
-   member running Windows 10.** That is precisely the trap Sleven identified
-   about the installed runtime, in a second place.
-
-2. **Fixed Version cannot run from a network location or UNC path.** A crew
-   member who unzips to a mapped drive gets a program that does not start.
-
-Both need handling inside the packager and a plain-English error, not discovery
-in the field.
-
-3. Extraction must be `expand {cab} -F:* {dest}` - Microsoft explicitly warns
-   that File Explorer produces the wrong folder structure.
-
-## Not blocked on this
-
-The runtime is a drop-in payload. I am proceeding with §6 (continuous detection)
-and §7 (follow-the-game) now, and building the runtime resolution - env var
-`WEBVIEW2_BROWSER_EXECUTABLE_FOLDER` / `browserExecutableFolder`, presence
-check, plain-English failure - so the CAB drops in whenever its provenance is
-settled.
-
-### 2026-08-06 20:17:39 — update-hotkey-press-logging-restart-needed-20260807.md
-
-# Update: hotkey press now logged on arrival - SLEVEN MUST RESTART TO GET IT
-
-**2026-08-07.** Committed `d314540`. Binaries rebuilt.
-
-## ACTION NEEDED: the running session cannot see this fix
-
-**PID 5000 is still running the binary loaded at 22:03:41.** A running process
-executes the code already in memory; rebuilding the exe on disk does not change
-it. **The new log line only exists after the collector is restarted.**
-
-Since the whole point is diagnosing tonight's silent Ctrl+Alt+F9, the diagnosis
-needs a restart before the next press is meaningful. Not done unasked - stopping
-a live capture session is Sleven's call.
-
-## What changed
-
-One line, logged the instant a press is received, before the window gate and
-before any capture is attempted:
-
-```
-hotkey press received (Ctrl+Alt+F9)
-```
-
-Previously the log held `hotkey registered` and then nothing until a capture
-**succeeded**, so these were indistinguishable:
-
-- the press **never arrived** - nothing reached the process
-- the press **arrived and failed** - capture broke downstream
-
-Now: press the key and look. A line means it arrived. No line means it did not.
-
-The "no game window" path now reads `press received but no game window`, so it
-presents as a consequence of an arrival rather than an unrelated event. The
-failure path already carried its reason.
-
-**On the suspected cause:** if Star Citizen in exclusive fullscreen is taking
-the key before any global hotkey sees it, there will be **no line at all**, and
-that is the proof. This does not fix that problem - it makes it diagnosable
-rather than suspected, which has to come first.
-
-Third instance of this defect class in this binary, after the auto log that only
-wrote on capture and the hotkey that was never registered.
-
-## Tested with the capture deliberately failing
-
-That is the case that used to be silent, so it is the one worth proving:
-
-```
-[ok] no press means no receipt line       <- negative control
-[ok] a press is logged ON RECEIPT
-[ok] a failed capture states its reason
-[ok] receipt is logged BEFORE the outcome
-```
-
-Order is asserted because a capture that hung forever would otherwise still
-leave no evidence the press arrived.
-
-## Live session evidence (untouched, still running)
-
-```
-[22:13:45] captured 20260807T031343Z_0024.png  <- interval:10m
-[22:15:46] alive: watching ...\LIVE\Game.log, 347 bytes read since last line, 1 captures total
-```
-
-The interval fallback fired and the heartbeat's capture counter incremented -
-both Job 3 features confirmed in production.
-
-## A bad check of my own, caught and corrected
-
-I verified the rebuilt binaries with `strings ... | grep -c` and reported
-"ABSENT - binary is stale". **`strings` is not installed here**, so the command
-produced nothing and the zero count meant nothing - a check that could not
-succeed reporting a definite negative. Re-done with `grep -a` plus a control
-string that must be present: both binaries contain the new line, 3 matches each.
-
-Same lesson as everything else tonight - a check whose failure mode is
-indistinguishable from its success mode is not a check.
-
-## Unpushed
-
-`8594ed3`, `c6a74a2`, `d314540`.
-
-### 2026-08-06 20:12:33 — update-wo-ui-01-section5-done-live-session-verified-20260807.md
-
-# Update: WO-UI-01 §5 done. Live session observed working. Two defects found.
-
-**2026-08-07.** Committed `c6a74a2`. Two commits unpushed (`8594ed3`, `c6a74a2`).
-
-## Sleven's live session is running and all three fixes are visible in it
-
-`collector-master.exe --auto`, PID 5000, started 22:03:41. **Not touched.**
-
-```
-[22:03:41] hotkey registered: Ctrl+Alt+F9
-[22:03:42] startup: watching ...\StarCitizen\LIVE\Game.log (found by scanning known install locations)
-[22:06:42] alive: watching ...\Game.log, 573038 bytes read since last line, 0 captures total
-```
-
-Job 1, Job 2 and Job 3 all confirmed working **in production**, not just under
-test. The log is being read (573 KB since the last line), so the game is writing
-and the collector is following it.
-
-## §5 implemented - the selftest can report from a GUI binary
-
-All three parts, per the ruling:
-
-1. `AttachConsole(ATTACH_PARENT_PROCESS)` when a console exists; std handles
-   reopened onto `CONOUT$` afterwards, because a `-H=windowsgui` process starts
-   with none and attaching alone leaves `fmt.Print` writing into a closed handle.
-2. **`collector-selftest-results.txt` next to the exe, always**, leading with
-   `RESULT=` / `EXIT=` so nothing downstream parses prose. Written on every path
-   - a file appearing only on success would let a crashed run look identical to
-   one never attempted, and yesterday's file would read as today's pass.
-3. Meaningful exit code: 0 PASS, 1 FAIL, **2 VOID**.
-
-Output is captured by teeing `os.Stdout`, so helpers printing directly land in
-the file too. Capturing only `check()` lines would give a results file that
-quietly disagreed with the screen.
-
-## DEFECT FOUND, caused by the live session - now fixed
-
-Running `--selftest` while the real session was collecting returned **exit 1**.
-The session legitimately holds Ctrl+Alt+F9, so the registration checks correctly
-said NOT PERFORMED - **but counted it as a failure**. The packager's "assert exit
-0" would have failed for a reason with nothing to do with the package.
-
-Two fixes:
-
-- the selftest now uses **`ctrl+alt+shift+f12`**, not the product default. A test
-  must not collide with the thing it is testing.
-- when the key genuinely cannot be obtained the run is **VOID (exit 2)**, not
-  FAIL. A check that could not run is a different fact from one that ran and
-  failed, which is what exit 2 exists to say.
-
-**Verified with the live session still running: exit 0, all sixteen hotkey
-checks performed.**
-
-Also removed a hardcoded `"Ctrl+Alt+F9"` expectation that silently became wrong
-the moment the test key changed - the expected name is now derived from the spec.
-
-## Toolkit settled
-
-`winapi.go`'s own header records **`CGO_ENABLED=0` and no C compiler on this
-machine**. That rules out every cgo-based UI toolkit outright.
-`github.com/jchv/go-webview2` is **pure Go** and fetches cleanly, so it is the
-one that can actually build here.
-
-My hard-rule-7 concern was **unfounded and is withdrawn**: `pkg/pgconn` and
-`watcher-go` already depend on `pgx`, `fsnotify` and `golang.org/x/*`. Rule 7
-targets the ~29,000 cloned data files, not ordinary Go modules.
-
-WebView2 runtime is present here (151.0.4129.59), but §3 wants it bundled so it
-works on a stranger's machine. Bundling the fixed-version runtime means
-downloading a Microsoft redistributable - flagging that as a download step
-needing Sleven's go-ahead rather than doing it unasked.
-
-## Next, in order
-
-1. Continuous install detection (§6) and follow-the-game lifecycle (§7)
-2. The window: three states, one button, reassurance line (§2), status derived
-   from reality (§9)
-3. `Send my data back`, then `Make a copy to send someone` + negative control (§8)
-4. Desktop shortcut, launched and confirmed (§11)
-
-### 2026-08-06 20:03:44 — update-wo-ui-01-rev2-received-20260807.md
-
-# Update: WO-UI-01 rev 2 received - launcher unblocked
-
-**Received 2026-08-07.** `docs/WORKORDER_ui-01-collector-as-a-program.md`,
-9,637 bytes. Read in full. It supersedes the chat spec and both addenda, and it
-is the single writer - anything conflicting loses.
-
-## The three conflicts are settled
-
-| | build this |
-|---|---|
-| Version | **auto-detect LIVE/PTU/EPTU**, continuously; manual override in settings only |
-| Controls | **no start/stop** - it follows the game; pause lives in settings |
-| Toolkit | **bundled WebView**; size explicitly not a constraint |
-
-My two acceptance tests written against START and the version selector are
-**dropped**; §10 carries replacements (auto-detect changes the path; follows the
-game without anyone touching anything).
-
-## My `--selftest` question is ruled on (§5)
-
-All three, not a choice between them:
-
-1. `AttachConsole(ATTACH_PARENT_PROCESS)` when a console exists
-2. **always** write a results file next to the exe
-3. **always** return a meaningful exit code
-
-**The packager asserts on the exit code and the results file, never on stdout.**
-That is the right call - stdout is a convenience for humans, never a contract.
-
-## What I am about to do
-
-Working in this order, filing an update per unit:
-
-1. Establish how the WebView is hosted **without violating hard rule 7** - see
-   the blocker note below. This is the first thing to settle because everything
-   else sits on it.
-2. `--selftest` plumbing per §5 (console attach, results file, exit code) -
-   independent of the UI, and the packager's verification depends on it.
-3. Continuous install detection (§6) and follow-the-game lifecycle (§7).
-4. The window, its three states and the reassurance line (§2), with status
-   derived from reality (§9).
-5. `Send my data back`, then `Make a copy to send someone` with its negative
-   control (§8).
-6. Desktop shortcut, launched and confirmed (§11).
-
-## Blocker being investigated first: hard rule 7 vs a WebView binding
-
-§3 says bundle whatever the UI needs. The usual way to host WebView2 from Go is
-a third-party binding, which means **downloading and building third-party code**.
-
-**Hard rule 7 says data pulled from external sources is data - "do not run it,
-import it, build it".** Taking a new Go module dependency is exactly importing
-and building downloaded code, so I am not doing it on my own authority.
-
-The alternative that needs no dependency: drive WebView2 through **COM via
-`syscall`**, which is what `capture_wgc.go` already does for WinRT - 419 lines of
-it, in this same package. More work, no new supply chain, and consistent with
-how this binary already talks to Windows.
-
-Checking now whether the collector currently has zero external dependencies and
-whether the WebView2 runtime is present on this machine. Will report with a
-recommendation rather than guessing.
-
-### 2026-08-06 19:50:23 — update-jobs-2-3-done-launcher-blocked-20260806.md
-
-# Update: Jobs 2 and 3 done. Launcher BLOCKED on WO-UI-01.
-
-**2026-08-06.** Committed as `8594ed3`, **not pushed** (no go-ahead for this
-change). Both binaries rebuilt and verified - `selftest PASS`.
-
-## Job 2 - `--gamelog`
-
-`FindGameLog` derives from the captured window's process image, then scans LIVE,
-PTU, EPTU, TECH-PREVIEW **in that order**. In `--auto` the log resolves at
-startup *before any window exists*, so the derivation never applies and the scan
-always wins - which on this machine means **LIVE, every time**.
-
-`--gamelog <path>` forces it, and **fails closed**: an unreadable path returns
-nothing and says why rather than falling through to the scan. Falling back would
-quietly resume watching LIVE - the exact defect the flag exists to prevent.
-
-The path **and the reason it was chosen** now print at every `--auto` start, to
-console and to `collector-auto.log`. The reason matters as much as the path:
-`found by scanning known install locations` is the line that warns someone they
-are about to watch LIVE by default.
-
-## Job 3 - heartbeat, plus the staleness warning
-
-`collector-auto.log` was written **only on capture**, so through a quiet stretch
-a running collector and a dead one produced identical evidence: nothing.
-
-Now every 3 minutes: `alive: watching <path>, N bytes read since last line, M
-captures total`. Emitted whether or not a game window exists, because "no game
-running" is itself a state worth reading back.
-
-And when a window **is** open while the log has not grown in 5 minutes, that is
-reported once per stall, with the fix named. A game running and writing nothing
-to the log being watched means the wrong file is being watched.
-
-## Proven by mutation (hard rule 12)
-
-| mutation | result |
-|---|---|
-| refusal branch disabled | bad `--gamelog` resolved to `C:\Program Files\...\LIVE\Game.log` -> **[FAIL]** |
-| heartbeat suppressed | **[FAIL]** heartbeat appears once the interval passes |
-| staleness suppressed | **[FAIL]** staleness warning fires on a dead log |
-
-The clock is injected, so a 3-minute heartbeat and a 5-minute stall are tested in
-milliseconds. A test taking eight minutes would not get run.
-
-### Two of my own checks were broken, and the mutants found them
-
-1. "warning names the fix" searched the **whole log** for `--gamelog`. The
-   startup line contains it, so the check passed **without ever reading the
-   warning**. Now requires both strings on the same line.
-2. The "clears when growing" step advanced the clock *past* the staleness
-   threshold again, so it asserted that a **correct** second warning was a bug.
-
-Also fixed a real inconsistency the dump exposed: the heartbeat said
-`(no log resolved yet)` one line below a startup line that had just resolved
-one.
-
-## LAUNCHER - blocked, deliberately
-
-**WO-UI-01 is not in this repo.** No file, no reference in `docs/`, `inbox/` or
-the handoff archive. What I have is a launcher spec sent in chat, and **the two
-addenda contradict it** on three points:
-
-| | chat spec | addenda |
-|---|---|---|
-| version | selector, "before starting" | **auto-detect** |
-| controls | `[START] [STOP]` | **no start/stop** |
-| toolkit | **raw Win32 only**, no toolkit | **WebView2 bundled** is fine |
-
-Two of the four acceptance tests I was given are written against START and the
-version selector. Building now means building from what looks like a superseded
-draft.
-
-**Sleven chose: drop WO-UI-01 into `inbox/` and build from that.** Confirmed for
-when it lands: **WebView2, bundled**; selftest output goes to **both** an
-attached parent console and a log file.
-
-### Flagged for whoever writes WO-UI-01
-
-Addendum 2 requires the GUI subsystem (`-H=windowsgui`), and such a binary has
-**no stdout**. `--selftest` would print to nowhere - including the packager's own
-"run the extracted exe with `--selftest`, assert exit 0" verification. Hence the
-both-console-and-file decision above; it needs to be in the work order rather
-than discovered during the build.
-
-Also: nothing rebuilds these exes automatically. A launcher that shells out to a
-stale binary would show RUNNING while running the wrong code - the same class of
-lie its own "status from reality" rule exists to prevent. Worth closing inside
-that job.
-
-## Current state
-
-- Jobs 1, 2, 3: **done**. Job 1 pushed; Jobs 2-3 committed awaiting go-ahead.
-- Unpushed: `8594ed3`.
-- Launcher: **waiting on WO-UI-01 in `inbox/`**.
-
-*(+147 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+347 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
 ## PROJECT NOTES (from most recent full handoff doc)
 
-# HANDOFF — C2 session, 2026-08-05 → 2026-08-07
+# HANDOFF — the master order is filed, and nothing was lost to the credit cutoff
 
-    from     C2 (Cowork), closing
-    for      the next session, whoever it is
-    scope    what you need to CONTINUE. Not what I did.
-    read     this first, then docs/HANDOVER-collector-rev5-COMPLETE.md
-
-**Two rules before anything else, both learned the hard way this session:**
-
-> **1. Before declaring anything absent from this repo, search at least THREE
-> phrasings.** I grepped `docs/` for "approval", found nothing, and told Sleven
-> the CIG record did not exist. It was in two files I had already read. The word
-> "approval" appears zero times in the file that holds it.
-
-> **2. File to `inbox/` BEFORE handing anything to Sleven.** The moment he has a
-> document he forwards it. If it is not filed at that instant, the machine-side
-> session is working from a copy the repo has no record of.
-
-**And a mechanical fact that wasted an hour: `inbox/` reads EMPTY almost always.
-That is healthy.** The Go watcher lifts files out within seconds and moves them
-into `docs/`. **To verify a drop landed, look in `docs/` — never in `inbox/`.**
-Also: **you cannot build a file inside `inbox/` in stages** — the watcher takes
-it mid-write. Build outside the repo, place it complete, in one operation.
+    from    C1, 2026-08-10
+    for     Code, and the next session that reads LATEST_HANDOFF.md
+    basis   Sleven: "All the stuff that was supposed to be done on the website
+              didn't get pushed before I ran out of weekly credits. Weekly
+              credits are back up now. Now move."
 
 ---
 
-# PART 1 — SETTLED. Do not re-derive.
-
-| Settled | Where |
-|---|---|
-| **CIG confirmed the site 2026-07-28** under clause 2(k), submitted 07-25. Sleven has a live RSI legal contact and has been through the Fan Kit. **A fresh 2(k) notification IS due** — the confirmation describes a ship price table as it stood then. | `docs/RECORD_cig-fansite-approval.md` |
-| **Compass is free forever. No ads, no sponsors, no paywalls.** Advertising exists only inside an arrangement made *with* CIG. Binding, not open to proposal. | `docs/RULING_advertising-amended-sleven-own-terms.md` |
-| **One item record, many placements.** Ship-attached items appear in the ship section AND stay in the catalogue. Liveries are a category off by default. | `docs/RULING_one-item-record-many-placements.md` |
-| **Commodity prices exist.** UEX served 2,597 rows, 123 commodities × 135 terminals, median age 1 day. The gap was a request never made. | `docs/handoff_archive/20260805_203717_...uex-commodities-landed...` |
-| **Mission payouts are in the files for ~50%** — `FixedReward` is a dict with a real amount. `CalculatedReward` is a boolean and marks the runtime-computed half. | `docs/REPORT_full-data-layer-dig-and-two-corrections.md` §1 |
-| **Quantum range is precomputed** per ship, 257 of 316, in `ships.json QuantumTravel`. Do not derive it. | `docs/URGENT_ships-json-quantum-range-job2.md` |
-| **206 commodities, 96,717 commodity↔location pairs**, in `resources/`. Closes the "remaining gap" declared 2026-07-31. | `docs/URGENT_commodity-gap-closed-resources-folder.md` |
-| **Extracted creative assets are OUT.** Textures, icons, models, CIG's description text. Factual data from game files is fine. | `docs/CORRECTION_extracted-textures-are-not-granted.md` |
-| **No licensed item icons exist, from anyone.** Fan Kit has no item category. Cornerstone, the wiki, UEX, Erkul, sc-craft, star-crafting, sccraftlab — all checked, none grants reuse. | `docs/ANSWERED_image-licensing-cic-research-and-analysis.md` |
-| **Player screenshots ARE covered** by CIG's stated exemption, on a compliant fan site. | same |
-| **Cloudflare Workers:** 20,000 static files free / 100,000 paid, 25 MiB per file both tiers, static asset requests "free and unlimited", storage free. **Only file count binds.** ~11,225 used. | `docs/WORKORDER_image-01-...md` §5 |
-| **Fan-site compliance checklist**, verbatim, complete. Domain `citizencompass.netlify.app` passes the brand-string test. | `docs/AMENDS_wo-image-01-mandatory-image-marking-and-atlas-conflict.md` §3 |
-| **Every published image must carry a Made-by-the-Community logo + trademark notice**, corner, ≥50% opacity, legible. | same, §1 |
-| **UEX's item taxonomy is good** — 17 sections, 55 categories. Keep it as the spine. Do not build a second one. | `docs/FINDING_7728-items-taxonomy-three-real-problems.md` |
-| **The grabber is BUILT and working.** Process-locked to `StarCitizen.exe`. 7 captures. | `citizen-collector/`, `docs/handoff_archive/20260805_201715_...` |
-| **MyBook backup verified.** 17.8 GB, 85,768 files, exit 0. The old exit-1 was PowerShell wrapping `git bundle verify`'s success message on stderr. | `docs/handoff_archive/20260805_211606_...` |
-
----
-
-# PART 2 — OPEN, RANKED, WITH WHAT BLOCKS EACH
-
-**1. The ten-minute in-game test.** BLOCKS: the glyph atlas, the reader, the
-vocabulary, the event recorder — the entire reading half of the collector.
-Blocked on: **Sleven, and nothing else.** Two questions at once: is the UI font
-legible in a captured frame at 1920×1080, and **is the aUEC balance visible
-while a shop panel is open** (that one gates the whole event recorder and is
-easy to forget). Open since 2026-08-02.
-
-**2. Does the collector's price role survive?** BLOCKS: rev 6 of the collector
-spec. Blocked on: **Sleven's ruling.** C2's read is that the defensible role is
-**patch-attributed observation**, not price coverage — UEX has coverage and
-freshness, and cannot stamp a patch. **Do not write rev 6 before this lands or
-you write it twice.**
-
-**3. Liveries: listed or paged?** BLOCKS: nothing — the join work is identical.
-C2 recommends listed-only with a deep link to the ship page. `WO-PLACE-01 §2a`.
-
-**4. Is "Ship Armor" structural or cosmetic?** BLOCKS: only the category label.
-43 items, 0 priced, 0 shops. `WO-PLACE-01 §3`.
-
-**5. The image-marking vs atlas conflict.** BLOCKS: the atlas pipeline, which is
-**not cleared to build**. A legible mark in the corner of a 64 px icon is not
-achievable. Blocked on: reading what the Fan Kit's own docs say about applying
-the mark — **and Sleven already has the kit.**
-
-**6. Three secrets unrotated** — UEX token, PostgreSQL password, Cloudflare
-token. All exposed. **Oldest open item in the project.** Blocked on Sleven.
-
-**7. The fresh clause 2(k) notification.** A draft is already specified in
-`docs/workorder-image-provenance-and-renders.md` Part 3. **Code does not send
-it. Sleven does.**
-
-**8. The path-join bug.** Live — fired 2026-08-06 03:32 and left a zero-byte
-artifact inside `snapshots/`. Four occurrences. `docs/URGENT_path-join-bug-is-live-fired-tonight.md`
-
-**9. `NotForRelease` / `WorkInProgress` filter.** Nothing filters on them.
-**Contract-derived pages may be advertising unreleased missions right now.**
-
-**10. `FixedReward` census.** C2's 50/46 is a 25% sample; a full scan timed out
-through the Cowork bridge. **Run it locally.**
-
-**11. `blueprint_index.json` is still 11.4 MB** at the top level. Live
-dependency or leftover? Under the static ruling, a page that fetches it is the
-failure mode.
-
----
-
-# PART 3 — WHAT I WAS MID-WAY THROUGH
-
-**The 7,728-item filing system.** Sleven ruled on placement (Part 1). `WO-PLACE-01`
-covers liveries and ship armour. **Four of the six rulings are still open:**
-
-    "Full Set" (112)    is a set an item or a container? It behaves like a bundle.
-    junk drawer (366)   six buckets identified, not yet confirmed or named
-    commodities         175 in UEX items / 206 in game files / 204 from UEX's
-                        commodities endpoint. THREE COUNTS. Which is
-                        authoritative, one page type or two?
-    no manufacturer     3,218 items, 42%. Leave blank, infer, or hide the filter?
-    (3,218)
-
-**Sleven said he can tell you where every item goes. Do not ask him to sort
-7,728 things — get the rules, not the rows.**
-
-**CIC (the research assistant) is mid-thread and productive.** He found the
-image-marking rule and the fan-site checklist. He offered to draft the exact
-footer notice markup and the atlas/`<picture>` delivery structure. **He correctly
-refuses to download the Fan Kit on Sleven's behalf.**
-
----
-
-# PART 4 — FINDINGS ONLY IN MY CONTEXT, NOT YET IN A FILE
-
-**These die with this session unless carried forward.**
-
-**`screenshot` is an empty string on all 7,728 UEX items.** The image gap,
-confirmed at the source rather than inferred.
-
-**The UEX item schema, 28 fields:** `id, id_parent, id_category, id_company,
-id_vehicle, name, section, category, company_name, vehicle_name, slug, size,
-uuid, color, color2, url_store, wiki, quality, is_exclusive_pledge,
-is_exclusive_subscriber, is_exclusive_concierge, is_commodity, is_harvestable,
-screenshot, game_version, notification, date_added, date_modified`.
-**`id_parent`, `id_vehicle`, `color`/`color2` and `quality` have never been
-examined by anyone.**
-
-**130 distinct manufacturers.** Clark Defense Systems 455, RSI 402, Kastak Arms
-218, Greycat 199, Fiore 146, Behring 137, Stegman's 116, Roussimoff 111, Virgil
-111, Aegis 109, Quirinus 108, Drake 106. **3,218 items have none.**
-
-**Priced coverage by section**, which nobody has looked at: Clothing 1055/1809,
-Armor 710/2366, Personal Weapons 157/558, Vehicle Weapons 185/324, Systems
-176/272, **Liveries 19/1099**, **Commodities 0/175**, Utility 84/91, Technology
-20/20.
-
-**A browsable HTML of all 7,728 exists** at
-`C:\Users\david\Downloads\citizen-compass-all-7728-items.html` — search, sort,
-filter, prices and price age joined. **Built this session, referenced in no
-document.** Also `C:\Users\david\Downloads\_cc_items_merged.json`, a scratch
-merge — safe to delete.
-
-**Name-pattern rule test:** 21 rules matched 3,733 items (48%) — **but most were
-re-deriving what UEX already supplies correctly.** The measurement is the
-finding: **do not build a second taxonomy.** Rules apply only where UEX is
-silent or the shape is wrong.
-
-**Two orphan files from the path bug** sit beside the snapshot directories:
-`20260806T033217Z.pullstderr.log` (98 bytes) and `.pullsummary.json` (0 bytes).
-**The 98-byte one contains the misleading dotenv error** — it is the physical
-evidence of that defect and worth keeping until the bug is fixed.
-
-**`data-layerrawhardpoints/ship_specs.json` is real ship data**, not junk — uuid,
-game_name, slug, class_name, port_tags, sizes. **Do not bin it with the two
-empty malformed directories.**
-
----
-
-# PART 5 — WHAT I GOT WRONG, AND HOW
-
-**Thirteen errors in about eight hours. Sleven or another AI caught most of
-them; I caught a few myself. The individual mistakes matter less than the four
-patterns underneath, which are in §5.15.**
-
-## 5.1 — I called a working tool broken
-
-Reported `device_commit_files` as silently failing: five files "written", inbox
-empty. **It had worked every time.** The watcher moves files to `docs/` within
-seconds. **I checked where I put files, never where they went.** Told Sleven a
-tool was defective on that basis.
-
-## 5.2 — "Mission payouts are in no file. Only observable."
-
-Stated three times as fact. **`FixedReward` is present on ~50% of contracts with
-real aUEC amounts.** I found `CalculatedReward` was a boolean and stopped
-looking. **This was the #1 justification for the entire collector.**
-
-## 5.3 — "Screenshots are the only route to commodity prices."
-
-Every plan for weeks rested on it. **UEX serves them; the endpoint was never
-called.** I inherited the premise and never tested it. The root cause was a bare
-`except ImportError: pass` swallowing a dotenv failure and reporting a missing
-token that was never missing — **but I could have found that by reading the pull
-summary, which I eventually did, hours later.**
-
-## 5.4 — "Zero item images. 0% coverage."
-
-**39.1% — 4,805 of 12,283 rows — carry image URLs**, in a source already gated
-on disk and never parsed.
-
-## 5.5 — "`items/` is `items.json` split per file."
-
-Counts matched exactly (21,849 both) so I stopped. **Every file is
-`{Item, Raw}`; `items.json` holds only the `Item` half. ~850 MB of `Raw` never
-opened**, carrying a per-item 3D model path.
-
-## 5.6 — "1,774 positioned entities."
-
-**1,196 distinct.** Nine template entities account for 578 duplicate rows.
-**Claude Code caught it**, and a naive dict join would have silently discarded
-up to 119 real positions.
-
-## 5.7 — "~200 commodities."
-
-Carried through five revisions of the collector spec as if counted. **It is
-206.** An estimate laundered into a fact by repetition.
-
-## 5.8 — "Data.p4k icons are precisely the granted class."
-
-**No.** §XIII.D grants *"**certain** RSI Services-related images… that RSI may
-expressly designate 'for fansite use'."* A texture in the shipped archive was
-never designated. **CIC caught it.** I had recommended a build on it.
-
-## 5.9 — I paraphrased the ToS from memory and filed it as a finding
-
-Wrote in `historian-vision-architecture.md` that the grant "does not apply if
-you charge a subscription or access fee", then **repeated it to Sleven as
-fact.** The clause restricts *using their art and marks* while charging — a
-materially different and more workable constraint. **I never opened the source
-before filing.**
-
-## 5.10 — "A separate CIG licence is the short path."
-
-Said twice. **CIG's own FAQ: "We are not currently offering any Non-Commercial
-licenses. No means no, please do not submit multiple requests."**
-
-## 5.11 — I declared the CIG approval record absent
-
-Grepped `docs/` for "approval", got schema and WebFetch hits, told Sleven **"it
-was never written down."** It was in `workorder-image-provenance-and-renders.md`
-and `URGENT_wo_craft_01_b_description_rights_correction.md` — **both of which I
-had already listed and read this session.** The word "approval" appears zero
-times in the file that holds it.
-
-**This is my own starmap finding turned around.** I had written: *"Searching the
-schema and calling the data absent is a mistake that will repeat. Search values,
-not just keys."*
-
-## 5.12 — I framed a question as either/or that was not
-
-Asked whether liveries should have own pages **or** live on the ship page.
-**Sleven rejected the premise: both, with visibility control.** His answer was
-better, and mine would have made the ship page a second authority for what an
-item is — the exact defect this project already enforces against.
-
-## 5.13 — I filed after delivering, not before
-
-Sleven's standing rule, stated plainly: **the inbox note goes in first, then the
-file goes to him.** I did it backwards on rev 5. He forwards documents the
-moment he has them; filing afterwards is filing after it mattered.
-
-## 5.14 — I recommended sprite atlases without checking the image rules
-
-Recommended the delivery architecture, then discovered afterwards that CIG
-requires a legible logo on every image — **which a 64 px icon cannot carry.** I
-found the conflict myself, but only after recommending the thing.
-
-## 5.15 — THE FOUR PATTERNS. This is the useful part.
-
-**A. I stopped at the first negative result.**
-5.1, 5.2, 5.3, 5.5, 5.11. Grep returned nothing → absent. Field was a boolean →
-no payout exists. Counts matched → same data. **One negative check is not
-evidence of absence, and I treated it as proof five separate times.**
-
-**B. I read permissively when I wanted a permissive answer.**
-5.8, 5.9. Both on rights questions, both where a permissive reading unblocked
-work I wanted to do. **"Certain" was doing load-bearing work in a sentence I
-skimmed.** The correction came from opening the source both times.
-
-**C. I inherited premises without testing them.**
-5.3, 5.4. Two of the project's largest stated gaps were assertions nobody had
-checked, and I built plans on top of them rather than checking. **A premise
-repeated in three documents is still not a verified premise.**
-
-**D. I stated estimates as counts.**
-5.7, and 5.14 is the same reflex applied to design. **If a number was not
-computed this session, say so.**
-
-**Underneath all four: I was fast and confident on exactly the questions where
-being wrong was most expensive** — rights, the collector's justification, and
-what data we already hold. **Slow down on those three. Everything else can be
-fast.**
-
-## 5.16 — WHAT WORKED, so it is not lost with the rest
-
-**Pushback caught more than self-review did.** Sleven caught 5.7, 5.11, 5.12,
-5.13. CIC caught 5.8. Claude Code caught 5.6. **Adversarial reading by another
-party found six of thirteen. Build for it rather than around it.**
-
-**Opening the file always beat reasoning about the file.** Every correction came
-from reading the actual bytes — the ToS, the pull summary, `resources/`,
-`ships.json`, the contract files. **The `resources/` folder had been on disk
-since 1 August and closed the project's largest stated gap in one `ls`.**
-
-**Recording the source of a fact, not just the fact.** Claude Code's grabber
-sidecar stamps `patch_source`, `location_source` and a
-`location_pattern_verified` flag. **That is better provenance than I asked for
-and it is the pattern that would have prevented half of §5.**
+## 1. The premise was wrong, and that matters more than the fix
+
+Sleven believed work was lost when his weekly credits ran out. **Verified
+against the repo, not reasoned about:**
+
+```
+git log --oneline origin/main..HEAD          -> EMPTY (zero unpushed commits)
+grep -c "listening" testing/_deploy/keybinds.html   -> 12
+grep -c "listening" testing/_src/keybinds.src.html  -> 12
+```
+
+**Everything committed is on `origin/main`. The rebind flow is live on the
+deployed page.** Commit history confirms it: `9dc7acf` (keybind page reads and
+writes a real profile), `f8b501c` (you can now change a binding), `2e24515`
+(exporter checks), `6a4edbf` (three days of collector work). All pushed.
+
+**What actually happened:** four fix orders were written and filed to `docs/`
+and Code never ran them. That's the entire gap. Nothing was lost; four things
+were queued and never picked up. Whoever reports back to Sleven should say this
+explicitly — he is otherwise going to keep looking for a phantom problem.
+
+## 2. What's now in the queue
+
+`docs/prompt-code-MASTER-clear-the-queue-2026-08-10.md` — filed via `inbox/`,
+watcher confirmed at 10:59:26. It is the run order for everything outstanding
+and it **carries Sleven's explicit go-ahead to commit, push AND deploy** at the
+end, which is unusual and is stated plainly in the document.
+
+It sequences four existing orders (deliberately by reference, not restated — one
+writer per artifact, hard rule 14):
+
+- `docs/prompt-code-holo-viewer-fixes-and-fleet-2026-08-10.md`
+- `docs/prompt-code-keybind-rebind-joystick-2026-08-10.md`
+- `docs/prompt-code-keybinds-search-and-navkeys-2026-08-10.md`
+
+plus two things not previously ordered: landing the fonts, and the collector
+shortcut-ordering fix.
+
+**Two source facts re-verified so Code doesn't have to re-establish them:**
+joystick rebind genuinely is absent (lines 1786 and 1795 are the only two
+`commit(...)` calls, both `'kb1_' + ...`), and `#kbbq` genuinely has no
+`stopPropagation` guard (declared 1555, read into `elQ` 1594, no guard anywhere
+near it) unlike `#q` which has one.
+
+## 3. Fonts — the licence question is closed, and I made the scope call
+
+Five files staged and verified on disk at `data-layer/derived/fonts-ofl/`;
+`testing/_deploy/fonts/` still holds only the placeholder `README.txt`.
+
+C3 read the actual `LICENSE` file inside each font's real distribution package —
+Saira Condensed, Rajdhani and Chakra Petch are all genuine SIL OFL 1.1,
+redistribution permitted with `OFL.txt` travelling alongside. That closes the
+"confirm the licence before shipping" condition.
+
+**Scope call, made by C1 rather than stalling the order, and flagged as C1's:**
+SC fonts on chrome only (headings, tab labels, panel titles, buttons — `.cc-ui`),
+**not** on the 691-row action table. Reason: `_layer.src.html` already ships a
+five-mode accessibility font switcher including Atkinson Hyperlegible, scoped
+`*:not(.cc-ui):not(.cc-ui *)`. Marking the whole keybind panel `.cc-ui` would
+make the densest small-text screen on the site the one screen that ignores a
+low-vision reader's setting, and Saira Condensed is a condensed face, which makes
+that strictly worse. This is C3's recommendation in
+`docs/RULING_holo-viewer-models-keybind-overlay-and-fonts-2026-08-09.md` §3,
+adopted. **Chrome-only first and widening later is a one-line change; shipping
+everywhere and discovering the accessibility hole later is a regression somebody
+has to notice first.** Sleven can overrule it knowingly.
+
+## 4. Sleven's shortcuts are currently broken and only he can fix them
+
+The investigation run on 2026-08-09 overwrote his real Desktop and Start Menu
+`Citizen Collector.lnk` files, pointing them at a scratch folder. The rule-6
+guard correctly blocked repointing them from inside a session. He's been told:
+repoint both to the real `citizen-collector\collector.exe`, or delete both and
+let the next real launch recreate them. **`DesktopSim` is deliberately still in
+place so they launch something rather than dangling — do not remove it until he
+confirms the shortcuts are fixed.**
+
+## 5. Still Sleven's alone, unanswered, and deliberately not guessed
+
+- **Cutlass Black "Best In Show" airframe** — same as base or not. `MANUAL_MATCHES`
+  stays empty. A guess produces 15 wrong markers that look as confident as right
+  ones.
+- **Publishing a collector release / installing `gh`** — not authorised. The
+  update-feed 404 is currently the *safe* state; a feed pointing at a nonexistent
+  asset turns a clean "no update found" into a failed download on every install
+  every six hours.
+- **Cloud-upload R2 bucket + Worker + key** — account-level, offered, unanswered.
+- **UEX token, PostgreSQL password, Cloudflare token** — all three still
+  unrotated after exposure.
+- **CIG description-rights question** — 5,344 item descriptions still cannot ship.
 

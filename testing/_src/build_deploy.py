@@ -1341,6 +1341,75 @@ print('pages copied:', ', '.join(_copied) if _copied else 'none')
 print('written:', len(out)/1048576, 'MB')
 
 # ---------------------------------------------------------------------------
+# A2 - THE "MADE BY THE COMMUNITY" MARK.
+#
+# CIG require their mark in the corner of any image built from their assets, at
+# no less than 50% opacity and a legible size. This refuses to finish a build in
+# which such an image is missing it.
+#
+# THE REFUSAL IS THE POINT, not the applier. An applier that silently stops
+# running produces an unmarked site and no error; "the mark is applied" then
+# passes on a build that applies nothing. So this reads the PIXELS of what was
+# actually built - see scripts/community_mark.py for how, and for the first
+# version of that detection which was measured and found WRONG.
+#
+# WHAT IS IN SCOPE: every asset the register (A4) records as CIG-sourced with
+# kind "image". That is currently zero, so the guard is armed and idle, exactly
+# like A3's contact requirement - the first such image registered turns it on
+# with nobody having to remember to.
+#
+# WHAT IS DELIBERATELY NOT IN SCOPE, and reported instead: the 241 ship
+# thumbnails already shipping in images/. Their provenance is recorded in
+# docs/workorder-image-provenance-and-renders.md, which establishes that the
+# upstream pack is governed by terms naming "Made by the Community", and
+# equally that it is NOT established whether any individual image is a CIG
+# asset, a screenshot or a render. Marking all 241 is a bulk mutation of the
+# site's whole visual surface (rule 5) on a Fan-Kit compliance question (rule
+# 8: report it, do not fix it), and Part 2 of that same work order plans to
+# replace every one of them with our own renders. Reported, not silently done.
+# ---------------------------------------------------------------------------
+sys.path.insert(0, os.path.join(REPO, 'scripts'))
+import community_mark as _mark
+
+_img_assets = [a for a in _cig.tagged() if a.get('kind') == 'image']
+if _img_assets:
+    _unmarked, _unbuilt = [], []
+    for _a in _img_assets:
+        _variant = _a.get('mark_variant', 'white')
+        for _f in _cig.deploy_paths(_a, OUT):
+            if not os.path.exists(_f):
+                _unbuilt.append(_a['file'])
+            elif not _mark.has_mark(_f, _variant):
+                _unmarked.append('%s (score %.3f, needs >= %.2f)' % (
+                    _a['file'], _mark.mark_score(_f, _variant),
+                    _mark.MARK_THRESHOLD))
+    if _unmarked:
+        sys.exit(
+            "MADE BY THE COMMUNITY MARK MISSING from %d built image(s):\n"
+            "    %s\n"
+            "\n"
+            "CIG require their mark in the corner of any image built from their\n"
+            "assets, at no less than 50%% opacity and a legible size. These are\n"
+            "registered as CIG-sourced and do not carry it.\n"
+            "\n"
+            "This was measured from the built pixels, not read from a flag - so\n"
+            "it is also what fires if the compositing step stops running.\n"
+            "\n"
+            "Apply it with scripts/community_mark.py apply_mark(). Nothing was\n"
+            "uploaded." % (len(_unmarked), '\n    '.join(_unmarked)))
+    if _unbuilt:
+        sys.exit(
+            "REGISTERED CIG IMAGE NOT IN THE BUILD: %s\n"
+            "It is registered as CIG-sourced but is not where the takedown would\n"
+            "look for it. Refusing to ship a register that does not match the\n"
+            "site, because that register is the off switch." % ', '.join(_unbuilt))
+    print('community mark: %d CIG-sourced image(s), all carry it'
+          % len(_img_assets))
+else:
+    print('community mark: 0 CIG-sourced images registered - guard armed, '
+          'nothing to mark')
+
+# ---------------------------------------------------------------------------
 # DEPLOY GUARD - last thing before anything can be uploaded.
 #
 # Everything in _deploy is served PUBLICLY. On 2026-08-06 a failed

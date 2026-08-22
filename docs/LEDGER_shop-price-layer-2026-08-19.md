@@ -3947,7 +3947,7 @@ P8  DONE  2cc669f  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
     whether the columns look right, the model draws, and 19px markers are
     comfortable to hit are Sleven's to see.
 
-A1  DONE  <sha>  THE TRADEMARK NOTICE, ONE CONSTANT, ON ALL SEVEN BUILT PAGES,
+A1  DONE  1d4640a  THE TRADEMARK NOTICE, ONE CONSTANT, ON ALL SEVEN BUILT PAGES,
     ALWAYS VISIBLE.
     WHAT I FOUND BEFORE CHANGING ANYTHING, and it is exactly what the order
     predicted - "six hand-copied instances is six chances at one":
@@ -3992,7 +3992,7 @@ A1  DONE  <sha>  THE TRADEMARK NOTICE, ONE CONSTANT, ON ALL SEVEN BUILT PAGES,
     PROVEN: `--prove` blanks the constant and the comparison goes red on all
     seven pages.
 
-A3  DONE  <sha>  THE SOURCE AND CONTACT NOTICE - BUILT, AND CORRECTLY NOT
+A3  DONE  1d4640a  THE SOURCE AND CONTACT NOTICE - BUILT, AND CORRECTLY NOT
     RENDERING YET.
     THE BUILD REFUSES WITHOUT A CONTACT ADDRESS, and I watched it refuse before
     writing any checker - that is A3's control, observed firing.
@@ -4021,3 +4021,66 @@ A3  DONE  <sha>  THE SOURCE AND CONTACT NOTICE - BUILT, AND CORRECTLY NOT
     `source_notice()` RAISES on an empty contact rather than rendering
     "contact:" and stopping, so the failure cannot reach a page even if a
     future caller forgets the check.
+
+A2  DONE  __SHA__  THE "MADE BY THE COMMUNITY" MARK - APPLIER, DETECTOR, AND
+    A BUILD THAT REFUSES WITHOUT IT.
+    `scripts/community_mark.py` composites the Fan Kit mark bottom-right at 70%
+    opacity, following the precedent in
+    docs/FINDING_hologram-display-concept-2026-08-08.md rather than inventing a
+    second approach. CIG's prohibitions are structural, not commented: ONE scale
+    factor for both axes so it cannot be distorted, never transposed so it
+    cannot be flipped, its own pixels copied so it cannot be recoloured, nothing
+    drawn over it so it gets no outline, shadow or effect. Opacity below CIG's
+    50% floor RAISES rather than clamping.
+    THE FIRST DETECTOR I WROTE WAS WRONG, AND MEASURING IT IS WHAT FOUND THAT.
+    It scored "is the corner brighter where the mark is opaque". But the mark is
+    not a flat silhouette: 72% of it is opaque and that region spans luminance
+    9..255 with a MEAN OF 113 - mid grey. On a mid-grey render it shifts the
+    average by almost nothing. Measured: mid-grey scored 5.36 where dark and
+    light scored 57 and 68, i.e. it would have declared the mark MISSING on
+    exactly the mid-tone images a ship render actually produces. Replaced with
+    the Pearson correlation between the corner and the mark's own luminance,
+    which is invariant to background and to opacity because compositing is
+    linear. Re-measured across dark/mid/light, a gradient with a deliberately
+    bright corner blob, and a 320px image, both variants, at 70% AND at the 50%
+    floor: MARKED 0.9683..0.9994, UNMARKED at most 0.0212. The threshold 0.50
+    sits in the middle of a 0.947 gap, and the checker re-measures both ends
+    every run so it cannot quietly stop separating them.
+    THE LOAD-BEARING NEGATIVE CONTROL RUNS THE REAL BUILD, TWICE.
+    `checks/_verify_community_mark.py` does not call the guard's inner function
+    and does not describe what the build would do - it executes
+    testing/_src/build_deploy.py as a subprocess against a fixture register
+    (CC_CIG_REGISTER, added for this) and asserts on its exit status:
+      unmarked image registered as CIG-sourced -> build FAILED, exit 1
+      the SAME image, marked                   -> build SUCCEEDED, exit 0
+    Both halves are required: the first alone passes on a build that refuses
+    everything, the second alone on a build that refuses nothing.
+    AND THE FIRST RUN OF THAT CONTROL SCORED A FALSE PASS, WHICH IS WHY IT NOW
+    ASSERTS *WHICH* REFUSAL IT GOT. Registering a CIG asset also switches on
+    A3's contact requirement, so the build exited 1 on the MISSING CONTACT
+    without ever reaching the mark guard - and "the build refused" was green.
+    That is the project's silent-success shape exactly: refused, but for the
+    wrong reason. The control now supplies a contact and requires the refusal to
+    name the mark. Ninth instance logged.
+    ORIENTATION IS ASSERTED AGAINST FOUR TRANSFORMS, with a margin set from
+    measurement rather than taste: upright 0.9905 beats mirrored-left-right
+    0.8800 by only 0.1105, because the mark is a near-circular badge; the
+    vertical and rotational transforms fall to 0.54..0.60. Claiming a wide
+    margin here would have been claiming something untrue about this mark.
+    GUARD IS ARMED AND IDLE: 0 CIG-sourced images are registered, so it reports
+    "guard armed, nothing to mark". The first one registered turns it on with
+    nobody remembering to - same shape as A3.
+    REPORTED, NOT FIXED (hard rule 8): the 241 ship thumbnails already shipping
+    in images/ do NOT carry the mark. docs/workorder-image-provenance-and-
+    renders.md establishes that the upstream pack is governed by terms naming
+    "Made by the Community", and equally that it is NOT established whether any
+    individual image is a CIG asset, a screenshot or a render. Marking all 241
+    is a bulk mutation of the site's whole visual surface (rule 5) on a Fan Kit
+    compliance question (rule 8 says report it, do not fix it), and Part 2 of
+    that same work order plans to replace every one of them with our own
+    renders. THIS IS A DECISION FOR SLEVEN, not one I take silently.
+    THE MARK FILE IS NOT COMMITTED. It is read from the Fan Kit on disk, or from
+    CC_FANKIT_DIR. Copying a CIG asset into a public git repo is a separate
+    decision from the one already taken, and not mine.
+    13 assertions pass; _deploy is left at exactly 241 images with no fixture
+    behind it. Fixtures moved to _to_delete/a2_mark_fixtures/ (rule 1).

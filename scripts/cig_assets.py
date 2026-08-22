@@ -42,7 +42,21 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
-REGISTER = os.path.join(REPO, "data-layer", "cig_assets.json")
+# CC_CIG_REGISTER points the register somewhere else. This exists so the
+# takedown and the mark guard can be exercised as REAL RUNS against a fixture
+# register - a procedure that is only ever described is not a control. It is
+# read at call time, not import time, so a test can set it around one call.
+_DEFAULT_REGISTER = os.path.join(REPO, "data-layer", "cig_assets.json")
+
+
+def register_path():
+    return os.environ.get("CC_CIG_REGISTER") or _DEFAULT_REGISTER
+
+
+# Kept as a module attribute for callers that read it directly; the functions
+# below all go through register_path() so the override cannot be bypassed by
+# forgetting to pass one.
+REGISTER = _DEFAULT_REGISTER
 
 # The sources whose assets the takedown removes. A set rather than one string
 # because "came from CIG" may later need to distinguish the holoviewer from the
@@ -65,7 +79,7 @@ def load(path=None):
     """The register. A missing file is an EMPTY register, not an error - that is
     the honest state before the first asset arrives, and it must not stop a
     build."""
-    path = path or REGISTER
+    path = path or register_path()
     if not os.path.exists(path):
         return _empty()
     with io.open(path, "r", encoding="utf-8") as fh:
@@ -79,7 +93,7 @@ def load(path=None):
 
 
 def save(data, path=None):
-    path = path or REGISTER
+    path = path or register_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with io.open(path, "w", encoding="utf-8", newline="\n") as fh:
         json.dump(data, fh, indent=1, sort_keys=True, ensure_ascii=False)
