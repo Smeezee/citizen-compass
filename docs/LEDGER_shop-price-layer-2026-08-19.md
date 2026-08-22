@@ -4395,3 +4395,39 @@ B3  DONE  fd37ae8  TWO HOMES, SPLIT BY WHETHER THE THING IS ON THE HULL.
     STATED LIMIT: the 960x540 stage is a STUB, not a measurement. Nothing here
     proves the panel fits a real viewport - only that the arithmetic places it
     inside the box it was given. Real viewports are B8's job.
+
+B4  DONE  c6d8da0  THE PAGE OPENS CALM, AND REMEMBERS THE CHOICE.
+    "The ship just constantly spins." A stop control is not the same as opening
+    still: it made a visitor undo something they never asked for, on every
+    ship, before they could look at what they came to see.
+    Default not spinning. Choice remembered in sessionStorage - not
+    localStorage, because it is a preference about this sitting rather than a
+    setting that should follow somebody back weeks later having been forgotten.
+    READ THROUGH A GUARD. sessionStorage THROWS in a browser with storage
+    disabled and is absent entirely outside one. A page that fell over because
+    it could not remember a spin preference would be broken by its own
+    convenience.
+    "NO PREFERENCE" (null) AND "PREFERS OFF" (false) STAY DISTINCT even though
+    they produce the same first frame. Collapsing them would make the negative
+    control below unprovable, which is the whole reason to keep them apart.
+    The static markup opens in the default state too - until applySpin() first
+    runs, a button reading "Stop spin" over a still ship is the page
+    contradicting itself on every load.
+    CONTROL  checks/_verify_spin_default.mjs, 27 assertions, three storage
+    worlds driven rather than reasoned about: none, working, and one that
+    throws on every access.
+      no preference  -> spinOn false, _view.spinning() false, "Start spin"
+      stored "1"     -> spinOn true, _view.spinning() TRUE, "Stop spin"
+      toggle writes "1" then "0", and a page loaded afterwards honours it -
+      the round trip closes, because writing proves nothing if nothing reads
+      storage throwing -> page loads, defaults calm, control still works
+    THE NEGATIVE HALF IS THE LOAD-BEARING ONE and the order said so: "it does
+    not spin" also passes on a build where spin is BROKEN. Asserting
+    _view.spinning() rather than the button's label is what separates the two.
+    RULE 12. --mutate-default returns to spinning-by-default; --mutate-forget
+    drops the write so the memory silently stops working. Both exit non-zero,
+    as does --self-test.
+    AND THE HARNESS WAS LYING TO THIS CONTROL. openShip() set spinOn on every
+    call, so the stored-preference case came up still - the harness had just
+    turned it off. Found because the control failed on a page that was right.
+    `spin` is optional now and unset by default.
