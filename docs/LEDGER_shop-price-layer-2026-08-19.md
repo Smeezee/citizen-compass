@@ -3361,7 +3361,7 @@ D1  DONE  3156e6b  TESTING SITE DEPLOYED, and the standing rule that says to do 
     PERFORMED because CC_GEO_DIR is unset - pre-existing, unrelated, and
     correctly refusing to claim a pass.
 
-N2  DONE  <sha>  THE ACQUISITION BLOCK IS ON THE SHIP PAGE. NOTHING WAS
+N2  DONE  66d3d59  THE ACQUISITION BLOCK IS ON THE SHIP PAGE. NOTHING WAS
     DROPPED, AND THE CHECKLIST IS THE PROOF RATHER THAN MY WORD FOR IT.
     Done FIRST, before N1 and N3, deliberately: build the destination, then
     reroute, then retire. Retiring the panel before its contents had somewhere
@@ -3398,3 +3398,68 @@ N2  DONE  <sha>  THE ACQUISITION BLOCK IS ON THE SHIP PAGE. NOTHING WAS
     Carried: 221 ships. record 221, confidence 221, status 221, role 221,
     manufacturer 221, name 221, in-game price 179, sold at 179, pledge price
     138, notes 56.
+
+N1  DONE  <sha>  EVERY ROUTE INTO A SHIP LANDS ON THE SHIP PAGE, and the
+    "Open in the loadout bench" button is gone.
+    There is now ONE function - `shipPageUrl(ship)` - that turns a record into
+    a destination, so "does the list ever reach a ship another way" is a
+    question about one thing rather than three call sites.
+    THE NAME CELL IS REBUILT, NOT WRAPPED, and that turned out to be the whole
+    difficulty. The site renders the cell as an RSI ANCHOR - `nameCellHtml()`
+    emits `<a class="buy-link" href="...robertsspaceindustries...">Name</a>`
+    whenever the record has a pledge_url, which is 229 of 254. Wrapping that in
+    another anchor nests one link inside another and leaves the outer one doing
+    nothing on most rows. The cell is replaced outright from the record.
+    I NEARLY SHIPPED A REAL REGRESSION HERE and the control caught it: 33 site
+    ships have NO ship page, and 27 OF THOSE CARRY A pledge_url. Replacing
+    their cell would have left those 27 rows with no link at all - N1 says a
+    ship NAME must not go to RSI, and it says that because there is somewhere
+    better to send people. For these there is not. So a ship with no ship page
+    KEEPS its RSI link and says why in the title; the other 221 go to the ship
+    page. The letter of the rule would have removed a link and offered nothing.
+
+N3  DONE  <sha>  INDEX IS A LIST. THE PANEL AND ITS VIEWER ARE RETIRED, AND THE
+    NUMBER IS THE POINT: 1,622,716 -> 410,219 BYTES. A 75% CUT.
+    What came off: three.js (603 KB), OrbitControls, GLTFLoader, the DRACO
+    decoder and its wasm as base64, the embedded model map, the whole ship
+    panel, its cc_viewer instance, and 46 now-dead CSS rules. About 1.07 MB of
+    vendor payload that every visitor downloaded in order to look at a TABLE.
+    IT FETCHES NO GEOMETRY BECAUSE NOTHING ON IT CAN. Asserted on the bytes,
+    not on the panel looking gone: no `new THREE.WebGLRenderer`, no GLTFLoader
+    construction, no DRACOLoader, no PMREMGenerator, no CC_DRACO_WASM_B64, no
+    CC_EMBED, no `<script src="cc_viewer.js">`, and no `.glb` anywhere.
+    AND THE SHIP PAGE STILL HAS IT - asserted separately, because removing the
+    viewer from BOTH pages would satisfy every assertion above and is the
+    vacuous way to pass N3.
+    FIVE BUILD PATCHES RETIRED, EACH REPLACED BY A REFUSAL RATHER THAN DELETED:
+    the CDN strip, the model-source seam, the thumbnail rewrite, the DRACO/
+    viewer asserts, and the temporal-dead-zone declaration hoist. Every one now
+    STOPS THE BUILD if a viewer reappears on index, which is the only way this
+    stays true without somebody remembering it.
+    THE L8 NEGATIVE HALF HAD TO BE RESHAPED, and leaving it alone would have
+    been the quiet failure. It required BOTH pages to lose their viewer when
+    cc_viewer.js was broken - "only one failed" meant a second copy. index now
+    has NO viewer at all, so its half was passing for a reason with nothing to
+    do with the module while looking exactly as strong as before. Split: the
+    SHIP page must still fail on a broken module, and index's absence of a
+    viewer is asserted on the bytes where it belongs.
+    TWO CONTROLS MOVED ASIDE, NEVER DELETED (rule 1), to
+    `_to_delete/n3_index_panel_retired_20260822/` with a WHY.md:
+    `_verify_ship_hardpoint_panel.mjs` and `_verify_hardpoint_panel_offline.mjs`
+    both proved the index panel. Both reported NOT PERFORMED once it was gone -
+    correctly refusing to claim a pass, which is why they were noticed at all.
+    What they guaranteed is carried by the ship page's L14 cases 1 and 3,
+    already asserted.
+    AND ONE FILE STOPPED BEING PUBLISHED: `hardpoint_data.gen.js`, 152 KB,
+    referenced by NO page once the panel went. It is still generated and still
+    proven by checks/_verify_hardpoint_data.py - generated and checked is not
+    the same as served, and only the third had stopped being true. The
+    published copy was moved to _to_delete, never deleted.
+
+N4  DONE  <sha>  ONE VIEWER INSTANCE, ONE MODEL LOAD PER SHIP.
+    Trivially true for index now - it has none. On the ship page it is
+    structural rather than incidental: `new CCViewer.Viewer(` appears ONCE in
+    the whole page, `view()` returns the existing instance rather than building
+    another, and `showModel()` short-circuits on `_modelFor === shipId` so
+    geometry is fetched when the SHIP changes and not when a TAB does.
+    All three asserted on the built page.

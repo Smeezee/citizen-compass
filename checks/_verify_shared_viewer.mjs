@@ -70,7 +70,7 @@ const indexCode = strip(indexHtml);
 const loadoutCode = strip(loadoutHtml);
 
 console.log("--- 1. exactly ONE implementation, in the shipped bytes ---");
-const SENTINEL = /THE VIEWER LIVES IN cc_viewer\.js AND NOWHERE ELSE/;
+const SENTINEL = /INDEX IS A LIST\. The ship panel and its 3D viewer are retired/;
 record(SENTINEL.test(indexHtml) && !SENTINEL.test(indexCode),
   "the comment stripper works: index explains where the viewer lives in prose, "
   + "and that prose is not in the code",
@@ -110,8 +110,12 @@ for (const [needle, what] of [
 }
 
 console.log("\n--- 2. both pages reference it ---");
-record(indexHtml.includes('<script src="cc_viewer.js">'),
-  "index.html loads cc_viewer.js");
+/* INVERTED BY N3. index.html used to load the viewer module; it is a list now
+   and must NOT. The assertion is kept in the inverted form rather than deleted,
+   because "index stopped loading it" is a claim worth failing on if a viewer
+   ever comes back. */
+record(!indexHtml.includes('<script src="cc_viewer.js">'),
+  "index.html does NOT load cc_viewer.js - it is a list (N3)");
 record(loadoutHtml.includes('<script src="cc_viewer.js">'),
   "loadout.html loads cc_viewer.js");
 record(existsSync(join(DEPLOY, "cc_viewer.js")),
@@ -181,11 +185,108 @@ console.log("\n--- L11: every ship name in the list resolves to a page that load
   const RSI = pick(rsiJs, "LOADOUT_RSI") || {};
   record(Object.keys(RSI).length > 100,
     "the ship page carries the pledge links", `${Object.keys(RSI).length}`);
-  record(/CC_RSI/.test(indexCode),
-    "index still keeps the pledge link too - it moved, it was not deleted");
+  /* N1 CHANGED WHAT THIS SHOULD SAY. The pledge link is no longer on a ship's
+     row, because the row now goes to the ship page and the RSI link is offered
+     there - which is the whole point of N1.
+     THE EXCEPTION IS THE ONE THAT MATTERS: 33 ships have no ship page, and 27
+     of those carry a pledge_url. Taking their link away to satisfy the letter
+     of N1 would leave those rows with no link at all, so they keep it. */
+  record(!/CC_RSI/.test(indexCode),
+    "the runtime pledge-link fallback is gone from index - the ship page gets "
+    + "it from LOADOUT_RSI, built from the same field");
+  record(/ship\.pledge_url/.test(indexCode) && /cc-nobench/.test(indexCode),
+    "but a ship with NO ship page keeps its RSI link, because it is the only "
+    + "route that ship has");
   notes.push(`L11: ${Object.keys(LOADOUT_LINK || {}).length} matrix rows link `
     + `to a ship page that exists; ${Object.keys(RSI).length} of those pages `
     + `carry the RSI link that used to sit on the row`);
+}
+
+console.log("\n--- N1: every route into a ship lands on the SHIP PAGE ---");
+{
+  /* THE PANEL IS GONE. Asserted on the markup it cannot exist without, rather
+     than on the absence of one function - a panel with a renamed opener would
+     still be a panel. */
+  record(!/id="cc-ship"/.test(indexHtml),
+    "index.html carries no ship panel");
+  record(!/Open in the loadout bench/.test(indexCode),
+    "and no \"Open in the loadout bench\" button");
+  record(!/function open\s*\(ship\)/.test(indexCode),
+    "and no function that opens a ship in place");
+
+  /* EVERY ROUTE. There is ONE function that turns a row into a destination,
+     so this is a question about one thing rather than three call sites - and
+     that is asserted too, because three call sites agreeing today is not the
+     same as their being unable to disagree tomorrow. */
+  const routes = (indexCode.match(/shipPageUrl\s*\(/g) || []).length;
+  record(routes >= 2, "the row builder resolves its destination through one "
+    + "named function", `${routes} uses of shipPageUrl()`);
+  record(/loadout\.html#/.test(indexCode),
+    "and that destination is the ship page");
+  record(!/location\.href\s*=\s*["'`](?!loadout)/.test(indexCode),
+    "index navigates nowhere else of its own accord");
+
+  /* A ROW MUST NOT LINK TO RSI. The site renders the name cell as an RSI
+     anchor whenever the record has a pledge_url - 229 of 254 - so this is the
+     specific thing N1 is about, and the cell is rebuilt rather than wrapped. */
+  record(/td\.innerHTML='<a class="cc-open/.test(indexCode),
+    "the name cell is REBUILT as a link to the ship page, not wrapped around "
+    + "the RSI anchor the site put there");
+  record(/cc-nobench/.test(indexCode),
+    "a ship with no bench entry gets no link and says why, rather than a link "
+    + "onto nothing");
+}
+
+console.log("\n--- N3: index is a LIST. No viewer, no geometry, no vendor payload ---");
+{
+  /* THE MEASURABLE HALF OF "ONE PAGE". Not "the panel looks gone" - the
+     three.js payload is either in these bytes or it is not. */
+  for (const [needle, what] of [
+    [/new\s+THREE\.WebGLRenderer/, "a renderer"],
+    [/new\s+THREE\.GLTFLoader\s*\(/, "a model loader"],
+    [/new\s+THREE\.DRACOLoader\s*\(/, "a DRACO decoder"],
+    [/PMREMGenerator/, "an environment map"],
+    [/CC_DRACO_WASM_B64/, "the decoder wasm"],
+    [/CC_EMBED/, "the embedded model map"],
+    [/<script src="cc_viewer\.js">/, "the shared viewer module"],
+  ]) {
+    record(!needle.test(indexCode), `index.html carries no ${what}`);
+  }
+  record(!/\.glb/.test(indexCode),
+    "and names no model file, so nothing on it can ask for geometry");
+
+  /* THE SIZE, WHICH IS THE POINT STATED AS A NUMBER. index.html was 1,622,716
+     bytes with the viewer on it. A page that is a list has no business being
+     larger than the data it lists. */
+  const bytes = Buffer.byteLength(indexHtml, "utf8");
+  record(bytes < 700000,
+    "index.html is a fraction of its former size",
+    `${bytes.toLocaleString()} bytes, was 1,622,716`);
+  notes.push(`N3: index.html ${bytes.toLocaleString()} bytes, down from ` +
+    `1,622,716 - a ${Math.round((1 - bytes / 1622716) * 100)}% cut, and it ` +
+    `fetches no geometry because nothing on it can`);
+
+  /* THE SHIP PAGE STILL HAS THE VIEWER. Removing it from both would also pass
+     every assertion above, which is the vacuous way to satisfy N3. */
+  record(/<script src="cc_viewer\.js">/.test(loadoutHtml),
+    "and the SHIP page still loads the viewer - N3 moved it, it did not "
+    + "delete it");
+}
+
+console.log("\n--- N4: one viewer instance, one model load per ship ---");
+{
+  /* One construction site in the page, so "one instance" is structural rather
+     than a thing that happens to be true on the path somebody tested. */
+  const made = (loadoutCode.match(/new\s+CCViewer\.Viewer\s*\(/g) || []).length;
+  record(made === 1,
+    "the ship page constructs exactly ONE viewer, in one place", `${made}`);
+  record(/if\s*\(_view\)\s*return\s+_view/.test(loadoutCode.replace(/\s+/g, " ")) ||
+         /_view\s*\)\s*return\s*_view/.test(loadoutCode.replace(/\s+/g, " ")),
+    "and reuses it rather than making another");
+  /* One LOAD per ship: the guard is `_modelFor`, which short-circuits when the
+     ship has not changed. Tab switches re-render; they must not re-fetch. */
+  record(/_modelFor\s*===\s*shipId/.test(loadoutCode),
+    "and re-loads geometry only when the SHIP changes, not when a tab does");
 }
 
 console.log("\n--- 4. THE NEGATIVE HALF: break the module, BOTH pages must fail ---");
@@ -235,21 +336,31 @@ function tryPage(html, label, entry) {
   return made;
 }
 
-const idxViewer = tryPage(indexHtml, "index.html", "typeof ccView==='function' ? ccView() : null");
+/* THIS ASSERTION CHANGED SHAPE AT N3, AND SAYING SO IS THE POINT.
+ *
+ * It used to require BOTH pages to fail when the module was broken, because
+ * both had a viewer and "only one failed" meant a second copy. index.html no
+ * longer has a viewer AT ALL - N3 made it a list - so "index produces no
+ * viewer" is now true for a reason that has nothing to do with the module,
+ * and leaving it in the both-must-fail form would be a check passing
+ * vacuously while looking as strong as it did yesterday.
+ *
+ * So it is split. The ship page must still fail when the module breaks, which
+ * is the real claim. And index must have no viewer whether the module is
+ * broken or not - asserted just above, on the bytes, where it belongs. */
 const loViewer = tryPage(loadoutHtml, "loadout.html", "typeof view==='function' ? view() : null");
-record(idxViewer === null || idxViewer === undefined,
-  "index.html produces NO viewer when the module is broken",
-  `got ${typeof idxViewer}`);
 record(loViewer === null || loViewer === undefined,
-  "loadout.html produces NO viewer when the module is broken",
+  "the SHIP page produces no viewer when the module is broken - so it really "
+  + "is using the module and not a private copy",
   `got ${typeof loViewer}`);
-if ((idxViewer && !loViewer) || (!idxViewer && loViewer)) {
-  failures.push("ONLY ONE PAGE FAILED - there is a second viewer copy somewhere");
-  console.log("  FAIL ONLY ONE PAGE FAILED - there is a second viewer copy somewhere");
-}
-notes.push("L8 negative half: with cc_viewer.js broken, index.html and "
-  + "loadout.html BOTH fail to produce a viewer - so neither is quietly "
-  + "carrying a second copy");
+const idxViewer = tryPage(indexHtml, "index.html", "typeof ccView==='function' ? ccView() : null");
+record(idxViewer === null || idxViewer === undefined,
+  "and index has none either - but for a different reason, which is that N3 "
+  + "left nothing on it that could construct one");
+notes.push("L8 negative half, reshaped by N3: breaking cc_viewer.js leaves the "
+  + "SHIP page with no viewer, which is the claim worth making now. index has "
+  + "no viewer at all, so its half of the old assertion had become vacuous and "
+  + "was split out rather than left standing.");
 
 console.log("");
 if (notes.length) {

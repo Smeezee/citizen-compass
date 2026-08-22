@@ -303,63 +303,42 @@ if _r.returncode != 0:
 site  = rd(SITE)
 layer = rd(LAYER)
 
-# ---- 1. strip CDN script tags ---------------------------------------------
+# ---- 1. NO CDN TAGS TO STRIP - index.html has no 3D viewer any more (N3) ---
+#
+# _layer.src.html used to pull three.js, GLTFLoader and OrbitControls from a
+# CDN for local development, and this build stripped all three before inlining
+# vendored copies. The ship panel and its viewer are retired: index is a LIST.
+#
+# THE ASSERT IS KEPT AND INVERTED rather than deleted. A CDN tag reappearing in
+# the layer means somebody has put a viewer back on index, and this build would
+# otherwise inline three.js again without anybody noticing the page had doubled
+# in size.
 cdn = re.findall(r'<script src="https://cdn\.jsdelivr\.net[^"]*"></script>\s*', layer)
-assert len(cdn)==3, cdn
-for t in cdn: layer = layer.replace(t,'',1)
+if cdn:
+    sys.exit("_layer.src.html references a CDN again: %s\n"
+             "index.html is a list and carries no 3D viewer (N3). A CDN tag "
+             "here means a viewer has come back. Nothing was written." % cdn)
 
-# ---- 2. patch model loading to use embedded data ---------------------------
+# ---- 2. NO MODEL LOADING TO PATCH - the viewer is gone from index (N3) -----
 #
-# THIS USED TO REWRITE THE WHOLE LOAD CALLBACK - twenty-five lines carrying a
-# second copy of the material setup, the framing and the staleness guard. Two
-# copies of that code is exactly the defect L8 exists to close, and it bit as
-# predicted: when the viewer moved into cc_viewer.js these anchors went stale.
-# One of the two substitutions was a bare `.replace`, which is SILENT when it
-# misses - it would have shipped a build with no DRACO decoder attached, every
-# model failing to decode, and the build still reporting success.
+# This step used to swap `ccModelSource()` so the built page read models from
+# embedded data URIs, assert cc_viewer.js was referenced, assert the DRACO
+# wiring was present, rewrite the thumbnail path, and hoist a declaration out
+# of a temporal-dead-zone bug in the viewer's own wiring.
 #
-# So the page carries ONE SEAM - `ccModelSource(dir)` - and this replaces that
-# function and nothing else. The anchor is asserted, so the next time somebody
-# moves it the build stops instead of quietly doing nothing.
-_SRC_OLD = ("function ccModelSource(dir){ return CC_DIR+encodeURIComponent(dir)"
-            "+'/'+CC_FILE; }")
-_SRC_NEW = "function ccModelSource(dir){ return CC_EMBED[dir] || null; }"
-if _SRC_OLD not in layer:
-    sys.exit("MODEL SOURCE SEAM NOT FOUND in _layer.src.html. The deploy build "
-             "carries models as embedded data URIs and swaps ccModelSource() to "
-             "read them. Without that swap the built page would request files "
-             "that are not in _deploy and every model would 404. "
-             "Nothing was written.")
-layer = layer.replace(_SRC_OLD, _SRC_NEW, 1)
-
-# THE SHARED VIEWER MUST BE THE ONE DOING THE LOADING (L8).
-#
-# index.html no longer holds a viewer of its own. If cc_viewer.js stops being
-# referenced - or stops carrying the DRACO wiring that moved into it - the page
-# still builds, still serves 200, and shows nothing where a ship should be.
-# That is the exact shape this project calls silent success, so it is checked.
-if '<script src="cc_viewer.js"></script>' not in layer:
-    sys.exit("_layer.src.html does not load cc_viewer.js, so the built index "
-             "would have no 3D viewer at all. Nothing was written.")
-_viewer_js = rd(os.path.join(SRC, 'cc_viewer.js'))
-for _need, _why in (
-        ('function attachDraco', 'the DRACO wiring this build used to inject'),
-        ('CC_DRACO_WASM_B64', 'the decoder wasm global this build defines'),
-        ('THREE.WebGLRenderer', 'the renderer itself')):
-    if _need not in _viewer_js:
-        sys.exit("cc_viewer.js is missing %s (%s). The built page would look "
-                 "fine and draw nothing. Nothing was written." % (_need, _why))
-
-
-# thumbnails ride along with the deploy build as resized webp, so the stage
-# is never blank while a model streams in.
-_img_old = "  const img=CC_DIR+encodeURIComponent(dir)+'/image.webp';\n"
-_img_new = "  const img='images/'+CC_SAFE(dir)+'.webp';\n"
-# a silent no-op here would ship a page that 404s every thumbnail while looking
-# like a clean build - this substitution has to be proven, not assumed
-assert _img_old in layer, "thumbnail src line not found - build_full.py is out of step with the layer"
-layer = layer.replace(_img_old, _img_new)
-
+# All five were about a viewer index.html no longer has. They are replaced by
+# ONE refusal, because the thing worth checking is no longer "did the patch
+# apply" but "has a viewer come back without the build being told".
+for _gone, _what in (
+        ('ccModelSource', 'the model-source seam'),
+        ('cc-canvas"></canvas>', 'a viewer canvas'),
+        ('<script src="cc_viewer.js">', 'the shared viewer module'),
+        ('CC_DRACO_WASM_B64', 'the DRACO decoder')):
+    if _gone in layer:
+        sys.exit("_layer.src.html carries %s (%s) again. index.html is a LIST "
+                 "and loads no 3D geometry (N3); if a viewer belongs here now, "
+                 "this build needs teaching rather than working around. "
+                 "Nothing was written." % (_gone, _what))
 
 # ---- 2b. robust row matching -----------------------------------------------
 # the live page appends a link glyph to ship names, so exact === matching fails
@@ -370,29 +349,22 @@ new_match = """    const label=td.textContent.trim(); if(!label)return;
     const ship=CC_LOOKUP(label); if(!ship)return;"""
 layer = layer.replace(old_match, new_match)
 
-old_click = "    td.querySelector('.cc-open').onclick=()=>open(ship);"
-assert old_click in layer
-new_click = """    const _a=td.querySelector('a[href]');
-    if(_a) CC_RSI[ship.id]=_a.getAttribute('href');   // captured, not discarded
-    td.innerHTML='<span class="cc-open'+(CC_HAS3D(ship.id)?' cc-has3d':'')+'">'+
-                 ship.name+'</span>';
-    td.style.cursor='pointer';
-    td.onclick=()=>open(ship);"""
-layer = layer.replace(old_click, new_click)
-
-# the RSI anchor is stripped from the row above, so drop the old wrapper line too
-old_wrap = """    const has=!!CC_MODELS[String(ship.id)];
-    td.innerHTML='<span class="cc-open'+(has?'':' cc-nomodel')+'">'+td.innerHTML+'</span>';"""
-assert old_wrap in layer
-layer = layer.replace(old_wrap, "")
-
-# RSI link now lives only on the detail page
-old_rsi = """  if(ship.pledge_url){rsi.href=ship.pledge_url;rsi.style.display='';}else rsi.style.display='none';"""
-assert old_rsi in layer
-new_rsi = """  const rsiHref=ship.pledge_url||CC_RSI[ship.id]||null;
-  if(rsiHref){rsi.href=rsiHref;rsi.target='_blank';rsi.rel='noopener';rsi.style.display='';}
-  else rsi.style.display='none';"""
-layer = layer.replace(old_rsi, new_rsi)
+# THE OLD ROW REWRITE IS GONE, and what it did now happens in decorate().
+#
+# It used to strip the RSI anchor out of the name cell, stash the href in
+# CC_RSI, rebuild the cell as a clickable span, and wire an onclick into the
+# retired ship panel. Three of those four were about a panel that no longer
+# exists, and the fourth - capturing the href - was capturing something the
+# ship page already gets from LOADOUT_RSI, built from the same `pledge_url`
+# field the anchor itself is rendered from.
+#
+# So the cell is rebuilt in the page instead, from the record, which is both
+# fewer moving parts and the only way to be sure a name never links to RSI.
+# The refusal below is what stops the old shape coming back unnoticed.
+if "td.onclick=()=>open(ship)" in layer or "cc-lolink" in layer:
+    sys.exit("_layer.src.html still wires a row into a ship PANEL, or still "
+             "carries the 'Open in the loadout bench' link. Index is a list and "
+             "every route lands on the ship page (N1). Nothing was written.")
 
 lookup_js = """
 /* Ship names on the page carry a trailing link glyph and stray whitespace.
@@ -418,27 +390,22 @@ const CC_HAS3D = id => (typeof CC_EMBED!=='undefined')
 layer = layer.replace("const $=id=>document.getElementById(id);",
                       lookup_js + "const $=id=>document.getElementById(id);", 1)
 
-# ---- 2c. FIX a real pre-existing bug in the layer ---------------------------
-# apply() runs at load and does `typeof _ccView` on a `let` declared 85 lines
-# later. On a let/const that is a TDZ ReferenceError, NOT a safe undefined check,
-# so apply() throws and every statement after it never runs - which killed the
-# 3D viewer wiring and the clickable ship rows. Hoist the declaration.
+# ---- 2c. NOTHING LEFT TO HOIST - the viewer is off index (N3) --------------
 #
-# THE NAME CHANGED AT L8 and this is why the assert below is not decoration.
-# The viewer moved into cc_viewer.js, so `let renderer,scene,camera,...` became
-# `let _ccView=null, current=null;` - and the build stopped at this line rather
-# than hoisting nothing and shipping a page whose display panel throws on load.
-# An assert that has fired once is worth more than a comment claiming it never
-# will.
-decl = "let _ccView=null, current=null;"
-assert decl in layer, (
-    "the viewer declaration this build hoists is not in _layer.src.html. "
-    "Without the hoist, apply() hits a temporal-dead-zone ReferenceError at "
-    "load and every statement after it - the whole 3D viewer wiring - never "
-    "runs. Nothing was written.")
-layer = layer.replace(decl, "/* declaration hoisted - see below */", 1)
-layer = layer.replace("const $=id=>document.getElementById(id);",
-                      decl + "\nconst $=id=>document.getElementById(id);", 1)
+# This step hoisted `let _ccView=null, current=null;` above `apply()`, which
+# read `typeof _ccView` eighty lines before the declaration. On a `let` that is
+# a temporal-dead-zone ReferenceError rather than a safe undefined check, so
+# apply() threw at load and every statement after it - the whole viewer wiring
+# and the clickable rows - never ran.
+#
+# The viewer is retired and so is the reader. Kept as a refusal rather than
+# removed: if a `let` declaration for a viewer reappears above apply(), the
+# same TDZ bug comes with it, and it is silent.
+if "let _ccView" in layer or "let renderer,scene,camera" in layer:
+    sys.exit("_layer.src.html declares a 3D viewer again. index.html is a list "
+             "(N3), and the declaration this build used to hoist carried a "
+             "temporal-dead-zone bug that silently killed everything after "
+             "apply(). Nothing was written.")
 
 # ---- 2d. style for the rows now that the anchors are gone ------------------
 badge_css = """<style>
@@ -568,7 +535,12 @@ else:
             'testing stamp changed nothing. Nothing was written.')
 
 k = site.lower().rindex('</body>')
-out = site[:k] + '\n<!-- Citizen Compass portable concept build -->\n' + libs + layer + '\n' + site[k:]
+# N3: `libs` IS NOT INJECTED. index.html carried three.js (603 KB),
+# OrbitControls, GLTFLoader, the DRACO decoder and its wasm as base64, plus the
+# embedded model map - about 1.07 MB of vendor payload downloaded by everyone
+# who opened a TABLE. The viewer moved to the ship page, which gets the same
+# bytes through the CC_VENDOR_THREE marker, once, on the page that draws.
+out = site[:k] + '\n<!-- Citizen Compass portable concept build -->\n' + layer + '\n' + site[k:]
 
 # ---- password gate ---------------------------------------------------------
 GATE = """<style>

@@ -52,10 +52,19 @@ PAGES = [
     # Its published sha256 (R7/H5). A file cannot carry its own hash, so this
     # is a second file - generated in the same pass, never typed.
     ('find_checksum.gen.js', 'find_checksum.gen.js'),
-    # The ship page's hardpoint data (I1). index.html loads it with a
-    # <script src>, so it ships as its own file rather than inlined - and if it
-    # is absent the panel falls back to the API exactly as it did before.
-    ('hardpoint_data.gen.js', 'hardpoint_data.gen.js'),
+    # hardpoint_data.gen.js IS NO LONGER PUBLISHED (N3, 2026-08-22).
+    #
+    # index.html loaded it with a <script src> to fill its hardpoint panel. That
+    # panel is retired - index is a list - and NO PAGE REFERENCES THE FILE ANY
+    # MORE. It was 152 KB served to every visitor for nothing.
+    #
+    # IT IS STILL GENERATED into testing/_src by the build, and
+    # checks/_verify_hardpoint_data.py still proves it: it remains the record of
+    # what mount data exists, and the alignment gate reads it. What changed is
+    # that it is no longer PUBLISHED. Generated and checked is not the same as
+    # served, and only the third one had stopped being true.
+    #
+    # ('hardpoint_data.gen.js', 'hardpoint_data.gen.js'),
     ('kb_modes.gen.js',  'kb_modes.gen.js'),
     # The exporter ships as its own file rather than inlined into the page:
     # inlining would create a second copy of code that already has an owner in

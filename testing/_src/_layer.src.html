@@ -144,7 +144,6 @@ body.cc-caps *{ text-transform:none !important }
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .cc-g > .t em{font-style:normal;font-weight:600;color:#8FA6B6;font-size:14px;
   font-variant-numeric:tabular-nums}
-.cc-hint{font-size:13px;color:#8FA6B6;margin:-4px 0 8px;line-height:1.45}
 
 .cc-row{display:flex;gap:6px;flex-wrap:wrap}
 .cc-row button{flex:1;min-width:60px;background:rgba(0,201,167,.09);
@@ -201,95 +200,18 @@ body{padding-top:30px}
 .cc-nomodel{opacity:.72}
 
 /* ---------- ship view ---------- */
-#cc-ship{position:fixed;top:0;right:0;bottom:0;left:46px;z-index:99999;background:var(--cc-bg);
-  display:none;flex-direction:column;overflow:hidden;color:var(--cc-text)}
-#cc-ship.open{display:flex}
-#cc-bar{display:flex;align-items:center;gap:16px;padding:13px 18px;
-  background:var(--cc-panel);border-bottom:1px solid rgba(var(--cc-accent-rgb),.32);
-  flex:0 0 auto}
-#cc-back{background:var(--cc-accent);
-  border:2px solid var(--cc-accent);color:#04252E;
-  border-radius:7px;
-  padding:calc(11px * var(--cc-scale,1)) calc(22px * var(--cc-scale,1));
-  font:800 calc(16px * var(--cc-scale,1))/1 inherit;
-  letter-spacing:.02em;white-space:nowrap;cursor:pointer;
-  box-shadow:0 3px 14px rgba(0,0,0,.4)}
-#cc-back:hover{filter:brightness(1.12)}
-#cc-back:active{transform:translateY(1px)}
-#cc-bar h2{margin:0;font-size:24px;font-weight:700;color:var(--cc-text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#cc-bar .mfr{color:var(--cc-muted);font-size:15px;white-space:nowrap}
-#cc-bar img{height:26px;width:auto}
-#cc-bar .spacer{flex:1}
-#cc-badge{padding:5px 13px;border-radius:99px;font-size:13px;font-weight:700;white-space:nowrap}
-.cc-buy{background:var(--cc-accent);color:#04252E}
-.cc-pledge{background:var(--cc-accent2);color:#241100}
 
-#cc-grid{flex:1;display:grid;grid-template-columns:300px 1fr 340px;gap:12px;
-  padding:12px;min-height:0}
 @media(max-width:1200px){#cc-grid{grid-template-columns:1fr;overflow-y:auto}}
-.cc-col{display:flex;flex-direction:column;gap:12px;min-height:0;overflow-y:auto}
 .cc-panel{background:var(--cc-panel);
   border:var(--cc-border-w) solid rgba(var(--cc-accent-rgb),var(--cc-border-a));
   border-radius:var(--cc-radius);padding:14px 16px;flex:0 0 auto}
 .cc-panel h3{margin:0 0 11px;font-size:15px;color:var(--cc-accent);font-weight:700;
   padding-bottom:8px;border-bottom:1px solid rgba(var(--cc-accent-rgb),.25)}
-.cc-kv{display:flex;justify-content:space-between;gap:12px;align-items:baseline;
-  padding:7px 0;font-size:16px;border-bottom:1px solid rgba(var(--cc-muted-rgb),.16)}
-.cc-kv:last-child{border-bottom:0}
-.cc-kv .k{color:var(--cc-muted);font-size:14px;white-space:nowrap;font-weight:600}
-.cc-kv .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--cc-text);font-weight:600}
-.cc-kv .v.big{font-size:21px;font-weight:700;color:var(--cc-accent)}
-.cc-kv .v.amber{color:var(--cc-accent2)}
-.cc-kv .v.none{color:var(--cc-muted);font-style:italic;font-size:14px;font-weight:400}
-.cc-sub{font-size:14px;color:var(--cc-muted);font-weight:600;margin-top:10px}
-.cc-dealers{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-.cc-dealers span{background:rgba(var(--cc-accent-rgb),.15);
-  border:1px solid rgba(var(--cc-accent-rgb),.42);color:var(--cc-accent);
-  padding:5px 11px;border-radius:4px;font-size:14px;font-weight:600}
-.cc-note{font-size:15px;color:var(--cc-text);line-height:1.65;margin:0;opacity:.92}
-.cc-link{display:block;text-align:center;background:rgba(255,107,0,.16);
-  border:1px solid var(--cc-accent2);color:var(--cc-accent2);padding:11px;
-  border-radius:5px;font-size:15px;font-weight:600;text-decoration:none;margin-top:12px}
-.cc-link:hover{background:var(--cc-accent2);color:#241100}
-#cc-stage{position:relative;background:var(--cc-panel);
-  border:var(--cc-border-w) solid rgba(var(--cc-accent-rgb),var(--cc-border-a));
-  border-radius:var(--cc-radius);overflow:hidden;min-height:320px}
-#cc-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-#cc-still{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
-  transition:opacity .5s;pointer-events:none;padding:24px}
-#cc-status{position:absolute;left:14px;bottom:12px;font-size:14px;
-  color:var(--cc-muted);pointer-events:none;font-weight:600;
-  background:rgba(0,0,0,.4);padding:4px 9px;border-radius:4px}
-#cc-hint{position:absolute;right:14px;bottom:12px;font-size:14px;color:var(--cc-muted)}
-#cc-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:9px;color:var(--cc-muted);font-size:16px;text-align:center;padding:24px}
-.cc-slots{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .cc-slot{background:rgba(0,0,0,.25);border:1px solid rgba(var(--cc-muted-rgb),.28);
   border-radius:4px;padding:9px 11px;min-height:56px;display:flex;flex-direction:column;
   justify-content:center}
 .cc-slot .sn{font-size:13px;color:var(--cc-muted);font-weight:700}
 .cc-slot .sv{font-size:14px;color:var(--cc-muted);font-style:italic;margin-top:3px;opacity:.8}
-.cc-pending{font-size:14px;color:var(--cc-text);line-height:1.6;opacity:.9;
-  background:rgba(255,107,0,.1);border-left:3px solid var(--cc-accent2);
-  padding:10px 12px;border-radius:0 4px 4px 0;margin-bottom:11px}
-.cc-prov{font-size:14px;color:var(--cc-muted);display:flex;gap:16px;flex-wrap:wrap}
-.cc-prov b{color:var(--cc-accent);font-weight:700}
-#cc-rel{flex:0 0 auto;background:var(--cc-panel);
-  border-top:1px solid rgba(var(--cc-accent-rgb),.32);padding:11px 14px;
-  display:flex;gap:9px;align-items:center;overflow-x:auto;
-  /* The compliance strip is #cc-ship::after, absolutely positioned at the
-     overlay's bottom, so it paints over whatever is last in the flex column.
-     #cc-grid already clears it; #cc-rel did not, and the Related buttons sat
-     underneath it. --cc-strip is measured at runtime because the text wraps to
-     two or three lines as the window narrows. */
-  padding-bottom:calc(11px + var(--cc-strip,36px))}
-#cc-rel .lbl{font-size:14px;color:var(--cc-accent);white-space:nowrap;
-  padding-right:6px;font-weight:700}
-#cc-rel button{background:rgba(var(--cc-accent-rgb),.12);
-  border:1px solid rgba(var(--cc-accent-rgb),.38);color:var(--cc-text);
-  border-radius:4px;padding:8px 14px;font:600 14px/1 inherit;cursor:pointer;white-space:nowrap}
-#cc-rel button:hover{background:rgba(var(--cc-accent-rgb),.3)}
 </style>
 
 <script>
@@ -532,629 +454,54 @@ body{padding-top:30px}
   </div>
 </div>
 
-<div id="cc-ship">
-  <div id="cc-bar">
-    <button id="cc-back">&larr;&nbsp; Back to all ships</button>
-    <img id="cc-logo" alt="" style="display:none">
-    <h2 id="cc-name"></h2><span class="mfr" id="cc-mfr"></span>
-    <span id="cc-badge"></span><span class="spacer"></span>
-    <span class="mfr" id="cc-role"></span>
-  </div>
-  <div id="cc-grid">
-    <div class="cc-col">
-      <div class="cc-panel"><h3>Acquisition</h3>
-        <div class="cc-kv"><span class="k">In-game price</span><span class="v big" id="cc-auec"></span></div>
-        <div class="cc-kv"><span class="k">Pledge price</span><span class="v amber" id="cc-usd"></span></div>
-        <div id="cc-dealwrap"><div class="cc-sub">Sold at</div>
-          <div class="cc-dealers" id="cc-dealers"></div></div>
-        <a class="cc-link" id="cc-rsi" target="_blank" rel="noopener">View on RSI &#8599;</a>
-      </div>
-      <!-- THE LOADOUT ENTRY POINT. On the ship page, carrying the ship's own
-           class id, per Sleven's 2026-08-02 ruling. Hidden entirely for a ship
-           the bench has no data for - see openLoadout(). -->
-      <div class="cc-panel" id="cc-lowrap"><h3>Loadout</h3>
-        <div class="cc-sub" id="cc-lonote"></div>
-        <a class="cc-link" id="cc-lolink" target="_blank" rel="noopener">Open in the loadout bench &#8599;</a>
-      </div>
-      <div class="cc-panel" id="cc-notewrap"><h3>Notes</h3><p class="cc-note" id="cc-note"></p></div>
-      <div class="cc-panel"><h3>Record</h3><div class="cc-prov" id="cc-prov"></div></div>
-    </div>
-    <div id="cc-stage">
-      <canvas id="cc-canvas"></canvas><img id="cc-still" alt="">
-      <div id="cc-empty" style="display:none"></div>
-      <div id="cc-status"></div><div id="cc-hint">drag to rotate &middot; scroll to zoom</div>
-    </div>
-    <div class="cc-col">
-      <div class="cc-panel"><h3>Loadout</h3>
-        <div class="cc-pending" id="cc-slotnote">Slot structure is measured from this hull's own model geometry and read from the game's mount data. Nothing here is estimated, and a hull we have not measured says so rather than showing a blank.</div>
-        <div class="cc-slots" id="cc-slots"></div></div>
-      <div class="cc-panel"><h3>Classification</h3>
-        <div class="cc-kv"><span class="k">Role</span><span class="v" id="cc-role2"></span></div>
-        <div class="cc-kv"><span class="k">Manufacturer</span><span class="v" id="cc-mfr2"></span></div>
-        <div class="cc-kv"><span class="k">Status</span><span class="v" id="cc-stat2"></span></div>
-        <div class="cc-kv"><span class="k">Model folder</span><span class="v" id="cc-mfile"></span></div>
-      </div>
-    </div>
-  </div>
-  <div id="cc-rel"><span class="lbl">Related</span><span id="cc-relitems" style="display:contents"></span></div>
-</div>
-
-<script src="hardpoint_data.gen.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="cc_viewer.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 const CC_MODELS = {"129": "100i", "130": "125a", "131": "135c", "132": "300i", "133": "315p", "134": "325a", "135": "350r", "136": "400i", "137": "600i Explorer", "138": "600i Touring", "139": "85X", "140": "890 Jump", "61": "A1 Spirit", "62": "A2 Hercules", "145": "Apollo Medivac", "146": "Apollo Triage", "63": "Ares Inferno", "64": "Ares Ion", "203": "Arrastra", "21": "Asgard", "44": "ATLS", "45": "ATLS GEO", "147": "Aurora CL", "148": "Aurora ES", "149": "Aurora LN", "150": "Aurora LX", "151": "Aurora MR", "1": "Avenger Stalker", "2": "Avenger Titan", "3": "Avenger Titan Renegade", "4": "Avenger Warlock", "22": "Ballista", "86": "Blade", "70": "Buccaneer", "65": "C1 Spirit", "66": "C2 Hercules", "23": "C8 Pisces", "24": "C8R Pisces", "25": "C8X Pisces Expedition", "26": "Carrack", "71": "Caterpillar", "27": "Centurion", "72": "Clipper", "152": "Constellation Andromeda", "154": "Constellation Phoenix", "155": "Constellation Taurus", "73": "Corsair", "191": "Crucible", "46": "CSV-SM", "74": "Cutlass Black Best In Show Edition 2949", "75": "Cutlass Blue", "76": "Cutlass Red", "77": "Cutlass Steel", "78": "Cutter", "79": "Cutter Rambler", "80": "Cutter Scout", "168": "Cyclone", "173": "Cyclone AA", "174": "Cyclone MT", "175": "Cyclone RC", "176": "Cyclone RN", "177": "Cyclone TR", "54": "Defender", "81": "Dragonfly Black", "204": "E1 Spirit", "5": "Eclipse", "196": "Endeavor", "198": "Expanse", "31": "F7C-M Super Hornet Mk I", "32": "F7C-R Hornet Tracker Mk I", "33": "F7C-R Hornet Tracker Mk II", "34": "F7C-S Hornet Ghost Mk I", "35": "F7C-S Hornet Ghost Mk II", "28": "F7C Hornet Mk I", "29": "F7C Hornet Mk II", "30": "F7C Hornet Wildfire Mk I", "214": "F8C Lightning", "103": "Fortune", "104": "Freelancer", "105": "Freelancer DUR", "106": "Freelancer MAX", "107": "Freelancer MIS", "119": "Fury", "120": "Fury LX", "121": "Fury MX", "211": "G12", "212": "G12a", "213": "G12r", "182": "Galaxy", "197": "Genesis", "36": "Gladiator", "6": "Gladius Valiant", "7": "Gladius Valiant", "230": "Glaive", "82": "Golem", "224": "Golem OX", "122": "Guardian", "123": "Guardian MX", "232": "Guardian QI", "8": "Hammerhead", "37": "Hawk", "83": "Herald", "55": "HoverQuad", "108": "Hull A", "222": "Hull B", "109": "Hull C", "199": "Hull D", "200": "Hull E", "38": "Hurricane", "188": "Idris-M", "189": "Idris-P", "67": "Intrepid", "218": "Ironclad", "219": "Ironclad Assault", "187": "Javelin", "165": "Khartu-Al", "181": "Kraken", "202": "Kraken Privateer", "100": "L-21 Wolf", "229": "L-22 Alpha Wolf", "195": "Legionnaire", "183": "Liberator", "170": "Lynx", "68": "M2 Hercules", "141": "M50", "157": "Mantis", "94": "MDC", "186": "Merchantman", "69": "Mercury", "158": "Meteor", "47": "MOLE", "49": "MPUV Cargo", "50": "MPUV Personnel", "51": "MPUV Tractor", "95": "MTC", "84": "Mule", "56": "Mustang Alpha", "57": "Mustang Beta", "58": "Mustang Delta", "59": "Mustang Gamma", "190": "Nautilus", "60": "Nomad", "169": "Nova", "166": "Nox", "201": "Odyssey", "193": "Orion", "101": "P-52 Merlin", "102": "P-72 Archimedes", "39": "Paladin", "159": "Perseus", "184": "Pioneer", "221": "Polaris", "110": "Prospector", "87": "Prowler", "88": "Prowler Utility", "96": "PTV", "124": "Pulse", "125": "Pulse LX", "52": "RAFT", "228": "Railen", "206": "Ranger CV", "207": "Ranger RC", "208": "Ranger TR", "126": "Razor", "127": "Razor EX", "128": "Razor LX", "9": "Reclaimer", "10": "Redeemer", "111": "Reliant Kore", "112": "Reliant Mako", "113": "Reliant Sen", "114": "Reliant Tana", "11": "Retaliator", "97": "ROC", "98": "ROC-DS", "12": "Sabre", "13": "Sabre Comet", "14": "Sabre Firebird", "15": "Sabre Peregrine", "160": "Salvation", "167": "San'tok.yāi", "161": "Scorpius", "171": "Scorpius Antares", "231": "Scythe", "93": "Shiv", "40": "Spartan", "53": "SRV", "115": "Starfarer", "116": "Starfarer Gemini", "117": "Starlancer MAX", "118": "Starlancer TAC", "89": "Stinger", "178": "Storm", "179": "Storm AA", "99": "STV", "92": "Syulen", "90": "Talon", "91": "Talon Shrike", "41": "Terrapin", "42": "Terrapin Medic", "162": "Ursa", "163": "Ursa Medivac", "43": "Valkyrie", "16": "Vanguard Harbinger", "17": "Vanguard Hoplite", "18": "Vanguard Sentinel", "19": "Vanguard Warden", "194": "Vulcan", "85": "Vulture", "142": "X1", "143": "X1 Force", "144": "X1 Velocity", "164": "Zeus Mk II CL", "172": "Zeus Mk II ES", "205": "Zeus Mk II MR", "234": "ATLS", "235": "ATLS", "236": "ATLS", "237": "Ballista", "238": "Ballista", "239": "Carrack Expedition", "240": "Constellation Phoenix Emerald", "241": "F7A Hornet Mk I", "242": "F7A Hornet Mk II", "244": "F7C-M Super Hornet Heartseeker Mk I", "245": "F7C-M Super Hornet Mk II", "246": "F8C Lightning Executive Edition", "248": "Gladius Pirate Edition", "249": "Mustang Alpha Vindicator", "250": "Mustang Omega", "251": "P-72 Archimedes Emerald", "252": "Sabre Raven", "253": "Ursa Fortuna", "254": "Valkyrie"};
+
 /* ==========================================================================
-   G8 - the Loadout panel stops saying "awaiting data".
+   N1 + N3 - INDEX IS A LIST. The ship panel and its 3D viewer are retired.
 
-   WHY THIS IS THE FIRST NETWORK CALL ON THIS PAGE
-   ------------------------------------------------
-   The panel promised "slot structure shown, no invented values" and then
-   rendered eight hardcoded category rows that all said "awaiting data". That
-   was honest while there was nothing to show, and it would have become a lie
-   the moment there was. F3 found why it could never fill: the hardpoint SLOTS
-   were not in PostgreSQL at all - they were two derived JSON files on disk -
-   and no endpoint existed. Both halves are now built, so the panel asks.
+   WHAT WAS HERE
+   -------------
+   A full ship view: its own cc_viewer instance, an Acquisition panel, a
+   Record panel, a hardpoint slot summary, a Related strip, and a button
+   reading "Open in the loadout bench" - which is the tell. There were TWO ship
+   views and two viewers, and the second one existed because L9 said "do not
+   build a THIRD page" and never said "retire the second".
 
-   IT ASKS BY MODEL, NOT BY SHIP, using the same `dir` the page already
-   resolved to load the 3D view. No ship-to-model matching is invented here;
-   the page hands over the key it is already holding.
+   Everything that panel showed now lives on the ship page. Not copied - moved.
+   The N2 checklist in the ledger ticks off every field by name.
 
-   FOUR OUTCOMES, AND NONE OF THEM IS A SPINNER THAT NEVER RESOLVES
-   -----------------------------------------------------------------
-     slots        render them, grouped by kind
-     known, none  say so, and say WHY - the API carries the build's own reason
-     404          say this model is not in the dataset
-     unreachable  say the data could not be reached, and say it is the API
+   WHAT THIS BUYS, AND IT IS THE MEASURABLE HALF OF "ONE PAGE"
+   ----------------------------------------------------------
+   index.html no longer loads three.js, OrbitControls, GLTFLoader, the DRACO
+   decoder or its wasm - about 1.07 MB of vendor payload that every visitor
+   downloaded to look at a TABLE. It fetches no model geometry at all, because
+   there is nothing here that could ask for any.
 
-   The last one matters more than it looks: the API has spent this evening
-   returning 502, and a panel that spins forever during an outage tells a
-   visitor nothing while looking like it is about to. It resolves to a
-   sentence, every time.
-
-   NOTHING IS INVENTED IN ANY BRANCH. There is no placeholder row, no "0"
-   standing in for an unmeasured size, and no category list fabricated to make
-   the panel look populated.
+   WHAT STAYS
+   ----------
+   CC_MODELS, because a row still says whether a hull HAS a 3D model - that is
+   a lookup in a table, not a viewer. And the left sidebar, which is site
+   navigation and was never part of this.
    ========================================================================== */
-const CC_API=(new URLSearchParams(location.search).get("api")
-  ||"https://citizen-compass-production.up.railway.app").replace(/\/$/,"");
 
-const CC_ESC=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>
-  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* THE ONE ROUTE INTO A SHIP. Every entry point on this page calls this and
+   nothing else, so "does the list ever reach a ship any other way" is a
+   question about ONE function rather than about three call sites.
 
-/* One sentence in the slot area. Used for every non-slot outcome, so no branch
-   can accidentally leave the panel mid-load. */
-function ccSlotMessage(text){
-  const el=$('cc-slots'); if(!el) return;
-  el.innerHTML='<div class="cc-slot" style="grid-column:1/-1">'+
-    '<span class="sv">'+CC_ESC(text)+'</span></div>';
+   Keyed on the record id through LOADOUT_LINK, built at build time against
+   data-layer/ship_resolution.json - never on a display name. 22 display names
+   are shared by 51 records in this dataset. */
+function shipPageUrl(ship){
+  var cls = (typeof LOADOUT_LINK!=='undefined') ? LOADOUT_LINK[String(ship.id)] : null;
+  return cls ? 'loadout.html#' + encodeURIComponent(cls) : null;
 }
-
-const CC_KIND_LABEL={gun:'Guns',missile:'Missile racks',mount:'Turrets and mounts',
-  countermeasure:'Countermeasures'};
-
-/* --------------------------------------------------------------------------
-   I1 - THE HARDPOINTS BECOME A FILE, AND THE API BECOMES THE FALLBACK.
-
-   This panel was the LAST thing on this site that needed a live server. Prices
-   stopped needing one at H1 and became a generated file; 2,195 hardpoint slots
-   is a smaller fact than 26,657 price rows, so they became one too.
-   hardpoint_data.gen.js is generated from PostgreSQL by build_hardpoint_data.py
-   on every build, and this page reads it.
-
-   THE ORDER OF PREFERENCE, AND WHY IT IS THIS WAY ROUND:
-
-     1. the generated file, if it loaded
-     2. the API, exactly as before, if it did not
-
-   The API path below is UNCHANGED and its failure sentences are UNTOUCHED. If
-   hardpoint_data.gen.js is missing - a 404, a build that did not copy it, a
-   browser that blocked it - this page behaves precisely as it did before this
-   change, including "The API did not answer, so nothing is shown rather than
-   something guessed". That is not a courtesy; it is the acceptance line, and
-   checks/_verify_ship_hardpoint_panel.mjs proves it by driving this same
-   shipped code with no HP_DATA defined.
-
-   THE FILE LOADING AND THE MODEL BEING ABSENT FROM IT ARE DIFFERENT FACTS.
-   A file that loaded and does not list this hull is the API's 404 - "not in
-   the dataset yet" - and is answered from the file, NOT by falling through to
-   a server to be told the same thing slowly. Falling through on a miss would
-   put the network back on the read path for exactly the ships that need it
-   least.
-
-   ONE RENDERER. Both paths hand the same object to ccRenderHardpoints(), so
-   the file and the API cannot render differently. The alternative - two copies
-   of the grouping and the S-badge logic - is the one-writer defect (rule 14)
-   applied to markup.
-   -------------------------------------------------------------------------- */
-
-/* The API's own spelling rule, in JavaScript:
-     re.sub(r"[^a-z0-9]+", " ", raw.lower()).strip()
-   It is stated in HP_SCHEMA.model_key_rule in the generated file so that this
-   is not the only place it exists. A second, differently-spelled matcher is
-   the join this project has already paid for elsewhere. */
-const CC_MODEL_KEY=raw=>String(raw==null?'':raw).toLowerCase()
-  .replace(/[^a-z0-9]+/g,' ').trim();
-
-/* null when the file did not load - which is the ONLY condition that puts the
-   API back on the read path. */
-function ccHpFile(){
-  return (typeof HP_DATA!=='undefined' && HP_DATA && Array.isArray(HP_DATA.models))
-    ? HP_DATA : null;
+function openShip(ship){
+  var url = shipPageUrl(ship);
+  if(!url) return false;          // caller decides what to say; this invents nothing
+  location.href = url;
+  return true;
 }
-
-let _ccHpIndex=null;
-function ccHpRow(hp,dir){
-  if(!_ccHpIndex){
-    _ccHpIndex=new Map();
-    hp.models.forEach(m=>_ccHpIndex.set(m[0],m));
-  }
-  return _ccHpIndex.get(CC_MODEL_KEY(dir))||null;
-}
-
-/* Positional arrays back into the SAME object the API returns, so everything
-   downstream is identical. -1 means the source stated none, and it becomes
-   null rather than an empty string: "not stated" and "" are different. */
-function ccHpExpand(hp,dir,row){
-  const s=(t,i)=>(i==null||i<0)?null:t[i];
-  return {
-    model:dir,
-    model_key:row[0],
-    status:row[1],
-    reason:s(hp.reasons,row[2]),
-    slot_count:row[3],
-    source_dataset:s(hp.datasets,row[4]),
-    slots:row[5].map(x=>({
-      port:x[0],
-      kind:s(hp.kinds,x[1]),
-      size:x[2],            /* null, never 0 - see the generator's header */
-      stock_item_name:s(hp.stock,x[3]),
-      where:x[4],
-    })),
-  };
-}
-
-/* The game's own placeholder loadout entry, matched exactly rather than by
-   the word "placeholder" - a real component could legitimately be called
-   something containing it, and this must not swallow one. */
-const CC_HP_PLACEHOLDER=/^<=\s*PLACEHOLDER\s*=>$/;
-
-/* The one renderer. Called with the API's JSON or with the file's expansion of
-   the same record; it cannot tell them apart, which is the point. */
-function ccRenderHardpoints(data){
-  const slots=(data&&data.slots)||[];
-  if(!slots.length){
-    ccSlotMessage('No hardpoint data for this hull'+
-      (data&&data.reason?' \u2014 '+data.reason:'')+'.');
-    return;
-  }
-
-  const groups=new Map();
-  slots.forEach(s=>{
-    const k=CC_KIND_LABEL[s.kind]||(s.kind?s.kind:'Other mounts');
-    if(!groups.has(k)) groups.set(k,[]);
-    groups.get(k).push(s);
-  });
-
-  let html='';
-  groups.forEach((rows,label)=>{
-    html+='<div class="cc-slot" style="grid-column:1/-1"><span class="sn">'+
-      CC_ESC(label)+'</span><span class="sv">'+rows.length+'</span></div>';
-    rows.forEach(s=>{
-      /* TWO NON-VALUES THAT THE SOURCE SPELLS AS VALUES, FOUND 2026-08-21
-         WHILE MOVING THIS PANEL ONTO A FILE - and present on the API path
-         since G8, so this is a fix to what the site shows rather than a
-         difference between the two paths.
-
-         size 0. Eight countermeasure mounts carry it (HoverQuad, X1, X1
-         Force). "S0" reads as "size zero", which is a size nobody measured.
-         An unstated size is shown as nothing at all.
-
-         '<= PLACEHOLDER =>'. 167 mounts carry it as their stock item name -
-         it is the GAME'S own placeholder, not a component. Printing it puts
-         a string that names nothing where a visitor expects the fitted item.
-
-         Neither is invented away: the mount is still listed, and a mount with
-         nothing left to say renders 'not stated' rather than a blank. What is
-         dropped is a non-value being displayed as a value. */
-      const bits=[];
-      if(s.size!=null&&s.size>0) bits.push('S'+s.size);
-      if(s.stock_item_name&&!CC_HP_PLACEHOLDER.test(s.stock_item_name))
-        bits.push(s.stock_item_name);
-      html+='<div class="cc-slot"><span class="sn">'+
-        CC_ESC(s.where||s.port)+'</span><span class="sv">'+
-        (bits.length?CC_ESC(bits.join(' \u00b7 ')):'not stated')+'</span></div>';
-    });
-  });
-  $('cc-slots').innerHTML=html;
-
-  const note=$('cc-slotnote');
-  if(note&&data.source_dataset){
-    note.textContent='Slot structure measured from this hull\u2019s own model '+
-      'geometry and the game\u2019s mount data ('+data.slot_count+' mounts, '+
-      'source: '+data.source_dataset+'). Nothing here is estimated.';
-  }
-}
-
-let _ccHpToken=0;
-async function loadHardpoints(dir){
-  const token=++_ccHpToken;                 /* a fast click must not let an
-                                               earlier ship's answer land in a
-                                               later ship's panel */
-  if(!dir){ ccSlotMessage('No model folder matched for this ship, so there is '+
-    'no hull to read hardpoints from.'); return; }
-
-  /* ---- 1. the generated file, when it loaded ---------------------------- */
-  const hp=ccHpFile();
-  if(hp){
-    const row=ccHpRow(hp,dir);
-    if(!row){
-      /* the API's 404, answered from the file and worded identically */
-      ccSlotMessage('This model is not in the hardpoint dataset yet.'); return;
-    }
-    ccRenderHardpoints(ccHpExpand(hp,dir,row));
-    return;
-  }
-
-  /* ---- 2. the API, unchanged, when the file is absent ------------------- */
-  ccSlotMessage('Reading hardpoint data\u2026');
-  let res;
-  try{
-    res=await fetch(CC_API+'/api/v1/ships/models/'+encodeURIComponent(dir)+
-      '/hardpoints',{headers:{Accept:'application/json'}});
-  }catch(e){
-    if(token===_ccHpToken) ccSlotMessage('Could not reach the hardpoint data. '+
-      'The API did not answer, so nothing is shown rather than something '+
-      'guessed.');
-    return;
-  }
-  if(token!==_ccHpToken) return;
-  if(res.status===404){
-    ccSlotMessage('This model is not in the hardpoint dataset yet.'); return;
-  }
-  if(!res.ok){
-    ccSlotMessage('Could not reach the hardpoint data (the API answered '+
-      res.status+'). Nothing is shown rather than something guessed.');
-    return;
-  }
-  let data;
-  try{ data=await res.json(); }
-  catch(e){ ccSlotMessage('The hardpoint data came back unreadable.'); return; }
-  if(token!==_ccHpToken) return;
-
-  ccRenderHardpoints(data);
-}
-
-const CC_DIR="../sc-ships/", CC_FILE="model_scaled.glb";
-/* WHERE A MODEL COMES FROM - ONE SEAM, AND THE ONLY ONE.
-   The dev page reads a file off disk. The deploy build carries every model as
-   an embedded data URI instead, and build_deploy.py replaces THIS FUNCTION and
-   nothing else.
-   It used to rewrite the whole 25-line load callback, which meant the build
-   held a second copy of the material setup, the framing and the staleness
-   guard - and when the viewer moved into cc_viewer.js those anchors went stale
-   silently. One small function with an asserted anchor cannot do that: either
-   it is replaced or the build stops. Returns null when this build has no model
-   for that hull, which the caller says out loud. */
-function ccModelSource(dir){ return CC_DIR+encodeURIComponent(dir)+'/'+CC_FILE; }
-const $=id=>document.getElementById(id);
-const hex2rgb=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16)).join(',')};
-
-/* ================= display engine ================= */
-const BG = {
-  'Site':      {bg:'#0D1B2E',panel:'#112244',head:'#0F2850',text:'#C8D6E5',muted:'#6B8A99'},
-  'Deep':      {bg:'#05080D',panel:'#0D1420',head:'#111B29',text:'#DCE7EF',muted:'#8296A6'},
-  'Softer':    {bg:'#141F2E',panel:'#1D2C40',head:'#22344B',text:'#DDE7EE',muted:'#9BAFBE'},
-  'Slate':     {bg:'#1A1F26',panel:'#252C36',head:'#2C3540',text:'#DFE5EA',muted:'#98A4AF'},
-  'Warm dark': {bg:'#171310',panel:'#241D18',head:'#2C231C',text:'#EDE3D8',muted:'#AA9A8A'},
-  'Light':     {bg:'#F2F5F8',panel:'#FFFFFF',head:'#E4EBF1',text:'#182430',muted:'#5A6B7A'}
-};
-const ACC = ['#00C9A7','#3FE3C4','#4FA8FF','#9D7BFF','#FFD24A','#FF6B00'];
-const ACC2= ['#FF6B00','#FF9448','#FFD24A','#FF5C8A','#7FE8D4','#9D7BFF'];
-const D = {scale:130,font:'',weight:0,track:0,word:0,lead:150,bg:'Site',tb:100,
-  acc:'#00C9A7',acc2:'#FF6B00',sat:100,rowpad:7,bord:28,bw:1,rad:6,
-  bold:false,noglow:false,nomotion:false,stripe:false,hover:false,
-  strongborder:false,noborder:false,links:false,caps:false,focus:false};
-let S = Object.assign({}, D);
-let _saved=null;
-try{ _saved = localStorage.getItem('ccDisplay'); }catch(e){}
-if(_saved){ try{ Object.assign(S, JSON.parse(_saved)); }catch(e){} }
-else if(innerWidth < 700){
-  // 130% suits a monitor; on a phone it costs a whole screen of header before
-  // any content. Only applied when the visitor has no saved preference.
-  S.scale = 100;
-}
-
-function shade(hex,pct){
-  const [r,g,b]=hex2rgb(hex).split(',').map(Number);
-  const f=pct/100;
-  return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v*f)))
-    .toString(16).padStart(2,'0')).join('');
-}
-function apply(){
-  const p=BG[S.bg]||BG.Site, r=document.documentElement, b=document.body;
-  b.classList.add('cc-on');
-  r.style.setProperty('--cc-scale', S.scale/100);
-  r.style.setProperty('--cc-bg', p.bg);
-  r.style.setProperty('--cc-panel', p.panel);
-  r.style.setProperty('--cc-head', p.head);
-  r.style.setProperty('--cc-text', shade(p.text, S.tb));
-  r.style.setProperty('--cc-muted', shade(p.muted, S.tb));
-  r.style.setProperty('--cc-muted-rgb', hex2rgb(p.muted));
-  r.style.setProperty('--cc-accent', S.acc);
-  r.style.setProperty('--cc-accent-rgb', hex2rgb(S.acc));
-  r.style.setProperty('--cc-accent2', S.acc2);
-  r.style.setProperty('--cc-weight', S.weight||'inherit');
-  r.style.setProperty('--cc-track', (S.track/100)+'em');
-  r.style.setProperty('--cc-word', (S.word/100)+'em');
-  r.style.setProperty('--cc-lead', S.lead/100);
-  r.style.setProperty('--cc-rowpad', S.rowpad+'px');
-  r.style.setProperty('--cc-border-a', S.bord/100);
-  r.style.setProperty('--cc-border-w', S.bw+'px');
-  r.style.setProperty('--cc-radius', S.rad+'px');
-  b.style.filter = S.sat!==100 ? 'saturate('+S.sat+'%)' : '';
-
-  ['cc-f-system','cc-f-legible','cc-f-lexend','cc-f-serif','cc-f-mono']
-    .forEach(c=>b.classList.remove(c));
-  if(S.font) b.classList.add(S.font);
-  b.classList.toggle('cc-w', !!S.weight);
-  b.classList.toggle('cc-sp', S.track!==0||S.word!==0||S.lead!==150);
-  ['bold','noglow','nomotion','stripe','hover','strongborder','noborder','links','caps','focus']
-    .forEach(k=>b.classList.toggle('cc-'+k, !!S[k]));
-  if(S.bold && !S.weight) r.style.setProperty('--cc-weight','600'), b.classList.add('cc-w');
-
-  // reflect UI
-  const setv=(id,v)=>{const e=$(id); if(e)e.textContent=v;};
-  setv('cc-scale-v', S.scale+'%'); setv('cc-tb-v', S.tb+'%'); setv('cc-sat-v', S.sat+'%');
-  setv('cc-weight-v', S.weight||'site'); setv('cc-track-v', (S.track/100).toFixed(2)+'em');
-  setv('cc-word-v', (S.word/100).toFixed(2)+'em'); setv('cc-lead-v', (S.lead/100).toFixed(2));
-  setv('cc-rowpad-v', S.rowpad+'px'); setv('cc-bord-v', S.bord+'%');
-  setv('cc-bw-v', S.bw+'px'); setv('cc-rad-v', S.rad+'px');
-  [['cc-scale','scale'],['cc-tb','tb'],['cc-sat','sat'],['cc-weight','weight'],
-   ['cc-track','track'],['cc-word','word'],['cc-lead','lead'],['cc-rowpad','rowpad'],
-   ['cc-bord','bord'],['cc-bw','bw'],['cc-rad','rad']].forEach(([id,k])=>{
-     const e=$(id); if(e) e.value=S[k];});
-  document.querySelectorAll('#cc-fonts button').forEach(x=>x.classList.toggle('on',x.dataset.f===S.font));
-  document.querySelectorAll('.knob').forEach(x=>x.classList.toggle('on',!!S[x.dataset.t]));
-  document.querySelectorAll('#cc-bgs button').forEach(x=>x.classList.toggle('on',x.dataset.v===S.bg));
-  document.querySelectorAll('#cc-acc button').forEach(x=>x.classList.toggle('on',x.dataset.v===S.acc));
-  document.querySelectorAll('#cc-acc2 button').forEach(x=>x.classList.toggle('on',x.dataset.v===S.acc2));
-
-  buildExport();
-  try{ localStorage.setItem('ccDisplay', JSON.stringify(S)); }catch(e){}
-  /* The viewer resizes itself on window resize; this is the display
-     panel changing the stage's own size, which no resize event fires
-     for. `_ccView` is null until a ship has been opened. */
-  if(typeof _ccView!=='undefined' && _ccView) setTimeout(size,80);
-}
-function buildExport(){
-  const p=BG[S.bg]||BG.Site;
-  const L=[':root {',
-   '  --mg-bg-dark: '+p.bg+';','  --mg-panel-bg: '+p.panel+';','  --mg-thead-bg: '+p.head+';',
-   '  --mg-cyan: '+S.acc+';','  --mg-amber: '+S.acc2+';',
-   '  --text-main: '+shade(p.text,S.tb)+';','  --text-muted: '+shade(p.muted,S.tb)+';',
-   '  --border-color: rgba('+hex2rgb(S.acc)+', '+(S.bord/100)+');','}','',
-   'html { font-size: '+(16*S.scale/100).toFixed(1)+'px; }','','body {'];
-  if(S.font==='cc-f-legible') L.push('  font-family: "Atkinson Hyperlegible", "Segoe UI", sans-serif;');
-  if(S.font==='cc-f-lexend')  L.push('  font-family: "Lexend", "Segoe UI", sans-serif;');
-  if(S.font==='cc-f-system')  L.push('  font-family: "Segoe UI", -apple-system, sans-serif;');
-  if(S.font==='cc-f-serif')   L.push('  font-family: "Source Serif 4", Georgia, serif;');
-  if(S.font==='cc-f-mono')    L.push('  font-family: ui-monospace, Consolas, monospace;');
-  if(S.weight||S.bold) L.push('  font-weight: '+(S.weight||600)+';');
-  if(S.track) L.push('  letter-spacing: '+(S.track/100).toFixed(2)+'em;');
-  if(S.word)  L.push('  word-spacing: '+(S.word/100).toFixed(2)+'em;');
-  if(S.lead!==150) L.push('  line-height: '+(S.lead/100).toFixed(2)+';');
-  L.push('}','','td, th {','  padding-top: '+S.rowpad+'px;','  padding-bottom: '+S.rowpad+'px;');
-  if(S.bw!==1) L.push('  border-width: '+S.bw+'px;');
-  L.push('}');
-  if(S.stripe) L.push('','tbody tr:nth-child(even) td {',
-    '  background: rgba('+hex2rgb(S.acc)+', .055);','}');
-  if(S.noglow) L.push('','* { text-shadow: none; box-shadow: none; }');
-  if(S.nomotion) L.push('','* { animation: none; transition: none; }');
-  if(S.links) L.push('','a { text-decoration: underline; text-underline-offset: 3px; }');
-  const e=$('cc-out'); if(e) e.value=L.join('\n');
-  const st=$('cc-state');
-  if(st) st.textContent = Object.entries(S).filter(([k,v])=>v!==D[k])
-    .map(([k,v])=>k+'='+v).join('  ·  ') || 'all defaults';
-}
-
-/* presets */
-const PRE={
-  default:{},
-  astig:{bold:true,noglow:true,bg:'Softer',tb:92,sat:80,weight:600,scale:110},
-  dyslexia:{font:'cc-f-legible',track:3,word:12,lead:180,bg:'Softer',scale:110,rowpad:11},
-  lowvis:{scale:150,weight:700,bold:true,bg:'Deep',tb:120,rowpad:14,bw:2,bord:60,stripe:true},
-  light:{bg:'Light',acc:'#00806B',acc2:'#C24E00',tb:100,noglow:true},
-  amber:{bg:'Deep',acc:'#FFB000',acc2:'#FF6B00',tb:105,noglow:true,weight:500},
-  calm:{sat:45,nomotion:true,noglow:true,bord:14,bg:'Slate',rad:10}
-};
-document.querySelectorAll('#cc-presets button').forEach(b=>b.onclick=()=>{
-  S=Object.assign({},D,PRE[b.dataset.pre]||{}); apply(); });
-
-/* swatches */
-function swatches(host,list,key){
-  const h=$(host); if(!h) return; h.innerHTML='';
-  list.forEach(v=>{
-    const b=document.createElement('button');
-    b.dataset.v = typeof v==='string' ? v : v.k;
-    b.style.background = typeof v==='string' ? v : v.c;
-    b.title = b.dataset.v;
-    b.onclick=()=>{ S[key]=b.dataset.v; apply(); };
-    h.appendChild(b);
-  });
-}
-swatches('cc-bgs', Object.keys(BG).map(k=>({k, c:BG[k].bg})), 'bg');
-swatches('cc-acc', ACC, 'acc');
-swatches('cc-acc2', ACC2, 'acc2');
-
-/* wiring */
-[['cc-scale','scale'],['cc-tb','tb'],['cc-sat','sat'],['cc-weight','weight'],
- ['cc-track','track'],['cc-word','word'],['cc-lead','lead'],['cc-rowpad','rowpad'],
- ['cc-bord','bord'],['cc-bw','bw'],['cc-rad','rad']].forEach(([id,k])=>{
-  const e=$(id); if(e) e.oninput=()=>{ S[k]=+e.value; apply(); };});
-document.querySelectorAll('#cc-fonts button').forEach(b=>b.onclick=()=>{S.font=b.dataset.f;apply();});
-document.querySelectorAll('.knob').forEach(b=>b.onclick=()=>{S[b.dataset.t]=!S[b.dataset.t];apply();});
-document.querySelectorAll('#cc-tabs button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('#cc-tabs button').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');
-  document.querySelectorAll('.cc-pane').forEach(p=>p.classList.toggle('on',p.dataset.p===b.dataset.p));
-});
-$('cc-tab').onclick=()=>{
-  const open=$('cc-panel').classList.toggle('open');
-  document.body.classList.toggle('cc-drawer-open', open);
-};
-$('cc-close').onclick=()=>$('cc-panel').classList.remove('open');
-$('cc-reset').onclick=()=>{ S=Object.assign({},D); apply(); };
-$('cc-copy').onclick=()=>{ const t=$('cc-out'); t.select();
-  document.execCommand('copy'); $('cc-copy').textContent='Copied';
-  setTimeout(()=>$('cc-copy').textContent='Copy to clipboard',1400); };
-addEventListener('keydown',e=>{ if(e.key.toLowerCase()==='d'&&e.altKey)
-  $('cc-panel').classList.toggle('open'); });
-apply();
-
-/* ================= 3D viewer =================
-   THE VIEWER LIVES IN cc_viewer.js AND NOWHERE ELSE (L8).
-   The renderer, the lights, the environment map, the framing and the load
-   token used to be inline here. The ship page needs the same viewer, and two
-   copies of a Three.js viewer guarantee drift - the tone-mapping fix, the
-   load-token guard and the still-image blanking are each a bug found once and
-   fixed once, and a second copy is a place for each of them to come back
-   quietly.
-   What stays here is this page's own chrome: badges, prices, dealers,
-   hardpoints, the bench link. None of that belongs to a viewer. */
-let _ccView=null, current=null;
-function ccView(){
-  if(_ccView) return _ccView;
-  if(typeof CCViewer==='undefined') return null;
-  _ccView=new CCViewer.Viewer($('cc-canvas'), $('cc-stage'));
-  return _ccView;
-}
-function boot(){ const v=ccView(); if(v) v.boot(); }
-function size(){ const v=_ccView; if(v) v.size(); }
-function loop(){ const v=ccView(); if(v) v.start(); }
-function clearModel(){ const v=_ccView; if(v){ v.clear(); current=null; } }
-
-function open(ship){
-  const dir=CC_MODELS[String(ship.id)];
-  /* One token, owned by the viewer module, so the "a later ship owns the
-     stage" test is the same test in both places rather than two that can
-     drift apart. */
-  const tok=ccView()?ccView().cancel():0;
-  const isCurrent=()=>!ccView()||ccView()._tok===tok;
-  $('cc-ship').classList.add('open'); document.body.classList.add('cc-ship-open');
-  if(window.ccCloseManuDrawer) window.ccCloseManuDrawer();
-  if(window.ccSyncStrip) window.ccSyncStrip();
-  const view=ccView(); if(view){ view.boot(); view.start(); }
-  $('cc-name').textContent=ship.name;
-  $('cc-mfr').textContent=ship.manufacturer; $('cc-mfr2').textContent=ship.manufacturer;
-  $('cc-role').textContent=ship.role||''; $('cc-role2').textContent=ship.role||'—';
-  const logo=(typeof MANUFACTURER_LOGOS!=='undefined')?MANUFACTURER_LOGOS[ship.manufacturer]:null;
-  const lg=$('cc-logo'); if(logo){lg.src=logo;lg.style.display='';}else lg.style.display='none';
-  const buy=ship.status==='purchasable', b=$('cc-badge');
-  b.textContent=buy?'In-game':'Pledge only'; b.className=buy?'cc-buy':'cc-pledge';
-  $('cc-stat2').textContent=buy?'Purchasable in-game':'Concept / pledge only';
-  const au=$('cc-auec');
-  if(ship.auec_price!=null){au.textContent=ship.auec_price.toLocaleString()+' aUEC';au.className='v big';}
-  else{au.textContent='not purchasable in-game';au.className='v none';}
-  const usd=$('cc-usd');
-  if(ship.pledge_price_usd!=null){usd.textContent='$'+Number(ship.pledge_price_usd)
-    .toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});usd.className='v amber';}
-  else{usd.textContent='no listed pledge price';usd.className='v none';}
-  const dz=$('cc-dealers');dz.innerHTML='';
-  if(ship.dealers&&ship.dealers.length){$('cc-dealwrap').style.display='';
-    ship.dealers.forEach(d=>{const s=document.createElement('span');s.textContent=d;dz.appendChild(s);});}
-  else $('cc-dealwrap').style.display='none';
-  const rsi=$('cc-rsi');
-  if(ship.pledge_url){rsi.href=ship.pledge_url;rsi.style.display='';}else rsi.style.display='none';
-  $('cc-notewrap').style.display=ship.notes?'':'none'; $('cc-note').textContent=ship.notes||'';
-  /* THE BENCH LINK.
-     Keyed on the record id, never on the ship's name. The id -> class-id table
-     is built once at build time from data-layer/ship_resolution.json, which is
-     this project's existing verified resolution artifact; doing the join here
-     on a display name would reintroduce exactly the class of failure that
-     finding closed.
-     A ship the bench has no data for shows NO link and says why. Opening the
-     bench onto a ship it knows nothing about reads as the tool being broken
-     rather than the data being absent. */
-  (function(){
-    var wrap=$('cc-lowrap'), link=$('cc-lolink'), note=$('cc-lonote');
-    if(!wrap) return;
-    var cls=(typeof LOADOUT_LINK!=='undefined')?LOADOUT_LINK[String(ship.id)]:null;
-    if(cls){
-      link.href='loadout.html#'+encodeURIComponent(cls);
-      link.style.display='';
-      note.textContent='Components, weapons and shields for this ship.';
-    }else{
-      link.removeAttribute('href');
-      link.style.display='none';
-      note.textContent='No loadout data - the game files carry no build for '+
-        'this ship yet, so there is nothing to open.';
-    }
-  })();
-  $('cc-prov').innerHTML='<span>Confidence <b>'+(ship.confidence||'unrecorded')+
-    '</b></span><span>Last verified <b>'+(ship.last_verified_patch||'not recorded')+
-    '</b></span><span>Record <b>#'+ship.id+'</b></span>';
-  loadHardpoints(dir);
-  $('cc-mfile').textContent=dir||'none matched';
-  const rel=SHIPS.filter(s=>s.id!==ship.id&&(s.manufacturer===ship.manufacturer||s.role===ship.role)).slice(0,14);
-  const ri=$('cc-relitems');ri.innerHTML='';
-  rel.forEach(s=>{const btn=document.createElement('button');btn.textContent=s.name;
-    btn.onclick=()=>open(s);ri.appendChild(btn);});
-  clearModel();
-  const still=$('cc-still'),empty=$('cc-empty'),status=$('cc-status');
-  empty.style.display='none';
-  if(!dir){still.style.display='none';empty.style.display='flex';
-    empty.innerHTML='<div>No 3D model folder matched for this ship.</div>'+
-      '<div style="opacity:.75;font-size:14px">'+SHIPS.length+' ships &middot; '+
-      Object.keys(CC_MODELS).length+' matched</div>';
-    status.textContent='';size();return;}
-  /* Blank the still BEFORE making it visible.
-     An <img> keeps painting its previous frame until the new src decodes, and
-     the old code set opacity=1 first — so opening a second ship flashed the
-     PREVIOUS ship's photo at full strength until the new one arrived. Kill the
-     transition, blank it, then fade the new photo in only once it can paint. */
-  still.style.display='';
-  still.style.transition='none';
-  still.style.opacity=0;
-  still.onerror=null; still.onload=null;
-  still.src=CC_BLANK;
-  void still.offsetWidth;                 // force the blank to commit
-
-  const img=CC_DIR+encodeURIComponent(dir)+'/image.webp';
-  const showStill=()=>{ if(!isCurrent()) return;      // a later ship owns the stage
-    still.style.transition=''; still.style.opacity=1; };
-  still.onload=()=>{ if(still.src.indexOf(CC_BLANK)===0) return; showStill(); };
-  still.onerror=()=>{ if(!isCurrent()) return; still.style.transition=''; still.style.opacity=0; };
-  still.src=img;
-  if(still.decode) still.decode().then(showStill).catch(()=>{});
-
-  status.textContent='loading model…'; size();
-  const url=ccModelSource(dir);
-  if(!view){ status.textContent='the 3D viewer module did not load'; return; }
-  if(!url){ still.style.display='none'; empty.style.display='flex';
-    empty.innerHTML='<div>3D model not bundled in this build.</div>';
-    status.textContent=''; size(); return; }
-  view.load(url,{
-    onLoad:r=>{ current=view.current;
-      still.style.transition=''; still.style.opacity=0;
-      status.textContent=dir+' · '+r.seconds.toFixed(1)+'s · '+
-        r.size.x.toFixed(1)+' × '+r.size.y.toFixed(1)+' × '+r.size.z.toFixed(1); },
-    onProgress:x=>{ if(x.lengthComputable)status.textContent='loading… '+
-      Math.round(x.loaded/x.total*100)+'% ('+(x.total/1048576).toFixed(1)+' MB)'; },
-    onError:e=>{ status.textContent='model failed — is the local server running?';
-      console.warn('[cc]',url,e); }});
-}
-function close(){
-  /* Orphan any load still in flight for this page - the same cancel() the
-     viewer uses internally, so there is one notion of "superseded". */
-  if(_ccView){ _ccView.cancel(); _ccView.clear(); _ccView.stop(); }
-  current=null;
-  $('cc-ship').classList.remove('open');
-  document.body.classList.remove('cc-ship-open');}
-$('cc-back').onclick=close;
-addEventListener('keydown',e=>{if(e.key==='Escape'&&$('cc-ship').classList.contains('open'))close();});
 
 function decorate(){
   const body=$('matrix-body'); if(!body)return;
@@ -1163,14 +510,47 @@ function decorate(){
     const label=td.textContent.trim(); if(!label)return;
     const ship=SHIPS.find(s=>s.name===label); if(!ship)return;
     td.dataset.ccDone='1';
+    /* THE CELL IS REBUILT FROM THE RECORD, NOT WRAPPED AROUND WHAT IS IN IT.
+       The site renders this cell as an RSI anchor - `nameCellHtml()` emits
+       `<a class="buy-link" href="...robertsspaceindustries...">Name 🔗</a>`
+       whenever the record has a pledge_url, which is 229 of 254. Wrapping that
+       in another anchor would nest one link inside another and leave the
+       outer one doing nothing on most rows.
+
+       N1 is exactly about this: THE SHIP NAME MUST NOT GO TO RSI. It goes to
+       the ship page, and the RSI link is offered there instead. So the cell is
+       replaced outright, using the record's own name rather than whatever text
+       happened to be in the cell. */
+    const url=shipPageUrl(ship);
+    const name=(typeof escapeHtml==='function')?escapeHtml(ship.name):ship.name;
+    /* A SHIP THE GAME FILES CARRY NO BUILD FOR GETS NO LINK, and says why.
+       33 of the 254 site records are in this state. A link that opens onto
+       nothing is worse than a name that plainly is not one - the first reads
+       as the site being broken, the second as a fact about the ship. */
+    if(!url){
+      /* AND IT KEEPS ITS RSI LINK, because that is the only route it has.
+         27 of these 33 carry a pledge_url, and the ship page they would
+         otherwise send somebody to does not exist. N1 says a ship NAME must
+         not go to RSI - it says so because there is somewhere better to send
+         people. For these there is not, and taking the link away to satisfy
+         the letter of a rule would leave the row with no link at all. */
+      td.innerHTML = ship.pledge_url
+        ? '<a class="cc-open cc-nobench" target="_blank" rel="noopener" href="'+
+          ship.pledge_url+'" title="The game files carry no build for this ship '+
+          'yet, so it has no ship page. This opens its RSI pledge page.">'+
+          name+' &#128279;</a>'
+        : '<span class="cc-open cc-nobench" title="The game files carry no '+
+          'build for this ship yet, so it has no ship page.">'+name+'</span>';
+      return;
+    }
     const has=!!CC_MODELS[String(ship.id)];
-    td.innerHTML='<span class="cc-open'+(has?'':' cc-nomodel')+'">'+td.innerHTML+'</span>';
-    td.querySelector('.cc-open').onclick=()=>open(ship);
+    td.innerHTML='<a class="cc-open'+(has?'':' cc-nomodel')+'" href="'+url+'">'+
+                 name+'</a>';
   });
 }
 new MutationObserver(decorate).observe(document.body,{childList:true,subtree:true});
 decorate();setTimeout(decorate,400);setTimeout(decorate,1500);
-console.log('[cc-testing] v2 · display engine + '+Object.keys(CC_MODELS).length+' ships mapped');
+console.log('[cc-testing] v2 · list only · '+Object.keys(CC_MODELS).length+' ships mapped');
 </script>
 
 <style>
@@ -1214,13 +594,6 @@ body.cc-drawer-open #cc-fb-tab{transform:translateX(-380px);transition:transform
 </style>
 <style>
 /* ---------- ship overlay compliance strip ---------- */
-#cc-ship::after{
-  content:"Unofficial Star Citizen fan site \2014 not affiliated with the Cloud Imperium group of companies. Star Citizen\00AE, Roberts Space Industries\00AE and Cloud Imperium\00AE are registered trademarks of Cloud Imperium Rights LLC.";
-  position:absolute;left:0;right:0;bottom:0;padding:6px 16px;
-  background:rgba(6,12,20,.95);border-top:1px solid rgba(0,201,167,.22);
-  color:#7B8FA1;font:400 11.5px/1.45 "Segoe UI",system-ui,sans-serif;
-  pointer-events:none;z-index:6}
-#cc-grid{padding-bottom:36px}
 
 /* ---------- keybinding tester overlay ---------- */
 #cc-kb-tab{position:fixed;top:calc(44% + 290px);right:0;z-index:100002;
@@ -2924,7 +2297,6 @@ body.cc-railed nav{justify-content:flex-end}
 body.cc-ship-open #cc-rail{z-index:100001}
 @media (max-width:900px){
   #cc-rail{display:none}
-  #cc-ship{left:0}
   body.cc-railed{padding-left:0 !important}
   body.cc-railed nav a[href^="#"]{display:inline-block !important}
 }
