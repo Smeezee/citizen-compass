@@ -2625,7 +2625,7 @@ L1  DONE  703c164  THE COMPONENT CATALOGUE IS DERIVED NOW, NOT WRITTEN.
     resistance profile for every hull, every livery on every hull, and a port
     that stopped offering the part CIG fits in it.
 
-L2  DONE  5041b24  THE STOCK LOADOUT IS THE SHIP'S OWN DEFAULTS, PROVEN PORT FOR
+L2  DONE  f858214  THE STOCK LOADOUT IS THE SHIP'S OWN DEFAULTS, PROVEN PORT FOR
     PORT. Every slot carries `stock` read straight off the port's `ClassName`
     - not empty, not a guess, and not a class of part chosen by us.
     CONTROL, and the shape of it is the point: five named hulls (Cutlass
@@ -2638,3 +2638,72 @@ L2  DONE  5041b24  THE STOCK LOADOUT IS THE SHIP'S OWN DEFAULTS, PROVEN PORT FOR
     of its slots carry one), because "no mismatches" is trivially true of a
     ship that opens empty. That mutant is planted and caught too.
     Mutants now 9, all caught.
+
+L3  DONE  <sha>  EVERY SLOT IS CLICKABLE AND THE PICKER READS THE PORT, NOT THE
+    TYPE. The page's `fits()` was `P[k].t===slot.t && P[k].s===slot.s` - every
+    part of the type at that size, on every ship. That is the false claim L3
+    exists to stop. It now reads `FITS[slot.fit]`, the port's own
+    CompatibleTypes + size window, plus `also` for the 44 ports where CIG
+    mounts something its own declared rule rejects.
+    CONTROL: checks/_verify_ship_page.mjs drives THE PAGE'S OWN SCRIPT in a vm
+    against the real generated data and reads the HTML it produces. 53
+    assertions.
+    BOTH HALVES, NAMED, AND FROM THE RENDERED STRING RATHER THAN THE DATA:
+      OFFERED - Aegis Avenger Stalker, port `hardpoint_weapon_missilerack_
+      right_wing`, offers 16 parts including the Aegis Eclipse 20xS3 Bomb Rack.
+      ABSENT  - the Aegis Retaliator 64xS3 Front Bomb Rack (size 5) does not
+      appear at all for that size-3 port. Not greyed. Absent.
+    And the sweep behind the two named ones: all 21 editable ports on that hull
+    offer EXACTLY their own list, checked element by element, because two named
+    examples prove two ports.
+    ONE THING I HAD TO FIX IN THE CHECK ITSELF, worth recording because it
+    would have read as a defect: CIG ships the same product at several sizes -
+    there is an MSD-313 Missile Rack at size 3 AND at size 10 - so the first
+    version of the ABSENT assertion failed on a NAME collision rather than on a
+    wrongly-offered part. A name is not an identity here. Now asserted on the
+    className.
+    PROVEN TWO WAYS. `--self-test` inverts everything and exits 1. `--mutate`
+    plants the real defect - `fitsFor` widened back to "every part of this
+    type" - and FIVE assertions fire. That second one is the one that matters:
+    it is a shortcut somebody could really take, not a sign flip.
+    ARGUING WITH L3, as the order asked, and the answer is 99.4% yes:
+    CompatibleTypes + the size window decides fitment cleanly for 7,633 of the
+    7,681 editable ports where CIG's own fitted part can be checked against the
+    port's own declared rule. It does NOT decide it cleanly for 48, and those
+    are CIG disagreeing with itself - an Anvil Centurion turret port declaring
+    it accepts `WeaponGun` with a `Turret` in it, three missile racks size 3 in
+    a 2..2 window. Handled by always offering the stock part at its own port.
+    TWO TRAPS THAT WOULD HAVE SHIPPED SILENTLY, both found by measurement:
+      1. `SubTypes` enforced literally EMPTIES EVERY QUANTUM PICKER ON THE
+         SITE. 253 quantum ports declare `SubTypes: ["QDrive"]` and all 63
+         quantum drives carry `subType: "UNDEFINED"`. Same shape on JumpDrive,
+         247 ports. UNDEFINED means "not stated" on both sides.
+      2. `$editable` IS NOT A SUBTYPE. The Origin M80's right power-plant port
+         declares `SubTypes: ["$editable"]`; no power plant has that subType,
+         so enforcing it left that port offering nothing but the part already
+         in it. Found by the control, not by reading the code.
+    AND THE GAP, LOGGED NOT GUESSED: 134 editable ports name a component type
+    that NO catalogue item satisfies at their size (e.g. Aegis Gladius /
+    `$IP_rack_addon_02`). They render, marked `nofit`, and say the game files
+    list no part for them. They do NOT open an empty picker, because an empty
+    picker looks exactly like a broken one.
+
+L4  DONE  <sha>  A FIXED PORT IS SHOWN, COUNTS, AND OPENS NO PICKER - three
+    separable failures, asserted separately.
+    SHOWN: all 57 of the Avenger Stalker's ports render, 36 of them fixed, and
+    each NAMES the part in it ("Aegis Avenger - Decoy Launcher") rather than
+    saying "Countermeasure - LOCKED", which tells a visitor nothing about their
+    own ship.
+    COUNTS: proven by REMOVING the fixed ports and watching the totals move -
+    em, pw, mass and the part count all change. If they had not, the fixed
+    ports were never in the sum, which is the version of this bug that looks
+    completely fine on screen.
+    NO PICKER: clicking one renders nothing selectable. It renders an
+    explanation instead, with the patch its editability was last verified
+    against, rather than being inert - an inert control reads as broken.
+    `Editable` CARRIES `last_verified_patch`, AND IT IS DATA. Per-port
+    overrides live in `data-layer/editability_patches.json`, absent by default.
+    A mechanism that has never fired is an untested gate wearing a reassuring
+    name, so the control PLANTS a real override, regenerates, confirms it
+    reached the named slot, removes it and confirms it is gone. When CIG opens
+    a port, that is a data edit and nothing else.
