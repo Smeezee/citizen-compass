@@ -4431,3 +4431,67 @@ B4  DONE  c6d8da0  THE PAGE OPENS CALM, AND REMEMBERS THE CHOICE.
     call, so the stored-preference case came up still - the harness had just
     turned it off. Found because the control failed on a page that was right.
     `spin` is optional now and unset by default.
+
+B5  DONE  2654263  THE PARENT IS CARRIED AND CAN BE INHERITED FROM - AND ON
+    TODAY'S INPUT IT IS A MEASURED NO-OP. Both halves are asserted.
+    THE FLATTEN. walk_ports() always knew each port's parent and the slot
+    record always threw it away. 12,318 of 26,000 slots now carry one, as an
+    index into the same name table `h` uses. A top-level port carries an
+    EXPLICIT null: "this is top-level" and "nobody looked" must not arrive as
+    the same value. Cost: loadout_data.gen.js 3.64 MB -> 3.88 MB (+247 KB),
+    on a file A5 already flagged as served whole to every visitor.
+    THE FALLBACK, exactly as specified. One level, from a real parent, ONLY
+    when the child's own name yields nothing, never instead of it. `index` is
+    deliberately NOT vocabulary - a trailing number says nothing about where a
+    thing is, and counting it would make `hardpoint_class_2` look located when
+    all it carries is a 2. Every point records `placed_from` (own | inherited)
+    and the parent it borrowed.
+    AND place_fleet.py COULD NOT BE RUN FOR TWELVE DAYS. It read
+    /home/claude/fleet/geo and /home/claude/fleet/matched.json - the 2026-08-10
+    sandbox, gone. Nobody noticed because its OUTPUT was already committed: a
+    dataset driving every marker on the site, produced by a derivation that
+    could not be repeated. That is now fixed - geometry decoded this morning,
+    matched.json reconstructed by build_matched.py from ship_mounts.json plus
+    the model matching hardpoints_fleet already recorded, paths repo-relative,
+    default output to _stage/ rather than over the committed dataset, and a
+    missing input exits rather than writing a partial fleet over a good one.
+    THE ORDER'S PREMISE DOES NOT HOLD ON THIS DATA, AND IT IS REPORTED RATHER
+    THAN WORKED AROUND:
+      Hammerhead: 20 placed ports, ZERO with no position vocabulary
+      `hardpoint_class_2` is NOT in the placed fleet at all. The placement
+        input carries only TOP-LEVEL mounts - the six turret BASES - and the
+        guns inside them are children in ships.json that never reach it
+      0 of 1,798 mounts in the input have a parent, so the fallback provably
+        cannot move a marker today
+      the 76 fleet-wide none-target points are `hardpoint_countermeasures_2`,
+        `hardpoint_PDC_04`, `hardpoint_CML_7` - the part table matches
+        "countermeasure" but not the plural, and has never known PDC or CML.
+        A REAL DEFECT, A DIFFERENT ONE. Reported, not fixed here.
+    So the order's before/after on the Hammerhead CANNOT BE PRODUCED. Said so,
+    with the numbers, rather than finding some other pair of runs that differ.
+    CONTROL  checks/_verify_turret_inheritance.py, 30 assertions.
+      the branch is driven with a BUILT FIXTURE that must exercise it: one
+      point inherits and MOVES ([0.42,-0.34,0.00] -> [0.42,0.34,-0.16]), one
+      keeps its own answer despite having a parent that says otherwise, one
+      has nothing invented for it, none-target 2 -> 1
+      then the real fleet, run TWICE with geometry held constant: 0 markers
+      moved, which is exactly what 0 parents predicts
+    Without the fixture half, "0 moved, PASS" would be indistinguishable from a
+    fallback that does not work at all.
+    TWO OF THE CONTROL'S OWN ASSERTIONS WERE WRONG, and are recorded rather
+    than deleted. It compared parent names against the page's SLOT list, which
+    does not contain turret bases - the assertion was wrong, not the data, and
+    deleting it is how a control quietly stops checking. And it claimed an
+    un-parented sibling could not move: the separation pass is GLOBAL by
+    design, so a port leaving a spread group moves the ones left behind. "The
+    fallback moves only the ports that inherit" is false, and now says so.
+    NOT DONE, DELIBERATELY. The local run does NOT byte-reproduce the committed
+    hardpoints_fleet.json. Frames agree to 1e-4 and the models are the same -
+    what differs is the vertex SUBSAMPLE, so each marker snaps to a slightly
+    different real vertex. Only 10 of 1,798 positions match. Promoting the
+    staged run would move ~1,788 markers on the testing site for nothing the
+    order asked for. REPORTED, NOT PROMOTED - and worth knowing on its own:
+    THIS DERIVATION IS SAMPLE-DEPENDENT AND NOT REPRODUCIBLE ACROSS DECODES.
+    Also untracked and left that way: hardpoints_fleet.json, ship_mounts.json
+    and matched.json are working-tree data in an untracked directory. Adding
+    1.8 MB of data to the repo is Sleven's call, not mine.
