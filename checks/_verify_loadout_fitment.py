@@ -315,46 +315,47 @@ def run(data, ships, items, strict=True):
         if not rec or not sh:
             continue
         named_found += 1
-        # Rebuild the expected sequence from the snapshot, in the same walk
-        # order the generator uses, and compare stock for stock.
+        # KEYED ON PortId, WHICH IS THE GAME'S OWN UNIQUE PORT IDENTITY.
+        #
+        # The first version of this rebuilt the generator's port-selection rule
+        # here and compared counts, which meant it drifted the moment the
+        # generator learned to type a port by what is fitted in it - and a
+        # check that re-implements the thing it checks is testing its own copy
+        # anyway. Keying on PortId asks the only question that matters and
+        # duplicates no logic: FOR EVERY PORT THE PAGE SHOWS, DOES THE GAME
+        # FILE PUT THAT EXACT PART IN THAT EXACT PORT?
         raw = []
         B.walk_ports(sh.get("Loadout"), raw)
-        expect = []
+        prefix = META.get("port_id_prefix") or ""
+        by_pid = {}
         for entry, _pilot, _par in raw:
-            etype = (entry.get("Type") or "").split(".")[0]
-            if etype == "Armor":
+            pid = entry.get("PortId") or ""
+            if prefix and pid.startswith(prefix):
+                pid = pid[len(prefix):]
+            by_pid[pid] = entry
+        for sl in rec["slots"]:
+            entry = by_pid.get(sl.get("p"))
+            if entry is None:
+                mismatches.append("%s: slot %s names port %r, which is not in "
+                                  "the game file" % (cls, sl["id"], sl.get("p")))
                 continue
-            hp = entry.get("HardpointName") or ""
-            r = B.port_rules(entry, catalogue_types)
-            if ("paint" in hp.lower()) or any(t == B.PAINT_TYPE for t, _ in r):
+            # The port the page names must be the port the page labels.
+            if (entry.get("HardpointName") or "") != HP[sl["h"]]:
+                mismatches.append("%s / %s: page says port %r, game file says %r"
+                                  % (cls, sl.get("p"), HP[sl["h"]],
+                                     entry.get("HardpointName")))
                 continue
-            if not r:
-                continue
-            expect.append((hp, entry.get("ClassName")))
-        got = [(HP[sl["h"]], sl.get("stock")) for sl in rec["slots"]]
-        # The emitted slots are sorted for display, so compare as multisets of
-        # (port, part) pairs - order on screen is a layout choice, but WHICH
-        # PART IS IN WHICH PORT is not.
-        exp_pairs = sorted((hp, (cn or "")) for hp, cn in expect)
-        # `stock` IS the className, so the pairs compare directly.
-        got_pairs = sorted((hp, (st or "")) for hp, st in got)
-        if len(exp_pairs) != len(got_pairs):
-            mismatches.append("%s: %d ports in the game file, %d on the page"
-                              % (cls, len(exp_pairs), len(got_pairs)))
-            continue
-        for (ehp, ecn), (ghp, gcn) in zip(exp_pairs, got_pairs):
-            if ehp != ghp:
-                mismatches.append("%s: port %s vs %s" % (cls, ehp, ghp))
-                break
-            # A stock part the page could not carry comes back empty; that is
-            # an absence to report, not a mismatch to hide.
-            if gcn and ecn and gcn != ecn:
+            want = entry.get("ClassName") or ""
+            got = sl.get("stock") or ""
+            # A part the page could not carry comes back empty; that is an
+            # absence to report elsewhere, not a wrong part fitted here.
+            if got and want and got != want:
                 mismatches.append("%s / %s: game fits %s, page opens with %s"
-                                  % (cls, ehp, ecn, gcn))
-                break
+                                  % (cls, entry.get("HardpointName"), want, got))
     check(named_found >= 3, "enough named ships to compare", "%d" % named_found)
     check(not mismatches,
-          "each named ship's opening state matches its Loadout PORT FOR PORT",
+          "each named ship's opening state matches its Loadout PORT FOR PORT, "
+          "keyed on the game's own PortId",
           "; ".join(mismatches[:3]))
     # And the opening state is not empty, which "no mismatches" would allow.
     cut = SHIPS.get("DRAK_Cutlass_Black") or {}
@@ -367,7 +368,7 @@ def run(data, ships, items, strict=True):
     if cut:
         NOTES.append("L2: Drake Cutlass Black opens with %d of %d ports "
                      "filled from its own ClassName defaults, matched port "
-                     "for port against ships.json"
+                     "for port by PortId against ships.json"
                      % (len(stocked), len(cut.get("slots", []))))
 
     # ---- 3. SUBTYPES MUST NOT HAVE CLOSED SILENTLY -----------------------

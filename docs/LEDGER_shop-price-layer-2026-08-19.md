@@ -2836,7 +2836,7 @@ L7  DONE  fdaa586  LIVERIES LIVE ON THE SHIP PAGE. 915 liveries in 104 hull sets
     LIVERIES TAKE NO PART IN THE READOUT, proven by fitting one and asserting
     that every computed figure is byte-identical afterwards.
 
-M0  DONE  <sha>  ADDENDUM §0 AUDIT OF L1-L7. The answer is: NOTHING WAS KEYED
+M0  DONE  3bd90c7  ADDENDUM §0 AUDIT OF L1-L7. The answer is: NOTHING WAS KEYED
     ON `Name`, and one display defect the collision causes HAS been fixed.
     THE COLLISION REPRODUCES EXACTLY as the addendum states: 316 records, 287
     distinct display names, 22 names shared by 51 records. A Name-keyed build
@@ -2873,3 +2873,65 @@ M0  DONE  <sha>  ADDENDUM §0 AUDIT OF L1-L7. The answer is: NOTHING WAS KEYED
     guessing when it had done nothing of the kind. Recorded there. Two
     independent encounters with the same defect in one run is the strongest
     argument for the addendum's rule that I can offer.
+
+L8  DONE  <sha>  THE 3D VIEWER IS ONE FILE NOW - testing/_src/cc_viewer.js.
+    The renderer, the lights, the environment map, the framing, the load path
+    and its cancellation came out of index.html. What did NOT come out is
+    badges, prices, dealers, hardpoint panels or tabs - that is what each page
+    says AROUND a ship, and pushing it in would make one function with two
+    personalities.
+    MEASURED IN THE SHIPPED BYTES: `new THREE.WebGLRenderer` appears ONCE, in
+    the module, and zero times in either page. Same for the PMREM environment,
+    the ACES tone mapping, the GLTFLoader, the DRACO wiring, the lighting rig
+    and the OrbitControls.
+    THE NEGATIVE HALF, WHICH IS THE ONLY ASSERTION A SECOND COPY COULD NOT
+    SURVIVE: cc_viewer.js is replaced with one whose constructor throws, each
+    page's OWN script is run against it, and BOTH must come back with no
+    viewer. Both do. It is not behind a flag - a negative half that has to be
+    asked for is one nobody runs.
+    AND THE SAME SHIP RESOLVES TO THE SAME MODEL ON BOTH PAGES: 221 linked
+    ships compared file by file. index reaches a model by site record id,
+    the ship page by ClassName, and the two are composed at BUILD time through
+    ship_resolution.json - so neither join ever touches a display name, which
+    on this dataset would hand one Hammerhead the other one's model.
+    THE EXTRACTION IMMEDIATELY CAUGHT TWO BUILD DEFECTS THAT WOULD HAVE SHIPPED
+    QUIETLY, and they are the argument for having done it:
+      1. build_deploy.py injected the DRACO decoder into the page with a BARE
+         `.replace` anchored on one exact line. Moving the viewer moved that
+         line. A `.replace` that misses is SILENT - it would have shipped a
+         build with no DRACO decoder, EVERY MODEL FAILING TO DECODE, and the
+         build reporting success. The wiring now lives beside the loader it
+         belongs to and the build ASSERTS it is there.
+      2. The build also rewrote the whole 25-line load callback, which meant it
+         held a second copy of the material setup, the framing and the
+         staleness guard. Replaced by ONE seam - `ccModelSource(dir)` - with an
+         asserted anchor. The old anchor going stale is how this was found.
+    A third assert - the TDZ declaration hoist - fired on this change too, and
+    stopped the build rather than hoisting nothing and shipping a page whose
+    display panel throws on load. Three build-time guards, all three earned.
+    CONTROL: checks/_verify_shared_viewer.mjs, 18 assertions.
+    ONE THING I HAD TO FIX IN THE CHECK: searching the pages for
+    `PMREMGenerator` and `ACESFilmicToneMapping` failed, because THREE.JS
+    ITSELF IS INLINED INTO BOTH PAGES and defines them. The check was finding
+    the library, which is exactly what should be there. Now matched on
+    CONSTRUCTION - `new THREE.PMREMGenerator(` - not on the identifier.
+
+L9  DONE  <sha>  THE SHIP PAGE = THE BENCH PLUS THE MODEL. No third page.
+    loadout.html was already per-ship, already did A/B and already shared by
+    URL, so the model came to it. 201 of 221 linked ships carry one.
+    THE MODEL STAYS LOADED WHILE THE READOUT CHANGES, which is L9's control and
+    which falls out of the layout rather than being arranged: the stage sits
+    above the tabs and a swap re-renders the panes, never the stage.
+    LAID OUT TO THE ADDENDUM'S TABBED SHAPE FROM THE START rather than
+    retrofitted - model, components and readout by default; Loadout,
+    Engineering, Liveries, Crew, Where to buy and Specs behind plain text
+    labels; each an addressable fragment; a tab suppressed where the ship has
+    no data for it. M1 finishes the lazy loading.
+    ClassName -> model is GENERATED at build time into loadout_model.gen.js by
+    composing CC_MODELS (record id -> folder) with LOADOUT_LINK (record id ->
+    ClassName). Both joins are on ids. The path differs between _src and
+    _deploy, so that is ONE SEAM substituted at copy time, asserted both ways.
+    L14 CASE 1 IS HANDLED HERE: a ship with a game file and no model - 20 of
+    the 221 - gets an honest sentence where the viewer goes, saying the numbers
+    below are real and only the model is missing. Not a broken viewer, not a
+    spinner.

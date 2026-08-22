@@ -309,45 +309,47 @@ assert len(cdn)==3, cdn
 for t in cdn: layer = layer.replace(t,'',1)
 
 # ---- 2. patch model loading to use embedded data ---------------------------
-old_start = "  const url=CC_DIR+encodeURIComponent(dir)+'/'+CC_FILE, t0=performance.now();"
-i = layer.index(old_start)
-# anchored on the staleness guard, which every loader callback now carries
-j = layer.index("status.textContent='model failed", i)
-j = layer.index("});", j)+3
-new_load = """  const t0=performance.now();
-  const b64=CC_EMBED[dir];
-  if(!b64){ still.style.display='none'; empty.style.display='flex';
-    empty.innerHTML='<div>3D model not bundled in this portable build.</div>'+
-      '<div style="opacity:.75;font-size:14px">'+Object.keys(CC_EMBED).length+
-      ' of '+Object.keys(CC_MODELS).length+' matched ships carry a model here. '+
-      'The full library is 243 ships.</div>';
-    status.textContent=''; size(); return; }
-  loader.load(b64,g=>{
-    if(tok!==openTok) return;   // an earlier ship's model must not land here
-    clearModel();current=g.scene;
-    current.traverse(o=>{if(o.isMesh&&o.material)
-      (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{
-        m.side=THREE.DoubleSide;
-        /* The models carry no textures and one material named "Default".
-           glTF's spec default is metalness 1.0 - a mirror - which with no
-           environment reads as a white blob. CC_HULL is declared in
-           _layer.src.html; this block is the one the deploy build uses. */
-        m.color=new THREE.Color(CC_HULL.color);
-        m.metalness=CC_HULL.metalness;
-        m.roughness=CC_HULL.roughness;
-        m.envMapIntensity=1.0;
-        m.needsUpdate=true;
-      });});
-    scene.add(current); const i=frame(current);
-    still.style.transition=''; still.style.opacity=0;
-    status.textContent=dir+' \\u00b7 '+((performance.now()-t0)/1000).toFixed(1)+'s \\u00b7 '+
-      i.sz.x.toFixed(1)+' \\u00d7 '+i.sz.y.toFixed(1)+' \\u00d7 '+i.sz.z.toFixed(1)+
-      ' \\u00b7 draco';},
-    x=>{if(tok!==openTok)return;
-      if(x.lengthComputable)status.textContent='loading '+Math.round(x.loaded/x.total*100)+'%';},
-    e=>{if(tok!==openTok)return;
-      status.textContent='model failed to load';console.warn('[cc]',dir,e);});"""
-layer = layer[:i] + new_load + layer[j:]
+#
+# THIS USED TO REWRITE THE WHOLE LOAD CALLBACK - twenty-five lines carrying a
+# second copy of the material setup, the framing and the staleness guard. Two
+# copies of that code is exactly the defect L8 exists to close, and it bit as
+# predicted: when the viewer moved into cc_viewer.js these anchors went stale.
+# One of the two substitutions was a bare `.replace`, which is SILENT when it
+# misses - it would have shipped a build with no DRACO decoder attached, every
+# model failing to decode, and the build still reporting success.
+#
+# So the page carries ONE SEAM - `ccModelSource(dir)` - and this replaces that
+# function and nothing else. The anchor is asserted, so the next time somebody
+# moves it the build stops instead of quietly doing nothing.
+_SRC_OLD = ("function ccModelSource(dir){ return CC_DIR+encodeURIComponent(dir)"
+            "+'/'+CC_FILE; }")
+_SRC_NEW = "function ccModelSource(dir){ return CC_EMBED[dir] || null; }"
+if _SRC_OLD not in layer:
+    sys.exit("MODEL SOURCE SEAM NOT FOUND in _layer.src.html. The deploy build "
+             "carries models as embedded data URIs and swaps ccModelSource() to "
+             "read them. Without that swap the built page would request files "
+             "that are not in _deploy and every model would 404. "
+             "Nothing was written.")
+layer = layer.replace(_SRC_OLD, _SRC_NEW, 1)
+
+# THE SHARED VIEWER MUST BE THE ONE DOING THE LOADING (L8).
+#
+# index.html no longer holds a viewer of its own. If cc_viewer.js stops being
+# referenced - or stops carrying the DRACO wiring that moved into it - the page
+# still builds, still serves 200, and shows nothing where a ship should be.
+# That is the exact shape this project calls silent success, so it is checked.
+if '<script src="cc_viewer.js"></script>' not in layer:
+    sys.exit("_layer.src.html does not load cc_viewer.js, so the built index "
+             "would have no 3D viewer at all. Nothing was written.")
+_viewer_js = rd(os.path.join(SRC, 'cc_viewer.js'))
+for _need, _why in (
+        ('function attachDraco', 'the DRACO wiring this build used to inject'),
+        ('CC_DRACO_WASM_B64', 'the decoder wasm global this build defines'),
+        ('THREE.WebGLRenderer', 'the renderer itself')):
+    if _need not in _viewer_js:
+        sys.exit("cc_viewer.js is missing %s (%s). The built page would look "
+                 "fine and draw nothing. Nothing was written." % (_need, _why))
+
 
 # thumbnails ride along with the deploy build as resized webp, so the stage
 # is never blank while a model streams in.
@@ -417,12 +419,23 @@ layer = layer.replace("const $=id=>document.getElementById(id);",
                       lookup_js + "const $=id=>document.getElementById(id);", 1)
 
 # ---- 2c. FIX a real pre-existing bug in the layer ---------------------------
-# apply() runs at load and does `typeof renderer` on a `let` declared 85 lines
+# apply() runs at load and does `typeof _ccView` on a `let` declared 85 lines
 # later. On a let/const that is a TDZ ReferenceError, NOT a safe undefined check,
 # so apply() throws and every statement after it never runs - which killed the
 # 3D viewer wiring and the clickable ship rows. Hoist the declaration.
-decl = "let renderer,scene,camera,controls,current,raf,loader;"
-assert decl in layer
+#
+# THE NAME CHANGED AT L8 and this is why the assert below is not decoration.
+# The viewer moved into cc_viewer.js, so `let renderer,scene,camera,...` became
+# `let _ccView=null, current=null;` - and the build stopped at this line rather
+# than hoisting nothing and shipping a page whose display panel throws on load.
+# An assert that has fired once is worth more than a comment claiming it never
+# will.
+decl = "let _ccView=null, current=null;"
+assert decl in layer, (
+    "the viewer declaration this build hoists is not in _layer.src.html. "
+    "Without the hoist, apply() hits a temporal-dead-zone ReferenceError at "
+    "load and every statement after it - the whole 3D viewer wiring - never "
+    "runs. Nothing was written.")
 layer = layer.replace(decl, "/* declaration hoisted - see below */", 1)
 layer = layer.replace("const $=id=>document.getElementById(id);",
                       decl + "\nconst $=id=>document.getElementById(id);", 1)
@@ -495,22 +508,18 @@ const CC_EMBED = {json.dumps(models)};
 </script>
 """
 
-# ---- 4. attach DRACOLoader with patched library loading --------------------
-layer = layer.replace(
-    "  loader=new THREE.GLTFLoader(); addEventListener('resize',size);",
-    """  loader=new THREE.GLTFLoader();
-  const dl=new THREE.DRACOLoader();
-  dl._loadLibrary=function(url){
-    if(url==='draco_wasm_wrapper.js') return Promise.resolve(CC_DRACO_WRAPPER);
-    if(url==='draco_decoder.wasm'){
-      const b=atob(CC_DRACO_WASM_B64), a=new Uint8Array(b.length);
-      for(let n=0;n<b.length;n++) a[n]=b.charCodeAt(n);
-      return Promise.resolve(a.buffer);
-    }
-    return Promise.reject(new Error('unexpected draco asset '+url));
-  };
-  loader.setDRACOLoader(dl);
-  addEventListener('resize',size);""")
+# ---- 4. DRACOLoader: attached by cc_viewer.js, not injected here -----------
+#
+# This step used to paste the DRACO wiring into _layer.src.html with a bare
+# `.replace` anchored on one exact line. A `.replace` that misses is SILENT -
+# and moving the viewer into cc_viewer.js moved that line, so this build would
+# have kept reporting success while shipping a page whose every model failed to
+# decode. Nothing would have said so.
+#
+# The wiring now lives beside the loader it belongs to, in cc_viewer.js, and
+# reads CC_DRACO_WRAPPER and CC_DRACO_WASM_B64 out of the vendor block below.
+# Step 2 ASSERTS it is still in there, so the check that replaced this one
+# cannot fail quietly the way this one could.
 
 # ---- 5. inject into the real site -----------------------------------------
 # ---- THE TESTING SITE SAYS IT IS THE TESTING SITE ---------------------------
@@ -719,6 +728,69 @@ else:
 open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
 
 # ---------------------------------------------------------------------------
+# L9. THE SHIP PAGE NEEDS THE SAME MODEL, SO IT NEEDS THE SAME JOIN.
+#
+# index.html reaches a model through CC_MODELS, which is keyed on the SITE's
+# record id. The bench is keyed on the game's ClassName. LOADOUT_LINK already
+# resolves record id -> ClassName, against data-layer/ship_resolution.json, at
+# build time - so composing the two here gives ClassName -> model folder
+# without a second join and without ever touching a display NAME.
+#
+# That last part is not incidental. 22 display names are shared by 51 records
+# in this dataset, so a name-keyed join would quietly hand one Hammerhead the
+# other Hammerhead's model. Both joins here are on ids.
+#
+# ONE WRITER: this file is written here and nowhere else, and it is generated
+# rather than typed for the same reason hardpoint_data.gen.js is.
+_model_by_class, _model_absent = {}, []
+for _rid, _cls in _link.items():
+    _dir = _cc.get(str(_rid))
+    if _dir and safe(_dir) + '.glb' in have:
+        _model_by_class[_cls] = safe(_dir) + '.glb'
+    else:
+        _model_absent.append(_cls)
+
+# EVERY LINKED SHIP ACCOUNTED FOR. A ship with no model is a real and expected
+# state - L14 case 1, the Origin M80 - and the page says "no model available"
+# rather than showing a broken viewer. What must not happen is the two numbers
+# not adding up, which would mean the join dropped something silently.
+if len(_model_by_class) + len(_model_absent) != len(_link):
+    sys.exit("ship-page model accounting does not add up: %d + %d != %d. "
+             "Nothing was written."
+             % (len(_model_by_class), len(_model_absent), len(_link)))
+if not _model_by_class:
+    sys.exit("no ship resolved to a 3D model for the ship page, so the viewer "
+             "would never load anything. Refusing to ship a dead viewer.")
+
+# THE PATH SEAM, and it is the same shape as ccModelSource.
+#
+# In _src the page is opened from disk beside ../sc-ships/. In _deploy the
+# models are siblings under models/. One template, substituted at copy time,
+# asserted both ways - rather than the page guessing which world it is in.
+_MODEL_DEV = '../sc-ships/{dir}/model_scaled.glb'
+_MODEL_DEPLOY = 'models/{file}'
+_model_js = (
+    '/* GENERATED by testing/_src/build_deploy.py - do not hand edit.\n'
+    '   ClassName -> 3D model, composed from CC_MODELS (record id -> folder)\n'
+    '   and LOADOUT_LINK (record id -> ClassName). BOTH JOINS ARE ON IDS: 22\n'
+    '   display names are shared by 51 records in this dataset, so a\n'
+    '   name-keyed join would hand one Hammerhead the other one\'s model.\n'
+    '\n'
+    '   %d of %d linked ships have a model. The rest are L14 case 1 - a game\n'
+    '   file and no model - and the page says so rather than showing an empty\n'
+    '   viewer. */\n'
+    'const LOADOUT_MODEL=%s;\n'
+    'const LOADOUT_MODEL_URL=%s;\n'
+    % (len(_model_by_class), len(_link),
+       json.dumps(_model_by_class, ensure_ascii=True, sort_keys=True,
+                  separators=(',', ':')).replace('<', r'<'),
+       json.dumps(_MODEL_DEV)))
+open(os.path.join(SRC, 'loadout_model.gen.js'), 'w',
+     encoding='utf-8', newline='\n').write(_model_js)
+print('ship-page models: %d of %d linked ships carry one, %d correctly do not'
+      % (len(_model_by_class), len(_link), len(_model_absent)))
+
+# ---------------------------------------------------------------------------
 # Standalone pages that ship alongside index.html.
 #
 # These are NOT generated - they are authored in _src/ and copied. An earlier
@@ -767,6 +839,14 @@ PAGES = [
     ('holo.src.html',    'holo.html'),
     ('holo_data.gen.js', 'holo_data.gen.js'),
     ('loadout_data.gen.js', 'loadout_data.gen.js'),
+    # THE SHIP VIEWER, ONE COPY (L8). index.html and loadout.html both reach it
+    # with <script src>. Shipping it as a file rather than inlining it into
+    # each page is the whole point of the extraction: an inlined copy per page
+    # IS two copies, and two copies drift.
+    ('cc_viewer.js',     'cc_viewer.js'),
+    # ClassName -> 3D model for the ship page (L9). Written by this same build,
+    # a few dozen lines above, so it can never be stale relative to CC_MODELS.
+    ('loadout_model.gen.js', 'loadout_model.gen.js'),
     # A gamepad diagnostic that shares NO code with the site. That
     # independence is the point: it answers "can this browser see the
     # stick at all" without our own detection logic in the way. Copied
@@ -803,6 +883,25 @@ for _src_name, _out_name in PAGES:
     _s = os.path.join(SRC, _src_name)
     if os.path.exists(_s):
         _dst = os.path.join(OUT, _out_name)
+        # THE MODEL PATH SEAM (L9). In _src the ship page reads ../sc-ships/;
+        # in _deploy the models are siblings under models/. Substituted here,
+        # ASSERTED both ways - a silent miss would ship a page that 404s every
+        # model while the build reported success, which is the failure the
+        # ccModelSource seam above exists to have stopped happening twice.
+        if _src_name == 'loadout_model.gen.js':
+            _txt = rd(_s)
+            _dev_line = 'const LOADOUT_MODEL_URL=%s;' % json.dumps(_MODEL_DEV)
+            if _dev_line not in _txt:
+                sys.exit("loadout_model.gen.js does not carry the dev model "
+                         "path this build swaps out. The shipped ship page "
+                         "would look for models that are not there. "
+                         "Nothing more was written.")
+            _txt = _txt.replace(
+                _dev_line, 'const LOADOUT_MODEL_URL=%s;' % json.dumps(_MODEL_DEPLOY))
+            open(os.path.join(OUT, _out_name), 'w',
+                 encoding='utf-8', newline='\n').write(_txt)
+            _copied.append(_out_name)
+            continue
         _txt = rd(_s) if _src_name.endswith('.html') else None
         if _txt is not None and CC_VENDOR_MARKER in _txt:
             _txt = _txt.replace(CC_VENDOR_MARKER, _vendor_block)

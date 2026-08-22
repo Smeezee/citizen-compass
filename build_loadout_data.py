@@ -371,22 +371,50 @@ def item_fits(it, rules, mn, mx):
 # items
 # --------------------------------------------------------------------------
 
-def part_record(it, type_name):
-    """One component, trimmed to what a readout reads."""
-    if "PLACEHOLDER" in (it.get("name") or ""):
-        # CIG ships placeholder rows in its own data. They are not components
-        # and must never be offered as one.
-        return None
+def part_record(it, type_name, fitted=False):
+    """One component, trimmed to what a readout reads.
+
+    `<= PLACEHOLDER =>` IS CIG'S "NO DISPLAY NAME", NOT "NOT A REAL PART", and
+    telling those two apart is worth a paragraph because getting it wrong goes
+    both ways.
+
+    8,229 fitted ports hold an item CIG has never given a localised name -
+    `GATS_BallisticGatling_Barrel_S2` is a real gatling barrel, and
+    `TMBL_Cyclone_CargoGrid_Main` is a real cargo grid. Refusing them outright
+    left 14,503 ports rendering as a fixed row with nothing in it, which tells
+    a visitor less than nothing about their own ship.
+
+    So the rule splits by what the part is being used for:
+
+      OFFERED IN A PICKER - never. An unnamed row is unpickable in practice,
+      and offering one as an alternative to a named gun is the page asking
+      somebody to choose something it cannot describe.
+
+      FITTED AT A PORT - yes, carried, named from its className and MARKED
+      `nn` so the page can say the game files give it no name. That is an
+      honest gap; a blank row is just a gap.
+    """
     st = it.get("stdItem") or {}
+    placeholder = ("PLACEHOLDER" in (it.get("name") or "")
+                   or "PLACEHOLDER" in (st.get("Name") or ""))
+    if placeholder and not fitted:
+        return None
     mfr = st.get("Manufacturer")
     mfr = (mfr or {}).get("Name") if isinstance(mfr, dict) else None
 
+    name = st.get("Name") or it.get("name") or it.get("className")
     rec = {
-        "n": st.get("Name") or it.get("name") or it.get("className"),
+        "n": name,
         "m": mfr or it.get("manufacturer") or "Unknown",
         "t": code_for(type_name),
         "s": num(it.get("size")) or 0,
     }
+    if placeholder:
+        # The className, spaced out. Derived, never invented: `GATS_Ballistic
+        # Gatling_Barrel_S2` reads as "GATS Ballistic Gatling Barrel S2", which
+        # is what the game file actually calls it.
+        rec["n"] = (it.get("className") or "").replace("_", " ").strip() or "Unnamed part"
+        rec["nn"] = 1
 
     # MASS IS A REAL COUPLING AND MUST NOT BE DROPPED (L6). Fitted parts change
     # the ship's total mass, which changes handling - and since thrusters are
@@ -606,6 +634,17 @@ def select_types(all_ports, catalogue_types):
 # ships
 # --------------------------------------------------------------------------
 
+# Every PortId in the snapshot starts `loadout.`, which is 8 identical bytes on
+# 25,875 slots. Stripped here and stated in META, so the id stays reversible.
+PORT_PREFIX = "loadout."
+
+
+def strip_port_prefix(pid):
+    if not pid:
+        return None
+    return pid[len(PORT_PREFIX):] if pid.startswith(PORT_PREFIX) else pid
+
+
 def pretty_hardpoint(name):
     """`hardpoint_weapon_nose_left` -> `Weapon nose left`. Nothing invented."""
     if not name:
@@ -690,7 +729,8 @@ def cig_aggregates(s):
 
 
 def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types,
-                overrides, stats, hp_names, hp_index, type_of_code):
+                overrides, stats, hp_names, hp_index, type_of_code,
+                by_class_ref):
     """One ship: every port it has, fixed and editable alike (L2, L3, L4)."""
     name = s.get("Name")
     cls = s.get("ClassName") or name
@@ -754,17 +794,41 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
                 stats["paint_tagged"] += 1
             continue
 
+        # A PORT WITH SOMETHING FITTED IN IT IS A PORT, WHATEVER IT DECLARES.
+        #
+        # This cost six of the Aegis Javelin's twenty-two M9A cannons and it is
+        # worth writing down. Deciding what a slot is purely from
+        # `CompatibleTypes` drops any port that declares nothing and still has
+        # a real component sitting in it - and CIG has plenty. The build's own
+        # gate caught it: our pilot-DPS sum went from reproducing CIG on all
+        # 275 ships to 272, and the Javelin was 9,295 against CIG's 37,180.
+        #
+        # A port holding an M9A cannon is unambiguously a weapon port. So the
+        # fitted item's own type is the fallback - it is evidence, not a guess.
+        fitted_item = by_class_ref.get((stock_cls or "").lower())
+        fitted_type = (fitted_item or {}).get("type") or ""
         if not rules:
-            # No real component type accepts anything here. Structure - a door,
-            # a display, a light group. Not a slot, and not a lie either: it is
-            # simply not a component port. Counted so the omission is visible.
-            if editable:
-                stats["editable_not_component"] += 1
-            continue
-
-        # The type shown is the port's own first accepted type, not the fitted
-        # item's - because the port is the thing being described.
-        main_type = rules[0][0]
+            if (fitted_type and fitted_type in catalogue_types
+                    and fitted_type not in EXCLUDED_TYPES
+                    and fitted_type != PAINT_TYPE):
+                # Typed by what is in it. It opens no picker either way,
+                # because the port states no rule for what else would fit -
+                # and L3 is explicit that a port rule is never guessed.
+                main_type = fitted_type
+                rules = ()
+                stats["typed_by_fitted"] += 1
+            else:
+                # No real component type accepts anything here and nothing
+                # component-shaped is in it. Structure - a door, a display, a
+                # light group. Not a slot, and not a lie either. Counted so the
+                # omission stays visible.
+                if editable:
+                    stats["editable_not_component"] += 1
+                continue
+        else:
+            # The type shown is the port's own first accepted type, not the
+            # fitted item's - because the port is the thing being described.
+            main_type = rules[0][0]
         code = code_for(main_type)
         counts[code] = counts.get(code, 0) + 1
         # `h` is an INDEX INTO LOADOUT_HP, not a label.
@@ -782,17 +846,29 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
         if hp_name not in hp_index:
             hp_index[hp_name] = len(hp_names)
             hp_names.append(hp_name)
+        # `p` IS THE GAME'S OWN PORT ID, AND IT IS THE ONLY REAL IDENTITY HERE.
+        #
+        # A hardpoint NAME is not unique within a ship: 287 of 316 hulls have
+        # slots sharing one, 11,283 slots in all, and the RSI Polaris has
+        # THIRTY ports called `MEC`, thirty called `VEN` and thirty called
+        # `POW`. `PortId` is unique - 57,759 ports, 57,759 distinct ids,
+        # checked across the whole snapshot.
+        #
+        # L10 requires a hull marker to select "port N and no other, BY
+        # IDENTITY, never by screen position". A name cannot do that. This can,
+        # and it is what any marker join must be made on.
         slot = {
             "id": "%s%d" % (code, counts[code]),
             "t": code,
             "s": num(entry.get("MaxSize")),
             "h": hp_index[hp_name],
+            "p": strip_port_prefix(entry.get("PortId")),
         }
         if slot["s"] is None:
             slot["s"] = num(entry.get("MinSize")) or 0
         if stock_key:
             slot["stock"] = stock_key
-        if editable:
+        if editable and rules:
             key = rule_key(rules, entry.get("MinSize"), entry.get("MaxSize"))
             slot["fit"] = key
             stats["editable_component"] += 1
@@ -983,7 +1059,7 @@ def main():
             continue
         if cn not in reachable and cn not in stock_fitted:
             continue
-        rec = part_record(it, t)
+        rec = part_record(it, t, fitted=(cn in stock_fitted))
         if not rec or not rec.get("n"):
             continue
         parts[cn] = rec
@@ -1011,6 +1087,7 @@ def main():
 
     stats = {"editable_component": 0, "fixed_component": 0,
              "editable_not_component": 0, "paint_ports": 0,
+             "typed_by_fitted": 0,
              "armor_unresolved": 0,
              "paint_tagged": 0}
     built, empty, no_armor = {}, [], []
@@ -1020,7 +1097,7 @@ def main():
             continue
         rec = ship_record(s, parts, part_keys, armors, paints, fits_index,
                           catalogue_types, overrides, stats, hp_names, hp_index,
-                          type_of_code)
+                          type_of_code, by_class)
         if not rec["slots"]:
             empty.append(rec["n"] or cls)
         if not rec.get("arm"):
@@ -1147,6 +1224,7 @@ def main():
         "paint_sets": len(paint_sets),
         "fits": len(fits_out),
         "hardpoints": len(hp_names),
+        "port_id_prefix": PORT_PREFIX,
         "ports_with_no_part": len(nofit),
         "types": sorted(selected),
         "unreleased": len(unreleased),
@@ -1255,6 +1333,8 @@ def main():
     say("    editable but NOT a component   : %d  (doors, displays, decals)"
         % stats["editable_not_component"])
     say("    armour ports that did NOT resolve: %d" % stats["armor_unresolved"])
+    say("    ports typed by what is FITTED in them: %d  (the port declares"
+        " nothing)" % stats["typed_by_fitted"])
     say("")
     say("  CARRIED:")
     say("    parts    %5d of %d catalogue items" % (len(parts), len(items)))

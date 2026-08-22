@@ -65,21 +65,55 @@ check('a real number of ships and parts',
 console.log('\n== every slot points at a part that exists ==');
 {
   const missing = [];
-  let slots = 0;
+  let slots = 0, empty = 0, portless = 0;
+  const portIds = [];
   for (const [id, s] of Object.entries(SHIPS)) {
+    const seen = new Set();
     for (const sl of s.slots || []) {
       slots++;
+      /* AN EMPTY PORT IS NOT A DANGLING REFERENCE, and telling those two apart
+         is the whole job of this block now that the page carries every port
+         rather than only the five component types it used to.
+
+         6,454 ports in this snapshot are EMPTY in the game files - a missile
+         rack CIG ships with no missile in it, a mount with nothing on it. The
+         page renders those honestly. What must never happen is a slot naming a
+         part that is not in the table, because that renders as the word
+         "empty" on a ship that definitely has guns and looks like a data
+         problem nobody can locate. Only the second one is a failure. */
+      if (sl.stock === undefined) { empty++; continue; }
       // --prove: pretend one key was mistyped, which is the actual failure
       // mode - a generator change that renames keys without renaming
       // references.
-      const key = (prove && slots === 1) ? sl.stock + '_TYPO' : sl.stock;
+      const key = (prove && missing.length === 0 && slots > 1) ? sl.stock + '_TYPO' : sl.stock;
       if (!PARTS[key]) missing.push(s.n + ' / ' + sl.id + ' -> ' + key);
+      if (sl.p === undefined) portless++;
+      if (seen.has(sl.p)) portIds.push(s.n + ' / ' + sl.p);
+      seen.add(sl.p);
     }
   }
   check('a real number of slots exist at all', slots > 2000, slots + ' slots');
   check('NO slot references a part that is not in the table',
         missing.length === 0,
         missing.length + ' dangling: ' + missing.slice(0, 3).join('; '));
+  /* The empty ports are BOUNDED, not merely tolerated. If every slot suddenly
+     came back empty this block would otherwise pass in silence, having checked
+     nothing at all - which is the exact shape of the failures this project
+     keeps finding. */
+  check('empty ports are a minority, not the whole file',
+        empty < slots * 0.5,
+        empty + ' of ' + slots + ' slots carry no fitted part');
+  console.log('        ' + empty + ' ports are empty in the game files - a '
+    + 'real state, rendered as such');
+  /* L10 NEEDS AN IDENTITY, and a hardpoint NAME is not one: 287 of 316 hulls
+     have slots sharing a name and the RSI Polaris has thirty ports called
+     MEC. PortId is unique and every slot must carry it, or a hull marker
+     cannot select one port and no other. */
+  check('every slot carries the game\'s own PortId',
+        portless === 0, portless + ' without one');
+  check('and no two slots on a ship share it - so a marker can select ONE port',
+        portIds.length === 0,
+        portIds.length + ' collisions: ' + portIds.slice(0, 3).join('; '));
 }
 
 console.log('\n== parts carry what the page reads for their type ==');
