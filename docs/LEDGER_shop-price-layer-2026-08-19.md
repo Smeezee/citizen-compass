@@ -3199,7 +3199,7 @@ L17 DONE  502f9e2  SWEEP. `checks/run_all_controls.py` DISCOVERS controls from
          CC_GEO_DIR is unset. Pre-existing, correctly refusing to claim a pass,
          and out of scope for this order.
 
-M5  DONE  <sha>  THE OTHER LAYERS. Three of the four are populated; the fourth
+M5  DONE  837796d  THE OTHER LAYERS. Three of the four are populated; the fourth
     is a shell and is therefore invisible.
       LIVERIES   populated at L7 - 915 liveries in 104 hull sets.
       SPECS      populated at L9 - dimensions, mass (all three of CIG's
@@ -3225,7 +3225,7 @@ M5  DONE  <sha>  THE OTHER LAYERS. Three of the four are populated; the fourth
     The control asserts Crew appears on ZERO of the 316 hulls, which is the
     honest expression of "build the mechanism, do not populate it".
 
-M6  DONE  <sha>  THE PUNCH LIST CARRIES THE LAYERS AND THE DEFECT CLASS.
+M6  DONE  837796d  THE PUNCH LIST CARRIES THE LAYERS AND THE DEFECT CLASS.
     Added: a table of every ship-page layer with its state and its number, so
     "Crew is a shell" is a row with 802 unread seat ports beside it rather than
     a thing somebody remembers. And the payload table with the measurement that
@@ -3242,7 +3242,7 @@ M6  DONE  <sha>  THE PUNCH LIST CARRIES THE LAYERS AND THE DEFECT CLASS.
     316 records becoming 287 does not throw, does not warn, and looks like a
     reasonable number of ships.
 
-L17 SWEEP FINAL  <sha>  45 controls discovered, 42 ok, 1 failed, 2 skipped,
+L17 SWEEP FINAL  837796d  45 controls discovered, 42 ok, 1 failed, 2 skipped,
     0 NOT RUN, in 171s.
     THE ONE FAILURE IS A CONTROL REFUSING TO CLAIM A PASS:
     `_verify_g3_matcher_delta.py` exits 2 with "NOT PERFORMED - CC_GEO_DIR is
