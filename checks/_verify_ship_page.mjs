@@ -951,6 +951,81 @@ console.log("\n--- M3: plain language, reachable by keyboard and not hover alone
     `reachable by mouse, keyboard and screen reader`);
 }
 
+console.log("\n--- N2: the Acquisition block moved across, field by field ---");
+{
+  /* THE FAILURE MODE OF A CONSOLIDATION IS A FIELD NOBODY NOTICES IS GONE.
+     index.html's ship panel is retired, so every fact it showed is asserted
+     here BY NAME on a hull that has it - not "the panel renders", which would
+     pass with half of it missing. */
+  const INFO = g("INFO");
+  record(Object.keys(INFO).length > 150,
+    "the acquisition data reached the ship page",
+    `${Object.keys(INFO).length} ships`);
+
+  // Pick a hull that carries as much of the block as exists, by measurement.
+  const rich = Object.keys(INFO).find((k) => SHIPS[k] &&
+    INFO[k].auec && INFO[k].sold && INFO[k].conf && INFO[k].rec != null);
+  record(!!rich, "found a hull carrying price, dealers, confidence and a record number");
+  vm.runInContext(`shipId=${JSON.stringify(rich)};reset();renderAll();`, sandbox);
+  const I = INFO[rich];
+  const acq = el("acq").innerHTML;
+  const rec = el("recrow").innerHTML;
+  vm.runInContext(`tab="buy";renderBuy();`, sandbox);
+  const buy = el("buy").innerHTML;
+  vm.runInContext(`tab="specs";renderSpecs();`, sandbox);
+  const specs = el("specs").innerHTML;
+  const related = el("related").innerHTML;
+  const head = el("shipname").textContent;
+
+  // ---- the checklist, one line per field --------------------------------
+  const TICK = [
+    ["In-game price",   acq, Number(I.auec).toLocaleString()],
+    ["Pledge price",    acq, "Pledge price"],
+    ["Sold at",         buy, I.sold[0]],
+    ["View on RSI",     String(el("rsi").href), "robertsspaceindustries"],
+    ["Confidence",      rec, I.conf],
+    ["Last verified",   rec, "last verified against patch"],
+    ["Record number",   rec, "#" + I.rec],
+    ["Ship name",       head, SHIPS[rich].n],
+    ["Manufacturer",    acq, SHIPS[rich].m],
+    ["Status",          acq, I.stat === "purchasable" ? "Purchasable" : "pledge only"],
+    ["Related ships",   related, "Related"],
+    ["Model folder",    specs, "3D model file"],
+  ];
+  for (const [what, where, needle] of TICK) {
+    record(String(where).includes(needle),
+      `N2 tick: ${what} is on the ship page`, `looked for ${JSON.stringify(needle)}`);
+  }
+  notes.push(`N2 checklist ticked on ${SHIPS[rich].n}: ` +
+    TICK.map(([w]) => w).join(", "));
+
+  // NOTES is on a minority of ships, so it is ticked on one that HAS it -
+  // asserting it on a ship without would pass for the wrong reason.
+  const withNote = Object.keys(INFO).find((k) => SHIPS[k] && INFO[k].note);
+  record(!!withNote, "a hull with a note exists to tick it on");
+  if (withNote) {
+    vm.runInContext(`shipId=${JSON.stringify(withNote)};reset();tab="specs";renderAll();renderSpecs();`, sandbox);
+    record(el("specs").innerHTML.includes(INFO[withNote].note),
+      `N2 tick: Notes is on the ship page (${SHIPS[withNote].n})`);
+  }
+
+  // AND THE ONE THAT DID NOT SURVIVE, because saying so is the point of a
+  // checklist. The site's own last_verified_patch is null on all 254 records,
+  // so there was never anything to move - index.html rendered "not recorded"
+  // for every ship in the fleet. The page states the SNAPSHOT's patch instead,
+  // which is a real answer.
+  const anyLvp = Object.values(INFO).filter((v) => v.lvp).length;
+  record(anyLvp === 0,
+    "the site's own last-verified field is empty on every ship - so the page " +
+    "states the snapshot's patch instead of an empty row",
+    `${anyLvp} ships carry one`);
+  notes.push("N2: the site's `last_verified_patch` is null on all 254 records " +
+    "- index.html showed \"not recorded\" for every ship. The ship page states " +
+    "the snapshot patch, which is a real figure.");
+
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();tab="loadout";renderAll();`, sandbox);
+}
+
 /* ---------------------------------------------- rule 8: never touch these */
 console.log("\n--- rule 8: the trademark and Fan Kit text is untouched ---");
 record(/Cloud Imperium Rights LLC/.test(html), "the trademark footer is intact");

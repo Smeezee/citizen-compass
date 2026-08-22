@@ -3360,3 +3360,41 @@ D1  DONE  3156e6b  TESTING SITE DEPLOYED, and the standing rule that says to do 
     0 NOT RUN. The one failure is `_verify_g3_matcher_delta.py` reporting NOT
     PERFORMED because CC_GEO_DIR is unset - pre-existing, unrelated, and
     correctly refusing to claim a pass.
+
+N2  DONE  <sha>  THE ACQUISITION BLOCK IS ON THE SHIP PAGE. NOTHING WAS
+    DROPPED, AND THE CHECKLIST IS THE PROOF RATHER THAN MY WORD FOR IT.
+    Done FIRST, before N1 and N3, deliberately: build the destination, then
+    reroute, then retire. Retiring the panel before its contents had somewhere
+    to go is how a field goes missing in a consolidation.
+    THE CHECKLIST, TICKED ONE AT A TIME AGAINST THE RENDERED HTML on a hull
+    measured to carry them all:
+      In-game price      -> ship page header, as `1,089,270 aUEC`
+      Pledge price       -> ship page header
+      Sold at            -> `Where to buy` tab, as dealer chips
+      View on RSI        -> ship page header (already moved at L11)
+      Confidence         -> the provenance row
+      Last verified      -> the provenance row, SEE BELOW
+      Record number      -> the provenance row, as `#129`
+      Notes              -> Specs, ticked on a hull that HAS one (Aegis Gladius
+                            Dunlevy) rather than one that does not
+      Status             -> header, "Purchasable in-game" / "Concept / pledge
+                            only" - index.html's badge
+      Role, Manufacturer -> header
+      Model folder       -> Specs
+      Related ships      -> the foot of the ship page, and they LINK TO THE
+                            SHIP PAGE rather than back to a list
+    THE ONE FIELD THAT DID NOT SURVIVE, AND IT NEVER EXISTED: the site's own
+    `last_verified_patch` IS NULL ON ALL 254 RECORDS. index.html rendered "Last
+    verified: not recorded" for every ship in the fleet, every time anybody
+    opened one. There was nothing to move. The ship page states the SNAPSHOT's
+    patch instead - 4.9 - which is a real figure it has always had. The site
+    field renders only if it ever becomes non-null, and says which of the two
+    it is. Asserted as an absence so it cannot be quietly "fixed" by writing a
+    plausible value into it.
+    THE BUILD REFUSES TO SHIP A DROPPED FIELD. `build_deploy.py` counts how
+    many ships each field reached and EXITS if a field that exists on the site
+    records reaches zero. A consolidation that loses a column otherwise looks
+    exactly like a clean build.
+    Carried: 221 ships. record 221, confidence 221, status 221, role 221,
+    manufacturer 221, name 221, in-game price 179, sold at 179, pledge price
+    138, notes 56.

@@ -752,6 +752,65 @@ for _rid, _cls in _link.items():
     _u = _pledge_by_id.get(str(_rid))
     if _u:
         _rsi_by_class[_cls] = _u
+
+# ---------------------------------------------------------------------------
+# N2. THE ACQUISITION BLOCK MOVES TO THE SHIP PAGE. LOSE NOTHING.
+#
+# index.html's ship panel is being retired (N1/N3), and everything it showed has
+# to arrive on the ship page rather than quietly stop existing. That is a
+# CONSOLIDATION, and the failure mode of a consolidation is a field nobody
+# notices is gone - so every field is carried by name here and ticked off in
+# the ledger one at a time.
+#
+# Keyed on ClassName through the SAME id-to-id join as the model and the RSI
+# link. 22 display names are shared by 51 records, so a name-keyed join would
+# put one Hammerhead's price on the other one.
+_FIELD_MAP = [
+    # (site record key, emitted key, what it is)
+    ('id',                  'rec',   'record number'),
+    ('auec_price',          'auec',  'in-game price'),
+    ('pledge_price_usd',    'usd',   'pledge price'),
+    ('dealers',             'sold',  'sold at'),
+    ('confidence',          'conf',  'confidence'),
+    ('last_verified_patch', 'lvp',   'last verified'),
+    ('notes',               'note',  'notes'),
+    ('status',              'stat',  'purchasable / pledge only'),
+    ('role',                'srole', "the site's own role text"),
+    ('manufacturer',        'smfr',  "the site's own manufacturer text"),
+    ('name',                'sname', 'the site display name, for Related'),
+]
+_site_by_id = {str(_s['id']): _s for _s in _site_ships}
+_info_by_class, _field_seen = {}, {k: 0 for _k, k, _w in _FIELD_MAP}
+for _rid, _cls in _link.items():
+    _rec = _site_by_id.get(str(_rid))
+    if not _rec:
+        continue
+    _out = {}
+    for _src_key, _dst_key, _what in _FIELD_MAP:
+        _v = _rec.get(_src_key)
+        # An empty string, an empty list and None are all "not stated" and are
+        # dropped - the page says nothing rather than rendering a blank row.
+        if _v is None or _v == '' or _v == []:
+            continue
+        _out[_dst_key] = _v
+        _field_seen[_dst_key] += 1
+    if _out:
+        _info_by_class[_cls] = _out
+
+# EVERY FIELD MUST HAVE LANDED SOMEWHERE. A field that is present on the site
+# records and reaches ZERO ships has been dropped by this move - which is the
+# exact defect N2 exists to catch, and it would otherwise look like a clean
+# build.
+_dropped = [w for _s, k, w in _FIELD_MAP
+            if _field_seen[k] == 0
+            and any(_r.get(_s) not in (None, '', []) for _r in _site_ships)]
+if _dropped:
+    sys.exit("N2 FIELD DROPPED IN THE MOVE: %s. These exist on the site's ship "
+             "records and reached no ship on the ship page. Nothing was written."
+             % ', '.join(_dropped))
+print('ship-page acquisition data: %d ships; fields carried: %s'
+      % (len(_info_by_class),
+         ', '.join('%s %d' % (w, _field_seen[k]) for _s, k, w in _FIELD_MAP)))
 for _rid, _cls in _link.items():
     _dir = _cc.get(str(_rid))
     if _dir and safe(_dir) + '.glb' in have:
@@ -797,11 +856,22 @@ _model_js = (
     '   travels with the ship and stays clearly available on its page. Keyed on\n'
     '   ClassName through the same id-to-id join as the model. */\n'
     'const LOADOUT_RSI=%s;\n'
+    '/* N2: THE ACQUISITION BLOCK, moved off index.html rather than dropped.\n'
+    '   In-game price, pledge price, sold at, confidence, last verified,\n'
+    '   record number, notes, status, and the site\'s own role, manufacturer\n'
+    '   and display name. Keyed on ClassName through the same id-to-id join as\n'
+    '   the model, because 22 display names are shared by 51 records.\n'
+    '   The build REFUSES to write this file if a field that exists on the site\n'
+    '   records reaches zero ships - a field silently lost in a consolidation\n'
+    '   is exactly what N2 exists to catch. */\n'
+    'const LOADOUT_INFO=%s;\n'
     % (len(_model_by_class), len(_link),
        json.dumps(_model_by_class, ensure_ascii=True, sort_keys=True,
                   separators=(',', ':')).replace('<', r'<'),
        json.dumps(_MODEL_DEV),
        json.dumps(_rsi_by_class, ensure_ascii=True, sort_keys=True,
+                  separators=(',', ':')).replace('<', r'<'),
+       json.dumps(_info_by_class, ensure_ascii=True, sort_keys=True,
                   separators=(',', ':')).replace('<', r'<')))
 open(os.path.join(SRC, 'loadout_model.gen.js'), 'w',
      encoding='utf-8', newline='\n').write(_model_js)

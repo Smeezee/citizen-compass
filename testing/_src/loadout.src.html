@@ -211,6 +211,40 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .stat.explained:focus-within .why{display:block}
 .relay:focus .where{color:var(--accent2)}
 
+/* N2: the acquisition strip. Price first, because it is what a lot of people
+   came for and it used to be one page further in. */
+.top .spacer{flex:1 1 auto}
+.top h1{font-size:21px;margin:0;white-space:nowrap;overflow:hidden;
+ text-overflow:ellipsis;max-width:42vw}
+.acq{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+ gap:10px;margin-bottom:13px}
+.acq .a{background:var(--panel);border:1px solid var(--line);border-radius:9px;
+ padding:9px 12px}
+.acq .a .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;
+ letter-spacing:.04em}
+.acq .a .v{font:700 16px inherit;margin-top:3px}
+.acq .a .v.big{font-size:19px;color:var(--accent2)}
+.acq .a .v.amber{color:var(--b)}
+.acq .a .v.none{font-weight:400;font-size:13.5px;color:var(--muted);font-style:italic}
+
+.dealers{display:flex;flex-wrap:wrap;gap:7px}
+.dealers span{background:var(--panel2);border:1px solid var(--line);
+ border-radius:6px;padding:5px 10px;font-size:13px}
+
+.recrow{display:flex;flex-wrap:wrap;gap:14px;margin-top:11px;padding-top:10px;
+ border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.recrow b{color:var(--text)}
+
+.related{margin-top:13px;display:flex;flex-wrap:wrap;align-items:center;gap:7px;
+ padding:11px 13px;background:var(--panel);border:1px solid var(--line);
+ border-radius:11px}
+.related:empty{display:none}
+.related .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;
+ letter-spacing:.04em;margin-right:4px}
+.related a{background:var(--panel2);border:1px solid var(--line);border-radius:6px;
+ padding:5px 10px;font-size:13px;color:var(--text);text-decoration:none}
+.related a:hover{border-color:var(--accent);color:var(--accent)}
+
 /* THE FUSE GAUGE. One bar per fuse slot that exists - see renderEngineering()
    for why there are no empty positions. */
 .relays{display:flex;flex-direction:column;gap:5px}
@@ -237,16 +271,19 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
 </style>
 
 <div class="top">
-  <a href="index.html" style="text-decoration:none;font-weight:700">&larr; Back</a>
-  <h1>Loadout Bench</h1>
+  <a href="index.html" style="text-decoration:none;font-weight:700">&larr; All ships</a>
+  <h1 id="shipname">Ship</h1>
   <select id="ship"></select>
-  <button class="btn blue on" id="edA">Editing A</button>
-  <button class="btn orange" id="edB">Editing B</button>
-  <button class="btn" id="copyA">Copy A &rarr; B</button>
+  <span class="spacer"></span>
   <button class="btn" id="share">Copy share link</button>
   <a class="rsi" id="rsi" target="_blank" rel="noopener">View on RSI</a>
-  <span class="prov" id="prov"></span>
 </div>
+
+<!-- N2: PRICE AND PLEDGE PRICE, at the top of the ship page.
+     They were the first thing index.html's Acquisition panel showed, and they
+     are the reason a lot of people arrive. So they arrive with the ship rather
+     than being one page further in. -->
+<div class="acq" id="acq"></div>
 
 <div class="shipstate" id="shipstate"></div>
 
@@ -310,6 +347,10 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
 </div><!-- /pane-crew -->
 
 <div class="note" id="sourcenote"></div>
+
+<!-- N2: RELATED SHIPS, at the foot of the ship page where index.html had them
+     at the foot of its panel. Same place in the reading order, different page. -->
+<div class="related" id="related"></div>
 
 <footer>
 This is an unofficial Star Citizen fan site, not affiliated with the Cloud Imperium group of
@@ -455,9 +496,6 @@ function fillShipList(){
 /* PROVENANCE, ON THE PAGE RATHER THAN IN A COMMENT. The site's premise is that
    a reader can tell where a number came from. */
 function fillProvenance(){
-  const p=$('prov');
-  if(p) p.textContent="snapshot "+(META.snapshot||"unknown")+" · patch "+
-    (META.last_verified_patch||"?");
   const n=$('sourcenote');
   if(!n) return;
   n.innerHTML=`<strong>Where these numbers come from.</strong>
@@ -488,7 +526,31 @@ function fillProvenance(){
     components in CIG's data — that is a category boundary, not missing data.
     ${META.ports_with_no_part?`${META.ports_with_no_part} ports on this dataset
     accept a component type that has no matching part in the game files at that
-    size; they are shown, and they say so, rather than opening an empty window.`:""}`;
+    size; they are shown, and they say so, rather than opening an empty window.`:""}
+    <div class="recrow" id="recrow"></div>`;
+  renderRecord();
+}
+
+/* N2: CONFIDENCE, LAST VERIFIED and RECORD NUMBER - index.html's "Record"
+   panel, folded in with the provenance this page already shows rather than
+   given a second treatment of its own. One provenance voice, not two.
+
+   LAST VERIFIED IS NOT WHAT IT LOOKED LIKE. The site's own
+   `last_verified_patch` is NULL ON ALL 254 RECORDS - index.html rendered "Last
+   verified: not recorded" for every ship in the fleet, every time. So the
+   honest figure is the SNAPSHOT's patch, which this page has always had and
+   which is a real answer. The site field is shown only if it ever becomes
+   non-null, and says which of the two it is. */
+function renderRecord(){
+  const el=$('recrow'); if(!el) return;
+  const i=info();
+  const bits=[];
+  if(i.conf) bits.push(`<span>Confidence <b>${i.conf}</b></span>`);
+  bits.push(`<span>Components last verified against patch
+    <b>${META.last_verified_patch||"?"}</b></span>`);
+  if(i.lvp) bits.push(`<span>Site record last verified <b>${i.lvp}</b></span>`);
+  if(i.rec!=null) bits.push(`<span>Record <b>#${i.rec}</b></span>`);
+  el.innerHTML=bits.join("");
 }
 
 function stockBuild(){const o={};ship().slots.forEach(s=>{if(swappable(s))o[s.id]=s.stock;});return o;}
@@ -1107,6 +1169,17 @@ function renderBuy(){
      component to a UEX shop item. Two real datasets with no verified bridge
      between them is a different fact from "we have no prices", and the second
      one would be a lie. */
+  /* N2: SOLD AT. index.html listed the in-game dealers that stock this hull;
+     the order puts them on this tab, which exists for exactly this. */
+  const dealers=info().sold||[];
+  if(dealers.length){
+    h+=`<h2>Sold at</h2><p class="sub2">In-game dealers that stock this hull.</p>
+      <div class="dealers">${dealers.map(d=>`<span>${d}</span>`).join("")}</div>`;
+  }else{
+    h+=`<h2>Sold at</h2><p class="gap">No in-game dealer is recorded for this
+      hull. That is an absence in our records, not a statement that nobody
+      sells it.</p>`;
+  }
   h+=`<div class="trip"><strong>Where the shop data actually is.</strong>
       This site does hold real shop and price data &mdash;
       <a href="find.html">FIND</a> carries terminals, categories and prices
@@ -1239,6 +1312,48 @@ function showModel(){
 
    MARKERS STAY WEAPONS-ONLY. Internal ports are reached from the list. Settled. */
 const RSI=(typeof LOADOUT_RSI!=='undefined')?LOADOUT_RSI:{};
+
+/* N2: EVERYTHING index.html's SHIP PANEL SHOWED, now shown here.
+   That panel is retired (N1/N3), so this is not a copy - it is the only place
+   these facts appear. Each field is carried by name, and the build refuses to
+   write LOADOUT_INFO at all if one of them reaches zero ships. */
+const INFO=(typeof LOADOUT_INFO!=='undefined')?LOADOUT_INFO:{};
+const info=()=>INFO[shipId]||{};
+const money=n=>n==null?null:Number(n).toLocaleString();
+
+function renderAcq(){
+  const el=$('acq'); if(!el) return;
+  const i=info(), sh=ship();
+  const bits=[];
+  /* IN-GAME PRICE and PLEDGE PRICE. A ship with neither says so once, rather
+     than showing two empty rows - index.html showed "not purchasable in-game"
+     and "no listed pledge price" as separate lines, which is two sentences to
+     say one thing. */
+  bits.push(`<div class="a"><div class="k">In-game price</div>
+    <div class="v${i.auec?' big':' none'}">${i.auec?money(i.auec)+" aUEC":"not purchasable in-game"}</div></div>`);
+  bits.push(`<div class="a"><div class="k">Pledge price</div>
+    <div class="v${i.usd?' amber':' none'}">${i.usd?"$"+Number(i.usd).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):"no listed pledge price"}</div></div>`);
+  if(i.stat) bits.push(`<div class="a"><div class="k">Status</div>
+    <div class="v">${i.stat==="purchasable"?"Purchasable in-game":"Concept / pledge only"}</div></div>`);
+  bits.push(`<div class="a"><div class="k">Manufacturer</div>
+    <div class="v">${sh.m||i.smfr||"\u2014"}</div></div>`);
+  if(sh.role||i.srole) bits.push(`<div class="a"><div class="k">Role</div>
+    <div class="v">${sh.role||i.srole}</div></div>`);
+  el.innerHTML=bits.join("");
+}
+
+/* N2: RELATED SHIPS. index.html picked ships sharing a manufacturer or a role;
+   the same rule, on the ship page, linking to the ship page. */
+function renderRelated(){
+  const el=$('related'); if(!el) return;
+  const sh=ship();
+  const rel=Object.keys(SHIPS).filter(k=>k!==shipId&&(SHIPS[k].slots||[]).length&&
+      (SHIPS[k].m===sh.m||(sh.role&&SHIPS[k].role===sh.role))).slice(0,14);
+  if(!rel.length){ el.innerHTML=""; return; }
+  el.innerHTML=`<span class="lbl">Related</span>`+
+    rel.map(k=>`<a href="#${k}" data-ship="${k}">${shipLabel(k)}</a>`).join("");
+}
+
 /* A ship with no pledge page shows NO link rather than a dead one. An empty
    link that goes nowhere reads as the site being broken. */
 function renderRsi(){
@@ -1405,7 +1520,10 @@ function openTab(id,fromHash){
 function renderAll(){
   renderStats();renderCol("A");renderCol("B");renderPicker();renderBuy();
   renderMatchup();renderLiveries();renderShipState();renderSpecs();
-  renderTabs();showModel();renderMarkers();renderRsi();writeHash();
+  renderTabs();showModel();renderMarkers();renderRsi();
+  renderAcq();renderRelated();renderRecord();
+  $('shipname').textContent=shipLabel(shipId);
+  writeHash();
 }
 
 /* SPECS. Dimensions, mass, career and role - the plain facts, all of them
@@ -1430,7 +1548,11 @@ function renderSpecs(){
       ${row("Size class",sh.size,"")}
       ${row("SCM speed",c.scm,"m/s")}
       ${row("Max speed",c.vmax,"m/s")}
-    </div>`;
+    </div>
+    ${info().note?`<h3>Notes</h3><p class="sub2">${info().note}</p>`:""}
+    <h3>Model</h3><p class="sub2">${MODELS[shipId]
+      ? `3D model file <b>${MODELS[shipId]}</b>.`
+      : "No 3D model file is matched to this hull."}</p>`;
 }
 fillShipList();fillProvenance();
 
@@ -1451,6 +1573,9 @@ document.addEventListener('click',e=>{
     if(!s) return;
     if(!swappable(s)){ sel=null; renderPicker(); flashFixed(sl, s); return; }
     selectPort(s, sl.dataset.col||editing); return;}
+  const rl=e.target.closest('.related a[data-ship]');
+  if(rl){ e.preventDefault(); shipId=rl.dataset.ship; reset(); tab="loadout";
+    renderAll(); return; }
   const tb=e.target.closest('.tabs a[data-tab]');
   if(tb){ e.preventDefault(); openTab(tb.dataset.tab); return; }
   const es=e.target.closest('.sortrow button[data-e]');
