@@ -149,6 +149,11 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .paint{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
 .paint b{display:block;font-size:13.5px;font-weight:600}
 .paint small{color:var(--muted);font-size:11.5px}
+.signote{margin-top:10px;padding:8px 11px;background:var(--panel2);
+ border-left:3px solid var(--accent2);border-radius:0 7px 7px 0;
+ font-size:13px;color:var(--muted)}
+.signote:empty{display:none}
+#pools:empty{display:none}
 .shipstate{margin-bottom:13px;padding:11px 13px;background:#1A1206;
  border:1px solid #4A3410;border-radius:8px;font-size:14px;color:#E8C9A0;display:none}
 
@@ -172,6 +177,7 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
 <div class="outcome">
   <h2>Everything that moves — A vs B</h2>
   <div class="stats" id="stats"></div>
+  <div class="signote" id="signote"></div>
   <div class="budgets" id="budgets"></div>
 </div>
 
@@ -180,6 +186,8 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
   <div class="col b" id="colB"></div>
   <div class="picker" id="picker"></div>
 </div>
+
+<div class="panel" id="pools"></div>
 
 <div class="panel" id="armour"></div>
 
@@ -353,7 +361,8 @@ function reset(){A=stockBuild();B=stockBuild();sel=null;}
 function calc(build,over){
   const sh=ship();
   let r={dps:0,alpha:0,ehp:0,regen:0,ir:0,em:0,pw:0,cap:0,ht:0,cool:0,qt:0,
-         scu:0,mass:0,parts:0,mix:{}};
+         scu:0,mass:0,parts:0,mix:{},
+         sens:0,pierce:0,mrate:0,mrange:0,force:0,beam:0,life:0};
   sh.slots.forEach(s=>{
     let id = swappable(s) ? build[s.id] : s.stock;
     if(over&&over.slot===s.id) id=over.part;
@@ -374,6 +383,18 @@ function calc(build,over){
     r.ir+=p.ir||0; r.em+=p.em||0;
     r.pw+=p.pw||0; r.cap+=p.cap||0; r.ht+=p.ht||0; r.cool+=p.cool||0;
     r.scu+=p.scu||0;
+    /* DETECTION, MINING, SALVAGE AND LIFE SUPPORT - the rest of L6's list.
+       BEST-OF rather than a sum, because two radars do not see twice as far
+       and two mining heads do not stack their range. Throughput DOES add, so
+       it is summed. Which of the two a figure is decides whether the readout
+       is arithmetic or nonsense. */
+    if(p.sens)   r.sens  = Math.max(r.sens,  p.sens);
+    if(p.pierce) r.pierce= Math.max(r.pierce,p.pierce);
+    if(p.mrange) r.mrange= Math.max(r.mrange,p.mrange);
+    if(p.beam)   r.beam  = Math.max(r.beam,  p.beam);
+    if(p.force)  r.force = Math.max(r.force, p.force);
+    r.mrate+=p.mrate||0;
+    if(s.t==="lsg") r.life++;
     /* MASS IS A REAL COUPLING (L6). Fitted parts change the ship's total mass,
        and since thrusters are effectively fixed, mass is the main lever a
        player has left over agility - which makes it more important than it
@@ -459,9 +480,46 @@ function renderStats(){
   if(cig.qfuel!=null)
     h+= stat("Quantum fuel",cig.qfuel,cig.qfuel,"capacity",false,false,null,true,true);
   if(sh.crew!=null)
-    h+= stat("Crew",sh.crew,sh.crew,(sh.seats?sh.seats+" seats · ":"")+"life support and stations",
+    h+= stat("Crew",sh.crew,sh.crew,(sh.seats?sh.seats+" seats · ":"")+"stations",
              false,false,null,true,true);
+  if(ra.life||rb.life)
+    h+= stat("Life support",ra.life,rb.life,"generators fitted",false,false,null,false,false);
+  /* --- detection ----------------------------------------------------- */
+  if(ra.sens||rb.sens){
+    h+= stat("Radar sensitivity",ra.sens,rb.sens,"how faint a contact it picks up",
+             false,false,null,false,false);
+    h+= stat("Radar piercing",ra.pierce,rb.pierce,"how much cover it sees through",
+             false,false,null,false,false);
+  }
+  /* --- industry ------------------------------------------------------- */
+  if(ra.mrate||rb.mrate){
+    h+= stat("Mining throughput",ra.mrate,rb.mrate,"extraction rate, summed across heads",
+             false,false,null,false,false);
+    h+= stat("Mining range",ra.mrange,rb.mrange,"m · best head fitted",false,false,null,false,false);
+  }
+  if(ra.beam||rb.beam)
+    h+= stat("Beam range",ra.beam,rb.beam,"m · salvage or tractor · best fitted",
+             false,false,null,false,false);
+  if(ra.force||rb.force)
+    h+= stat("Beam force",ra.force,rb.force,"N · best fitted",false,false,null,false,false);
   $('stats').innerHTML=h;
+
+  /* ARMOUR'S SIGNAL MULTIPLIERS BELONG WITH THE SIGNATURE, not only in the
+     armour panel. L6 lists them under signature explicitly, and a reader
+     comparing two builds' IR should see that the hull itself is multiplying
+     it. */
+  const arm=sh.arm&&ARMOR[sh.arm], sm=arm&&arm.sm;
+  const sigNote=$('signote');
+  if(sigNote){
+    sigNote.innerHTML = sm
+      ? `<b>${arm.n}</b> multiplies this hull's signature before anything else:
+         ${["Infrared","Electromagnetic","CrossSection"].filter(k=>sm[k]!=null)
+           .map(k=>`${k==="CrossSection"?"cross-section":k.toLowerCase()}
+           <b>${Math.round(sm[k]*100)}%</b>`).join(" · ")}.
+         Armour moves stealth, so the numbers above are what the components do
+         and this is what the hull does to them.`
+      : "";
+  }
 
   /* --- the two budgets that can actually be blown ---------------------- */
   const pw=Math.min(200,Math.round(rb.pw/Math.max(rb.cap,1)*100));
@@ -475,6 +533,22 @@ function renderStats(){
      <div class="v">${fmt(rb.ht)} / ${fmt(rb.cool)}</div>
      <div class="bar"><i class="${cl>100?'over':''}" style="width:${Math.min(cl,100)}%"></i></div>
      <div class="sub" style="${cl>100?'color:var(--bad)':''}">${cl}% used${cl>100?" — this build overheats":""}</div></div>`;
+
+  /* POWER POOLS. CIG caps power allocation PER ITEM TYPE, so a ship with
+     plenty of generation can still be unable to feed its guns. A cap of -1
+     means no cap and is not emitted at all rather than shown as a negative. */
+  const pools=(cig.pools)||null, pe=$('pools');
+  if(pe){
+    pe.innerHTML = pools
+      ? `<h2>Power pools — CIG's per-type caps</h2>
+         <p class="sub2">Power is not one budget. CIG allocates it by component
+         type, so a hull with generation to spare can still be unable to feed a
+         bigger gun. Types with no cap are not listed.</p>
+         <div class="resrow">${Object.keys(pools).sort().map(k=>
+           `<div class="res"><div class="k">${k}</div><div class="v">${pools[k]}</div>
+            <div class="s">max size</div></div>`).join("")}</div>`
+      : "";
+  }
 
   renderArmour();
 }

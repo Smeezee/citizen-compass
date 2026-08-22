@@ -432,11 +432,56 @@ def part_record(it, type_name):
     rec["em"] = r2(num(e.get("Maximum")) if isinstance(e, dict) else num(e))
     rec["ir"] = r2(num(em.get("Ir")))
 
-    # Cargo, so a container or grid says what it is worth carrying.
-    ct = dict_or_none(st.get("Container")) or dict_or_none(st.get("Cargo")) or {}
-    scu = num(ct.get("SCU")) or num(ct.get("Capacity"))
-    if scu:
-        rec["scu"] = r2(scu)
+    # DETECTION. A radar's sensitivity and piercing are how far it sees and
+    # through how much cover - the "detection" half of L6. Carried as the two
+    # aggregate numbers rather than the full 8-entry SignatureDetection table,
+    # which the readout does not use and which would be 77 x 8 rows of ballast.
+    rd = dict_or_none(st.get("Radar"))
+    if rd:
+        sens = dict_or_none(rd.get("Sensitivity")) or {}
+        pier = dict_or_none(rd.get("Piercing")) or {}
+        v = [num(x) for x in sens.values() if num(x) is not None]
+        if v:
+            rec["sens"] = r2(sum(v) / len(v))
+        v = [num(x) for x in pier.values() if num(x) is not None]
+        if v:
+            rec["pierce"] = r2(sum(v) / len(v))
+        rec["rcool"] = r2(num(rd.get("Cooldown")))
+
+    # MINING. Throughput and range are what a player picks a head for.
+    ml = dict_or_none(st.get("MiningLaser"))
+    if ml:
+        rec["mrate"] = r2(num(ml.get("ExtractionThroughput")))
+        rec["mrange"] = r2(num(ml.get("MaximumRange")))
+        mods = dict_or_none(ml.get("Modifiers")) or {}
+        mm = {k: r2(num(v)) for k, v in mods.items() if num(v) is not None}
+        if mm:
+            rec["mmod"] = mm
+
+    # SALVAGE AND TRACTOR both live under TractorBeam - a salvage head is a
+    # beam with a different job, which is CIG's modelling and not ours.
+    tb = dict_or_none(st.get("TractorBeam"))
+    if tb:
+        rec["force"] = r2(num(tb.get("MaxForce")))
+        rec["beam"] = r2(num(tb.get("MaxDistance")))
+
+    # CARGO, and it is NOT where you would first look. A cargo grid states no
+    # SCU figure at all - `InventoryOccupancy` is how much room the GRID ITSELF
+    # takes up, which is a different question and reads as 0 for every one of
+    # the 143 grids. What a grid holds is stated by its DIMENSIONS, in the
+    # game's 1.25m cargo unit: 2.5 x 1.25 x 1.25 is 2 x 1 x 1 = 2 SCU.
+    #
+    # Written down because reading InventoryOccupancy.SCU here would have put
+    # "0 SCU" on every container on the site, and 0 is a number somebody
+    # believes.
+    ic = dict_or_none(st.get("InventoryContainer"))
+    if ic:
+        d = [num(ic.get(k)) for k in ("X", "Y", "Z")]
+        if all(v is not None and v > 0 for v in d):
+            units = 1
+            for v in d:
+                units *= max(1, int(round(v / 1.25)))
+            rec["scu"] = units
 
     # Power draw and generation both live in the resource network.
     # THE RESOURCE NETWORK CARRIES THREE KINDS OF DELTA, not two.
@@ -596,9 +641,18 @@ def cig_aggregates(s):
     if power:
         cig["pw"] = r2(num(power.get("UsedSegmentsShields")))
         cig["cap"] = r2(num(power.get("GenerationSegments")))
+    # POWER POOLS. CIG allocates power by ITEM TYPE with a size cap, and -1
+    # means "no cap" rather than "no power" - reading it as a number would put
+    # a negative allocation on the page. Only the real caps are carried.
     pools = dict_or_none(s.get("PowerPools"))
     if pools:
-        cig["pool"] = r2(num(pools.get("Total")) or num(pools.get("Pool")))
+        pp = {}
+        for k, v in pools.items():
+            sz = num((v or {}).get("Size")) if isinstance(v, dict) else None
+            if sz is not None and sz >= 0:
+                pp[k] = r2(sz)
+        if pp:
+            cig["pools"] = pp
     cooling = dict_or_none(s.get("Cooling"))
     if cooling:
         cig["ht"] = r2(num(cooling.get("UsedSegmentsShields")))

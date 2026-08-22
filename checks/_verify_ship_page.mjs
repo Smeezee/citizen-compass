@@ -285,6 +285,45 @@ record(el("budgets").innerHTML.includes("Power draw") &&
        el("budgets").innerHTML.includes("Cooling"),
   "power draw against output and heat against cooling are both shown");
 
+// L6 NAMES A LONGER LIST THAN THE SIX ABOVE, and the rest only appear on hulls
+// that have the hardware. Asserting them on one ship would either fail for the
+// right reason or pass for the wrong one, so each is proven on a hull chosen
+// BY MEASUREMENT as one that actually carries it.
+const dims = [
+  ["Radar sensitivity", "sens",   "detection"],
+  ["Mining throughput", "mrate",  "mining"],
+  ["Beam range",        "beam",   "salvage and tractor"],
+  ["Fitted containers", "scu",    "swappable cargo"],
+];
+for (const [label, field, what] of dims) {
+  const k = Object.keys(SHIPS).find(k =>
+    (SHIPS[k].slots || []).some(sl => {
+      const id = sl.fit ? sl.stock : sl.stock;
+      return id && PARTS[id] && PARTS[id][field];
+    }));
+  if (!k) { record(false, `a hull exists that carries ${what}`); continue; }
+  vm.runInContext(`shipId=${JSON.stringify(k)};reset();renderAll();`, sandbox);
+  record(el("stats").innerHTML.includes(label),
+    `${what} is in the readout, on a hull that has it (${SHIPS[k].n})`);
+}
+// Power pools: CIG caps power by item type, and a ship with generation to
+// spare can still be unable to feed a bigger gun.
+{
+  const k = Object.keys(SHIPS).find(k => (SHIPS[k].cig || {}).pools);
+  record(!!k, "a hull states CIG's per-type power pools");
+  vm.runInContext(`shipId=${JSON.stringify(k)};reset();renderAll();`, sandbox);
+  record(el("pools").innerHTML.includes("Power pools"),
+    `the per-type power caps are shown (${SHIPS[k].n})`);
+  record(!/-1/.test(el("pools").innerHTML),
+    "and an uncapped type is omitted rather than shown as -1");
+}
+// Armour's signal multipliers belong with the signature, not only in the
+// armour panel - L6 lists them under signature explicitly.
+vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();renderAll();`, sandbox);
+record(/multiplies this hull's signature/.test(el("signote").innerHTML),
+  "armour's SIGNAL multipliers are shown alongside the signature readout");
+
+
 // MASS MOVES WHEN A PART IS SWAPPED. Stating a mass that never changes would
 // be worse than omitting it.
 const m0 = g("calc(A).mass");

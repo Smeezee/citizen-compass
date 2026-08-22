@@ -2708,7 +2708,7 @@ L4  DONE  9d86082  A FIXED PORT IS SHOWN, COUNTS, AND OPENS NO PICKER - three
     reached the named slot, removes it and confirms it is gone. When CIG opens
     a port, that is a data edit and nothing else.
 
-L5  DONE  <sha>  ARMOUR. FIXED, NO PICKER, AND IT MOVES TWO THINGS THE PAGE HAD
+L5  DONE  b602193  ARMOUR. FIXED, NO PICKER, AND IT MOVES TWO THINGS THE PAGE HAD
     NO WAY TO SAY BEFORE.
     HOW THE 77 UNTAGGED ARMOUR ITEMS ATTACH - the order asked, and the answer
     is that THE QUESTION HAS A DIFFERENT SHAPE THAN EXPECTED. `RequiredTags` is
@@ -2753,3 +2753,39 @@ L5  DONE  <sha>  ARMOUR. FIXED, NO PICKER, AND IT MOVES TWO THINGS THE PAGE HAD
     including one that SEARCHES for a weapon and two hulls that differ by more
     than 5% and FAILS if no such pair exists - so the claim cannot pass while
     being empty.
+
+L6  DONE  <sha>  THE READOUT SHOWS EVERYTHING THAT MOVES, AT ONCE.
+    Was five stats and two budgets. Now: sustained DPS, alpha, effective HP,
+    shield regen, IR, EM, distortion pool, quantum range, SCM and max speed,
+    TOTAL MASS, cargo, fitted container SCU, fuel, quantum fuel, crew and
+    seats, life support, radar sensitivity and piercing, mining throughput and
+    range, beam range and force - plus power draw against generation, heat
+    against cooling, CIG'S PER-TYPE POWER POOLS, and armour's signal
+    multipliers sitting with the signature where L6 puts them.
+    Stock versus current on each, with the CIG/summed badge on both.
+    MASS IS NOT DROPPED, and it is the one the order singles out. The page
+    carries the hull's own mass plus every fitted part, so a swap moves it -
+    and since thrusters are effectively fixed, mass is the main lever a player
+    has left over agility. Lower is better, so the arrow points that way.
+    THE ORDER'S CONTROL, IN WORDS: on the Aegis Avenger Stalker, fitting a
+    REVENANT GATLING at `hardpoint_weapon_gun_class1_right_wing` RAISES dps,
+    alpha, EM and power draw and LOWERS total mass. More gun, more draw, more
+    noise, less weight - four readouts, two directions, one click. Found by
+    SEARCHING every editable port and every part it admits rather than by
+    naming a swap and hoping, and the control FAILS if no such pair exists.
+    TWO THINGS THAT WOULD HAVE PUT A WRONG NUMBER ON THE PAGE:
+      1. A CARGO GRID STATES NO SCU. `InventoryOccupancy` is how much room the
+         GRID takes up, not what it holds, and it reads 0 for all 143 grids.
+         Capacity is stated by DIMENSIONS in the game's 1.25m unit - 2.5 x 1.25
+         x 1.25 is 2 SCU. Reading the obvious field would have printed "0 SCU"
+         on every container on the site, and 0 is a number somebody believes.
+      2. POWER POOLS USE -1 FOR "NO CAP". Rendering it as a number puts a
+         negative power allocation on the page. Uncapped types are omitted, and
+         the control asserts no "-1" reaches the rendered HTML.
+    BEST-OF vs SUM, decided per figure rather than uniformly: two radars do not
+    see twice as far and two mining heads do not stack their range, so those
+    are best-of; extraction throughput does add, so it is summed. Getting that
+    backwards is arithmetic that looks fine.
+    CONTROL: 67 assertions now. Each of detection, mining, salvage and cargo is
+    proven ON A HULL MEASURED TO CARRY IT rather than on one ship that would
+    either fail for the right reason or pass for the wrong one.
