@@ -115,15 +115,45 @@ its beds and its bay, not because of anything you bolt on. So the ship page
 must **say that** rather than offer a dead control — and today it offers no
 control at all, which is correct but silent. **Saying it is the work.**
 
-### Ship page payload
+### Ship-page layers that exist as shells
 
-The default ship page ships **3.5 MB raw / 275 KB gzipped** of loadout data,
-against 431 KB / 37 KB before this order. The growth is scope, not bloat — 25,875
-ports instead of ~4,300 slots of five types — but it all arrives whether or not
-anybody opens a tab.
+The ship page is tabbed layers with per-layer lazy loading. Some layers are
+built, some are a mechanism waiting for data.
 
-**The addendum's per-layer loading (§2, M1) is the answer to this**, and it is
-measured there rather than assumed here.
+| Layer | State | Number |
+|---|---|---:|
+| **Loadout** | built, and it is the default view | 25,875 ports |
+| **Engineering** | built — relays and fuse slots | 678 relays / 1,419 fuses on 305 hulls |
+| **Liveries** | built | 915 liveries in 104 hull sets |
+| **Specs** | built | dimensions, mass, career, role on 316 |
+| **Where to buy** | built as far as the data honestly allows | says what is known and links to FIND |
+| **Crew** | **SHELL. No data. Suppressed on all 316 ships.** | 802 seat ports exist and are unread |
+
+**A shell is not a gap in the site; it is a gap in this list.** The Crew tab
+appears on no ship, so nobody meets an empty layer. What it costs is that 802
+seat ports, 387 pilot seats and 140 bedding positions are in the snapshot and
+nothing reads them. `docs/IDEA_unused-ship-data.md` §1 is the design.
+
+**DOES NOT BLOCK.**
+
+### The ship page's payload, and the change that would actually fix it
+
+Per-layer lazy loading is built and it saves **4.4 KB of a 274.8 KB page** —
+1.6%. The weight is not in the layers, it is in the ships.
+
+| | gzipped |
+|---|---:|
+| what the page loads today | 274.8 KB |
+| one ship's complete bundle, median | 10.1 KB |
+| the ship index for the picker | 3.6 KB |
+| **a page that loaded one ship** | **~14 KB** |
+
+**Loading one ship instead of 316 is a 95% cut.** It is not built: 316
+generated files, and it touches the deploy guard's allowed-file list. It is a
+decision, not an oversight.
+
+**DOES NOT BLOCK** — but it is the largest single improvement available to
+this page and it is cheap to describe and moderate to build.
 
 ---
 
@@ -139,6 +169,19 @@ them apart.
 
 **Check for it wherever ships are grouped, joined or counted anywhere in this
 project.** It is not on this list once; it is a thing to look for.
+
+**Places to look, because this list should name them rather than gesture:**
+
+- any `dict`/`Map` keyed on a ship's display name
+- any `SHIPS.find(s => s.name === label)` — index.html had one, and it is why
+  `CC_LOOKUP` and `ship_resolution.json` exist
+- any `GROUP BY` on a name column in the database
+- any report that counts "ships" and gets 287 instead of 316
+- any join between two datasets that meets in the middle on a name
+
+**The tell is a count that is lower than it should be and looks plausible.**
+316 records becoming 287 does not throw, does not warn, and looks like a
+reasonable number of ships.
 
 The same shape one level down: **a hardpoint name is not unique within a
 ship.** 287 of 316 hulls have slots sharing one, 11,283 slots in all, and the

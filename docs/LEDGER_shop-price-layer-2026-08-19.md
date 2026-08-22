@@ -3087,7 +3087,7 @@ L16 DONE  a2c822e  THE PRE-LIVE PUNCH LIST EXISTS, AND `CURRENT-STATE.md` IS BAC
     to be checked wherever ships are grouped anywhere in the project, plus its
     one-level-down twin, hardpoint-name-vs-PortId.
 
-M1  DONE  <sha>  THE TAB SHELL, WITH PER-LAYER LAZY LOADING - and section 5's
+M1  DONE  502f9e2  THE TAB SHELL, WITH PER-LAYER LAZY LOADING - and section 5's
     invitation to argue with section 2 taken up, with numbers.
     Loadout / Engineering / Liveries / Crew / Where to buy / Specs, as plain
     text labels, each an addressable fragment, default always Loadout and never
@@ -3131,7 +3131,7 @@ M1  DONE  <sha>  THE TAB SHELL, WITH PER-LAYER LAZY LOADING - and section 5's
     should not take on my own inside a run about component fitment. Recorded
     with the numbers so it can be decided rather than rediscovered.
 
-M2  DONE  <sha>  THE ENGINEERING LAYER. 678 relays / 1,419 FUSE SLOTS on 305
+M2  DONE  502f9e2  THE ENGINEERING LAYER. 678 relays / 1,419 FUSE SLOTS on 305
     hulls, reproducing the addendum exactly. Aegis Idris-P 15 relays / 37
     fuses; Drake Vulture 1 relay / 2 fuses. Both named figures match.
     THE COUNT IS THE ACTUAL CHILD PORTS, NOT THE `RELAY_Nslot` CLASS NAME.
@@ -3152,7 +3152,7 @@ M2  DONE  <sha>  THE ENGINEERING LAYER. 678 relays / 1,419 FUSE SLOTS on 305
     Each relay is bound to its `PortId` like every other port on this page, and
     each carries the plain-language sentence M3 asks for.
 
-M3  DONE  <sha>  PLAIN LANGUAGE, PAGE-WIDE, AND REACHABLE BY KEYBOARD.
+M3  DONE  502f9e2  PLAIN LANGUAGE, PAGE-WIDE, AND REACHABLE BY KEYBOARD.
     23 readout values carry one sentence a person who has never opened a game
     file can understand - `EM 818` becomes "electromagnetic noise from powered
     components; turn things off and it drops".
@@ -3165,7 +3165,7 @@ M3  DONE  <sha>  PLAIN LANGUAGE, PAGE-WIDE, AND REACHABLE BY KEYBOARD.
     explanation contains `CompatibleTypes`, `ClassName`, `stdItem`, `PortId` or
     `IsPilotSlaveable`. An explanation written in field names explains nothing.
 
-M4  DONE  <sha>  WHAT IS NOT ESTABLISHED IS SAID, AND NOT IMPLIED.
+M4  DONE  502f9e2  WHAT IS NOT ESTABLISHED IS SAID, AND NOT IMPLIED.
     The engineering panel states in its own words that fuse RATINGS and failure
     behaviour are not in the game files - only counts and positions - and that
     whether a blown relay disables the components near it IS NOT STATED
@@ -3176,7 +3176,7 @@ M4  DONE  <sha>  WHAT IS NOT ESTABLISHED IS SAID, AND NOT IMPLIED.
     control greps for "will disable", "causes ... to fail" and "knocks out" and
     fails if any of them appears.
 
-L17 DONE  <sha>  SWEEP. `checks/run_all_controls.py` DISCOVERS controls from
+L17 DONE  502f9e2  SWEEP. `checks/run_all_controls.py` DISCOVERS controls from
     disk rather than from a typed list, so the three written in this run
     (_verify_loadout_fitment.py, _verify_ship_page.mjs,
     _verify_shared_viewer.mjs) were swept the moment they landed.
@@ -3198,3 +3198,61 @@ L17 DONE  <sha>  SWEEP. `checks/run_all_controls.py` DISCOVERS controls from
       3. `_verify_g3_matcher_delta.py` - reports NOT PERFORMED because
          CC_GEO_DIR is unset. Pre-existing, correctly refusing to claim a pass,
          and out of scope for this order.
+
+M5  DONE  <sha>  THE OTHER LAYERS. Three of the four are populated; the fourth
+    is a shell and is therefore invisible.
+      LIVERIES   populated at L7 - 915 liveries in 104 hull sets.
+      SPECS      populated at L9 - dimensions, mass (all three of CIG's
+                 figures), hull HP, crew, seats, cargo, size class, SCM and max
+                 speed. Every figure CIG's own.
+      WHERE TO BUY  populated, and this one needed thinking about rather than
+                 filling. A tab labelled "Where to buy" that says only "we have
+                 no prices" IS a tab opening onto an apology, which §1 forbids
+                 - the same reasoning that forbids an empty picker. So it now
+                 says what IS known and links to FIND, which carries 26,657
+                 real price rows. And it states the gap precisely: the
+                 components come from the game files, the prices come from a
+                 separate community dataset, and NOTHING HAS VERIFIED THAT A
+                 GIVEN COMPONENT IS A GIVEN PRICED SHOP ITEM. Two real datasets
+                 with no proven join is a different fact from "we have no
+                 prices", and the second would be the easier lie.
+      CREW       NOT POPULATED, per the order, and therefore SUPPRESSED ON ALL
+                 316 SHIPS. The pane exists, the label exists, and the tab
+                 appears nowhere because there is nothing behind it. The page
+                 carries a comment saying exactly what turns it on - one
+                 predicate and one generated file - so the next person does not
+                 think it was forgotten.
+    The control asserts Crew appears on ZERO of the 316 hulls, which is the
+    honest expression of "build the mechanism, do not populate it".
+
+M6  DONE  <sha>  THE PUNCH LIST CARRIES THE LAYERS AND THE DEFECT CLASS.
+    Added: a table of every ship-page layer with its state and its number, so
+    "Crew is a shell" is a row with 802 unread seat ports beside it rather than
+    a thing somebody remembers. And the payload table with the measurement that
+    matters - per-layer loading saves 1.6%, per-SHIP loading would save 95%.
+    AND THE Name-vs-ClassName DEFECT IS NAMED AS A CLASS WITH PLACES TO LOOK,
+    because a class of defect written as a warning is a warning:
+      any dict or Map keyed on a ship's display name
+      any `SHIPS.find(s => s.name === label)` - index.html had one, and it is
+        why CC_LOOKUP and ship_resolution.json exist
+      any GROUP BY on a name column
+      any report that counts "ships" and gets 287 instead of 316
+      any join between two datasets that meets in the middle on a name
+    THE TELL IS A COUNT THAT IS LOWER THAN IT SHOULD BE AND LOOKS PLAUSIBLE.
+    316 records becoming 287 does not throw, does not warn, and looks like a
+    reasonable number of ships.
+
+L17 SWEEP FINAL  <sha>  45 controls discovered, 42 ok, 1 failed, 2 skipped,
+    0 NOT RUN, in 171s.
+    THE ONE FAILURE IS A CONTROL REFUSING TO CLAIM A PASS:
+    `_verify_g3_matcher_delta.py` exits 2 with "NOT PERFORMED - CC_GEO_DIR is
+    not set, so the build cannot read any geometry and this check cannot look
+    at anything." That is the behaviour rule 12 asks for, it is pre-existing,
+    it is unrelated to this order, and I have not made it pass by giving it
+    something to look at that I would then be asserting about.
+    THE TWO SKIPS ARE DELIBERATE AND SELF-DESCRIBING: both fetch the DEPLOYED
+    origin, which is a statement about the live site rather than about this
+    working tree, and one of them makes ~450 network requests.
+    THE THREE NEW CONTROLS FROM THIS RUN WERE SWEPT WITHOUT BEING ADDED TO
+    ANYTHING - the runner discovers checks/_verify_* from disk, which is why a
+    control written today is in today's sweep.

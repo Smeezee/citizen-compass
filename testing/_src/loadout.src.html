@@ -1095,11 +1095,32 @@ function renderBuy(){
     });
     h+=`</table>`;
   }
-  h+=`<div class="trip"><strong>No prices, and that is deliberate.</strong>
-      Component prices and shop locations are market data. They are not in the
-      game files this page is built from, so nothing here tells you what a part
-      costs or where to buy it. Showing a made-up number would be worse than
-      showing none.</div>`;
+  /* M5: A TAB MUST NOT OPEN ONTO AN APOLOGY.
+     "Where to buy" that only says "we have no prices" is the navigation
+     version of an empty picker - the addendum forbids one and the same
+     reasoning covers the other. So this says exactly what IS known, exactly
+     what is not, and points at the place where the shop data that DOES exist
+     actually lives.
+
+     What is not known is specific and worth stating precisely: the site holds
+     real UEX shop and price data, and there is no PROVEN JOIN from a game-file
+     component to a UEX shop item. Two real datasets with no verified bridge
+     between them is a different fact from "we have no prices", and the second
+     one would be a lie. */
+  h+=`<div class="trip"><strong>Where the shop data actually is.</strong>
+      This site does hold real shop and price data &mdash;
+      <a href="find.html">FIND</a> carries terminals, categories and prices
+      pulled from UEX.
+      <br><br>
+      <strong>What is not proven is the bridge between them.</strong> The
+      components above come from Star Citizen's own game files; the prices come
+      from a separate community dataset. Nothing has verified that a given game
+      file component IS a given priced shop item, so this page will not put a
+      number beside a part and imply somebody checked. Two real datasets with
+      no proven join is a different thing from having no prices, and saying the
+      second would be the easier lie.
+      <br><br>
+      When that join is proven, this is where it lands.</div>`;
   $('buy').innerHTML=h;
 }
 
@@ -1344,6 +1365,13 @@ const TABS=[
      layer file. The count is cheap; the layer is not. */
   {id:"engineering", label:"Engineering",  has:()=>!!ship().eng, lazy:"engineering"},
   {id:"liveries",    label:"Liveries",     has:()=>!!(ship().pset&&(PSETS[ship().pset]||[]).length)},
+  /* CREW IS A SHELL AND IS THEREFORE SUPPRESSED EVERYWHERE. The order says
+     build the mechanism, do not populate it in this run. `has:()=>false` is
+     the honest expression of that: the pane exists, the label exists, and the
+     tab does not appear on a single ship because there is nothing behind it.
+     When docs/IDEA_unused-ship-data.md section 1 is picked up, this becomes
+     `has:()=>!!ship().seats` plus a generated layer file, and nothing else
+     changes. */
   {id:"crew",        label:"Crew",         has:()=>false},
   {id:"buy",         label:"Where to buy", has:()=>true},
   {id:"specs",       label:"Specs",        has:()=>true},
