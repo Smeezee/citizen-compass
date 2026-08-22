@@ -3595,3 +3595,35 @@ N9  DONE  6969fb2  THE FALSE CLAIM IS GONE, AND WHAT REPLACED IT IS SPECIFIC.
     NOT ATTEMPTED, per the order: no re-export with hardpoints preserved and no
     hand-placing in Blender. Sleven has not decided which, and it turns on
     whether the extraction tool can keep hardpoint data.
+
+N12 DONE  <sha>  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
+    URL: https://citizencompasstesting.citizencompass-contact.workers.dev
+    Version ID f6507a7d-1d99-4565-b3c3-06e360657198. NOT the live site.
+    SWEEP: 43 controls discovered, 40 ok, 1 failed, 2 skipped, 0 NOT RUN, 111s.
+    The one failure is `_verify_g3_matcher_delta.py` reporting NOT PERFORMED
+    because CC_GEO_DIR is unset - pre-existing, unrelated, correctly refusing
+    to claim a pass. The two skips fetch the deployed origin by design.
+    Two controls fewer than last sweep because two were retired with the index
+    panel at N3, moved to _to_delete rather than deleted.
+    UPLOAD DIFF MATCHES THE WORK: three files, index.html, loadout.html and
+    loadout_model.gen.js. Everything else was already up.
+    VERIFIED FROM THE SERVED BYTES, not the exit code:
+      index served       410,219 bytes  (was 1,622,716 - a 75% cut)
+      /loadout served  1,266,286 bytes
+    INDEX CARRIES NO VIEWER: zero hits for cc_viewer.js, WebGLRenderer,
+    DRACOLoader, CC_EMBED, `id="cc-ship"` and `.glb`. The single hit for "Open
+    in the loadout bench" is my own comment explaining its removal.
+    A SHIP NAME LANDS ON THE SHIP PAGE: `shipPageUrl` x3, `loadout.html#`, and
+    `cc-nobench` present for the 33 hulls with no ship page.
+    AND THE STRONGEST CHECK - THE SERVED PAGE WAS DRIVEN, not grepped. Its own
+    six script blocks were run against the four SERVED data files:
+      opens with ONE build         twoUp=false, second column hidden
+      18 stats, each ONCE          zero second values
+      no A/B letters               before the second build is asked for
+      fixed group CLOSED           labelled "not swappable in game (36)"
+      marker note present          the N9 statement is on the page
+      acquisition strip            5 fields rendered
+      back-to-stock hidden         nothing changed yet, so nothing to undo
+    STATED LIMIT, unchanged: no browser was involved and none exists on this
+    machine (rule 7). Whether the model draws, the markers land where they
+    should, and the CSS holds is Sleven's to see.
