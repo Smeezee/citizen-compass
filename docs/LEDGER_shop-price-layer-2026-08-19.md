@@ -3026,7 +3026,7 @@ L14 DONE  9cd1a02  THE THREE KINDS OF INCOMPLETE SHIP, each handled and each
     the dataset matches Stingray or S-65. A ship with no verifiable specs is
     the opposite of what this site is for, and it comes in when it reaches Live.
 
-L15 DONE  <sha>  THE PARKED IDEAS ARE WRITTEN DOWN AND NOTHING IS BUILT FOR
+L15 DONE  6fe4575  THE PARKED IDEAS ARE WRITTEN DOWN AND NOTHING IS BUILT FOR
     THEM. `docs/IDEA_recommended-builds.md` and `docs/IDEA_unused-ship-data.md`.
     THE TENSION IS NAMED RATHER THAN SOFTENED, which is what the order asked
     for: §0 says the page has no opinion and a recommendation IS an opinion.
@@ -3049,3 +3049,40 @@ L15 DONE  <sha>  THE PARKED IDEAS ARE WRITTEN DOWN AND NOTHING IS BUILT FOR
     Also recorded there: the `WeaponPersonal` gap - 1,092 ports accept them and
     the catalogue to fill them is not in ship-items.json. Racks are swappable
     and there is nothing to offer in them. A gap in a different dataset.
+
+L16 DONE  <sha>  THE PRE-LIVE PUNCH LIST EXISTS, AND `CURRENT-STATE.md` IS BACK
+    IN LINE. `docs/PRE-LIVE-PUNCH-LIST.md` is new; CURRENT-STATE was last
+    written 2026-08-16 and now leads with the ship page and the shop layer.
+    EVERY ENTRY CARRIES A NUMBER, because an entry without one is a feeling and
+    a list of feelings cannot be worked through. The numbers were MEASURED
+    while writing it, not carried from the order, and two of the order's have
+    moved:
+      `unchecked_hull` is now ZERO, not 21. The G3 geometry rebuild and the
+      current alignment gate closed it. Reporting 21 would have been repeating
+      a figure rather than checking one.
+      25 ships with no mount data reproduces exactly; the 8 refused by the
+      alignment gate is now 7 refused + 1 with no published dimensions, which
+      is the same 8 split by cause.
+    THREE THINGS BLOCK GOING LIVE, and I am asked what I think:
+      1. NOTHING IN THE SHOP LAYER IS VERIFIED. 0 of 7,932 shop items and 0 of
+         823 terminals, against 26,657 price rows on the page. Every other gap
+         on the list costs a visitor a shrug. This one costs them a trip, and
+         /find is the one page where somebody reads a number and then flies
+         somewhere. The fix is NOT "verify all 7,932" - it is verify enough to
+         state a rate, and put the rate on the page.
+      2. THE LIVE WORKER STILL 404s. That is the definition of not being live.
+      3. NOBODY HAS OPENED THE SHIP PAGE IN A BROWSER. Every control I have
+         written proves LOGIC and RENDERED HTML. None of them proves a browser
+         draws anything, because there is no browser on this machine and none
+         was installed (rule 7). The hull markers are positioned by projecting
+         coordinates onto a canvas every frame, which is exactly the thing that
+         is right in the arithmetic and wrong on the screen.
+    EVERYTHING ELSE IS AN HONEST GAP THE SITE STATES WHERE A VISITOR MEETS IT -
+    134 ports with no part, 6,454 empty ports, 11 hulls with no armour, 46 with
+    an untagged paint port, 79 unreachable liveries, 1,092 WeaponPersonal racks
+    with no catalogue, the four careers with no component behind them. Shipping
+    with those IS the standard working. Shipping with unverified prices is the
+    standard failing.
+    AND ONE ENTRY IS A CLASS OF DEFECT RATHER THAN AN ITEM: Name-vs-ClassName,
+    to be checked wherever ships are grouped anywhere in the project, plus its
+    one-level-down twin, hardpoint-name-vs-PortId.
