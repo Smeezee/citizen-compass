@@ -3627,3 +3627,75 @@ N12 DONE  feb6879  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
     STATED LIMIT, unchanged: no browser was involved and none exists on this
     machine (rule 7). Whether the model draws, the markers land where they
     should, and the CSS holds is Sleven's to see.
+
+E-N1 DONE  <sha>  ERRATUM: EVERY SHIP NAME STILL OPENED RSI. N1 WAS NOT DONE
+    AND MY CONTROL COULD NOT HAVE FAILED. This is mine and Sleven found it in
+    ten seconds.
+    THE COUNT, BEFORE AND AFTER, measured by RUNNING the page's own
+    `nameCellHtml()` over all 254 records rather than by reading the source:
+      BEFORE   229 name cells pointed at RSI.   0 reached a ship page.
+      AFTER    27 point at RSI, 221 reach the ship page, 6 link nowhere.
+    The 229 is not my estimate - the `--prove` mode restores the original
+    function and the check reports exactly 229, which is C1's figure reproduced
+    from the shipped bytes.
+    WHY 27 AND NOT 33. 33 ships have no ship page. 27 of them have a
+    `pledge_url` and therefore an RSI cell; the other SIX have neither and
+    render as plain text: CSV-FM, RAPTOR, Starlancer BLD, F7C-M Super Hornet
+    Heartseeker Mk I, Mustang Alpha Vindicator, Valkyrie Liberator.
+    221 + 27 + 6 = 254. The instruction said the number must be 33; the honest
+    number is 27, because six of the 33 have nowhere to point.
+    THE CAUSE, exactly as C1 diagnosed. `decorate()` rewrote the name cell
+    AFTER the site rendered it, finding the ship by `td.textContent.trim()`.
+    `nameCellHtml()` appends `&#128279;` - a link glyph - so the text was
+    "Redeemer 🔗", `CC_LOOKUP` missed, the function returned silently, and the
+    cell kept the RSI anchor it was born with.
+    FIXED AT SOURCE, NOT AT THE GLYPH. Trimming the emoji would have fixed the
+    symptom and kept the design: one writer rendering a cell and a second racing
+    to rewrite it, MATCHED ON DISPLAY TEXT - the thing this project banned two
+    days ago when 22 names turned out to be shared by 51 records.
+    Now the BUILD decides, per record, what the cell is - `CC_SHIPLINK` - and
+    `nameCellHtml()` reads the decision. ONE WRITER. `decorate()`, its
+    MutationObserver and its two guessed timers (400 ms, 1500 ms) are gone,
+    with the CC_NORM / CC_LOOKUP / CC_SAFE / CC_RSI / CC_HAS3D scaffolding that
+    existed only to support text matching. A function that has to be called
+    three times at guessed intervals is telling you it is in the wrong place.
+    AND THE INJECTION MOVED. `LOADOUT_LINK` was inserted before `</body>`;
+    `buildMatrix()` runs synchronously in the site's own script, long before
+    that. The data now arrives BEFORE the ship records, and the control asserts
+    that ordering by INDEX POSITION in the bytes - a table that renders before
+    its data arrives is the same defect one layer down.
+    ANSWERING §6's QUESTION: `nameCellHtml()` CAN see the data at render time,
+    once the injection is moved. I did NOT edit `releases/latest.html` or
+    `static/preview.html` - they are the live site's own source, they have
+    already drifted 80 KB apart, and `CC_SHIPLINK` is a build artifact that
+    cannot exist in them. The build substitutes the function with an ASSERTED
+    anchor and refuses if the shape has changed; the original's last two
+    branches are kept verbatim, so either file opened standalone behaves
+    exactly as it always has.
+    THE REPLACEMENT CONTROL: checks/_verify_ship_name_route.mjs, 22 assertions,
+    NOT ONE OF THEM A GREP.
+      POSITIVE  Redeemer renders href="loadout.html#AEGS_Redeemer", with no
+                robertsspaceindustries anywhere in the cell and no link glyph.
+      NEGATIVE  Vulcan - no game file - renders RSI WITH the explanation. Both
+                halves: a function returning a ship-page link for everything
+                would pass the positive.
+      WHOLE SET all 221 linked records emit a ship-page href, counted, and
+                every record is accounted for. Not "at least one", which is
+                what let the last one through.
+      PROVEN    `--prove` restores the original function and SEVEN assertions
+                fire, reporting 229. A check that has not been seen failing
+                against the bug it exists for is not evidence.
+    ONE DEFECT FOUND IN MY OWN HARNESS while writing it, and it matters: the
+    DOM stub's `createElement` never reflected `textContent` into `innerHTML`,
+    and the page's `escapeHtml()` is implemented through exactly that. So
+    escapeHtml returned "" FOR EVERYTHING and every cell the harness read had a
+    blank name and a blank href. The assertions that passed did so on hrefs
+    built outside escapeHtml - luck, not design. The stub now escapes properly
+    and the harness ASSERTS `escapeHtml("A<b>&") === "A&lt;b&gt;&amp;"` before
+    reading anything through it.
+    TWO STALE ASSERTIONS IN `_verify_shared_viewer.mjs` REPLACED rather than
+    repointed: they greped for `shipPageUrl(` and a `td.innerHTML=` shape. Both
+    were the erratum's own shape. Where a name goes is now asserted only by the
+    behavioural check; what stays here is structural - that no rewriter, no
+    observer and no text match survive, and that the data arrives before the
+    records.

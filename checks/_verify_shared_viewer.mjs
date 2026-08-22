@@ -214,27 +214,32 @@ console.log("\n--- N1: every route into a ship lands on the SHIP PAGE ---");
   record(!/function open\s*\(ship\)/.test(indexCode),
     "and no function that opens a ship in place");
 
-  /* EVERY ROUTE. There is ONE function that turns a row into a destination,
-     so this is a question about one thing rather than three call sites - and
-     that is asserted too, because three call sites agreeing today is not the
-     same as their being unable to disagree tomorrow. */
-  const routes = (indexCode.match(/shipPageUrl\s*\(/g) || []).length;
-  record(routes >= 2, "the row builder resolves its destination through one "
-    + "named function", `${routes} uses of shipPageUrl()`);
-  record(/loadout\.html#/.test(indexCode),
-    "and that destination is the ship page");
-  record(!/location\.href\s*=\s*["'`](?!loadout)/.test(indexCode),
-    "index navigates nowhere else of its own accord");
-
-  /* A ROW MUST NOT LINK TO RSI. The site renders the name cell as an RSI
-     anchor whenever the record has a pledge_url - 229 of 254 - so this is the
-     specific thing N1 is about, and the cell is rebuilt rather than wrapped. */
-  record(/td\.innerHTML='<a class="cc-open/.test(indexCode),
-    "the name cell is REBUILT as a link to the ship page, not wrapped around "
-    + "the RSI anchor the site put there");
-  record(/cc-nobench/.test(indexCode),
-    "a ship with no bench entry gets no link and says why, rather than a link "
-    + "onto nothing");
+  /* WHERE A NAME ACTUALLY GOES IS NOT ASSERTED HERE, AND THAT IS THE POINT.
+   *
+   * This block used to grep for `shipPageUrl(`, `loadout.html#` and a
+   * particular `td.innerHTML=` shape, and reported N1 done. Every one of those
+   * strings was present. EVERY SHIP NAME STILL OPENED RSI, because the
+   * function containing them bailed before it ran.
+   *
+   * Greping for a symbol cannot tell you where a link points. So that question
+   * moved to checks/_verify_ship_name_route.mjs, which RUNS the page's own
+   * nameCellHtml() against real records and reads the href that comes back -
+   * and which has been SEEN FAILING against the exact bug, reproducing its 229.
+   *
+   * What is still worth asserting here is structural: that the second writer
+   * which made the failure possible is gone for good. */
+  record(!/function decorate\s*\(/.test(indexCode),
+    "no post-render rewriter edits the name cells after the site builds them");
+  record(!/MutationObserver\s*\(\s*decorate/.test(indexCode),
+    "and no observer drives one");
+  record(!/td\.textContent\.trim\(\)/.test(indexCode),
+    "and nothing identifies a ship by the text in its cell - the match that "
+    + "failed on a link glyph");
+  record(/const CC_SHIPLINK=/.test(indexHtml),
+    "the build's per-row decision is IN the page, computed before it renders");
+  record(indexHtml.indexOf("const CC_SHIPLINK=") < indexHtml.indexOf("const SHIPS = ["),
+    "and arrives BEFORE the ship records, so the matrix can read it - it used "
+    + "to be injected after the table had already been built");
 }
 
 console.log("\n--- N3: index is a LIST. No viewer, no geometry, no vendor payload ---");

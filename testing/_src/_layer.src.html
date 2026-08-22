@@ -485,71 +485,20 @@ const CC_MODELS = {"129": "100i", "130": "125a", "131": "135c", "132": "300i", "
    navigation and was never part of this.
    ========================================================================== */
 
-/* THE ONE ROUTE INTO A SHIP. Every entry point on this page calls this and
-   nothing else, so "does the list ever reach a ship any other way" is a
-   question about ONE function rather than about three call sites.
+/* THE NAME CELL IS EMITTED ONCE, BY THE SITE'S OWN `nameCellHtml()`, from
+   data this build computes. There is nothing here to do.
 
-   Keyed on the record id through LOADOUT_LINK, built at build time against
-   data-layer/ship_resolution.json - never on a display name. 22 display names
-   are shared by 51 records in this dataset. */
-function shipPageUrl(ship){
-  var cls = (typeof LOADOUT_LINK!=='undefined') ? LOADOUT_LINK[String(ship.id)] : null;
-  return cls ? 'loadout.html#' + encodeURIComponent(cls) : null;
-}
-function openShip(ship){
-  var url = shipPageUrl(ship);
-  if(!url) return false;          // caller decides what to say; this invents nothing
-  location.href = url;
-  return true;
-}
+   WHAT USED TO BE HERE, and why it is gone (erratum, 2026-08-22): a
+   `decorate()` that rewrote every name cell AFTER the site had rendered it,
+   driven by a MutationObserver and re-run on two guessed timers - 400 ms and
+   1500 ms. It found each ship by reading the cell's own text, and
+   `nameCellHtml()` appends a link glyph, so the text was "Redeemer 🔗", the
+   lookup missed, and it bailed silently leaving the RSI anchor in place. 229
+   of 254 rows. There was no route to any ship page at all.
 
-function decorate(){
-  const body=$('matrix-body'); if(!body)return;
-  body.querySelectorAll('tr').forEach(tr=>{
-    const td=tr.querySelector('td'); if(!td||td.dataset.ccDone)return;
-    const label=td.textContent.trim(); if(!label)return;
-    const ship=SHIPS.find(s=>s.name===label); if(!ship)return;
-    td.dataset.ccDone='1';
-    /* THE CELL IS REBUILT FROM THE RECORD, NOT WRAPPED AROUND WHAT IS IN IT.
-       The site renders this cell as an RSI anchor - `nameCellHtml()` emits
-       `<a class="buy-link" href="...robertsspaceindustries...">Name 🔗</a>`
-       whenever the record has a pledge_url, which is 229 of 254. Wrapping that
-       in another anchor would nest one link inside another and leave the
-       outer one doing nothing on most rows.
-
-       N1 is exactly about this: THE SHIP NAME MUST NOT GO TO RSI. It goes to
-       the ship page, and the RSI link is offered there instead. So the cell is
-       replaced outright, using the record's own name rather than whatever text
-       happened to be in the cell. */
-    const url=shipPageUrl(ship);
-    const name=(typeof escapeHtml==='function')?escapeHtml(ship.name):ship.name;
-    /* A SHIP THE GAME FILES CARRY NO BUILD FOR GETS NO LINK, and says why.
-       33 of the 254 site records are in this state. A link that opens onto
-       nothing is worse than a name that plainly is not one - the first reads
-       as the site being broken, the second as a fact about the ship. */
-    if(!url){
-      /* AND IT KEEPS ITS RSI LINK, because that is the only route it has.
-         27 of these 33 carry a pledge_url, and the ship page they would
-         otherwise send somebody to does not exist. N1 says a ship NAME must
-         not go to RSI - it says so because there is somewhere better to send
-         people. For these there is not, and taking the link away to satisfy
-         the letter of a rule would leave the row with no link at all. */
-      td.innerHTML = ship.pledge_url
-        ? '<a class="cc-open cc-nobench" target="_blank" rel="noopener" href="'+
-          ship.pledge_url+'" title="The game files carry no build for this ship '+
-          'yet, so it has no ship page. This opens its RSI pledge page.">'+
-          name+' &#128279;</a>'
-        : '<span class="cc-open cc-nobench" title="The game files carry no '+
-          'build for this ship yet, so it has no ship page.">'+name+'</span>';
-      return;
-    }
-    const has=!!CC_MODELS[String(ship.id)];
-    td.innerHTML='<a class="cc-open'+(has?'':' cc-nomodel')+'" href="'+url+'">'+
-                 name+'</a>';
-  });
-}
-new MutationObserver(decorate).observe(document.body,{childList:true,subtree:true});
-decorate();setTimeout(decorate,400);setTimeout(decorate,1500);
+   A function that has to be called three times at guessed intervals is telling
+   you it is in the wrong place. It was.
+*/
 console.log('[cc-testing] v2 · list only · '+Object.keys(CC_MODELS).length+' ships mapped');
 </script>
 

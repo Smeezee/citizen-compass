@@ -340,55 +340,21 @@ for _gone, _what in (
                  "this build needs teaching rather than working around. "
                  "Nothing was written." % (_gone, _what))
 
-# ---- 2b. robust row matching -----------------------------------------------
-# the live page appends a link glyph to ship names, so exact === matching fails
-old_match = """    const label=td.textContent.trim(); if(!label)return;
-    const ship=SHIPS.find(s=>s.name===label); if(!ship)return;"""
-assert old_match in layer
-new_match = """    const label=td.textContent.trim(); if(!label)return;
-    const ship=CC_LOOKUP(label); if(!ship)return;"""
-layer = layer.replace(old_match, new_match)
-
-# THE OLD ROW REWRITE IS GONE, and what it did now happens in decorate().
+# ---- 2b. NOTHING TO MATCH - the cell is emitted, not rewritten -------------
 #
-# It used to strip the RSI anchor out of the name cell, stash the href in
-# CC_RSI, rebuild the cell as a clickable span, and wire an onclick into the
-# retired ship panel. Three of those four were about a panel that no longer
-# exists, and the fourth - capturing the href - was capturing something the
-# ship page already gets from LOADOUT_RSI, built from the same `pledge_url`
-# field the anchor itself is rendered from.
+# This step existed to make a POST-RENDER REWRITER work: it swapped an exact
+# name compare for a normalising lookup, because the site appends a link glyph
+# to ship names and `td.textContent` therefore read "Redeemer 🔗". It then
+# injected CC_NORM, CC_LOOKUP, CC_SAFE, CC_RSI and CC_HAS3D to support it.
 #
-# So the cell is rebuilt in the page instead, from the record, which is both
-# fewer moving parts and the only way to be sure a name never links to RSI.
-# The refusal below is what stops the old shape coming back unnoticed.
-if "td.onclick=()=>open(ship)" in layer or "cc-lolink" in layer:
-    sys.exit("_layer.src.html still wires a row into a ship PANEL, or still "
-             "carries the 'Open in the loadout bench' link. Index is a list and "
-             "every route lands on the ship page (N1). Nothing was written.")
+# ALL OF IT WAS SCAFFOLDING FOR MATCHING ON DISPLAY TEXT, and on 2026-08-22 the
+# normalising lookup turned out not to be applied at all - every ship name
+# still opened RSI. The fix was not a better normaliser. It was to stop having
+# a second writer: the build now computes each cell and `nameCellHtml()` emits
+# it once (see the CC_SHIPLINK block further down).
+#
+# The refusal above already fails the build if a rewriter comes back.
 
-lookup_js = """
-/* Ship names on the page carry a trailing link glyph and stray whitespace.
-   Match on a normalised form instead of an exact string compare. */
-const CC_NORM = s => String(s)
-  .replace(/[\\u{1F000}-\\u{1FAFF}\\u{2190}-\\u{27BF}\\u{2B00}-\\u{2BFF}\\u{FE0F}\\u{200D}]/gu,'')
-  .replace(/\\s+/g,' ').trim().toLowerCase();
-let _ccIndex=null;
-function CC_LOOKUP(label){
-  if(!_ccIndex){ _ccIndex=new Map();
-    SHIPS.forEach(s=>{ const k=CC_NORM(s.name); if(!_ccIndex.has(k)) _ccIndex.set(k,s); }); }
-  return _ccIndex.get(CC_NORM(label)) || null;
-}
-/* RSI links are stripped from the matrix rows and kept here, so the ship name
-   opens the detail page. The link is offered inside that page instead. */
-const CC_SAFE = n => String(n).replace(/[^A-Za-z0-9._-]+/g,'_');
-const CC_RSI = {};
-SHIPS.forEach(s=>{ if(s.pledge_url) CC_RSI[s.id]=s.pledge_url; });
-const CC_HAS3D = id => (typeof CC_EMBED!=='undefined')
-  ? !!CC_EMBED[CC_MODELS[String(id)]]
-  : !!CC_MODELS[String(id)];
-"""
-layer = layer.replace("const $=id=>document.getElementById(id);",
-                      lookup_js + "const $=id=>document.getElementById(id);", 1)
 
 # ---- 2c. NOTHING LEFT TO HOIST - the viewer is off index (N3) --------------
 #
@@ -690,12 +656,100 @@ print('loadout entry point: %d of %d ships offer the bench, %d correctly do not'
       % (_offered, len(_site_ships), _absent))
 print('  no bench data (first few): %s' % ', '.join(_absent_names))
 
-_link_js = ('<script>const LOADOUT_LINK=%s;</script>'
-            % json.dumps(_link, ensure_ascii=True, separators=(',', ':')).replace('<', r'\u003c'))
-if '</body>' in out:
-    out = out.replace('</body>', _link_js + '\n</body>', 1)
+# ---------------------------------------------------------------------------
+# ERRATUM 2026-08-22. EVERY SHIP NAME STILL OPENED RSI, AND THE CONTROL COULD
+# NOT HAVE FAILED.
+#
+# WHAT WAS WRONG. `decorate()` in the layer rewrote the name cell AFTER the site
+# had rendered it, finding the ship by reading the cell's own text. But
+# `nameCellHtml()` appends a link glyph - `Redeemer &#128279;` - so
+# `td.textContent.trim()` was "Redeemer 🔗", the lookup missed, the function
+# bailed silently, and the cell kept the RSI anchor it was born with. 229 of 254
+# rows. There was NO route to any ship page at all.
+#
+# WHY THE GLYPH IS NOT THE BUG. Trimming the emoji would have fixed the symptom
+# and left the design: one writer rendering a cell and a second racing to
+# rewrite it, matched ON DISPLAY TEXT - the exact thing this project banned two
+# days ago when 22 names turned out to be shared by 51 records.
+#
+# THE FIX. The BUILD decides, per record, what that cell should be, and
+# `nameCellHtml()` reads the decision. One writer. No observer, no timers, no
+# text matching, and no runtime lookup that can miss.
+#
+# It is injected BEFORE the site's own script, because `buildMatrix()` runs
+# synchronously inside it - LOADOUT_LINK used to go in before `</body>`, which
+# is after the matrix has already been built. A table that renders before its
+# data arrives is the same defect one layer down.
+_cell = {}
+for _s in _site_ships:
+    _sid = str(_s['id'])
+    _cls = _link.get(_sid)
+    if _cls:
+        _dir = _cc.get(_sid)
+        _cell[_sid] = {'h': 'loadout.html#' + _cls,
+                       'm': 1 if (_dir and safe(_dir) + '.glb' in have) else 0}
+    elif _s.get('pledge_url'):
+        # No game file, so no ship page - and 27 of these 33 have a pledge page
+        # that is the ONLY route they have. Taking it away to satisfy the letter
+        # of "a name must not go to RSI" would leave the row with no link at all.
+        _cell[_sid] = {'h': _s['pledge_url'], 'r': 1}
+    # neither: no entry, and nameCellHtml renders a plain name
+
+_have_page = sum(1 for v in _cell.values() if not v.get('r'))
+_rsi_only = sum(1 for v in _cell.values() if v.get('r'))
+if _have_page < 200:
+    sys.exit("only %d ship rows resolved to a ship page. Expected ~221. The "
+             "row links would be mostly dead. Nothing was written." % _have_page)
+print('ship-name cells: %d point at the ship page, %d at RSI (no game file), '
+      '%d plain' % (_have_page, _rsi_only, len(_site_ships) - len(_cell)))
+
+_link_js = ('<script>const LOADOUT_LINK=%s;\nconst CC_SHIPLINK=%s;</script>\n'
+            % (json.dumps(_link, ensure_ascii=True, separators=(',', ':')).replace('<', r'\u003c'),
+               json.dumps(_cell, ensure_ascii=True, sort_keys=True,
+                          separators=(',', ':')).replace('<', r'\u003c')))
+
+_ANCHOR = '<script>\nconst SHIPS = ['
+if _ANCHOR not in out:
+    _ANCHOR = 'const SHIPS = ['
+    if _ANCHOR not in out:
+        sys.exit("could not find the site's SHIPS declaration, so the row-link "
+                 "data cannot be injected before the matrix is built. The names "
+                 "would all still point at RSI. Nothing was written.")
+    out = out.replace(_ANCHOR, '</script>' + _link_js + '<script>' + _ANCHOR, 1)
 else:
-    out = out + _link_js
+    out = out.replace(_ANCHOR, _link_js + _ANCHOR, 1)
+
+# ---- nameCellHtml emits the cell, and is the ONLY thing that does ----------
+_CELL_OLD = """function nameCellHtml(ship) {
+  if (ship.pledge_url) {
+    return `<td><a class="buy-link" href="${escapeHtml(ship.pledge_url)}" target="_blank" rel="noopener">${escapeHtml(ship.name)} &#128279;</a></td>`;
+  }
+  return `<td>${escapeHtml(ship.name)}</td>`;
+}"""
+_CELL_NEW = """function nameCellHtml(ship) {
+  /* ONE WRITER. The build decided what this cell should be - see CC_SHIPLINK -
+     and this reads the decision. Nothing rewrites the cell afterwards.
+     The last two branches are the untouched original, kept so that
+     releases/latest.html opened on its own still behaves exactly as it always
+     has when the build data is absent. */
+  const _n = escapeHtml(ship.name);
+  const _L = (typeof CC_SHIPLINK !== "undefined") ? CC_SHIPLINK[String(ship.id)] : null;
+  if (_L && !_L.r) {
+    return `<td><a class="cc-open${_L.m ? "" : " cc-nomodel"}" href="${_L.h}">${_n}</a></td>`;
+  }
+  if (_L && _L.r) {
+    return `<td><a class="cc-open cc-nobench buy-link" href="${_L.h}" target="_blank" rel="noopener" title="The game files carry no build for this ship yet, so it has no ship page. This opens its RSI pledge page.">${_n} &#128279;</a></td>`;
+  }
+  if (ship.pledge_url) {
+    return `<td><a class="buy-link" href="${escapeHtml(ship.pledge_url)}" target="_blank" rel="noopener">${_n} &#128279;</a></td>`;
+  }
+  return `<td>${_n}</td>`;
+}"""
+if _CELL_OLD not in out:
+    sys.exit("the site's nameCellHtml() is not the shape this build replaces. "
+             "Every ship name would keep pointing at RSI, which is the defect "
+             "this replacement exists to fix. Nothing was written.")
+out = out.replace(_CELL_OLD, _CELL_NEW, 1)
 
 open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
 
