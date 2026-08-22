@@ -4140,7 +4140,7 @@ A4  DONE  3073791  THE OFF SWITCH - BUILT, AND EXECUTED RATHER THAN DESCRIBED.
     step is second because the removal is local until it is published, and every
     word of explanation is below both.
 
-A5  DONE  __SHA__  STATIC-ASSET EXPOSURE - MEASURED AND REPORTED. NOT FIXED,
+A5  DONE  47577c9  STATIC-ASSET EXPOSURE - MEASURED AND REPORTED. NOT FIXED,
     BY INSTRUCTION.
     docs/FINDING_static-asset-exposure-2026-08-22.md. Every figure came from
     FETCHING the deployed sites with curl on 2026-08-22, not from reading
@@ -4193,3 +4193,65 @@ A5  DONE  __SHA__  STATIC-ASSET EXPOSURE - MEASURED AND REPORTED. NOT FIXED,
     lands, which is when the trade-offs should be re-weighed with the
     reconnaissance back.
     NOT IMPLEMENTED. Awaiting Sleven's decision, as instructed.
+
+# B RUN - docs/ORDER_the-picker-redesign-2026-08-22.md (REV 2)
+# Same ledger, per the convention the H run set. Appended below the A run,
+# nothing above rewritten. Rev 2 replaced rev 1 at that same path; nothing
+# from rev 1 survives except by being restated there.
+
+B0  DONE  eef64be  A MARKER THAT DID NOTHING HAS STOPPED EXISTING IN THAT FORM.
+    THE SYMPTOM WAS REPORTED AS "not all the ships have been done". Every ship
+    had been done. The markers were drawn, for the right ports, in the right
+    places. They were not clickable and they did not say so - which from the
+    outside is the same thing as a broken page, and worse, because it looks
+    like missing data rather than a bug.
+    MEASURED BEFORE, from the generated data and then again by clicking:
+      1,200 markers on 157 hulls - 418 clickable (34.8%), 782 SILENT (65.2%)
+      61 hulls where EVERY marker was silent
+      Origin 400i: 10 markers, 2 clickable, 8 silent
+    THE CAUSE, one line. selectPort() opened with
+      if(!swappable(slot)){ sel=null; renderPicker(); return false; }
+    so clicking a fixed port CLEARED the selection and re-rendered the same
+    empty prompt already on screen. Nothing appeared, nothing explained, and
+    renderMarkers() had drawn a marker for every LOADOUT_MARK entry without
+    ever asking whether it could be selected.
+    THE FIX. A fixed port is selected like any other; only what OPENS differs.
+    fixedPanel() names what is fitted, its manufacturer, its type and size, the
+    port's own name in the game's vocabulary, why the game will not allow the
+    change (its Editable flag, in the game's own terms), and the
+    last_verified_patch tag. Markers are NOT deleted - Sleven's standing
+    position is that fixed ports stay visible because they are part of the
+    ship.
+    AND THEY LOOK DIFFERENT BEFORE THEY ARE CLICKED, BY SHAPE NOT COLOUR: 15px
+    with a dashed ring against 19px with a solid one, which reads identically
+    in greyscale and on a dim monitor. Roughly one man in twelve cannot rely on
+    a hue, and the order forbade colour alone.
+    ONE SELECTION PATH KEPT. The left-column row previously rendered the fixed
+    panel itself - a second writer of the picker, and a way for the row and the
+    marker to drift apart. Both routes now call selectPort(); the row adds only
+    the bump under the finger.
+    CONTROL  checks/_verify_marker_response.mjs, 21 assertions.
+    It classifies the OUTCOME of a real dispatched click into picker / fixed /
+    SILENT, read off what the picker pane actually contains. THIS IS THE POINT:
+    _verify_ship_page.mjs's P5 block already dispatched a real click and
+    asserted sel came back naming the port. It passed, always, because it
+    selected its marker with `s.fit` - a SWAPPABLE port, every time. The
+    mechanism was asserted; the experience was not.
+      Origin 400i   10 markers, 2 picker, 8 fixed, 0 silent
+      fleet         1,200 markers / 157 hulls, 0 silent, 0 all-silent hulls
+      the panel for hardpoint_missile_left contains "ST-205 Missile Rack"
+    NEGATIVE CONTROL, as the order required: a swappable marker opens the
+    PICKER and the fixed panel is ABSENT from it. Without it a build that
+    showed the fixed panel for everything would pass.
+    RULE 12, THE LOAD-BEARING HALF. --mutate puts the exact early return back
+    and reproduces the defect to the number: 782 silent, 61 all-silent hulls,
+    8 of 10 on the 400i. That is the code that actually shipped, not a sign
+    flip. --self-test inverts all 21 and exits 1. The census counter is
+    separately proven able to print a non-zero silent count, so today's 0 is a
+    measurement rather than a constant.
+    ONE THING THE FIRST RUN GOT WRONG, recorded because it nearly passed as a
+    data finding: the control reported that the 400i has no
+    hardpoint_missile_left port. It has one. A slot's `h` is an INDEX into the
+    hardpoint-name table, not the name, so comparing it to a string matched
+    nothing. The lookup was wrong, not the data.
+    NO REGRESSION: _verify_ship_page.mjs still 238 ok, 0 failed.
