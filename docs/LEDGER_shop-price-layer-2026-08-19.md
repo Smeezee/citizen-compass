@@ -3919,7 +3919,7 @@ P7  DONE  999b5cf  NO SCROLLING TO SEE THE PAGE, measured at both sizes.
     the stated viewports, and the 1366 case is a real pass rather than a
     reported miss.
 
-P8  DONE  <sha>  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
+P8  DONE  2cc669f  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
     URL: https://citizencompasstesting.citizencompass-contact.workers.dev
     Version ID c3d8559f-1037-441c-bd34-ef8f78410d71. NOT the live site.
     SWEEP: 45 controls discovered, 42 ok, 1 failed, 2 skipped, 0 NOT RUN, 150s.
