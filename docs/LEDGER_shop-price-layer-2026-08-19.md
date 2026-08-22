@@ -4301,3 +4301,53 @@ B1  DONE  a6d28b9  THE LEFT COLUMN NOW HOLDS ONLY WHAT A PERSON CAN ACT ON.
     when it CATCHES the mutant. The new B-run controls exit 1 instead, because
     a non-zero exit cannot be mistaken for "the run did nothing". Both are
     honest; they are different, and this is where that is written down.
+
+B2  DONE  4f062da  ONE COMPACT ROW PER SLOT, THE PICKER INLINE BENEATH IT, AND
+    THE FITTED PART PINNED TO THE TOP.
+    THE TAKEOVER IS GONE. P5 fixed "the picker rendered ~1,050px down a 1,952px
+    page" by REPLACING the list with the picker. That fixed the eye and created
+    a new defect in the same move: you lost your place in the list you were
+    reading. The picker now opens inline under the row that was clicked; the
+    rows above and below stay on screen; only one is open at a time, because
+    `sel` names exactly one slot and the state machine does the work rather
+    than anybody remembering to close the last one.
+    The "<- Components" button went with the takeover. The list never leaves,
+    so there is nothing to go back TO - closing the open row IS going back, in
+    place, and that is what the close control does.
+    THE FITTED PART IS PINNED, AND THIS IS A DEFECT NOT A NICETY. Sleven opened
+    the Avenger Stalker's size-4 turret mount - 74 parts, sorted by DPS - and
+    THE PART ALREADY FITTED WAS NOWHERE ON SCREEN. It is now lifted out of the
+    sort, rendered first, labelled "Currently fitted" IN WORDS rather than by
+    tint alone, and REMOVED from the remainder so it appears exactly once. The
+    same part twice would be its own small lie about what is on offer. The sort
+    governs everything below it, unchanged.
+    pickerHTML() and partRow() extracted so a port's two entrances - its row
+    and its marker - cannot render different lists.
+    AND THE PANE STOPPED DOUBLE-RENDERING. renderPicker() no longer writes a
+    swappable port's picker into the picker pane: renderChrome() keeps that
+    pane hidden now, so it would have been a second copy of the same content
+    where nobody would ever see it go wrong. Cleared rather than left stale.
+    CONTROL  checks/_verify_inline_picker.mjs, 34 assertions.
+      turret mount, size 4, 74 parts: FIRST entry is "VariPuck S4 Gimbal Mount"
+      on all three sorts, exactly once, labelled
+      Best and Lightest are still different orders below the pin
+      row 1 open -> all 21 rows still present, column not hidden, ONE picker
+      row 5 clicked -> row 1's picker GONE, row 5's open, still exactly one
+      FLEET: 314 hulls, exactly one inline picker when a port is selected
+    RULE 12. --mutate-pin puts the fitted part back in the sort and the first
+    entry becomes "Remote Turret" - the state Sleven actually hit.
+    --mutate-multi opens every row at once: 21 pickers on the Avenger, 308
+    hulls wrong. Both exit non-zero, as does --self-test.
+    THE CONTROL NEARLY DROVE THE WRONG PORT, and it is worth writing down. Its
+    first version chose "the port with the longest list". On this hull that is
+    the FLIGHT CONTROLLER at 238 parts, not the turret mount at 74 - so the
+    whole block would have been asserted against a port the order never
+    mentions, passing, while nobody had checked the one Sleven opened. It now
+    asks for a turret mount by type.
+    _verify_ship_page.mjs's L3 and P5 blocks follow the picker to where it now
+    renders, through one pickerNow() helper that reads whichever home the page
+    filled - reading only the old pane would have made every L3 assertion read
+    an empty string, which is a check that passes because it never looked. P5's
+    "the picker takes the left column" became the STRONGER claim that the
+    column is not taken over. 240 ok; its --mutate still catches the widened
+    fitsFor.
