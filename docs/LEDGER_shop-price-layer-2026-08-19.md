@@ -4589,3 +4589,72 @@ B7  DONE  b1bb24b  THREE FIGURES, AND ONLY THE ONES A SHIP ACTUALLY HAS.
     literal match missed it. Made whitespace-tolerant - the page was not
     reflowed to suit the test, which is the tempting direction and the wrong
     one.
+
+B8  DONE  1281c82  SWEPT, DEPLOYED, AND VERIFIED FROM THE SERVED BYTES.
+    SWEEP  54 ok, 0 failed, 2 skipped, 0 NOT RUN, 216s. All eight controls the
+    B run added are green in it. The 2 skipped both fetch the deployed origin
+    and are named with their reason, so "skipped" is not "passed".
+    DEPLOY  version 3020c87b-adfb-492f-9bec-01350a13f00d.
+    UPLOAD DIFF, FILE BY FILE, as the order asked:
+      + /loadout.html
+      + /loadout_data.gen.js
+      498 already uploaded, unchanged
+    Two files is exactly what B0-B7 should touch - the ship page and its data.
+    A diff of 500 would have meant something else had moved, and the count is
+    checked for that reason rather than recorded for tidiness.
+    VERIFIED FROM THE DEPLOYED BYTES. checks/_verify_picker_deployed.mjs
+    fetches the served page and its four data files, then drives THE SERVED
+    PAGE'S OWN SCRIPT through the same harness the working-tree controls use.
+    30 assertions:
+      ACCEPTANCE - ORIGIN 400i, ALL 10 MARKERS RESPOND on the deployed page:
+        2 open the picker, 8 open the fixed panel, 0 silent. Sleven's own
+        reproduction, answered on the wire.
+      the served page and its data are byte-identical to what was just built
+      the Avenger Stalker's turret mount serves the FITTED PART FIRST on all
+        three sorts - "VariPuck S4 Gimbal Mount"
+      a marker and its left-column row open IDENTICAL content at IDENTICAL
+        coordinates
+      the left column serves ZERO fixed ports, Specs serves all 36, and they
+        sum to the hull's 57
+      the served page opens NOT spinning, viewer really still, control reads
+        "Start spin"
+    PAGE HEIGHT AT BOTH VIEWPORTS, AND THE ORDER'S ONE THING TO ARGUE WITH IS
+    ANSWERED: NEITHER HAD TO BE DROPPED.
+      1920x1080   238px chrome + 842px grid = 1080 of 1080
+      1366x768    238px chrome + 530px grid =  768 of 768
+    The grid is `calc(100vh - var(--chrome))` and the columns scroll
+    internally, so B2's inline picker and B3's stage panel cost the page NO
+    height at all. The 85px of slack P7 left is untouched because neither
+    feature spends page height - one scrolls inside a column, the other is
+    absolutely positioned over the stage.
+    STATED LIMIT: still no browser. This proves the served page's LOGIC and
+    markup; the height figures are arithmetic on the served stylesheet, by the
+    same model _verify_ship_page_fits.mjs uses, and are a MODEL rather than a
+    measurement. It cannot see text wrapping, so the real page is at least as
+    tall as this says, never shorter.
+
+B9  DONE  1281c82  THE FLEET MARKER CENSUS, TAKEN BY CLICKING ALL 1,200
+    MARKERS ON THE DEPLOYED SITE.
+
+                                  before      after
+         markers total              1200       1200
+         clickable                   418        418
+         fixed but informative         0        782
+         SILENT                      782          0
+         hulls entirely silent        61          0
+
+    THE "BEFORE" COLUMN IS NOT A REMEMBERED NUMBER. _verify_marker_response.mjs
+    --mutate puts the pre-B0 early return back and reproduces it on demand:
+    782 silent, 61 hulls entirely silent, 8 of 10 on the 400i. A before/after
+    where the before can be regenerated is worth more than one copied out of an
+    order.
+    The order required that last number reach 0 and that the check be capable
+    of printing something other than 0. Both hold: the counter is separately
+    proven on synthetic input, and the mutation prints 61.
+    Every marker lands in one of the two ANSWERING states - 418 + 782 = 1,200,
+    none unaccounted for.
+    WHAT THE CENSUS DOES NOT COVER, said plainly: the marker POSITIONS are
+    unchanged by this run. B5 and B6 both changed the derivation and neither
+    was promoted, because a local placement run does not byte-reproduce the
+    committed dataset. So these 1,200 markers are in the same places they were
+    this morning - what changed is that all of them now answer.
