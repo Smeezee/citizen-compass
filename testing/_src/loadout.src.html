@@ -283,6 +283,31 @@ function isStock(b){
   return (ship().slots||[]).every(s=>!swappable(s)||b[s.id]===s.stock);
 }
 
+/* A DISPLAY NAME IS NOT AN IDENTITY IN THIS DATASET.
+   22 names are shared by 51 records: `AEGS_Hammerhead` and
+   `AEGS_Hammerhead_GS` are both "Aegis Hammerhead" and they are different
+   ships - 226 ports and 9 crew against 223 and 8. Everything here joins on
+   ClassName, so nothing is lost. But a DROPDOWN with two identical entries is
+   its own defect: the visitor cannot tell which one they are picking, and
+   whichever they pick they cannot tell which they got.
+
+   So where a name repeats, the label carries the part of the ClassName that
+   distinguishes it - derived from the key, never typed - and where it does
+   not, nothing changes. */
+const DUPNAME=(()=>{
+  const seen={}, dup={};
+  Object.keys(SHIPS).forEach(k=>{const n=SHIPS[k].n; if(seen[n])dup[n]=1; seen[n]=1;});
+  return dup;
+})();
+function shipLabel(k){
+  const n=SHIPS[k].n;
+  if(!DUPNAME[n]) return n;
+  /* The class id minus the manufacturer prefix, spaced out - so
+     `AEGS_Hammerhead_GS` reads "Aegis Hammerhead (Hammerhead GS)". */
+  const tail=k.replace(/^[A-Z]{3,5}_/,"").replace(/_/g," ");
+  return `${n} (${tail})`;
+}
+
 /* THE SHIP LIST. Every hull with data, plus the ones the game has not built -
    shown, disabled, with the reason. Saying "this ship is not released yet"
    is the same discipline as HOLO_UNMATCHED in the holo viewer: state what you
@@ -292,14 +317,14 @@ function fillShipList(){
   Object.keys(SHIPS).forEach(k=>{
     ((SHIPS[k].slots||[]).length?withData:noSlots).push(k);
   });
-  const byName=(a,b)=>SHIPS[a].n.localeCompare(SHIPS[b].n);
+  const byName=(a,b)=>shipLabel(a).localeCompare(shipLabel(b));
   withData.sort(byName); noSlots.sort(byName);
   let h=`<optgroup label="Ships with a loadout (${withData.length})">`;
-  withData.forEach(k=>{h+=`<option value="${k}">${SHIPS[k].n}</option>`;});
+  withData.forEach(k=>{h+=`<option value="${k}">${shipLabel(k)}</option>`;});
   h+=`</optgroup>`;
   if(noSlots.length){
     h+=`<optgroup label="No fittable components (${noSlots.length})">`;
-    noSlots.forEach(k=>{h+=`<option value="${k}">${SHIPS[k].n}</option>`;});
+    noSlots.forEach(k=>{h+=`<option value="${k}">${shipLabel(k)}</option>`;});
     h+=`</optgroup>`;
   }
   if(UNRELEASED.length){

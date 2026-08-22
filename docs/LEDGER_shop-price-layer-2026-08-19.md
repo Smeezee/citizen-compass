@@ -2790,7 +2790,7 @@ L6  DONE  63a3865  THE READOUT SHOWS EVERYTHING THAT MOVES, AT ONCE.
     proven ON A HULL MEASURED TO CARRY IT rather than on one ship that would
     either fail for the right reason or pass for the wrong one.
 
-L7  DONE  <sha>  LIVERIES LIVE ON THE SHIP PAGE. 915 liveries in 104 hull sets,
+L7  DONE  fdaa586  LIVERIES LIVE ON THE SHIP PAGE. 915 liveries in 104 hull sets,
     off 321 livery ports.
     THE CASE RULE IS LOAD-BEARING AND THE SIX SHIPS ARE NAMED: 315 paint ports
     are spelled `hardpoint_paint` and 6 are `Hardpoint_Paint`. Those six are
@@ -2835,3 +2835,41 @@ L7  DONE  <sha>  LIVERIES LIVE ON THE SHIP PAGE. 915 liveries in 104 hull sets,
     source can plug into the section later.
     LIVERIES TAKE NO PART IN THE READOUT, proven by fitting one and asserting
     that every computed figure is byte-identical afterwards.
+
+M0  DONE  <sha>  ADDENDUM §0 AUDIT OF L1-L7. The answer is: NOTHING WAS KEYED
+    ON `Name`, and one display defect the collision causes HAS been fixed.
+    THE COLLISION REPRODUCES EXACTLY as the addendum states: 316 records, 287
+    distinct display names, 22 names shared by 51 records. A Name-keyed build
+    would have lost 29 records.
+    EVERY EMITTED TABLE, AND WHAT IT IS KEYED ON - checked one at a time rather
+    than assumed:
+      LOADOUT_SHIPS      316  ClassName
+      LOADOUT_PARTS     1833  className
+      LOADOUT_ARMOR      179  className
+      LOADOUT_PAINTS     915  className
+      LOADOUT_FITS       124  the port's own rule (types|min|max)
+      LOADOUT_PAINTSETS  104  the port's RequiredTags
+      LOADOUT_TYPES       36  type code
+      LOADOUT_HP        2372  an array, referenced by index
+    Not one of them touches a display name. The one place a NAME is used at all
+    is LOADOUT_UNRELEASED, and those are the 33 ships with NO game record at
+    all - they cannot collide with a ClassName-keyed record, and all 33 names
+    are distinct anyway.
+    §0's CONTROL PASSES: both Hammerheads survive as separate entries -
+    AEGS_Hammerhead with 226 ports and 9 crew, AEGS_Hammerhead_GS with 223 and
+    8. Genuinely different ships, and the control asserts they DIFFER rather
+    than only that there are two of them.
+    WHAT I DID HAVE TO FIX, and it is a real defect the addendum's framing
+    surfaces: JOINING CORRECTLY IS NOT ENOUGH. The ship dropdown rendered
+    "Aegis Hammerhead" twice, identically. A visitor could not tell which they
+    were picking, or which they got. Shared names now carry the distinguishing
+    part of the ClassName - "Aegis Hammerhead (Hammerhead GS)" - derived from
+    the key, never typed, and applied ONLY to the 22 names that need it. The
+    control asserts all three: no two entries read alike, the shared ones are
+    disambiguated, and the other 265 are left alone.
+    AND I HAD ALREADY HIT THIS CLASS OF DEFECT AT L7, before the addendum
+    arrived: my own livery check keyed on the display name and merged
+    `DRAK_Caterpillar` with `DRAK_Caterpillar_Boarded`, reporting the page
+    guessing when it had done nothing of the kind. Recorded there. Two
+    independent encounters with the same defect in one run is the strongest
+    argument for the addendum's rule that I can offer.

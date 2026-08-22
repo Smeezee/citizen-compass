@@ -515,6 +515,56 @@ record(stockStats !== changedStats,
 record(el("sourcenote").innerHTML.includes(META.snapshot),
   "the page names the snapshot it was built from");
 
+/* ------------ ADDENDUM s0: a display name is not an identity here --------- */
+console.log("\n--- addendum s0: Name is a label, ClassName is the key ---");
+{
+  const byName = {};
+  for (const k of Object.keys(SHIPS)) (byName[SHIPS[k].n] = byName[SHIPS[k].n] || []).push(k);
+  const dupNames = Object.keys(byName).filter(n => byName[n].length > 1);
+  const dupRecords = dupNames.reduce((t, n) => t + byName[n].length, 0);
+  record(dupNames.length > 0,
+    "there really are shared display names - so keying on Name is a live risk, " +
+    "not a hypothetical", `${dupNames.length} names over ${dupRecords} records`);
+  record(Object.keys(SHIPS).length > Object.keys(byName).length,
+    "and a Name-keyed table WOULD lose records",
+    `${Object.keys(SHIPS).length} records, ${Object.keys(byName).length} names`);
+
+  // THE ADDENDUM'S OWN CONTROL: both Hammerheads survive as distinct entries.
+  const hh = byName["Aegis Hammerhead"] || [];
+  record(hh.length === 2, "both Aegis Hammerhead records survive the pipeline",
+    JSON.stringify(hh));
+  if (hh.length === 2) {
+    const [a, b] = hh.map(k => SHIPS[k]);
+    record(a.slots.length !== b.slots.length || a.crew !== b.crew,
+      "and they are genuinely DIFFERENT ships, not one record twice",
+      `${a.slots.length}/${a.crew} vs ${b.slots.length}/${b.crew}`);
+    notes.push(`addendum s0: ${hh[0]} has ${a.slots.length} ports and ${a.crew} ` +
+      `crew, ${hh[1]} has ${b.slots.length} and ${b.crew} - both survive, ` +
+      `both keyed on ClassName`);
+  }
+
+  // AND THE DISPLAY DEFECT THE COLLISION CAUSES. Joining correctly is not
+  // enough: a dropdown with two entries reading "Aegis Hammerhead" leaves the
+  // visitor unable to tell which they picked.
+  vm.runInContext("fillShipList();", sandbox);
+  const list = el("ship").innerHTML;
+  const labels = [...list.matchAll(/<option value="[^"]*">([^<]*)</g)].map(m => m[1]);
+  const counts = {};
+  for (const l of labels) counts[l] = (counts[l] || 0) + 1;
+  const stillAmbiguous = Object.keys(counts).filter(l => counts[l] > 1);
+  record(stillAmbiguous.length === 0,
+    "no two entries in the ship list read identically",
+    `${stillAmbiguous.length}: ${stillAmbiguous.slice(0, 3)}`);
+  record(labels.some(l => /\(/.test(l)),
+    "the shared names are disambiguated from the ClassName, not left ambiguous");
+  // And a name that is NOT shared is left alone - the disambiguation must not
+  // spread to every ship on the site.
+  const plain = labels.filter(l => !/\(/.test(l));
+  record(plain.length > labels.length * 0.8,
+    "and the disambiguation touches only the names that need it",
+    `${labels.length - plain.length} of ${labels.length} decorated`);
+}
+
 /* ---------------------------------------------- rule 8: never touch these */
 console.log("\n--- rule 8: the trademark and Fan Kit text is untouched ---");
 record(/Cloud Imperium Rights LLC/.test(html), "the trademark footer is intact");
