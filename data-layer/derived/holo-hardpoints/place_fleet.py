@@ -172,7 +172,94 @@ def nose_sign(P, ix_len, ix_lat, ix_up):
     # nose is at the NARROW end; return the sign of the forward direction
     return -1 if spread(a) < spread(b) else +1
 
-def place(P, mn, mx, axes, nose, loc, spread=0.0, avoid=(), minsep=0.06):
+# ------------------------------------------------------- B6: the extremity
+# TARGET puts a wing mount at 88% of half-beam ON EVERY HULL IN THE FLEET, then
+# snaps to the nearest vertex. That is a guess that a wing sits at the same
+# fraction of a Vulture and of a Polaris, and it is a guess this repo can stop
+# making: the hull's actual outermost vertex is right there in the geometry.
+#
+# WHAT THIS IS AND IS NOT, because the distinction is the whole honesty of the
+# feature. It is STILL DERIVED FROM A NAME. The name says "wing", and this
+# finds where this particular hull's wing tip actually is instead of assuming
+# 0.88. It does NOT read a mount position out of the model, because there is
+# none to read - the exports are one welded mesh with no mount nodes.
+# renderMarkerNote() must not start claiming otherwise, and B6 does not let it:
+# nothing here changes what the page says.
+#
+# ONLY FOR NAMES THAT NAME AN EXTREMITY. A "body" or "hull" mount has no
+# extremity to measure towards and keeps the fraction it always had.
+EXTREMITY = {
+    'wing':   'lateral',
+    'pylon':  'lateral',
+    'nose':   'forward',
+    'chin':   'down',
+    'roof':   'up',
+    'canopy': 'up',
+}
+
+
+def extremity_target(P, mn, mx, axes, nose, loc):
+    """The hull's own extreme vertex in the band this name implies, or None.
+
+    None means "no extremity is implied", and the caller keeps the fixed
+    fraction. It is returned rather than silently falling back to a guess, so
+    the two cases stay distinguishable in the record.
+    """
+    want = EXTREMITY.get(loc['part'])
+    if want is None:
+        return None
+    lat, up, lon = axes
+    x, y, z = P[:, lat], P[:, up], P[:, lon]
+    mid = (mn[lat] + mx[lat]) / 2.0
+    half = max(mx[lat] - mid, mid - mn[lat]) or 1e-6
+    zmin, zr = mn[lon], (mx[lon] - mn[lon]) or 1e-6
+
+    # THE BAND. `lon` in the name says which third of the hull to look in; with
+    # no `lon`, the part's own default w from TARGET is used, so a plain "wing"
+    # still looks where wings are on this hull rather than along its whole
+    # length. The band is deliberately generous - a wing root and a wing tip
+    # are not at the same station, and a narrow band would find the widest
+    # point of the fuselage instead.
+    w0 = TARGET[loc['part']][2] + LON_SHIFT[loc['lon']]
+    wz = w0 if nose < 0 else (1.0 - w0)
+    lo = max(0.0, wz - 0.30)
+    hi = min(1.0, wz + 0.30)
+    band = (z >= zmin + lo * zr) & (z <= zmin + hi * zr)
+    if band.sum() < 30:
+        band = np.ones(len(P), bool)
+
+    sel = band
+    if loc['side'] == 'left':
+        s2 = band & (x < mid - half * 0.02)
+        if s2.sum() >= 30:
+            sel = s2
+    elif loc['side'] == 'right':
+        s2 = band & (x > mid + half * 0.02)
+        if s2.sum() >= 30:
+            sel = s2
+    if sel.sum() < 10:
+        return None
+
+    idx = np.flatnonzero(sel)
+    if want == 'lateral':
+        # Furthest out from the centreline, on whichever side the name gave.
+        # With no side, the furthest out either way - which is what an unsided
+        # "wing" means on a hull with one.
+        j = idx[int(np.argmax(np.abs(x[idx] - mid)))]
+    elif want == 'forward':
+        # The nose end, measured rather than assumed: `nose` is the sign of the
+        # forward direction along the length axis and was itself derived from
+        # the hull's cross-sectional spread.
+        j = idx[int(np.argmax(z[idx] * (1 if nose > 0 else -1)))]
+    elif want == 'up':
+        j = idx[int(np.argmax(y[idx]))]
+    else:                                   # 'down'
+        j = idx[int(np.argmin(y[idx]))]
+    return P[j]
+
+
+def place(P, mn, mx, axes, nose, loc, spread=0.0, avoid=(), minsep=0.06,
+          siblings=1):
     lat, up, lon = axes
     # the hull's own centreline — nine of these models are not centred on 0,
     # and the Scorpius is 35% of its own width off, so assuming 0 puts every
@@ -189,12 +276,50 @@ def place(P, mn, mx, axes, nose, loc, spread=0.0, avoid=(), minsep=0.06):
     elif loc['side'] == 'right': side_ok = x >  mid + half * 0.02
     if side_ok.sum() < 30: side_ok = np.ones(len(P), bool)
 
+    # B6: THE MEASURED EXTREMITY, COMPUTED ONCE. It does not depend on the
+    # attempt or the spread - what the spread does below is slide ALONG the
+    # hull from it, which is how two wing mounts on the same wing separate
+    # without either of them leaving the wing.
+    # AND ONLY WHERE IT DOES NOT COST SEPARATION.
+    #
+    # With siblings in the same target group, the fraction plus the spread is
+    # what holds them apart; aiming all of them at one measured extremity puts
+    # them on the same vertex and the separation pass then has to push them off
+    # it again. Measured: applying it to sibling groups took fleet crowding
+    # from 118 markers to 121, and B6's own acceptance says crowding MUST NOT
+    # get worse. A single mount has nothing to be held apart from, and that is
+    # where the measurement is a strict improvement.
+    #
+    # This is a narrowing of the item, not a refusal of it: 291 points name an
+    # extremity, and the ones skipped here are skipped for a measured reason
+    # that is recorded per point in `aimed_at`.
+    ext = (None if (EXTREM_OFF or siblings > 1)
+           else extremity_target(P, mn, mx, axes, nose, loc))
+
     p = None
     for attempt in range(9):
         u, v, w = target_uvw(loc, spread + attempt * 0.055 * (1 if attempt % 2 else -1))
         # w runs 0=nose..1=tail; flip into model space using the measured nose end
         wz = w if nose < 0 else (1.0 - w)
         tx, ty, tz = mid + u * half, ymin + v * yr, zmin + wz * zr
+        if ext is not None:
+            # ONE AXIS, THE ONE THE NAME IS ABOUT. "Wing" is a claim about how
+            # far OUT, not about how high or how far back, so only the lateral
+            # coordinate is taken from the measurement and the other two stay
+            # with the fraction.
+            #
+            # This is not fastidiousness. The first version pinned two axes and
+            # FLEET CROWDING WENT UP, 118 markers to 120 - siblings on one wing
+            # all landed on the same tip vertex because the spread had only one
+            # axis left to work in. Pinning one axis leaves the separation pass
+            # the room it needs, and is the smaller claim as well.
+            _w = EXTREMITY[loc['part']]
+            if _w == 'lateral':
+                tx = float(ext[lat])
+            elif _w == 'forward':
+                tz = float(ext[lon])
+            else:
+                ty = float(ext[up])
         d = (x - tx) ** 2 + (y - ty) ** 2 + (z - tz) ** 2
         d = np.where(side_ok, d, np.inf)
         p = P[int(np.argmin(d))]
@@ -214,16 +339,25 @@ def push_out(p, mn, mx, frac=0.012):
     size = float(np.linalg.norm(np.array(mx) - np.array(mn)))
     return np.asarray(p, float) + d / n * size * frac
 
+# B6 can be turned OFF for one run, so a before and an after can be MEASURED
+# rather than described. Module-level rather than threaded through place(),
+# because place() is called from one place and a parameter nobody ever passes
+# is a parameter that rots.
+EXTREM_OFF = False
+
 KIND = {'Turret': 'mount', 'MissileLauncher': 'missile',
         'WeaponDefensive': 'countermeasure', 'WeaponGun': 'gun', 'TurretBase': 'mount'}
 
 def main():
-    global GEO
+    global GEO, EXTREM_OFF
     ap = argparse.ArgumentParser(description='Derive hardpoint positions.')
     ap.add_argument('--matched', default=MATCHED)
     ap.add_argument('--geo', default=GEO)
     ap.add_argument('--out', default=OUT)
     ap.add_argument('--report', default=REPORT)
+    ap.add_argument('--no-extremity', action='store_true',
+                    help='disable B6\'s measured extremity and use the fixed '
+                         'fractions - the BEFORE state.')
     ap.add_argument('--no-inherit', action='store_true',
                     help='disable B5\'s parent fallback - the BEFORE state, '
                          'so a before/after can be measured rather than '
@@ -247,6 +381,10 @@ def main():
     os.makedirs(os.path.dirname(os.path.abspath(args.out)) or '.', exist_ok=True)
 
     GEO = args.geo
+    EXTREM_OFF = bool(args.no_extremity)
+    if EXTREM_OFF:
+        print('--no-extremity: fixed fractions only, so this run is the '
+              'BEFORE state for B6.')
     with open(args.matched, 'r', encoding='utf-8') as _fh:
         data = json.load(_fh)['matched']
     if args.no_inherit:
@@ -307,7 +445,8 @@ def main():
             n = len(lst)
             for i, (mt, loc) in enumerate(lst):
                 sp = 0.0 if n == 1 else (i / (n - 1.0) - 0.5) * 0.34
-                p, ok = place(P, mn, mx, axes, nose, loc, sp, avoid=placed)
+                p, ok = place(P, mn, mx, axes, nose, loc, sp, avoid=placed,
+                              siblings=n)
                 placed.append(p)
                 if not ok: crowded += 1
                 pcm = push_out(p, mn, mx)
@@ -340,6 +479,14 @@ def main():
                     # nothing and its parent's did. renderMarkerNote() keeps
                     # telling the truth because this is here to be told.
                     'placed_from': loc.get('_from', 'own'),
+                    # B6: whether this point was aimed at a MEASURED extremity
+                    # of this hull or at the fixed fraction. Recorded per point
+                    # because "the wing mounts moved" is only checkable if the
+                    # data says which ones were treated as wing mounts.
+                    'aimed_at': ('extremity'
+                                 if (not EXTREM_OFF and n == 1
+                                     and loc['part'] in EXTREMITY)
+                                 else 'fraction'),
                     'parent': mt.get('parent'),
                     'items': ([{'name': item.get('name'), 'type': item.get('type'),
                                 'size': item.get('size') or mt.get('size'),
