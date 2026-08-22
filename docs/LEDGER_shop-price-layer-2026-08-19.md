@@ -2579,7 +2579,7 @@ I9  DONE  0e866b8  TESTING SITE DEPLOYED, on Sleven's say-so and at his request.
     No dot-entries exist in _deploy. I do not know what the other three are and
     am not going to invent a reason.
 
-L1  DONE  <sha>  THE COMPONENT CATALOGUE IS DERIVED NOW, NOT WRITTEN.
+L1  DONE  703c164  THE COMPONENT CATALOGUE IS DERIVED NOW, NOT WRITTEN.
     `build_loadout_data.py` carried a hand-typed list of FIVE component types.
     That is the by-type rule the order forbids, and it is now gone: every port
     on every ship is scanned and a type is kept when BOTH conditions hold - the
@@ -2624,3 +2624,17 @@ L1  DONE  <sha>  THE COMPONENT CATALOGUE IS DERIVED NOW, NOT WRITTEN.
     leaked into a list, every quantum picker emptied, fixed ports hidden, one
     resistance profile for every hull, every livery on every hull, and a port
     that stopped offering the part CIG fits in it.
+
+L2  DONE  5041b24  THE STOCK LOADOUT IS THE SHIP'S OWN DEFAULTS, PROVEN PORT FOR
+    PORT. Every slot carries `stock` read straight off the port's `ClassName`
+    - not empty, not a guess, and not a class of part chosen by us.
+    CONTROL, and the shape of it is the point: five named hulls (Cutlass
+    Black, Avenger Stalker, Aurora MR, Hornet F7C, Prospector) are rebuilt from
+    ships.json and compared PAIR BY PAIR - which part is in WHICH PORT - rather
+    than by count. A count passes while the parts are shuffled between ports,
+    and a Cutlass with its shields in the power-plant slots shows exactly the
+    right number of components. That mutant is planted and caught.
+    Plus the vacuity guard: the Cutlass Black must OPEN with parts fitted (26
+    of its slots carry one), because "no mismatches" is trivially true of a
+    ship that opens empty. That mutant is planted and caught too.
+    Mutants now 9, all caught.

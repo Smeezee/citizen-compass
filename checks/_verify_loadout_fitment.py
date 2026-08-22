@@ -292,6 +292,84 @@ def run(data, ships, items, strict=True):
                      "(size %s) - absent from the list, not greyed"
                      % (named_neg[1], named_neg[2], named_neg[3], named_neg[4]))
 
+    # ---- 2b. L2 - THE STOCK LOADOUT IS THE SHIP'S OWN DEFAULTS -----------
+    say("")
+    say("2b. L2 - a ship opens with what its own Loadout says is fitted")
+    # PORT FOR PORT, on named ships, against ships.json directly. Not a count
+    # and not a sample: the whole sequence, in order, for each named hull.
+    #
+    # A count would pass while the parts were shuffled between ports, which is
+    # precisely the bug that would make a ship page subtly wrong and impossible
+    # to spot - a Cutlass with its shields in its power-plant slots still shows
+    # the right number of components.
+    ship_by_class = {}
+    for sh in ships:
+        ship_by_class[sh.get("ClassName") or sh.get("Name")] = sh
+    NAMED = ["DRAK_Cutlass_Black", "AEGS_Avenger_Stalker", "RSI_Aurora_MR",
+             "ANVL_Hornet_F7C", "MISC_Prospector"]
+    named_found = 0
+    mismatches = []
+    for cls in NAMED:
+        rec = SHIPS.get(cls)
+        sh = ship_by_class.get(cls)
+        if not rec or not sh:
+            continue
+        named_found += 1
+        # Rebuild the expected sequence from the snapshot, in the same walk
+        # order the generator uses, and compare stock for stock.
+        raw = []
+        B.walk_ports(sh.get("Loadout"), raw)
+        expect = []
+        for entry, _pilot, _par in raw:
+            etype = (entry.get("Type") or "").split(".")[0]
+            if etype == "Armor":
+                continue
+            hp = entry.get("HardpointName") or ""
+            r = B.port_rules(entry, catalogue_types)
+            if ("paint" in hp.lower()) or any(t == B.PAINT_TYPE for t, _ in r):
+                continue
+            if not r:
+                continue
+            expect.append((hp, entry.get("ClassName")))
+        got = [(HP[sl["h"]], sl.get("stock")) for sl in rec["slots"]]
+        # The emitted slots are sorted for display, so compare as multisets of
+        # (port, part) pairs - order on screen is a layout choice, but WHICH
+        # PART IS IN WHICH PORT is not.
+        exp_pairs = sorted((hp, (cn or "")) for hp, cn in expect)
+        # `stock` IS the className, so the pairs compare directly.
+        got_pairs = sorted((hp, (st or "")) for hp, st in got)
+        if len(exp_pairs) != len(got_pairs):
+            mismatches.append("%s: %d ports in the game file, %d on the page"
+                              % (cls, len(exp_pairs), len(got_pairs)))
+            continue
+        for (ehp, ecn), (ghp, gcn) in zip(exp_pairs, got_pairs):
+            if ehp != ghp:
+                mismatches.append("%s: port %s vs %s" % (cls, ehp, ghp))
+                break
+            # A stock part the page could not carry comes back empty; that is
+            # an absence to report, not a mismatch to hide.
+            if gcn and ecn and gcn != ecn:
+                mismatches.append("%s / %s: game fits %s, page opens with %s"
+                                  % (cls, ehp, ecn, gcn))
+                break
+    check(named_found >= 3, "enough named ships to compare", "%d" % named_found)
+    check(not mismatches,
+          "each named ship's opening state matches its Loadout PORT FOR PORT",
+          "; ".join(mismatches[:3]))
+    # And the opening state is not empty, which "no mismatches" would allow.
+    cut = SHIPS.get("DRAK_Cutlass_Black") or {}
+    stocked = [sl for sl in cut.get("slots", []) if sl.get("stock")]
+    check(len(stocked) > 10,
+          "the named ship opens with parts fitted, not empty - so the "
+          "port-for-port match is not vacuous",
+          "%d of %d slots carry a stock part"
+          % (len(stocked), len(cut.get("slots", []))))
+    if cut:
+        NOTES.append("L2: Drake Cutlass Black opens with %d of %d ports "
+                     "filled from its own ClassName defaults, matched port "
+                     "for port against ships.json"
+                     % (len(stocked), len(cut.get("slots", []))))
+
     # ---- 3. SUBTYPES MUST NOT HAVE CLOSED SILENTLY -----------------------
     say("")
     say("3. subtype handling has not silently emptied a picker")
@@ -696,8 +774,28 @@ def mutants():
                                 "in it")
         return "a port stopped offering the part CIG fits in it"
 
+    def m_shuffle_stock(d):
+        """Stock parts shuffled between ports - the right count, wrong ship."""
+        rec = d["LOADOUT_SHIPS"].get("DRAK_Cutlass_Black")
+        stocks = [sl.get("stock") for sl in rec["slots"]]
+        rot = stocks[1:] + stocks[:1]
+        for sl, v in zip(rec["slots"], rot):
+            if v:
+                sl["stock"] = v
+            else:
+                sl.pop("stock", None)
+        return "stock parts were shuffled between ports"
+
+    def m_empty_stock(d):
+        """A ship that opens empty instead of with its own defaults."""
+        rec = d["LOADOUT_SHIPS"].get("DRAK_Cutlass_Black")
+        for sl in rec["slots"]:
+            sl.pop("stock", None)
+        return "a ship opened empty instead of with its defaults"
+
     muts = [m_drop_type, m_offer_oversize, m_empty_quantum, m_hide_fixed,
-            m_one_armour, m_all_liveries, m_stock_not_offered]
+            m_one_armour, m_all_liveries, m_stock_not_offered,
+            m_shuffle_stock, m_empty_stock]
     say("")
     say("=" * 72)
     say("MUTANTS - each defect below MUST be caught, or this file is not a check")
