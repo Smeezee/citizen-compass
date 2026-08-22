@@ -1483,6 +1483,10 @@ function renderShipState(){
    stage. */
 const MODELS=(typeof LOADOUT_MODEL!=='undefined')?LOADOUT_MODEL:{};
 const MODEL_URL=(typeof LOADOUT_MODEL_URL!=='undefined')?LOADOUT_MODEL_URL:null;
+/* A4: ships whose model was removed at the rights holder's request. A Set so
+   the lookup is a lookup; empty on every normal build. */
+const WITHDRAWN=new Set((typeof LOADOUT_WITHDRAWN!=='undefined')
+  ?LOADOUT_WITHDRAWN:[]);
 let _view=null, _modelFor=null;
 function view(){
   if(_view) return _view;
@@ -1508,6 +1512,20 @@ function showModel(){
   /* L14 CASE 1: A GAME FILE AND NO 3D MODEL. The Origin M80 has full stats and
      no model. It gets an honest sentence where the viewer goes - not a broken
      viewer, and not a spinner that never resolves. */
+  /* A4: THE MODEL WAS TAKEN DOWN. Checked BEFORE the generic no-model case,
+     because telling somebody "we have no model for this hull yet" about a ship
+     whose model we removed on purpose is a false statement. The viewer is torn
+     down properly rather than left showing a dead canvas. */
+  if(WITHDRAWN.has(shipId)){
+    if(v){ v.cancel(); v.clear(); v.stop(); }
+    empty.style.display='flex';
+    empty.innerHTML=`<div>The 3D model for ${ship().n} has been removed.</div>
+      <div style="opacity:.75;font-size:13.5px">It was taken down at the
+      rights holder's request. Everything below comes from the game files and
+      is unaffected.</div>`;
+    status.textContent='';
+    return;
+  }
   if(!url){
     if(v){ v.cancel(); v.clear(); v.stop(); }
     empty.style.display='flex';

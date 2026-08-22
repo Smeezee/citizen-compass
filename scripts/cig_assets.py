@@ -155,3 +155,32 @@ def register(file, kind, source, origin=None, note=None, path=None):
     data["assets"].append(rec)
     save(data, path)
     return rec
+
+
+def withdrawn(path=None):
+    """Every asset the takedown has already pulled.
+
+    `removed` is a DATE STAMP ON THE RECORD, not the absence of a file. That is
+    deliberate and it is the thing that makes a takedown durable: the file is
+    gone from the built site, but the record of why it is gone survives, so a
+    later build cannot quietly put it back and no one has to remember which
+    ships were affected.
+    """
+    return [a for a in load(path).get("assets", []) if a.get("removed")]
+
+
+def withdrawn_files(kind=None, path=None):
+    """Just the file names, optionally of one kind."""
+    return {a["file"] for a in withdrawn(path)
+            if a.get("file") and (kind is None or a.get("kind") == kind)}
+
+
+def mark_removed(file, kind, when, path=None):
+    """Stamp one asset as withdrawn. Returns the record, or None if unknown."""
+    data = load(path)
+    for a in data["assets"]:
+        if a.get("file") == file and a.get("kind") == kind:
+            a["removed"] = when
+            save(data, path)
+            return a
+    return None
