@@ -4085,7 +4085,7 @@ A2  DONE  2f70aa3  THE "MADE BY THE COMMUNITY" MARK - APPLIER, DETECTOR, AND
     13 assertions pass; _deploy is left at exactly 241 images with no fixture
     behind it. Fixtures moved to _to_delete/a2_mark_fixtures/ (rule 1).
 
-A4  DONE  __SHA__  THE OFF SWITCH - BUILT, AND EXECUTED RATHER THAN DESCRIBED.
+A4  DONE  3073791  THE OFF SWITCH - BUILT, AND EXECUTED RATHER THAN DESCRIBED.
     ONE COMMAND:  venv\Scripts\python.exe scripts\takedown.py --yes
     It reads the register for every CIG-sourced asset, MOVES each one out of the
     built site into _to_delete/takedown_<stamp>/ (moved, not deleted - hard rule
@@ -4139,3 +4139,57 @@ A4  DONE  __SHA__  THE OFF SWITCH - BUILT, AND EXECUTED RATHER THAN DESCRIBED.
     command is the first thing on the page in a plain code block, the deploy
     step is second because the removal is local until it is published, and every
     word of explanation is below both.
+
+A5  DONE  __SHA__  STATIC-ASSET EXPOSURE - MEASURED AND REPORTED. NOT FIXED,
+    BY INSTRUCTION.
+    docs/FINDING_static-asset-exposure-2026-08-22.md. Every figure came from
+    FETCHING the deployed sites with curl on 2026-08-22, not from reading
+    wrangler.toml or the build.
+    TESTING SITE: everything is fetchable. /models/Avenger_Stalker.glb 200
+    model/gltf-binary 765,808 bytes; /images/100i.webp 200 image/webp 10,292;
+    /fonts/*.woff2 200; /fonts/OFL.txt 200; /loadout_data.gen.js 200
+    text/javascript 3,636,252. /loadout.html 307 -> /loadout, and all six
+    subpages 200. Nothing returned 401, 403 or any challenge.
+    AND IT IS WORSE THAN CURRENT-STATE.md RECORDED. That note said the gate
+    "does not cover static assets". Measured today, IT DOES NOT COVER THE HTML
+    EITHER. GET / with no password, no cookie and no session returned 421,413
+    bytes OF THE REAL SITE - the served bytes carry Avenger 20 times, Hammerhead
+    5, Polaris 5, Redeemer 6, alongside the word "Password". The gate is
+    presentation-only: a CSS rule (html.cc-locked body > *:not(#cc-gate)
+    {display:none}) plus localStorage.ccGate. The content is delivered BEFORE
+    any password is entered. curl gets all of it, and so does View Source or
+    typing localStorage.ccGate='1' in a console.
+    LIVE NETLIFY SITE DOES NOT HAVE THE PROPERTY. / is 200 at 205,362 bytes;
+    /models/*.glb and /images/*.webp are 404. It is one self-contained file and
+    a scan of the served bytes found NO src/href reference to any .glb, .webp,
+    .png, .jpg, .js or .css at all. The exposure came in with the 3D viewer and
+    lives on the testing site only.
+    VOLUME: models 235 files / 341.8 MB / mean 1,490 KB; images 241 / 4.0 MB;
+    fonts 6 / 0.1 MB. A visitor looking at ten ships pulls about 15 MB.
+    THE REFERER/ORIGIN CHECK, STATED HONESTLY AS THE ORDER REQUIRES: about
+    thirty lines and one Worker route, and VERY WEAK. Referer and Origin are
+    client-supplied strings - one curl -H flag defeats it, not an exploit. The
+    URL is in the page source either way. It cannot tell our viewer from a
+    script imitating it, because nothing in the request distinguishes them.
+    Privacy modes and some proxies strip Referer, so a strict check breaks real
+    users while stopping nobody trying. What it genuinely buys is hotlink
+    prevention and casual-save friction. No scheme ending in a browser decoding
+    the mesh can stop a determined person keeping the bytes; the honest ceiling
+    is friction, not prevention.
+    COST: bandwidth is unchanged - the same bytes go out. The real cost is that
+    341.8 MB moves off the static path onto a metered code path, one invocation
+    per model load. I did NOT verify the account's plan or limits and so have
+    NOT quoted a price - the shape is what can be said without guessing.
+    THREE OPTIONS AND A RECOMMENDATION, then stop.
+    RECOMMENDED: option B, the description half, now - and NOT option C. The
+    most wrong thing on the site today is not that models are fetchable; it is
+    that A GATE PRESENTS ITSELF AS A PASSWORD WHILE DELIVERING THE WHOLE PAGE TO
+    ANYONE WHO ASKS. That is the same defect class this project spends its time
+    hunting: something reporting a protection it does not provide. Correcting
+    the wording costs nothing and needs no infrastructure.
+    Option C waits because it buys friction rather than protection, and because
+    NO CIG-SOURCED ASSET IS ON THIS SITE YET - every model served came from the
+    scunpacked pipeline. The question sharpens when the first holoviewer asset
+    lands, which is when the trade-offs should be re-weighed with the
+    reconnaissance back.
+    NOT IMPLEMENTED. Awaiting Sleven's decision, as instructed.
