@@ -452,10 +452,16 @@ const set = PSETS[SH.pset] || [];
 record(set.length > 0 && set.length < Object.keys(g("PAINTS")).length,
   "this hull is offered its OWN liveries, not the whole catalogue",
   `${set.length} of ${Object.keys(g("PAINTS")).length}`);
-// Liveries take no part in the readout.
-const beforeLiv = g("JSON.stringify(calc(A))");
-record(beforeLiv === withFixed || true, "");
-record(!/class="stat/.test(liv), "no livery contributes a stat to the readout");
+// LIVERIES TAKE NO PART IN THE READOUT, proven by fitting one and watching
+// nothing move. A cosmetic that quietly changed a number would be worse than
+// one that was missing.
+const beforeLiv = g("JSON.stringify(calc(B))");
+const aPaint = (PSETS[SH.pset] || [])[0];
+vm.runInContext(`B.__livery=${JSON.stringify(aPaint)};`, sandbox);
+const afterLiv = g("JSON.stringify(calc(B))");
+record(beforeLiv === afterLiv,
+  "fitting a livery moves NO readout - it is cosmetic and stays cosmetic");
+record(!/class="stat/.test(liv), "and no livery renders a stat of its own");
 
 /* --------------------------------------------- L12: the link carries all */
 console.log("\n--- L12: the share link carries the whole build ---");

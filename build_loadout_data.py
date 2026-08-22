@@ -700,7 +700,8 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
     ports = []
     walk_ports(s.get("Loadout"), ports)
 
-    slots, counts, ship_paints = [], {}, []
+    slots, counts = [], {}
+    ship_paint_tags = set()
     armor_key = None
     for entry, pilot, _parent in ports:
         etype = (entry.get("Type") or "").split(".")[0]
@@ -744,7 +745,12 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
             tags = sorted(set(t for t in tags if t))
             stats["paint_ports"] += 1
             if tags:
-                ship_paints = "+".join(tags)
+                # UNION, not last-one-wins. Four hulls carry several paint
+                # ports - the Drake Caterpillar's first is untagged and a later
+                # one is not - so overwriting would drop whichever came first
+                # and would depend on walk order, which is not a decision
+                # anybody made.
+                ship_paint_tags.update(tags)
                 stats["paint_tagged"] += 1
             continue
 
@@ -849,8 +855,8 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
         p = {k.lower()[:4]: r2(num(v)) for k, v in pen.items() if num(v) is not None}
         if p:
             rec["pen"] = p
-    if ship_paints:
-        rec["pset"] = ship_paints
+    if ship_paint_tags:
+        rec["pset"] = "+".join(sorted(ship_paint_tags))
 
     cig = cig_aggregates(s)
     if cig:

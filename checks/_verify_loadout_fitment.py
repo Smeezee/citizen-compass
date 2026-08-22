@@ -566,6 +566,98 @@ def run(data, ships, items, strict=True):
           "there really are paint ports NOT spelled `hardpoint_paint` - so "
           "case-insensitivity is load-bearing, not defensive",
           "%d exact, %d other-case" % (lower, upper))
+    # AND WHICH SHIPS WOULD BE LOST, by name. "Six ships" is a number; "the six
+    # RSI Aurora Mk I variants" is a thing somebody can go and look at. The
+    # exact-case match is run here as the DEFECT it would be, so the loss is
+    # demonstrated rather than described.
+    lost = []
+    for sh in ships:
+        raw = []
+        B.walk_ports(sh.get("Loadout"), raw)
+        anyp = [e for e, _p, _x in raw
+                if "paint" in (e.get("HardpointName") or "").lower()]
+        exact = [e for e in anyp
+                 if (e.get("HardpointName") or "").startswith("hardpoint_paint")]
+        if anyp and not exact:
+            lost.append(sh.get("Name"))
+    check(len(lost) > 0,
+          "an exact-case match WOULD lose ships - demonstrated, not asserted",
+          "%d: %s" % (len(lost), lost))
+    # THE SIX ARE DETECTED, AND THEY STILL GET NO LIVERIES - and that is the
+    # honest answer rather than a failure to fix.
+    #
+    # The case-insensitive match is what stops those six ports being mistaken
+    # for component slots, and it does that. But CIG left the SAME six records
+    # with `RequiredTags: null` on the paint port, so the game states no livery
+    # for them. `Paint_Aurora` liveries plainly exist and plainly belong to an
+    # Aurora - and "plainly" is inference, which L3 forbids: "where the data
+    # does not say, exclude and log it. NEVER GUESS A PORT RULE." Offering a
+    # livery the game does not say is fittable is the same false claim as
+    # offering an unmountable shield.
+    #
+    # So this asserts the honest treatment: they render, they say the game
+    # files list no livery, and the count goes on the punch list.
+    # KEYED ON CLASSNAME, NOT ON THE DISPLAY NAME. Two distinct records are
+    # both called "Drake Caterpillar" - `DRAK_Caterpillar` and
+    # `DRAK_Caterpillar_Boarded` - and the boarded one's paint port is
+    # untagged while the flyable one's is not. A name-keyed join merged them
+    # and reported the page guessing when it had done nothing of the kind.
+    # The generator keys on ClassName throughout; this check now does too.
+    got = set(k for k in SHIPS if SHIPS[k].get("pset"))
+    untagged = []
+    for sh in ships:
+        raw = []
+        B.walk_ports(sh.get("Loadout"), raw)
+        pp = [e for e, _p, _x in raw
+              if "paint" in (e.get("HardpointName") or "").lower()]
+        # EVERY paint port, not the first. Four hulls carry several, and on the
+        # Drake Caterpillar the first is untagged while a later one is not -
+        # reading only `pp[0]` called a hull untagged that is not, which is the
+        # check being wrong rather than the page.
+        if pp and not any(e.get("RequiredTags") for e in pp):
+            untagged.append(sh.get("ClassName") or sh.get("Name"))
+    lost_cls = []
+    for sh in ships:
+        raw = []
+        B.walk_ports(sh.get("Loadout"), raw)
+        anyp = [e for e, _p, _x in raw
+                if "paint" in (e.get("HardpointName") or "").lower()]
+        exact = [e for e in anyp
+                 if (e.get("HardpointName") or "").startswith("hardpoint_paint")]
+        if anyp and not exact:
+            lost_cls.append(sh.get("ClassName") or sh.get("Name"))
+    check(all(n in untagged for n in lost_cls),
+          "the six ships an exact match would lose are ALSO the ones CIG left "
+          "with no livery tag - two defects in the same records",
+          "not all untagged: %s" % [n for n in lost_cls if n not in untagged])
+    check(not (set(untagged) & got),
+          "no hull with an untagged paint port is offered liveries anyway - "
+          "the page does not guess which hull a livery belongs to",
+          "guessed for: %s" % sorted(set(untagged) & got)[:3])
+    # Orphaned liveries: reachable by nothing, so nobody can fit them.
+    port_tags, paint_tag_counts = set(), {}
+    for sh in ships:
+        raw = []
+        B.walk_ports(sh.get("Loadout"), raw)
+        for e, _p, _x in raw:
+            if "paint" in (e.get("HardpointName") or "").lower():
+                for t in (e.get("RequiredTags") or []):
+                    port_tags.add(t)
+    for it in items:
+        if (it.get("type") or "") != B.PAINT_TYPE:
+            continue
+        for t in ((it.get("stdItem") or {}).get("RequiredTags") or []):
+            paint_tag_counts[t] = paint_tag_counts.get(t, 0) + 1
+    orphan_tags = sorted(t for t in paint_tag_counts if t not in port_tags)
+    orphan_n = sum(paint_tag_counts[t] for t in orphan_tags)
+    NOTES.append("L7 case: %d paint ports are spelled `hardpoint_paint` and %d "
+                 "are not. An exact-case match would lose %d ships: %s"
+                 % (lower, upper, len(lost), ", ".join(sorted(lost))))
+    NOTES.append("L7 gap, for the punch list: %d hulls have a paint port CIG "
+                 "left untagged, so no livery can be stated for them; and %d "
+                 "liveries under %d tags (%s) are asked for by no port at all"
+                 % (len(untagged), orphan_n, len(orphan_tags),
+                    ", ".join(orphan_tags)))
     with_paints = [r for r in SHIPS.values() if r.get("pset")]
     check(len(with_paints) > 200,
           "liveries reach the hulls that have a paint port",

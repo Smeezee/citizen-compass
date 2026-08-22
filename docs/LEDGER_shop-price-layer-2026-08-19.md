@@ -2754,7 +2754,7 @@ L5  DONE  b602193  ARMOUR. FIXED, NO PICKER, AND IT MOVES TWO THINGS THE PAGE HA
     than 5% and FAILS if no such pair exists - so the claim cannot pass while
     being empty.
 
-L6  DONE  <sha>  THE READOUT SHOWS EVERYTHING THAT MOVES, AT ONCE.
+L6  DONE  63a3865  THE READOUT SHOWS EVERYTHING THAT MOVES, AT ONCE.
     Was five stats and two budgets. Now: sustained DPS, alpha, effective HP,
     shield regen, IR, EM, distortion pool, quantum range, SCM and max speed,
     TOTAL MASS, cargo, fitted container SCU, fuel, quantum fuel, crew and
@@ -2789,3 +2789,49 @@ L6  DONE  <sha>  THE READOUT SHOWS EVERYTHING THAT MOVES, AT ONCE.
     CONTROL: 67 assertions now. Each of detection, mining, salvage and cargo is
     proven ON A HULL MEASURED TO CARRY IT rather than on one ship that would
     either fail for the right reason or pass for the wrong one.
+
+L7  DONE  <sha>  LIVERIES LIVE ON THE SHIP PAGE. 915 liveries in 104 hull sets,
+    off 321 livery ports.
+    THE CASE RULE IS LOAD-BEARING AND THE SIX SHIPS ARE NAMED: 315 paint ports
+    are spelled `hardpoint_paint` and 6 are `Hardpoint_Paint`. Those six are
+    the RSI AURORA MK I LX, LN, ES, SE, MR and CL. The control does not assert
+    the number - it RUNS the exact-case match as the defect it would be and
+    reports which ships fall out.
+    AND THE JOIN IS THE TAG, NOT THE TYPE. A paint port's `CompatibleTypes`
+    says only `Paints`, which is every livery in the game. Taking that at face
+    value offered all 1,077 liveries on every hull - 1,077 false claims per
+    ship, and 8 MB of repeated lists, which is how the defect announced itself.
+    The port's own `RequiredTags` is the real join.
+    THEN THE CONTROL FOUND SOMETHING I WOULD HAVE MISSED, and it is the entry
+    worth reading: THE SAME SIX AURORAS ALSO HAVE `RequiredTags: null` ON THAT
+    PORT. Two CIG defects in the same six records. `Paint_Aurora` liveries
+    plainly exist and plainly belong to an Aurora - and "plainly" is inference.
+    L3 is explicit: where the data does not say, exclude and log it, NEVER
+    GUESS A PORT RULE. Offering a livery the game does not state is fittable is
+    the same false claim as offering an unmountable shield, so they get none
+    and the page says the game files list none.
+    THE FULL GAP, FOR THE PUNCH LIST: 46 hulls have a paint port CIG left
+    untagged. 79 liveries under 9 tags (Paint_Aurora, Paint_Cutlass,
+    Paint_400i, Paint_Apollo, Paint_Hermes, Paint_Omega, Paint_Wolf,
+    Paint_Pisces_Expedition, ANVL_Hornet_F7A_Mk2) are asked for by NO port at
+    all, so nobody can fit them. One port tag, `300_Seat_Paint`, is answered by
+    no livery.
+    TWO DEFECTS THE CONTROL CAUGHT IN MY OWN WORK, both the same shape - a join
+    on the wrong key:
+      1. The generator let the LAST paint port win. Four hulls carry several,
+         and on the Drake Caterpillar the first is untagged and a later one is
+         not, so overwriting dropped liveries depending on walk order - which
+         is not a decision anybody made. Now a UNION across every paint port.
+      2. My CHECK keyed on the DISPLAY NAME, and TWO DISTINCT RECORDS ARE BOTH
+         CALLED "Drake Caterpillar" - `DRAK_Caterpillar` and
+         `DRAK_Caterpillar_Boarded`. The boarded one is untagged, the flyable
+         one is not, and merging them made the check report the page guessing
+         when it had done nothing of the kind. The check now keys on ClassName
+         like the generator. A display name is not an identity in this dataset.
+    NOT RENDERED ON THE MODEL, and the page says why in its own words: the data
+    carries a name and a colour word in a class name, not a texture, so
+    painting the model would mean guessing the colour - and a guessed colour on
+    a page whose whole point is verifiable data is worse than none. A texture
+    source can plug into the section later.
+    LIVERIES TAKE NO PART IN THE READOUT, proven by fitting one and asserting
+    that every computed figure is byte-identical afterwards.
