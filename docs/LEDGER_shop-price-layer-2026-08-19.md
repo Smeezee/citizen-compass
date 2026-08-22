@@ -3628,7 +3628,7 @@ N12 DONE  feb6879  SWEEP + DEPLOY + VERIFIED FROM THE SERVED BYTES.
     machine (rule 7). Whether the model draws, the markers land where they
     should, and the CSS holds is Sleven's to see.
 
-E-N1 DONE  <sha>  ERRATUM: EVERY SHIP NAME STILL OPENED RSI. N1 WAS NOT DONE
+E-N1 DONE  c7fa846  ERRATUM: EVERY SHIP NAME STILL OPENED RSI. N1 WAS NOT DONE
     AND MY CONTROL COULD NOT HAVE FAILED. This is mine and Sleven found it in
     ten seconds.
     THE COUNT, BEFORE AND AFTER, measured by RUNNING the page's own
@@ -3699,3 +3699,61 @@ E-N1 DONE  <sha>  ERRATUM: EVERY SHIP NAME STILL OPENED RSI. N1 WAS NOT DONE
     behavioural check; what stays here is structural - that no rewriter, no
     observer and no text match survive, and that the data arrives before the
     records.
+
+E-N2 DONE  <sha>  §4 AUDIT: WHICH N CONTROLS DROVE SOMETHING, WHICH GREPPED.
+    246 assertions across the three control files, classified by whether the
+    section RUNS page code and reads what comes out, or reads the source text.
+      DRIVEN     208
+      GREP-ONLY   38
+    THE DRIVEN ONES, all in `_verify_ship_page.mjs` and
+    `_verify_ship_name_route.mjs`: L3, L3-sweep, L4, L5 x2, L6, L7, L10, L11,
+    L12, L13, L14, addendum s0, M1, M1-network-trace, M2, M3, N2, N5/N6, N7,
+    N8, N9, N10, N11, and all four of the new name-route sections. Each runs
+    the page's own script in a vm and asserts on the HTML it produced or the
+    state it reached.
+    THE GREP-ONLY ONES, AND WHETHER A GREP IS THE RIGHT INSTRUMENT - because
+    "grep" is not automatically wrong, it is wrong when the claim is a
+    BEHAVIOUR:
+      rule 8 - trademark/Fan Kit text present            (2)  CORRECT. The
+        claim IS "this text exists untouched". Nothing to drive.
+      N3 - index carries no renderer/loader/wasm/.glb    (4)  CORRECT. An
+        ABSENCE cannot be proven by running something. Backed by a byte-count
+        measurement (410,219 vs 1,622,716), which is not a grep.
+      name-route - no rewriter, observer or text match   (4)  CORRECT, same
+        reason: these are absences.
+      shared_viewer 1 - one THREE.WebGLRenderer          (5)  ACCEPTABLE. Code
+        shape, and the §4 NEGATIVE HALF proves the ship page really uses the
+        module by breaking it.
+      shared_viewer 2 - both pages reference it          (3)  WEAK ON ITS OWN -
+        "the page references X" is the erratum's exact shape. Covered by the
+        negative half, which is behavioural.
+      shared_viewer 3 - same model on both pages         (3)  MISCLASSIFIED by
+        my own script: it PARSES the tables and compares them. A data
+        comparison, not a text search. Sound.
+      shared_viewer L11 - names resolve to a page        (6)  DATA COMPARISON,
+        and THE ONE THAT SHOULD HAVE CAUGHT THE ERRATUM AND DID NOT. It proved
+        every link TARGET exists. It never asked what the page EMITS. That gap
+        is now closed by _verify_ship_name_route.mjs.
+      shared_viewer N1 - route into a ship               (8)  REWRITTEN in this
+        pass. Now structural only - no rewriter, no observer, no text match,
+        and the link data arrives BEFORE the ship records (asserted by index
+        position in the bytes). Where a name GOES is asserted only by the
+        behavioural check.
+    ONE CONTROL WAS THE ERRATUM'S SHAPE AND I REPLACED IT: N4. It greped for
+    `new CCViewer.Viewer(` appearing once and for the literal string
+    `_modelFor === shipId` - asserting the code CONTAINS a guard, not that the
+    guard WORKS.
+    SO I DROVE IT, AND THE FEATURE IS FINE: with a recording stand-in for the
+    viewer, opening a ship loads geometry ONCE; calling showModel() twice more
+    for the same ship loads nothing; three tab switches load nothing and do not
+    replace the viewer instance; and changing SHIP loads exactly once more -
+    that last half matters, because "no further loads" is also satisfied by a
+    page that never loads anything again.
+    THE DIFFERENCE BETWEEN N4 AND N1 IS WORTH RECORDING: both had a control
+    that could not fail. N1's feature was broken and nobody knew. N4's was
+    sound. A weak control does not tell you which of those you have - that is
+    the whole argument for not writing them.
+    NOT FIXED IN THIS PASS, per §4's instruction to list rather than fix: the
+    two WEAK-BUT-COVERED greps in shared_viewer sections 1 and 2. Both are
+    backed by the negative half, which breaks the module and requires the ship
+    page to fail. If that ever stops being true they should become behavioural.

@@ -1319,6 +1319,57 @@ console.log("\n--- N9: the page does not claim a marker position is measured ---
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
 }
 
+console.log("\n--- N4 (behavioural): one model load per ship, none per tab ---");
+{
+  /* THE SECTION-4 AUDIT MOVED THIS HERE. The N4 assertions in
+     _verify_shared_viewer.mjs grep for `new CCViewer.Viewer(` appearing once
+     and for the string `_modelFor === shipId`. That asserts the code CONTAINS
+     a guard. It does not assert the guard WORKS - which is precisely the shape
+     that let every ship name point at RSI while the check reported N1 done.
+
+     So the load path is driven, and the loads are COUNTED. */
+  const loads = [];
+  vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();`, sandbox);
+  /* Stand in for the viewer with something that records what it is asked to
+     load. The page's own showModel() decides whether to ask. */
+  vm.runInContext(`__loads=[];_view={
+      boot(){},start(){},size(){},cancel(){},clear(){},stop(){},
+      current:{},unitScale(){return 1;},project(){return null;},
+      load(u){__loads.push(u);return 1;}
+    };_modelFor=null;`, sandbox);
+
+  vm.runInContext(`showModel();`, sandbox);
+  const after1 = g("__loads.length");
+  record(after1 === 1, "opening a ship fetches its geometry once", `${after1}`);
+
+  vm.runInContext(`showModel();showModel();`, sandbox);
+  record(g("__loads.length") === after1,
+    "and asking again for the SAME ship fetches nothing more",
+    `${g("__loads.length")} total`);
+
+  /* Moving between tabs re-renders; it must not re-fetch, and must not
+     reinitialise the viewer. */
+  const viewerBefore = g("_view");
+  vm.runInContext(`openTab("specs");openTab("liveries");openTab("loadout");`, sandbox);
+  record(g("__loads.length") === after1,
+    "moving between tabs fetches no further geometry",
+    `${g("__loads.length")} total`);
+  record(g("_view") === viewerBefore,
+    "and does not replace the viewer instance");
+
+  /* A DIFFERENT ship must fetch - otherwise "no further loads" would be
+     satisfied by a page that never loads anything again. */
+  const other = Object.keys(SHIPS).find(k => k !== shipKey && g("MODELS")[k]);
+  vm.runInContext(`shipId=${JSON.stringify(other)};reset();showModel();`, sandbox);
+  record(g("__loads.length") === after1 + 1,
+    "but changing SHIP does fetch, once",
+    `${g("__loads.length")} total`);
+  notes.push(`N4 behavioural: ${g("__loads.length")} geometry loads across ` +
+    `two ships, three showModel() calls and three tab switches`);
+
+  vm.runInContext(`_view=null;_modelFor=null;shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
+}
+
 /* ---------------------------------------------- rule 8: never touch these */
 console.log("\n--- rule 8: the trademark and Fan Kit text is untouched ---");
 record(/Cloud Imperium Rights LLC/.test(html), "the trademark footer is intact");
