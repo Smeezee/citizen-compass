@@ -58,7 +58,14 @@ if (MUT_LATE) {
     + "supplies. ***");
 }
 
-const H = loadPage({ mutate });
+/* B8's pattern: CC_PAGE / CC_SRCDIR point this at bytes fetched from the
+   origin, so the same assertions can be run against what a visitor is sent.
+   Passing them and having them ignored is worse than not having them - the
+   run would report a served-bytes pass it never performed - so they are
+   threaded through rather than left to the harness's defaults. */
+const H = loadPage({ mutate,
+  srcDir: process.env.CC_SRCDIR || null,
+  pageFile: process.env.CC_PAGE || null });
 const { record, finish, state } = reporter(SELFTEST);
 const { SHIPS, MARKS, el, openShip, g, run } = H;
 
