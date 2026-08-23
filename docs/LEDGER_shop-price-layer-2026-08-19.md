@@ -5384,3 +5384,90 @@ E9  DONE  703ff79  THE HULL CONSTRAINT ON FLIGHT BLADES EXISTS AND IT IS CALLED
     RULES, not ports - 73 against 123 - and a control asserted on it as a port
     count. Both are reported now under names that say which is which.
     SWEEP  66 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+Q1 / E11  DONE  3b4636a  THE LABELS FOLLOW THE SHIP, AND THREE THINGS HAD TO BE
+    FIXED BEFORE ANYTHING COULD SEE IT. Deployed
+    4b408f81-828e-4c06-bc95-60f774aef615, verified from the served bytes.
+    THE DEFECT WAS TWO LINES APART IN ONE FILE. `v.onFrame = renderMarkers` put
+    the markers in the animation loop; renderLabels() was called once, from
+    renderAll(). Markers tracked the camera every frame and labels were placed
+    and abandoned, leader stubs pointing at where the hull used to be.
+    SPLIT IN THREE, NOT MOVED WHOLESALE - E11a's trap taken as written.
+      renderLabels()    decides WHICH markers get a label and builds the DOM.
+      solveLabels()     the collision search; stores each label's OFFSET FROM
+                        ITS OWN MARKER. Throttled: 180ms floor, re-tidy on
+                        settle after 120ms still, or mid-drag once a marker has
+                        drifted 26px.
+      positionLabels()  every frame: marker position plus stored offset, and
+                        the leader line redrawn from marker to label edge.
+    A LABEL CANNOT BE VISUALLY DETACHED, AND THAT IS STRUCTURAL RATHER THAN A
+    MATTER OF TIMING. Its position IS its marker's position plus a fixed
+    offset, and the line's two ends come from the same projection in the same
+    frame. A stale solve makes the ARRANGEMENT untidy and cannot make a line
+    miss. The line is the promise; the ring position is the tidiness.
+    ONE PROJECTION, NOT TWO. renderMarkers records into `_markProj` and the
+    label pass reads it. The same arithmetic run twice per frame would also be
+    two copies that can disagree, which is exactly the state where a line
+    misses the marker it is drawn to.
+      60 frames of continuous motion, 35-marker Perseus: 5 solves, not 60.
+      0.18ms per frame of page arithmetic in this harness. NOT A FRAME TIME -
+      there is no GPU here and it is reported as a model.
+    AND THE HARNESS COULD NOT HAVE SEEN ANY OF IT. `children` returned [] and
+    `childElementCount` returned 0, ALWAYS. renderMarkers writes its markup
+    once and then positions the elements every frame through `box.children` -
+    so against that stub THE ENTIRE POSITIONING LOOP WAS SKIPPED, on every
+    control that has ever driven this page. NO CHECK HAD EVER SEEN WHERE A
+    MARKER WAS PUT. The harness parses top-level tags into children with real
+    style objects now, and decodes entities the way a browser does.
+    A SHIPPED DEFECT FOUND ON THE WAY, OLDER THAN E11. EIGHTEEN PART NAMES
+    CONTAIN A DOUBLE QUOTE - M2C "Swarm", CST-313 "Castillo", CF-337 Panther
+    "Hazard-Zone" Repeater. Every one was written straight into title="..." and
+    aria-label="..." on the hull markers, so the browser ended the attribute at
+    the first quote and the tooltip meant to name the gun said `M2C ` and
+    stopped. On every hull carrying one, since B0 put the name in the tooltip.
+    Escaped now; `&` deliberately is not, because several of these strings
+    carry real entities and escaping it would render them as literal text.
+    AND A RE-ENTRY THE THROTTLE WAS SILENTLY LOAD-BEARING FOR. solveLabels()
+    ends by calling positionLabels(), which ends by deciding whether a re-solve
+    is due, so the two can call each other. The throttle stopped it - which
+    made a stack overflow depend on an arithmetic coincidence elsewhere in the
+    file. Found by --mutate-solveinloop blowing the stack instead of reporting
+    the cost it was written to measure. Guarded by construction now.
+    CONTROL  checks/_verify_label_tracking.mjs, 17 assertions, SEPARATE from
+    _verify_labels.mjs on purpose: that file asserts the labels exist, do not
+    overlap, and that each line ends on its LABEL's edge - all true throughout
+    the defect, because none of them ever asked where the OTHER END was.
+      --mutate-onceonly reproduces the shipped behaviour and FAILS ON EVERY
+        HULL, which is what E11 said it must:
+          Sabre     8 of 8 adrift, worst 192.9px
+          Polaris  23 adrift, worst  84.4px
+          Perseus  26 adrift, worst  59.1px
+        Asserted at every 6 degrees of a full turn, NOT only after it settles -
+        mid-drag is the state Sleven was in when he found it.
+      --mutate-solveinloop puts the solve back in the frame loop: 120 solves
+        across 60 frames instead of 5.
+    AND THE FIRST VERSION OF --mutate-onceonly WAS NOT A FAITHFUL
+    REPRODUCTION. It neutered positionLabels() outright, but that function is
+    also what makes a label visible - so the run failed with "0 labels
+    rendered" rather than with labels stranded where the hull used to be. A
+    NEGATIVE CONTROL THAT FAILS FOR THE WRONG REASON HAS NOT REPRODUCED THE
+    DEFECT.
+    TIME IS DRIVEN, NOT MEASURED. 60 frames execute in 9ms of wall clock here,
+    so a millisecond throttle would never fire once and the run would have
+    reported "0 solves in 60 frames" as though that were the feature working.
+    AND THE BYTE THAT CAUSED THIS FOUR TIMES IS MACHINE-CHECKED NOW.
+    `control_bytes` in checks/file_checks.py. A regex written as /\bpinned\b/
+    through a tool that reads \b as an escape becomes /<0x08>pinned<0x08>/ - a
+    VALID pattern matching NOTHING, invisible in every editor and every diff.
+    It hit _verify_sorts.mjs, _verify_dim.mjs, this harness's own tag parser,
+    and a comment in leak_selftest.go. THE _verify_dim ONE MADE A PASSING
+    ASSERTION UNFALSIFIABLE AND HAD ALREADY BEEN REPORTED AS AN OK.
+    The flagged set is exactly \a \b \f \v \e - the bytes an escape can produce
+    FROM A LETTER. 0x01 as a deliberate field separator, which roundtrip.js
+    uses, is a WARNING and not a defect; calling that a failure would train
+    everybody to ignore the checker, which is how a check stops being one.
+    checks/_verify_control_bytes.py, 15 assertions, proves it in both
+    directions - and caught a hole in its own first version: str.splitlines()
+    treats 0x0B and 0x0C as line breaks, so two of the five bytes never
+    appeared inside a line and the checker was blind to them.
+    SWEEP  68 ok, 0 failed, 3 skipped, 0 NOT RUN.
