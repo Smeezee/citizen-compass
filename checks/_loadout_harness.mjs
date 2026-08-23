@@ -308,7 +308,19 @@ export function loadPage({ mutate = [], session = null,
        an orthographic map of the hull's unit coordinates onto a 960x540
        stage - deterministic, and it separates markers that are apart on
        the hull. */
-    + `project(x,y,z){return{x:480+x*430,y:270-y*250,depth:z*0.5};},`
+    /* E11b: AND IT SCALES BY THE CANVAS, BECAUSE THE REAL ONE DOES.
+       cc_viewer's project() ends
+         var w=this.canvas.clientWidth, h=this.canvas.clientHeight;
+         return {x:(v.x*0.5+0.5)*w, y:(-v.y*0.5+0.5)*h, ...}
+       so a canvas that has not been laid out yet collapses EVERY marker onto
+       (0,0). That is a real state - a model finishing before the stage has a
+       size - and a stub with a fixed mapping can never be in it, which is why
+       E8's control could prove renderLabels RUNS at load and not that the
+       positions it computed were usable. A control can set clientWidth to 0
+       now and reproduce it. */
+    + `project(x,y,z){var c=document.getElementById('cc-canvas');`
+    + `var w=(c&&c.clientWidth)||0, h=(c&&c.clientHeight)||0;`
+    + `return{x:(x*0.4479+0.5)*w, y:(0.5-y*0.463)*h, depth:z*0.5};},`
     + `spinning(){return this._s;},setSpin(v){this._s=!!v;return this._s;},`
     /* E4: the page tells the viewer how much of the stage a panel is
        covering. Recorded rather than swallowed, so a control can assert that

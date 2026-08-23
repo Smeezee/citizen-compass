@@ -2954,10 +2954,16 @@ function renderLabels(){
   });
   box.innerHTML=lh;
   svg.innerHTML=ls;
-  /* On a cold render the frame loop may not have projected yet. Take it now,
-     so the first paint is already right instead of a frame late - which is
-     E11b, one item down. */
-  if(_markProj.length!==list.length) renderMarkers();
+  /* PROJECT NOW, ALWAYS, RATHER THAN WHEN THE COUNT LOOKS WRONG.
+     This was `if(_markProj.length!==list.length) renderMarkers();` and the
+     guard was not a freshness test - it was a LENGTH test. Switching from one
+     4-marker hull to another, or rendering after the stage had resized, left
+     the previous projection in place and the labels were placed against
+     positions that no longer existed. It also hid E11b from its own control:
+     the stale numbers happened to be plausible.
+     renderLabels is a render-path call, not a frame-path one, and re-running
+     an O(n) projection here costs nothing that matters. */
+  renderMarkers();
   const shown=solveLabels();
   /* WRITTEN HERE AND NOT LEFT TO positionLabels(). That function returns early
      when there is nothing live, so on a hull where the toggle is off and
