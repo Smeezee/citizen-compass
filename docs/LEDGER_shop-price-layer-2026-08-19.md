@@ -4800,3 +4800,76 @@ H1 + E4  DONE  c2a96f1  THE HOLOGRAM, PORTED FROM SOURCE. AND THE STAGE
     checks/_verify_stage_panel.mjs gains E4's five - 52 assertions - including
     the one that matters: the selected marker lies inside the stage's REMAINING
     rectangle, not under the panel.
+
+E2  DONE  664616f  A PART ROW SHOWS WHAT THE THING IS, NOT WHAT IT SCORES.
+    513 of 3,283 parts carry no headline stat, so the page rendered them as a
+    name and "IR 0 EM 0". The page was not dropping anything - there was
+    nothing else in the record. But there WAS something in the snapshot, never
+    carried across: turrets' gun count and size, tank capacity, what an
+    attachment modifies. 327 of the 513 now carry one; Sleven's exact row reads
+    "Takes 2 x S3".
+    IR and EM appear only when non-zero or beside something else. 166 parts
+    genuinely have nothing and SAY SO IN WORDS. A ZERO IS A CLAIM; AN ABSENCE
+    IS NOT.
+    CONTROL  checks/_verify_part_rows.mjs, 15 assertions, driving partRow() for
+    ALL 3,283 parts. --mutate-zeros restores the bare pair on 2,764 rows;
+    --mutate-blank suppresses every row and fails the POSITIVE half, which is
+    why the positive half exists.
+    TWO OF ITS OWN ASSERTIONS WERE WRONG AND ARE RECORDED RATHER THAN LOOSENED:
+    it called 14 parts "nothing" while they carried EM 17,000, a power draw and
+    a detection range that partRow had never rendered (it does now); and it
+    flagged two PLACEHOLDER rows whose KEYS contain the word while their names
+    are "Suldrath" and "Sukoran". H8 is about a reader, so it tests visible
+    text now.
+
+E1  DONE  e1a1d7c  A HULL WITH NOTHING ON IT SAYS WHICH KIND OF NOTHING.
+    201 ships render a model, 159 carry markers, 42 draw a hull and mark
+    nothing while the page said nothing at all.
+    TWO CASES, AND THE WRONG SENTENCE IS A LIE:
+      8 hulls  no weapon mounts at all  -> the Cyclone's wording, verbatim
+     34 hulls  mounts but no positions  -> the Cutlass Black: 38 weapon mounts,
+              42 changeable, a hull that draws perfectly. "No weapon mounts"
+              would be false about it.
+    Told apart FROM THE DATA - port types against the marker generator's own
+    set - never from a list of ship names.
+    CONTROL  checks/_verify_marker_absence.mjs, 14 assertions, sweeping every
+    hull with a model. --mutate-onemsg gives both cases the Cyclone's wording;
+    --mutate-silent empties the note. Both fail. And it asserts BOTH messages
+    are in use, because a rule that only ever fires one way is untested.
+
+H2/H3/H5  DONE  3f33dd7  THE RESOLUTION - AND THE ORDER'S PREMISE IS WRONG.
+    H5 IS THE DELIVERABLE AND THE NUMBER IS 21. Ships that fly, are not an
+    edition of something we have, and have no geometry in any of the three
+    libraries: Aegis Tiburon, Anvil Arrow, Anvil F7 Hornet Mk Wikelo, Anvil F8A
+    Lightning, Argo MOTH, Drake Command Module, Drake Pitbull, Gatac Tyilui,
+    Grey's Basher, Greycat PTV, Greycat UTV, Mirai Fury, MISC Starlite, Origin
+    85X Limited, Origin M80, RSI Aurora Mk I SE, RSI Aurora Mk II, RSI Hermes,
+    RSI Mantis, Power Suit, Vanduul Mauler Destroyer.
+    The order anticipated it: "It may be small enough that the answer is no."
+    H2 - THE FORTY ORPHANS ARE NOT MOSTLY A NAME-MATCHING FAILURE.
+       1 resolved by exact match (Nox_Kue.glb -> XIAN_Nox_Kue)
+      25 ARE MODELS FOR SHIPS CIG HAS NOT BUILT - Kraken, Galaxy, Orion,
+         Pioneer, Liberator, Hull D/E, Zeus Mk II MR, three Rangers, three
+         G12s. In LOADOUT_UNRELEASED, no ports, no ship page, nothing to wire.
+      14 genuinely unresolved
+    A model library running AHEAD of the game data. Different problem, better
+    one.
+    THE FIRST PASS RESOLVED ZERO, and that is the defect in one line: THE MODEL
+    FILES ARE BARE SHIP NAMES AND THE SHIP RECORDS ARE NOT - `Kraken.glb`
+    against "Drake Kraken". Stripping a ship's own manufacturer from the front
+    of its own name is canonicalisation; a stem reducing to more than one ship
+    is REFUSED as ambiguous.
+    The six pairs the order says match "by eye" do NOT match exactly - the file
+    says "Edition" and the ship does not. Refused and NAMED for a human. "By
+    eye" is what produced Dragonfly Black -> Yellowjacket.
+    H3 - 93 editions, decided STRUCTURALLY from the ClassName. 1 has its own
+    export and wins with it; 92 take their base hull; all share the base's
+    manufacturer.
+    H4 - only ONE of the 14 Fan Kit models is needed: RSI Constellation Aquila.
+    Ten are ships that already have a model, INCLUDING the Drake Cutlass Black,
+    which the order and the errata both say cannot be rendered at all. It
+    renders; what it lacked was markers, which is E1 and is now answered.
+    CONTROL  checks/_verify_model_resolution.py, 23 assertions. The
+    load-bearing half is not finding pairs - it is REFUSING the four known-bad
+    ones by name every run, while still making at least one, because refusing
+    everything would refuse those four for free.
