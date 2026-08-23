@@ -5666,3 +5666,82 @@ R4  DONE  e8d4dbf  GOING BACK GOES BACK - OFFSET, SEARCH, SORT AND THE ROW YOU
     the previous index.html to a bare curl; re-fetched with a cache-buster it
     carries the adapter and all 24 assertions pass. Worth knowing before
     reading a served-bytes failure as a deploy failure.
+
+R1  DONE  c1e86d0  THE SOLVER DECIDES, AND THE RECLAIMER WAS NEVER BROKEN.
+    Deployed a9546688-59f2-4cdd-95e4-b4defc05a851, verified from the served
+    bytes.
+    Sleven: "everything works the way it's supposed to, but it doesn't have the
+    names like the other ones do." IT WAS NOT BROKEN. 15 markers, every one
+    resolving to a real port with a real hardpoint name and a fitted part, and
+    ONE OVER a threshold of 14 THAT I INVENTED IN H1b. A working feature that
+    the person using it concluded was a broken page - THIRD TIME IN TWO DAYS,
+    after the silent markers and the panel labelled `Look`.
+    AND THE THRESHOLD WAS MEASURABLY WRONG, not merely arbitrary. Driving the
+    solver over all 159 hulls that carry markers:
+      155 of 159   places EVERY marker with zero overlaps
+        4 of 159   cannot
+                     RSI Perseus    35 markers, 26 placed,  9 with no room
+                     Aegis Idris-P  23 markers, 20 placed,  3 with no room
+                     Aegis Idris-M  23 markers, 22 placed,  1 with no room
+                     RSI Polaris    24 markers, 23 placed,  1 with no room
+    The count turned labels off on SEVEN hulls. THREE OF THOSE SEVEN PLACE
+    EVERY LABEL CLEANLY - the Reclaimer at 15, the 890 Jump at 17, the
+    Constellation Andromeda at 16. It was hiding working labels on three hulls
+    and catching nothing the solver would not have caught.
+    WHAT MAKES THE SOLVER RIGHT IS NOT THAT IT DISAGREES WITH 14 TODAY, and the
+    control says so rather than claiming a win it does not have: the largest
+    clean hull carries 17 and the smallest crowded one 23, so A COUNT OF 20
+    WOULD GIVE THE SAME ANSWERS ON TODAY'S FLEET. What makes it right is that
+    the answer MOVES WITH THE THING BEING ASKED ABOUT - shrink the stage to
+    300x200 and the Reclaimer's same 15 markers go from 15 placed to 6 with no
+    room, and the default flips. A laptop, a split screen or a phone, which no
+    number in the source can follow.
+    R1b: THE OFF-STATE READS AS A CONTROL, WITH ITS REASON. "labels off on a
+    hull this busy" is a status caption, and a status caption is what a reader
+    skims past - which is how a working Reclaimer got reported as broken. It
+    states a number now: "35 hardpoints - 9 have no room - show all labels
+    anyway". Where the READER turned them off it says "labels off" and claims
+    no reason it does not have.
+    AND MY OWN CONTROL CAUGHT A REGRESSION R1 INTRODUCED, WHICH IS E11b
+    ARRIVING THROUGH THE DOOR R1 OPENED. Whether labels are on is now the
+    solver's answer, and the solver's answer depends on the stage - so a page
+    whose canvas had no size when the model arrived gets "nothing fits", labels
+    default off, _lblLive is empty, and positionLabels() returns early on an
+    empty list. THE FRAME LOOP COULD NEVER RE-DECIDE, and the labels would stay
+    down until something re-rendered the page: exactly the symptom Q2 fixed.
+    The frame loop compares the stage AND canvas geometry against what the
+    current decision was made with and re-renders when it changes. BOTH BOXES,
+    because both decide the answer - the canvas scales the projection and the
+    stage bounds the collision search - and watching only the stage left the
+    control reporting "0 labels up" on a canvas that had just gained its size.
+    It also earns its keep on a window resize, where somebody dragging their
+    browser narrower was keeping a default computed for the old width.
+    CONTROL  checks/_verify_label_threshold.mjs, 33 assertions. Section 1
+    RE-MEASURES THE FLEET EVERY RUN rather than quoting the order, and asserts
+    the old threshold's error as a number.
+      --mutate-alwayson    labels on whatever the solver says. THE ORDER'S
+                           LOAD-BEARING NEGATIVE - without it "everything is
+                           on" passes every other assertion.
+      --mutate-countagain  the threshold of 14 comes back; the Reclaimer goes
+                           dark again.
+      --mutate-caption     the off-state stops naming a number.
+    AND THIS CONTROL LEAKED ITS OWN STATE. Section 4 shrank the stage to
+    300x200 and never put it back, so sections 5 and 6 measured a hull that no
+    longer fits its own labels - four assertions failing on a page that was
+    correct. THIRD TIME; the other two are in this ledger under H1f and H1b,
+    and all three were found by numbers being wrong in a way the feature could
+    not explain rather than by a run failing where the defect was.
+    _verify_labels.mjs asserted the old wording verbatim; it asserts what the
+    line must SAY - a number, and the way past it - rather than how it says it.
+    _verify_label_cold_start.mjs asserted labels piled in the corner on an
+    unsized canvas; with R1 the solver reports nothing fits and none are drawn
+    at all, which is better. It asserts the RECOVERY, which is the claim that
+    section exists to make and which survives the change.
+    ONE THING FOR C1 RATHER THAN FOR ME. The order's rule is explicit - "solver
+    cannot place some -> labels OFF by default" - and it is implemented as
+    written. On two of the four affected hulls that means ONE unplaceable label
+    hides 22 or 23 working ones: Polaris 23 of 24 placed, Idris-M 22 of 23.
+    THAT IS THE SAME SHAPE AS THE DEFECT THIS ITEM FIXES, at a smaller scale,
+    and "show all labels anyway" is one click away. Recorded rather than acted
+    on.
+    SWEEP  72 ok, 0 failed, 3 skipped, 0 NOT RUN.
