@@ -5517,3 +5517,70 @@ Q2 / E11b  DONE  f0e3a0a  THE PATH WAS THE UNSIZED CANVAS, AND E8'S CONTROL WAS
                          reproducing AND a hull switch reuses the old
                          positions - two failures from one line.
     SWEEP  69 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+Q3 / E6 + H1f-2  DONE  d6b954e  THE PANEL IS FINDABLE, AND ITS SETTINGS ARE
+    PERMANENT. Deployed 4963dbd8-a51b-4540-8b18-5c8e5ae2328a, verified from the
+    served bytes.
+    Sleven reported THE ENTIRE CONTROL PANEL AS MISSING WHILE LOOKING STRAIGHT
+    AT IT. The only way in was a word - `Look` - set in the muted colour, in
+    the corner of a stage already carrying muted corner text. It read as a
+    caption on the picture rather than as a thing to press.
+      the label names what is behind it     Display, not Look
+      it carries a gear                     the one glyph read as "settings"
+                                            without reading anything
+      drawn in --text on a filled chip      `Look` was --muted on a scrim -
+        outlined in the accent                the same treatment as the stage's
+                                              own hint text
+      and on a FIRST VISIT it opens itself  once, and remembers that it did
+    NOT A TOUR AND NOT A DISMISSIBLE TIP. The thing itself, open, with every
+    control in it. Closing it is the acknowledgement.
+    AN EMPTY PANEL MUST NOT OPEN ITSELF. renderTunePanel() draws nothing
+    without a viewer, so on a machine with no WebGL the offer would be an empty
+    box - worse than nothing, and it would spend the one offer this feature
+    gets. NOT OFFERED IS NOT THE SAME AS OFFERED AND EMPTY, and the flag is not
+    marked spent either, so the offer still arrives on a machine that can show
+    it.
+    H1f-2, WHICH IS WHY E6 MATTERS MORE THAN IT DID. Sleven, asked directly:
+    "as long as possible, really... I'd hate to have to come in after a couple
+    of days and have to redo it." Every look-and-feel preference moves from
+    sessionStorage to localStorage - render style, colour and sliders
+    (cc_viewer), page brightness (CC_THEME), and the spin choice. THIS REVERSES
+    WHAT B4 AND H1f BOTH DECIDED, and both had argued these were preferences
+    about one sitting. They are not; he said so.
+    The limits are stated rather than implied: per-browser, per-device, gone
+    with the site's data, because there are no accounts here. The failure mode
+    is mild - the page returns to defaults that are good defaults - AND IT IS
+    EXACTLY WHY E6 MATTERS. Clearing storage clears the seen-flag too, so THE
+    RECOVERY PATH AND THE FIRST-VISIT PATH ARE THE SAME PATH. Asserted, not
+    left as a comment.
+    AND THE HARNESS COULD NOT BOOT A PAGE THAT HAD A VIEWER. The stub was a
+    string assigned to `_view` by openShip(), so THE PAGE'S OWN BOOT NEVER HAD
+    ONE: view() returns null without CCViewer, and every viewer-dependent path
+    at load time was therefore unreachable from any control - E6's first-visit
+    panel among them. THAT IS THE SAME BLIND SPOT THAT HID E11b, ONE LAYER
+    DOWN. It is a factory now, and `viewer:true` installs a CCViewer around it
+    so view() succeeds at boot exactly as it does in a browser.
+    The harness also installs sessionStorage and localStorage as SEPARATE
+    stores. Aliasing them would have made "does this survive a closed browser"
+    unaskable: a control could clear one, see the value still there, and learn
+    nothing, because it never left.
+    CONTROL  checks/_verify_panel_findable.mjs, 27 assertions.
+      --mutate-oldlabel    back to a bare `Look`.
+      --mutate-nofirst     the first visit no longer opens it.
+      --mutate-nagforever  the seen-flag is never written, so it opens on EVERY
+                           visit - the opposite failure, and the one an
+                           auto-opening panel invites.
+      --mutate-session     the settings go back to a session lifetime.
+    TWO THINGS THE NEGATIVES FORCED.
+    MARKUP MUTATIONS ARE NOT SCRIPT MUTATIONS. --mutate-oldlabel changes the
+    BUTTON, which section 1 reads out of the file directly; routing it through
+    loadPage() planted nothing, and the harness REFUSED rather than letting the
+    run come out clean.
+    AND THE SECOND-VISIT CHECK WAS SEEDED BY HAND. It typed ccPanelSeen:"1"
+    into the store, which passes against a build that never writes the flag at
+    all - the exact defect --mutate-nagforever plants. It is seeded from what
+    the FIRST visit actually stored now, so the two visits are one chain.
+    _verify_spin_default.mjs and _verify_dim.mjs assert the persistent store
+    AND that nothing lands in the session one, so a build that quietly went
+    back to a session lifetime fails rather than passes.
+    SWEEP  70 ok, 0 failed, 3 skipped, 0 NOT RUN.
