@@ -4748,3 +4748,55 @@ B5/B6 CORRECTED  c0e93b0  THREE FINDINGS AGAINST THE PROMOTION, ALL CONFIRMED.
     overwrote that report before reading it.
     Two more hulls place, so markers go 1,200 on 157 hulls to 1,210 on 159.
     Sweep 54 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+H1 + E4  DONE  c2a96f1  THE HOLOGRAM, PORTED FROM SOURCE. AND THE STAGE
+    REFRAMES.
+    PORTED, NOT REIMPLEMENTED - and that distinction cost a rewrite.
+    docs/holo-viewer-prototype-src/ landed 66 KB of real source. I had ALREADY
+    written H1 from the living document's PROSE, and it was wrong in the
+    centre: my version made `solid` an additive MeshBasicMaterial. The
+    prototype's own comment says why that is the defect and not the fix -
+    "opaque means the ship actually blocks the grid behind it, which is what
+    made the old additive-only version read as murky soup". Reverted and did it
+    again from the source. `solid` is an OPAQUE depth-writing ShaderMaterial
+    with FRAG_SOLID verbatim; only the panel lines and the wireframe are
+    additive.
+    THE OTHER THING PROSE LOST: edgeOpacity(). Line opacity is COMPUTED FROM
+    THE EDGE COUNT - 0.44*(168351/edges)^0.85 clamped to [0.12,0.55] - so a
+    dense hull gets dimmer lines. My hard-coded 0.55 would have whited out the
+    Liberator and left the Cyclone invisible. That function IS the white-out
+    defence and no amount of reading the description would have produced it.
+    Three styles, no sliders, detail 24 / lineInt 1.0 / scan 1.0 hard-coded.
+    Pre-pass for panel and wire only - solid is opaque and writes its own
+    depth - with polygonOffset. Nothing DoubleSide.
+    NOT PORTED, SAID RATHER THAN DROPPED: UnrealBloomPass. No postprocessing is
+    vendored here and adding third-party code is not a side effect of a render
+    port. FRAG_SOLID's fresnel carries part of it; the gap is a softer halo.
+    E4: the page tells the viewer what fraction of the stage a panel covers and
+    the viewer re-centres on the remainder. Sleven's 125a capture had the hull
+    a sliver at the far edge; B3's "a panel must not cover its own marker" is
+    defeated just as thoroughly when the HULL leaves instead.
+    CONTROL  checks/_verify_holo_render.mjs, 20 assertions. It RUNS the
+    viewer's own _buildHoloMaterials and _applyHolo against the largest real
+    hull (Liberator, 1,102,122 vertices) and reads the materials back.
+      panel  additive 0.120/fragment -> 0.00% pure white with the pre-pass
+      solid  opaque                  -> 0.00%
+      wire   additive 0.075/fragment -> 0.00%
+      panel WITHOUT the pre-pass, DoubleSide -> 29.32%, defect reproduced
+    ONE RESULT IS EXACT RATHER THAN MODELLED: solid's brightest possible pixel
+    is uColor*1.995 and 0x5fd8ee's red channel is 0.373, giving 0.744. The RED
+    CHANNEL CANNOT REACH 1.0 - saturation is arithmetically impossible there,
+    not merely unobserved.
+    STATED LIMIT: there is no GPU here. No frame was drawn, no pixel read. The
+    figures are arithmetic on the blend using real materials and real geometry,
+    reported as a model, NOT as a render.
+    AND THE FIRST VERSION OF THAT CONTROL WAS VACUOUS. I declared
+    check(label, got) and called check(got, label) everywhere, so every
+    assertion took a non-empty STRING as its condition. Every line read
+    "ok true", exit 0, and --mutate-prepass ALSO exited 0. Caught by reading
+    the output rather than trusting the exit code. THIRD TIME a control of mine
+    has carried a vacuous assertion; the pattern is that they are found by
+    reading output, never by the run passing.
+    checks/_verify_stage_panel.mjs gains E4's five - 52 assertions - including
+    the one that matters: the selected marker lies inside the stage's REMAINING
+    rectangle, not under the panel.
