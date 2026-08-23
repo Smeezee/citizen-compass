@@ -4873,3 +4873,61 @@ H2/H3/H5  DONE  3f33dd7  THE RESOLUTION - AND THE ORDER'S PREMISE IS WRONG.
     load-bearing half is not finding pairs - it is REFUSING the four known-bad
     ones by name every run, while still making at least one, because refusing
     everything would refuse those four for free.
+
+H1 + H1f  DONE  22d5d9c  ALL SIX STYLES, FIVE COLOURS, THREE SLIDERS, AND THE
+    PANEL THAT DRIVES THEM. Deployed 4f397e10-4700-4af3-b0df-a7e27d89a7c6.
+    TWO OF C1'S CONSTRAINTS OVERTURNED BY SLEVEN, and the reasoning is kept
+    because it is the interesting part: the argument for three styles and
+    hard-coded sliders was that a visitor should enjoy the page rather than
+    tune it. His answer is that ON THIS PAGE THE TUNING IS THE ENJOYMENT. A
+    developer's tuning panel and a visitor's controls look identical in a
+    screenshot; the difference is whether anybody wants to touch them.
+    Six styles ported from viewer.js with FRAG_SOLID and FRAG_HULL verbatim.
+    Five colours. Three sliders. Default Solid + lines in AMBER, grid on,
+    scanlines off - none of which the first pass honoured.
+    H1f: absolutely positioned inside #cc-stage, CLOSED by default, one control
+    opens it, Escape or an outside click closes it. Zero page height BY
+    CONSTRUCTION - the prototype's panel is a permanent right-hand column and
+    P7 measured this page at 1080 of 1080. Session-persisted like B4's spin.
+    A REAL DEFECT, AND IT IS WHY THE DEPLOYED PAGE LOOKED WHITE. edgeOpacity
+    clamps into [0.12, 0.55], tuned against four ~200-350k-vertex Fan Kit
+    models. On the Liberator, 1,102,122 vertices, THE FORMULA ASKS FOR 0.063
+    AND THE FLOOR DOUBLES IT. The floor protects nothing: a sparse hull's
+    formula already returns a high value the CEILING catches, so the floor only
+    ever bites dense hulls - the ones that saturate. One density factor now
+    scales edges, wireframe and points alike.
+    AND MY CONTROL WAS HIDING IT. It modelled ONE FRAGMENT PER PIXEL for every
+    pass. The depth pre-pass deduplicates SURFACES; it does NOT deduplicate
+    LINES - coincident edges at one depth all draw and all add. That is how it
+    reported 0.00% white while Sleven was looking at white line-work.
+    At the shipped defaults, on the densest hull in the fleet:
+      panel 4.85%  solidlines 3.76%  solid 0.00%  hull 0.00%  wire 0.09%
+      points 4.18%
+    Panel is CLOSE TO THE 5% LINE and that is recorded rather than rounded
+    away. Worst a user can reach (lineInt 2.0, detail 80) is 30.90% - reported,
+    not asserted, because a bright setting somebody chose is not a bright
+    default they did not.
+    THE CONTROL WAS ALSO LEAKING ITS OWN STATE. Section 3 drove each slider to
+    its extremes and never restored them, so section 5 measured lineInt=1.8 and
+    detail=70 and reported them as the defaults - 30.9% for a configuration
+    nobody ships. Found by DUMPING THE PASSES, not by the numbers looking
+    wrong: a saturating hull was exactly what I expected to see, which is what
+    makes that leak dangerous. CC_HOLO is snapshotted and restored.
+    CONTROLS
+      _verify_holo_render.mjs, 39 assertions against the real module. ALL 15
+      STYLE PAIRS produce DIFFERENT render signatures. --mutate-noop makes
+      setStyle record the name while _applyHolo ignores it and all 15 collapse
+      - the load-bearing negative the order names.
+      _verify_look_panel.mjs, 36 assertions against the page: closed by
+      default, 6 styles / 5 colours / 3 sliders / 3 toggles, every one reaching
+      the viewer and remembered, Escape and outside-click closing it, and
+      open-equals-closed height asserted FROM THE CSS rather than believed.
+    Two harnesses because they are two claims: a page with no buttons and a
+    viewer that ignores every call each pass one of them. The first pass
+    shipped exactly the second failure.
+    NOT PORTED, said rather than dropped: UnrealBloomPass. No postprocessing is
+    vendored here; the glow slider drives the fresnel rim and cc_viewer.js says
+    so in the only place that does.
+    SEQUENCING NOTE: deployed AHEAD of the sweep on Sleven's instruction, after
+    running all twelve page controls individually. The sweep then returned 59
+    ok / 0 failed, so it cost nothing - but the order of those two is recorded.
