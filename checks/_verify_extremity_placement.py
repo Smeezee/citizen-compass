@@ -266,14 +266,56 @@ else:
               aimed > 100, "%d points" % aimed)
         check("and some of them really moved", moved > 50, "%d points" % moved)
 
-        cb = sum(x[1] for x in ra["crowded"])
-        ca = sum(x[1] for x in rb["crowded"])
-        print("\n     crowded markers BEFORE %d on %d ships"
-              % (cb, len(ra["crowded"])))
-        print("     crowded markers AFTER  %d on %d ships"
-              % (ca, len(rb["crowded"])))
-        check("FLEET CROWDING DOES NOT GET WORSE - the item's own acceptance",
+        # CROWDING IS TWO NUMBERS AND BOTH ARE ASSERTED.
+        #
+        # I reported "118 -> 117" and called the control held. That is the
+        # MARKER count, and it is the one that improved. The HULL count is a
+        # separate number that can move the other way - markers can consolidate
+        # onto fewer hulls or spread onto more - and quoting whichever one went
+        # the right way is a metric chosen after the fact.
+        #
+        # A RISE IN EITHER IS THE CONTROL FIRING. And both are measured a
+        # second way, independently of the placement report's own counter,
+        # because that counter records what the placement loop could not clear
+        # DURING placement - which is not the same question as "are two markers
+        # sitting on top of each other in the finished file".
+        def proximity(fleet):
+            tot, hulls = 0, set()
+            for n, v in fleet.items():
+                pts = [h["pos_model"] for h in v["hardpoints"]]
+                if len(pts) < 2:
+                    continue
+                lo = [min(q[i] for q in pts) for i in range(3)]
+                hi = [max(q[i] for q in pts) for i in range(3)]
+                ms = (math.dist(lo, hi) or 1.0) * 0.02
+                for i, q in enumerate(pts):
+                    if min((math.dist(q, r2) for j, r2 in enumerate(pts)
+                            if j != i), default=9e9) < ms:
+                        tot += 1
+                        hulls.add(n)
+            return tot, len(hulls)
+
+        cb, hb = sum(x[1] for x in ra["crowded"]), len(ra["crowded"])
+        ca, ha = sum(x[1] for x in rb["crowded"]), len(rb["crowded"])
+        pb, pa = proximity(A), proximity(B)
+        print("")
+        print("                      report metric        proximity metric")
+        print("                      markers  hulls       markers  hulls")
+        print("     BEFORE            %5d   %4d        %5d   %4d"
+              % (cb, hb, pb[0], pb[1]))
+        print("     AFTER             %5d   %4d        %5d   %4d"
+              % (ca, ha, pa[0], pa[1]))
+        check("FLEET CROWDING DOES NOT GET WORSE by MARKER count",
               ca <= cb, "%d -> %d" % (cb, ca))
+        check("nor by HULL count - the figure I quoted only the good half of",
+              ha <= hb, "%d -> %d hulls" % (hb, ha))
+        check("nor by an independent proximity measure, by marker",
+              pa[0] <= pb[0], "%d -> %d" % (pb[0], pa[0]))
+        check("nor by that measure's hull count",
+              pa[1] <= pb[1], "%d -> %d hulls" % (pb[1], pa[1]))
+        _notes.append("crowding BEFORE/AFTER - report metric %d/%d markers on "
+                      "%d/%d hulls; proximity metric %d/%d markers on %d/%d "
+                      "hulls" % (cb, ca, hb, ha, pb[0], pa[0], pb[1], pa[1]))
 
         # THE NEGATIVE CONTROL THE ORDER NAMES: if every ship moves a long way,
         # the new measurement is wrong rather than the old one.

@@ -429,15 +429,51 @@ def main():
             # `from` is recorded on every point, whichever way it went, because
             # a derivation that stops saying how it got its answer is one
             # nobody can audit later.
-            src = 'own'
-            if not has_vocabulary(loc) and mt.get('parent'):
-                ploc = read_location(mt['parent'], mt['parent'])
-                if has_vocabulary(ploc):
-                    ploc['index'] = loc['index']   # keep the child's ordering
-                    loc = ploc
-                    src = 'inherited'
-                    inherited_n += 1
+            src, from_name = 'own', None
+            if not has_vocabulary(loc):
+                # WHERE THE POSITION COMES FROM, AND WHY IT IS NOT "ONE LEVEL".
+                #
+                # A gun inside a turret sits THREE deep:
+                #     turret_side_back_right
+                #       -> hardpoint_weapon_left_upper
+                #            -> hardpoint_class_2
+                #
+                # One level up from the gun is `hardpoint_weapon_left_upper`,
+                # and that name DOES yield vocabulary: left, upper, gun. So a
+                # strict one-level rule stops there and places a gun belonging
+                # to the back-RIGHT turret on the LEFT side of the ship.
+                #
+                # That is worse than the hull-centre default, not better: it is
+                # a confident wrong position, which is the exact failure mode
+                # the no-fuzzy-matching rule exists to prevent elsewhere in
+                # this pipeline.
+                #
+                # So a port inside a turret takes THE TURRET'S position. The
+                # turret is a real ancestor recorded in the data, not a guess,
+                # not a sibling, and not an inference - `turret` is the
+                # OUTERMOST TurretBase in this port's own chain. Everything
+                # bolted to a turret is physically at that turret.
+                #
+                # Anything else with no vocabulary of its own falls back to the
+                # nearest ancestor that has some, walking outwards. Still only
+                # real parents, still nothing invented.
+                cand = []
+                if mt.get('turret'):
+                    cand.append(mt['turret'])
+                cand += list(reversed(mt.get('chain') or []))
+                if mt.get('parent') and mt['parent'] not in cand:
+                    cand.append(mt['parent'])
+                for anc in cand:
+                    aloc = read_location(anc, anc)
+                    if has_vocabulary(aloc):
+                        aloc['index'] = loc['index']   # keep child ordering
+                        loc = aloc
+                        src = 'inherited'
+                        from_name = anc
+                        inherited_n += 1
+                        break
             loc['_from'] = src
+            loc['_from_name'] = from_name
             bykey.setdefault((loc['side'], loc['vert'], loc['lon'], loc['part']), []).append((mt, loc))
 
         hps, placed, crowded = [], [], 0
@@ -470,7 +506,11 @@ def main():
                     'where': mt['where'], 'port': mt['port'],
                     'kind': KIND.get(mt['type'], 'other'),
                     'pilot': None,
-                    'turretOf': None,
+                    # B5: THE TURRET THIS PORT IS BOLTED TO, or null.
+                    # The field has existed since 2026-08-10 and has been null
+                    # on all 1,798 records for the whole of that time, because
+                    # no port that HAD a turret ever reached this file.
+                    'turretOf': mt.get('turret'),
                     'pos_model': [round(float(c), 3) for c in pcm],
                     'unit': [round(c, 5) for c in unit],
                     'read': [k for k in ('side', 'vert', 'lon', 'part') if loc[k]],
@@ -479,6 +519,8 @@ def main():
                     # nothing and its parent's did. renderMarkerNote() keeps
                     # telling the truth because this is here to be told.
                     'placed_from': loc.get('_from', 'own'),
+                    'inherited_from': loc.get('_from_name'),
+                    'depth': mt.get('depth', 0),
                     # B6: whether this point was aimed at a MEASURED extremity
                     # of this hull or at the fixed fraction. Recorded per point
                     # because "the wing mounts moved" is only checkable if the
@@ -577,7 +619,16 @@ def main():
     print('ships skipped    :', len(report['skipped']))
     for n, why in report['skipped'][:12]:
         print('   ', n, '->', str(why)[:100])
-    print('ships with a crowded marker:', len(report['crowded']))
+    # CROWDING IS TWO NUMBERS AND BOTH ARE REPORTED.
+    #
+    # "118 -> 117" is the MARKER count and it improved. The HULL count is a
+    # different number and it does not have to move the same way: markers can
+    # consolidate onto fewer hulls or spread onto more. Reporting whichever one
+    # improved is the shape of a metric chosen after the fact, so both are
+    # printed here and a rise in EITHER is treated as the control firing.
+    _cm = sum(n for _, n in report['crowded'])
+    _ch = len(report['crowded'])
+    print('crowded markers:', _cm, 'on', _ch, 'hulls')
     _inh = sum(n for _, n in report['inherited'])
     _none = sum(1 for s in out.values() for h in s['hardpoints'] if not h['read'])
     print('points placed from a PARENT name:', _inh,
