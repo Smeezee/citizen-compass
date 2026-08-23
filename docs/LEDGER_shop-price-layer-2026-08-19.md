@@ -5327,3 +5327,60 @@ E10  DONE  d02906e  "BEST" IS GONE, FOUR FACTUAL SORTS, AND EVERY ONE OF THEM
     this fall through to the same axis - so it failed on a working page. Moved
     to the new names.
     SWEEP  65 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+E9  DONE  703ff79  THE HULL CONSTRAINT ON FLIGHT BLADES EXISTS AND IT IS CALLED
+    RequiredTags. Deployed 7e07f610-2869-4dc5-9d10-7a9e5d87c2cf, verified from
+    the served bytes.
+    SLEVEN WAS RIGHT AND THE FIELD WAS IN THE SNAPSHOT ALL ALONG.
+      ports  123 of the 136 editable FlightController ports carry
+             `RequiredTags` naming a hull-specific kit -
+             ANVL_Pisces_C8R_Blade, AEGS_Avenger_Stalker_Blade
+      items  ALL 238 blades carry the matching tag on their own side
+      join   complete - every tagged port admits 1 to 5 blades, none starved
+    Fitment matched on TYPE and SIZE only, and every blade in the game is
+    FlightController size 1, so all 136 hulls were offered all 238 - 143 of
+    which are numerically identical to one another.
+    THIS IS THE MECHANISM PAINTS ALREADY USE, and that branch's own comment
+    says why: "the tag is the join, not the type". A paint port's
+    CompatibleTypes says only `Paints`, which is every livery in the game. A
+    blade port's says only `FlightController`.
+      C8R Pisces   238 -> 3   its own Standard, PHB and TSB
+      per hull     1: 65   2: 16   3: 34   4: 1   5: 7   238: 13
+    SCOPED TO FlightController DELIBERATELY AND THE REST IS MEASURED RATHER
+    THAN CHANGED. RequiredTags appears on editable ports of 25 types - 2,467
+    Misc, 256 Paints, 160 Turret, 66 WeaponAttachment. Applying it everywhere
+    would be a fleet-wide change to what every picker offers, decided as a side
+    effect of a question about flight blades. Counts recorded so it can be
+    ordered separately.
+    THE 13 THAT REMAIN UNCONSTRAINED ARE NAMED, NOT ROUNDED AWAY: Banu
+    Defender, the seven Mustangs, both Nomads, the HoverQuad and the
+    Caterpillars. Their ports state no kit and inventing one from their silence
+    is the opposite of what the data says. The page SAYS SO on those ports
+    rather than implying all 238 were made for the hull.
+    A CONSTRAINT THAT WOULD EMPTY A PORT IS NOT APPLIED AND IS NAMED IN THE
+    BUILD. None is starved today, but a future snapshot could rename a tag on
+    one side only, and a picker going from 238 options to none would read as a
+    broken page rather than as moved data.
+    AND THE PAGE ANSWERS THE QUESTION HE ACTUALLY ASKED. "Flight blade"
+    appeared nowhere with any explanation. The picker says what one is and what
+    PHB and TSB do, where somebody is choosing one.
+    WHAT IS NOT CLAIMED: whether a blade made for one hull would PHYSICALLY fit
+    another. No source we hold settles that and the order says so explicitly.
+    The claim made here is narrower and is a fact about the game files.
+    CONTROL  checks/_verify_flight_blades.mjs, 20 assertions. SECTION 1 READS
+    THE RAW SNAPSHOT, NOT THE BUILT DATA - a constraint read out of the output
+    would only prove the output agrees with itself.
+      --mutate-untagged collapses every flight-controller port back onto one
+      list; the Pisces returns to 238 with "Avenger Stalker PHB Flight Blade"
+      among them. SLEVEN'S EXACT REPORT, REPRODUCED.
+    THE ORDER'S SECOND BRANCH - "if no such field exists, assert the list is
+    GROUPED" - IS EXPLICITLY DECLINED RATHER THAN FORGOTTEN, and the control
+    prints that it does not apply.
+    _verify_loadout_fitment.py rebuilt the rule key WITHOUT the tag segment, so
+    all 73 tagged lists looked like keys belonging to no port and it failed on
+    a correct page. It calls the builder's own constrain_tags() and item_tags()
+    now rather than reimplementing the rule, so the two cannot drift again.
+    AND ONE OF MY OWN FIGURES WAS MISNAMED. `blade_ports_constrained` counted
+    RULES, not ports - 73 against 123 - and a control asserted on it as a port
+    count. Both are reported now under names that say which is which.
+    SWEEP  66 ok, 0 failed, 3 skipped, 0 NOT RUN.
