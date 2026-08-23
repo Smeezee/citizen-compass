@@ -45,7 +45,11 @@ import vm from "node:vm";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
-const VIEWER = join(ROOT, "testing", "_src", "cc_viewer.js");
+/* B8's pattern: CC_VIEWER points this at a cc_viewer.js fetched from the
+   origin, so the fleet-wide assertions can be re-run against the bytes a
+   visitor is actually sent rather than against the working tree. */
+const VIEWER = process.env.CC_VIEWER
+  || join(ROOT, "testing", "_src", "cc_viewer.js");
 const GEO = process.env.CC_GEO_DIR
   || join(ROOT, "data-layer", "derived", "hull-geometry");
 const MUT = process.argv.slice(2).find((a) => a.startsWith("--mutate-")) || "";
