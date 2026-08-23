@@ -1925,7 +1925,10 @@ function renderStagePanel(){
   const el=$('cc-panel'); if(!el) return;
   const sh=ship(), slot=sel?sh.slots.find(x=>x.id===sel.slot):null;
   if(!slot || pickerHome(slot)!=="stage"){
-    el.hidden=true; el.innerHTML=""; return;
+    el.hidden=true; el.innerHTML="";
+    /* E4: and the stage gets its whole width back. */
+    if(_view && _view.setObstruction) _view.setObstruction(0);
+    return;
   }
   el.innerHTML = swappable(slot) ? pickerHTML(slot) : fixedPanel(slot);
   el.hidden=false;
@@ -1951,6 +1954,17 @@ function renderStagePanel(){
   el.setAttribute("data-side", box.side);
   el.setAttribute("data-for", slot.id);
   el.setAttribute("data-anchor", pt ? (Math.round(px)+","+Math.round(py)) : "none");
+  /* E4: THE STAGE REFRAMES AROUND WHAT IS LEFT OF IT.
+     Sleven's capture: the 125a with the countermeasure panel open, the hull a
+     sliver at the far left while the panel holds most of the stage. The ship
+     was neither centred nor scaled to the space it still had.
+     B3 says a panel must not cover its own marker. That rule is defeated just
+     as thoroughly if the HULL drifts out from under the panel instead - the
+     marker goes with it. So the viewer is told how much of its width is
+     covered and re-centres on the remainder. */
+  if(_view && _view.setObstruction && sw){
+    _view.setObstruction(PANEL_W / sw);
+  }
 }
 function markersFor(cls){ return MARKS[cls]||[]; }
 function slotByPort(pid){ return ship().slots.find(s=>s.p===pid)||null; }

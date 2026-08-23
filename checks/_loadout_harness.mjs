@@ -169,6 +169,11 @@ export function loadPage({ mutate = [], session = null,
     + `clear(){},stop(){},current:{},unitScale(){return 1;},`
     + `project(){return{x:640,y:360,depth:0};},`
     + `spinning(){return this._s;},setSpin(v){this._s=!!v;return this._s;},`
+    /* E4: the page tells the viewer how much of the stage a panel is
+       covering. Recorded rather than swallowed, so a control can assert that
+       the page asked - and asked for the right amount. */
+    + `_obs:0,setObstruction(f){this._obs=Math.max(0,Math.min(0.8,Number(f)||0));`
+    + `return this._obs;},obstruction(){return this._obs;},`
     + `load(){return 1;}};`;
 
   /* `spin` is deliberately OPTIONAL and unset by default. Forcing spinOn on

@@ -271,6 +271,46 @@ openShip(key400i);
     "and does NOT close it - otherwise the picker would shut on first use");
 }
 
+/* ------------------------- 4b. E4: THE STAGE REFRAMES AROUND THE PANEL --- */
+console.log("\n--- E4: the stage gives up width to the panel and re-centres ---");
+openShip(key400i);
+{
+  run("sel=null;renderAll();");
+  record(g("_view").obstruction() === 0,
+    "with nothing open, the stage is not obstructed",
+    String(g("_view").obstruction()));
+
+  clickMarker(swapMark[0]);
+  const obs = g("_view").obstruction();
+  const W = g("PANEL_W");
+  record(obs > 0, "opening a panel tells the viewer the stage is covered",
+    String(obs));
+  record(Math.abs(obs - W / STAGE_W) < 1e-6,
+    `and by the right amount - the panel's own width over the stage's `
+    + `(${W}/${STAGE_W})`, String(obs));
+
+  /* THE POINT OF THE ITEM: the marker the panel is ABOUT must still be on
+     screen. Sleven's capture had the hull as a sliver at the far edge with
+     the panel holding the stage - B3's "a panel must not cover its own
+     marker" is defeated just as thoroughly when the HULL leaves instead. */
+  const p = panelState();
+  const [ax] = String(p.anchor).split(",").map(Number);
+  const freeLeft = (p.side === "left") ? p.left + W : 0;
+  const freeRight = (p.side === "left") ? STAGE_W : p.left;
+  record(ax >= freeLeft && ax <= freeRight,
+    "and the selected marker lies inside the stage's REMAINING visible "
+    + "rectangle, not under the panel",
+    `marker x=${ax}, free ${freeLeft}..${freeRight}`);
+  state.notes.push(`E4: panel covers ${(obs * 100).toFixed(1)}% of the stage; `
+    + `the selected marker stays in the free ${freeRight - freeLeft}px`);
+
+  run("sel=null;renderAll();");
+  record(g("_view").obstruction() === 0,
+    "and closing it gives the whole stage back - the NEGATIVE half, without "
+    + "which a build that never un-obstructs also passes",
+    String(g("_view").obstruction()));
+}
+
 /* --------------------------------- 5. THE SPLIT, ACROSS THE WHOLE FLEET --- */
 console.log("\n--- 5. every port opens in exactly the home its marker decides ---");
 {
