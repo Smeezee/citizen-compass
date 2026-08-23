@@ -5229,3 +5229,46 @@ E7b  DONE  434e921  CAUSE 1 CANNOT APPLY, CAUSE 2 IS WHAT IT WAS, AND THE FLOOR
     being it - the real object needs a BufferGeometry and a WebGL context and
     there is neither here. Counts are a model of the extraction.
     SWEEP  64 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+E8  DONE  552ff2a + 3b1b3e0  THE LABELS ARRIVE WITH THE MODEL, AND THE TOGGLE
+    STOPS FOLLOWING YOU. Deployed 709c870b-542e-40e1-a9b7-cf2118fd1190,
+    verified from the served bytes.
+    ONE FAULT, NOT THE TWO THE ERRATA READS, and the second half is the first
+    half seen from the other side.
+    Markers reposition every frame through v.onFrame, so they appear the
+    instant the hull does. LABELS ONLY RENDER FROM renderAll(), which last ran
+    BEFORE the model finished loading - and renderLabels() returns early when
+    there is no v.current to project against. So on the C8R Pisces, 4 markers,
+    where labels are on by default, nothing was drawn until something else
+    re-rendered the page. Clicking a marker did that. They "popped up" on the
+    first click and then STAYED - and staying was correct; the state before it
+    was not. onLoad calls renderLabels() now. That is the whole fix.
+    AND THE TOGGLE IS PER SHIP. `allLabels` overrides the threshold and was
+    never cleared, so hiding labels on a 35-marker Perseus carried to a
+    4-marker Pisces, where the hint then said "labels off on a hull this busy"
+    about a hull that is not busy. THAT SENTENCE IS E1'S DEFECT AGAIN: a
+    message that is false is worse than no message. resetView() clears it and
+    the wording tells the page's decision apart from the reader's.
+    WHY THE REST OF THE FILE COULD NOT SEE THIS. Every other section drives a
+    viewer whose `current` is already set - the state AFTER the model has
+    loaded. The whole control was measuring the half of the timeline that
+    worked, and the gap is between renderAll() and the model arriving. SAME
+    SHAPE AS E7a, ONE FILE OVER: a stub faithful about everything the
+    assertions happened to look at.
+    CONTROL  _verify_labels.mjs section 5, 7 new assertions, 30 in all. It
+    drives a viewer with `current` null and a load() that KEEPS the callback
+    rather than calling it - exactly where the page stood when Sleven looked at
+    it - then fires onLoad with nothing clicked. IT SELECTS THE HULL BY DATA
+    RATHER THAN BY NAME and lands on ANVL_C8R_Pisces, 4 markers: his own ship,
+    found by the criteria instead of typed in.
+      --mutate-latelabels reproduces his report exactly:
+        0 labels -> click -> 4 -> dismiss -> 4
+    `data-shown` is reset on the empty path. It is what a control reads to ask
+    how many labels are up, and leaving the previous ship's number on an
+    emptied box made the negative report "1 label" for a box holding none - a
+    stale reading wearing the shape of a measurement.
+    AND THE CONTROL COULD NOT READ SERVED BYTES AT ALL. It called
+    loadPage({mutate}) and nothing else, so CC_PAGE was accepted and ignored
+    and the run came out clean - a served-bytes pass it had never performed.
+    Threaded through in 3b1b3e0, before the claim was made.
+    SWEEP  64 ok, 0 failed, 3 skipped, 0 NOT RUN.
