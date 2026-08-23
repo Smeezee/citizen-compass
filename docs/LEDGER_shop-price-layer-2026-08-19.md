@@ -5471,3 +5471,49 @@ Q1 / E11  DONE  3b4636a  THE LABELS FOLLOW THE SHIP, AND THREE THINGS HAD TO BE
     treats 0x0B and 0x0C as line breaks, so two of the five bytes never
     appeared inside a line and the checker was blind to them.
     SWEEP  68 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+Q2 / E11b  DONE  f0e3a0a  THE PATH WAS THE UNSIZED CANVAS, AND E8'S CONTROL WAS
+    NARROW RATHER THAN WRONG. Deployed a0842511-cefe-404a-88a4-3b6d5387811d,
+    verified from the served bytes.
+    THE ORDER ASKED WHICH PATH SKIPPED THEM AND THE ANSWER DECIDES SOMETHING,
+    so it is stated first. ONLOAD CAN FIRE BEFORE THE STAGE HAS A SIZE.
+    cc_viewer's projection ends
+      var w=this.canvas.clientWidth, h=this.canvas.clientHeight;
+      return {x:(v.x*0.5+0.5)*w, y:(-v.y*0.5+0.5)*h, depth:v.z};
+    so with a canvas of zero size EVERY marker projects to (0,0). The markers
+    recovered on the very next frame because they are in the animation loop.
+    THE LABELS WERE NOT IN IT, so they stayed piled in the top-left corner
+    until something re-rendered the page - and clicking a hardpoint is exactly
+    that. "Nothing was there, then they popped up" is that sentence.
+    REPRODUCED, NOT THEORISED. Cold-booting the Pisces with a zero-size canvas
+    puts all four labels at 28,28 / 58,58 / 96,96 / 0,0. One frame after the
+    stage gains its size, with nothing clicked, they are on the hull.
+    SO E8'S CONTROL WAS NARROW, NOT WRONG. E8's fix was real and necessary -
+    renderLabels() genuinely was never called when the model arrived. What that
+    control could not prove is that the positions it computed were USABLE at
+    that instant, because THE HARNESS'S STUB PROJECTION WAS A FIXED MAPPING
+    THAT NEVER DEPENDED ON CANVAS SIZE. The harness was never in the state that
+    produces the defect, so no assertion written against it could have found
+    this. The stub reads the canvas now.
+    AND Q1 IS WHAT ACTUALLY CLOSES IT. Nothing here changes onLoad. What fixes
+    it is positionLabels() running every frame and recomputing from the
+    projection, so labels self-correct the way markers always did.
+    ONE REAL DEFECT IN MY OWN Q1 CODE, FOUND WHILE LOOKING FOR THIS ONE.
+    renderLabels refreshed the projection with
+      if(_markProj.length!==list.length) renderMarkers();
+    which is a LENGTH TEST WEARING THE SHAPE OF A FRESHNESS TEST. Switching
+    between two hulls with the same marker count - the Pisces has three
+    siblings at four each - reused the previous hull's screen positions, and
+    the numbers looked entirely plausible. It also hid the race from its own
+    control. renderLabels is a render-path call and re-projecting is O(n); it
+    just does it now.
+    CONTROL  checks/_verify_label_cold_start.mjs, 15 assertions. SECTION 1
+    DRIVES THE REAL cc_viewer PROJECTION with a zero-size canvas rather than
+    asserting about a stub, so the mechanism is measured and not argued.
+      --mutate-onceonly  takes the labels back out of the frame loop. They stay
+                         at 28,28 / 58,58 / 96,96 - the reported symptom
+                         exactly.
+      --mutate-stalelen  restores the length-equality guard. The race stops
+                         reproducing AND a hull switch reuses the old
+                         positions - two failures from one line.
+    SWEEP  69 ok, 0 failed, 3 skipped, 0 NOT RUN.
