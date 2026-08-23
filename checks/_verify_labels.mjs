@@ -71,29 +71,42 @@ const { SHIPS, MARKS, el, openShip, g, run } = H;
 
 const SHIPS_UNDER_TEST = ["Sabre", "Polaris", "Perseus"];
 
-/* The rendered geometry, read back off the DOM the page produced. */
+/* THE RENDERED GEOMETRY, READ OFF THE ELEMENTS AND NOT OFF THE MARKUP STRING.
+
+   E11 moved the positions out of the innerHTML and onto the elements: the
+   markup is written once and every frame after that writes only `style.left`
+   and `style.top`, which is what makes 35 labels affordable at 60fps. Scraping
+   the string would therefore report the placeholder `left:0px` the render
+   emitted and never the position the page actually put the label at - a
+   control reading a number that had stopped being the answer.
+
+   The harness models children now, which is what makes this possible. Before
+   E11 it returned [] for every element's children, and no control had ever
+   seen where anything was put. */
 function rendered() {
-  const html = el("cc-labels").innerHTML || "";
   const boxFn = g("labelBox");
   const out = [];
-  const re = /<div class="hp[^"]*"\s*style="left:(-?\d+)px;top:(-?\d+)px"\s*><b>([^<]*)<\/b>([^<]*)<\/div>/g;
-  let m;
-  while ((m = re.exec(html))) {
-    const text = m[3] + "\n" + m[4];
-    const b = boxFn(text);
-    const lx = Number(m[1]), ly = Number(m[2]);
+  for (const kid of el("cc-labels").children) {
+    if ((kid.style.display || "") === "none") continue;
+    /* The harness decodes entities the way a browser does, so `&#10;` has
+       already become a newline and `&quot;` a quote by the time it lands
+       here. Decoding again in each control would be a second answer to what
+       an attribute says. */
+    const text = String(kid._attrs["data-text"] || "");
+    const b = text ? boxFn(text) : { w: 0, h: 0 };
+    const lx = parseFloat(kid.style.left) || 0;
+    const ly = parseFloat(kid.style.top) || 0;
     out.push({ lx, ly, w: b.w, h: b.h, text,
                x1: lx, y1: ly - b.h / 2, x2: lx + b.w, y2: ly + b.h / 2 });
   }
   return out;
 }
 function leaders() {
-  const svg = el("cc-leaders").innerHTML || "";
   const out = [];
-  const re = /<line[^>]*x1="(-?\d+)"\s*y1="(-?\d+)"\s*x2="(-?\d+)"\s*y2="(-?\d+)"/g;
-  let m;
-  while ((m = re.exec(svg))) {
-    out.push({ x1: +m[1], y1: +m[2], x2: +m[3], y2: +m[4] });
+  for (const ln of el("cc-leaders").children) {
+    if (String(ln.getAttribute("stroke-opacity") || "1") === "0") continue;
+    out.push({ x1: +ln.getAttribute("x1"), y1: +ln.getAttribute("y1"),
+               x2: +ln.getAttribute("x2"), y2: +ln.getAttribute("y2") });
   }
   return out;
 }

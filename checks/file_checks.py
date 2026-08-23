@@ -396,6 +396,111 @@ def missing_encoding_check(repo_root: Path) -> list[Finding]:
     return findings
 
 
+# SOURCE, NOT CAPTURED OUTPUT. A .txt holding a previous run's console can
+# carry the byte legitimately - as a RECORD of the defect - and flagging that
+# forever would train everybody to ignore this checker.
+_CONTROL_SCAN_EXT = {".py", ".mjs", ".js", ".html", ".css", ".json", ".md",
+                     ".ps1", ".toml", ".go"}
+_CONTROL_SKIP_DIRS = {
+    ".git", "__pycache__", "venv", ".venv", "node_modules", "_to_delete",
+    "sc-ships", "models", "vendor", "external-sources", "derived",
+    "handoff_archive", "logs", "_deploy", "fixtures",
+}
+# Tab, newline and carriage return are text.
+_CONTROL_ALLOWED = {0x09, 0x0A, 0x0D}
+# THE DEFECT SET IS NOT "EVERY CONTROL CHARACTER", AND THE DISTINCTION IS THE
+# POINT. These five are exactly the ones a language's escape processing can
+# silently produce FROM A LETTER - \a \b \f \v \e - so a source file carrying
+# one is a mangled escape rather than a decision. Anything else in C0 can be a
+# deliberate choice: roundtrip.js joins its fields on 0x01 on purpose, and
+# calling that a defect would train everybody to ignore this checker, which is
+# how a check stops being one.
+_CONTROL_MANGLED = {0x07, 0x08, 0x0B, 0x0C, 0x1B}
+
+
+def control_bytes_check(repo_root: Path) -> list[Finding]:
+    """Flag any source file carrying a raw C0 control character.
+
+    WHY THIS EXISTS, AND IT IS NOT HYGIENE.
+
+    A regex written as `/\\bpinned\\b/` and passed through a tool that reads
+    `\\b` as an escape becomes `/<0x08>pinned<0x08>/`. It is a VALID regular
+    expression. It matches nothing. It is invisible in every editor, in `git
+    diff`, and in a code review, because a terminal renders 0x08 as nothing at
+    all.
+
+    It has now happened four times in this repo in one session:
+
+      _verify_sorts.mjs      /\\bpinned\\b/ - a FAILING assertion, on a correct
+                             page. Announced itself.
+      _verify_dim.mjs        /\\bhidden\\b/ - a PASSING assertion that could not
+                             fail. Worse: it had already been reported as an ok.
+      _loadout_harness.mjs   /<(div|button)\\b.../ - the tag parser matched
+                             nothing, so a stub built to observe element
+                             positions observed none.
+
+    The second of those is the reason this is a machine check and not a habit.
+    A byte that turns a check into a check-shaped no-op cannot be guarded by
+    remembering to look for it, because looking is exactly what does not work.
+
+    Proven in both directions by `checks/_verify_control_bytes.py`.
+    """
+    findings = []
+    scanned = 0
+    for path in sorted(repo_root.rglob("*")):
+        if not path.is_file() or path.suffix.lower() not in _CONTROL_SCAN_EXT:
+            continue
+        rel = path.relative_to(repo_root)
+        if any(part.startswith(".") or part in _CONTROL_SKIP_DIRS
+               for part in rel.parts[:-1]):
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except Exception:
+            # Not decodable as UTF-8 is a different finding and not this one's.
+            continue
+        scanned += 1
+        # SPLIT ON \n ONLY, NOT str.splitlines(). splitlines() treats 0x0B and
+        # 0x0C as line boundaries, so a vertical tab or a form feed is consumed
+        # as whitespace between lines and never appears INSIDE one - which made
+        # this checker blind to two of the five bytes it exists to find. Caught
+        # by the control planting all five and getting three back.
+        for n, line in enumerate(text.replace("\r\n", "\n").split("\n"), 1):
+            seen = sorted({ord(c) for c in line
+                           if (ord(c) < 0x20 and ord(c) not in _CONTROL_ALLOWED)
+                           or ord(c) == 0x7F})
+            if not seen:
+                continue
+            shown = line
+            for b in seen:
+                shown = shown.replace(chr(b), "<0x%02X>" % b)
+            mangled = [b for b in seen if b in _CONTROL_MANGLED]
+            other = [b for b in seen if b not in _CONTROL_MANGLED]
+            if mangled:
+                findings.append(Finding(
+                    "control_bytes", f"{rel}:{n}", "DEFECT",
+                    "escape-mangled control character(s) %s - a regex written "
+                    "through a tool that reads backslash-b as an escape "
+                    "becomes 0x08, which is a valid pattern matching NOTHING "
+                    "and is invisible in every editor and every diff: %s"
+                    % (", ".join("0x%02X" % b for b in mangled),
+                       shown.strip()[:120])))
+            if other:
+                findings.append(Finding(
+                    "control_bytes", f"{rel}:{n}", "WARNING",
+                    "raw control character(s) %s in source - can be deliberate "
+                    "(roundtrip.js joins fields on 0x01 on purpose), so "
+                    "reported rather than failed: %s"
+                    % (", ".join("0x%02X" % b for b in other),
+                       shown.strip()[:120])))
+    if not findings:
+        findings.append(Finding(
+            "control_bytes", None, "PASS",
+            f"scanned {scanned} source files, none carries a raw control "
+            f"character outside tab, newline and carriage return"))
+    return findings
+
+
 # --- ops/infra health --------------------------------------------------------
 
 
@@ -846,6 +951,7 @@ CHECKERS = [
     ("orphaned_test_fixture", orphaned_test_fixture_check),
     ("missing_or_corrupt_3d_model", missing_or_corrupt_3d_model_check),
     ("missing_encoding", missing_encoding_check),
+    ("control_bytes", control_bytes_check),
     ("log_growth", log_growth_check),
     ("backup_freshness", backup_freshness_check),
     ("scheduled_task_health", scheduled_task_health_check),

@@ -185,7 +185,7 @@ func runSidecarLeakSelftest(check func(name string, ok bool, detail string)) {
 }
 
 // A DirectX session whose GPU driver line mentions the Vulkan API. This is a
-// real shape from the archive and it is the exact case the old `Vulkan`
+// real shape from the archive and it is the exact case the old `\bVulkan\b`
 // matcher got wrong - the driver stating what it supports, not what the game is
 // running on.
 const rendererFixtureDX = `<2026-08-13T00:40:31.100Z> Changelist: 12399239

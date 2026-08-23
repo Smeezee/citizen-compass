@@ -54,17 +54,95 @@ export function loadPage({ mutate = [], session = null,
     .filter((f) => existsSync(f))
     .map((f) => readFileSync(f, "utf-8"));
 
+  /* E11: CHILDREN ARE REAL NOW, AND THE OLD STUB IS WHY THEY HAD TO BE.
+     `children` returned [] and `childElementCount` returned 0, always. That is
+     not a simplification - it silently disabled a whole code path. renderMarkers
+     writes its markup ONCE and then positions the elements every frame through
+     `box.children`; against the old stub the write happened and THE ENTIRE
+     POSITIONING LOOP WAS SKIPPED, on every control that has ever driven this
+     page. No check has ever seen where a marker was put.
+     E11 is a defect about exactly that - labels placed and abandoned while the
+     hull turns - so a stub that cannot observe positions could not have caught
+     it and cannot verify the fix.
+     Top-level tags only. This is not a parser and does not pretend to be one:
+     it reads the opening tags a render emits, keeps their attributes, and gives
+     each one a `style` object the page can write into. Nesting is ignored,
+     which is honest for the two layers that use it - markers are flat buttons
+     and leader lines are flat <line> elements. */
+  const TAG = /<(div|button|line|span)\b([^>]*?)(\/?)>/gi;
+  const ATTR = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*"([^"]*)"/g;
+  function parseChildren(html) {
+    const out = [];
+    let m;
+    TAG.lastIndex = 0;
+    while ((m = TAG.exec(String(html || "")))) {
+      /* ENTITIES ARE DECODED, BECAUSE A BROWSER DECODES THEM. An attribute
+         written `data-text="M2C &quot;Swarm&quot;"` reaches the page as
+         `M2C "Swarm"`, and a control measuring the raw string would measure a
+         name eight characters longer than the one on screen - which is exactly
+         what it did, and it reported five label overlaps that were not there.
+         Decoding here rather than in each control keeps one answer to "what
+         does this attribute say". */
+      const unent = (v) => String(v)
+        .replace(/&quot;/g, '"')
+        .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+        .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(Number(d)))
+        .replace(/&amp;/g, "&");
+      const attrs = {};
+      let a;
+      ATTR.lastIndex = 0;
+      while ((a = ATTR.exec(m[2]))) attrs[a[1].toLowerCase()] = unent(a[2]);
+      const style = {};
+      for (const part of String(attrs.style || "").split(";")) {
+        const i = part.indexOf(":");
+        if (i > 0) {
+          style[part.slice(0, i).trim()] = part.slice(i + 1).trim();
+        }
+      }
+      const dataset = {};
+      for (const k of Object.keys(attrs)) {
+        if (k.indexOf("data-") === 0) dataset[k.slice(5)] = attrs[k];
+      }
+      const node = {
+        tagName: m[1].toUpperCase(), _attrs: attrs, style, dataset,
+        className: attrs.class || "",
+        classList: {
+          add(c) { if (!node.className.split(/\s+/).includes(c)) {
+            node.className = (node.className + " " + c).trim(); } },
+          remove(c) { node.className = node.className.split(/\s+/)
+            .filter((x) => x && x !== c).join(" "); },
+          toggle(c, on) { const has = node.className.split(/\s+/).includes(c);
+            const want = (on === undefined) ? !has : !!on;
+            if (want) node.classList.add(c); else node.classList.remove(c); },
+          contains(c) { return node.className.split(/\s+/).includes(c); },
+        },
+        getAttribute(k) { return node._attrs[String(k).toLowerCase()]; },
+        setAttribute(k, v) { node._attrs[String(k).toLowerCase()] = String(v); },
+      };
+      out.push(node);
+    }
+    return out;
+  }
+
   const els = new Map();
   const el = (id) => {
     if (!els.has(id)) {
-      els.set(id, {
-        id, innerHTML: "", textContent: "", className: "", value: "",
+      const node = {
+        id, textContent: "", className: "", value: "",
         style: {}, onclick: null, onchange: null, href: "", hidden: false,
         classList: { add() {}, remove() {}, toggle() {} },
         removeAttribute(a) { this[a] = ""; },
         setAttribute(a, v) { this[a] = v; },
-        get childElementCount() { return 0; },
-        get children() { return []; },
+        _html: "", _kids: [],
+        /* Reparsed on write, and NOT on read: the page positions children by
+           mutating their style AFTER the write, and re-parsing on every read
+           would throw those mutations away - which would leave this stub
+           reporting the markup's original numbers no matter what the page did
+           to them. That would be the same blindness in a new place. */
+        get innerHTML() { return this._html; },
+        set innerHTML(v) { this._html = String(v); this._kids = parseChildren(v); },
+        get childElementCount() { return this._kids.length; },
+        get children() { return this._kids; },
         /* A STATED STAGE SIZE, so B3's placement maths runs on real numbers
            rather than on zero. 960x540 is a plausible desktop stage and it is
            a STUB, not a measurement: nothing here proves the panel fits a real
@@ -72,7 +150,8 @@ export function loadPage({ mutate = [], session = null,
            given. The pure function is driven separately with its own numbers,
            including numbers chosen to make it flip. */
         clientWidth: 960, clientHeight: 540,
-      });
+      };
+      els.set(id, node);
     }
     return els.get(id);
   };

@@ -1538,7 +1538,7 @@ function stat(k,a,b,sub,lower,stealth,fmtf,cigA,cigB){
     }
   }
   return `<div class="stat${stealth?' stealth':''}${why?' explained':''}${moved?' justmoved':''}"
-      ${why?`tabindex="0" title="${why}" aria-label="${k}: ${why}"`:""}>
+      ${why?`tabindex="0" title="${attr(why)}" aria-label="${attr(k)}: ${attr(why)}"`:""}>
     <div class="k">${k}${mark}${why?'<span class="ask" aria-hidden="true">?</span>':""}</div>
     <div class="row">${body}</div><div class="sub">${sub}</div>
     ${why?`<div class="why">${why}</div>`:""}</div>`;
@@ -2240,7 +2240,7 @@ function renderEngineering(){
     const why=`This relay holds ${r[1]} fuse${r[1]===1?"":"s"}. If one blows, `
       +`${r[0].toLowerCase()} is where you go to swap it.`;
     h+=`<div class="relay" data-port="${r[2]}" tabindex="0"
-          aria-label="${r[0]}: ${r[1]} fuse slot${r[1]===1?"":"s"}. ${why}"
+          aria-label="${attr(r[0])}: ${r[1]} fuse slot${r[1]===1?"":"s"}. ${attr(why)}"
           data-why="${why}">
       <span class="where">${r[0]}</span>
       <span class="fuses">${bars}</span>
@@ -2436,7 +2436,7 @@ function showModel(){
   applySpin();
   /* Markers move with the camera, so they are repositioned per frame rather
      than on render. The viewer offers one hook for exactly this. */
-  v.onFrame=renderMarkers;
+  v.onFrame=onFrameTick;
   status.textContent='loading model…';
   v.load(url,{
     onLoad:r=>{ status.textContent=r.seconds.toFixed(1)+'s · '+
@@ -2698,6 +2698,27 @@ function renderStagePanel(){
 }
 function markersFor(cls){ return MARKS[cls]||[]; }
 function slotByPort(pid){ return ship().slots.find(s=>s.p===pid)||null; }
+/* E11: A NAME GOES INTO AN ATTRIBUTE ESCAPED, AND 18 OF THEM NEEDED IT.
+
+   Found while wiring the labels: `M2C "Swarm"`, `CST-313 "Castillo"`,
+   `CF-337 Panther "Hazard-Zone" Repeater` - EIGHTEEN part names in this
+   catalogue carry a double quote, and every one of them was being written
+   straight into `title="..."` and `aria-label="..."` on the hull markers.
+   The browser ends the attribute at the first quote and reads the rest of the
+   name as attribute names of its own, so on the RSI Polaris the tooltip that
+   is supposed to say which gun this is says `M2C ` and stops.
+
+   THIS IS NOT NEW WITH E11. It has been on every marker of every hull carrying
+   one of those parts since B0 put the name in the tooltip. It surfaced here
+   because a control finally read an attribute back and got a truncated string.
+
+   `&` is deliberately NOT escaped. Several of these strings already contain
+   real entities - `&mdash;`, `&middot;` - and escaping the ampersand would
+   render them as literal text. The character that breaks an attribute is the
+   quote; that is the one closed. */
+const attr = v => String(v==null?"":v)
+  .replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
 function renderMarkers(){
   const box=$('cc-marks'), v=_view;
   if(!box) return;
@@ -2717,20 +2738,38 @@ function renderMarkers(){
                 : " — click to change")
         : "port";
       return `<button type="button" data-port="${m[0]}"
-        class="${fx?'fx':''}" title="${label}"
-        aria-label="${label}"></button>`;
+        class="${fx?'fx':''}" title="${attr(label)}"
+        aria-label="${attr(label)}"></button>`;
     }).join("");
   }
   const kids=box.children, us=v.unitScale();
+  /* E11: THE PROJECTION IS RECORDED, NOT RECOMPUTED DOWNSTREAM. The labels
+     have to follow the same points these markers land on, every frame. Doing
+     the arithmetic twice would be the same work run twice AND would let the
+     two copies disagree - which is precisely the state in which a leader line
+     misses the marker it is drawn to. One projection, one source. */
+  _markProj.length=0;
   for(let i=0;i<list.length;i++){
-    const m=list[i], b=kids[i]; if(!b) continue;
+    const m=list[i], b=kids[i];
     const p=v.project(m[1]*us, m[2]*us, m[3]*us);
+    _markProj[i]=p||null;
+    if(!b) continue;
     if(!p){ b.style.display='none'; continue; }
     b.style.display='';
     b.style.left=p.x+'px'; b.style.top=p.y+'px';
     const sl=slotByPort(m[0]);
     b.classList.toggle('sel', !!(sel&&sl&&sel.slot===sl.id));
   }
+}
+/* Where each marker landed this frame, by its index in markersFor(shipId). */
+const _markProj=[];
+
+/* THE FRAME. Markers first, because the labels read what it recorded. Wiring
+   the viewer straight to renderMarkers was the whole of E11 - the labels were
+   never in the loop at all. */
+function onFrameTick(){
+  renderMarkers();
+  positionLabels();
 }
 
 /* ================= H1b: LABEL PLACEMENT =================================
@@ -2814,62 +2853,218 @@ function labelsWanted(n){
   return n<=CC_LBL_MAX;
 }
 
+/* ================= E11: THE LABELS FOLLOW THE SHIP ========================
+
+   Sleven, 2026-08-23: "They did pop up, but they do not stay with the ship. I
+   can move the ship around and they just float there... They're supposed to be
+   attached to the hardpoints."
+
+   THE DEFECT WAS TWO LINES APART IN THIS FILE. `v.onFrame = renderMarkers` put
+   the markers in the animation loop; renderLabels() was called once, from
+   renderAll(). Markers tracked the camera every frame and labels were placed
+   and abandoned, leader stubs pointing at where the hull used to be.
+
+   AND H1b's CONTROL COULD NOT HAVE CAUGHT IT. It asserted the labels existed,
+   that they did not overlap, and that each line ended on its label's own edge.
+   IT NEVER ASSERTED THE OTHER END OF THAT LINE WAS STILL ON A MARKER. Same
+   shape as the 782 silent markers: the code did exactly what it was told.
+
+   THE TRAP, AND WHY THIS IS SPLIT IN THREE RATHER THAN MOVED WHOLESALE.
+   layoutLabels() is a collision solver - six candidate rings of twelve,
+   nearest-first, each tested against everything already placed. That search is
+   what took the Perseus from 15 placed to 26 with none overlapping. Running it
+   sixty times a second on 35 labels would cost the framerate on exactly the
+   hulls that need labels most.
+
+     renderLabels()    decides WHICH markers get a label and builds the DOM.
+                       Runs on a render, not on a frame.
+     solveLabels()     runs the collision search and stores, per label, its
+                       OFFSET FROM ITS OWN MARKER. Throttled.
+     positionLabels()  every frame: marker position plus stored offset, and the
+                       leader line redrawn from the marker to the label edge.
+
+   A LABEL CAN NEVER BE VISUALLY DETACHED, AND THAT IS STRUCTURAL RATHER THAN A
+   MATTER OF TIMING. A label sits at its marker's position plus a fixed offset,
+   and the line's two ends come from the same projection in the same frame. A
+   stale solve makes the ARRANGEMENT untidy - two labels may overlap for a few
+   frames - and CANNOT make a line miss. The line is the promise; the ring
+   position is the tidiness. */
+
+/* No more often than this, however fast the hull is turning. */
+const CC_LBL_SOLVE_MS=180;
+/* Still for this long, and the arrangement is re-tidied. */
+const CC_LBL_SETTLE_MS=120;
+/* Drifted this far since the last solve and a re-tidy is due even mid-drag. */
+const CC_LBL_MOVE_PX=26;
+
+/* One entry per RENDERED label: which marker it belongs to, its offset from
+   that marker, and where its marker was when the arrangement was last solved. */
+let _lblLive=[];
+let _lblSolveAt=0, _lblMoveAt=0;
+
+function _lblNow(){
+  try{ return (typeof window!=="undefined" && window.performance
+    && window.performance.now) ? window.performance.now() : Date.now(); }
+  catch(e){ return Date.now(); }
+}
+
+/* WHICH MARKERS GET A LABEL, and the DOM to move. One element per live label
+   whether or not the solver finds it room, so the label list, the line list
+   and _lblLive stay index-for-index - a hidden element is cheaper than three
+   arrays somebody has to keep in step. */
 function renderLabels(){
   const box=$('cc-labels'), svg=$('cc-leaders'), v=_view;
   if(!box||!svg) return;
   const list=markersFor(shipId);
   if(!list.length||!v||!v.current){
+    _lblLive=[];
     box.innerHTML=""; svg.innerHTML="";
     /* E8: THE COUNTS ARE RESET TOO, NOT JUST THE MARKUP. `data-shown` is what
        a control reads to ask how many labels are up, and leaving yesterday's
        number on an emptied box is a stale reading that looks like a
-       measurement. It made the E8 negative report "1 label" for a box holding
-       none. */
+       measurement. */
     box.setAttribute('data-shown','0');
     box.setAttribute('data-dropped','0');
     box.setAttribute('data-total', String(list.length));
+    renderLabelCount(list.length, 0, 0, labelsWanted(list.length));
     return; }
-  const stage=$('cc-stage');
-  const sw=(stage&&stage.clientWidth)||0, sh=(stage&&stage.clientHeight)||0;
-  const us=v.unitScale();
   const show=labelsWanted(list.length);
-  const items=[], meta=[];
-  list.forEach(m=>{
+  _lblLive=[];
+  let lh="", ls="";
+  list.forEach((m,mi)=>{
     const sl=slotByPort(m[0]); if(!sl) return;
     const selNow = !!(sel&&sel.slot===sl.id);
     /* HOVER AND SELECTION ALWAYS LABEL, whatever the toggle says. */
     if(!show && !selNow) return;
-    const p=v.project(m[1]*us, m[2]*us, m[3]*us);
-    if(!p) return;
     const part=P[sl.stock];
-    const text=(part?part.n:portLabel(sl.h))+"\n"+portLabel(sl.h);
-    items.push({x:p.x,y:p.y,box:labelBox(text)});
-    meta.push({sl,part,text,hot:selNow,turret:!!sl.turret,x:p.x,y:p.y});
-  });
-  const place=layoutLabels(items, sw||960, sh||540);
-  let lh="", sh2="";
-  place.forEach((pl,i)=>{
-    if(!pl.placed) return;
-    const md=meta[i];
-    /* THE LEADER LINE MUST VISIBLY CONNECT. A label that has drifted free of
-       its line is worse than no label, so the line is drawn from the marker to
-       the label's own edge - the side facing the marker. */
-    const anchorX = (pl.lx > md.x) ? pl.lx : pl.lx+items[i].box.w;
-    lh+=`<div class="hp${md.hot?' hot':''}${md.turret?' turret':''}"
-      style="left:${Math.round(pl.lx)}px;top:${Math.round(pl.ly)}px"
-      ><b>${md.part?md.part.n:portLabel(md.sl.h)}</b>${portLabel(md.sl.h)}</div>`;
-    sh2+=`<line class="${md.hot?'hot':''}" x1="${Math.round(md.x)}"
-      y1="${Math.round(md.y)}" x2="${Math.round(anchorX)}"
-      y2="${Math.round(pl.ly)}"></line>`;
+    const name=part?part.n:portLabel(sl.h);
+    const text=name+"\n"+portLabel(sl.h);
+    _lblLive.push({mi:mi, box:labelBox(text), dx:0, dy:0, placed:false,
+                   sx:0, sy:0});
+    /* `data-text` carries the two lines the box was measured from. The label's
+       own markup splits them across a <b> and a text node, and a control that
+       reassembled the string from those would be reimplementing the split -
+       which is how two copies of "what this label says" come to disagree. */
+    lh+=`<div class="hp${selNow?' hot':''}${sl.turret?' turret':''}"
+      data-text="${attr(name)}&#10;${attr(portLabel(sl.h))}"
+      style="left:0px;top:0px;display:none"
+      ><b>${name}</b>${portLabel(sl.h)}</div>`;
+    ls+=`<line class="${selNow?'hot':''}" x1="0" y1="0" x2="0" y2="0"
+      stroke-opacity="0"></line>`;
   });
   box.innerHTML=lh;
-  svg.innerHTML=sh2;
-  const shown=place.filter(x=>x.placed).length;
-  const dropped=place.filter(x=>!x.placed).length;
+  svg.innerHTML=ls;
+  /* On a cold render the frame loop may not have projected yet. Take it now,
+     so the first paint is already right instead of a frame late - which is
+     E11b, one item down. */
+  if(_markProj.length!==list.length) renderMarkers();
+  const shown=solveLabels();
+  /* WRITTEN HERE AND NOT LEFT TO positionLabels(). That function returns early
+     when there is nothing live, so on a hull where the toggle is off and
+     nothing is selected it would leave the PREVIOUS ship's count on an empty
+     box - the same stale-attribute defect E8 fixed on the other path, arriving
+     again through a new door. */
   box.setAttribute('data-shown', String(shown));
-  box.setAttribute('data-dropped', String(dropped));
   box.setAttribute('data-total', String(list.length));
-  renderLabelCount(list.length, shown, dropped, show);
+  box.setAttribute('data-dropped', String(_lblLive.length-shown));
+  renderLabelCount(list.length, shown, _lblLive.length-shown, show);
+}
+
+/* THE ARRANGEMENT. It decides where each label sits RELATIVE TO ITS MARKER and
+   stores that, so the frame loop never has to know the search happened. */
+function solveLabels(){
+  if(!_lblLive.length) return 0;
+  /* RE-ENTRY IS IMPOSSIBLE, NOT MERELY UNLIKELY. solveLabels() ends by calling
+     positionLabels(), and positionLabels() ends by deciding whether a re-solve
+     is due - so the two can call each other. Today the throttle stops it,
+     because the solve snapshots each marker's position and the very next
+     position pass therefore measures zero drift. That is a real argument and
+     it is the wrong kind: it makes a stack overflow depend on an arithmetic
+     coincidence somewhere else in the file. Found by a mutator that removed
+     the throttle and blew the stack rather than reporting the cost it was
+     written to measure. */
+  if(_lblSolving) return _lblLive.filter(L=>L.placed).length;
+  _lblSolving=true;
+  try{ return _solveLabelsInner(); } finally { _lblSolving=false; }
+}
+let _lblSolving=false;
+function _solveLabelsInner(){
+  const stage=$('cc-stage');
+  const sw=(stage&&stage.clientWidth)||960, sh=(stage&&stage.clientHeight)||540;
+  const items=[], live=[];
+  _lblLive.forEach(L=>{
+    const p=_markProj[L.mi];
+    L.placed=false;
+    if(!p) return;
+    items.push({x:p.x, y:p.y, box:L.box});
+    live.push(L);
+  });
+  const place=layoutLabels(items, sw, sh);
+  place.forEach((pl,i)=>{
+    const L=live[i];
+    L.placed=!!pl.placed;
+    if(pl.placed){ L.dx=pl.lx-items[i].x; L.dy=pl.ly-items[i].y; }
+  });
+  /* SNAPSHOT WHERE THE SOLVE SAW EACH MARKER, before anything else runs. The
+     throttle measures drift from here, and leaving it unset would make the
+     first frame compare against undefined - NaN, which is never greater than
+     anything, so the re-solve would never fire at all. */
+  _lblLive.forEach(L=>{
+    const p=_markProj[L.mi];
+    L.sx=p?p.x:0; L.sy=p?p.y:0;
+  });
+  _lblSolveAt=_lblNow(); _lblMoveAt=_lblSolveAt;
+  positionLabels();
+  return _lblLive.filter(L=>L.placed).length;
+}
+
+/* EVERY FRAME, AND CHEAP: one read of an already-computed projection, one add
+   and one write per label. */
+function positionLabels(){
+  const box=$('cc-labels'), svg=$('cc-leaders');
+  if(!box||!svg||!_lblLive.length) return 0;
+  const kids=box.children, lines=svg.children;
+  let moved=0, shown=0;
+  for(let i=0;i<_lblLive.length;i++){
+    const L=_lblLive[i], el=kids[i], ln=lines[i];
+    const p=_markProj[L.mi];
+    if(!el) continue;
+    if(!p||!L.placed){
+      el.style.display='none';
+      if(ln) ln.setAttribute('stroke-opacity','0');
+      continue;
+    }
+    shown++;
+    const lx=p.x+L.dx, ly=p.y+L.dy;
+    el.style.display='';
+    el.style.left=Math.round(lx)+'px';
+    el.style.top=Math.round(ly)+'px';
+    if(ln){
+      /* The line ends on the label's edge FACING the marker, so the two read
+         as one object rather than as a line crossing a box. */
+      const anchorX=(lx>p.x)?lx:lx+L.box.w;
+      ln.setAttribute('stroke-opacity','1');
+      ln.setAttribute('x1', String(Math.round(p.x)));
+      ln.setAttribute('y1', String(Math.round(p.y)));
+      ln.setAttribute('x2', String(Math.round(anchorX)));
+      ln.setAttribute('y2', String(Math.round(ly)));
+    }
+    const d=Math.abs(p.x-L.sx)+Math.abs(p.y-L.sy);
+    if(d>moved) moved=d;
+  }
+  box.setAttribute('data-shown', String(shown));
+
+  /* THE THROTTLE. Re-tidy when the hull has stopped, or when it has drifted
+     far enough that the arrangement is visibly wrong and waiting for it to
+     stop would be worse. Never more often than CC_LBL_SOLVE_MS. */
+  const now=_lblNow();
+  if(moved>0.5) _lblMoveAt=now;
+  const stale=moved>1;
+  const settled=stale && (now-_lblMoveAt)>=CC_LBL_SETTLE_MS;
+  const overdue=stale && moved>CC_LBL_MOVE_PX
+    && (now-_lblSolveAt)>=CC_LBL_SOLVE_MS;
+  if(settled||overdue) solveLabels();
+  return shown;
 }
 
 /* THE COUNT IS ALWAYS STATED, and this is the half that keeps the threshold
