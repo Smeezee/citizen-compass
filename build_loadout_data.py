@@ -466,6 +466,67 @@ def part_record(it, type_name, fitted=False):
         if mmix:
             rec["mdmg"] = mmix
 
+    # E2: WHAT THE THING IS, WHEN IT HAS NO SCORE.
+    #
+    # 513 of 3,283 parts carry no headline stat at all - no DPS, HP, range,
+    # power, cooling, SCU or mass - so the page rendered them as a name, a
+    # manufacturer and "IR 0 EM 0". Sleven, looking at the Gladius Valiant's
+    # turret mount: "some of them don't provide any information."
+    #
+    # The page was not dropping anything. There was nothing else in the record.
+    # But there IS something in the SNAPSHOT, and it was never carried across:
+    #
+    #   turrets            how many guns they take, and at what size
+    #   fuel tanks         their capacity
+    #   weapon attachments what they modify
+    #
+    # A row of zeros reads as broken data when the part is simply one whose
+    # interesting properties are of a different kind. IR 0 EM 0 is true and
+    # useless.
+    tur = dict_or_none(st.get("Turret"))
+    ports = st.get("Ports")
+    if (tur is not None or (rec.get("t") == "tur")) and isinstance(ports, list):
+        # Only the ports that actually take a weapon. A turret's seat, its
+        # ammo box and its cooling port are ports too and counting them would
+        # make "takes 4" a lie about a two-gun turret.
+        guns = []
+        for prt in ports:
+            if not isinstance(prt, dict):
+                continue
+            types = prt.get("Types") or []
+            if any(str(x).startswith(("WeaponGun", "Turret")) for x in types):
+                guns.append(num(prt.get("MaxSize")) or num(prt.get("Size")))
+        guns = [g for g in guns if g]
+        if guns:
+            rec["gn"] = len(guns)
+            rec["gs"] = max(guns)
+
+    # Hydrogen and quantum tanks carry the same shape under different keys.
+    # Both are "capacity", and the page says which kind from the port's type.
+    ft = (dict_or_none(st.get("FuelTank"))
+          or dict_or_none(st.get("QuantumFuelTank")))
+    if ft and num(ft.get("Capacity")):
+        rec["fuel"] = r2(num(ft.get("Capacity")))
+
+    wm = dict_or_none(st.get("WeaponModifier"))
+    if wm:
+        # WHAT IT CHANGES, not by how much. The multipliers are nested three
+        # deep and mostly 1.0; naming the ones that are not is the fact worth
+        # printing, and it stays short enough for a row.
+        base = dict_or_none(wm.get("WeaponStats")) or {}
+        changed = []
+        for grp, vals in base.items():
+            if not isinstance(vals, dict):
+                continue
+            for k, v in vals.items():
+                try:
+                    if v is not None and float(v) != 1.0 and "Multiplier" in k:
+                        changed.append(k.replace("Multiplier", ""))
+                except (TypeError, ValueError):
+                    continue
+        if changed:
+            rec["mod"] = sorted(set(changed))[:3]
+
     sh = dict_or_none(st.get("Shield"))
     if sh:
         rec["ehp"] = r2(num(sh.get("MaxShieldHealth")))
