@@ -5272,3 +5272,58 @@ E8  DONE  552ff2a + 8ceba6f  THE LABELS ARRIVE WITH THE MODEL, AND THE TOGGLE
     and the run came out clean - a served-bytes pass it had never performed.
     Threaded through in 8ceba6f, before the claim was made.
     SWEEP  64 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+E10  DONE  d02906e  "BEST" IS GONE, FOUR FACTUAL SORTS, AND EVERY ONE OF THEM
+    FLIPS. Deployed d78a24a0-60af-46da-8cda-c1b1a3b4de6d, verified from the
+    served bytes.
+      Most <stat>  the port's own headline figure   <->  Least <stat>
+      Coolest      IR alone                         <->  Hottest
+      Quietest     EM alone                         <->  Loudest
+      Lightest     mass                             <->  Heaviest
+    IR IS SPLIT FROM EM, which is Sleven's own ask. `Quietest` summed them and
+    served neither: somebody dodging missiles cares about IR and somebody
+    avoiding detection cares about EM.
+    THE BUTTON SAYS WHAT THE NEXT CLICK WILL DO, and an arrow on the active
+    sort says what the list is doing NOW. Both, or the control is a riddle.
+    AND THE HEADLINE AXIS IS DERIVED FROM THE PARTS ON OFFER RATHER THAN FROM A
+    TABLE OF PORT TYPES. The old sort mapped FIVE type codes by hand and fell
+    through to SIZE for everything else - so on a missile port, a bomb rack, a
+    radar or a turret mount it had been sorting by size and calling it "Best".
+    THERE ARE 26 PORT TYPES IN THIS DATA AND THE HAND-WRITTEN LIST COVERED
+    FIVE. A key must now be present on at least half a port's parts to be named
+    its headline, so one outlier cannot name the axis for the rest.
+      wpn Most damage   shd Most shielding   col Most cooling
+      msl Most damage   pow Most power capacity   qtm Most quantum range
+    TIES FLIP WITH EVERYTHING ELSE, AND IT TOOK A TOTAL ORDER TO MAKE THAT
+    TRUE. "It flips the stack" is not defined at all unless the stack has a
+    defined order, and it did not: two parts sharing a DISPLAY NAME compared
+    equal, so 8 of one port's 15 rows did not move on a reverse. Ties break on
+    the name and then on the ID.
+    CONTROL  checks/_verify_sorts.mjs, 36 assertions.
+      --mutate-nothird  the toggle SETS instead of flipping. THE LOAD-BEARING
+                        NEGATIVE THE ORDER NAMES, and it reads
+                        "THE THIRD CLICK RETURNS TO THE FIRST ORDER - it stuck".
+      --mutate-sumsig   Coolest goes back to IR+EM.
+      --mutate-nostate  the direction arrow is dropped.
+    IT DRIVES A PORT FOUND FROM THE DATA whose parts rank differently under IR,
+    under EM AND under their sum - Vanduul Mauler Destroyer / tur30, 362 parts,
+    named in the output. Without that third condition --mutate-sumsig would
+    plant a defect nothing could see.
+    THE "Best" ASSERTION IS SCOPED TO THE SORT CONTROLS AND THAT IS DELIBERATE.
+    The order says assert the string appears nowhere on the page and it cannot:
+    the fleet contains CIG's "Reclaimer Best In Show Edition 2949". Asserting
+    on the whole page would fail on a ship name, and loosening it afterwards is
+    how a check ends up asserting nothing.
+    AND THREE OF MY OWN REGEXES WERE LITERAL BACKSPACE BYTES. `/\bpinned\b/`
+    written through a Python string literal becomes /<0x08>pinned<0x08>/, which
+    matches nothing - so the pinned row was never excluded and "the second
+    click reverses the list" failed on a page that was correct. FOUND BY THE
+    COUNTS NOT ADDING UP - 362 against 361 in the markup - NOT BY READING THE
+    LINE. The same byte was in _verify_dim.mjs's `/\bhidden\b/`, where it made
+    a PASSING assertion unfalsifiable rather than a failing one: the worse
+    direction, and it had been reported as an ok. Both are plain substring
+    tests now and the tree is scanned clean of 0x08.
+    _verify_inline_picker.mjs drove sort="best" and sort="light", which after
+    this fall through to the same axis - so it failed on a working page. Moved
+    to the new names.
+    SWEEP  65 ok, 0 failed, 3 skipped, 0 NOT RUN.
