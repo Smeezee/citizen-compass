@@ -204,6 +204,33 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 #cc-marks button.fx:hover,#cc-marks button.fx:focus{
  background:rgba(7,13,22,.9);border-style:solid}
 #cc-marks button.fx.sel{background:var(--accent);border-style:solid}
+/* H1b: THE LABELS ARE THE FEATURE, not decoration on the markers.
+   A derived position will never be exact - the exports are one welded mesh
+   with no mount data. A dot two metres off that says "CF-337 Panther Repeater
+   / Weapon left nose" is informative; the same dot with no label is a guess
+   the visitor cannot check. The label is what makes the whole derived-position
+   approach honest and readable, which is why it ships in the default view
+   rather than behind a toggle. */
+#cc-leaders{position:absolute;inset:0;pointer-events:none;z-index:4;
+ overflow:visible}
+#cc-leaders line{stroke:rgba(255,170,60,.62);stroke-width:1}
+#cc-leaders line.hot{stroke:#fff;stroke-width:1.4}
+#cc-labels{position:absolute;inset:0;pointer-events:none;z-index:5}
+#cc-labels .hp{position:absolute;transform:translateY(-50%);font-size:10px;
+ color:#ffd9a0;white-space:nowrap;text-shadow:0 0 6px #000,0 0 12px #000;
+ letter-spacing:.04em;line-height:1.25}
+#cc-labels .hp b{display:block;color:#fff;font-weight:600;font-size:10.5px}
+#cc-labels .hp.turret{color:#c9d4ff}
+#cc-labels .hp.hot b{color:var(--accent)}
+#cc-labelcount{position:absolute;left:9px;bottom:9px;z-index:6;font-size:11px;
+ color:var(--muted);background:rgba(7,13,22,.72);border:1px solid var(--line);
+ border-radius:7px;padding:4px 9px}
+#cc-labelcount[hidden]{display:none}
+#cc-labelcount b{color:var(--text)}
+#cc-labelcount button{background:none;border:0;padding:0 0 0 6px;font:inherit;
+ color:var(--accent2);text-decoration:underline;text-underline-offset:2px;
+ cursor:pointer}
+#cc-labelcount button:hover{color:var(--accent)}
 #cc-hint{position:absolute;right:11px;bottom:9px;font-size:11.5px;color:var(--muted);opacity:.7}
 /* B3: THE PANEL OVER THE STAGE.
    Its WIDTH AND HEIGHT ARE SET FROM JAVASCRIPT, not from here, and that is
@@ -522,6 +549,13 @@ footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px s
     <div id="cc-stage">
       <canvas id="cc-canvas"></canvas>
       <div id="cc-marks"></div>
+      <!-- H1b: the leader lines and the labels they lead to. An SVG layer for
+           the lines because a line from A to B is a line, not a border on a
+           box; a DOM layer for the labels because they carry real text. -->
+      <svg id="cc-leaders" aria-hidden="true"></svg>
+      <div id="cc-labels"></div>
+      <!-- H1b: the count, always stated. -->
+      <div id="cc-labelcount" hidden></div>
       <!-- B3: the picker, over the model, anchored near the dot it belongs to.
            Choosing a gun happens where the gun is. -->
       <div id="cc-panel" hidden></div>
@@ -2085,6 +2119,157 @@ function renderMarkers(){
   }
 }
 
+/* ================= H1b: LABEL PLACEMENT =================================
+   THE PROTOTYPE HAS NOT SOLVED THIS AND THE ORDER SAYS SO. Its label sits at a
+   fixed 11px offset from its marker with a border-left stub standing in for a
+   leader line, so on the Sabre - EIGHT hardpoints on a small fighter -
+   "MSD-423 Missile Rack" and "CF-337 Panther Repeater" overlap into an
+   unreadable stack and "Weapon left wing" is drawn twice on top of itself.
+   The Polaris has 24 markers, the Perseus 35. A naive port produces a mess on
+   exactly the ships where a person most needs to know what is where.
+
+   DECONFLICT THE LABELS, NOT THE MARKERS. The marker stays on its derived
+   position - that is a claim about the hull and it does not move. The label
+   may move anywhere, because it is not a claim about anything, and it keeps a
+   leader line back to its marker. Two things are being placed and only one of
+   them is an assertion.
+
+   A PURE FUNCTION OF NUMBERS, so it can be driven with the Sabre, the Polaris
+   and the Perseus and asserted to produce ZERO overlaps - which is not
+   something anyone can eyeball on 35 labels. */
+function labelBox(text){
+  /* Estimated, and deliberately GENEROUS. There is no browser here to measure
+     text, and a box estimated too small produces a layout that says it does
+     not overlap when it does. Rounding up is the safe direction. */
+  const lines=String(text||"").split("\n");
+  let w=0;
+  lines.forEach(l=>{ w=Math.max(w, l.length*5.9); });
+  return { w: Math.ceil(w)+6, h: lines.length*13+4 };
+}
+/* The candidate offsets, in preference order: out to the right first, because
+   that is where the prototype put them and where they read best, then left,
+   then the diagonals, then further out. */
+const CC_LBL_OFF=(function(){
+  /* Rings of candidates, near first. Eighteen was not enough - the Perseus
+     could place only 15 of its 35 and dropped the rest, which on the ship that
+     most needs labelling is the worst place to run out of room. */
+  const out=[[14,0],[-14,0]];
+  [16,28,42,58,76,96].forEach(function(r){
+    [[1,0],[-1,0],[1,-1],[1,1],[-1,-1],[-1,1],[0,-1],[0,1],
+     [1,-0.5],[1,0.5],[-1,-0.5],[-1,0.5]].forEach(function(d){
+      out.push([Math.round(d[0]*r), Math.round(d[1]*r)]);
+    });
+  });
+  return out;
+})();
+function layoutLabels(items, stageW, stageH){
+  /* items: [{x,y,box:{w,h}}] in stage pixels. Returns a placement per item
+     with lx/ly (the label's left/middle) and `placed`. */
+  const out=[], taken=[];
+  const hits=(a,b)=>!(a.x2<=b.x1||b.x2<=a.x1||a.y2<=b.y1||b.y2<=a.y1);
+  /* Nearest the top first, so the order is stable and does not depend on the
+     data's own ordering - two runs on the same ship must place identically. */
+  const order=items.map((it,i)=>({it,i})).sort((p,q)=>
+    (p.it.y-q.it.y)||(p.it.x-q.it.x)||(p.i-q.i));
+  order.forEach(({it,i})=>{
+    let best=null;
+    for(const [dx,dy] of CC_LBL_OFF){
+      const lx = dx<0 ? it.x+dx-it.box.w : it.x+dx;
+      const ly = it.y+dy;
+      const r={x1:lx,y1:ly-it.box.h/2,x2:lx+it.box.w,y2:ly+it.box.h/2};
+      if(r.x1<2||r.y1<2||r.x2>stageW-2||r.y2>stageH-2) continue;
+      if(taken.some(o=>hits(r,o))) continue;
+      best={lx,ly,r}; break;
+    }
+    if(best){ taken.push(best.r); out[i]={lx:best.lx,ly:best.ly,placed:true}; }
+    /* NOT PLACED IS A REAL ANSWER. A label crammed on top of another is worse
+       than one that is not drawn, and the count of them is reported rather
+       than hidden - see renderLabels. */
+    else out[i]={lx:null,ly:null,placed:false};
+  });
+  return out;
+}
+
+/* THE THRESHOLD. Above it, labels are a toggle rather than a default, and the
+   toggle STATES THE COUNT - "35 hardpoints - show all labels". Silently hiding
+   them would be the marker defect in a new costume. */
+const CC_LBL_MAX=14;
+let allLabels=null;   /* null = follow the threshold; true/false = the choice */
+function labelsWanted(n){
+  if(allLabels!==null) return allLabels;
+  return n<=CC_LBL_MAX;
+}
+
+function renderLabels(){
+  const box=$('cc-labels'), svg=$('cc-leaders'), v=_view;
+  if(!box||!svg) return;
+  const list=markersFor(shipId);
+  if(!list.length||!v||!v.current){ box.innerHTML=""; svg.innerHTML=""; return; }
+  const stage=$('cc-stage');
+  const sw=(stage&&stage.clientWidth)||0, sh=(stage&&stage.clientHeight)||0;
+  const us=v.unitScale();
+  const show=labelsWanted(list.length);
+  const items=[], meta=[];
+  list.forEach(m=>{
+    const sl=slotByPort(m[0]); if(!sl) return;
+    const selNow = !!(sel&&sel.slot===sl.id);
+    /* HOVER AND SELECTION ALWAYS LABEL, whatever the toggle says. */
+    if(!show && !selNow) return;
+    const p=v.project(m[1]*us, m[2]*us, m[3]*us);
+    if(!p) return;
+    const part=P[sl.stock];
+    const text=(part?part.n:portLabel(sl.h))+"\n"+portLabel(sl.h);
+    items.push({x:p.x,y:p.y,box:labelBox(text)});
+    meta.push({sl,part,text,hot:selNow,turret:!!sl.turret,x:p.x,y:p.y});
+  });
+  const place=layoutLabels(items, sw||960, sh||540);
+  let lh="", sh2="";
+  place.forEach((pl,i)=>{
+    if(!pl.placed) return;
+    const md=meta[i];
+    /* THE LEADER LINE MUST VISIBLY CONNECT. A label that has drifted free of
+       its line is worse than no label, so the line is drawn from the marker to
+       the label's own edge - the side facing the marker. */
+    const anchorX = (pl.lx > md.x) ? pl.lx : pl.lx+items[i].box.w;
+    lh+=`<div class="hp${md.hot?' hot':''}${md.turret?' turret':''}"
+      style="left:${Math.round(pl.lx)}px;top:${Math.round(pl.ly)}px"
+      ><b>${md.part?md.part.n:portLabel(md.sl.h)}</b>${portLabel(md.sl.h)}</div>`;
+    sh2+=`<line class="${md.hot?'hot':''}" x1="${Math.round(md.x)}"
+      y1="${Math.round(md.y)}" x2="${Math.round(anchorX)}"
+      y2="${Math.round(pl.ly)}"></line>`;
+  });
+  box.innerHTML=lh;
+  svg.innerHTML=sh2;
+  const shown=place.filter(x=>x.placed).length;
+  const dropped=place.filter(x=>!x.placed).length;
+  box.setAttribute('data-shown', String(shown));
+  box.setAttribute('data-dropped', String(dropped));
+  box.setAttribute('data-total', String(list.length));
+  renderLabelCount(list.length, shown, dropped, show);
+}
+
+/* THE COUNT IS ALWAYS STATED, and this is the half that keeps the threshold
+   honest. Hiding 20 labels because they would not fit is the marker defect in
+   a new costume - a thing the page decided not to show you, silently. So the
+   hint says how many hardpoints there are, how many carry a label, and offers
+   the toggle by name. */
+function renderLabelCount(total, shown, dropped, showing){
+  const el=$('cc-labelcount'); if(!el) return;
+  if(!total){ el.innerHTML=""; el.hidden=true; return; }
+  el.hidden=false;
+  let msg;
+  if(!showing){
+    msg=`<b>${total} hardpoints</b> &middot; labels off on a hull this busy`;
+  }else if(dropped){
+    msg=`<b>${total} hardpoints</b> &middot; ${shown} labelled, ${dropped} with
+      no room`;
+  }else{
+    msg=`<b>${total} hardpoints</b> &middot; all labelled`;
+  }
+  el.innerHTML=`${msg} <button type="button" id="cc-lbl-toggle">${
+    showing?"hide labels":"show all labels"}</button>`;
+}
+
 /* THE ONE PLACE A PORT GETS SELECTED. Both routes come here.
    If a second selection path is ever added, this is the function that stops
    being the answer - which is what the control asserts. */
@@ -2347,7 +2532,7 @@ function renderAll(){
   renderChrome();
   renderStats();renderCol("A");if(twoUp)renderCol("B");renderPicker();renderBuy();
   renderMatchup();renderLiveries();renderShipState();renderSpecs();
-  renderTabs();showModel();renderMarkers();renderStagePanel();applyTuneState();renderMarkerNote();renderRsi();
+  renderTabs();showModel();renderMarkers();renderLabels();renderStagePanel();applyTuneState();renderMarkerNote();renderRsi();
   renderAcq();renderRelated();renderRecord();
   $('shipname').textContent=shipLabel(shipId);
   writeHash();
@@ -2555,6 +2740,10 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#cc-spin')){ toggleSpin(); return; }
   /* H1f: the look controls. Every one of these CHANGES THE RENDER - the
      viewer rebuilds its passes - rather than setting a class and hoping. */
+  if(e.target.closest('#cc-lbl-toggle')){
+    const n=markersFor(shipId).length;
+    allLabels = !labelsWanted(n);
+    renderLabels(); return; }
   if(e.target.closest('#cc-tune')){ tuneOpen(!tuneIsOpen()); return; }
   const ts=e.target.closest('#cc-tune-panel button[data-style]');
   if(ts&&_view){ _view.setStyle(ts.dataset.style); _view.remember();

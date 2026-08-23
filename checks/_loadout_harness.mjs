@@ -171,7 +171,14 @@ export function loadPage({ mutate = [], session = null,
      point projects to is irrelevant to every question these controls ask. */
   const VIEW = `_view={_s:false,boot(){},start(){},size(){},cancel(){},`
     + `clear(){},stop(){},current:{},unitScale(){return 1;},`
-    + `project(){return{x:640,y:360,depth:0};},`
+    /* A REAL PROJECTION, not a constant. It returned {640,360} for every
+       marker, which is fine for "did a click reach the handler" and
+       useless for anything spatial: H1b's labels all landed on one
+       point and the layout looked broken when it was the stub. This is
+       an orthographic map of the hull's unit coordinates onto a 960x540
+       stage - deterministic, and it separates markers that are apart on
+       the hull. */
+    + `project(x,y,z){return{x:480+x*430,y:270-y*250,depth:z*0.5};},`
     + `spinning(){return this._s;},setSpin(v){this._s=!!v;return this._s;},`
     /* E4: the page tells the viewer how much of the stage a panel is
        covering. Recorded rather than swallowed, so a control can assert that
