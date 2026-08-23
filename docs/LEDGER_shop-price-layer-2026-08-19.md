@@ -5119,7 +5119,7 @@ E7a  DONE  6ff5506  THE WIREFRAME BUTTON WAS THROWING, AND MY CONTROL WAS
     signatures differ" would not catch a style that renders INVISIBLY.
     Distinctness is not visibility. That is E7b and it is still open.
 
-E5  DONE  6ff5506 + <served-override>  EVERY SHIP STOOD HALF UNDER THE FLOOR,
+E5  DONE  6ff5506 + 647f1b9  EVERY SHIP STOOD HALF UNDER THE FLOOR,
     AND THE ORDER'S NUMBERS DESCRIBE THE FILES RATHER THAN THE PAGE. Deployed
     d120865b-f490-427c-a8ba-2fa097156470, verified from the served bytes.
     THE ERRATA'S CENSUS IS REPRODUCED EXACTLY and the control asserts it: 4
