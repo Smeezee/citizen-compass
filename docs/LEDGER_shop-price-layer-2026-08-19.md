@@ -4696,3 +4696,55 @@ B5/B6 PROMOTED  ef4cf29  THE FLEET PLACEMENT RE-DERIVED AND SHIPPED.
     overwrite and I applied it to one file of the two. The names are
     re-derivable by running the frame check over the candidate hulls, and that
     is folded into H5, which needs the same answer.
+
+B5/B6 CORRECTED  c0e93b0  THREE FINDINGS AGAINST THE PROMOTION, ALL CONFIRMED.
+    1. B5 NEVER FIRED, AND NOT WHERE ANYBODY LOOKED. Not the record write, not
+    place_fleet reading it. THE CHILD PORTS WERE NEVER IN THE INPUT:
+      ships.json        2,555 top-level weapon ports, 2,374 CHILDREN
+      ship_mounts.json  3,011 mounts, 0 of them children
+    So the Hammerhead's 24 hardpoint_class_2 guns were not on the hull-centre
+    default - they were ABSENT - and turretOf was null on all 1,798 records
+    because no port that HAD a turret ever reached the file. My "the premise
+    does not hold" was the same miss from the other side.
+    build_matched.py reads the port TREE and can emit children with parent,
+    chain and the outermost TurretBase. place_fleet inherits FROM THE TURRET,
+    not one level: one level up from a gun is hardpoint_weapon_left_upper,
+    which yields left+upper and would put a back-RIGHT turret's gun on the LEFT
+    of the ship. turretOf is populated at last.
+    PROVEN ON THE HAMMERHEAD: 24 guns present, all with turretOf, all
+    placed_from inherited from that turret, none at hull centre.
+    SHIPPED DISABLED, because the control caught why it must be: the hull-scale
+    sibling spread plus the collision walk means 12 OF 24 GUNS LAND NEARER A
+    DIFFERENT TURRET THAN THEIR OWN. A confident wrong position - worse than
+    hull centre, which at least looks wrong.
+      with children   +160 markers on 5 more hulls
+                      crowding 60->216 / 9->21 hulls (proximity)
+                               117->451 / 19->34 hulls (report)
+    Sleven's call: OFF. The control asserts 0 inherited and 0 child points in
+    the shipped dataset and FAILS if --with-children is turned on before the
+    scatter is fixed.
+    DEFERRED, NOT DROPPED, and scheduled after the hologram work: spread an
+    inherited sibling around ITS TURRET rather than across the hull, and stop
+    the collision pass walking it arbitrarily far from the turret it belongs
+    to.
+    2. THE CROWDING FIGURE I QUOTED WAS THE HALF THAT IMPROVED. Four numbers
+    now, two metrics, and a rise in any fires the control.
+                      report metric      proximity metric
+                      markers  hulls     markers  hulls
+      B6 alone BEFORE   118     19         60      9
+               AFTER    117     19         60      9
+    B6 alone is clean. THE PROMOTION AS A WHOLE IS NOT: sandbox to shipped is
+    50 -> 60 markers on 8 -> 9 hulls by proximity. Worse - by the vertex
+    resample, not by B5 or B6 - and I had not reported it.
+    3. THE GATE HAD NOTHING LEFT TO REFUSE. matched.json was built from
+    hardpoints_fleet.json, the 167 hulls ALREADY PLACED - a set with every
+    refusal already removed. Hence skipped:0. A gate that cannot refuse
+    anything is not a gate.
+      placed 169, skipped 6
+        Clipper, Defender, Eclipse, Nova, Pulse  proportions vs published dims
+        Javelin                                   no published dimensions
+    Not loosened: the control drives it with proportions that must fail and a
+    hull that must pass. SIX, NOT SEVEN - the seventh cannot be named because I
+    overwrote that report before reading it.
+    Two more hulls place, so markers go 1,200 on 157 hulls to 1,210 on 159.
+    Sweep 54 ok, 0 failed, 3 skipped, 0 NOT RUN.
