@@ -109,8 +109,26 @@ export function loadPage({ mutate = [], session = null,
         if (t === "input") inputHandlers.push(fn);
       },
       querySelector: () => null,
+      /* H1g: THE ROOT ELEMENT, BECAUSE THE DIM IS WRITTEN ONTO IT.
+         CC_THEME sets one custom property per token on documentElement.style.
+         Recording them rather than discarding them is what lets a control
+         assert the page APPLIED the palette, separately from asserting that
+         palette() computed a good one - a build where apply() writes nothing
+         passes every arithmetic assertion and dims not one pixel. */
+      documentElement: {
+        _props: {}, _attrs: {},
+        style: {
+          setProperty(k, v) { this._props[k] = String(v); },
+          getPropertyValue(k) { return this._props[k] || ""; },
+          _props: {},
+        },
+        setAttribute(k, v) { this._attrs[k] = String(v); },
+        getAttribute(k) { return this._attrs[k] || null; },
+      },
     },
   };
+  sandbox.document.documentElement.style._props =
+    sandbox.document.documentElement._props;
   /* SESSION STORAGE, OPTIONAL AND THREE-WAY.
      Absent (the default) is a browser that has none, which is also what this
      harness is. `session` installs a working one seeded with real values.
@@ -144,25 +162,58 @@ export function loadPage({ mutate = [], session = null,
      read and the one carrying the page's entry point is chosen. */
   const blocks = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
     .map((m) => m[1]);
-  let script = blocks.find((b) => /function renderAll\s*\(/.test(b));
-  if (!script) {
+  const entry = blocks.findIndex((b) => /function renderAll\s*\(/.test(b));
+  if (entry < 0) {
     console.log("NO PAGE SCRIPT FOUND - none of the " + blocks.length
       + " inline <script> blocks defines renderAll(). Refusing to assert "
       + "against a page this cannot drive.");
     process.exit(2);
   }
+  /* H1g: THE PAGE'S OWN SCRIPT IS NOW MORE THAN ONE BLOCK.
+     CC_THEME has to run in the HEAD - a returning visitor with Blackout saved
+     would otherwise get one frame of a full-brightness page in the dark, which
+     is the exact injury the feature exists to prevent - so the page carries a
+     head block and an end-of-body block. Taking only the block with
+     renderAll() in it would leave every control driving a page where CC_THEME
+     does not exist, and the first symptom would be controls that pass while
+     the palette is never applied.
+     Every block from the head down to the entry point is run, in document
+     order, exactly as a browser would. Vendor blocks stay excluded because
+     they are all AFTER the entry point in the built page - three.js and the
+     DRACO decoder are appended, not prepended - and running a megabyte of
+     vendor code against a DOM stub is what the original filter was for. */
+  const preamble = blocks.slice(0, entry);
+  let script = blocks[entry];
+  /* MUTATIONS APPLY ACROSS EVERY BLOCK THAT RUNS, not only the entry point.
+     H1g's palette lives in the head block, and a `--mutate-oldpalette` that
+     silently matched nothing in the entry block would have left the mutated
+     run identical to the clean one - a negative control that cannot plant its
+     defect, reporting a pass. The "matched nothing" refusal is therefore
+     across the set: a pattern must land somewhere. */
   for (const [pattern, replacement] of mutate) {
+    let hit = false;
+    for (let i = 0; i < preamble.length; i++) {
+      const before = preamble[i];
+      preamble[i] = preamble[i].replace(pattern, replacement);
+      if (preamble[i] !== before) hit = true;
+    }
     const before = script;
     script = script.replace(pattern, replacement);
-    if (script === before) {
-      console.log(`MUTATION DID NOT APPLY - ${pattern} matched nothing, so `
-        + `this run proves nothing. Fix the mutator before trusting the check.`);
+    if (script !== before) hit = true;
+    if (!hit) {
+      console.log(`MUTATION DID NOT APPLY - ${pattern} matched nothing in any `
+        + `of the ${preamble.length + 1} script blocks, so this run proves `
+        + `nothing. Fix the mutator before trusting the check.`);
       process.exit(1);
     }
   }
 
   vm.runInContext(dataJs, sandbox, { filename: "loadout_data.gen.js" });
   for (const s of EXTRA) vm.runInContext(s, sandbox, { filename: "gen" });
+  for (let i = 0; i < preamble.length; i++) {
+    vm.runInContext(preamble[i], sandbox,
+      { filename: `loadout.src.html:head[${i}]` });
+  }
   vm.runInContext(script, sandbox, { filename: "loadout.src.html:script" });
   const g = (expr) => vm.runInContext(expr, sandbox);
   const run = (stmt) => vm.runInContext(stmt, sandbox);
@@ -264,6 +315,11 @@ export function loadPage({ mutate = [], session = null,
     g, run, el, openShip, dispatch, key, clickHandlers, keyHandlers,
     inputHandlers, pickerNow,
     session: sandbox.sessionStorage || null,
+    /* What the page WROTE onto the root element, and what it stamped there.
+       Read back rather than inferred, so "the palette was applied" is a
+       measurement of the page's own effect. */
+    rootProps: sandbox.document.documentElement._props,
+    rootAttr: (k) => sandbox.document.documentElement.getAttribute(k),
     SHIPS: g("SHIPS"), PARTS: g("P"), MARKS: g("MARKS"), HPN: g("HPN"),
     META: g("META"),
     /* A slot's `h` is an INDEX into the hardpoint-name table, not the name.

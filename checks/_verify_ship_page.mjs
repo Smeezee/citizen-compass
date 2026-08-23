@@ -145,7 +145,29 @@ sandbox.window = sandbox;
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
 
-let script = html.match(/<script>\n([\s\S]*)<\/script>/)[1];
+/* H1g: THE PAGE IS TWO SCRIPT BLOCKS NOW, and this greedy match used to be
+   one. CC_THEME runs in the HEAD - the dim has to be applied before first
+   paint, or a returning visitor gets one frame of a bright page in the dark -
+   so `<script>` to the LAST `</script>` swallowed the tag between the two
+   blocks and this control died on a SyntaxError rather than on a failed
+   assertion.
+   THIS FILE CARRIES ITS OWN COPY OF THE HARNESS, WHICH IS WHY THE SAME FIX HAD
+   TO BE MADE TWICE. checks/_loadout_harness.mjs exists precisely to stop that,
+   and its own header names this hazard: "the day the page starts touching a
+   DOM property none of the copies implement, the copies diverge one at a time".
+   Recorded rather than quietly patched - the real fix is moving this control
+   onto the shared harness. */
+let script = (() => {
+  const blocks = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map((m) => m[1]);
+  const entry = blocks.findIndex((b) => /function renderAll\s*\(/.test(b));
+  if (entry < 0) {
+    console.log("NO PAGE SCRIPT FOUND - none of the " + blocks.length
+      + " inline <script> blocks defines renderAll().");
+    process.exit(2);
+  }
+  return blocks.slice(0, entry + 1).join("\n;\n");
+})();
 if (MUTATE) {
   // THE DEFECT, PLANTED. `fitsFor` stops reading the port's own rule and
   // offers every part of the type instead - which is exactly what the page did

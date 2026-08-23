@@ -4,9 +4,59 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Citizen Compass — Loadout Bench</title>
 <style>
-:root{--bg:#070D16;--panel:#0E1B2E;--panel2:#12233A;--line:#22364F;--text:#EDE3D8;
- --muted:#93A7B6;--accent:#FF6B00;--accent2:#00C9A7;--a:#4DA3FF;--b:#FF8A00;
- --good:#3FE3C4;--bad:#FF6B6B}
+/* ===================== H1g: THE PALETTE IS A TOKEN SET =====================
+   EVERY COLOUR ON THIS PAGE IS A TOKEN AND THERE ARE NO LITERALS BELOW THIS
+   BLOCK. That is not tidiness - it is the mechanism.
+
+   H1g-1 asks that the WHOLE PAGE dim, and the control that proves it has no
+   browser to render into. What it can do is take the complete set of colours
+   the page is able to paint, apply the preset, and assert the brightest one is
+   under the ceiling. That inference is only sound if the token set IS the
+   complete set - so `_verify_dim.mjs` asserts that no colour literal survives
+   outside this block. A stray `#fff` in a rule further down would be a colour
+   the dim never reaches AND a colour the control never sees, which is exactly
+   the failure the order names: "dimming the ground while a white number stays
+   at full".
+
+   The values here are DAY. `CC_THEME.apply()` overwrites them on the root
+   element for every other level. They are written out rather than left to
+   JavaScript so the page is correct in the moment before the script runs.
+
+   TWO COLOURS CHANGED FOR COLOUR VISION AND THE MEASUREMENT IS IN THE LEDGER.
+   `--good` was #3FE3C4 mint and `--accent2` #00C9A7 teal; both are now in the
+   blue half of the wheel. Mint against the red `--bad` is the classic
+   red-green pair and it scored 0.69 where 1.0 is the floor - the two chips
+   that say "this got better" and "this got worse" sit in the same list, one
+   above the other, and to roughly one man in twelve they were the same
+   colour. */
+:root{
+ /* GROUNDS - backgrounds, borders, anything light is subtracted from. */
+ --bg:#070D16; --panel:#0E1B2E; --panel2:#12233A; --panel3:#16283D;
+ --hover:#122335; --hover2:#101F31; --well:#0A1524; --deep:#08121F;
+ --footerbg:#0B1626; --line:#22364F; --line2:#1B3247;
+ --scrim:#070D16; --shadow:#000000;
+ --notebg:#1A1206; --noteline:#4A3410;
+ --provbg:#0E2A22; --provline:#1F5A48;
+ --onaccent:#1A0E04; --onblue:#150A2B; --onteal:#032027;
+ /* INKS - text and anything that reads as light on the page. */
+ --text:#EDE3D8; --muted:#93A7B6; --faint:#6C8293;
+ --accent:#FF6B00; --accent2:#22D3EE; --a:#A78BFA; --b:#FF8A00;
+ --good:#38BDF8; --bad:#FF6B6B;
+ --notetext:#E8C9A0; --provtext:#8FE3C8;
+ --lbl:#FFD9A0; --lblhead:#FFFFFF; --lblturret:#C9D4FF; --leader:#FFAA3C;
+ /* TINTS - a token over its own ground, composited once here rather than by
+    the browser, so the dim reaches them and the control can read them. */
+ --tint-good:#173955; --tint-bad:#332D41; --tint-flat:#24354B;
+ --tint-sel:#2D2528; --tint-changed:#21242A; --tint-a:#273255;
+ --tint-a2:#11384D; --tint-fitted:#1D2642; --tint-bump:#392926;
+ --edge-good:#2B87B6; --edge-bad:#AC525A; --edge-stealth:#186982;
+ /* SCRIMS over the canvas, where the backdrop is a render and not a token.
+    Stated as alpha because there is nothing to composite against. */
+ --scrim-72:rgba(7,13,22,0.72); --scrim-55:rgba(7,13,22,0.55);
+ --scrim-90:rgba(7,13,22,0.9); --scrim-78:rgba(7,13,22,0.78);
+ --scrim-82:rgba(7,13,22,0.82); --scrim-drop:rgba(0,0,0,0.55);
+ --scrim-code:rgba(0,0,0,0.3); --scrim-label:rgba(0,0,0,0.85);
+ --leaderline:rgba(255,170,60,0.62)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
  font:15px/1.45 "Segoe UI",system-ui,sans-serif;padding:0 12px 10px}
@@ -24,21 +74,39 @@ a{color:var(--accent)}
  text-decoration:none}
 .rsi:hover{border-color:var(--accent);color:var(--accent)}
 .rsi[hidden]{display:none}
-.prov{background:#0E2A22;border:1px solid #1F5A48;color:#8FE3C8;
+.prov{background:var(--provbg);border:1px solid var(--provline);color:var(--provtext);
  padding:5px 11px;border-radius:6px;font-size:12.5px;font-weight:600}
 .btn{background:var(--panel2);color:var(--muted);border:1px solid var(--line);
  border-radius:7px;padding:9px 13px;font:700 13.5px inherit;cursor:pointer}
 .btn:hover{border-color:var(--accent);color:var(--text)}
-.btn.on{background:var(--accent);border-color:var(--accent);color:#1A0E04}
-.btn.blue.on{background:var(--a);border-color:var(--a);color:#04182B}
-.btn.orange.on{background:var(--b);border-color:var(--b);color:#1A0E04}
+.btn.on{background:var(--accent);border-color:var(--accent);color:var(--onaccent)}
+.btn.blue.on{background:var(--a);border-color:var(--a);color:var(--onblue)}
+.btn.orange.on{background:var(--b);border-color:var(--b);color:var(--onaccent)}
+
+/* H1g-1: THE PAGE DIMMER, AND IT IS IN THE HEADER RATHER THAN IN A PANEL.
+   "Presets are what a person reaches for mid-flight when they do not want to
+   fiddle" - so a preset is ONE click from anywhere on the page. Putting these
+   inside the Look panel would have made it two, and the Look panel is over the
+   stage, which is the wrong place for a control that changes the whole page. */
+.dim{display:flex;align-items:center;gap:3px;background:var(--panel2);
+ border:1px solid var(--line);border-radius:7px;padding:3px 5px}
+.dim button{background:transparent;border:1px solid transparent;color:var(--muted);
+ border-radius:5px;padding:5px 9px;font:700 12px inherit;cursor:pointer}
+.dim button:hover{color:var(--text)}
+.dim button.on{background:var(--accent);border-color:var(--accent);color:var(--onaccent)}
+.dim input[type=range]{width:92px;accent-color:var(--accent);margin:0 3px}
+/* THE LEVEL IS STATED AS A NUMBER, and that is not decoration. Which preset is
+   active is otherwise carried only by which button is orange - colour as the
+   only carrier, which is the exact thing H1g-3 forbids everywhere else on this
+   page. It reads as a percentage of Day's light. */
+.dim .lv{font:700 11.5px inherit;color:var(--muted);min-width:33px;text-align:right}
 
 .outcome{background:transparent;border:0;padding:9px 10px;margin:0}
 .outcome h2{font-size:13px;margin:0 0 10px;color:var(--accent);letter-spacing:.06em;
  text-transform:uppercase}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:6px}
 .stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
-.stat.stealth{border-color:rgba(0,201,167,.4)}
+.stat.stealth{border-color:var(--edge-stealth)}
 .stat .k{font-size:11.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .stat.stealth .k{color:var(--accent2)}
 .stat .row{display:flex;align-items:baseline;gap:8px;margin-top:3px;flex-wrap:wrap}
@@ -46,15 +114,19 @@ a{color:var(--accent)}
 .vb{font:800 17px/1 inherit;color:var(--b)}
 .vb.ghost{opacity:.55;font-style:italic}
 .d{font-size:12.5px;font-weight:700;padding:1px 6px;border-radius:4px}
-.d.up{background:rgba(63,227,196,.14);color:var(--good)}
-.d.down{background:rgba(255,107,107,.14);color:var(--bad)}
-.d.flat{background:rgba(147,167,182,.12);color:var(--muted)}
+/* H1g-3: the shape that carries better/worse when the colour cannot. */
+.d b{font-weight:700;margin-right:3px;font-size:10px;vertical-align:.5px}
+.va i,.vb i{font-style:normal;font-size:10px;opacity:.72;margin-right:3px;
+ letter-spacing:.06em;vertical-align:2px}
+.d.up{background:var(--tint-good);color:var(--good)}
+.d.down{background:var(--tint-bad);color:var(--bad)}
+.d.flat{background:var(--tint-flat);color:var(--muted)}
 .sub{font-size:11.5px;color:var(--muted);margin-top:2px}
 .budgets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:6px}
 .bud{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
 .bud .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .bud .v{font:700 15px inherit;margin-top:2px}
-.bar{height:7px;background:#0A1524;border-radius:5px;overflow:hidden;margin-top:6px}
+.bar{height:7px;background:var(--well);border-radius:5px;overflow:hidden;margin-top:6px}
 .bar i{display:block;height:100%;background:var(--accent2);transition:width .18s}
 .bar i.over{background:var(--bad)}
 
@@ -69,11 +141,11 @@ a{color:var(--accent)}
 .colhead .cost{margin-left:auto;font:700 14px inherit;color:var(--accent2)}
 .grp h3{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
  margin:11px 13px 5px}
-.slot{display:flex;align-items:center;gap:8px;padding:5px 10px;border-top:1px solid #16283D;cursor:pointer}
-.slot:hover{background:#122335}
-.slot.sel{background:rgba(255,107,0,.13);box-shadow:inset 3px 0 0 var(--accent)}
+.slot{display:flex;align-items:center;gap:8px;padding:5px 10px;border-top:1px solid var(--panel3);cursor:pointer}
+.slot:hover{background:var(--hover)}
+.slot.sel{background:var(--tint-sel);box-shadow:inset 3px 0 0 var(--accent)}
 .slot.fixed{opacity:.5;cursor:not-allowed}
-.slot .sz{flex:0 0 32px;height:24px;border-radius:5px;background:#16283D;color:var(--muted);
+.slot .sz{flex:0 0 32px;height:24px;border-radius:5px;background:var(--panel3);color:var(--muted);
  display:flex;align-items:center;justify-content:center;font:700 12px inherit}
 .slot .nm{flex:1 1 auto;min-width:0}
 .slot .nm b{display:block;font-size:14px;font-weight:600;white-space:nowrap;
@@ -81,23 +153,23 @@ a{color:var(--accent)}
 .slot .nm small{color:var(--muted);font-size:12px}
 .slot .pr{flex:0 0 auto;text-align:right;font-size:12px;color:var(--muted)}
 .slot .pr b{display:block;color:var(--text);font-size:13px}
-.slot.changed{background:rgba(255,138,0,.08)}
+.slot.changed{background:var(--tint-changed)}
 .slot.changed .nm b{color:var(--b)}
 .tag{display:inline-block;font-size:10.5px;font-weight:700;padding:0 5px;border-radius:3px;
- background:#16283D;color:var(--muted);margin-left:5px}
-.tag.st{background:rgba(0,201,167,.16);color:var(--accent2)}
+ background:var(--panel3);color:var(--muted);margin-left:5px}
+.tag.st{background:var(--tint-a2);color:var(--accent2)}
 
 .picker .ph{padding:11px 13px;border-bottom:1px solid var(--line);background:var(--panel2)}
 .picker .ph b{display:block;font-size:15px}
 .picker .ph small{color:var(--muted);font-size:12.5px}
 .picker .sortrow{display:flex;gap:6px;flex-wrap:wrap;padding:9px 13px;border-bottom:1px solid var(--line)}
-.picker .sortrow button{background:#16283D;color:var(--muted);border:1px solid var(--line);
+.picker .sortrow button{background:var(--panel3);color:var(--muted);border:1px solid var(--line);
  border-radius:6px;padding:6px 10px;font:700 12px inherit;cursor:pointer}
-.picker .sortrow button.on{background:var(--accent2);border-color:var(--accent2);color:#04231D}
+.picker .sortrow button.on{background:var(--accent2);border-color:var(--accent2);color:var(--onteal)}
 .plist{overflow:auto;flex:1 1 auto}
-.pi{padding:9px 13px;border-top:1px solid #16283D;cursor:pointer}
-.pi:hover{background:#16283D}
-.pi.fitted{background:rgba(77,163,255,.10)}
+.pi{padding:9px 13px;border-top:1px solid var(--panel3);cursor:pointer}
+.pi:hover{background:var(--panel3)}
+.pi.fitted{background:var(--tint-fitted)}
 .pi b{font-size:14px;font-weight:600}
 .pi .m{color:var(--muted);font-size:12px}
 .pi .st{display:flex;gap:10px;flex-wrap:wrap;margin-top:3px;font-size:12px;color:var(--muted)}
@@ -122,27 +194,27 @@ a{color:var(--accent)}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th{text-align:left;color:var(--muted);font-size:11.5px;text-transform:uppercase;
  letter-spacing:.04em;padding:5px 7px;border-bottom:1px solid var(--line)}
-td{padding:7px;border-bottom:1px solid #16283D}
+td{padding:7px;border-bottom:1px solid var(--panel3)}
 td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .conf{font-size:11.5px;color:var(--muted)}
 .trip{margin-top:11px;padding:11px 13px;background:var(--panel2);border-left:3px solid var(--accent2);
  border-radius:0 8px 8px 0;font-size:14.5px}
-.note{margin-top:13px;padding:11px 13px;background:#1A1206;border:1px solid #4A3410;
- border-radius:8px;font-size:13.5px;color:#E8C9A0}
+.note{margin-top:13px;padding:11px 13px;background:var(--notebg);border:1px solid var(--noteline);
+ border-radius:8px;font-size:13.5px;color:var(--notetext)}
 /* WHOSE NUMBER IS IT (L13). A badge rather than a footnote, so the
    distinction between reporting CIG's figure and asserting our own cannot be
    lost when the layout moves. */
 .src{display:inline-block;font:700 9.5px/1.5 inherit;padding:0 5px;border-radius:3px;
  margin-left:6px;vertical-align:1px;letter-spacing:.06em}
-.src.cig{background:rgba(77,163,255,.16);color:var(--a)}
-.src.ours{background:rgba(147,167,182,.14);color:var(--muted)}
+.src.cig{background:var(--tint-a);color:var(--a)}
+.src.ours{background:var(--tint-flat);color:var(--muted)}
 
 .colsub{padding:6px 13px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line)}
 .slot.fixed{opacity:.62;cursor:default}
-.slot.fixed:hover{background:#101F31}
+.slot.fixed:hover{background:var(--hover2)}
 .slot.bump{animation:bump .26s ease}
-@keyframes bump{0%{background:rgba(255,107,0,.18)}100%{background:transparent}}
-.tag.pv{background:rgba(77,163,255,.12);color:var(--a)}
+@keyframes bump{0%{background:var(--tint-bump)}100%{background:transparent}}
+.tag.pv{background:var(--tint-a);color:var(--a)}
 
 .panel{margin-top:13px;background:var(--panel);border:1px solid var(--line);
  border-radius:11px;padding:13px 15px}
@@ -154,8 +226,8 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .panel .gap{font-size:14px;color:var(--muted);margin:0}
 .resrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px}
 .res{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 10px}
-.res.good{border-color:rgba(63,227,196,.42)}
-.res.bad{border-color:rgba(255,107,107,.42)}
+.res.good{border-color:var(--edge-good)}
+.res.bad{border-color:var(--edge-bad)}
 .res .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .res .v{font:800 19px/1.2 inherit}
 .res.good .v{color:var(--good)}.res.bad .v{color:var(--bad)}
@@ -171,7 +243,7 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 /* P2: THE VIEWER IS BOUNDED. It used to run edge to edge - Sleven: "it runs
    screen to screen on each side". The centre column caps its width; this caps
    its height so the three columns agree on one. */
-#cc-stage{position:relative;height:100%;min-height:260px;background:#0A1524;
+#cc-stage{position:relative;height:100%;min-height:260px;background:var(--well);
  border:1px solid var(--line);border-radius:10px;overflow:hidden}
 #cc-canvas{width:100%;height:100%;display:block}
 #cc-empty{position:absolute;inset:0;display:flex;flex-direction:column;
@@ -183,7 +255,7 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 #cc-marks{position:absolute;inset:0;pointer-events:none}
 #cc-marks button{position:absolute;transform:translate(-50%,-50%);
  pointer-events:auto;width:19px;height:19px;padding:0;border-radius:50%;
- background:rgba(7,13,22,.72);border:2px solid var(--accent2);cursor:pointer;
+ background:var(--scrim-72);border:2px solid var(--accent2);cursor:pointer;
  color:transparent;font-size:0;transition:transform .12s,background .12s}
 #cc-marks button:hover,#cc-marks button:focus{background:var(--accent2);
  transform:translate(-50%,-50%) scale(1.25);outline:2px solid var(--text);
@@ -200,9 +272,9 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    something - see fixedPanel(). It is not disabled, because it is not
    inert: it has something to say. */
 #cc-marks button.fx{width:15px;height:15px;border-style:dashed;
- border-width:2px;background:rgba(7,13,22,.55)}
+ border-width:2px;background:var(--scrim-55)}
 #cc-marks button.fx:hover,#cc-marks button.fx:focus{
- background:rgba(7,13,22,.9);border-style:solid}
+ background:var(--scrim-90);border-style:solid}
 #cc-marks button.fx.sel{background:var(--accent);border-style:solid}
 /* H1b: THE LABELS ARE THE FEATURE, not decoration on the markers.
    A derived position will never be exact - the exports are one welded mesh
@@ -213,17 +285,17 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    rather than behind a toggle. */
 #cc-leaders{position:absolute;inset:0;pointer-events:none;z-index:4;
  overflow:visible}
-#cc-leaders line{stroke:rgba(255,170,60,.62);stroke-width:1}
-#cc-leaders line.hot{stroke:#fff;stroke-width:1.4}
+#cc-leaders line{stroke:var(--leaderline);stroke-width:1}
+#cc-leaders line.hot{stroke:var(--lblhead);stroke-width:1.4}
 #cc-labels{position:absolute;inset:0;pointer-events:none;z-index:5}
 #cc-labels .hp{position:absolute;transform:translateY(-50%);font-size:10px;
- color:#ffd9a0;white-space:nowrap;text-shadow:0 0 6px #000,0 0 12px #000;
+ color:var(--lbl);white-space:nowrap;text-shadow:0 0 6px var(--scrim-label),0 0 12px var(--scrim-label);
  letter-spacing:.04em;line-height:1.25}
-#cc-labels .hp b{display:block;color:#fff;font-weight:600;font-size:10.5px}
-#cc-labels .hp.turret{color:#c9d4ff}
+#cc-labels .hp b{display:block;color:var(--lblhead);font-weight:600;font-size:10.5px}
+#cc-labels .hp.turret{color:var(--lblturret)}
 #cc-labels .hp.hot b{color:var(--accent)}
 #cc-labelcount{position:absolute;left:9px;bottom:9px;z-index:6;font-size:11px;
- color:var(--muted);background:rgba(7,13,22,.72);border:1px solid var(--line);
+ color:var(--muted);background:var(--scrim-72);border:1px solid var(--line);
  border-radius:7px;padding:4px 9px}
 #cc-labelcount[hidden]{display:none}
 #cc-labelcount b{color:var(--text)}
@@ -240,14 +312,14 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    marker it is anchored to with nothing reporting it. */
 #cc-panel{position:absolute;z-index:6;background:var(--panel);
  border:1px solid var(--accent2);border-radius:10px;overflow:hidden;
- box-shadow:0 14px 34px rgba(0,0,0,.55);display:flex;flex-direction:column}
+ box-shadow:0 14px 34px var(--scrim-drop);display:flex;flex-direction:column}
 #cc-panel[hidden]{display:none}
 /* H1f: the opener and the panel. Both absolutely positioned INSIDE the stage,
    which is what makes "costs zero page height" true rather than hoped for -
    P7 measured this page at 1080 of 1080 and 768 of 768 and there is no room
    for a column. */
 #cc-tune{position:absolute;left:9px;top:9px;z-index:5;
- background:rgba(7,13,22,.78);border:1px solid var(--line);color:var(--muted);
+ background:var(--scrim-78);border:1px solid var(--line);color:var(--muted);
  border-radius:7px;padding:5px 10px;font:600 11.5px inherit;cursor:pointer}
 #cc-tune:hover{border-color:var(--accent2);color:var(--accent2)}
 #cc-tune:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
@@ -255,7 +327,7 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 #cc-tune-panel{position:absolute;left:9px;top:44px;z-index:7;width:250px;
  max-height:calc(100% - 56px);overflow:auto;background:var(--panel);
  border:1px solid var(--accent2);border-radius:10px;padding:11px 12px;
- box-shadow:0 14px 34px rgba(0,0,0,.55);font-size:12px}
+ box-shadow:0 14px 34px var(--scrim-drop);font-size:12px}
 #cc-tune-panel[hidden]{display:none}
 #cc-tune-panel h4{margin:0 0 6px;font:700 10.5px inherit;letter-spacing:.07em;
  text-transform:uppercase;color:var(--muted)}
@@ -296,19 +368,19 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .stat.explained{position:relative;cursor:help}
 .stat.explained:focus{outline:2px solid var(--accent2);outline-offset:2px}
 .stat .ask{display:inline-block;margin-left:5px;width:13px;height:13px;
- line-height:13px;text-align:center;border-radius:50%;background:#1B3247;
+ line-height:13px;text-align:center;border-radius:50%;background:var(--line2);
  color:var(--muted);font:700 9px inherit;vertical-align:1px}
 .stat .why{display:none;position:absolute;left:8px;right:8px;top:100%;z-index:5;
- margin-top:4px;padding:9px 11px;background:#08121F;border:1px solid var(--accent2);
+ margin-top:4px;padding:9px 11px;background:var(--deep);border:1px solid var(--accent2);
  border-radius:8px;font:400 12.5px/1.45 inherit;color:var(--text);
- box-shadow:0 8px 22px rgba(0,0,0,.55)}
+ box-shadow:0 8px 22px var(--scrim-drop)}
 .stat.explained:hover .why,.stat.explained:focus .why,
 .stat.explained:focus-within .why{display:block}
 .relay:focus .where{color:var(--accent2)}
 
 /* P4: the stop control, on the canvas where the spinning is. */
 #cc-spin{position:absolute;top:9px;right:9px;z-index:3;
- background:rgba(7,13,22,.82);color:var(--text);border:1px solid var(--line);
+ background:var(--scrim-82);color:var(--text);border:1px solid var(--line);
  border-radius:7px;padding:5px 10px;font:700 11.5px inherit;cursor:pointer}
 #cc-spin:hover{border-color:var(--accent2);color:var(--accent2)}
 #cc-spin:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
@@ -372,11 +444,11 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 
 /* N9: said under the model, where somebody looking at the dots will read it.
    Not a tooltip and not a footnote - the order says do not bury it. */
-.markernote{margin-top:6px;padding:6px 10px;background:#1A1206;
- border:1px solid #4A3410;border-radius:8px;font:400 11.5px/1.4 inherit;
- color:#E8C9A0;max-height:78px;overflow-y:auto}
+.markernote{margin-top:6px;padding:6px 10px;background:var(--notebg);
+ border:1px solid var(--noteline);border-radius:8px;font:400 11.5px/1.4 inherit;
+ color:var(--notetext);max-height:78px;overflow-y:auto}
 .markernote:empty{display:none}
-.markernote code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;
+.markernote code{background:var(--scrim-code);padding:1px 5px;border-radius:4px;
  font-size:12px}
 
 /* B1: N7's collapsed fold is GONE, and so are its rules. The fixed ports live
@@ -486,18 +558,379 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
  font-size:11.5px;line-height:1.4;color:var(--muted)}
 .signote:empty{display:none}
 #pools:empty{display:none}
-.shipstate{margin-bottom:13px;padding:11px 13px;background:#1A1206;
- border:1px solid #4A3410;border-radius:8px;font-size:14px;color:#E8C9A0;display:none}
+.shipstate{margin-bottom:13px;padding:11px 13px;background:var(--notebg);
+ border:1px solid var(--noteline);border-radius:8px;font-size:14px;color:var(--notetext);display:none}
 
-footer{margin:24px -16px 0;padding:15px 16px;background:#0B1626;border-top:1px solid var(--line);
- color:#6B8091;font:400 12.5px/1.6 inherit}
+footer{margin:24px -16px 0;padding:15px 16px;background:var(--footerbg);border-top:1px solid var(--line);
+ color:var(--faint);font:400 12.5px/1.6 inherit}
 </style>
+<script>
+/* ============ H1g-1/H1g-2: ONE DIMMER, AND IT DIMS THE WHOLE PAGE ==========
+
+   Sleven, 2026-08-23: "if they wanna have it up on a second or third
+   monitor... I've played extensively in the dark, and I always hated having a
+   page that I couldn't force to dark mode."
+
+   WHAT H1f SHIPPED AND WHY IT WAS NOT THE FEATURE. The Look panel dims the
+   MODEL. The stat tiles, the component list, the headings and the header bar
+   were untouched, so the ship got darker and the thing burning his eyes stayed
+   exactly as bright. A dimmed hologram beside a bright white panel does not
+   solve the problem it was built for.
+
+   WHY THIS SCRIPT IS IN THE HEAD AND THE REST OF THE PAGE'S SCRIPT IS NOT.
+   Everything else can wait for the DOM. This cannot: a returning visitor with
+   Blackout saved would otherwise get one frame of a full-brightness page, in
+   the dark, which is the precise injury the feature exists to prevent. It
+   runs before the body parses and writes the tokens onto the root element.
+
+   WHY THE DIM IS NOT `filter: brightness()`. Because that would break H1g-2.
+   Scaling every colour by the same factor drives every contrast ratio towards
+   1:1 - text and its background converge, and a dark page with grey-on-grey
+   text is a different injury, not a fix. So the dim is computed per token
+   against a CONTRAST FLOOR: grounds and inks scale on separate curves, and any
+   ink that would fall below the floor against its own ground is pulled back up
+   until it meets it. At Blackout the floor is what decides, not the curve -
+   the curve asks for 12% of Day's light and the floor returns roughly twice
+   that, which is recorded rather than tuned away.
+
+   THE MATHS IS DUPLICATED IN checks/_colour.mjs AND THAT IS DELIBERATE, with a
+   guard. A page cannot import a Node module, so the control cannot share this
+   code - but two copies of a transform is rule 14's hazard. The control
+   therefore asserts the two AGREE, digit for digit, on a spread of colours
+   before it asserts anything else. A silent divergence would otherwise mean
+   the control measures maths the page does not use. */
+var CC_THEME = {
+  KEY: 'ccDim',
+
+  /* Three named presets, one click each. `Day` is the default and is level 0 -
+     the page as it was. */
+  PRESETS: [['day', 'Day', 0], ['night', 'Night', 0.55],
+            ['blackout', 'Blackout', 1]],
+  DEFAULT: 0,
+
+  /* THE TWO CURVES, as the three points the presets are defined at. The slider
+     interpolates between them, so a preset and the slider position that names
+     it are the same value rather than two things that must be kept in step.
+     Inks fall further than grounds because inks are what a screen actually
+     emits at you; the page's grounds are already close to black. */
+  INK:    [[0, 1.00], [0.55, 0.40], [1, 0.12]],
+  GROUND: [[0, 1.00], [0.55, 0.70], [1, 0.45]],
+
+  /* WCAG AA for normal text. Applied to every ink, including the ones drawn at
+     11px, rather than taking the large-text relaxation. */
+  FLOOR: 4.5,
+
+  /* THE COMPLETE SET OF COLOURS THIS PAGE CAN PAINT. `_verify_dim.mjs`
+     asserts the stylesheet holds no colour literal outside the token block, so
+     this list being complete is a checked fact and not a hope. */
+  GROUNDS: ['bg', 'panel', 'panel2', 'panel3', 'hover', 'hover2', 'well',
+            'deep', 'footerbg', 'line', 'line2', 'scrim', 'shadow',
+            'notebg', 'noteline', 'provbg', 'provline'],
+
+  /* FACES - dark text on a FILLED accent. They are the floor's mirror image:
+     an ink has to be bright enough against its ground, a face has to be DARK
+     enough against its own. Left in GROUNDS they got no floor at all, and
+     `onteal` on `accent2` measured 4.46 at Blackout - a text pair the check
+     for text pairs could not see, because the table it reads did not describe
+     it. */
+  FACES: { onaccent: 'accent', onblue: 'a', onteal: 'accent2' },
+
+  /* Each ink, and THE GROUND IT IS READ AGAINST. The floor is meaningless
+     without this - contrast is a property of a pair, and an ink checked
+     against the wrong ground is a number about nothing. */
+  INKS: {
+    text: 'panel2', muted: 'panel2', faint: 'footerbg',
+    accent: 'panel', accent2: 'panel', a: 'panel2', b: 'panel2',
+    good: 'panel2', bad: 'panel2',
+    notetext: 'notebg', provtext: 'provbg',
+    lbl: 'well', lblhead: 'well', lblturret: 'well', leader: 'well'
+  },
+
+  /* Tints: an ink laid over a ground at an alpha, composited HERE rather than
+     by the browser. Two reasons. The dim reaches them, which `rgba()` in a
+     rule would not. And the control can read the colour a person actually
+     sees, instead of a declared colour that is never painted on its own. */
+  TINTS: {
+    'tint-good':    ['good', 0.14, 'panel2'],
+    'tint-bad':     ['bad', 0.14, 'panel2'],
+    'tint-flat':    ['muted', 0.14, 'panel2'],
+    'tint-sel':     ['accent', 0.13, 'panel'],
+    'tint-changed': ['b', 0.08, 'panel'],
+    'tint-a':       ['a', 0.14, 'panel2'],
+    'tint-a2':      ['accent2', 0.16, 'panel'],
+    'tint-fitted':  ['a', 0.10, 'panel'],
+    'tint-bump':    ['accent', 0.18, 'panel'],
+    /* 0.42 was the shipped alpha and it is why these two borders scored 0.76
+       against a floor of 1.0: diluting a colour into its ground takes the
+       chroma out, and chroma is the only thing a protanope has left to tell
+       these two apart. 0.65 puts the pair at 1.37. */
+    'edge-good':    ['good', 0.65, 'panel2'],
+    'edge-bad':     ['bad', 0.65, 'panel2'],
+    'edge-stealth': ['accent2', 0.40, 'panel2']
+  },
+
+  /* Scrims sit over the RENDER, where there is no token to composite against,
+     so they stay as alpha and the dim reaches them through the canvas. */
+  SCRIMS: {
+    'scrim-72': ['scrim', 0.72], 'scrim-55': ['scrim', 0.55],
+    'scrim-90': ['scrim', 0.90], 'scrim-78': ['scrim', 0.78],
+    'scrim-82': ['scrim', 0.82], 'scrim-drop': ['shadow', 0.55],
+    'scrim-code': ['shadow', 0.30], 'scrim-label': ['shadow', 0.85],
+    'leaderline': ['leader', 0.62]
+  },
+
+  BASE: {
+    bg: '#070D16', panel: '#0E1B2E', panel2: '#12233A', panel3: '#16283D',
+    hover: '#122335', hover2: '#101F31', well: '#0A1524', deep: '#08121F',
+    footerbg: '#0B1626', line: '#22364F', line2: '#1B3247',
+    scrim: '#070D16', shadow: '#000000',
+    notebg: '#1A1206', noteline: '#4A3410',
+    provbg: '#0E2A22', provline: '#1F5A48',
+    onaccent: '#1A0E04', onblue: '#150A2B', onteal: '#032027',
+    text: '#EDE3D8', muted: '#93A7B6', faint: '#6B8091',
+    accent: '#FF6B00', accent2: '#22D3EE', a: '#A78BFA', b: '#FF8A00',
+    good: '#38BDF8', bad: '#FF6B6B',
+    notetext: '#E8C9A0', provtext: '#8FE3C8',
+    lbl: '#FFD9A0', lblhead: '#FFFFFF', lblturret: '#C9D4FF',
+    leader: '#FFAA3C'
+  }
+};
+
+/* ---------- the arithmetic ---------- */
+
+CC_THEME._rgb = function (h) {
+  var s = String(h).replace('#', '');
+  return [parseInt(s.slice(0, 2), 16), parseInt(s.slice(2, 4), 16),
+          parseInt(s.slice(4, 6), 16)];
+};
+CC_THEME._hex = function (c) {
+  var b = function (v) {
+    var n = Math.round(v); if (n < 0) n = 0; if (n > 255) n = 255;
+    var s = n.toString(16); return s.length < 2 ? '0' + s : s;
+  };
+  return '#' + b(c[0]) + b(c[1]) + b(c[2]);
+};
+/* The sRGB transfer function, both ways. Scaling has to happen in LINEAR light
+   or the dim shifts hue and the luminance figure becomes a guess. */
+CC_THEME._lin = function (c) {
+  return c.map(function (v) {
+    var x = v / 255;
+    return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+  });
+};
+CC_THEME._srgb = function (l) {
+  return l.map(function (x) {
+    var v = x < 0 ? 0 : (x > 1 ? 1 : x);
+    return 255 * (v <= 0.0031308 ? v * 12.92
+      : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+  });
+};
+CC_THEME.lum = function (hex) {
+  var l = this._lin(this._rgb(hex));
+  return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2];
+};
+CC_THEME.contrast = function (a, b) {
+  var la = this.lum(a), lb = this.lum(b);
+  return ((la > lb ? la : lb) + 0.05) / ((la > lb ? lb : la) + 0.05);
+};
+CC_THEME.dim = function (hex, k) {
+  var t = this;
+  return t._hex(t._srgb(t._lin(t._rgb(hex)).map(function (x) { return x * k; })));
+};
+CC_THEME.mix = function (fg, alpha, bg) {
+  var f = this._rgb(fg), b = this._rgb(bg);
+  return this._hex([0, 1, 2].map(function (i) {
+    return f[i] * alpha + b[i] * (1 - alpha);
+  }));
+};
+/* Piecewise-linear through the curve's own points, so the value AT a preset is
+   exactly the preset's number rather than something an easing function
+   happened to produce near it. */
+CC_THEME.curve = function (pts, x) {
+  if (x <= pts[0][0]) return pts[0][1];
+  for (var i = 1; i < pts.length; i++) {
+    if (x <= pts[i][0]) {
+      var t = (x - pts[i - 1][0]) / (pts[i][0] - pts[i - 1][0]);
+      return pts[i - 1][1] + t * (pts[i][1] - pts[i - 1][1]);
+    }
+  }
+  return pts[pts.length - 1][1];
+};
+
+/* THE FLOOR, SOLVED AND THEN VERIFIED ON THE ROUNDED RESULT.
+
+   The analytic answer alone was not enough and the control caught it: the
+   smallest luminance that clears 4.5:1 is exact, but `dim()` has to round to
+   8-bit sRGB, and rounding lands on the wrong side. Three separate pairs came
+   out at 4.49, 4.47 and 4.46 - passing arithmetic, failing the floor. So the
+   solve gives the starting point and the loop confirms the colour that is
+   ACTUALLY produced clears it.
+
+   THE FLOOR IS ALSO ALLOWED TO BRIGHTEN. Clamping at k=1 would mean it could
+   only ever undo the dim, which quietly exempts DAY - and Day is where the one
+   pre-existing violation lived: the footer's #6B8091 on #0B1626 measured 4.43
+   against a floor of 4.5 and has shipped that way for as long as the footer
+   has existed. A floor that cannot fire at level 0 has a hole in it at exactly
+   the level everybody sees. */
+CC_THEME.floorUp = function (baseHex, k, groundHex) {
+  var t = this, lg = t.lum(groundHex), base = t.lum(baseHex);
+  if (base > 0) {
+    var kmin = (t.FLOOR * (lg + 0.05) - 0.05) / base;
+    if (kmin > 4) kmin = 4;
+    if (kmin > k) k = kmin;
+  }
+  /* BISECTED, NOT STEPPED, AND THE CONTROL IS WHY. A 2% climb until the pair
+     cleared overshot by up to 2%, and how far it overshot depended on how many
+     steps it happened to take - so as the slider moved and the ground darkened
+     by a hair, the answer could jump UP. The page got brighter as you dragged
+     the dimmer down, at exactly one point on the range. Bisection returns the
+     smallest clearing value rather than the first one a step landed on, so the
+     result falls with the ground instead of jittering against it. */
+  var hi = k;
+  while (t.contrast(t.dim(baseHex, hi), groundHex) < t.FLOOR && hi < 16) {
+    hi *= 1.25;
+  }
+  var lo = k > hi ? hi : k;
+  for (var i = 0; i < 32; i++) {
+    var mid = (lo + hi) / 2;
+    if (t.contrast(t.dim(baseHex, mid), groundHex) >= t.FLOOR) hi = mid;
+    else lo = mid;
+  }
+  return t.dim(baseHex, hi);
+};
+/* The mirror. A face is dark text on a filled accent, so clearing the floor
+   means going DOWN, and the dim curve it starts from is the ground curve
+   rather than the ink one - a face is not a light the screen emits at you. */
+CC_THEME.floorDown = function (baseHex, k, groundHex) {
+  var t = this, lg = t.lum(groundHex), base = t.lum(baseHex);
+  var want = (lg + 0.05) / t.FLOOR - 0.05;
+  if (base > 0 && want > 0) {
+    var kmax = want / base;
+    if (kmax < k) k = kmax;
+  } else if (want <= 0) {
+    k = 0;
+  }
+  var lo = 0, hi = k;
+  if (t.contrast(t.dim(baseHex, hi), groundHex) >= t.FLOOR) {
+    return t.dim(baseHex, hi);
+  }
+  for (var i = 0; i < 32; i++) {
+    var mid = (lo + hi) / 2;
+    if (t.contrast(t.dim(baseHex, mid), groundHex) >= t.FLOOR) lo = mid;
+    else hi = mid;
+  }
+  return t.dim(baseHex, lo);
+};
+
+/* THE WHOLE PALETTE AT ONE LEVEL. Pure: same level in, same object out, no
+   DOM touched. That is what lets a control drive it directly and assert on
+   every colour the page can paint, on a machine with no browser. */
+CC_THEME.palette = function (level) {
+  var t = this;
+  var lv = level < 0 ? 0 : (level > 1 ? 1 : level);
+  var kg = t.curve(t.GROUND, lv), ki = t.curve(t.INK, lv);
+  var out = {};
+  t.GROUNDS.forEach(function (n) { out[n] = t.dim(t.BASE[n], kg); });
+  Object.keys(t.INKS).forEach(function (n) {
+    out[n] = t.floorUp(t.BASE[n], ki, out[t.INKS[n]]);
+  });
+  Object.keys(t.FACES).forEach(function (n) {
+    out[n] = t.floorDown(t.BASE[n], kg, out[t.FACES[n]]);
+  });
+  Object.keys(t.TINTS).forEach(function (n) {
+    var s = t.TINTS[n];
+    out[n] = t.mix(out[s[0]], s[1], out[s[2]]);
+  });
+  Object.keys(t.SCRIMS).forEach(function (n) {
+    var s = t.SCRIMS[n], c = t._rgb(out[s[0]]);
+    out[n] = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + s[1] + ')';
+  });
+  return out;
+};
+
+/* The brightest thing the page can paint at this level. This is the figure
+   H1g-1's ceiling is asserted against, and it is a figure about the TOKEN SET
+   - see the note on completeness above. */
+CC_THEME.peak = function (level) {
+  var t = this, p = t.palette(level), top = 0;
+  Object.keys(p).forEach(function (n) {
+    if (String(p[n]).charAt(0) !== '#') return;
+    var l = t.lum(p[n]); if (l > top) top = l;
+  });
+  return top;
+};
+
+/* ---------- state ---------- */
+
+/* sessionStorage, read through a guard, for the same reason the Look panel
+   uses it: how somebody wants to look at ships this sitting, not a setting
+   that follows them back next month. Storage THROWS outright where it is
+   disabled and a page must not fall over because it could not remember a
+   brightness. */
+CC_THEME._store = function () {
+  try { return (typeof sessionStorage !== 'undefined') ? sessionStorage : null; }
+  catch (e) { return null; }
+};
+CC_THEME.level = CC_THEME.DEFAULT;
+CC_THEME.load = function () {
+  var s = this._store(); if (!s) return this.level;
+  try {
+    var v = parseFloat(s.getItem(this.KEY));
+    if (isFinite(v) && v >= 0 && v <= 1) this.level = v;
+  } catch (e) {}
+  return this.level;
+};
+CC_THEME.save = function () {
+  var s = this._store(); if (!s) return;
+  try { s.setItem(this.KEY, String(this.level)); } catch (e) {}
+};
+/* The preset a level IS, or null when the slider has been moved off one. The
+   buttons light from this, so "Night" is lit because the page is at Night
+   rather than because Night was the last thing clicked. */
+CC_THEME.presetAt = function (level) {
+  var lv = level == null ? this.level : level, hit = null;
+  this.PRESETS.forEach(function (p) {
+    if (Math.abs(p[2] - lv) < 0.005) hit = p[0];
+  });
+  return hit;
+};
+
+CC_THEME.apply = function (level) {
+  if (level != null) this.level = level < 0 ? 0 : (level > 1 ? 1 : level);
+  var p = this.palette(this.level), root = null;
+  try { root = document.documentElement; } catch (e) { root = null; }
+  if (root && root.style && root.style.setProperty) {
+    Object.keys(p).forEach(function (n) {
+      root.style.setProperty('--' + n, p[n]);
+    });
+    if (root.setAttribute) {
+      root.setAttribute('data-dim', this.presetAt() || 'custom');
+    }
+  }
+  /* The model is part of the page, so it dims with it rather than being the
+     one bright rectangle left. */
+  if (typeof window !== 'undefined' && window.CC_DIM_SINK) {
+    try { window.CC_DIM_SINK(this.level); } catch (e) {}
+  }
+  return p;
+};
+
+CC_THEME.load();
+CC_THEME.apply();
+</script>
 
 <div class="top">
   <a href="index.html" style="text-decoration:none;font-weight:700">&larr; All ships</a>
   <h1 id="shipname">Ship</h1>
   <select id="ship"></select>
   <span class="spacer"></span>
+  <!-- H1g-1: THE WHOLE PAGE DIMS. Filled by renderDim() rather than written
+       out here, so the buttons show the level the page IS at - including a
+       level restored from the session - instead of whatever was typed into the
+       markup once. The empty group is what a visitor sees for the moment
+       before the script runs; the COLOURS are already right by then, because
+       CC_THEME runs in the head. -->
+  <div class="dim" id="cc-dim" role="group" aria-label="Page brightness"></div>
   <!-- N11: BACK TO STOCK IS ALWAYS ONE VISIBLE CLICK. Not in a menu.
        Failure has to be free or nobody experiments, and experimenting is how
        this page teaches. Shown only when there is something to undo. -->
@@ -968,13 +1401,34 @@ function calc(build,over){
   r.mass = Math.round((sh.ms||0) + r.mass);
   return r;
 }
+/* H1g-3: BETTER AND WORSE CARRY A SHAPE, NOT ONLY A COLOUR.
+   What shipped was a green chip and a red chip, and the SIGN does not stand in
+   for the meaning: on a lower-is-better stat "-15%" is the good outcome and on
+   every other stat it is the bad one, so the only thing saying which was the
+   colour. Green against red is the pair roughly one man in twelve cannot
+   separate, and measured under protanopia the two chips scored 0.69 where 1.0
+   is the floor.
+   The palette fix moved `--good` into the blue half of the wheel, which raises
+   that pair to 1.87. THE GLYPH IS NOT REDUNDANT WITH IT. `flat` is a neutral
+   grey and a protanope sees red as a desaturated olive, so grey-against-red
+   cannot be separated by any choice of red - the third state can only be told
+   apart by something that is not a colour. Both halves are needed and each one
+   has its own negative control. */
 function delta(a,b,lowerBetter){
-  if(a==null||b==null) return {c:"flat",t:"—"};
-  if(a===b) return {c:"flat",t:"same"};
+  if(a==null||b==null) return {c:"flat",g:"",t:"—",w:"not comparable"};
+  if(a===b) return {c:"flat",g:"=",t:"same",w:"unchanged"};
   const pct = a===0?100:Math.round((b-a)/Math.abs(a)*100);
   const better = lowerBetter ? b<a : b>a;
   const txt = lowerBetter && b<a ? Math.abs(pct)+"% quieter" : (pct>0?"+":"")+pct+"%";
-  return {c:better?"up":"down",t:txt};
+  return better ? {c:"up",g:"&#9650;",t:txt,w:"better"}
+                : {c:"down",g:"&#9660;",t:txt,w:"worse"};
+}
+/* One writer for the chip, because it is emitted from two places - the two-up
+   compare and N10's "what just moved" - and a carrier added to one of them is
+   a carrier missing from the other. */
+function deltaChip(d,extra){
+  return `<span class="d ${d.c}${extra?" "+extra:""}" title="${d.w}"
+    aria-label="${d.w}: ${d.t}"><b aria-hidden="true">${d.g}</b>${d.t}</span>`;
 }
 
 /* ---------- render ---------- */
@@ -1038,9 +1492,13 @@ function stat(k,a,b,sub,lower,stealth,fmtf,cigA,cigB){
   let body;
   if(twoUp){
     const d=delta(a,b,lower);
-    body=`<span class="va">${f(a)}</span>
-      <span class="vb${ghost?' ghost':''}">${f(b)}</span>
-      <span class="d ${d.c}">${d.t}</span>`;
+    /* H1g-3: WHICH BUILD IS WHICH IS A LETTER, not only a colour. The left
+       column is headed "Build A" and the right "Build B", but the two numbers
+       in a stat tile sit side by side with nothing between them - blue meant A
+       and orange meant B and that was the whole of it. */
+    body=`<span class="va"><i aria-hidden="true">A</i>${f(a)}</span>
+      <span class="vb${ghost?' ghost':''}"><i aria-hidden="true">B</i>${f(b)}</span>
+      ${deltaChip(d)}`;
   }else{
     /* N10: WHAT MOVED ANNOUNCES ITSELF FOR A BEAT. `moved` is set by the swap
        and cleared on a timer, so the number that changed is distinguishable
@@ -1049,7 +1507,7 @@ function stat(k,a,b,sub,lower,stealth,fmtf,cigA,cigB){
     body=`<span class="va">${f(a)}</span>`;
     if(moved){
       const d=changedStats.get(k);
-      body+=`<span class="d ${d.c} moved">${d.t}</span>`;
+      body+=deltaChip(d,"moved");
     }
   }
   return `<div class="stat${stealth?' stealth':''}${why?' explained':''}${moved?' justmoved':''}"
@@ -2671,6 +3129,57 @@ function renderTunePanel(){
 }
 const CC_COLOUR_NAMES=(typeof CCViewer!=='undefined'&&CCViewer.HOLO)
   ? CCViewer.HOLO.COLOUR_NAMES : [];
+
+/* ================= H1g-1: THE PAGE DIMMER =================================
+   The Look panel dims the MODEL. This dims the PAGE, which is what was
+   actually asked for - the stat tiles, the component list, the headings, the
+   header bar and the model, together, on one control.
+
+   The arithmetic is CC_THEME's, in the head. This is only the surface: three
+   presets, a fine slider, and a number saying where you are. */
+function renderDim(){
+  const g=$('cc-dim'); if(!g) return;
+  const cur=CC_THEME.presetAt();
+  /* The percentage is of DAY'S LIGHT, not of the slider's travel. A slider at
+     50% that says "50%" while the page is at 70% of its brightness is a
+     control lying about what it did. */
+  const pct=Math.round(CC_THEME.curve(CC_THEME.INK, CC_THEME.level)*100);
+  let h='';
+  CC_THEME.PRESETS.forEach(p=>{
+    const on = cur===p[0];
+    h+=`<button type="button" data-dim="${p[0]}" class="${on?'on':''}"
+      aria-pressed="${on?'true':'false'}">${p[1]}</button>`;
+  });
+  h+=`<input type="range" id="cc-dim-fine" min="0" max="100" step="1"
+    value="${Math.round(CC_THEME.level*100)}"
+    aria-label="Page brightness, fine">
+    <span class="lv" id="cc-dim-lv">${pct}%</span>`;
+  g.innerHTML=h;
+}
+/* SET IT, REMEMBER IT, AND REDRAW THE CONTROL FROM THE RESULT. Never from the
+   thing that was clicked: the buttons must show the level the page reached,
+   which is the only way the slider and the presets can disagree visibly if
+   they ever stop agreeing. */
+function setDim(level){
+  CC_THEME.apply(level);
+  CC_THEME.save();
+  renderDim();
+}
+renderDim();
+/* H1g-1: THE MODEL DIMS WITH THE PAGE, and it is the one thing here that is
+   not a token. It is a render, so there is nothing to recolour - the canvas is
+   scaled instead, by the SAME ratio the brightest token fell by. Tying it to
+   the peak rather than to the raw curve means the ship can never end up as the
+   one bright rectangle on a dimmed page, which is precisely the shape of the
+   defect this item exists to correct. */
+window.CC_DIM_SINK=function(level){
+  const c=$('cc-canvas'); if(!c||!c.style) return;
+  const k=CC_THEME.peak(level)/CC_THEME.peak(0);
+  c.style.filter = k>=0.999 ? '' : 'brightness('+k.toFixed(3)+')';
+};
+window.CC_DIM_SINK(CC_THEME.level);
+
+
 /* THE OPEN STATE LIVES IN JAVASCRIPT, not only in the markup's `hidden`
    attribute. A state that exists only as an attribute set once at build time
    is a state nothing can assert and nothing can restore - and it silently
@@ -2744,6 +3253,10 @@ document.addEventListener('click',e=>{
     const n=markersFor(shipId).length;
     allLabels = !labelsWanted(n);
     renderLabels(); return; }
+  /* H1g-1: the three presets. One click, whole page. */
+  const dm=e.target.closest('#cc-dim button[data-dim]');
+  if(dm){ const pr=CC_THEME.PRESETS.find(p=>p[0]===dm.dataset.dim);
+    if(pr) setDim(pr[2]); return; }
   if(e.target.closest('#cc-tune')){ tuneOpen(!tuneIsOpen()); return; }
   const ts=e.target.closest('#cc-tune-panel button[data-style]');
   if(ts&&_view){ _view.setStyle(ts.dataset.style); _view.remember();
@@ -2839,6 +3352,11 @@ function flashFixed(el){
    while the control is being dragged - which is the whole point of a slider
    over a set of buttons. */
 document.addEventListener('input',e=>{
+  /* H1g-1: the fine slider. Applied live while it is dragged, for the same
+     reason the Look panel's are - a brightness you cannot see arrive is a
+     brightness you cannot choose. */
+  const dfine=e.target.closest&&e.target.closest('#cc-dim input[type=range]');
+  if(dfine){ setDim(Number(dfine.value)/100); return; }
   const s=e.target.closest&&e.target.closest('#cc-tune-panel input[data-slider]');
   if(!s||!_view) return;
   const k=s.dataset.slider;
