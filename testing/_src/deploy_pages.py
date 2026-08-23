@@ -84,6 +84,11 @@ PAGES = [
     # each page is the whole point of the extraction: an inlined copy per page
     # IS two copies, and two copies drift.
     ('cc_viewer.js',     'cc_viewer.js'),
+    # R4. "WHERE WAS I" HAS ONE WRITER, and it is a file rather than a block
+    # copied into each list page for the same reason the viewer is: a list this
+    # site adds next month gets the behaviour by declaring two functions, and
+    # three inlined copies would be three lists whose Back button drifts apart.
+    ('cc_listmem.js',    'cc_listmem.js'),
     # ClassName -> 3D model for the ship page (L9). Written by the build
     # itself, so it can never be stale relative to CC_MODELS.
     ('loadout_model.gen.js', 'loadout_model.gen.js'),

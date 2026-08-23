@@ -2835,8 +2835,119 @@ body.cc-ship-open #cc-mdraw{display:none !important}
   padding:calc(7px * var(--cc-scale,1)) calc(14px * var(--cc-scale,1))}
 #cc-state button:hover{background:rgba(255,107,0,.26);color:#FFD2AE}
 #cc-state-txt{flex:1 1 auto;text-align:center}
+/* R4: THE ROW YOU CAME BACK FROM. Restoring the offset puts the right rows on
+   screen; this says which of them you were looking at, so somebody comparing
+   four Cyclones does not have to re-find their place inside the place. */
+tr.cc-came-from > td{background:rgba(0,201,167,.10)}
+tr.cc-came-from > td:first-child{box-shadow:inset 3px 0 0 #00C9A7}
 @media (max-width:640px){ #cc-state-txt{text-align:left} }
 </style>
+<!-- R4: the list-memory module. One writer for "where was I", shared by
+     every list on the site. -->
+<script src="cc_listmem.js"></script>
+<script>
+/* ===================== R4: GOING BACK GOES BACK ==========================
+   Sleven: "If I'm sitting at the very bottom of the page and I click the
+   Cyclone TR... I wanna look at the other Cyclone - bam, right back to Avenger
+   Stalker at the very top. Fix it."
+
+   THIS FILE KNOWS WHAT THE SHIP LIST'S STATE IS. cc_listmem.js knows how to
+   store one and when to put it back, and knows nothing about roles or budgets.
+   Two functions is the whole contract between them.
+
+   BOTH ROUTES BACK LAND IN THE SAME PLACE BY CONSTRUCTION, and that is worth
+   being precise about because the order calls two ways out landing differently
+   a defect in its own right. Browser Back and the ship page's "All ships" link
+   are both an ARRIVAL AT THIS PAGE. Neither is special-cased; the restore
+   happens on arrival, so they cannot diverge. */
+(function(){
+  if (typeof CCListMem === 'undefined') return;
+
+  var KEY = 'ships';
+
+  function matrixState(){
+    return (typeof window !== 'undefined' && window.CC_MATRIX_STATE)
+      ? window.CC_MATRIX_STATE : null;
+  }
+  function box(){ return document.getElementById('shipSearch'); }
+  function body(){ return document.getElementById('matrix-body'); }
+
+  CCListMem.attach({
+    key: KEY,
+    /* The matrix scrolls the WINDOW. #matrix-wrap scrolls sideways when the
+       columns are wider than the screen, which is a different axis and not the
+       one anybody loses their place on. */
+    scroller: function(){ return null; },
+    linkSel: 'a.cc-open',
+    idOf: function(a){
+      var h = a.getAttribute('href') || '';
+      var i = h.indexOf('#');
+      return i >= 0 ? h.slice(i + 1) : null;
+    },
+    capture: function(){
+      var m = matrixState();
+      if (m) return m.get();
+      /* THE SORTER MAY NOT HAVE BUILT YET - it retries for several seconds
+         against a table the base page fills asynchronously. Storing the search
+         text alone is worth more than storing nothing, and it is stated as a
+         partial rather than dressed up as a full record. */
+      return { q: (box() && box().value) || '', partial: true };
+    },
+    apply: function(st){
+      var m = matrixState();
+      if (m) return m.set(st);
+      var b = box();
+      if (b && typeof st.q === 'string' && b.value !== st.q){
+        b.value = st.q;
+        b.dispatchEvent(new Event('input', {bubbles:true}));
+      }
+      return false;
+    },
+    highlight: function(id){
+      var t = body(); if (!t) return false;
+      var a = t.querySelector('a.cc-open[href$="#' + id + '"]');
+      if (!a) return false;
+      var tr = a.closest ? a.closest('tr') : null;
+      if (tr) tr.classList.add('cc-came-from');
+      return true;
+    }
+  });
+
+  /* WHEN THE ROWS EXIST. The base page fills #matrix-body from script, so
+     there is nothing to scroll to until it has - and a restore fired on
+     DOMContentLoaded scrolls a document that is still 200px tall, which is the
+     top, which is the defect. Observed rather than timed: the first time the
+     body holds real rows instead of the "Loading ships" placeholder, restore
+     once and stop watching. */
+  function ready(){
+    var t = body();
+    if (!t) return false;
+    if (!t.querySelector('a.cc-open')) return false;
+    return true;
+  }
+  var done = false;
+  function tryRestore(){
+    if (done || !ready()) return false;
+    done = true;
+    CCListMem.restore(KEY);
+    return true;
+  }
+  if (!tryRestore() && typeof MutationObserver === 'function'){
+    var t = body();
+    if (t){
+      var mo = new MutationObserver(function(){
+        if (tryRestore() && mo) mo.disconnect();
+      });
+      mo.observe(t, {childList:true, subtree:true});
+      /* Bounded, so a page whose list never arrives does not keep an observer
+         alive for the session. */
+      setTimeout(function(){ try{ mo.disconnect(); }catch(e){} }, 15000);
+    }
+  }
+  window.CC_LISTMEM_SHIPS = { key: KEY, ready: ready, restore: tryRestore };
+})();
+</script>
+
 <script>
 (function(){
   var SORT_COLS = {0:'ship name', 1:'role', 2:'aUEC price', 8:'pledge price'};
@@ -3053,6 +3164,41 @@ body.cc-ship-open #cc-mdraw{display:none !important}
     if(box) box.addEventListener('input', function(){ setTimeout(refilter,0); });
 
     window.ccResetTable = function(){ state.col=null;state.dir=0;state.dealer=null; apply(); };
+
+    /* R4: THE TABLE'S STATE IS READABLE AND WRITABLE FROM OUTSIDE THIS CLOSURE.
+       Not so anything can meddle with it - so that ONE thing can put it back.
+       Returning to this list has to restore the sort, the dealer column, the
+       budget and the buy-only flag together with the scroll offset, and a
+       position restored into a differently-filtered list is a different wrong
+       place rather than the right one. Two named functions rather than the
+       object itself, so what can be written is exactly what can be read. */
+    window.CC_MATRIX_STATE = {
+      get: function(){
+        return { col:state.col, dir:state.dir, dealer:state.dealer,
+                 budget:state.budget, buyOnly:state.buyOnly,
+                 q:(box&&box.value)||'' };
+      },
+      set: function(v){
+        if(!v) return false;
+        state.col   = (v.col===null||v.col===undefined) ? null : +v.col;
+        state.dir   = +v.dir || 0;
+        state.dealer= (v.dealer===null||v.dealer===undefined) ? null : +v.dealer;
+        state.budget= (v.budget===null||v.budget===undefined) ? null : +v.budget;
+        state.buyOnly = !!v.buyOnly;
+        if(bIn)  bIn.value  = state.budget==null ? '' : String(state.budget);
+        if(bChk) bChk.checked = state.buyOnly;
+        /* THE SEARCH BOX IS DRIVEN THROUGH ITS OWN EVENT, not by assignment.
+           The base site filters on `oninput`, and setting `.value` alone
+           restores the text and leaves 254 rows showing under it - the box
+           saying one thing and the list showing another. */
+        if(box && typeof v.q === 'string' && box.value !== v.q){
+          box.value = v.q;
+          box.dispatchEvent(new Event('input', {bubbles:true}));
+        }
+        apply();
+        return true;
+      }
+    };
     paint();
     return true;
   }
