@@ -80,6 +80,7 @@ export function loadPage({ mutate = [], session = null,
   let currentHash = "";
   const clickHandlers = [];
   const keyHandlers = [];
+  const inputHandlers = [];
   const sandbox = {
     console, JSON, Math, Date, Number, String, Array, Object, Map, Set, RegExp,
     Error, isNaN, parseInt, parseFloat, encodeURIComponent, decodeURIComponent,
@@ -103,6 +104,9 @@ export function loadPage({ mutate = [], session = null,
       addEventListener: (t, fn) => {
         if (t === "click") clickHandlers.push(fn);
         if (t === "keydown") keyHandlers.push(fn);
+        /* H1f's sliders are `input`, not `click` - a control that only
+           captured clicks could not reach them at all. */
+        if (t === "input") inputHandlers.push(fn);
       },
       querySelector: () => null,
     },
@@ -174,6 +178,27 @@ export function loadPage({ mutate = [], session = null,
        the page asked - and asked for the right amount. */
     + `_obs:0,setObstruction(f){this._obs=Math.max(0,Math.min(0.8,Number(f)||0));`
     + `return this._obs;},obstruction(){return this._obs;},`
+    /* H1f: the look API. A STUB, and it records what the page asked for.
+       Whether the real viewer's passes actually change is
+       _verify_holo_render.mjs's question, against the real module; this one's
+       question is whether the PAGE builds the controls and calls them. Two
+       different claims and they need two different harnesses. */
+    + `style:'solidlines',_col:0xffb545,_sl:{lineInt:1,detail:24,glow:0.55},`
+    + `_grid:true,_scan:false,calls:[],`
+    + `modes(){return [['panel','Panel lines'],['solidlines','Solid + lines'],`
+    + `['solid','Solid holo'],['hull','Lit hull'],['wire','Wireframe'],`
+    + `['points','Points']];},`
+    + `colours(){return [0x5fd8ee,0x7dffb4,0xffb545,0xff6b8a,0xe8f4ff];},`
+    + `setStyle(s){this.calls.push('style:'+s);this.style=s;return s;},`
+    + `colour(){return this._col;},`
+    + `setColour(c){this.calls.push('colour:'+c);this._col=c;return c;},`
+    + `slider(k){return this._sl[k];},`
+    + `setSlider(k,v){this.calls.push('slider:'+k+'='+v);this._sl[k]=v;return v;},`
+    + `gridOn(){return this._grid;},`
+    + `setGrid(v){this.calls.push('grid:'+!!v);this._grid=!!v;return this._grid;},`
+    + `scanlines(){return this._scan;},`
+    + `setScanlines(v){this.calls.push('scan:'+!!v);this._scan=!!v;return this._scan;},`
+    + `remember(){this.calls.push('remember');return true;},`
     + `load(){return 1;}};`;
 
   /* `spin` is deliberately OPTIONAL and unset by default. Forcing spinOn on
@@ -229,7 +254,8 @@ export function loadPage({ mutate = [], session = null,
   };
 
   return {
-    g, run, el, openShip, dispatch, key, clickHandlers, keyHandlers, pickerNow,
+    g, run, el, openShip, dispatch, key, clickHandlers, keyHandlers,
+    inputHandlers, pickerNow,
     session: sandbox.sessionStorage || null,
     SHIPS: g("SHIPS"), PARTS: g("P"), MARKS: g("MARKS"), HPN: g("HPN"),
     META: g("META"),
