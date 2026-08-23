@@ -2089,10 +2089,58 @@ function selectPort(slot, which){
    ship's length, width and height - checked against CIG's published
    dimensions, with 7 hulls SKIPPED rather than placed in a frame nobody
    verified - and which end is the nose. */
+/* E1: WHICH KIND OF "NOTHING ON THE HULL" THIS IS.
+   Measured on the deployed site: 201 ships render a model, 157 of them carry
+   hull markers, and 44 DRAW A HULL AND PUT NOTHING ON IT. The page said
+   nothing at all about that, so a visitor could not tell "this ship has no
+   weapon mounts" from "this page is broken".
+
+   THE PROTOTYPE SOLVED ONE OF THE TWO CASES AND ITS WORDING IS ADOPTED
+   VERBATIM. But the two are NOT the same and saying the wrong one would be a
+   lie:
+
+     no weapon mounts at all   the Cyclone. Nothing exists to mark. Its
+                               sentence, unchanged.
+     mounts but no positions   the Drake Cutlass Black - 117 ports, 42 of them
+                               changeable, a hull that draws perfectly, and we
+                               simply have no derived positions for it. Saying
+                               "no weapon mounts" here would be false about a
+                               ship carrying 42.
+
+   TOLD APART FROM THE DATA, never from a list of ship names. The test is the
+   ship's own port types against the same set the marker generator uses, so a
+   hull that gains mounts tomorrow changes sentence on the next data build with
+   nobody editing this. */
+const MARKABLE = {WeaponGun:1, Turret:1, MissileLauncher:1, WeaponDefensive:1,
+                  WeaponMining:1, BombLauncher:1, SalvageHead:1,
+                  TractorBeam:1, EMP:1, Missile:1, Bomb:1};
+function weaponMounts(sh){
+  return (sh.slots||[]).filter(s=>MARKABLE[(TYPES[s.t]||{}).t]);
+}
+function noMarkerNote(){
+  /* A hull with no MODEL is a different statement again, and showModel()
+     already makes it. Two messages about the same absence is one too many. */
+  if(!MODELS[shipId]) return "";
+  const sh=ship(), wm=weaponMounts(sh);
+  if(!wm.length){
+    return `<b>This hull carries no weapon mounts in the data &mdash; nothing
+      to mark on it.</b> The components it does carry are listed on the left
+      and on the Specs tab; they are internal, and this project does not invent
+      positions on a hull for things that have none.`;
+  }
+  const ch=(sh.slots||[]).filter(swappable).length;
+  return `<b>This ship's ${ch} changeable port${ch===1?"":"s"}
+    ${ch===1?"is":"are"} listed on the left.</b> We have no measured positions
+    for ${wm.length===1?"it":"them"} yet, so there is nothing to mark on the
+    hull &mdash; the model here is a picture of the ship rather than a map of
+    its mounts. The list still works: every port opens the same way it does on
+    a hull that has markers.`;
+}
+
 function renderMarkerNote(){
   const el=$('markernote'); if(!el) return;
   const n=markersFor(shipId).length;
-  if(!n){ el.innerHTML=""; return; }
+  if(!n){ el.innerHTML=noMarkerNote(); return; }
   el.innerHTML=`<b>About the ${n} dot${n===1?"":"s"} on this model.</b>
     Where they sit is worked out from each mount's <b>name</b> &mdash; a port
     called <code>hardpoint_weapon_wing_left</code> is placed on a wing &mdash;
