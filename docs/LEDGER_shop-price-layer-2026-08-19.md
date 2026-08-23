@@ -4976,3 +4976,107 @@ H1b  DONE  4e9d016  THE LABELS ARE THE FEATURE, DECONFLICTED, WITH THE COUNT
     the threshold block inherited it, so the Perseus arrived already showing
     everything. SECOND TIME IN ONE SESSION; both were found by numbers being
     wrong in a way the feature could not explain, never by a run failing.
+
+H1g  DONE  aeb95c8 + 5ec214f  THE WHOLE PAGE DIMS, AND COLOUR IS NEVER THE ONLY
+    CARRIER. Deployed 1dbc8fda-bbe0-47f4-8484-9fb31ee00524, verified from the
+    served bytes.
+    H1g-1. What H1f shipped dimmed THE MODEL. The tiles, the list, the headings
+    and the header bar were untouched, so the ship got darker and the thing
+    burning his eyes stayed exactly as bright. Three presets and a fine slider
+    now dim everything together, FROM THE HEADER BAR rather than from inside
+    the Look panel - a preset somebody reaches for mid-flight must not cost a
+    click to reveal. CC_THEME runs in the HEAD so a returning visitor at
+    Blackout never sees a bright frame.
+      Day       peak 100.0% of Day    worst text contrast 4.54
+      Night     peak  40.2%           worst text contrast 4.50
+      Blackout  peak  21.5%           worst text contrast 4.50
+    EVERY COLOUR IS A TOKEN NOW AND THAT IS THE MECHANISM, NOT TIDINESS. 61
+    literals gone, hex and rgba alike. There is no browser here, so "the whole
+    page dims" is only provable if the token set IS every colour the page can
+    paint - the control asserts no literal survives outside the token block and
+    everything after that assertion rests on it. A stray #fff would be both a
+    colour the dim never reaches and a colour the control never sees, which is
+    the failure the order names in one line: "dimming the ground while a white
+    number stays at full".
+    H1g-2. The dim is per-token against a 4.5:1 floor rather than a
+    filter: brightness(), which drives every contrast ratio towards 1:1 - a
+    dark page with grey-on-grey text is a different injury, not a fix. AT
+    BLACKOUT THE FLOOR IS WHAT DECIDES AND NOT THE CURVE: the curve asks for
+    12% of Day's light and gets 21.5%, and that figure is recorded rather than
+    tuned away.
+    AND THE FLOOR IS ALLOWED TO BRIGHTEN, WHICH CAUGHT A SHIPPED DEFECT.
+    Clamped at 1.0 it could only ever undo the dim, which exempts DAY - and Day
+    is where the one existing violation lived: the footer's #6B8091 on #0B1626
+    measures 4.43 against a floor of 4.5, and has for as long as that footer
+    has existed. A floor that cannot fire at level 0 has a hole in it at
+    exactly the level everybody sees.
+    THE FLOOR IS BISECTED RATHER THAN STEPPED, AND THE CONTROL IS WHY. Climbing
+    2% at a time overshot by however many steps it happened to take, so as the
+    ground darkened by a hair the answer could jump UP - the page got brighter
+    as you dragged the dimmer down, at one point on the range. Found by an
+    assertion that brightness never rises, not by looking at it.
+    H1g-3 - AND THE ORDER'S HEADLINE PAIR IS NOT THE ONE THAT FAILS. Measured
+    with Vienot/Brettel simulation, calibrated against pairs with known
+    answers:
+      #FF8A00 orange / #8FE3C8 mint   Day 1.12   Night 0.99 XX  Blackout 0.80 XX
+      #FF6B00 accent / #3FE3C4 good   Day 1.11   and the same collapse
+    They clear the floor at full brightness by about a tenth AND FAIL THE
+    MOMENT THE PAGE IS DIMMED. Scaling in linear light takes the chroma out
+    along with the light, so a palette validated only at Day is validated in
+    the wrong place - and the wrong place is precisely where H1g-1 says this
+    page will be read. H1g-1 AND H1g-3 ARE THE SAME DEFECT SEEN TWICE.
+    WHAT FAILS AT EVERY LEVEL is --good mint against --bad red, 0.69. Those are
+    the two chips saying "this got better" and "this got worse", one above the
+    other in the same list. --good is #38BDF8 and --accent2 #22D3EE now, which
+    puts the pair at 1.87 and holds it at Blackout. The res borders went 0.42
+    to 0.65 alpha for the same reason: diluting a colour into its ground takes
+    the chroma out, and chroma is all a protanope has left.
+    THE PALETTE IS ONLY HALF OF IT, AND THE OTHER HALF IS NOT REDUNDANT WITH
+    IT. `flat` is a neutral grey; a protanope sees red as a desaturated olive
+    and a blue-grey collides with sky, so THERE IS NO GREY THAT SEPARATES FROM
+    BOTH - the "unchanged" state cannot be told from the other two by any
+    choice of colour. Better / worse / same carry a glyph. The two builds in a
+    stat tile carry an A and a B; they were blue and orange and nothing else.
+    CONTROLS, TWO BECAUSE THEY ARE TWO CLAIMS. A page whose palette is perfect
+    and whose chips are bare colour fails one; a page covered in labels whose
+    palette is mud fails the other.
+      _verify_dim.mjs, 42 assertions. --mutate-modelonly reproduces H1f exactly
+      - the tokens are never written. --mutate-nofloor brings the 4.43 footer
+      straight back and drops Blackout body text to 2.52. --mutate-alwaysdark
+      is the order's own negative, a page that is dark whatever you press. All
+      three fail.
+      _verify_palette.mjs, 38 assertions. --mutate-oldpalette restores the mint
+      and the teal; three pairs fail at every preset. THAT IS THE LOAD-BEARING
+      NEGATIVE THE ORDER NAMES AND IT FIRES.
+    THE METRIC IS CALIBRATED EVERY RUN AGAINST PAIRS WITH KNOWN ANSWERS, AND
+    THE FIRST VERSION OF IT WAS WRONG. Plain CIEDE2000 on the simulated pair
+    puts pure red against pure green under deuteranopia at 15.8 - "different
+    colours" - because the simulation leaves them at very different
+    lightnesses. They are the canonical indistinguishable pair. Holding L*
+    equal asks the question actually being asked, and the threshold sits in a
+    measured gap (0.63 .. 2.10) rather than on the edge of one. Had I not
+    calibrated it, the wrong metric would have declared this page's real
+    collision fine.
+    AND --mutate-noglyph PLANTED NOTHING FIRST TIME. It patched the head block
+    while the carriers live in the page's own script, so the run passed and
+    reported that it had planted a defect. Caught by the exit-3 branch that
+    exists for exactly that, and not by anything looking wrong. FOURTH TIME a
+    control of mine has been found by reading output rather than by a run
+    failing.
+    STATED LIMIT: no pixel was read. There is no browser here (rule 7). What is
+    asserted is the complete token set, transformed by the page's OWN
+    arithmetic - which the control checks agrees with its own to 1e-12, because
+    a page cannot import a Node module and two copies of a transform is rule
+    14's hazard. The CVD figures are published matrices applied to numbers, and
+    they model DICHROMACY rather than the milder anomalous forms. No observer
+    looked at anything.
+    THE HARNESS HAD TO LEARN THE PAGE IS TWO SCRIPT BLOCKS, and so did
+    _verify_ship_page.mjs and _verify_marker_response.mjs, which carry their
+    own copies of it and both died on a SyntaxError rather than on an
+    assertion. That is the duplication the harness's own header warns about,
+    arriving on schedule. Fixed in place and RECORDED rather than quietly
+    patched: the real fix is moving both onto the shared harness.
+    SWEEP  62 ok, 0 failed, 3 skipped, 0 NOT RUN. _verify_g3_matcher_delta.py
+    reports NOT PERFORMED and exits 2 unless CC_GEO_DIR is set; set to
+    data-layer/derived/hull-geometry it passes. That is environment, not
+    regression, and it is the reason a bare sweep reads 61/1 rather than 62/0.
