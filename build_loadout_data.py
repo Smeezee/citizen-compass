@@ -334,11 +334,74 @@ def port_rules(entry, catalogue_types):
     return tuple(sorted(out))
 
 
-def rule_key(rules, mn, mx):
+# E9: THE HULL CONSTRAINT ON FLIGHT BLADES, AND IT WAS IN THE DATA ALL ALONG.
+#
+# Sleven, 2026-08-23: "an Anvil C8R Pisces able to put an Avenger Stalker
+# flight blade? I don't know what that is or why it's even on there."
+#
+# He was right. Fitment matched on TYPE and SIZE only, and every flight blade
+# in the game is FlightController size 1 - so every one of the 136 hulls with
+# such a port was offered all 238 blades, 143 of which are numerically
+# identical to each other.
+#
+# MEASURED IN THE SNAPSHOT: 123 of the 136 editable FlightController ports
+# carry `RequiredTags` naming a hull-specific kit - `ANVL_Pisces_C8R_Blade`,
+# `AEGS_Avenger_Stalker_Blade` - and ALL 238 blades carry the matching tag on
+# their own side. The join is complete and no tagged port is left with nothing:
+# every one admits between 1 and 5 blades. The C8R Pisces admits exactly three,
+# its own standard, HND and SPD.
+#
+# THIS IS THE SAME MECHANISM PAINTS ALREADY USE and the reasoning is quoted in
+# that branch: "the tag is the join, not the type". A paint port's
+# CompatibleTypes says only `Paints`, which is every livery in the game. A
+# blade port's says only `FlightController`, which is every blade in the game.
+#
+# SCOPED TO FlightController DELIBERATELY, AND THE REST IS MEASURED RATHER THAN
+# CHANGED. RequiredTags appears on editable ports of 25 types - 2,467 Misc
+# ports, 256 Paints, 160 Turret, 66 WeaponAttachment. Applying it everywhere
+# would be a fleet-wide change to what every picker offers, decided as a side
+# effect of a question about flight blades. The counts are in the build report
+# so somebody can order that separately.
+FLIGHT_TYPE = "FlightController"
+
+
+def port_tags(entry):
+    """A port's RequiredTags, normalised. Empty means NOT STATED."""
+    t = entry.get("RequiredTags")
+    if isinstance(t, str):
+        t = t.split()
+    return tuple(sorted(set(x for x in (t or []) if x)))
+
+
+def item_tags(it):
+    """An item's own tags, from whichever of the three fields carries them."""
+    st = it.get("stdItem") or {}
+    t = (it.get("requiredTags") or st.get("RequiredTags")
+         or it.get("entity_tags"))
+    if isinstance(t, str):
+        t = t.split()
+    return set(x for x in (t or []) if x)
+
+
+def constrain_tags(rules, entry):
+    """The tags that narrow this port, or () if none apply.
+
+    Only where the port is a flight-blade port AND states them. A port that
+    states nothing is left alone rather than narrowed on a hunch - 13 of the
+    136 are ground vehicles with no blade kit, and inventing a rule for them
+    from their silence is the opposite of what the data says.
+    """
+    if not any(t == FLIGHT_TYPE for t, _ in rules):
+        return ()
+    return port_tags(entry)
+
+
+def rule_key(rules, mn, mx, tags=()):
     """A stable name for one fitment rule, so 8,180 ports share 136 lists."""
-    return "%s|%s|%s" % (
+    return "%s|%s|%s%s" % (
         ";".join("%s%s" % (t, (":" + ",".join(s)) if s else "") for t, s in rules),
-        "" if mn is None else mn, "" if mx is None else mx)
+        "" if mn is None else mn, "" if mx is None else mx,
+        ("|" + ",".join(tags)) if tags else "")
 
 
 def item_fits(it, rules, mn, mx):
@@ -978,9 +1041,14 @@ def ship_record(s, parts, part_keys, armors, paints, fits_index, catalogue_types
         if stock_key:
             slot["stock"] = stock_key
         if editable and rules:
-            key = rule_key(rules, entry.get("MinSize"), entry.get("MaxSize"))
+            ctags = constrain_tags(rules, entry)
+            key = rule_key(rules, entry.get("MinSize"), entry.get("MaxSize"),
+                           ctags)
             slot["fit"] = key
             stats["editable_component"] += 1
+            if any(t == FLIGHT_TYPE for t, _ in rules):
+                stats["blade_ports_constrained" if ctags
+                      else "blade_ports_unconstrained"] += 1
         else:
             # L4: A FIXED PORT IS SHOWN, NOT HIDDEN. It still counts toward
             # totals because it is part of the ship; it just opens no picker.
@@ -1131,23 +1199,49 @@ def main():
         rules = port_rules(entry, catalogue_types)
         if not rules:
             continue
-        key = rule_key(rules, entry.get("MinSize"), entry.get("MaxSize"))
+        tags = constrain_tags(rules, entry)
+        key = rule_key(rules, entry.get("MinSize"), entry.get("MaxSize"), tags)
         if key not in rule_defs:
-            rule_defs[key] = (rules, entry.get("MinSize"), entry.get("MaxSize"))
+            rule_defs[key] = (rules, entry.get("MinSize"), entry.get("MaxSize"),
+                              tags)
 
     # Which items each rule accepts. Paint rules are resolved here too - the
     # ship record picks them up as `paints` and they never reach the readout.
     fits_index, reachable = {}, set()
-    for key, (rules, mn, mx) in rule_defs.items():
+    # RULES, not ports - 8,180 ports collapse to ~200 rules and the two counts
+    # are different facts. The per-PORT figures are counted in the slot loop
+    # and reported separately; naming both "blade_ports_*" once made a
+    # 73-rule figure read as a 73-port one.
+    blade_stats = {"rules": 0, "rules_open": 0, "admitted": [], "starved": []}
+    for key, (rules, mn, mx, tags) in rule_defs.items():
+        want = set(tags)
         keys = []
         for it in items:
             if not item_fits(it, rules, mn, mx):
+                continue
+            # E9: AND THE TAG, WHERE THE PORT STATES ONE.
+            if want and not (item_tags(it) & want):
                 continue
             cn = it.get("className")
             if not cn or "PLACEHOLDER" in (it.get("name") or ""):
                 continue
             keys.append(cn)
         keys.sort()
+        # A CONSTRAINT THAT EMPTIES A PORT IS NOT APPLIED, AND IT IS NAMED.
+        # Measured across the snapshot no tagged blade port is starved, but a
+        # future snapshot could rename a tag on one side only - and a picker
+        # that silently went from 238 options to none would look like the page
+        # was broken rather than like the data had moved.
+        if want and not keys:
+            blade_stats["starved"].append(key)
+            keys = sorted(it.get("className") for it in items
+                          if item_fits(it, rules, mn, mx)
+                          and it.get("className")
+                          and "PLACEHOLDER" not in (it.get("name") or ""))
+        if any(t == FLIGHT_TYPE for t, _ in rules):
+            blade_stats["rules" if want else "rules_open"] += 1
+            if want:
+                blade_stats["admitted"].append(len(keys))
         fits_index[key] = keys
         reachable.update(keys)
 
@@ -1217,7 +1311,9 @@ def main():
              "editable_not_component": 0, "paint_ports": 0,
              "typed_by_fitted": 0,
              "armor_unresolved": 0,
-             "paint_tagged": 0}
+             "paint_tagged": 0,
+             # E9: per PORT, which is a different fact from per RULE.
+             "blade_ports_constrained": 0, "blade_ports_unconstrained": 0}
     built, empty, no_armor = {}, [], []
     for s in ships:
         cls = s.get("ClassName") or s.get("Name")
@@ -1351,6 +1447,11 @@ def main():
         "paints": len(paints),
         "paint_sets": len(paint_sets),
         "fits": len(fits_out),
+        "blade_ports_constrained": stats["blade_ports_constrained"],
+        "blade_ports_unconstrained": stats["blade_ports_unconstrained"],
+        "blade_rules_constrained": blade_stats["rules"],
+        "blade_rules_unconstrained": blade_stats["rules_open"],
+        "blade_ports_starved": len(blade_stats["starved"]),
         "hardpoints": len(hp_names),
         "port_id_prefix": PORT_PREFIX,
         "ports_with_no_part": len(nofit),

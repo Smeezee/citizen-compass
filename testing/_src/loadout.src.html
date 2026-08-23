@@ -162,6 +162,10 @@ a{color:var(--accent)}
 .picker .ph{padding:11px 13px;border-bottom:1px solid var(--line);background:var(--panel2)}
 .picker .ph b{display:block;font-size:15px}
 .picker .ph small{color:var(--muted);font-size:12.5px}
+/* E9: what the part IS, said where somebody is choosing one. */
+.picker .portnote{margin-top:7px;padding:7px 9px;background:var(--panel3);
+ border-radius:6px;font-size:12px;line-height:1.45;color:var(--muted)}
+.picker .portnote b{color:var(--text);font-weight:600}
 .picker .sortrow{display:flex;gap:6px;flex-wrap:wrap;padding:9px 13px;border-bottom:1px solid var(--line)}
 .picker .sortrow button{background:var(--panel3);color:var(--muted);border:1px solid var(--line);
  border-radius:6px;padding:6px 10px;font:700 12px inherit;cursor:pointer}
@@ -2055,6 +2059,38 @@ function sortRow(slot){
   return h+'</div>';
 }
 
+/* E9: SAY WHAT THE THING IS, WHERE SOMEBODY IS LOOKING AT IT.
+   Sleven: "what exactly is a flight blade?" It appeared nowhere on the page
+   with any explanation, and a port offering parts nobody can name is a port
+   nobody can use. Established from the Star Citizen Wiki - "a vehicle
+   component that adjusts the flight behavior of a vehicle" - and from CIG's
+   own naming of the two tunings.
+   AND THE SECOND SENTENCE IS THE HONEST ONE. 13 of the 136 flight-controller
+   ports state no kit of their own, so the list falls back to every blade that
+   matches on type and size. That is not a claim that all 238 fit - it is the
+   page saying which of the two situations it is in. */
+const PORT_NOTE={
+  flc:`A <b>flight blade</b> plugs into the ship's computer and changes how the
+    hull handles. CIG ships two tunings: <b>PHB</b> for manoeuvrability and
+    <b>TSB</b> for top speed.`
+};
+function portNote(slot, opts){
+  const base=PORT_NOTE[slot.t];
+  if(!base) return "";
+  let extra="";
+  if(slot.t==="flc"){
+    /* THE THRESHOLD IS NOT A MAGIC NUMBER: a constrained port admits at most
+       five, so anything above that is a port with no kit named in the game
+       files rather than a hull with an unusually large one. */
+    extra = (opts.length>5)
+      ? ` <b>This port names no blade kit in the game files</b>, so everything
+          matching its type and size is listed - not a claim that all of them
+          were made for this hull.`
+      : ` These are the blades the game files tie to this hull.`;
+  }
+  return `<div class="portnote">${base}${extra}</div>`;
+}
+
 function pickerHTML(slot){
   const build=editing==="A"?A:B, cur=build[slot.id];
   let opts=fitsFor(slot).slice();
@@ -2105,7 +2141,8 @@ function pickerHTML(slot){
     <button class="btn tiny close" id="pickclose" type="button"
       aria-label="Close this port">Close</button>
     <small>${portLabel(slot.h)}${twoUp?" · editing build "+editing:""} · ${opts.length}
-    part${opts.length===1?"":"s"} fit this port on this ship</small></div>
+    part${opts.length===1?"":"s"} fit this port on this ship</small>
+    ${portNote(slot, opts)}</div>
     ${sortRow(slot)}<div class="plist">`;
   if(!opts.length){
     h+=`<div class="empty">The game files list no part that fits this port at

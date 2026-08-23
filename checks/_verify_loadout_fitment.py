@@ -239,10 +239,19 @@ def run(data, ships, items, strict=True):
         r = B.port_rules(entry, catalogue_types)
         if not r:
             continue
-        rule_of.setdefault(B.rule_key(r, entry.get("MinSize"), entry.get("MaxSize")),
-                           (r, entry.get("MinSize"), entry.get("MaxSize")))
+        # E9: THE KEY CARRIES THE PORT'S TAGS NOW, where it states any.
+        # Rebuilding it without them made every one of the 73 tagged
+        # flight-blade lists look like a key belonging to no port - this
+        # control failed on a page that was correct, because it reconstructed
+        # the key by a rule the builder no longer follows. It calls the
+        # builder's own constrain_tags() rather than reimplementing it, so the
+        # two cannot drift again.
+        ktags = B.constrain_tags(r, entry)
+        rule_of.setdefault(
+            B.rule_key(r, entry.get("MinSize"), entry.get("MaxSize"), ktags),
+            (r, entry.get("MinSize"), entry.get("MaxSize"), ktags))
     for key, offered in FITS.items():
-        r, mn, mx = rule_of.get(key, (None, None, None))
+        r, mn, mx, _kt = rule_of.get(key, (None, None, None, ()))
         if r is None:
             violations.append("fitment key %s belongs to no real port" % key)
             continue
@@ -270,7 +279,7 @@ def run(data, ships, items, strict=True):
     # Named negative example: pick a real small shield port and prove a
     # specific larger shield is not in its list.
     named_neg = None
-    for key, (r, mn, mx) in rule_of.items():
+    for key, (r, mn, mx, _kt) in rule_of.items():
         if key not in FITS or len(r) != 1 or r[0][0] != "Shield":
             continue
         if mx is None:
@@ -389,7 +398,7 @@ def run(data, ships, items, strict=True):
     # floor could pass while both were wrong.
     exact_bad = []
     for key, offered in FITS.items():
-        r, mn, mx = rule_of.get(key, (None, None, None))
+        r, mn, mx, ktags = rule_of.get(key, (None, None, None, ()))
         if r is None:
             continue
         want = set()
@@ -400,8 +409,14 @@ def run(data, ships, items, strict=True):
                 continue
             if (it.get("type") or "") == B.PAINT_TYPE:
                 continue
-            if B.item_fits(it, r, mn, mx):
-                want.add(it["className"])
+            if not B.item_fits(it, r, mn, mx):
+                continue
+            # E9: AND THE TAG, where the port states one. Type and size alone
+            # is precisely the rule this control was written against, and
+            # leaving it here would have made the check demand the defect back.
+            if ktags and not (B.item_tags(it) & set(ktags)):
+                continue
+            want.add(it["className"])
         got = set(offered)
         if got != want:
             exact_bad.append("%s: missing %s extra %s"
