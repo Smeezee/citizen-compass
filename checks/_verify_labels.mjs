@@ -219,8 +219,18 @@ for (const nm of SHIPS_UNDER_TEST) {
     record(!off || Number(el("cc-labels")["data-shown"] || 0)
       < seen.Perseus.n,
       "a 35-marker hull does NOT label everything by default");
-    record(/labels off on a hull this busy/.test(el("cc-labelcount").innerHTML),
-      "and says why, rather than simply showing nothing");
+    /* R1b REPLACED THIS SENTENCE, and the replacement is the point of the
+       item: "a hull this busy" is a status caption a reader skims past, which
+       is how a working Reclaimer got reported as a broken page. The line
+       states a NUMBER now - how many have no room - and offers the way past
+       it. Asserted on what the page must say rather than on the old wording,
+       so this reads as a requirement and not as a spelling. */
+    const hint = el("cc-labelcount").innerHTML || "";
+    record(/\d+\s+(?:has|have)\s+no room/.test(hint),
+      "and says why in a number a reader can check, rather than simply "
+      + "showing nothing", hint.replace(/<[^>]*>/g, " ").trim());
+    record(/show all labels anyway/.test(hint),
+      "and offers the way past it");
     H.dispatch(["#cc-lbl-toggle"]);
     record(Number(el("cc-labels")["data-shown"] || 0) > 10,
       "and the toggle turns them on",

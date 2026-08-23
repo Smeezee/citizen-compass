@@ -170,17 +170,25 @@ console.log("\n--- 4. THE RACE: the model arrives before the stage is sized ---"
 {
   coldBoot(0, 0);
   const atLoad = labelsNow();
-  record(inCorner(atLoad),
-    "with an unsized canvas the labels land at the origin - THE REPORTED "
-    + "SYMPTOM, reproduced, and this is the state E8's fix could not see",
+  /* R1 CHANGED WHAT THIS MOMENT LOOKS LIKE, AND IMPROVED IT. With every marker
+     projected to (0,0) the solver now reports that nothing fits, so the page
+     shows NO labels rather than a pile of them in the corner. Either way the
+     state is wrong and neither is what a reader should be left with - the
+     claim this section exists to make is the RECOVERY below, which is the half
+     E8's fix could not deliver on its own. Asserted as "not on the hull"
+     rather than as "in the corner", so it survives that change instead of
+     encoding one moment of it. */
+  record(atLoad.length === 0 || inCorner(atLoad),
+    "with an unsized canvas nothing usable is drawn - the reported symptom, "
+    + "reproduced, and the state E8's fix could not see",
     JSON.stringify(atLoad));
 
   /* THE STAGE GAINS ITS SIZE AND ONE FRAME RUNS. NOTHING IS CLICKED. */
   canvas(960, 540);
   run("onFrameTick();");
   const after = labelsNow();
-  record(after.length === atLoad.length,
-    "the same labels are still there after the stage sizes",
+  record(after.length > 0,
+    "the labels are up once the stage has a size",
     `${after.length}`);
   record(!inCorner(after),
     "AND THEY MOVE ONTO THE HULL ON THE NEXT FRAME, with no interaction of "

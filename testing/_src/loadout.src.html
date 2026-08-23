@@ -2803,7 +2803,39 @@ const _markProj=[];
    never in the loop at all. */
 function onFrameTick(){
   renderMarkers();
+  /* R1: THE DEFAULT IS RE-DECIDED WHEN THE STAGE CHANGES SIZE, and this is not
+     a nicety - it is the same defect E11b was, arriving through the door R1
+     opened.
+     Whether labels are on is now the solver's answer, and the solver's answer
+     depends on the stage. So a page whose stage had no size when the model
+     arrived gets "nothing fits", labels default off, and _lblLive is empty -
+     and positionLabels() returns early on an empty list, so the frame loop
+     alone could never re-decide. The labels would stay down until something
+     re-rendered the page, which is exactly the symptom Q2 fixed.
+     It also earns its keep on a window resize: somebody who drags their
+     browser narrower was keeping a default computed for the old width. */
+  /* BOTH BOXES, because both decide the answer: the CANVAS scales the
+     projection - an unsized one collapses every marker onto (0,0) - and the
+     STAGE bounds the collision search. Watching only one of them left the
+     control reporting "0 labels up" on a canvas that had just gained its
+     size. */
+  const sz=_lblBoxes();
+  if(sz!==_lblSizeKey){
+    _lblSizeKey=sz;
+    renderLabels();
+    return;
+  }
   positionLabels();
+}
+/* The geometry the current label decision was made against, as one string so
+   the comparison is a single test and cannot check three of four. Starts as
+   null rather than "0x0x0x0" so a page that really is 0x0 still gets its first
+   decision rather than reading as "already decided". */
+let _lblSizeKey=null;
+function _lblBoxes(){
+  const st=$('cc-stage'), cv=$('cc-canvas');
+  return [(st&&st.clientWidth)||0, (st&&st.clientHeight)||0,
+          (cv&&cv.clientWidth)||0, (cv&&cv.clientHeight)||0].join('x');
 }
 
 /* ================= H1b: LABEL PLACEMENT =================================
@@ -2877,14 +2909,39 @@ function layoutLabels(items, stageW, stageH){
   return out;
 }
 
-/* THE THRESHOLD. Above it, labels are a toggle rather than a default, and the
-   toggle STATES THE COUNT - "35 hardpoints - show all labels". Silently hiding
-   them would be the marker defect in a new costume. */
-const CC_LBL_MAX=14;
-let allLabels=null;   /* null = follow the threshold; true/false = the choice */
-function labelsWanted(n){
+/* R1a: THE SOLVER DECIDES, NOT A COUNTER.
+
+   Sleven, on the Aegis Reclaimer: "everything works the way it's supposed to,
+   but it doesn't have the names like the other ones do."
+
+   IT WAS NOT BROKEN. The Reclaimer has 15 markers, every one resolving to a
+   real port with a real hardpoint name and a fitted part, and it was ONE OVER
+   a threshold of 14 that somebody invented - me, in H1b. A working feature
+   that a person using it concluded was a broken page. Third time in two days.
+
+   AND THE THRESHOLD WAS MEASURABLY WRONG, not merely arbitrary. Driving
+   layoutLabels() over all 159 hulls that carry markers:
+
+     155 of 159   the solver places EVERY marker with zero overlaps
+       4 of 159   it cannot
+                    RSI Perseus   35 markers, 26 placed,  9 with no room
+                    Aegis Idris-P 23 markers, 20 placed,  3 with no room
+                    Aegis Idris-M 23 markers, 22 placed,  1 with no room
+                    RSI Polaris   24 markers, 23 placed,  1 with no room
+
+   The count threshold turned labels off on SEVEN hulls. Three of those seven -
+   the Reclaimer at 15, the 890 Jump at 17, the Constellation Andromeda at 16 -
+   place every single label cleanly. It was hiding working labels on three
+   hulls and catching nothing the solver would not have caught.
+
+   So the question stops being HOW MANY ARE THERE and becomes CAN THEY BE
+   LABELLED, which is the question layoutLabels() already answers. The line
+   moves itself when a hull changes, when the stage resizes, or when a name
+   gets longer - none of which a number in the source can follow. */
+let allLabels=null;   /* null = follow the solver; true/false = the choice */
+function labelsWanted(dropped){
   if(allLabels!==null) return allLabels;
-  return n<=CC_LBL_MAX;
+  return !dropped;
 }
 
 /* ================= E11: THE LABELS FOLLOW THE SHIP ========================
@@ -2960,34 +3017,9 @@ function renderLabels(){
     box.setAttribute('data-shown','0');
     box.setAttribute('data-dropped','0');
     box.setAttribute('data-total', String(list.length));
-    renderLabelCount(list.length, 0, 0, labelsWanted(list.length));
+    renderLabelCount(list.length, 0, 0, true);
     return; }
-  const show=labelsWanted(list.length);
-  _lblLive=[];
-  let lh="", ls="";
-  list.forEach((m,mi)=>{
-    const sl=slotByPort(m[0]); if(!sl) return;
-    const selNow = !!(sel&&sel.slot===sl.id);
-    /* HOVER AND SELECTION ALWAYS LABEL, whatever the toggle says. */
-    if(!show && !selNow) return;
-    const part=P[sl.stock];
-    const name=part?part.n:portLabel(sl.h);
-    const text=name+"\n"+portLabel(sl.h);
-    _lblLive.push({mi:mi, box:labelBox(text), dx:0, dy:0, placed:false,
-                   sx:0, sy:0});
-    /* `data-text` carries the two lines the box was measured from. The label's
-       own markup splits them across a <b> and a text node, and a control that
-       reassembled the string from those would be reimplementing the split -
-       which is how two copies of "what this label says" come to disagree. */
-    lh+=`<div class="hp${selNow?' hot':''}${sl.turret?' turret':''}"
-      data-text="${attr(name)}&#10;${attr(portLabel(sl.h))}"
-      style="left:0px;top:0px;display:none"
-      ><b>${name}</b>${portLabel(sl.h)}</div>`;
-    ls+=`<line class="${selNow?'hot':''}" x1="0" y1="0" x2="0" y2="0"
-      stroke-opacity="0"></line>`;
-  });
-  box.innerHTML=lh;
-  svg.innerHTML=ls;
+
   /* PROJECT NOW, ALWAYS, RATHER THAN WHEN THE COUNT LOOKS WRONG.
      This was `if(_markProj.length!==list.length) renderMarkers();` and the
      guard was not a freshness test - it was a LENGTH test. Switching from one
@@ -2998,7 +3030,59 @@ function renderLabels(){
      renderLabels is a render-path call, not a frame-path one, and re-running
      an O(n) projection here costs nothing that matters. */
   renderMarkers();
-  const shown=solveLabels();
+
+  /* R1a: ASK THE SOLVER FIRST, THEN DECIDE.
+     The default cannot be known before the solve, because the default IS the
+     solve's answer - so every marker is built and placed, and only then does
+     the page decide whether to show them. On the 155 hulls that place cleanly
+     this is the render; on the 4 that do not it is a measurement, and the
+     second pass below rebuilds with only what a selection asks for. */
+  const emit=(keep)=>{
+    _lblLive=[];
+    let lh="", ls="";
+    list.forEach((m,mi)=>{
+      const sl=slotByPort(m[0]); if(!sl) return;
+      const selNow = !!(sel&&sel.slot===sl.id);
+      if(!keep(sl, selNow)) return;
+      const part=P[sl.stock];
+      const name=part?part.n:portLabel(sl.h);
+      const text=name+"\n"+portLabel(sl.h);
+      _lblLive.push({mi:mi, box:labelBox(text), dx:0, dy:0, placed:false,
+                     sx:0, sy:0});
+      /* `data-text` carries the two lines the box was measured from. The
+         label's own markup splits them across a <b> and a text node, and a
+         control that reassembled the string from those would be
+         reimplementing the split - which is how two copies of "what this
+         label says" come to disagree. */
+      lh+=`<div class="hp${selNow?' hot':''}${sl.turret?' turret':''}"
+        data-text="${attr(name)}&#10;${attr(portLabel(sl.h))}"
+        style="left:0px;top:0px;display:none"
+        ><b>${name}</b>${portLabel(sl.h)}</div>`;
+      ls+=`<line class="${selNow?'hot':''}" x1="0" y1="0" x2="0" y2="0"
+        stroke-opacity="0"></line>`;
+    });
+    box.innerHTML=lh;
+    svg.innerHTML=ls;
+    return solveLabels();
+  };
+
+  let shown=emit(()=>true);
+  let dropped=_lblLive.length-shown;
+  /* THE FIT IS A PROPERTY OF THE HULL, NOT OF WHAT IS ON SCREEN. Recorded
+     before the second pass, so the count line can say "9 have no room" about
+     the hull even while only one label is up. */
+  const noRoom=dropped;
+  const show=labelsWanted(noRoom);
+
+  if(!show){
+    /* HOVER AND SELECTION ALWAYS LABEL, whatever the toggle says. Re-solved
+       rather than hidden, so the one label that IS up takes the best position
+       available to it instead of the position it was given while competing
+       with thirty-four others. */
+    shown=emit((sl, selNow)=>selNow);
+    dropped=_lblLive.length-shown;
+  }
+
   /* WRITTEN HERE AND NOT LEFT TO positionLabels(). That function returns early
      when there is nothing live, so on a hull where the toggle is off and
      nothing is selected it would leave the PREVIOUS ship's count on an empty
@@ -3006,8 +3090,11 @@ function renderLabels(){
      again through a new door. */
   box.setAttribute('data-shown', String(shown));
   box.setAttribute('data-total', String(list.length));
-  box.setAttribute('data-dropped', String(_lblLive.length-shown));
-  renderLabelCount(list.length, shown, _lblLive.length-shown, show);
+  box.setAttribute('data-dropped', String(noRoom));
+  renderLabelCount(list.length, shown, noRoom, show);
+  /* Stamped LAST, so the frame loop's comparison is against the geometry this
+     decision was actually made with rather than the geometry it started with. */
+  _lblSizeKey=_lblBoxes();
 }
 
 /* THE ARRANGEMENT. It decides where each label sits RELATIVE TO ITS MARKER and
@@ -3116,22 +3203,32 @@ function renderLabelCount(total, shown, dropped, showing){
   const el=$('cc-labelcount'); if(!el) return;
   if(!total){ el.innerHTML=""; el.hidden=true; return; }
   el.hidden=false;
-  let msg;
+  /* R1b: WHEN LABELS ARE OFF, THIS HAS TO READ AS A CONTROL SOMEBODY WANTS TO
+     PRESS, and it has to say WHY in its own words. The line existed before and
+     did not stop Sleven concluding the page was broken, so it was not doing
+     its job: "labels off on a hull this busy" is a status caption, and a
+     status caption is what a person reads past. */
+  let msg, act;
   if(!showing){
-    /* WHICH KIND OF OFF. Above the threshold it is the page's decision and it
-       says why; below it, it is the reader's own and the page must not claim
-       the hull is busy when it is not. */
-    msg = (total>CC_LBL_MAX)
-      ? `<b>${total} hardpoints</b> &middot; labels off on a hull this busy`
+    msg = dropped
+      /* THE PAGE'S OWN DECISION, WITH ITS REASON. Not "this hull is busy" -
+         a number the reader can check. */
+      ? `<b>${total} hardpoints</b> &middot; ${dropped} ${
+          dropped===1?"has":"have"} no room`
+      /* THE READER'S OWN DECISION. The page must not claim a reason it does
+         not have. */
       : `<b>${total} hardpoints</b> &middot; labels off`;
+    act = dropped ? "show all labels anyway" : "show all labels";
   }else if(dropped){
     msg=`<b>${total} hardpoints</b> &middot; ${shown} labelled, ${dropped} with
       no room`;
+    act="hide labels";
   }else{
     msg=`<b>${total} hardpoints</b> &middot; all labelled`;
+    act="hide labels";
   }
-  el.innerHTML=`${msg} <button type="button" id="cc-lbl-toggle">${
-    showing?"hide labels":"show all labels"}</button>`;
+  el.classList.toggle('off', !showing);
+  el.innerHTML=`${msg} <button type="button" id="cc-lbl-toggle">${act}</button>`;
 }
 
 /* THE ONE PLACE A PORT GETS SELECTED. Both routes come here.
@@ -3700,8 +3797,12 @@ document.addEventListener('click',e=>{
   /* H1f: the look controls. Every one of these CHANGES THE RENDER - the
      viewer rebuilds its passes - rather than setting a class and hoping. */
   if(e.target.closest('#cc-lbl-toggle')){
-    const n=markersFor(shipId).length;
-    allLabels = !labelsWanted(n);
+    /* R1a: FLIP WHAT IS ON SCREEN, not what a count predicts. The old line
+       recomputed the default from the marker count and inverted THAT, so on a
+       hull where the reader had already overridden it the button did nothing
+       visible. `data-shown` is what the page actually drew. */
+    const up=Number(($('cc-labels')||{})['data-shown']||0)>0;
+    allLabels = !up;
     renderLabels(); return; }
   /* H1g-1: the three presets. One click, whole page. */
   const dm=e.target.closest('#cc-dim button[data-dim]');
