@@ -55,7 +55,10 @@ import vm from "node:vm";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
-const VIEWER = join(ROOT, "testing", "_src", "cc_viewer.js");
+/* CC_VIEWER lets this be pointed at a cc_viewer.js fetched from the origin,
+   the same way CC_PAGE works for the page controls. */
+const VIEWER = process.env.CC_VIEWER
+  || join(ROOT, "testing", "_src", "cc_viewer.js");
 const GEO = process.env.CC_GEO_DIR
   || join(ROOT, "data-layer", "derived", "hull-geometry");
 

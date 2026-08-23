@@ -86,9 +86,14 @@ var CC_HOLO = {
   COLOUR_NAMES: ['Cyan', 'Mint', 'Amber', 'Rose', 'Ice'],
   DEFAULT_COLOUR: 0xffb545,
   /* The three sliders, with the ranges the prototype uses. */
-  lineInt: 1.0,      /* 0.1 .. 2.0   line intensity */
+  /* E7b: SLEVEN'S OWN NUMBERS, NOT THE PROTOTYPE'S CODE DEFAULTS.
+     The prototype's source also opens at lineInt 1.0 and it is not what he was
+     looking at - the captures he called perfect run the slider at 33-36% with
+     glow at 0.04. At full intensity the lines bloom into each other and the
+     hull reads as a solid mass; his 33% capture is the crisp one. */
+  lineInt: 0.33,     /* 0.1 .. 2.0   line intensity */
   detail: 24,        /* 5 .. 80 deg  line detail, the EdgesGeometry threshold */
-  glow: 0.55,        /* 0 .. 1.5     glow */
+  glow: 0.04,        /* 0 .. 1.5     glow */
   scan: 0,           /* scanlines OFF by default - available, not on */
   grid: true,
   field: 0x050a12,
@@ -230,8 +235,22 @@ function ccEdgeOpacity(edgeCount) {
   /* Kept taking an EDGE count, because that is what the caller has after
      building the EdgesGeometry, and the detail slider changes it - which is
      what makes that slider do something real. */
+  /* E7b: THE FLOOR GOES BACK TO THE PROTOTYPE'S 0.12, BECAUSE THE FLOOR AND
+     THE INTENSITY WERE ALWAYS ONE DECISION AND H1f CHANGED ONLY ONE OF THEM.
+
+     H1f dropped it to 0.035 and the reasoning was right for the settings then
+     in force: at lineInt 1.0 the floor doubled the Liberator's lines from
+     0.063 to 0.12 and that is what whited out the deployed page. The floor
+     only ever bites DENSE hulls, and at full intensity those are exactly the
+     ones that saturate.
+     At lineInt 0.33 they do not. Measured line opacity on the densest hull in
+     the fleet is 0.028 with the 0.035 floor and 0.040 with the 0.12 floor,
+     against 0.074 on the Sabre - the size of hull Sleven's captures were
+     taken on. Without the floor a 1.1M-vertex hull gets a third of the lines
+     he approved; with it, it gets half. The floor is doing the job it was
+     written for again. */
   var o = 0.44 * Math.pow(168351 / Math.max(1, edgeCount), 0.85);
-  return Math.min(0.55, Math.max(0.035, o)) * CC_HOLO.lineInt;
+  return Math.min(0.55, Math.max(0.12, o)) * CC_HOLO.lineInt;
 }
 
 /* 1x1 transparent GIF. Assigning '' to img.src makes some browsers re-request

@@ -267,13 +267,78 @@ async function main() {
   }
 }
 
+/* E7b: THE SAME DECODER, LENT OUT, RATHER THAN A SECOND ONE.
+   `checks/_verify_edge_detail.mjs` needs positions, normals AND the index
+   buffer out of the same files, decoded by the same wasm the browser runs.
+   Writing a second decoder for it would be two implementations of the one
+   thing whose agreement the whole measurement depends on - rule 14. So this
+   file exports its own helpers and stays a CLI: `main()` runs only when it is
+   the entry point, which is what the `require.main` guard below is for.
+
+   Returns whatever attributes are asked for, plus the triangle indices.
+   Positions are always read because the caller cannot do anything without
+   them. */
+function decodeMesh(draco, bytes, want) {
+  want = want || {};
+  const decoder = new draco.Decoder();
+  const buffer = new draco.DecoderBuffer();
+  buffer.Init(new Int8Array(bytes), bytes.length);
+  const type = decoder.GetEncodedGeometryType(buffer);
+  if (type !== draco.TRIANGULAR_MESH) {
+    draco.destroy(buffer); draco.destroy(decoder);
+    throw new Error('not a triangular mesh - there are no faces to find edges '
+      + 'between, and reporting an edge count for it would be a number about '
+      + 'nothing');
+  }
+  const mesh = new draco.Mesh();
+  const status = decoder.DecodeBufferToMesh(buffer, mesh);
+  if (!status.ok()) throw new Error('draco refused the mesh: ' + status.error_msg());
+
+  const n = mesh.num_points();
+  const pull = (which) => {
+    const id = decoder.GetAttributeId(mesh, which);
+    if (id < 0) return null;
+    const attr = decoder.GetAttribute(mesh, id);
+    const comps = attr.num_components();
+    const byteLength = n * comps * 4;
+    const ptr = draco._malloc(byteLength);
+    decoder.GetAttributeDataArrayForAllPoints(mesh, attr, draco.DT_FLOAT32,
+                                              byteLength, ptr);
+    const out = new Float32Array(draco.HEAPF32.buffer, ptr, n * comps).slice();
+    draco._free(ptr);
+    return { data: out, comps };
+  };
+
+  const out = { n, pos: pull(draco.POSITION) };
+  if (!out.pos) throw new Error('this mesh has no POSITION attribute');
+  if (want.normals) out.nrm = pull(draco.NORMAL);
+
+  /* The index buffer, in bulk for the same reason the attributes are. */
+  const faces = mesh.num_faces();
+  const idxBytes = faces * 3 * 4;
+  const iptr = draco._malloc(idxBytes);
+  decoder.GetTrianglesUInt32Array(mesh, idxBytes, iptr);
+  out.idx = new Uint32Array(draco.HEAPU32.buffer, iptr, faces * 3).slice();
+  draco._free(iptr);
+  out.faces = faces;
+
+  draco.destroy(mesh);
+  draco.destroy(buffer);
+  draco.destroy(decoder);
+  return out;
+}
+
+module.exports = { readGlb, loadDraco, decodePositions, decodeMesh };
+
 // EXIT DELIBERATELY.
 //
 // The emscripten runtime keeps handles open, so node never returns to the shell
 // on its own - the first run of this looked like a five-minute hang, and when it
 // was killed the pipe took the output with it. Everything is written to disk
 // before this point, so exiting here loses nothing.
-main().then(
-  () => { process.exit(0); },
-  (e) => { console.error(String((e && e.message) || e)); process.exit(1); }
-);
+if (require.main === module) {
+  main().then(
+    () => { process.exit(0); },
+    (e) => { console.error(String((e && e.message) || e)); process.exit(1); }
+  );
+}
