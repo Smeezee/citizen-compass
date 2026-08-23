@@ -5230,7 +5230,7 @@ E7b  DONE  434e921  CAUSE 1 CANNOT APPLY, CAUSE 2 IS WHAT IT WAS, AND THE FLOOR
     there is neither here. Counts are a model of the extraction.
     SWEEP  64 ok, 0 failed, 3 skipped, 0 NOT RUN.
 
-E8  DONE  552ff2a + 3b1b3e0  THE LABELS ARRIVE WITH THE MODEL, AND THE TOGGLE
+E8  DONE  552ff2a + 8ceba6f  THE LABELS ARRIVE WITH THE MODEL, AND THE TOGGLE
     STOPS FOLLOWING YOU. Deployed 709c870b-542e-40e1-a9b7-cf2118fd1190,
     verified from the served bytes.
     ONE FAULT, NOT THE TWO THE ERRATA READS, and the second half is the first
@@ -5270,5 +5270,5 @@ E8  DONE  552ff2a + 3b1b3e0  THE LABELS ARRIVE WITH THE MODEL, AND THE TOGGLE
     AND THE CONTROL COULD NOT READ SERVED BYTES AT ALL. It called
     loadPage({mutate}) and nothing else, so CC_PAGE was accepted and ignored
     and the run came out clean - a served-bytes pass it had never performed.
-    Threaded through in 3b1b3e0, before the claim was made.
+    Threaded through in 8ceba6f, before the claim was made.
     SWEEP  64 ok, 0 failed, 3 skipped, 0 NOT RUN.
