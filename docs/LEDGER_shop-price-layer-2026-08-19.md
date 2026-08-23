@@ -5584,3 +5584,85 @@ Q3 / E6 + H1f-2  DONE  d6b954e  THE PANEL IS FINDABLE, AND ITS SETTINGS ARE
     AND that nothing lands in the session one, so a build that quietly went
     back to a session lifetime fails rather than passes.
     SWEEP  70 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+R4  DONE  e8d4dbf  GOING BACK GOES BACK - OFFSET, SEARCH, SORT AND THE ROW YOU
+    CAME FROM. Deployed 58fc0406-705c-4f4b-af94-da5afa1d6753, verified from the
+    served bytes.
+    Sleven: "If I'm sitting at the very bottom of the page and I click the
+    Cyclone TR... I wanna look at the other Cyclone - bam, right back to
+    Avenger Stalker at the very top. Fix it."
+    THE WHOLE STATE TRAVELS, NOT JUST THE NUMBER. Somebody comparing four
+    Cyclones has a search typed, a role picked, a column sorted and a row they
+    were looking at. Restoring the offset alone drops them at pixel 4,300 of a
+    list that is no longer filtered the way it was - A DIFFERENT WRONG PLACE
+    RATHER THAN THE RIGHT ONE. One record: offset, search text, sorted column
+    and direction, dealer column, budget, buy-only, and the ship that was
+    opened.
+    BOTH ROUTES BACK LAND IN THE SAME PLACE BY CONSTRUCTION, which the order
+    calls its own defect if they do not. Browser Back and the ship page's "All
+    ships" link are both an ARRIVAL at index.html. Neither is special-cased and
+    there is no second code path to diverge along.
+    RESTORED WHEN THE ROWS EXIST, NOT ON A TIMER AND NOT ON DOMContentLoaded.
+    The base page ships "Loading ships" and fills the table from script; a
+    restore fired before that scrolls a 200px document to 4,300, which lands at
+    the top - THE DEFECT WEARING A SMALLER NUMBER. The adapter watches the
+    tbody and restores the first time it holds real rows. history.
+    scrollRestoration goes to manual, because the browser's own restore lands
+    somewhere else a moment earlier and two restores fighting is worse than one
+    that is late.
+    A RELOAD IS A NAVIGATION TOO - pagehide and beforeunload both record - so a
+    refresh does not dump somebody at the top of 254 rows.
+    cc_listmem.js is A FILE, not a block copied into each list page, for the
+    reason cc_viewer.js is: a list added next month gets this by declaring two
+    functions, and three inlined copies are three Back buttons that drift
+    apart. It knows how to store a position and when to put one back, and
+    NOTHING about roles or budgets - the page hands it capture() and apply().
+    CC_MATRIX_STATE exposes the sorter's state through two named functions
+    rather than the object, so what can be written is exactly what can be read.
+    Its set() drives the search box through its own `input` event rather than
+    by assignment: the base site filters on oninput, and setting .value alone
+    restores the text and leaves 254 rows under it - THE BOX SAYING ONE THING
+    AND THE LIST SHOWING ANOTHER.
+    ON MEASUREMENT, SHIPS IS THE ONLY CROSS-PAGE LIST-TO-DETAIL MOVE THIS SITE
+    HAS, and that is recorded rather than quietly doing one of three. FIND
+    keeps its query and filters in the hash and never navigates to a detail
+    page; the keybind action list is a search inside a layer on the same page;
+    manufacturers sets a filter and scrolls within the matrix. The module is
+    built for all of them and wired to the one that exists.
+    CONTROL  checks/_verify_list_memory.mjs, 24 assertions, driving
+    cc_listmem.js itself and the ship adapter LIFTED OUT OF THE BUILT
+    index.html rather than retyped.
+      --mutate-oneglobalkey  every list shares one key. THE ORDER'S
+                             LOAD-BEARING NEGATIVE, and it fires: the ship list
+                             comes back at 4,300, a stale offset from a
+                             different list.
+      --mutate-scrollonly    the state is dropped and only the offset kept.
+      --mutate-noclickmark   the row that was opened is not recorded.
+    TWO THINGS THE NEGATIVES FORCED, BOTH OF WHICH HAD THE CONTROL PASSING FOR
+    THE WRONG REASON.
+    THE STALE RECORD IS WRITTEN BY THE MODULE, NOT TYPED INTO STORAGE. A
+    hand-written key only reproduces the collision if the control guesses the
+    same key format the module uses - so the mutation that changed that format
+    made the fixture stop matching and the run passed.
+    AND THE "OTHER LIST" WAS ON A SHIPS PAGE. Booting the ships page and
+    calling it another list made its own pagehide store a ships record at
+    4,300, so the CLEAN build failed for a reason unrelated to the section.
+    The stub also fills its table AFTER the adapter runs, because the real page
+    does. A stub that handed the adapter a finished table tests an order of
+    events this page never has - and section 4 passed against a build whose
+    apply() could never have seen the matrix state.
+    STATED LIMIT: no browser and no layout. scrollTo is a recorded number
+    rather than a rendered position. What that proves is the whole of the
+    defect - the offset was never stored at all, so nothing could have put it
+    back - and not that a real document was tall enough at the moment of
+    restore, which is why the module retries and why the retry is asserted
+    separately against a document that grows.
+    SWEEP  71 ok, 0 failed, 3 skipped, 0 NOT RUN. An earlier run of the same
+    sweep showed _verify_broken_checker_end_to_end failing on
+    "pipeline_findings unchanged"; it passes standalone and passed on re-run,
+    and the cause is the SCHEDULED run_checks task writing to that table during
+    the 142s that control takes. Recorded rather than dropped.
+    AND THE FIRST SERVED-BYTES CHECK FAILED ON A CACHED COPY. Cloudflare served
+    the previous index.html to a bare curl; re-fetched with a cache-buster it
+    carries the adapter and all 24 assertions pass. Worth knowing before
+    reading a served-bytes failure as a deploy failure.
