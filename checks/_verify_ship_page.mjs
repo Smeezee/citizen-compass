@@ -1347,14 +1347,42 @@ console.log("\n--- N9: the page does not claim a marker position is measured ---
     "name and are not measured, says why that cannot currently be better, and " +
     "keeps the axis and nose described as measured because they are");
 
-  /* A hull with NO markers says something different and equally honest. */
+  /* A hull with NO markers says something different and equally honest.
+
+     THIS ASSERTED SILENCE UNTIL 2026-08-23 AND E1 CHANGED THAT DELIBERATELY.
+     Saying nothing was the defect Sleven found: 42 hulls draw a model, mark
+     nothing on it, and left a visitor unable to tell "this ship has no weapon
+     mounts" from "this page is broken".
+
+     So the claim is not relaxed, it is REPLACED by the stronger one - the hull
+     says which kind of nothing it is, and says only that one.
+     checks/_verify_marker_absence.mjs is the item's own control and sweeps
+     every hull; this stays as the regression guard in the place that noticed. */
   const MARKS2 = g("MARKS"), MODELS2 = g("MODELS");
   const noMark = Object.keys(SHIPS).find((k) =>
     SHIPS[k].slots.length && MODELS2[k] && !(MARKS2[k] || []).length);
   if (noMark) {
     vm.runInContext(`shipId=${JSON.stringify(noMark)};reset();resetView();renderAll();`, sandbox);
-    record(el("markernote").innerHTML === "",
-      "a hull with no markers carries no note about markers");
+    const nm = el("markernote").innerHTML || "";
+    const MARKABLE2 = new Set(["WeaponGun", "Turret", "MissileLauncher",
+      "WeaponDefensive", "WeaponMining", "BombLauncher", "SalvageHead",
+      "TractorBeam", "EMP", "Missile", "Bomb"]);
+    const mounts = (SHIPS[noMark].slots || [])
+      .filter((s) => MARKABLE2.has((TYPES[s.t] || {}).t)).length;
+    const saysNone = /no weapon mounts in the data/.test(nm);
+    const saysNoPos = /no measured positions/.test(nm);
+    record(nm.length > 40,
+      "a hull with no markers SAYS SO rather than staying silent - saying "
+      + "nothing is what E1 was raised about");
+    record(mounts ? (saysNoPos && !saysNone) : (saysNone && !saysNoPos),
+      mounts
+        ? `and ${SHIPS[noMark].n} carries ${mounts} weapon mounts, so it is `
+          + `told there are no positions - not that it has no mounts`
+        : `and ${SHIPS[noMark].n} genuinely has no weapon mounts, so it gets `
+          + `the Cyclone's wording`,
+      `mounts=${mounts} none=${saysNone} nopos=${saysNoPos}`);
+    record(!(saysNone && saysNoPos),
+      "and never both messages at once");
     record(/no marker placement for this hull/i.test(el("shipstate").innerHTML),
       "and says it has no marker placement, rather than that none was measured");
   }
