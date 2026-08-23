@@ -1,0 +1,1105 @@
+{
+ "orphans": [
+  "Anvil_Ballista_Dunestalker.glb",
+  "Anvil_Ballista_Snowblind.glb",
+  "Argo_Mole_Carbon_Edition.glb",
+  "Argo_Mole_Talus_Edition.glb",
+  "Carrack_Expedition_w_C8X.glb",
+  "Carrack_w_C8X.glb",
+  "Caterpillar_Best_In_Show_Edition_2949.glb",
+  "Caterpillar_Pirate_Edition.glb",
+  "Crucible.glb",
+  "Dragonfly_Yellowjacket.glb",
+  "E1_Spirit.glb",
+  "Endeavor.glb",
+  "Expanse.glb",
+  "F7C-M_Super_Hornet_Heartseeker_Mk_I.glb",
+  "G12.glb",
+  "G12a.glb",
+  "G12r.glb",
+  "Galaxy.glb",
+  "Genesis.glb",
+  "Hammerhead_Best_In_Show_Edition_2949.glb",
+  "Hull_D.glb",
+  "Hull_E.glb",
+  "Kraken.glb",
+  "Kraken_Privateer.glb",
+  "Legionnaire.glb",
+  "Liberator.glb",
+  "Mustang_Alpha_Vindicator.glb",
+  "Nautilus.glb",
+  "Nautilus_Solstice_Edition.glb",
+  "Nox_Kue.glb",
+  "Odyssey.glb",
+  "Orion.glb",
+  "Pioneer.glb",
+  "Ranger_CV.glb",
+  "Ranger_RC.glb",
+  "Ranger_TR.glb",
+  "Reclaimer_Best_In_Show_Edition_2949.glb",
+  "Valkyrie_Liberator_Edition.glb",
+  "Vulcan.glb",
+  "Zeus_Mk_II_MR.glb"
+ ],
+ "resolved": [
+  {
+   "file": "Nox_Kue.glb",
+   "cls": "XIAN_Nox_Kue",
+   "how": "exact display name",
+   "mfr": "Aopoa",
+   "mfr_check": "unstated"
+  }
+ ],
+ "unreleased": [
+  {
+   "file": "Crucible.glb",
+   "ship": "Crucible",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "file": "E1_Spirit.glb",
+   "ship": "E1 Spirit",
+   "mfr": "Crusader Industries"
+  },
+  {
+   "file": "Endeavor.glb",
+   "ship": "Endeavor",
+   "mfr": "MISC"
+  },
+  {
+   "file": "Expanse.glb",
+   "ship": "Expanse",
+   "mfr": "MISC"
+  },
+  {
+   "file": "F7C-M_Super_Hornet_Heartseeker_Mk_I.glb",
+   "ship": "F7C-M Super Hornet Heartseeker Mk I",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "file": "G12.glb",
+   "ship": "G12",
+   "mfr": "Origin Jumpworks"
+  },
+  {
+   "file": "G12a.glb",
+   "ship": "G12a",
+   "mfr": "Origin Jumpworks"
+  },
+  {
+   "file": "G12r.glb",
+   "ship": "G12r",
+   "mfr": "Origin Jumpworks"
+  },
+  {
+   "file": "Galaxy.glb",
+   "ship": "Galaxy",
+   "mfr": "Roberts Space Industries"
+  },
+  {
+   "file": "Hull_D.glb",
+   "ship": "Hull D",
+   "mfr": "MISC"
+  },
+  {
+   "file": "Hull_E.glb",
+   "ship": "Hull E",
+   "mfr": "MISC"
+  },
+  {
+   "file": "Kraken.glb",
+   "ship": "Kraken",
+   "mfr": "Drake Interplanetary"
+  },
+  {
+   "file": "Kraken_Privateer.glb",
+   "ship": "Kraken Privateer",
+   "mfr": "Drake Interplanetary"
+  },
+  {
+   "file": "Legionnaire.glb",
+   "ship": "Legionnaire",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "file": "Liberator.glb",
+   "ship": "Liberator",
+   "mfr": "Anvil Aerospace"
+  },
+  {
+   "file": "Mustang_Alpha_Vindicator.glb",
+   "ship": "Mustang Alpha Vindicator",
+   "mfr": "Consolidated Outland"
+  },
+  {
+   "file": "Nautilus.glb",
+   "ship": "Nautilus",
+   "mfr": "Aegis Dynamics"
+  },
+  {
+   "file": "Odyssey.glb",
+   "ship": "Odyssey",
+   "mfr": "MISC"
+  },
+  {
+   "file": "Orion.glb",
+   "ship": "Orion",
+   "mfr": "Roberts Space Industries"
+  },
+  {
+   "file": "Pioneer.glb",
+   "ship": "Pioneer",
+   "mfr": "Consolidated Outland"
+  },
+  {
+   "file": "Ranger_CV.glb",
+   "ship": "Ranger CV",
+   "mfr": "Tumbril Land Systems"
+  },
+  {
+   "file": "Ranger_RC.glb",
+   "ship": "Ranger RC",
+   "mfr": "Tumbril Land Systems"
+  },
+  {
+   "file": "Ranger_TR.glb",
+   "ship": "Ranger TR",
+   "mfr": "Tumbril Land Systems"
+  },
+  {
+   "file": "Vulcan.glb",
+   "ship": "Vulcan",
+   "mfr": "Aegis Dynamics"
+  },
+  {
+   "file": "Zeus_Mk_II_MR.glb",
+   "ship": "Zeus Mk II MR",
+   "mfr": "Roberts Space Industries"
+  }
+ ],
+ "unresolved": [
+  {
+   "file": "Anvil_Ballista_Dunestalker.glb",
+   "why": "matched ANVL_Ballista_Dunestalker, which already has Ballista.glb"
+  },
+  {
+   "file": "Anvil_Ballista_Snowblind.glb",
+   "why": "matched ANVL_Ballista_Snowblind, which already has Ballista.glb"
+  },
+  {
+   "file": "Argo_Mole_Carbon_Edition.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Argo_Mole_Talus_Edition.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Carrack_Expedition_w_C8X.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Carrack_w_C8X.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Caterpillar_Best_In_Show_Edition_2949.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Caterpillar_Pirate_Edition.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Dragonfly_Yellowjacket.glb",
+   "why": "no exact match; a human should look at DRAK_Dragonfly_Yellow"
+  },
+  {
+   "file": "Genesis.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Hammerhead_Best_In_Show_Edition_2949.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Nautilus_Solstice_Edition.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Reclaimer_Best_In_Show_Edition_2949.glb",
+   "why": "no exact match; nothing close enough to name"
+  },
+  {
+   "file": "Valkyrie_Liberator_Edition.glb",
+   "why": "no exact match; nothing close enough to name"
+  }
+ ],
+ "editions": [
+  {
+   "cls": "AEGS_Eclipse_BIS2950",
+   "base": "AEGS_Eclipse",
+   "base_model": "Eclipse.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Gladius_Dunlevy",
+   "base": "AEGS_Gladius",
+   "base_model": "Gladius_Valiant.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Hammerhead_GS",
+   "base": "AEGS_Hammerhead",
+   "base_model": "Hammerhead.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Hammerhead_Showdown",
+   "base": "AEGS_Hammerhead",
+   "base_model": "Hammerhead.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Idris_P_Collector_Military",
+   "base": "AEGS_Idris_P",
+   "base_model": "Idris-P.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Idris_P_FW_25",
+   "base": "AEGS_Idris_P",
+   "base_model": "Idris-P.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Idris_P_TSG",
+   "base": "AEGS_Idris_P",
+   "base_model": "Idris-P.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Reclaimer_Showdown",
+   "base": "AEGS_Reclaimer",
+   "base_model": "Reclaimer.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Reclaimer_Teach",
+   "base": "AEGS_Reclaimer",
+   "base_model": "Reclaimer.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Sabre_Firebird_Collector_Milt",
+   "base": "AEGS_Sabre_Firebird",
+   "base_model": "Sabre_Firebird.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "AEGS_Sabre_Peregrine_Collector_Competition",
+   "base": "AEGS_Sabre_Peregrine",
+   "base_model": "Sabre_Peregrine.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Asgard_Collector_Military",
+   "base": "ANVL_Asgard",
+   "base_model": "Asgard.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Carrack_BIS2950",
+   "base": "ANVL_Carrack",
+   "base_model": "Carrack.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Hornet_F7A_Mk2_Exec_Military",
+   "base": "ANVL_Hornet_F7A_Mk2",
+   "base_model": "F7A_Hornet_Mk_II.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Hornet_F7A_Mk2_Exec_Stealth",
+   "base": "ANVL_Hornet_F7A_Mk2",
+   "base_model": "F7A_Hornet_Mk_II.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Hornet_F7CM_Heartseeker",
+   "base": "ANVL_Hornet_F7CM",
+   "base_model": "F7C-M_Super_Hornet_Mk_I.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Hornet_F7CM_Mk2_Heartseeker",
+   "base": "ANVL_Hornet_F7CM_Mk2",
+   "base_model": "F7C-M_Super_Hornet_Mk_II.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Lightning_F8C_Collector_Military",
+   "base": "ANVL_Lightning_F8C",
+   "base_model": "F8C_Lightning.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Lightning_F8C_Collector_Stealth",
+   "base": "ANVL_Lightning_F8C",
+   "base_model": "F8C_Lightning.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Lightning_F8C_Exec_Military",
+   "base": "ANVL_Lightning_F8C_Exec",
+   "base_model": "F8C_Lightning_Executive_Edition.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Lightning_F8C_Exec_Stealth",
+   "base": "ANVL_Lightning_F8C_Exec",
+   "base_model": "F8C_Lightning_Executive_Edition.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Lightning_F8C_Plat",
+   "base": "ANVL_Lightning_F8C",
+   "base_model": "F8C_Lightning.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Terrapin_Medic_Collector_Medic",
+   "base": "ANVL_Terrapin_Medic",
+   "base_model": "Terrapin_Medic.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ANVL_Valkyrie_BIS2950",
+   "base": "ANVL_Valkyrie",
+   "base_model": "Valkyrie.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ARGO_ATLS_GEO_Collector_Grad01",
+   "base": "ARGO_ATLS_GEO",
+   "base_model": "ATLS_GEO.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ARGO_ATLS_GEO_Collector_Grad02",
+   "base": "ARGO_ATLS_GEO",
+   "base_model": "ATLS_GEO.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ARGO_ATLS_GEO_Collector_Grad03",
+   "base": "ARGO_ATLS_GEO",
+   "base_model": "ATLS_GEO.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ARGO_MOLE_BTALA",
+   "base": "ARGO_MOLE",
+   "base_model": "MOLE.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ARGO_MOLE_Teach",
+   "base": "ARGO_MOLE",
+   "base_model": "MOLE.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ARGO_RAFT_Collector_Indust",
+   "base": "ARGO_RAFT",
+   "base_model": "RAFT.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "CNOU_Mustang_Alpha_CitizenCon2018",
+   "base": "CNOU_Mustang_Alpha",
+   "base_model": "Mustang_Alpha.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "CNOU_Nomad_Teach",
+   "base": "CNOU_Nomad",
+   "base_model": "Nomad.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "CRUS_Intrepid_Collector_Indust",
+   "base": "CRUS_Intrepid",
+   "base_model": "Intrepid.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "CRUS_Spirit_C1_Civilian",
+   "base": "CRUS_Spirit_C1",
+   "base_model": "C1_Spirit.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "CRUS_Starfighter_Inferno_Collector_Military",
+   "base": "CRUS_Starfighter_Inferno",
+   "base_model": "Ares_Inferno.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "CRUS_Starfighter_Ion_Collector_Stealth",
+   "base": "CRUS_Starfighter_Ion",
+   "base_model": "Ares_Ion.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "CRUS_Starlifter_A2_Collector_Military",
+   "base": "CRUS_Starlifter_A2",
+   "base_model": "A2_Hercules.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Caterpillar_Boarded",
+   "base": "DRAK_Caterpillar",
+   "base_model": "Caterpillar.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Caterpillar_Pirate",
+   "base": "DRAK_Caterpillar",
+   "base_model": "Caterpillar.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Clipper_Collector_Military",
+   "base": "DRAK_Clipper",
+   "base_model": "Clipper.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Corsair_Exec_Military",
+   "base": "DRAK_Corsair",
+   "base_model": "Corsair.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Corsair_Exec_StealthIndustrial",
+   "base": "DRAK_Corsair",
+   "base_model": "Corsair.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Cutlass_Black_BIS2950",
+   "base": "DRAK_Cutlass_Black",
+   "base_model": "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Cutlass_Black_Exec_Military",
+   "base": "DRAK_Cutlass_Black",
+   "base_model": "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Cutlass_Black_Exec_Stealth",
+   "base": "DRAK_Cutlass_Black",
+   "base_model": "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Cutlass_Blue_BIS2950",
+   "base": "DRAK_Cutlass_Blue",
+   "base_model": "Cutlass_Blue.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Cutlass_Red_BIS2950",
+   "base": "DRAK_Cutlass_Red",
+   "base_model": "Cutlass_Red.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Dragonfly_Pink",
+   "base": "DRAK_Dragonfly",
+   "base_model": "Dragonfly_Black.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Dragonfly_Yellow",
+   "base": "DRAK_Dragonfly",
+   "base_model": "Dragonfly_Black.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Golem_BTALA",
+   "base": "DRAK_Golem",
+   "base_model": "Golem.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Golem_Collector_Indust",
+   "base": "DRAK_Golem",
+   "base_model": "Golem.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Golem_Low_Fuel_TEMPORARY",
+   "base": "DRAK_Golem",
+   "base_model": "Golem.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Golem_Teach",
+   "base": "DRAK_Golem",
+   "base_model": "Golem.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "DRAK_Vulture_Teach",
+   "base": "DRAK_Vulture",
+   "base_model": "Vulture.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ESPR_Prowler_Utility_Collector_Indust",
+   "base": "ESPR_Prowler_Utility",
+   "base_model": "Prowler_Utility.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "GAMA_Syulen_Exec_Military",
+   "base": "GAMA_Syulen",
+   "base_model": "Syulen.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "GAMA_Syulen_Exec_Stealth",
+   "base": "GAMA_Syulen",
+   "base_model": "Syulen.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "GLSN_Shiv_TEMP_CosA",
+   "base": "GLSN_Shiv",
+   "base_model": "Shiv.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "GLSN_Shiv_TEMP_CosB",
+   "base": "GLSN_Shiv",
+   "base_model": "Shiv.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "GLSN_Shiv_TEMP_CosC",
+   "base": "GLSN_Shiv",
+   "base_model": "Shiv.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "KRIG_L21_Wolf_Collector_Military",
+   "base": "KRIG_L21_Wolf",
+   "base_model": "L-21_Wolf.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "KRIG_L21_Wolf_Collector_Stealth",
+   "base": "KRIG_L21_Wolf",
+   "base_model": "L-21_Wolf.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "KRIG_L22_AlphaWolf_Collector_Military",
+   "base": "KRIG_L22_AlphaWolf",
+   "base_model": "L-22_Alpha_Wolf.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MISC_Fortune_Collector_Industrial",
+   "base": "MISC_Fortune",
+   "base_model": "Fortune.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MISC_Fortune_Teach",
+   "base": "MISC_Fortune",
+   "base_model": "Fortune.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MISC_Prospector_BTALA",
+   "base": "MISC_Prospector",
+   "base_model": "Prospector.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MISC_Prospector_Collector_Indust",
+   "base": "MISC_Prospector",
+   "base_model": "Prospector.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MISC_Starfarer_Teach",
+   "base": "MISC_Starfarer",
+   "base_model": "Starfarer.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MISC_Starlancer_Max_Collector_Indust",
+   "base": "MISC_Starlancer_Max",
+   "base_model": "Starlancer_MAX.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MISC_Starlancer_TAC_Collector_Military",
+   "base": "MISC_Starlancer_TAC",
+   "base_model": "Starlancer_TAC.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MRAI_Guardian_MX_Collector_Military",
+   "base": "MRAI_Guardian_MX",
+   "base_model": "Guardian_MX.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MRAI_Guardian_Military",
+   "base": "MRAI_Guardian",
+   "base_model": "Guardian.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "MRAI_Guardian_QI_Collector_Indust",
+   "base": "MRAI_Guardian_QI",
+   "base_model": "Guardian_QI.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ORIG_600i_BIS2951",
+   "base": "ORIG_600i",
+   "base_model": "600i_Explorer.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "ORIG_600i_Executive_Edition",
+   "base": "ORIG_600i",
+   "base_model": "600i_Explorer.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Apollo_Medivac_Tier_1",
+   "base": "RSI_Apollo_Medivac",
+   "base_model": "Apollo_Medivac.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Apollo_Medivac_Tier_2",
+   "base": "RSI_Apollo_Medivac",
+   "base_model": "Apollo_Medivac.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Apollo_Medivac_Tier_3",
+   "base": "RSI_Apollo_Medivac",
+   "base_model": "Apollo_Medivac.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Apollo_Triage_Collector_Stealth",
+   "base": "RSI_Apollo_Triage",
+   "base_model": "Apollo_Triage.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Apollo_Triage_Tier_1",
+   "base": "RSI_Apollo_Triage",
+   "base_model": "Apollo_Triage.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Apollo_Triage_Tier_2",
+   "base": "RSI_Apollo_Triage",
+   "base_model": "Apollo_Triage.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Apollo_Triage_Tier_3",
+   "base": "RSI_Apollo_Triage",
+   "base_model": "Apollo_Triage.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Constellation_Taurus_Military",
+   "base": "RSI_Constellation_Taurus",
+   "base_model": "Constellation_Taurus.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Meteor_Collector_Military",
+   "base": "RSI_Meteor",
+   "base_model": "Meteor.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Meteor_Collector_Stealth",
+   "base": "RSI_Meteor",
+   "base_model": "Meteor.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Meteor_TEMP_LaserRepeater",
+   "base": "RSI_Meteor",
+   "base_model": "Meteor.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Polaris_Collector_Military",
+   "base": "RSI_Polaris",
+   "base_model": "Polaris.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Scorpius_Stealth",
+   "base": "RSI_Scorpius",
+   "base_model": "Scorpius.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Ursa_Medivac_Stealth",
+   "base": "RSI_Ursa_Medivac",
+   "base_model": "Ursa_Medivac.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Zeus_CL_Collector_Indust",
+   "base": "RSI_Zeus_CL",
+   "base_model": "Zeus_Mk_II_CL.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "RSI_Zeus_ES_Collector_Indust",
+   "base": "RSI_Zeus_ES",
+   "base_model": "Zeus_Mk_II_ES.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "XIAN_Nox_Collector_Mod",
+   "base": "XIAN_Nox",
+   "base_model": "Nox.glb",
+   "own_model": null,
+   "mfr_ok": true
+  },
+  {
+   "cls": "XIAN_Nox_Kue",
+   "base": "XIAN_Nox",
+   "base_model": "Nox.glb",
+   "own_model": "Nox_Kue.glb",
+   "mfr_ok": true
+  }
+ ],
+ "fankit": [
+  {
+   "file": "ARGO MPUV Cargo.ctm",
+   "cls": "ARGO_MPUV",
+   "why": "exact display name",
+   "already_has_model": true
+  },
+  {
+   "file": "Aegis Sabre.ctm",
+   "cls": "AEGS_Sabre",
+   "why": "exact display name",
+   "already_has_model": true
+  },
+  {
+   "file": "Anvil F7C-M Super Hornet.ctm",
+   "cls": null,
+   "why": "no exact match",
+   "already_has_model": false
+  },
+  {
+   "file": "Aopoa Khartu-al.ctm",
+   "cls": "XIAN_Scout",
+   "why": "exact display name",
+   "already_has_model": true
+  },
+  {
+   "file": "Banu Defender.ctm",
+   "cls": "BANU_Defender",
+   "why": "exact display name",
+   "already_has_model": true
+  },
+  {
+   "file": "CNOU Mustang Alpha.ctm",
+   "cls": null,
+   "why": "no exact match",
+   "already_has_model": false
+  },
+  {
+   "file": "Crusader Mercury Starrunner.ctm",
+   "cls": "CRUS_Star_Runner",
+   "why": "exact display name",
+   "already_has_model": true
+  },
+  {
+   "file": "Drake Cutlass Black.ctm",
+   "cls": null,
+   "why": "AMBIGUOUS",
+   "already_has_model": true
+  },
+  {
+   "file": "Esperia Blade.ctm",
+   "cls": "VNCL_Blade",
+   "why": "exact display name",
+   "already_has_model": true
+  },
+  {
+   "file": "Kruger P-52 Merlin.ctm",
+   "cls": "KRIG_P52_Merlin",
+   "why": "exact display name",
+   "already_has_model": true
+  },
+  {
+   "file": "MISC Freelancer MAX.ctm",
+   "cls": "MISC_Freelancer_MAX",
+   "why": "exact display name",
+   "already_has_model": true
+  },
+  {
+   "file": "Origin 600i Explorer.ctm",
+   "cls": null,
+   "why": "no exact match",
+   "already_has_model": false
+  },
+  {
+   "file": "RSI Constellation Aquila.ctm",
+   "cls": "RSI_Constellation_Aquila",
+   "why": "exact display name",
+   "already_has_model": false
+  },
+  {
+   "file": "Tumbril Cyclone.ctm",
+   "cls": "TMBL_Cyclone",
+   "why": "exact display name",
+   "already_has_model": true
+  }
+ ],
+ "missing": [
+  {
+   "cls": "AEGS_Tiburon",
+   "name": "Aegis Tiburon",
+   "mfr": "Aegis Dynamics",
+   "ports": 138
+  },
+  {
+   "cls": "ANVL_Arrow",
+   "name": "Anvil Arrow",
+   "mfr": "Anvil Aerospace",
+   "ports": 62
+  },
+  {
+   "cls": "ANVL_Hornet_F7_Mk2_Collector_Mod",
+   "name": "Anvil F7 Hornet Mk Wikelo",
+   "mfr": "Anvil Aerospace",
+   "ports": 87
+  },
+  {
+   "cls": "ANVL_Lightning_F8",
+   "name": "Anvil F8A Lightning",
+   "mfr": "Anvil Aerospace",
+   "ports": 92
+  },
+  {
+   "cls": "ARGO_MOTH",
+   "name": "Argo MOTH",
+   "mfr": "Argo Astronautics",
+   "ports": 76
+  },
+  {
+   "cls": "DRAK_Command_Module",
+   "name": "Drake Command Module",
+   "mfr": "Drake Interplanetary",
+   "ports": 67
+  },
+  {
+   "cls": "DRAK_Pitbull",
+   "name": "Drake Pitbull",
+   "mfr": "Drake Interplanetary",
+   "ports": 76
+  },
+  {
+   "cls": "GAMA_Tyilui",
+   "name": "Gatac Tyilui",
+   "mfr": "Gatac Manufacture",
+   "ports": 149
+  },
+  {
+   "cls": "GLSN_Basher",
+   "name": "Grey's Basher",
+   "mfr": "Grey's Market",
+   "ports": 74
+  },
+  {
+   "cls": "GRIN_PTV",
+   "name": "Greycat PTV",
+   "mfr": "Greycat Industrial",
+   "ports": 5
+  },
+  {
+   "cls": "GRIN_UTV",
+   "name": "Greycat UTV",
+   "mfr": "Greycat Industrial",
+   "ports": 8
+  },
+  {
+   "cls": "MISC_Fury",
+   "name": "Mirai Fury",
+   "mfr": "Mirai",
+   "ports": 65
+  },
+  {
+   "cls": "MISC_Starlite",
+   "name": "MISC Starlite",
+   "mfr": "Musashi Industrial and Starflight Concern",
+   "ports": 69
+  },
+  {
+   "cls": "ORIG_85X",
+   "name": "Origin 85X Limited",
+   "mfr": "Origin Jumpworks",
+   "ports": 59
+  },
+  {
+   "cls": "ORIG_m80",
+   "name": "Origin M80",
+   "mfr": "Origin Jumpworks",
+   "ports": 84
+  },
+  {
+   "cls": "PowerSuit",
+   "name": "Power Suit",
+   "mfr": "Unknown",
+   "ports": 2
+  },
+  {
+   "cls": "RSI_Aurora_GS_SE",
+   "name": "RSI Aurora Mk I SE",
+   "mfr": "Roberts Space Industries",
+   "ports": 62
+  },
+  {
+   "cls": "RSI_Aurora_Mk2",
+   "name": "RSI Aurora Mk II",
+   "mfr": "Roberts Space Industries",
+   "ports": 75
+  },
+  {
+   "cls": "RSI_Hermes",
+   "name": "RSI Hermes",
+   "mfr": "Roberts Space Industries",
+   "ports": 106
+  },
+  {
+   "cls": "RSI_Mantis",
+   "name": "RSI Mantis",
+   "mfr": "Roberts Space Industries",
+   "ports": 55
+  },
+  {
+   "cls": "VNCL_Mauler",
+   "name": "Vanduul Mauler Destroyer",
+   "mfr": "Vanduul Clans",
+   "ports": 286
+  }
+ ]
+}
