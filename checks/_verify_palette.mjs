@@ -45,7 +45,16 @@ import { loadPage } from "./_loadout_harness.mjs";
 import { worstCase, simulate, CHROMA_FLOOR, LUM_FLOOR } from "./_colour.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const SRC = join(HERE, "..", "testing", "_src", "loadout.src.html");
+/* B8's PATTERN: THESE BYTES CAN COME FROM THE ORIGIN.
+   `CC_PAGE` points this control at a page fetched from the deployed site and
+   `CC_SRCDIR` at the generated data beside it, so "verified from the served
+   bytes" means the same assertions ran against what a visitor is actually
+   sent - rather than against the working tree, which is a different claim and
+   a weaker one. Unset, both default to testing/_src. */
+const SRCDIR = process.env.CC_SRCDIR
+  || join(HERE, "..", "testing", "_src");
+const SRC = process.env.CC_PAGE
+  || join(SRCDIR, "loadout.src.html");
 const html = readFileSync(SRC, "utf-8");
 const MUT = process.argv.slice(2).find((a) => a.startsWith("--mutate-")) || "";
 
@@ -323,7 +332,9 @@ console.log("\n--- 4. every distinction is also drawn in something else ---");
      refuses outright when a pattern matches nothing, so a mutator that has
      drifted out of step with the markup stops the run rather than
      producing a clean pass. */
-  const page = loadPage({ mutate: PAGE_MUTATIONS[MUT] || [] });
+  const page = loadPage({ mutate: PAGE_MUTATIONS[MUT] || [],
+    srcDir: process.env.CC_SRCDIR || null,
+    pageFile: process.env.CC_PAGE || null });
   const { g, run, el, openShip } = page;
 
   /* A hull with something to swap, in two-up, with a real change made - which

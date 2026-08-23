@@ -37,7 +37,16 @@ import vm from "node:vm";
 import { luminance, contrast, dimBy, over } from "./_colour.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const SRC = join(HERE, "..", "testing", "_src", "loadout.src.html");
+/* B8's PATTERN: THESE BYTES CAN COME FROM THE ORIGIN.
+   `CC_PAGE` points this control at a page fetched from the deployed site and
+   `CC_SRCDIR` at the generated data beside it, so "verified from the served
+   bytes" means the same assertions ran against what a visitor is actually
+   sent - rather than against the working tree, which is a different claim and
+   a weaker one. Unset, both default to testing/_src. */
+const SRCDIR = process.env.CC_SRCDIR
+  || join(HERE, "..", "testing", "_src");
+const SRC = process.env.CC_PAGE
+  || join(SRCDIR, "loadout.src.html");
 const ARG = process.argv.slice(2);
 const MUT = ARG.find((a) => a.startsWith("--mutate-")) || "";
 
