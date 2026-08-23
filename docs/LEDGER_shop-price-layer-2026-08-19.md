@@ -4931,3 +4931,48 @@ H1 + H1f  DONE  22d5d9c  ALL SIX STYLES, FIVE COLOURS, THREE SLIDERS, AND THE
     SEQUENCING NOTE: deployed AHEAD of the sweep on Sleven's instruction, after
     running all twelve page controls individually. The sweep then returned 59
     ok / 0 failed, so it cost nothing - but the order of those two is recorded.
+
+H1b  DONE  4e9d016  THE LABELS ARE THE FEATURE, DECONFLICTED, WITH THE COUNT
+    ALWAYS STATED. Deployed 0c3b086c-fadc-4f01-98cb-416387a9234d.
+    LEDGERED LATE. The commit and the deploy both happened; this entry did not,
+    and a context clear is exactly when that costs something. Recorded here
+    with the control re-run from scratch rather than from memory of it passing:
+    23 ok / exit 0 clean, exit 1 under --mutate-nodeconflict, both verified by
+    exit code and not by the printed summary.
+    A derived position will never be exact - the exports are one welded mesh
+    with no mount data - so a dot two metres off that says "CF-337 Panther
+    Repeater / Weapon left nose" is informative, and the same dot with no label
+    is a guess the visitor cannot check. THE LABELS ARE WHAT MAKE THE DERIVED
+    POSITION HONEST, so they ship in the default view rather than behind a
+    toggle.
+    DECONFLICT THE LABELS, NOT THE MARKERS. The marker stays on its derived
+    position because that is a claim about the hull. The label may move
+    anywhere because it is not, and keeps a leader line back. Two things are
+    placed and only one of them is an assertion.
+    THE PROTOTYPE HAD NOT SOLVED THIS and the order says so - a fixed 11px
+    offset with a border-left stub, colliding in its own Sabre capture with
+    "Weapon left wing" drawn twice over itself.
+    layoutLabels() is a pure function of numbers: candidate rings, nearest
+    first, first non-overlapping wins, stable ordering so two runs place
+    identically. Eighteen candidates left the Perseus at 15 of 35; six rings of
+    twelve gets it to 26.
+      Aegis Sabre     8 markers   8 labelled   0 with no room   0 overlaps
+      RSI Polaris    24 markers  23 labelled   1 with no room   0 overlaps
+      RSI Perseus    35 markers  26 labelled   9 with no room   0 overlaps
+    NOT PLACED IS A REAL ANSWER AND IT IS NEVER SILENT. The stage states
+    "35 hardpoints, 26 labelled, 9 with no room" and offers the toggle by name.
+    Above 14 markers labels are off by default and the hint says why. Hiding
+    them quietly would be the marker defect in a new costume.
+    CONTROL  checks/_verify_labels.mjs, 23 assertions on the three ships the
+    order names. --mutate-nodeconflict removes the overlap test: the Sabre
+    produces 8 overlaps, the Polaris 75, the Perseus 213. IT COLLIDES TODAY, so
+    a check that passed with the feature off would be measuring nothing.
+    --mutate-silent suppresses the count.
+    THE HARNESS'S STUB project() RETURNED {640,360} FOR EVERY MARKER. Fine for
+    "did a click reach the handler", useless for anything spatial - every label
+    landed on one point and the layout looked broken when it was the stub. It
+    is an orthographic map of the hull's unit coordinates now.
+    AND THIS CONTROL LEAKED ITS OWN STATE TOO - section 1 set allLabels=true and
+    the threshold block inherited it, so the Perseus arrived already showing
+    everything. SECOND TIME IN ONE SESSION; both were found by numbers being
+    wrong in a way the feature could not explain, never by a run failing.
