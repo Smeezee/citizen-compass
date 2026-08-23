@@ -5165,3 +5165,67 @@ E5  DONE  6ff5506 + 647f1b9  EVERY SHIP STOOD HALF UNDER THE FLOOR,
     is where frame() PUTS the hull and what radius _fitTable() returns -
     arithmetic on real measured bounds, through the shipping code path.
     SWEEP  63 ok, 0 failed, 3 skipped, 0 NOT RUN.
+
+E7b  DONE  434e921  CAUSE 1 CANNOT APPLY, CAUSE 2 IS WHAT IT WAS, AND THE FLOOR
+    CAME BACK WITH IT. Deployed 3330b0e5-324e-4c8d-b4d7-327a552e95bf, verified
+    from the served bytes.
+    MEASURED BEFORE ANYTHING CHANGED, which is what the order asked for.
+    CAUSE 1 IS WRONG, AND FOR A REASON UPSTREAM OF THE EDGE COUNT. three.js's
+    EdgesGeometry NEVER READS THE NORMAL ATTRIBUTE. Read out of the vendored
+    bundle rather than from memory - getAttribute("position"), getNormal(),
+    Math.round(x*Math.pow(10,4)) - it takes positions, builds each face normal
+    with a cross product of the triangle's own three vertices, and keys
+    vertices on their positions rounded to 1e-4. THE FIX THE ORDER PROPOSES IS
+    ALREADY WHAT SHIPS.
+    The order's premise about the FILES is right and is asserted too: all 235
+    deployed models are Draco and NORMAL is compressed on every one. It simply
+    is not an attribute the edge detector ever opens.
+    THE COUNT, MEASURED ANYWAY, because "the code does not do X" and "doing X
+    would not have helped" are different claims. Decoded with the same DRACO
+    wasm the browser runs:
+      Sabre    353,731 v  617,052 f   computed 374,560 edges  stored 359,340
+      Cyclone   81,341 v  144,646 f   computed 124,263 edges  stored 100,914
+    Cause 1's ARITHMETIC is right - computed normals find 4.2% and 23.1% more -
+    and it is moot.
+    CAUSE 2 IS WHAT IS LEFT. lineInt 1.0 -> 0.33, glow 0.55 -> 0.04. AND THE
+    PROTOTYPE'S SOURCE ALSO OPENS AT lineInt 1.0 - copying its code defaults is
+    how the hot ones got here in the first place. What Sleven approved is the
+    SLIDER POSITION IN HIS CAPTURES, which is a different thing from the
+    prototype's default and had been conflated with it.
+    Modelled saturation on the densest hull, before -> after:
+      panel        4.85% -> 1.63% pure white   24.07% -> 16.86% clipped
+      solidlines   3.76% -> 1.42%              40.02% -> 30.90%
+      points       4.18% -> 0.40%              22.91% ->  7.10%
+      wire         0.09% -> 0.00%               1.67% ->  0.15%
+    Every figure improves, and the panel pass H1f had to record as "close to
+    the 5% line" is now a third of it.
+    AND THE EDGE-OPACITY FLOOR GOES BACK TO 0.12, BECAUSE THE FLOOR AND THE
+    INTENSITY WERE ALWAYS ONE DECISION AND H1f CHANGED ONLY ONE OF THEM. H1f
+    dropped it to 0.035 and the reasoning was right AT lineInt 1.0 - the floor
+    doubled the Liberator's lines from 0.063 to 0.12 and that is what whited
+    out the page. At 0.33 that pressure is gone:
+      line opacity, densest hull   floor 0.035: 0.028   floor 0.12: 0.040
+      line opacity, Sabre - the size his captures were taken on:    0.074
+    Without the floor a 1.1M-vertex hull gets a third of the lines he approved.
+    THE PROTOTYPE'S OWN SOURCE CONFIRMS E5 INDEPENDENTLY, found while reading
+    its edgeOpacity: holder.position.y = -cache[i].minY + 0.04. It stood its
+    hulls on the disc all along. THE +0.04 CLEARANCE IS NOT COPIED and that is
+    a decision, not an oversight: it is 2% of a normalised hull and this
+    library spans 10,000x in units per metre, so a fixed figure is invisible on
+    one hull and a gap on another. If z-fighting shows up on the disc, that is
+    where the answer is.
+    decode_glb_points.js exports its helpers now and gains decodeMesh -
+    positions, normals and indices - behind a require.main guard. ONE DECODER,
+    LENT OUT, rather than a second implementation of the very thing whose
+    agreement the measurement depends on.
+    CONTROL  checks/_verify_edge_detail.mjs, 16 assertions.
+      --mutate-hotdefaults puts 1.0 / 0.55 / 0.035 back and section 4 fails.
+      AN UNKNOWN --mutate- ARGUMENT IS REFUSED WITH EXIT 2. This file's own
+      header documented --mutate-storednormals, which was never implemented;
+      passing it planted nothing and the run came out clean. Caught by the
+      exit-3 branch, then closed properly at the top.
+    STATED LIMIT: the edge extraction here is a RE-IMPLEMENTATION of the
+    vendored EdgesGeometry, asserted against the vendored source rather than
+    being it - the real object needs a BufferGeometry and a WebGL context and
+    there is neither here. Counts are a model of the extraction.
+    SWEEP  64 ok, 0 failed, 3 skipped, 0 NOT RUN.
