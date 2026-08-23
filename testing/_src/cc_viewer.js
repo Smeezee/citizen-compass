@@ -439,9 +439,17 @@ var CCViewer = (function () {
      Returns null when the point is BEHIND the camera - `z > 1` after
      projection - because a marker drawn for a gun on the far side of the hull
      is a marker pointing at the wrong thing. */
+  /* E5: THE ARGUMENTS ARE HULL-SPACE, AND THEY ALWAYS WERE.
+     Markers arrive as `unit` coordinates around the hull's own centre, and
+     until E5 the hull's centre WAS the world origin, so this could add nothing
+     and be right. Now the hull stands on the disc instead of straddling it, so
+     its centre is half its height up and the offset has to be applied here.
+     Doing it in one place is the point: three call sites pass `unit * us` and
+     none of them should have to know where the hull was put. */
   Viewer.prototype.project = function (x, y, z) {
     if (!this.camera || !this.canvas) return null;
-    var v = new THREE.Vector3(x, y, z).project(this.camera);
+    var o = this._hullOrigin || { x: 0, y: 0, z: 0 };
+    var v = new THREE.Vector3(x + o.x, y + o.y, z + o.z).project(this.camera);
     if (v.z > 1) return null;
     var w = this.canvas.clientWidth, h = this.canvas.clientHeight;
     return { x: (v.x * 0.5 + 0.5) * w, y: (-v.y * 0.5 + 0.5) * h, depth: v.z };
@@ -476,19 +484,49 @@ var CCViewer = (function () {
     this.current = null;
   };
 
-  /* Centre the object and pull the camera back far enough to hold it. */
+  /* E5: STAND THE HULL ON THE DISC, AND SIZE THE DISC TO THE HULL.
+
+     Sleven: "the Avenger Stalker is like buried into the floor. Some ships
+     don't even have that floor thing there."
+
+     THE CAUSE IS THIS FUNCTION AND IT WAS ONE LINE. `o.position.sub(c)` puts
+     the BOUNDING-BOX CENTRE at the world origin, and the disc is drawn at
+     y=0 - so every hull was cut in half by the floor, at exactly 50%, all 235
+     of them. Not "most models are centred badly": the page did this to them.
+     The Stalker measuring exactly 50.0% is the tell - a model-origin problem
+     would not land on a round number.
+
+     x and z still centre. y comes from the measured BOTTOM instead, so the
+     ship stands on the table whatever its origin or its scale, with no
+     per-ship data and no list to maintain.
+
+     AND THE SECOND HALF IS THE SAME MEASUREMENT. The table was a fixed
+     9-unit grid and a fixed 1.45-1.50 ring while this library holds 158 ships
+     in metres, 8 normalised and 1 in centimetres - 223 of the 235 hulls are
+     WIDER than that ring is across, so the "missing" disc was never missing,
+     it was a speck inside the ship. The radius comes off the footprint now. */
   Viewer.prototype.frame = function (o) {
     var box = new THREE.Box3().setFromObject(o),
         sz = box.getSize(new THREE.Vector3()),
         c = box.getCenter(new THREE.Vector3());
-    o.position.sub(c);
+    o.position.x -= c.x;
+    o.position.y -= box.min.y;
+    o.position.z -= c.z;
+    /* Where hull-space (0,0,0) now lands, for project() to add. Keeping this
+       as a stated offset rather than letting each caller work it out is what
+       guarantees no marker moves RELATIVE TO THE HULL - which is the one thing
+       this change must not do. */
+    this._hullOrigin = { x: 0, y: (sz.y || 0) / 2, z: 0 };
+    this._hullSize = { x: sz.x, y: sz.y, z: sz.z };
+    this._fitTable(sz);
     var max = Math.max(sz.x, sz.y, sz.z) || 1;
     var d = max / (2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov) / 2)) * 1.55;
-    this.camera.position.set(d * 0.75, d * 0.42, d * 0.85);
+    var ty = this._hullOrigin.y;
+    this.camera.position.set(d * 0.75, ty + d * 0.42, d * 0.85);
     this.camera.near = max / 500;
     this.camera.far = max * 60;
     this.camera.updateProjectionMatrix();
-    this.controls.target.set(0, 0, 0);
+    this.controls.target.set(0, ty, 0);
     this.controls.update();
     return { sz: sz };
   };
@@ -534,18 +572,30 @@ var CCViewer = (function () {
     return this._mats;
   };
 
-  /* THE HOLO TABLE - grid and ring, at the prototype's own values. */
+  /* THE HOLO TABLE - grid and ring.
+
+     E5: ITS SIZE COMES OFF THE HULL NOW. The prototype's own values were a
+     fixed 9-unit grid and a 1.45-1.50 ring, tuned against four models of
+     roughly one size. This library holds 158 ships in metres, 8 normalised and
+     1 in centimetres, and measured footprints run from 0.23 to 4,856 units -
+     223 of the 235 hulls are WIDER THAN THAT RING IS ACROSS. Sleven's "some
+     ships don't even have that floor thing there" was never a missing disc; it
+     was a disc the size of a coin under a ship the size of a street.
+
+     Built at radius 1 and SCALED, rather than rebuilt per hull: GridHelper's
+     extent is baked into its geometry at construction, so re-sizing it any
+     other way means disposing and re-allocating a mesh on every ship change. */
   Viewer.prototype._buildTable = function () {
     if (this._table || !this.scene) return;
     this._table = new THREE.Group();
-    var grid = new THREE.GridHelper(9, 36, CC_HOLO.gridA, CC_HOLO.gridB);
+    var grid = new THREE.GridHelper(2, 36, CC_HOLO.gridA, CC_HOLO.gridB);
     if (grid.material) {
       grid.material.transparent = true;
       grid.material.opacity = CC_HOLO.gridOpacity;
     }
     this._table.add(grid);
     this._ring = new THREE.Mesh(
-      new THREE.RingGeometry(1.45, 1.50, 128),
+      new THREE.RingGeometry(0.965, 1.0, 128),
       new THREE.MeshBasicMaterial({
         color: this._colour, transparent: true, opacity: CC_HOLO.ringOpacity,
         side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
@@ -554,6 +604,45 @@ var CCViewer = (function () {
     this._table.add(this._ring);
     this._table.visible = CC_HOLO.grid;
     this.scene.add(this._table);
+  };
+
+  /* E5: THE DISC IS SIZED FROM THE MEASURED FOOTPRINT AND SAYS SO WHEN IT
+     CANNOT BE. `frame()` has the box already - this is the same measurement
+     used twice rather than a second guess.
+
+     A DEGENERATE RESULT IS REPORTED, NOT DRAWN SILENTLY. A hull with no width
+     at all - an empty scene, a failed decode - would otherwise produce a
+     zero-radius ring, which renders as nothing and is indistinguishable from
+     the bug this replaces. It is clamped to a visible minimum and the clamp is
+     recorded on `_tableClamped` for a control and for the page to read. */
+  Viewer.prototype.TABLE_MARGIN = 1.08;
+  Viewer.prototype._fitTable = function (sz) {
+    this._buildTable();
+    if (!this._table) return null;
+    var foot = Math.max(sz.x || 0, sz.z || 0);
+    var r = (foot / 2) * this.TABLE_MARGIN;
+    var clamped = false;
+    if (!isFinite(r) || r <= 0) {
+      /* Nothing measurable. Fall back to something visible against whatever
+         height the hull does have, and SAY that this happened. */
+      r = Math.max((sz.y || 0) / 2, 1) * this.TABLE_MARGIN;
+      clamped = true;
+      if (!isFinite(r) || r <= 0) { r = 1; }
+    }
+    this._tableRadius = r;
+    this._tableClamped = clamped;
+    this._table.scale.set(r, 1, r);
+    this._table.position.set(0, 0, 0);
+    return r;
+  };
+  /* So a control - and the page - can ask what was drawn rather than assuming
+     it from what was asked for. */
+  Viewer.prototype.tableInfo = function () {
+    return { radius: this._tableRadius || 0, y: 0,
+             clamped: !!this._tableClamped,
+             hullBottom: 0,
+             hullSize: this._hullSize || null,
+             origin: this._hullOrigin || null };
   };
 
   /* ------------------------------------------------------------ the API
@@ -662,6 +751,7 @@ var CCViewer = (function () {
        30k to 1.1M vertices cannot share one opacity. */
     var verts = 0;
     root.traverse(function (o) {
+      if (o.userData && o.userData.ccHoloPass) return;
       if (o.isMesh && o.geometry && o.geometry.attributes
           && o.geometry.attributes.position) {
         verts += o.geometry.attributes.position.count;
@@ -696,6 +786,17 @@ var CCViewer = (function () {
 
     root.traverse(function (o) {
       if (!o.isMesh || !o.geometry) return;
+      /* E7a: NEVER TREAT A PASS THIS FUNCTION ADDED AS A HULL MESH.
+         `wire` adds a Mesh child to the mesh being visited, and
+         Object3D.traverse reads children.length AFTER the callback runs - so
+         the engine descended into that child, called it a hull, gave it a wire
+         child of its own, and recursed until the stack blew. That is what "the
+         wireframe button did nothing" was: setStyle threw, so the render never
+         changed AND the button never lit.
+         `panel`, `solidlines` and `points` add LineSegments and Points, which
+         are not meshes, which is why wire was the only style affected and why
+         it looked like one dead button rather than a broken renderer. */
+      if (o.userData && o.userData.ccHoloPass) return;
 
       if (style === 'solid' || style === 'solidlines') {
         o.material = mats.solid; o.renderOrder = 1; note('surface', mats.solid);
@@ -713,13 +814,16 @@ var CCViewer = (function () {
         lm.opacity = ccEdgeOpacity(n) * (style === 'solidlines' ? 0.75 : 1);
         var lines = new THREE.LineSegments(eg, lm);
         lines.renderOrder = 2; lines.userData.ccOwnGeo = true;
+        lines.userData.ccHoloPass = true;
         o.add(lines); self._holoAdded.push(lines); note('lines', lm);
       } else if (style === 'wire') {
         var w = new THREE.Mesh(o.geometry, mats.wire);
+        w.userData.ccHoloPass = true;
         w.renderOrder = 2; o.add(w); self._holoAdded.push(w);
         note('wire', mats.wire);
       } else if (style === 'points') {
         var pt = new THREE.Points(o.geometry, mats.pts);
+        pt.userData.ccHoloPass = true;
         pt.renderOrder = 2; o.add(pt); self._holoAdded.push(pt);
         note('points', mats.pts);
       }

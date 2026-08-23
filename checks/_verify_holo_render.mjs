@@ -115,8 +115,21 @@ const THREE = {
       const i = this.children.indexOf(o);
       if (i >= 0) this.children.splice(i, 1);
     };
+    /* FAITHFUL TO three.js, AND THE OLD LINE IS WHY E7a GOT PAST THIS FILE.
+       It was `this.children.forEach(...)`, and forEach does not visit elements
+       appended during the iteration. The real Object3D.traverse is
+         t(this); const e=this.children; for(let n=0,i=e.length;n<i;n++) ...
+       which reads the length AFTER the callback has run, so a child the
+       callback just added IS descended into. That single difference is where
+       the Wireframe bug lived: _applyHolo added a Mesh child to the mesh it
+       was visiting, the engine walked into it, and the page recursed until the
+       stack blew. This stub absorbed it silently. */
     this.traverse = function (f) {
-      f(this); this.children.forEach((c) => c.traverse && c.traverse(f));
+      f(this);
+      var e = this.children;
+      for (var n = 0, i = e.length; n < i; n++) {
+        if (e[n].traverse) e[n].traverse(f);
+      }
     };
   },
   LineSegments: function (g, m) {
@@ -231,8 +244,27 @@ function viewerFor() {
   v._holoU = { uColor: mkColor(v._colour), uTime: { value: 0 },
                uScan: { value: HOLO.scan }, uGlow: { value: HOLO.glow } };
   v.style = HOLO.DEFAULT;
-  v.current = { traverse: (f) => f(v.__mesh) };
+  /* E7a: THE ROOT WALKS ITS CHILDREN, BECAUSE THE ENGINE DOES.
+     This was `{ traverse: (f) => f(v.__mesh) }` - a lambda that calls the
+     callback on exactly one mesh and never looks at a child. Object3D.traverse
+     reads `children.length` AFTER running the callback, so a child the
+     callback just added IS descended into, and _applyHolo's `wire` branch adds
+     a Mesh child to the mesh it is visiting. The engine walked into it, added
+     another, and the page recursed until the stack blew - which is what
+     "the wireframe button did nothing" was.
+     THE ONE BEHAVIOUR THAT WOULD HAVE CAUGHT IT IS THE ONE THIS FILE HAD
+     REPLACED WITH A LAMBDA. Recorded rather than quietly fixed: this control
+     did not fail to be written, it was written so it could not fail. */
   v.__mesh = new THREE.Mesh({ __edges: Math.round(hull.count * 1.5) }, null);
+  v.current = new THREE.Group();
+  v.current.traverse = function (f) {
+    f(this);
+    var e = this.children;
+    for (var n = 0, i = e.length; n < i; n++) {
+      if (e[n].traverse) e[n].traverse(f);
+    }
+  };
+  v.current.add(v.__mesh);
   v._applyHolo(v.current);
   return v;
 }
