@@ -37,6 +37,7 @@ import { loadPage, reporter } from "./_loadout_harness.mjs";
 const SELFTEST = process.argv.includes("--self-test");
 const MUT_ND = process.argv.includes("--mutate-nodeconflict");
 const MUT_SILENT = process.argv.includes("--mutate-silent");
+const MUT_LATE = process.argv.includes("--mutate-latelabels");
 
 const mutate = [];
 if (MUT_ND) {
@@ -47,6 +48,14 @@ if (MUT_ND) {
 if (MUT_SILENT) {
   mutate.push([/renderLabelCount\(list\.length, shown, dropped, show\);/, ""]);
   console.log("*** MUTATED: the count is never stated. ***");
+}
+if (MUT_LATE) {
+  /* E8's defect, put back: the model arrives and nothing draws the labels, so
+     they wait for whatever re-renders the page next. */
+  mutate.push([/renderLabels\(\); \},/, "},"]);
+  console.log("*** MUTATED: the model's onLoad no longer renders labels - "
+    + "they wait for the next renderAll(), which is what a marker click "
+    + "supplies. ***");
 }
 
 const H = loadPage({ mutate });
@@ -217,10 +226,109 @@ console.log("\n--- 4. a selected marker is always labelled ---");
   }
 }
 
+/* ------------------- 5. E8: THE LABELS ARRIVE WITH THE MODEL ------------- */
+/* Sleven, on the Anvil C8R Pisces Rescue: "that wasn't there until I clicked
+   one of the hardpoints, and then it popped up. And then when I clicked out,
+   it stayed."
+
+   THIS SECTION EXISTS BECAUSE THE REST OF THIS FILE COULD NOT SEE IT. Every
+   other section drives a viewer whose `current` is already set, which is the
+   state AFTER the model has loaded - so the whole file was measuring the half
+   of the timeline that worked. The gap is between renderAll() and the model
+   arriving, and reproducing it needs a viewer that has not finished loading.
+
+   Same shape as E7a, one file over: a stub that was faithful about everything
+   the assertions looked at. */
+console.log("\n--- 5. labels are there before anything is clicked ---");
+{
+  /* Sleven's own hull if it is in the data, else any hull under the threshold
+     with markers - and the one used is NAMED, because "a hull" is not a
+     reproduction. */
+  const key = g(`(function(){
+    var want = Object.keys(SHIPS).filter(function(k){
+      var m = (typeof MARKS !== 'undefined' && MARKS[k]) || [];
+      return m.length > 0 && m.length <= 14 && modelUrl(k);
+    });
+    var pisces = want.filter(function(k){
+      return /pisces/i.test(SHIPS[k].n || k); })[0];
+    return pisces || want[0] || null;
+  })()`);
+  record(!!key, "a hull under the label threshold, with markers and a model",
+    key ? `${g(`SHIPS[${JSON.stringify(key)}].n`)} `
+      + `(${(MARKS[key] || []).length} markers)` : "none found");
+
+  if (key) {
+    /* A VIEWER THAT HAS NOT FINISHED LOADING. `current` is null, and load()
+       keeps the callback instead of calling it - which is exactly where the
+       page stood when Sleven looked at it. */
+    run(`shipId=${JSON.stringify(key)}; reset(); resetView(); sel=null;
+      __loadCb=null;
+      (function(){
+        var base=_view, v={};
+        for (var k in base) v[k]=base[k];
+        v.current=null;
+        v.load=function(u,cb){ __loadCb=cb; return 1; };
+        _view=v;
+      })();
+      _modelFor=null;
+      renderAll();`);
+    const beforeLoad = el("cc-labels").innerHTML || "";
+    record(beforeLoad === "",
+      "with the model still loading there is nothing to label, and nothing is "
+      + "drawn - correct, and it is the state the defect never left",
+      beforeLoad.slice(0, 40));
+    record(g("__loadCb") !== null,
+      "the page asked the viewer to load and kept the callback");
+
+    /* The model arrives. NOTHING IS CLICKED. */
+    run(`_view.current={};
+      __loadCb.onLoad({seconds:0.2,size:{x:1,y:1,z:1}});`);
+    const afterLoad = el("cc-labels").innerHTML || "";
+    const shownAfterLoad = Number(el("cc-labels")["data-shown"] || 0);
+    record(/class="hp/.test(afterLoad) && shownAfterLoad > 0,
+      "and the labels are drawn the moment the model arrives, with no "
+      + "interaction at all", `${shownAfterLoad} labels`);
+
+    /* AND BACK AGAIN. Select a marker, dismiss it, and the state must be what
+       it was - not what the selection left behind. */
+    const slot = (SHIPS[key].slots || []).find((x) =>
+      (MARKS[key] || []).some((m) => m[0] === x.p));
+    if (slot) {
+      run(`sel={slot:${JSON.stringify(slot.id)}}; renderLabels();`);
+      const during = Number(el("cc-labels")["data-shown"] || 0);
+      run("sel=null; renderLabels();");
+      const after = Number(el("cc-labels")["data-shown"] || 0);
+      record(after === shownAfterLoad,
+        "selecting a marker and dismissing it returns the label state to "
+        + "where it started", `${shownAfterLoad} -> ${during} -> ${after}`);
+    }
+
+    /* THE TOGGLE IS PER SHIP. Hiding labels on a busy hull must not follow you
+       to a quiet one, where the hint would then say the hull is busy. */
+    const busy = g(`Object.keys(SHIPS).find(function(k){
+      var m=(typeof MARKS!=='undefined'&&MARKS[k])||[];
+      return m.length>14 && modelUrl(k); })`);
+    if (busy) {
+      run(`shipId=${JSON.stringify(busy)}; reset(); resetView();
+        allLabels=false; renderLabels();`);
+      run(`shipId=${JSON.stringify(key)}; reset(); resetView();
+        _modelFor=null; renderAll();`);
+      record(g("allLabels") === null,
+        "and a label choice made on one hull does not follow you to the next",
+        String(g("allLabels")));
+      run(`allLabels=false; renderLabels();`);
+      const hint = el("cc-labelcount").innerHTML || "";
+      record(!/this busy/.test(hint),
+        "and a quiet hull with labels turned off does NOT claim to be busy",
+        hint.replace(/<[^>]*>/g, "").trim().slice(0, 70));
+    }
+  }
+}
+
 finish(
   SELFTEST ? "--self-test: expectations were inverted, so a non-zero exit is "
     + "the correct outcome."
-  : (MUT_ND || MUT_SILENT)
+  : (MUT_ND || MUT_SILENT || MUT_LATE)
     ? "--mutate: a defect was planted, so a non-zero exit is the correct "
       + "outcome."
     : "");

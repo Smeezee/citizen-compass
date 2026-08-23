@@ -1197,7 +1197,13 @@ function isStock(b){
   return (ship().slots||[]).every(s=>!swappable(s)||b[s.id]===s.stock);
 }
 /* Changing ship starts over: one build, nothing marked, nothing to undo. */
-function resetView(){ twoUp=false; editing="A"; changedStats=new Map(); }
+function resetView(){ twoUp=false; editing="A"; changedStats=new Map();
+  /* E8: AND THE LABEL TOGGLE IS PER SHIP. `allLabels` overrides the threshold,
+     and it was never cleared - so hiding labels on a 35-marker Perseus carried
+     to a 4-marker Pisces, where the hint then said "labels off on a hull this
+     busy" about a hull that is not busy. That sentence is the same defect E1
+     was about: a message that is false is worse than no message. */
+  allLabels=null; }
 
 /* A DISPLAY NAME IS NOT AN IDENTITY IN THIS DATASET.
    22 names are shared by 51 records: `AEGS_Hammerhead` and
@@ -2297,7 +2303,20 @@ function showModel(){
   status.textContent='loading model…';
   v.load(url,{
     onLoad:r=>{ status.textContent=r.seconds.toFixed(1)+'s · '+
-      r.size.x.toFixed(1)+' × '+r.size.y.toFixed(1)+' × '+r.size.z.toFixed(1); },
+      r.size.x.toFixed(1)+' × '+r.size.y.toFixed(1)+' × '+r.size.z.toFixed(1);
+      /* E8: THE LABELS ARRIVE WITH THE MODEL, and this one line is the whole
+         of the defect Sleven found.
+         Markers reposition every frame through v.onFrame, so they appear the
+         instant the hull does. LABELS ONLY RENDER FROM renderAll(), which last
+         ran BEFORE the model finished loading - and renderLabels() returns
+         early when there is no v.current to project against. So on a
+         4-hardpoint hull, where labels are on by default, nothing was drawn
+         until something else re-rendered the page. Clicking a marker did that,
+         which is why they "popped up" on the first click and then stayed:
+         staying was correct, and the state before it was not.
+         ONE FAULT, NOT THE TWO THE ERRATA READS. The second half of what he
+         described is the first half seen from the other side. */
+      renderLabels(); },
     onProgress:x=>{ if(x.lengthComputable) status.textContent='loading… '+
       Math.round(x.loaded/x.total*100)+'%'; },
     onError:()=>{ status.textContent='';
@@ -2662,7 +2681,17 @@ function renderLabels(){
   const box=$('cc-labels'), svg=$('cc-leaders'), v=_view;
   if(!box||!svg) return;
   const list=markersFor(shipId);
-  if(!list.length||!v||!v.current){ box.innerHTML=""; svg.innerHTML=""; return; }
+  if(!list.length||!v||!v.current){
+    box.innerHTML=""; svg.innerHTML="";
+    /* E8: THE COUNTS ARE RESET TOO, NOT JUST THE MARKUP. `data-shown` is what
+       a control reads to ask how many labels are up, and leaving yesterday's
+       number on an emptied box is a stale reading that looks like a
+       measurement. It made the E8 negative report "1 label" for a box holding
+       none. */
+    box.setAttribute('data-shown','0');
+    box.setAttribute('data-dropped','0');
+    box.setAttribute('data-total', String(list.length));
+    return; }
   const stage=$('cc-stage');
   const sw=(stage&&stage.clientWidth)||0, sh=(stage&&stage.clientHeight)||0;
   const us=v.unitScale();
@@ -2717,7 +2746,12 @@ function renderLabelCount(total, shown, dropped, showing){
   el.hidden=false;
   let msg;
   if(!showing){
-    msg=`<b>${total} hardpoints</b> &middot; labels off on a hull this busy`;
+    /* WHICH KIND OF OFF. Above the threshold it is the page's decision and it
+       says why; below it, it is the reader's own and the page must not claim
+       the hull is busy when it is not. */
+    msg = (total>CC_LBL_MAX)
+      ? `<b>${total} hardpoints</b> &middot; labels off on a hull this busy`
+      : `<b>${total} hardpoints</b> &middot; labels off`;
   }else if(dropped){
     msg=`<b>${total} hardpoints</b> &middot; ${shown} labelled, ${dropped} with
       no room`;
