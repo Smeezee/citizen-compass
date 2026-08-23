@@ -182,14 +182,22 @@ var CC_HOLO_FRAG_HULL = [
    AND IT IS SCALED BY THE LINE-INTENSITY SLIDER, which is what makes that
    control do something real rather than set a class. */
 /* THE PANEL'S STATE, FOR THE SESSION.
-   sessionStorage rather than localStorage: this is a preference about how
-   somebody wants to look at ships this sitting, not a setting that should
-   follow them back next month. Read through a guard, because storage THROWS
-   outright in a browser that has it disabled and a page must not fall over
-   because it could not remember a colour. Same shape as B4's spin memory. */
+   H1f-2: localStorage, AND THAT REVERSES WHAT H1f CHOSE. H1f used
+   sessionStorage on the argument that this is a preference about one sitting.
+   Sleven, asked directly: "as long as possible, really... I'd hate to have to
+   come in after a couple of days and have to redo it." Once set it stays until
+   the person changes it.
+
+   The limits are per-browser and per-device, and are lost with the site's
+   data - there are no accounts here. That is why E6 matters: somebody who
+   loses the setting has to be able to find the panel again.
+
+   Read through a guard, because storage THROWS outright in a browser that has
+   it disabled and a page must not fall over because it could not remember a
+   colour. */
 var CC_HOLO_KEY = 'ccHolo';
 function ccHoloStore() {
-  try { return (typeof sessionStorage !== 'undefined') ? sessionStorage : null; }
+  try { return (typeof localStorage !== 'undefined') ? localStorage : null; }
   catch (e) { return null; }
 }
 function ccHoloSaved() {

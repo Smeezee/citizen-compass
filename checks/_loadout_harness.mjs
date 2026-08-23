@@ -36,9 +36,9 @@ import vm from "node:vm";
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const SRC = join(HERE, "..", "testing", "_src");
 
-export function loadPage({ mutate = [], session = null,
+export function loadPage({ mutate = [], session = null, local = null,
                            sessionThrows = false, srcDir = null,
-                           pageFile = null } = {}) {
+                           pageFile = null, viewer = false } = {}) {
   /* `srcDir` lets a control drive bytes that came from somewhere else. B8
      fetches the DEPLOYED page and its data files into a temp directory and
      points this at them, so what is asserted is what the ORIGIN SERVES rather
@@ -215,18 +215,34 @@ export function loadPage({ mutate = [], session = null,
      browser with storage disabled actually does - and is the case a page
      falls over on if it reads storage without a guard. All three are
      reachable, because "we handled it" is not the same as "we tried it". */
+  /* H1f-2 MOVED THE LOOK-AND-FEEL SETTINGS TO localStorage, so BOTH are
+     installed - as SEPARATE stores, seeded the same way. Aliasing one to the
+     other would have made "does this survive a closed browser" unaskable: a
+     control could clear the session store, see the value still there, and
+     learn nothing, because it never left. Two objects means a control can
+     empty one and check the other. `session:` seeds both by default and
+     `local:` overrides the persistent one on its own. */
   if (sessionThrows) {
-    sandbox.sessionStorage = {
+    const throws = {
       getItem() { throw new Error("storage disabled"); },
       setItem() { throw new Error("storage disabled"); },
+      removeItem() { throw new Error("storage disabled"); },
     };
-  } else if (session) {
-    const store = { ...session };
-    sandbox.sessionStorage = {
-      getItem: (k) => (k in store ? store[k] : null),
-      setItem: (k, v) => { store[k] = String(v); },
-      _dump: () => ({ ...store }),
+    sandbox.sessionStorage = throws;
+    sandbox.localStorage = throws;
+  } else if (session || local) {
+    const mk = (seed) => {
+      const store = { ...(seed || {}) };
+      return {
+        getItem: (k) => (k in store ? store[k] : null),
+        setItem: (k, v) => { store[k] = String(v); },
+        removeItem: (k) => { delete store[k]; },
+        clear: () => { for (const k of Object.keys(store)) delete store[k]; },
+        _dump: () => ({ ...store }),
+      };
     };
+    sandbox.sessionStorage = mk(session);
+    sandbox.localStorage = mk(local || session);
   }
 
   sandbox.window = sandbox;
@@ -293,13 +309,17 @@ export function loadPage({ mutate = [], session = null,
     vm.runInContext(preamble[i], sandbox,
       { filename: `loadout.src.html:head[${i}]` });
   }
-  vm.runInContext(script, sandbox, { filename: "loadout.src.html:script" });
-  const g = (expr) => vm.runInContext(expr, sandbox);
-  const run = (stmt) => vm.runInContext(stmt, sandbox);
-
-  /* A STUB VIEWER. The marker layer will not render without one, and where a
-     point projects to is irrelevant to every question these controls ask. */
-  const VIEW = `_view={_s:false,boot(){},start(){},size(){},cancel(){},`
+  /* A STUB VIEWER, DEFINED BEFORE THE PAGE RUNS.
+     It used to be a string assigned to `_view` by openShip(), which meant
+     THE PAGE'S OWN BOOT NEVER HAD A VIEWER: view() returns null without
+     CCViewer, so every viewer-dependent path at load time - and E6's
+     first-visit panel is one - was unreachable from any control. That is the
+     same blind spot that hid E11b, one layer down.
+     It is a factory in the sandbox now, and `viewer:true` installs a
+     CCViewer around it so view() succeeds at boot exactly as it does in a
+     browser. openShip() calls the same factory, so there is one stub and
+     not two. */
+  const VIEW_BODY = `{_s:false,boot(){},start(){},size(){},cancel(){},`
     + `clear(){},stop(){},current:{},unitScale(){return 1;},`
     /* A REAL PROJECTION, not a constant. It returned {640,360} for every
        marker, which is fine for "did a click reach the handler" and
@@ -349,6 +369,18 @@ export function loadPage({ mutate = [], session = null,
     + `setScanlines(v){this.calls.push('scan:'+!!v);this._scan=!!v;return this._scan;},`
     + `remember(){this.calls.push('remember');return true;},`
     + `load(){return 1;}};`;
+  vm.runInContext(`function __mkView(){ return ` + VIEW_BODY + `; }`,
+    sandbox, { filename: "harness:viewer" });
+  if (viewer) {
+    /* view() looks for a global CCViewer and returns null without one. */
+    vm.runInContext("var CCViewer={Viewer:function(){return __mkView();}};",
+      sandbox, { filename: "harness:viewer" });
+  }
+
+  vm.runInContext(script, sandbox, { filename: "loadout.src.html:script" });
+  const g = (expr) => vm.runInContext(expr, sandbox);
+  const run = (stmt) => vm.runInContext(stmt, sandbox);
+
 
   /* `spin` is deliberately OPTIONAL and unset by default. Forcing spinOn on
      every openShip() would overwrite whatever the page decided at load, which
@@ -358,7 +390,8 @@ export function loadPage({ mutate = [], session = null,
   const openShip = (key, opts = {}) => {
     const spin = ("spin" in opts) ? `spinOn=${!!opts.spin};` : "";
     run(`shipId=${JSON.stringify(key)};reset();resetView();${spin}`
-      + VIEW + `_view._s=spinOn;_modelFor=shipId;sel=null;renderAll();`);
+      + `_view=__mkView();_view._s=spinOn;_modelFor=shipId;sel=null;`
+      + `renderAll();`);
   };
 
   /* Dispatch through the page's own delegated handler, with the element a
@@ -406,6 +439,7 @@ export function loadPage({ mutate = [], session = null,
     g, run, el, openShip, dispatch, key, clickHandlers, keyHandlers,
     inputHandlers, pickerNow,
     session: sandbox.sessionStorage || null,
+    local: sandbox.localStorage || null,
     /* What the page WROTE onto the root element, and what it stamped there.
        Read back rather than inferred, so "the palette was applied" is a
        measurement of the page's own effect. */

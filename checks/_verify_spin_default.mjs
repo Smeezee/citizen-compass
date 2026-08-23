@@ -87,7 +87,7 @@ console.log("--- 1. first load, no stored preference ---");
 /* --------------------- 2. NEGATIVE: a stored preference brings it up spinning */
 console.log("\n--- 2. NEGATIVE: stored preference = spinning ---");
 {
-  const H = fresh({ session: { ccSpin: "1" } });
+  const H = fresh({ local: { ccSpin: "1" } });
   record(H.g("storedSpin")() === true, "the stored preference reads as spinning");
   record(H.g("spinOn") === true,
     "the page comes up SPINNING - so \"it does not spin\" above is a default, "
@@ -107,7 +107,7 @@ console.log("\n--- 2. NEGATIVE: stored preference = spinning ---");
 /* ------------------------- 3. A STORED "off" IS DISTINCT FROM NO PREFERENCE */
 console.log("\n--- 3. a stored 'off' is read, not merely defaulted to ---");
 {
-  const H = fresh({ session: { ccSpin: "0" } });
+  const H = fresh({ local: { ccSpin: "0" } });
   record(H.g("storedSpin")() === false,
     "a stored 0 reads as false, not as null",
     String(H.g("storedSpin")()));
@@ -123,25 +123,36 @@ console.log("\n--- 3. a stored 'off' is read, not merely defaulted to ---");
 /* ------------------------------- 4. THE CHOICE IS REMEMBERED, FOR REAL ---- */
 console.log("\n--- 4. toggling writes the preference ---");
 {
-  const H = fresh({ session: {} });
+  const H = fresh({ local: {} });
   H.openShip(firstShip(H));
   record(H.g("spinOn") === false, "opens still");
   const threw = H.dispatch(["#cc-spin"]);
   record(!threw, "clicking the control does not throw", threw || "");
   record(H.g("spinOn") === true, "it starts spinning");
   record(H.g("_view").spinning() === true, "and the viewer follows");
-  record(H.session._dump().ccSpin === "1",
-    "and the choice is written to storage", JSON.stringify(H.session._dump()));
+  /* H1f-2: THE PERSISTENT STORE, NOT THE SESSION ONE. B4 kept this in
+     sessionStorage on the argument that a spin preference is about one
+     sitting. Sleven reversed that - "as long as possible, really" - so reading
+     `H.session` here would now pass against a page that had quietly gone back
+     to a session lifetime, which is the thing this line exists to prevent. */
+  record(H.local._dump().ccSpin === "1",
+    "and the choice is written to the PERSISTENT store",
+    JSON.stringify(H.local._dump()));
+  record(!H.session._dump().ccSpin,
+    "and NOT to the session one - it has to outlive the browser closing",
+    JSON.stringify(H.session._dump()));
 
   H.dispatch(["#cc-spin"]);
   record(H.g("spinOn") === false, "clicking again stops it");
-  record(H.session._dump().ccSpin === "0",
+  record(H.local._dump().ccSpin === "0",
     "and that is written too - the memory is not one-way",
-    JSON.stringify(H.session._dump()));
+    JSON.stringify(H.local._dump()));
 
   /* AND A NEW PAGE HONOURS IT. Writing to storage proves nothing on its own if
-     nothing ever reads it back. */
-  const H2 = fresh({ session: { ccSpin: "1" } });
+     nothing ever reads it back. Seeded into the PERSISTENT store with the
+     session one left empty, which is what a browser looks like the next
+     morning. */
+  const H2 = fresh({ local: { ccSpin: "1" } });
   record(H2.g("spinOn") === true,
     "a page loaded afterwards honours what was written - the round trip "
     + "closes");

@@ -415,8 +415,22 @@ console.log("\n--- 8. the level survives, and a browser without storage does too
     setItem: (k, v) => { store[k] = String(v); },
   });
   s2.T.apply(0.55); s2.T.save();
-  record(store[s2.T.KEY] === "0.55", "the level is written to storage",
-    JSON.stringify(store));
+  record(store[s2.T.KEY] === "0.55",
+    "the level is written to the PERSISTENT store", JSON.stringify(store));
+  /* H1f-2: AND IT IS NOT THE SESSION ONE. A brightness chosen for a dark room
+     is not a fact about one sitting. Handing the page a session store and no
+     persistent one has to leave nothing written - otherwise this file would
+     pass against a build that had gone back to a session lifetime. */
+  const sessionOnly = {};
+  const s2b = loadThemeWith(null, {
+    getItem: (k) => (k in sessionOnly ? sessionOnly[k] : null),
+    setItem: (k, v) => { sessionOnly[k] = String(v); },
+  });
+  s2b.T.apply(0.55); s2b.T.save();
+  record(Object.keys(sessionOnly).length === 0,
+    "and a page with ONLY a session store writes nothing - the lifetime is "
+    + "the persistent one and not whatever happens to be available",
+    JSON.stringify(sessionOnly));
   const s3 = loadThemeWith({
     getItem: () => "0.55", setItem() {},
   });
@@ -435,7 +449,12 @@ console.log("\n--- 8. the level survives, and a browser without storage does too
   record(!threw, "and nothing in the theme path throws when storage does");
 }
 
-function loadThemeWith(sessionStorage) {
+/* H1f-2: THE PAGE READS localStorage NOW, so this installs one. Leaving the
+   parameter named `sessionStorage` and handing it over as that would have made
+   every persistence assertion below pass against a page that never wrote
+   anything - the guard in CC_THEME._store returns null when the store it wants
+   is absent, and a null store swallows every write silently. */
+function loadThemeWith(localStorage, sessionStorage) {
   const block = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
     .map((m) => m[1]).find((b) => /var CC_THEME/.test(b));
   const root2 = {
@@ -445,7 +464,7 @@ function loadThemeWith(sessionStorage) {
   };
   const sb = {
     console, Math, JSON, Number, String, Object, Array, parseFloat, parseInt,
-    isFinite, sessionStorage,
+    isFinite, localStorage, sessionStorage,
     document: { documentElement: root2 },
   };
   sb.window = sb; sb.globalThis = sb;

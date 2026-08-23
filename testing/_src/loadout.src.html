@@ -326,10 +326,25 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    which is what makes "costs zero page height" true rather than hoped for -
    P7 measured this page at 1080 of 1080 and 768 of 768 and there is no room
    for a column. */
-#cc-tune{position:absolute;left:9px;top:9px;z-index:5;
- background:var(--scrim-78);border:1px solid var(--line);color:var(--muted);
- border-radius:7px;padding:5px 10px;font:600 11.5px inherit;cursor:pointer}
-#cc-tune:hover{border-color:var(--accent2);color:var(--accent2)}
+/* E6: THE CONTROL PANEL NOBODY COULD FIND.
+   Sleven reported the entire panel as MISSING while looking straight at it,
+   because the only way in was a word - `Look` - set in the muted colour, in
+   the corner of a stage full of other muted corner text. It read as a caption.
+   Three things changed and none of them is decoration:
+     it says DISPLAY, which names what is behind it rather than describing an
+       activity;
+     it carries a gear, which is the one glyph everybody already reads as
+       "settings are here";
+     and it is drawn in the text colour on a filled chip, so it reads as a
+       thing to press rather than as a label on the picture. */
+#cc-tune{position:absolute;left:9px;top:9px;z-index:5;display:flex;
+ align-items:center;gap:5px;
+ background:var(--panel2);border:1px solid var(--accent2);color:var(--text);
+ border-radius:7px;padding:6px 11px;font:700 11.5px inherit;cursor:pointer}
+#cc-tune .ico{font-size:13px;line-height:1;color:var(--accent2)}
+#cc-tune:hover{background:var(--accent2);border-color:var(--accent2);
+ color:var(--onteal)}
+#cc-tune:hover .ico{color:var(--onteal)}
 #cc-tune:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
 #cc-tune.on{border-color:var(--accent2);color:var(--accent2)}
 #cc-tune-panel{position:absolute;left:9px;top:44px;z-index:7;width:250px;
@@ -870,13 +885,13 @@ CC_THEME.peak = function (level) {
 
 /* ---------- state ---------- */
 
-/* sessionStorage, read through a guard, for the same reason the Look panel
-   uses it: how somebody wants to look at ships this sitting, not a setting
-   that follows them back next month. Storage THROWS outright where it is
-   disabled and a page must not fall over because it could not remember a
-   brightness. */
+/* H1f-2: localStorage, read through a guard. A brightness chosen for a dark
+   room is not a fact about one sitting - somebody who set Blackout because
+   they play at night wants Blackout the next night too. Storage THROWS
+   outright where it is disabled and a page must not fall over because it could
+   not remember a brightness. */
 CC_THEME._store = function () {
-  try { return (typeof sessionStorage !== 'undefined') ? sessionStorage : null; }
+  try { return (typeof localStorage !== 'undefined') ? localStorage : null; }
   catch (e) { return null; }
 };
 CC_THEME.level = CC_THEME.DEFAULT;
@@ -1006,7 +1021,9 @@ CC_THEME.apply();
            standing rule: the page opens at its simplest true state and every
            layer is opt-in. -->
       <button type="button" id="cc-tune" aria-expanded="false"
-              title="Change how the ship looks">Look</button>
+              aria-controls="cc-tune-panel"
+              title="Display settings - render style, colour, detail, grid and spin"
+              ><span class="ico" aria-hidden="true">&#9881;</span>Display</button>
       <div id="cc-tune-panel" hidden role="dialog"
            aria-label="How the ship looks"></div>
       <!-- B4: the markup opens in the DEFAULT state, not the old one. Until
@@ -2536,20 +2553,37 @@ function renderRsi(){
    is not the same as opening still - it makes the visitor undo something they
    never asked for, on every ship, before they can look at the thing they came
    to look at. The default is now NOT spinning.
-   AND THE CHOICE IS REMEMBERED FOR THE SESSION, because the mirror image is
-   just as bad: somebody who likes it spinning should not re-click on every
-   hull. sessionStorage rather than localStorage - it is a preference about
-   this sitting, not a setting, and it should not follow somebody back weeks
-   later having been forgotten about.
-   READ THROUGH A GUARD. sessionStorage throws outright in a browser with
-   storage disabled, and it is absent entirely outside one. A page that fell
-   over because it could not remember a spin preference would be a page broken
-   by its own convenience. */
+   AND THE CHOICE IS REMEMBERED, because the mirror image is just as bad:
+   somebody who likes it spinning should not re-click on every hull.
+
+   H1f-2: INDEFINITELY, AND THAT REVERSES WHAT B4 DECIDED. B4 chose
+   sessionStorage on the argument that this is a preference about one sitting
+   rather than a setting. Sleven, asked directly: "as long as possible,
+   really... I'd hate to have to come in after a couple of days and have to
+   redo it. We can make it to where it stays once a user sets it." Once set it
+   stays until the person changes it - across a closed browser, a restarted
+   machine, and weeks between visits.
+
+   THE LIMITS ARE REAL AND ARE NOT PAPERED OVER. There are no accounts here, so
+   this lives in the browser: per-browser and per-device, gone if somebody
+   clears their site data or browses privately. The failure mode is mild - the
+   page comes back at defaults that are good defaults - and it is the reason E6
+   matters, because a person who loses the setting has to be able to FIND the
+   panel again.
+
+   READ THROUGH A GUARD. Storage throws outright in a browser with it disabled
+   and is absent entirely outside one. A page that fell over because it could
+   not remember a spin preference would be a page broken by its own
+   convenience. */
 const SPIN_KEY = "ccSpin";
-function spinStore(){
-  try{ return (typeof sessionStorage!=="undefined") ? sessionStorage : null; }
+/* ONE STORE FOR EVERY LOOK-AND-FEEL PREFERENCE, so "where is this kept" has a
+   single answer and the three of them cannot drift onto two different
+   lifetimes. */
+function ccStore(){
+  try{ return (typeof localStorage!=="undefined") ? localStorage : null; }
   catch(_e){ return null; }
 }
+function spinStore(){ return ccStore(); }
 function storedSpin(){
   const s=spinStore(); if(!s) return null;
   try{ const v=s.getItem(SPIN_KEY); return v==null ? null : v==="1"; }
@@ -3579,6 +3613,50 @@ function applyTuneState(){
   if(tuneShown) renderTunePanel();
 }
 
+
+/* E6: THE PANEL OPENS ITSELF ONCE, AND ONLY ONCE.
+
+   Renaming the control and giving it a gear makes it findable to somebody who
+   is looking. It does nothing for somebody who does not know there is anything
+   to look for - which is the state Sleven was in when he reported the whole
+   panel as missing.
+
+   So on a first visit the panel opens itself, and that fact is remembered. Not
+   a tour, not a dismissible tip: the thing itself, open, with every control in
+   it visible. Closing it is the acknowledgement, and it never opens itself
+   again.
+
+   AND THE STAKES ARE HIGHER SINCE H1f-2. Settings persist indefinitely now, so
+   a person who loses their stored settings - cleared site data, a new browser,
+   private browsing - lands on the defaults and needs to find the panel to get
+   back to what they had. Clearing storage also clears this flag, so the panel
+   opens itself for them again. The recovery path and the first-visit path are
+   THE SAME PATH, which is why this is stored beside the settings rather than
+   somewhere cleverer. */
+const CC_SEEN_KEY="ccPanelSeen";
+function panelSeen(){
+  const s=ccStore(); if(!s) return true;   /* no storage: never nag */
+  try{ return s.getItem(CC_SEEN_KEY)==="1"; }catch(_e){ return true; }
+}
+function rememberPanelSeen(){
+  const s=ccStore(); if(!s) return;
+  try{ s.setItem(CC_SEEN_KEY,"1"); }catch(_e){}
+}
+/* Called once from boot, after the first render, so the panel opens over a
+   page that already has something in it. */
+function offerPanelOnce(){
+  if(panelSeen()) return false;
+  /* AND ONLY IF THERE IS SOMETHING IN IT. renderTunePanel() draws nothing
+     without a viewer, so on a machine with no WebGL this would open an empty
+     box, unprompted, once - which is worse than not opening at all and would
+     spend the one offer this feature gets. Not offered is not the same as
+     offered and empty. */
+  if(typeof _view==="undefined" || !_view) return false;
+  rememberPanelSeen();
+  tuneOpen(true);
+  return true;
+}
+
 /* ---------- interaction ---------- */
 /* ONE INTERACTION EVERYWHERE (L3). A slot with a hull marker and a slot
    without behave identically when clicked. A FIXED slot is still clickable in
@@ -3817,5 +3895,8 @@ $('ship').onchange=e=>{shipId=e.target.value;reset();resetView();tab="loadout";r
 if(!readHash()) reset();
 $('ship').value=shipId;
 renderAll();
+/* E6: LAST, so the panel opens over a page that already has a ship in it
+   rather than over an empty stage. */
+offerPanelOnce();
 </script>
 </html>
