@@ -5080,3 +5080,88 @@ H1g  DONE  aeb95c8 + 5ec214f  THE WHOLE PAGE DIMS, AND COLOUR IS NEVER THE ONLY
     reports NOT PERFORMED and exits 2 unless CC_GEO_DIR is set; set to
     data-layer/derived/hull-geometry it passes. That is environment, not
     regression, and it is the reason a bare sweep reads 61/1 rather than 62/0.
+
+E7a  DONE  6ff5506  THE WIREFRAME BUTTON WAS THROWING, AND MY CONTROL WAS
+    WRITTEN SO IT COULD NOT FAIL. Deployed d120865b-f490-427c-a8ba-2fa097156470.
+    THE QUESTION THE ORDER ASKED WAS WHICH OF TWO THINGS HAPPENED, AND THE
+    ANSWER IS THE WORSE ONE. _verify_holo_render.mjs DOES carry H1f's pairwise
+    check - fifteen pairs, distinct signatures, --mutate-noop collapses them and
+    fails. It could not catch this because of the object it drove:
+      v.current = { traverse: (f) => f(v.__mesh) };
+    A lambda that calls the callback on exactly one mesh and NEVER LOOKS AT A
+    CHILD. Object3D.traverse reads children.length AFTER running the callback -
+      traverse(t){ t(this); const e=this.children;
+                   for(let n=0,i=e.length;n<i;n++) e[n].traverse(t) }
+    - and _applyHolo's `wire` branch does o.add(w) with a MESH. So the engine
+    descended into the child it had just been given, treated it as a hull, gave
+    it a wire child of its own, and recursed until the stack blew.
+    THE PAGE WAS NOT DOING NOTHING. IT WAS THROWING. Which is also why the
+    button never lit: _view.remember() and renderTunePanel() come after the
+    setStyle() that threw.
+    panel / solidlines / points add LineSegments and Points, which are not
+    meshes. That is why wire alone was affected and why it read as one dead
+    button rather than as a broken renderer.
+    PROVED RATHER THAN REASONED. I gave the control's root a traverse that
+    walks its children the way three.js does, changed nothing else, and re-ran:
+    RangeError: Maximum call stack size exceeded, in note(), through eight
+    frames of Mesh.traverse.
+    FIX: every pass _applyHolo adds is stamped userData.ccHoloPass and both
+    traversals skip them - the vertex-count pass too, so a re-apply cannot
+    double-count its own wireframe.
+    THE SHAPE TO CARRY FORWARD, because the order says this will recur: the
+    stub was FAITHFUL ABOUT WHAT A MATERIAL LOOKS LIKE AND UNFAITHFUL ABOUT HOW
+    THE SCENE IS WALKED. Every assertion in that file is about materials, so
+    the infidelity never showed. A STUB IS ONLY TESTED WHERE THE ASSERTIONS
+    LOOK. _loadout_harness.mjs had the identical defect in a different place -
+    its project() returned {640,360} for every marker, which was fine for "did
+    a click reach the handler" and useless for anything spatial.
+    AND THE SECOND, SMALLER POINT: even with a correct traverse, "the six
+    signatures differ" would not catch a style that renders INVISIBLY.
+    Distinctness is not visibility. That is E7b and it is still open.
+
+E5  DONE  6ff5506 + <served-override>  EVERY SHIP STOOD HALF UNDER THE FLOOR,
+    AND THE ORDER'S NUMBERS DESCRIBE THE FILES RATHER THAN THE PAGE. Deployed
+    d120865b-f490-427c-a8ba-2fa097156470, verified from the served bytes.
+    THE ERRATA'S CENSUS IS REPRODUCED EXACTLY and the control asserts it: 4
+    hulls with y=0 near the bottom, 224 in the middle, 7 high, Vanguard
+    Harbinger worst at 75.9%. Those figures are correct ABOUT THE FILES.
+    THEY ARE NOT WHAT THE PAGE DID. frame() ran o.position.sub(c) where c is
+    the BOUNDING-BOX CENTRE, which overrides whatever each file's origin says.
+    The page buried every hull at exactly 50% - all 235, INCLUDING THE FOUR THE
+    ERRATA RECORDS AS ALREADY SITTING ON THE DISC. Sleven's Avenger Stalker
+    measuring "exactly 50.0%" is the tell: a model-origin problem does not land
+    on a round number for one ship and the same round number for 235.
+    So the fix is the same in spirit and belongs in frame(), not in the disc. x
+    and z still centre; y comes off the measured bottom.
+    AND THE MISSING DISCS ARE THE SAME MEASUREMENT FROM THE OTHER SIDE. The
+    table was a fixed 9-unit grid and a fixed 1.45-1.50 ring, tuned against
+    four models of one size. Measured footprints run 0.23 to 4,856 model units
+    and 223 OF 235 HULLS ARE WIDER THAN THAT RING IS ACROSS. The disc was never
+    missing; it was a speck inside the ship. Radius comes off the footprint,
+    and the table is built at radius 1 and SCALED rather than reallocated per
+    hull, because GridHelper bakes its extent into its geometry.
+      hulls whose resting position changed   235 of 235
+      largest move                           666.58 model units, Asgard
+      Avenger Stalker                        50.0% buried -> 0.0%
+      disc radius across the fleet           0.124 to 2,622.1
+    project() gains the hull's origin IN ONE PLACE, so no marker moves relative
+    to its hull. Three call sites pass `unit * us` and none of them should have
+    to know where the hull was put.
+    CONTROL  checks/_verify_stage_floor.mjs, 15 assertions, driving the
+    viewer's OWN frame() and _fitTable() against all 235 measured hulls.
+      --mutate-centred    restores o.position.sub(c). Buries 235 where the
+                          order predicted at least 224 - both asserted. IT ALSO
+                          FAILS THE 940 MARKER PROBES, which is the regression
+                          that would have mattered most: lifting the hull and
+                          leaving the dots behind would undo B5/B6 and look
+                          like a placement fault rather than like this change.
+      --mutate-fixedring  restores 1.50. 223 hulls overhang.
+      --mutate-noclamp    the degenerate guard stops firing.
+    AND --mutate-noclamp CHANGED NOTHING AT FIRST. No hull in the fleet has a
+    zero footprint, so the clamp was a guard whose failure path had never
+    executed - rule 12's untested gate, going green every run. It is driven now
+    with a hull of zero width and a hull of no extent at all.
+    STATED LIMIT: no pixel was read and nothing was rendered. What is asserted
+    is where frame() PUTS the hull and what radius _fitTable() returns -
+    arithmetic on real measured bounds, through the shipping code path.
+    SWEEP  63 ok, 0 failed, 3 skipped, 0 NOT RUN.
