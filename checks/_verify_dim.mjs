@@ -222,7 +222,7 @@ console.log("\n--- 3. three presets and a fine slider, in the page chrome ---");
      elements later and reported a defect that was not there. An assertion
      whose regexp reaches past its subject measures whatever is nearby. */
   const tag = (top.match(/<div class="dim" id="cc-dim"[^>]*>/) || [""])[0];
-  record(tag !== "" && !/hidden/.test(tag),
+  record(tag !== "" && tag.indexOf(" hidden") < 0,
     "and it is not hidden behind a disclosure", tag);
 }
 

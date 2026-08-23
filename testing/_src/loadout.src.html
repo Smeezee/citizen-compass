@@ -166,6 +166,10 @@ a{color:var(--accent)}
 .picker .sortrow button{background:var(--panel3);color:var(--muted);border:1px solid var(--line);
  border-radius:6px;padding:6px 10px;font:700 12px inherit;cursor:pointer}
 .picker .sortrow button.on{background:var(--accent2);border-color:var(--accent2);color:var(--onteal)}
+/* E10: the direction, shown separately from the label. The button says
+   what the next click does; this says what the list is doing now. */
+.picker .sortrow button i{font-style:normal;margin-right:4px;font-size:9px;
+ vertical-align:1px}
 .plist{overflow:auto;flex:1 1 auto}
 .pi{padding:9px 13px;border-top:1px solid var(--panel3);cursor:pointer}
 .pi:hover{background:var(--panel3)}
@@ -1127,7 +1131,20 @@ function portLabel(h){
 }
 
 let shipId = Object.keys(SHIPS).filter(k=>(SHIPS[k].slots||[]).length)[0] || Object.keys(SHIPS)[0];
-let editing="A", sel=null, sort="best", ghost=null;
+let editing="A", sel=null, ghost=null;
+/* E10: "BEST" IS A JUDGEMENT AND THIS SITE DOES NOT MAKE JUDGEMENTS.
+   Sleven, 2026-08-23: "We do not determine what is best. Ever. We just provide
+   the information. The user determines what's best."
+   Four sorts, each NAMED FOR THE MEASUREMENT IT PERFORMS. `head` is the port's
+   own headline figure, so on a gun it is damage and on a shield generator it
+   is shielding - one axis whose name changes with what is being sorted, which
+   is factual where "Best" was a verdict.
+   AND IR IS SPLIT FROM EM, which is Sleven's own ask: "what about something
+   for the EM? Because we are able to track that with different components
+   putting out different types of signals." Somebody dodging missiles cares
+   about IR and somebody avoiding detection cares about EM. The old `Quietest`
+   summed them and served neither. */
+let sort="head", sortDesc=true;
 let A={}, B={};
 /* N5: ONE BUILD BY DEFAULT. The second does not exist until somebody asks.
    `twoUp` is the whole switch: while it is false there is one column, one set
@@ -1970,16 +1987,103 @@ function partRow(k, fit, pinned){
    the row that was clicked; B0's fixed panel is its counterpart for a port
    that cannot be changed. One function, so the two entrances a port has - its
    row and its marker - cannot show different lists. */
+/* E10: THE FOUR AXES. `head` is the only one whose name moves, because the
+   port's headline figure is a different measurement on a gun and on a cooler.
+   Each carries BOTH labels: the one to show while it is descending and the one
+   to show while it is ascending. */
+/* E10: THE HEADLINE AXIS IS DERIVED FROM THE PARTS ON OFFER, NOT FROM A TABLE
+   OF PORT TYPES. The old sort mapped five type codes by hand and fell through
+   to SIZE for everything else - so on a bomb rack, a missile port, a radar or
+   a turret it had been sorting by size and calling it "Best". There are 26
+   port types in this data and the hand-written list covered five.
+   The order of preference below is a judgement about which measurement is the
+   headline one when a part carries several; WHICH of them applies to a given
+   port is a measurement of that port's own parts. A key has to be present on
+   at least half the list to be its headline, so one outlier cannot name the
+   axis for everything else. */
+const CC_AXIS_ORDER=[["dps","damage"],["dmgt","damage"],["ehp","shielding"],
+  ["cool","cooling"],["cap","power capacity"],["qt","quantum range"],
+  ["scu","capacity"],["hp","health"],["pw","power draw"],["s","size"]];
+/* Takes the axis by name rather than reading the global, so the row can ask
+   about all four while only one of them is active. The first version read
+   `sort` inside the loop and had to shuffle the global back and forth to get
+   an answer - which is how a render ends up depending on the order its own
+   buttons are built in. */
+function sortAxis(slot, which){
+  const k=which||sort;
+  if(k==="ir")   return {key:"ir",  hi:"Hottest",  lo:"Coolest",  low:true};
+  if(k==="em")   return {key:"em",  hi:"Loudest",  lo:"Quietest", low:true};
+  if(k==="mass") return {key:"ms",  hi:"Heaviest", lo:"Lightest", low:true};
+  const h=headAxis(fitsFor(slot));
+  return {key:h[0], hi:"Most "+h[1], lo:"Least "+h[1], low:false};
+}
+function headAxis(ids){
+  const list=ids||[];
+  for(const pair of CC_AXIS_ORDER){
+    let have=0;
+    list.forEach(id=>{ if((P[id]||{})[pair[0]]) have++; });
+    if(list.length && have >= list.length/2) return pair;
+  }
+  return ["s","size"];
+}
+/* THE BUTTON SAYS WHAT THE NEXT CLICK WILL DO. Sleven's spec, approved after
+   driving a working example: "When you click Quietest, it brings the quietest
+   one to the top. That button should switch to Loudest."
+   A button that renames itself leaves somebody unsure which state they are in,
+   so THE CURRENT STATE IS SHOWN SEPARATELY - an arrow on the active sort,
+   pointing the way the list is actually ordered. The button says what happens
+   next; the arrow says what is happening now. Both, or the control is a
+   riddle. */
+function sortRow(slot){
+  const AX=[["head",null],["ir",null],["em",null],["mass",null]];
+  let h='<div class="sortrow" role="group" aria-label="Sort the parts">';
+  AX.forEach(([k])=>{
+    const ax=sortAxis(slot, k);
+    const active=(sort===k);
+    /* Descending means "most first" on a headline figure and "highest first"
+       on a signature - so the label a click will PRODUCE is the opposite of
+       what is on screen. */
+    const showing = active ? (sortDesc ? ax.hi : ax.lo) : null;
+    const next = active ? (sortDesc ? ax.lo : ax.hi)
+                        : (ax.low ? ax.lo : ax.hi);
+    const arrow = active ? (sortDesc ? "&#9660;" : "&#9650;") : "";
+    h+=`<button data-s="${k}" class="${active?'on':''}"
+      aria-pressed="${active?'true':'false'}"
+      title="${active?`showing ${showing} first`:''}">${
+      arrow?`<i aria-hidden="true">${arrow}</i>`:""}${next}</button>`;
+  });
+  return h+'</div>';
+}
+
 function pickerHTML(slot){
   const build=editing==="A"?A:B, cur=build[slot.id];
   let opts=fitsFor(slot).slice();
+  const axis=sortAxis(slot);
   opts.sort((x,y)=>{
     const px=P[x]||{},py=P[y]||{};
-    if(sort==="quiet") return ((px.ir||0)+(px.em||0))-((py.ir||0)+(py.em||0));
-    if(sort==="light") return (px.ms||0)-(py.ms||0);
-    const key=slot.t==="wpn"?"dps":slot.t==="shd"?"ehp":slot.t==="qtm"?"qt":
-              slot.t==="pow"?"cap":slot.t==="col"?"cool":"s";
-    return (py[key]||0)-(px[key]||0);
+    const a=px[axis.key]||0, b=py[axis.key]||0;
+    /* THE ORDER IS ONE COMPARISON AND ONE FLAG. Writing an ascending branch
+       and a descending branch is how a third click stops returning to the
+       first - the order's own load-bearing negative. */
+    if(a!==b) return sortDesc ? b-a : a-b;
+    /* TIES FLIP WITH EVERYTHING ELSE, and that is Sleven's word rather than a
+       detail: "It flips the stack." A stable tie-break would leave equal parts
+       in the same relative order both ways, so the list would not be the
+       reverse of itself - and on a turret mount where 300 of 362 parts share a
+       figure, most of the stack would not move at all. Ordering by name inside
+       a tie keeps it deterministic; reversing that with the direction makes
+       the second click do what the word says. */
+    /* AND THE TIE-BREAK IS A TOTAL ORDER, resolved on the part's ID when even
+       the names match. They do: this port offers both
+       MRCK_S03_GAMA_Railen_Dual_S02 and ..._Dual_S02_Right under one display
+       name, at the same mass. With the name alone those two compared EQUAL,
+       so the sort left them in whatever order they arrived in - identical in
+       both directions. "Flips the stack" is not defined at all unless the
+       stack has a defined order to begin with, and 8 of this port's 15 rows
+       did not move. */
+    const t=String(px.n||x).localeCompare(String(py.n||y))
+      || String(x).localeCompare(String(y));
+    return sortDesc ? t : -t;
   });
   /* B2: THE FITTED PART IS PINNED TO THE TOP, and this is a real defect rather
      than a nicety. Sleven opened the Avenger's size-4 turret mount, which
@@ -2002,11 +2106,7 @@ function pickerHTML(slot){
       aria-label="Close this port">Close</button>
     <small>${portLabel(slot.h)}${twoUp?" · editing build "+editing:""} · ${opts.length}
     part${opts.length===1?"":"s"} fit this port on this ship</small></div>
-    <div class="sortrow">
-      <button data-s="best" class="${sort==='best'?'on':''}">Best</button>
-      <button data-s="quiet" class="${sort==='quiet'?'on':''}">Quietest</button>
-      <button data-s="light" class="${sort==='light'?'on':''}">Lightest</button>
-    </div><div class="plist">`;
+    ${sortRow(slot)}<div class="plist">`;
   if(!opts.length){
     h+=`<div class="empty">The game files list no part that fits this port at
       this size. Nothing is offered here rather than something that would not
@@ -3317,7 +3417,14 @@ document.addEventListener('click',e=>{
   const so=e.target.closest('.sortrow button[data-s]');
   /* The sort lives inside the inline picker now, so re-rendering the picker
      pane alone would leave the visible list untouched. */
-  if(so){sort=so.dataset.s;renderAll();return;}
+  if(so){
+    /* CLICKING THE ACTIVE SORT FLIPS IT; clicking a different one starts that
+       axis at its own natural end - highest first for a headline figure,
+       lowest first for a signature or a mass, because that is the end somebody
+       reaching for "Coolest" is reaching for. */
+    if(sort===so.dataset.s) sortDesc=!sortDesc;
+    else { sort=so.dataset.s; sortDesc=!(sort==="ir"||sort==="em"||sort==="mass"); }
+    renderAll();return;}
   /* B3: CLICKING THE MODEL BACKGROUND CLOSES IT. Checked AFTER the marker and
      the panel's own contents, so clicking inside the panel or on another dot
      does what it says rather than being swallowed as a background click. */

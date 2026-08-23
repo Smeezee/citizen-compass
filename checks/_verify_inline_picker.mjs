@@ -96,7 +96,11 @@ record(!!(fittedKey && PARTS[fittedKey]),
    is a property of the LIST, not of where the list is drawn. */
 const openPicker = () => H.pickerNow().any;
 
-for (const mode of ["best", "quiet", "light"]) {
+/* E10 RENAMED THESE. `best` is gone - the site does not decide what is best
+   - and `quiet` split into ir and em. The old names silently fell through
+   to the headline axis, so `best` and `light` produced the SAME order and
+   the assertion below failed on a page that was working. */
+for (const mode of ["head", "ir", "em", "mass"]) {
   run(`sort=${JSON.stringify(mode)};sel={slot:${JSON.stringify(turret.id)}};`
     + `editing="A";renderAll();`);
   const pick = openPicker();
@@ -118,7 +122,7 @@ for (const mode of ["best", "quiet", "light"]) {
    that stopped sorting altogether. */
 {
   const seen = {};
-  for (const mode of ["best", "light"]) {
+  for (const mode of ["head", "mass"]) {
     run(`sort=${JSON.stringify(mode)};sel={slot:${JSON.stringify(turret.id)}};`
       + `renderAll();`);
     /* EVERYTHING below the pinned entry, not the first handful: two sorts can
@@ -127,9 +131,9 @@ for (const mode of ["best", "quiet", "light"]) {
     seen[mode] = [...openPicker().matchAll(/data-part="([^"]+)"/g)]
       .map((m) => m[1]).slice(1).join(",");
   }
-  record(seen.best !== seen.light,
-    "and the sort still governs everything below the pinned entry - Best and "
-    + "Lightest are not the same order");
+  record(seen.head !== seen.mass,
+    "and the sort still governs everything below the pinned entry - the "
+    + "headline figure and Lightest are not the same order");
 }
 
 /* ------------------------ 2. THE ROWS STAY. ONE OPENS. THE OTHERS CLOSE. --- */
