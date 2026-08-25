@@ -202,6 +202,43 @@ var CC_HOLO_FRAG = [
   '  float wrap=clamp((dot(N,L1)+0.50)/1.50,0.0,1.0);',
   '  float lit=0.165+d1*0.870+wrap*0.155+d2*0.235+d3*0.070;',
   '  vec3 c=uColor*lit+uColor*(spec*0.42+fres*0.17*uGlow);',
+  /* ================= THE COLOUR ERRATA, 2026-08-24 =====================
+     G1'S CONSTANTS WERE TUNED AND JUDGED IN CYAN AND WRITTEN DOWN AS IF
+     COLOUR DID NOT EXIST. They are a product with uColor, and a product is
+     not a constant. C1's fleet measurement: amber clips 12.04% of the
+     Retaliator, ice 75.19%, mint 25.52%, cyan 0.00% - same shader, same
+     hulls, only uColor changing. Five shipped user controls, not
+     hypotheticals: a visitor who picks Ice gets a white silhouette on every
+     ship in the library.
+
+     AND CYAN WAS NEVER SAFE. Its green and blue are already clipped at peak;
+     only its low red keeps the weighted luminance under the bar. The clean
+     0.00% was partly where the bar was set.
+
+     THE FIX IS A SOFT KNEE WITH THE WHITE POINT TAKEN FROM THE COLOUR'S OWN
+     HEADROOM. Below the knee nothing changes - the mid-tones G1 exists to
+     raise are left exactly where G1 put them. Above it the curve bends so the
+     brightest channel lands on 1.0 for whatever colour is chosen.
+
+     WHY NOT JUST DIVIDE BY THE PEAK. Measured over 4,000 normals: a flat
+     scale removes the clipping and costs 22-29% of mean luminance, which is
+     the negative control failing - the hull sat at 9% before G1 and the point
+     was to raise it. Extended Reinhard costs 13-17%. The knee costs 0.7-2.0%
+     and removes the same clipping, because it only touches the top end.
+
+     DO NOT FIX THIS BY PINNING THE PALETTE TO CYAN. Sleven overturned a
+     constraint to keep these five controls: on this page the tuning IS the
+     enjoyment. */
+  '  float mx=max(uColor.r,max(uColor.g,uColor.b));',
+  /* 1.4110 is the measured peak of the multiplier over 4,000 evenly spaced
+     normals at a head-on view, NOT the algebraic bound of 2.17 - the diffuse,
+     specular and fresnel terms do not peak on the same normal, and using the
+     bound would dim the hull for a case that never occurs. */
+  '  float W=max(1.4110*mx,0.82);',
+  '  const float K=0.80;',
+  '  vec3 tq=clamp((c-K)/max(W-K,1e-4),0.0,1.0);',
+  '  vec3 hi=K+(1.0-K)*tq*(2.0-tq);',
+  '  c=mix(c,hi,step(vec3(K),c));',
   /* The scanline and the sweep stay. They are the hologram's own character,
      nothing in the order retires them, and they now modulate a surface that is
      actually lit rather than one sitting at 9%. */
