@@ -213,12 +213,22 @@ const restoreDefaults = () => Object.assign(HOLO, HOLO_DEFAULTS);
 
 console.log("--- what the module ships ---");
 check(!!CCV && !!HOLO, "cc_viewer.js exposes its holo configuration");
-check(HOLO.MODES.length === 6,
-  `ALL SIX render styles - ${HOLO.MODES.map((m) => m[0]).join(", ")}`,
+/* G3/G4: SEVEN NOW. `xray` is G4's deliberate see-inside, replacing the
+   accidental one the 9% surface used to give. */
+check(HOLO.MODES.length === 7,
+  `ALL SEVEN render styles - ${HOLO.MODES.map((m) => m[0]).join(", ")}`,
   String(HOLO.MODES.length));
 check(HOLO.COLOURS.length === 5, "five colours", String(HOLO.COLOURS.length));
-check(HOLO.DEFAULT === "solidlines",
-  "the default style is Solid + lines, as pinned", HOLO.DEFAULT);
+/* G3: THE DEFAULT MOVED, AND THAT IS THE ITEM. `solidlines` drew 39,425 line
+   segments on an Aurora LX and 603,154 on a Javelin, additively, over a surface
+   at 9% - the lines were five times brighter than the surface they traced.
+   C1 measured "not clean surface" at 20.6-67.1% before, 12.9-45.6% with the
+   lines quietened, and 0.00% with the line pass removed. So the page opens on
+   `solid` and solid shading carries the panel detail. */
+check(HOLO.DEFAULT === "solid",
+  "the default style is Solid holo - no line pass at all", HOLO.DEFAULT);
+check(HOLO.MODES.some((m) => m[0] === "xray"),
+  "and See inside is offered as its own mode rather than happening by accident");
 check(HOLO.DEFAULT_COLOUR === 0xffb545,
   "and the default colour is AMBER, not cyan",
   "0x" + HOLO.DEFAULT_COLOUR.toString(16));
@@ -281,7 +291,7 @@ for (const [key] of HOLO.MODES) {
   sigs[key] = v.renderSignature();
   console.log(`    ${key.padEnd(11)} ${sigs[key].slice(0, 92)}`);
 }
-check(Object.keys(sigs).length === 6, "all six styles rendered something");
+check(Object.keys(sigs).length === 7, "all seven styles rendered something");
 check(Object.values(sigs).every((s) => s && s.length > 10),
   "and each produced a non-empty signature");
 
@@ -327,13 +337,24 @@ check(distinctCols.size === HOLO.COLOURS.length,
 
 /* ------------------------------------------- 3. THREE SLIDERS ------------ */
 console.log("\n3. every slider changes the render across its range");
-for (const [name, lo, hi] of [["lineInt", 0.2, 1.8], ["detail", 8, 70],
-                              ["glow", 0.05, 1.4]]) {
-  const a = viewerFor(); a.setSlider(name, lo);
+/* G3 CHANGED WHAT A SLIDER CAN BE MEASURED ON, and this is the honest version
+   rather than a loosened one. `lineInt` and `detail` govern the LINE PASS, and
+   the default style no longer has one - so driving them on `solid` proves
+   nothing, and a check that did would be asserting that a slider with nothing
+   to act on still acts. They are driven on `panel`, which draws lines. `glow`
+   is the rim and lives on the surface, so it is driven on the default.
+   AND THE OTHER HALF IS ASSERTED TOO: lineInt must NOT move the default, which
+   is what "the default draws no line pass" means in practice. */
+for (const [name, lo, hi, onStyle] of [["lineInt", 0.2, 1.8, "panel"],
+                                       ["detail", 8, 70, "panel"],
+                                       ["glow", 0.05, 1.4, null]]) {
+  const a = viewerFor(); if (onStyle) a.setStyle(onStyle); a.setSlider(name, lo);
   const sa = a.renderSignature();
-  const b = viewerFor(); b.setSlider(name, hi);
+  const b = viewerFor(); if (onStyle) b.setStyle(onStyle); b.setSlider(name, hi);
   const sb = b.renderSignature();
-  check(sa !== sb, `${name} changes the render between ${lo} and ${hi}`,
+  check(sa !== sb,
+    `${name} changes the render between ${lo} and ${hi}`
+    + (onStyle ? ` on ${onStyle}` : ""),
     sa === sb ? "identical signature" : "");
   const c = viewerFor();
   c.setSlider(name, 9999);
@@ -344,11 +365,31 @@ for (const [name, lo, hi] of [["lineInt", 0.2, 1.8], ["detail", 8, 70],
 
 /* ------------------------------- 4. THE PRE-PASS AND FRONTSIDE ----------- */
 console.log("\n4. the pre-pass, and no DoubleSide on a hull");
+/* G4 IS THE ONE EXCEPTION TO BOTH INVARIANTS, AND IT IS NAMED RATHER THAN
+   EXEMPTED. `xray` has no depth pre-pass and IS DoubleSide, on purpose: seeing
+   the far side is the whole mode, so nothing may occlude anything. Written as
+   "every style except this one, and this one must be exactly this" - a blanket
+   skip would have let any future style quietly drop its pre-pass. */
 for (const [key] of HOLO.MODES) {
   const v = viewerFor(); v.setStyle(key);
   const passes = v._holoPasses;
   const opaque = passes.some((p) => p.kind === "surface");
   const pre = passes.some((p) => p.kind === "prepass");
+  if (key === "xray") {
+    check(passes.some((p) => p.kind === "xray"),
+      "xray draws its own transparent surface",
+      JSON.stringify(passes.map((p) => p.kind)));
+    check(!opaque && !pre,
+      "and deliberately has NO depth pre-pass and no opaque pass - seeing the "
+      + "far side is the mode", JSON.stringify(passes.map((p) => p.kind)));
+    check(passes.some((p) => p.side === "double"),
+      "and IS DoubleSide, so the inside of the far hull is drawn");
+    check(passes.every((p) => p.blend !== "add"),
+      "and NORMAL blending, never additive - additive is what made the old "
+      + "picture read as soup",
+      JSON.stringify(passes.map((p) => p.blend)));
+    continue;
+  }
   check(opaque || pre,
     `${key} draws either an opaque surface or a depth pre-pass`,
     JSON.stringify(passes.map((p) => p.kind)));

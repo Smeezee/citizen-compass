@@ -74,11 +74,23 @@ var CC_HULL = { color: 0x5C6570, metalness: 0.55, roughness: 0.35,
    ships". The prototype opens on panel/cyan; this does not.
    ======================================================================= */
 var CC_HOLO = {
-  /* All six. `solidlines` is the default; the rest are controls. */
-  MODES: [['panel', 'Panel lines'], ['solidlines', 'Solid + lines'],
-          ['solid', 'Solid holo'], ['hull', 'Lit hull'],
+  /* G3: THE DEFAULT DRAWS NO LINE PASS, AND THAT CHANGES WHAT THE PAGE OPENS
+     ON. `solidlines` was the default and the line pass was the defect: at 24
+     degrees this generates 39,425 segments on an Aurora LX and 603,154 on a
+     Javelin, drawn additively over a surface that was at 9%. RSI draws about
+     forty lines on a Mercury and their own default has no line overlay at all -
+     what reads as panel seams there is geometry catching light.
+     Measured by C1: the fraction of each hull showing something other than its
+     own nearest solid surface ran 20.6% to 67.1%. Quietening the lines took it
+     to 12.9-45.6%. REMOVING THE LINE PASS TOOK IT TO 0.00% ON ALL TEN.
+     So `solid` opens, solid shading carries the panel detail, and panel / wire
+     / points stay as the opt-in family. `xray` is G4 - the see-inside that used
+     to happen by accident, now on purpose. */
+  MODES: [['solid', 'Solid holo'], ['panel', 'Panel lines'],
+          ['solidlines', 'Solid + lines'], ['hull', 'Lit hull'],
+          ['xray', 'See inside'],
           ['wire', 'Wireframe'], ['points', 'Points']],
-  DEFAULT: 'solidlines',
+  DEFAULT: 'solid',
   /* The prototype's five, in its order. AMBER IS INDEX 2 AND IS THE DEFAULT
      here - the deployed first pass rendered cyan-going-white and that was
      wrong twice over. */
@@ -93,7 +105,12 @@ var CC_HOLO = {
      hull reads as a solid mass; his 33% capture is the crisp one. */
   lineInt: 0.33,     /* 0.1 .. 2.0   line intensity */
   detail: 24,        /* 5 .. 80 deg  line detail, the EdgesGeometry threshold */
-  glow: 0.04,        /* 0 .. 1.5     glow */
+  /* G1: 0.04 IS RETIRED, AND IT IS RETIRED RATHER THAN OVERRIDDEN. E7b measured
+     it against `fres*(1.15*uGlow/0.55)` over a surface at 9% brightness, where
+     0.55 blew out. G1 replaces the surface AND the coefficient - 0.17 is 6.8x
+     smaller - so the number does not transfer. 1.0 is where the rim term equals
+     the order's own rendered-and-judged constant. */
+  glow: 1.0,         /* 0 .. 1.5     rim strength (uGlow, the order's uRim) */
   scan: 0,           /* scanlines OFF by default - available, not on */
   grid: true,
   field: 0x050a12,
@@ -128,22 +145,92 @@ var CC_HOLO_VERT = [
    the slider drives the rim term, which is where most of the visible lift came
    from anyway. It is a different thing wearing the same label and this comment
    is the only place that says so - so do not delete it. */
+/* G1: THE SURFACE SHADER, REPLACED. OPAQUE AND DIFFUSE-LED.
+
+   THE OLD ONE RENDERED THE HULL AT ABOUT 9% BRIGHTNESS, and that was the whole
+   defect. `uColor*(0.040 + ndl*0.20 + ...)`: ambient 0.040 against Lit hull's
+   0.34, key 0.20 against 0.86, no specular and no bounce at all. And the
+   fresnel term cannot rescue a head-on view - pow(1.0-abs(dot(N,V)), 2.3) GOES
+   TO ZERO FACING THE CAMERA, by construction. So the front of a ship landed at
+   roughly 0.09 of the colour while the edge pass drew at opacity 0.44
+   additively over it: THE LINES WERE FIVE TIMES BRIGHTER THAN THE SURFACE THEY
+   TRACE. That is why the hull read as a see-through wireframe and why the
+   head-on view carried the least information of any angle.
+
+   Sleven: "I'm staring at the front of the ship, and I'm looking directly into
+   the ship, I can't tell where the front is."
+
+   E12 SAID THIS WAS FACE WINDING. IT IS NOT, AND E12 IS WITHDRAWN. His own
+   captures refute it: the same geometry, the same FrontSide, the same depth
+   pre-pass and the same Draco file render as a complete closed object under Lit
+   hull. If the winding were reversed, Lit hull would be holed too. No model is
+   modified here and no winding is measured.
+
+   THESE CONSTANTS WERE RENDERED AND JUDGED, NOT DERIVED. They come out of C1's
+   render-bench.html reading its own framebuffer, and they are carried across
+   verbatim rather than re-tuned by argument on a machine with no GPU.
+
+   THE `wrap` TERM IS LOAD-BEARING. Without it, surfaces turning away from the
+   key light go black and the ship loses its far side again - the same defect in
+   a smaller costume. */
 var CC_HOLO_FRAG = [
+  /* THE ORDER WRITES `uRim` AND DOES NOT SAY WHERE IT COMES FROM. It is the
+     demo's rim multiplier at 1.0. Rather than add a second uniform for a
+     control this page already has, the existing `uGlow` carries it - so the
+     glow slider still does something, there is one rim control and not two,
+     and at the shipped default the term equals the order's constant exactly.
+     WHICH MEANS E7b's GLOW DEFAULT OF 0.04 DOES NOT CARRY OVER, and that is a
+     measurement being retired rather than ignored: 0.04 was chosen because the
+     OLD term was `fres*(1.15*uGlow/0.55)` over a surface sitting at 9%, and at
+     0.55 it blew out. G1 replaces both halves of that - the surface is lit
+     properly now and the coefficient is 0.17, 6.8x smaller. The default goes
+     to 1.0, where `fres*0.17*uGlow` is the rendered-and-judged value. */
   'uniform vec3 uColor; uniform float uTime; uniform float uScan;',
   'uniform float uGlow;',
   'varying vec3 vN; varying vec3 vV; varying vec3 vW;',
   'void main(){',
   '  vec3 N = normalize(vN);',
-  '  float ndl  = clamp(dot(N, normalize(vec3(0.35,0.9,0.30))), 0.0, 1.0);',
-  '  float ndl2 = clamp(dot(N, normalize(vec3(-0.6,-0.2,-0.5))), 0.0, 1.0);',
-  '  float fres = pow(1.0 - abs(dot(N, normalize(vV))), 2.3);',
+  '  vec3 V = normalize(vV);',
+  '  vec3 L1=normalize(vec3(0.40,0.86,0.32));',
+  '  vec3 L2=normalize(vec3(-0.70,0.26,-0.40));',
+  '  vec3 L3=normalize(vec3(0.10,-1.0,0.15));',
+  '  float d1=clamp(dot(N,L1),0.0,1.0);',
+  '  float d2=clamp(dot(N,L2),0.0,1.0);',
+  '  float d3=clamp(dot(N,L3),0.0,1.0);',
+  '  float spec=pow(clamp(dot(reflect(-L1,N),V),0.0,1.0),46.0);',
+  '  float fres=pow(1.0-abs(dot(N,V)),3.2);',
+  '  float wrap=clamp((dot(N,L1)+0.50)/1.50,0.0,1.0);',
+  '  float lit=0.165+d1*0.870+wrap*0.155+d2*0.235+d3*0.070;',
+  '  vec3 c=uColor*lit+uColor*(spec*0.42+fres*0.17*uGlow);',
+  /* The scanline and the sweep stay. They are the hologram's own character,
+     nothing in the order retires them, and they now modulate a surface that is
+     actually lit rather than one sitting at 9%. */
   '  float sl   = 0.5 + 0.5*sin(vW.y*230.0 - uTime*1.4);',
   '  sl = mix(1.0, sl, uScan*0.20);',
   '  float sweep = fract(vW.y*0.30 - uTime*0.085);',
   '  float band  = smoothstep(0.975,1.0,sweep)*uScan;',
-  '  vec3 c = uColor*(0.040 + ndl*0.20 + ndl2*0.055',
-  '                   + fres*(1.15*uGlow/0.55) + band*0.55);',
-  '  gl_FragColor = vec4(c*sl, 1.0);',
+  '  gl_FragColor = vec4(c*sl + uColor*band*0.55, 1.0);',
+  '}'
+].join('\n');
+
+/* G4: "SEE INSIDE", DELIBERATE THIS TIME.
+   The old shader gave an accidental x-ray: a 9% surface you could see through
+   because there was nothing there to stop you. This is the same effect ON
+   PURPOSE, and it is the split RSI ships make - Default and X-Ray as two
+   intentional modes rather than one mode that half-works.
+   NORMAL BLENDING, NEVER ADDITIVE, and depth writes off. Additive is what made
+   the old picture read as soup. */
+var CC_HOLO_FRAG_XRAY = [
+  'uniform vec3 uColor;',
+  'varying vec3 vN; varying vec3 vV;',
+  'void main(){',
+  '  vec3 N = normalize(vN);',
+  '  vec3 V = normalize(vV);',
+  '  vec3 L1=normalize(vec3(0.40,0.86,0.32));',
+  '  float f=pow(1.0-abs(dot(N,V)),2.0);',
+  '  float lit=0.30+clamp(dot(N,L1),0.0,1.0)*0.75+f*0.95;',
+  '  float a=0.085+f*0.62;',
+  '  gl_FragColor = vec4(uColor*lit, a);',
   '}'
 ].join('\n');
 
@@ -445,6 +532,10 @@ var CCViewer = (function () {
     (function loop() {
       self._raf = requestAnimationFrame(loop);
       if (self.controls) self.controls.update();
+      /* G2: after the controls have moved the camera and before it is used to
+         render. A zoom that outran the clip planes would otherwise be visible
+         for the frame it happened on. */
+      if (self.current) self.refreshClip();
       /* The scanline and sweep in FRAG_SOLID are functions of time. Without
          this they are a static band across the hull rather than a sweep. */
       if (self._holoU) {
@@ -550,13 +641,88 @@ var CCViewer = (function () {
     var d = max / (2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov) / 2)) * 1.55;
     var ty = this._hullOrigin.y;
     this.camera.position.set(d * 0.75, ty + d * 0.42, d * 0.85);
-    this.camera.near = max / 500;
-    this.camera.far = max * 60;
-    this.camera.updateProjectionMatrix();
     this.controls.target.set(0, ty, 0);
+    /* G2: FIT BY ITERATING THE PROJECTED BOUNDING BOX, NOT THE SPHERE.
+       Sphere-fitting leaves a long thin hull tiny in frame - it reserves room
+       for a radius the ship only reaches along one axis. Six passes over the
+       eight projected corners, scaling the distance by the worst overshoot,
+       converges without needing to solve anything. */
+    this._fitProjected(box, ty, 6);
+    this._setClip(box, ty);
     this.controls.update();
     return { sz: sz };
   };
+
+  /* The eight corners of the world box, once, so the fit loop is not rebuilding
+     them six times. */
+  Viewer.prototype._boxCorners = function (box) {
+    var out = [], i;
+    for (i = 0; i < 8; i++) {
+      out.push(new THREE.Vector3(
+        (i & 1) ? box.max.x : box.min.x,
+        (i & 2) ? box.max.y : box.min.y,
+        (i & 4) ? box.max.z : box.min.z));
+    }
+    return out;
+  };
+
+  Viewer.prototype._fitProjected = function (box, ty, passes) {
+    if (!this.camera || !this.controls) return 0;
+    var target = new THREE.Vector3(0, ty, 0);
+    var corners = this._boxCorners(box);
+    var i, k, worst;
+    for (k = 0; k < (passes || 6); k++) {
+      this.camera.updateMatrixWorld();
+      this.camera.updateProjectionMatrix();
+      worst = 0;
+      for (i = 0; i < corners.length; i++) {
+        var p = corners[i].clone().project(this.camera);
+        /* Behind the camera projects to nonsense, so it is treated as a full
+           overshoot rather than allowed to shrink the fit. */
+        if (p.z > 1) { worst = Math.max(worst, 2); continue; }
+        worst = Math.max(worst, Math.abs(p.x), Math.abs(p.y));
+      }
+      if (worst <= 0) break;
+      /* 0.92 leaves a little air rather than fitting the corners to the exact
+         edge of the canvas, where a marker label sitting on the silhouette
+         would have nowhere to go. */
+      var scale = worst / 0.92;
+      if (Math.abs(scale - 1) < 0.005) break;
+      var dir = this.camera.position.clone().sub(target);
+      if (dir.lengthSq() < 1e-12) dir.set(1, 0.5, 1);
+      this.camera.position.copy(target).add(dir.multiplyScalar(scale));
+    }
+    return this.camera.position.distanceTo(target);
+  };
+
+  /* G2: NEAR AND FAR COME OFF THE CAMERA'S DISTANCE, NOT THE MODEL'S SIZE.
+     It was `near = max/500, far = max*60` - a ratio of 30,000:1 on every hull,
+     which spends the depth buffer's precision on empty space in front of and
+     behind the ship. 24 bits of depth over 30,000:1 is what makes coincident
+     surfaces flicker and lines sink into the hull they trace.
+
+     THE CLAMP IS NOT DEFENSIVE DECORATION. A near plane of zero makes the
+     projection matrix NaN and the camera never recovers - C1 lost a blank
+     canvas to it. `dist*0.02` is the floor and it is always positive. */
+  Viewer.prototype._setClip = function (box, ty) {
+    if (!this.camera) return null;
+    var target = new THREE.Vector3(0, ty, 0);
+    var dist = this.camera.position.distanceTo(target);
+    var sz = box.getSize(new THREE.Vector3());
+    var r = Math.sqrt(sz.x * sz.x + sz.y * sz.y + sz.z * sz.z) / 2 || 1;
+    var near = Math.max(dist - r * 1.8, dist * 0.02);
+    var far = dist + r * 3.0;
+    if (!isFinite(near) || near <= 0) near = Math.max(dist * 0.02, 1e-4);
+    if (!isFinite(far) || far <= near) far = near * 1000;
+    this.camera.near = near;
+    this.camera.far = far;
+    this.camera.updateProjectionMatrix();
+    this._clip = { near: near, far: far, dist: dist, radius: r,
+                   ratio: far / near };
+    return this._clip;
+  };
+  /* So a control can read what was actually set rather than recompute it. */
+  Viewer.prototype.clip = function () { return this._clip || null; };
 
   /* THE MATERIALS, one set per viewer, built once.
   /* THE MATERIALS. One set per viewer, rebuilt when a slider or colour moves,
@@ -573,16 +739,29 @@ var CCViewer = (function () {
         uniforms: U, vertexShader: CC_HOLO_VERT,
         fragmentShader: CC_HOLO_FRAG_HULL,
         side: THREE.FrontSide, transparent: false, depthWrite: true }),
+      /* G4: SEE INSIDE, ON PURPOSE. Normal blending, never additive, and depth
+         writes off - additive is what made the old picture read as soup. */
+      xray: new THREE.ShaderMaterial({
+        uniforms: U, vertexShader: CC_HOLO_VERT,
+        fragmentShader: CC_HOLO_FRAG_XRAY,
+        side: THREE.DoubleSide, transparent: true, depthWrite: false,
+        blending: THREE.NormalBlending }),
       /* THE DEPTH-ONLY PRE-PASS. Non-negotiable: without it a 353,731-vertex
-         mesh went to 63.7% pure white pixels. polygonOffset keeps the lines
-         off the surface they trace. */
+         mesh went to 63.7% pure white pixels.
+         G3: polygonOffset IS GONE FROM IT, and this is the mistake C1 made in
+         the first pass and wrote down so it would not be repeated. This
+         material writes the hull's depth, so offsetting it displaces THE WHOLE
+         HULL BACKWARDS, and the slope-scaled term explodes on steeply-angled
+         faces - the background grid punched through the nose in speckles.
+         If lines ever need lifting, offset the LINES TOWARD THE CAMERA, never
+         the surface away, which is what the negative units below do. */
       depth: new THREE.MeshBasicMaterial({
-        colorWrite: false, depthWrite: true,
-        polygonOffset: true, polygonOffsetFactor: 1.2,
-        polygonOffsetUnits: 1.2 }),
+        colorWrite: false, depthWrite: true }),
       edges: new THREE.LineBasicMaterial({
         color: this._colour, transparent: true, opacity: 0.44,
-        blending: THREE.AdditiveBlending, depthWrite: false }),
+        blending: THREE.AdditiveBlending, depthWrite: false,
+        polygonOffset: true, polygonOffsetFactor: -1.0,
+        polygonOffsetUnits: -1.0 }),
       /* Wireframe and points carry the prototype's own base opacities,
          scaled by the same density factor the lines use. On a hull the size
          of the prototype's the factor is 1 and these are unchanged. */
@@ -829,10 +1008,22 @@ var CCViewer = (function () {
         o.material = mats.solid; o.renderOrder = 1; note('surface', mats.solid);
       } else if (style === 'hull') {
         o.material = mats.hull; o.renderOrder = 1; note('surface', mats.hull);
+      } else if (style === 'xray') {
+        /* G4: NO DEPTH PRE-PASS HERE, and that is the point rather than an
+           omission - seeing the far side is what this mode is for, so nothing
+           may occlude anything. DoubleSide for the same reason. */
+        o.material = mats.xray; o.renderOrder = 1; note('xray', mats.xray);
       } else {
         o.material = mats.depth; o.renderOrder = 0; note('prepass', mats.depth);
       }
 
+      /* G5: THE EDGE SET IS BUILT ONLY WHEN A STYLE THAT DRAWS LINES IS
+         SELECTED, which this branch already guaranteed - EdgesGeometry is
+         constructed inside it and nowhere else, so opening on `solid` builds no
+         edges at all. That matters: 603,154 segments on a Javelin before the
+         first frame is a visible stall on every capital hull, and the old
+         default drew them. Recorded rather than changed, because the code was
+         already right and saying "done" without checking would be a guess. */
       if (style === 'panel' || style === 'solidlines') {
         var eg = new THREE.EdgesGeometry(o.geometry, CC_HOLO.detail);
         var n = (eg.attributes && eg.attributes.position)
@@ -894,8 +1085,29 @@ var CCViewer = (function () {
     if (dir.lengthSq() < 1e-9) dir.set(1, 0.5, 1);
     dir.normalize().multiplyScalar(dist);
     this.camera.position.copy(this.controls.target).add(dir);
-    this.camera.updateProjectionMatrix();
+    /* G2: THE CLIP PLANES FOLLOW THE CAMERA HERE TOO. reframe() moves the
+       camera, and leaving near/far where frame() put them would give a hull
+       that clips its own nose the moment a panel opens and the camera pulls
+       back - a near plane derived from one distance applied at another. */
+    this._setClip(box, this.controls.target.y);
     this.controls.update();
+    return true;
+  };
+
+  /* G2: AND WHEN SOMEBODY ZOOMS. OrbitControls moves the camera without asking
+     this file, so near and far have to be recomputed from wherever it ended up
+     or a full zoom-in puts the hull behind the near plane and a full zoom-out
+     puts it past the far one. Called from the frame loop, and cheap: it only
+     touches the projection when the distance has actually moved. */
+  Viewer.prototype.refreshClip = function () {
+    if (!this.current || !this.camera || !this.controls) return false;
+    var d = this.camera.position.distanceTo(this.controls.target);
+    if (this._clipAt != null && Math.abs(d - this._clipAt) < d * 0.002) {
+      return false;
+    }
+    this._clipAt = d;
+    var box = new THREE.Box3().setFromObject(this.current);
+    this._setClip(box, this.controls.target.y);
     return true;
   };
 
