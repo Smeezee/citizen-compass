@@ -245,9 +245,19 @@ console.log("\n--- 1. the errata's file-space census, reproduced ---");
     fracs.push([f, h.name]);
     if (f <= 0.05) bottom++; else if (f >= 0.6) high++; else middle++;
   }
-  record(bottom === 4 && middle === 224 && high === 7,
-    "y=0 falls near the bottom on 4, mid on 224, high on 7 - the errata's "
-    + "own census", `${bottom} / ${middle} / ${high}`);
+  /* THE TAILS ARE THE FINDING; THE MIDDLE IS JUST EVERYTHING ELSE.
+     The errata measured 4 / 224 / 7 over a 235-hull library. P1 added four
+     decoded hulls and the middle became 228, so pinning all three numbers
+     turned a growing library into a failing control. The two tails are what
+     the errata was actually about - the hulls that sink into the disc or float
+     above it - so they stay exact, and the middle is asserted to account for
+     everything remaining rather than to equal a number from August. A new hull
+     landing in either tail still goes red, which is precisely when somebody
+     should look. */
+  record(bottom === 4 && high === 7 && bottom + middle + high === HULLS.length,
+    `y=0 falls near the bottom on 4 and high on 7 - the errata's own tails - `
+    + `with the other ${middle} in the middle of a ${HULLS.length}-hull `
+    + `library (was 235)`, `${bottom} / ${middle} / ${high}`);
   fracs.sort((a, b) => b[0] - a[0]);
   record(fracs[0][1].indexOf("Vanguard_Harbinger") === 0
     && Math.abs(fracs[0][0] - 0.759) < 0.002,

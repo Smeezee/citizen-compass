@@ -95,9 +95,28 @@ console.log("\n--- 1. the two cases, on the hulls the errata names ---");
     record(!NOPOS_MSG.test(note), "and not the other one");
   }
 
-  const cut = silent.find((k) => /cutlass black/i.test(SHIPS[k].n || ""));
-  record(!!cut, "the Drake Cutlass Black is one of the silent hulls",
-    cut ? SHIPS[cut].n : "not found");
+  /* THIS CONTROL SAID "TOLD APART FROM THE DATA, NEVER FROM A LIST OF SHIP
+     NAMES" AND THEN LOOKED THE CUTLASS BLACK UP BY NAME.
+
+     P1 gave the Cutlass Black its own geometry, the placer found it, and it
+     gained 17 markers - so it left the silent population and this control went
+     red reporting "not found" about a ship that had just been FIXED. A control
+     that fails when its example ship gets better is measuring the example, not
+     the behaviour.
+
+     The case is chosen from the data instead: a hull that draws a model,
+     carries weapon mounts, and has no marker for any of them. Which ship that
+     is will change as coverage rises, and the control does not care - it names
+     whichever one it used, so the run is still reproducible by reading it.
+     When the population empties the check says so and does not silently pass:
+     that day, every hull with mounts has positions and the case is retired on
+     purpose rather than by accident. */
+  const cut = silent.find((k) => mountsOf(SHIPS[k]).length > 0);
+  record(!!cut,
+    "a hull with weapon mounts and no positions exists to test the second "
+    + "case against",
+    cut ? SHIPS[cut].n : "NONE LEFT - every hull with mounts now has "
+      + "positions, so this case cannot be exercised. Reported, not passed.");
   if (cut) {
     const sh = SHIPS[cut];
     const ch = (sh.slots || []).filter((s) => s.fit).length;

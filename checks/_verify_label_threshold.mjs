@@ -89,9 +89,18 @@ const census = [];
   }
   const clean = census.filter((c) => c.noRoom === 0);
   const dirty = census.filter((c) => c.noRoom > 0);
-  record(census.length === 159,
+  /* THE INVARIANT IS "EVERY MARKED HULL WAS DRIVEN", NOT "159 HULLS WERE".
+     159 was the fleet size on the day this was written. P1 widened the
+     placer's candidate set and the number became 163, so a control that had
+     nothing to do with the placer went red on a legitimate change - and the
+     next person's cheapest move is to edit the number, which is how a count
+     ends up being maintained instead of an assertion.
+     Compared against the marker table itself: if the sweep skips a hull, this
+     still fails, and it fails for the reason it was written to catch. */
+  const marked = Object.keys(SHIPS).filter((k) => (MARKS[k] || []).length);
+  record(census.length === marked.length && census.length > 100,
     `all ${census.length} hulls that carry markers were driven through the `
-    + `solver`, String(census.length));
+    + `solver`, `${census.length} driven, ${marked.length} carry markers`);
   record(clean.length > dirty.length * 10,
     "the great majority place every label with no overlaps",
     `${clean.length} clean, ${dirty.length} not`);

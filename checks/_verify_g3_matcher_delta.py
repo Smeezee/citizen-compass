@@ -26,7 +26,9 @@ That is also the honest way to report a number to Sleven that does not match
 the one the order predicted: show the experiment that separates the causes,
 rather than the count that mixes them.
 
-REQUIRES CC_GEO_DIR, and says so rather than passing quietly if it is unset -
+READS data-layer/derived/hull-geometry/ by default, CC_GEO_DIR overriding
+it, and says NOT PERFORMED rather than passing quietly when there is no
+geometry to read -
 this check cannot run without decoded geometry, and a check that reports
 success having not looked is the failure mode this project names SILENT
 SUCCESS.
@@ -111,14 +113,37 @@ def run_build(quiet=True):
 
 
 def main():
-    if not os.environ.get("CC_GEO_DIR"):
-        print("NOT PERFORMED - CC_GEO_DIR is not set, so the build cannot read "
-              "any geometry and this check cannot look at anything.")
+    # THE REPO NOW HAS A STANDARD PLACE FOR DECODED GEOMETRY, so the check no
+    # longer has to be told where it is.
+    #
+    # This reported NOT PERFORMED on every scheduled run since it was written,
+    # because nothing in the sweep set CC_GEO_DIR. Honest, and useless: a check
+    # that has never once executed is not protecting anything, and a permanent
+    # skip in a green sweep is a line people stop reading.
+    #
+    # `data-layer/derived/hull-geometry/` is where decode_glb_points.js writes
+    # and where build_matched.py already looks by default - the same fallback,
+    # spelled the same way, so the check and the build cannot end up reading
+    # different geometry. The environment variable still wins when set.
+    #
+    # NOT PERFORMED remains the answer when there is genuinely nothing to read.
+    # That path is unchanged: it now fires on an empty or absent directory
+    # rather than on an unset variable.
+    geo = os.environ.get("CC_GEO_DIR") or os.path.join(
+        REPO, "data-layer", "derived", "hull-geometry")
+    have = (os.path.isdir(geo)
+            and any(f.endswith(".json") for f in os.listdir(geo)))
+    if not have:
+        print("NOT PERFORMED - no decoded geometry at %s, so the build cannot "
+              "read any hull and this check cannot look at anything." % geo)
         print("Regenerate it with:")
         print("  node testing/_src/decode_glb_points.js <dir> "
               "testing/_deploy/models/*.glb")
         print("Reported as NOT PERFORMED, never as passed.")
         return 2
+    os.environ["CC_GEO_DIR"] = geo
+    print("geometry: %s (%d decoded hulls)"
+          % (geo, sum(1 for f in os.listdir(geo) if f.endswith(".json"))))
 
     import build_hardpoint_join as B
 

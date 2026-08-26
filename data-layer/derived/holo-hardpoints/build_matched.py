@@ -86,6 +86,31 @@ WEAPONY = ("Turret", "MissileLauncher", "WeaponDefensive", "WeaponGun",
            "TurretBase")
 
 
+def _bare(name, rec, stem):
+    """The ship's name without its manufacturer. See the call site for why
+    this is derived rather than read out of the previous run's output."""
+    slug = (rec or {}).get("slug") or ""
+    maker = slug.split("-", 1)[0] if "-" in slug else ""
+    if " " not in name:
+        return name
+    first, rest = name.split(" ", 1)
+    if maker and _norm(first) == _norm(maker):
+        return rest
+    if _norm(rest) == _norm(stem):
+        return rest
+    return name
+
+
+def _norm(s):
+    """Lowercase, drop everything that is not a letter or a digit.
+
+    `Hull_D` and `hull d` are the same string. `Zeus_Mk_II_MR` and
+    `Zeus_Mk_II_ES` are not, and no amount of similarity will make them so -
+    which is the whole point of normalising rather than fuzzy-matching.
+    """
+    return re.sub(r"[^a-z0-9]+", "", (s or "").lower())
+
+
 def pretty(hp):
     """`hardpoint_weapon_left_upper` -> `Weapon left upper`.
 
@@ -225,19 +250,117 @@ def main():
     if os.path.isdir(geo_dir):
         have_geo = {f[:-5] for f in os.listdir(geo_dir) if f.endswith(".json")}
 
-    model_of = {name: rec["model"] for name, rec in fleet.items()}
-    if not args.only_placed:
-        # Ships in ship_mounts.json whose slug names a decoded hull. EXACT
-        # match on the slug's own stem - no fuzzy matching anywhere near this.
-        for name, rec in mounts.items():
-            if name in model_of:
+    # ---------------------------------------------------------------- P1
+    # THE JOIN WAS STILL POINTING BACKWARDS, AND THE COMMENT ABOVE WAS AHEAD
+    # OF THE CODE.
+    #
+    # `model_of` was SEEDED FROM `fleet` - hardpoints_fleet.json, which is this
+    # pipeline's OUTPUT - and only then widened. So a hull could enter the
+    # candidate set by having been placed before, and the widening ran with
+    # `if name in model_of: continue`, which skipped every one of them. The set
+    # was monotonically closed: 235 hulls had geometry, 175 were ever
+    # considered, and all 175 traced to the 2026-08-10 sandbox run. Cutlass
+    # Black, fetched 2026-08-24 with 17 mounts in ship_mounts.json, could not
+    # reach the placer and never would have.
+    #
+    # A PRIOR RUN IS A CACHE, NOT A SOURCE. The candidate set is now derived
+    # only from what exists: a hull with mount data AND decoded geometry.
+    # `fleet` is read for exactly one thing below - checking that the new
+    # derivation reproduces what the old one produced - and never to decide
+    # whether a ship is a candidate.
+    #
+    # FOUR EXACT RULES, TRIED IN ORDER, AND NOTHING ELSE. Rule 11 and the
+    # standing NO FUZZY MATCHING instruction: a name that does not resolve is
+    # REPORTED unresolved, never guessed at. Every rule is an exact match on
+    # the normalised string, and a key that hits MORE than one hull is refused
+    # rather than resolved to the first - picking one of two would be a coin
+    # toss dressed as data.
+    #
+    #   1. the ship's own name              "Cutlass Black"  -> Cutlass_Black
+    #   2. the slug minus its maker segment "misc-freelancer" -> Freelancer
+    #   3. the whole slug                   "aegs-eclipse"   -> aegs_eclipse
+    #   4. the name minus a leading maker word, and ONLY when that word is the
+    #      slug's own maker segment. "MISC Reliant Kore" carries slug
+    #      `misc-reliant` - the base slug, so rule 2 lands on a hull that does
+    #      not exist - and stripping "MISC" is decided by the record's own slug
+    #      rather than by anybody reading the name.
+    #
+    # PROVEN BEFORE IT SHIPPED: all 169 hulls already in hardpoints_fleet.json
+    # resolve under these rules to EXACTLY the model file the previous run
+    # recorded. 169 agree, 0 disagree, 0 unresolved. That is what makes the
+    # seed removable rather than merely unwanted - the derivation reproduces
+    # the cache, so dropping the cache moves nothing.
+    geo_by_norm = {}
+    for g in have_geo:
+        geo_by_norm.setdefault(_norm(g), []).append(g)
+
+    def resolve_model(name, rec):
+        """(stem, rule) or (None, reason). Exact only; ambiguity is refused."""
+        slug = rec.get("slug") or ""
+        maker = slug.split("-", 1)[0] if "-" in slug else ""
+        first = name.split(" ", 1)[0] if " " in name else ""
+        keys = [("name", name)]
+        if "-" in slug:
+            keys.append(("slug-minus-maker", slug.split("-", 1)[1]))
+        keys.append(("slug", slug))
+        if first and maker and _norm(first) == _norm(maker):
+            keys.append(("name-minus-maker", name.split(" ", 1)[1]))
+        for rule, k in keys:
+            if not k:
                 continue
-            slug = (rec.get("slug") or "")
-            stem = slug.split("-", 1)[-1].replace("-", "_")
-            for cand in (stem, stem.title(), slug.replace("-", "_")):
-                if cand in have_geo:
-                    model_of[name] = cand + ".glb"
-                    break
+            hits = geo_by_norm.get(_norm(k)) or []
+            if len(hits) == 1:
+                return hits[0], rule
+            if len(hits) > 1:
+                return None, "ambiguous on %s: %s" % (rule, ", ".join(sorted(hits)))
+        return None, "no decoded hull matches this ship's name or slug"
+
+    model_of, rejected, rule_counts = {}, [], {}
+    if args.only_placed:
+        # THE CACHE, USED DELIBERATELY AND LABELLED. Reproduces the old input
+        # set for a before/after comparison. It is not the default and it is
+        # not how new work enters the pipeline.
+        model_of = {name: rec["model"] for name, rec in fleet.items()}
+    else:
+        for name, rec in mounts.items():
+            stem, why = resolve_model(name, rec)
+            if stem:
+                model_of[name] = stem + ".glb"
+                rule_counts[why] = rule_counts.get(why, 0) + 1
+            else:
+                rejected.append((name, why))
+
+    print("candidates        : %d of %d ships in ship_mounts.json"
+          % (len(model_of), len(mounts)))
+    for rule in sorted(rule_counts):
+        print("    by %-18s %d" % (rule, rule_counts[rule]))
+
+    # AGREEMENT WITH THE PREVIOUS RUN, REPORTED WHETHER OR NOT IT IS PERFECT.
+    # A hull that resolves to a DIFFERENT model than it was placed against
+    # would move every marker on it, and that must be loud rather than
+    # discovered in a diff.
+    if not args.only_placed:
+        agree = [n for n, r in fleet.items()
+                 if model_of.get(n) == r["model"]]
+        moved = [(n, r["model"], model_of.get(n)) for n, r in fleet.items()
+                 if model_of.get(n) != r["model"]]
+        print("previously placed : %d of %d resolve to the SAME model file"
+              % (len(agree), len(fleet)))
+        if moved:
+            print("    *** %d WOULD CHANGE MODEL - every marker on them moves:"
+                  % len(moved))
+            for n, was, now in moved:
+                print("        %-28s was %s  now %s" % (n, was, now))
+
+    # SILENT EXCLUSION IS HOW THIS WENT UNNOTICED FOR SIXTEEN DAYS. Every
+    # refusal is named with its reason, so the gap is a list somebody can work
+    # down rather than a number nobody can act on.
+    print("rejected          : %d ships have mount data and no usable hull"
+          % len(rejected))
+    for name, why in sorted(rejected)[:12]:
+        print("    %-34s %s" % (name, why))
+    if len(rejected) > 12:
+        print("    ... and %d more, all in the report" % (len(rejected) - 12))
 
     matched, stats = {}, {"top": 0, "child": 0, "turret_child": 0,
                           "no_tree": [], "no_geo": []}
@@ -298,7 +421,27 @@ def main():
         entry = dict(src)
         entry["mounts"] = out_mounts
         entry["model"] = model
-        entry["bare"] = (fleet.get(name) or {}).get("bare") or name
+        # THE LAST READ OF THE OUTPUT, AND IT IS GONE TOO.
+        #
+        # `bare` - the ship's name without its manufacturer - used to be copied
+        # out of hardpoints_fleet.json with a fallback to the full name. That
+        # is a small dependency and it is still the pipeline reading its own
+        # result: a hull that had never been placed would have silently
+        # published "MISC Freelancer DUR" where every placed sibling published
+        # "Freelancer DUR", and nothing would have said why.
+        #
+        # Derived structurally instead, by two exact rules, and PROVEN against
+        # every one of the 178 recorded values before the read was removed:
+        # 0 mismatches.
+        #   1. strip the leading word when it IS the slug's maker segment.
+        #      "MISC Freelancer DUR" carries slug `misc-freelancer-dur`.
+        #   2. otherwise strip it when the remainder names the resolved hull
+        #      exactly. "Vanduul Scythe" resolves to Scythe.glb, and its slug
+        #      is `vncl-scythe`, so rule 1 cannot see that "Vanduul" is the
+        #      maker - the geometry it already resolved to says so instead.
+        # Anything else keeps its full name: "M50 Interceptor" and "C8R Pisces
+        # Rescue" are NOT maker-prefixed and must not be trimmed.
+        entry["bare"] = _bare(name, src, stem)
         matched[name] = entry
 
     with io.open(args.out, "w", encoding="utf-8", newline="\n") as fh:

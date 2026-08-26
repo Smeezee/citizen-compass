@@ -1,14 +1,14 @@
 {
  "counts": {
-  "model": 228,
-  "no_markers": 42,
-  "no_model": 26,
+  "model": 230,
+  "no_markers": 40,
+  "no_model": 24,
   "orphan_models": 14,
   "page": 221,
   "plain": 6,
   "rsi": 27,
   "site": 254,
-  "unbuilt_folders": 18
+  "unbuilt_folders": 14
  },
  "orphan_models": [
   "Anvil_Ballista_Dunestalker.glb",
@@ -19,12 +19,12 @@
   "Carrack_w_C8X.glb",
   "Caterpillar_Best_In_Show_Edition_2949.glb",
   "Caterpillar_Pirate_Edition.glb",
+  "Cutlass_Black_Best_In_Show_Edition_2949.glb",
   "Dragonfly_Yellowjacket.glb",
   "Hammerhead_Best_In_Show_Edition_2949.glb",
   "Nautilus_Solstice_Edition.glb",
   "Nox_Kue.glb",
-  "Reclaimer_Best_In_Show_Edition_2949.glb",
-  "Valkyrie_Liberator_Edition.glb"
+  "Reclaimer_Best_In_Show_Edition_2949.glb"
  ],
  "rows": [
   {
@@ -352,20 +352,20 @@
   },
   {
    "cls": "ANVL_Arrow",
-   "fleet": null,
-   "folder": null,
-   "glb": null,
+   "fleet": "Arrow",
+   "folder": "Arrow",
+   "glb": "Arrow.glb",
    "id": "20",
-   "markers": 0,
+   "markers": 9,
    "mfr": "Anvil Aerospace",
-   "model": false,
+   "model": true,
    "name": "Arrow",
    "page": true,
    "plain": false,
    "ports": 19,
    "rsi": false,
    "stem": "anvl_arrow",
-   "why": "no model folder mapped (CC_MODELS)"
+   "why": null
   },
   {
    "cls": "ANVL_Asgard",
@@ -386,7 +386,7 @@
   },
   {
    "cls": "ARGO_ATLS",
-   "fleet": null,
+   "fleet": "ATLS",
    "folder": "ATLS",
    "glb": "ATLS.glb",
    "id": "44",
@@ -845,20 +845,20 @@
   },
   {
    "cls": "RSI_Constellation_Aquila",
-   "fleet": null,
-   "folder": null,
-   "glb": null,
+   "fleet": "Constellation Aquila",
+   "folder": "Constellation Aquila",
+   "glb": "Constellation_Aquila.glb",
    "id": "153",
-   "markers": 0,
+   "markers": 16,
    "mfr": "Roberts Space Industries",
-   "model": false,
+   "model": true,
    "name": "Constellation Aquila",
    "page": true,
    "plain": false,
    "ports": 48,
    "rsi": false,
    "stem": "rsi_constellation_aquila",
-   "why": "no model folder mapped (CC_MODELS)"
+   "why": null
   },
   {
    "cls": "RSI_Constellation_Phoenix",
@@ -964,11 +964,11 @@
   },
   {
    "cls": "DRAK_Cutlass_Black",
-   "fleet": null,
-   "folder": "Cutlass Black Best In Show Edition 2949",
-   "glb": "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+   "fleet": "Cutlass Black",
+   "folder": "Cutlass Black",
+   "glb": "Cutlass_Black.glb",
    "id": "74",
-   "markers": 0,
+   "markers": 13,
    "mfr": "Drake Interplanetary",
    "model": true,
    "name": "Cutlass Black",
@@ -1678,9 +1678,9 @@
   },
   {
    "cls": "AEGS_Gladius",
-   "fleet": "Gladius Valiant",
-   "folder": "Gladius Valiant",
-   "glb": "Gladius_Valiant.glb",
+   "fleet": "Gladius",
+   "folder": "Gladius",
+   "glb": "Gladius.glb",
    "id": "6",
    "markers": 9,
    "mfr": "Aegis Dynamics",
@@ -2103,11 +2103,11 @@
   },
   {
    "cls": "XIAN_Scout",
-   "fleet": null,
+   "fleet": "Khartu-al",
    "folder": "Khartu-Al",
    "glb": "Khartu-Al.glb",
    "id": "165",
-   "markers": 0,
+   "markers": 4,
    "mfr": "Aopoa",
    "model": true,
    "name": "Khartu-al",
@@ -2307,7 +2307,7 @@
   },
   {
    "cls": "GRIN_MDC",
-   "fleet": null,
+   "fleet": "MDC",
    "folder": "MDC",
    "glb": "MDC.glb",
    "id": "94",
@@ -3174,7 +3174,7 @@
   },
   {
    "cls": "GRIN_ROC",
-   "fleet": null,
+   "fleet": "ROC",
    "folder": "ROC",
    "glb": "ROC.glb",
    "id": "97",
@@ -3191,7 +3191,7 @@
   },
   {
    "cls": "GRIN_ROC_DS",
-   "fleet": null,
+   "fleet": "ROC-DS",
    "folder": "ROC-DS",
    "glb": "ROC-DS.glb",
    "id": "98",
@@ -3990,7 +3990,7 @@
   },
   {
    "cls": "ARGO_ATLS_GEO_IKTI",
-   "fleet": null,
+   "fleet": "ATLS",
    "folder": "ATLS",
    "glb": "ATLS.glb",
    "id": "234",
@@ -4007,7 +4007,7 @@
   },
   {
    "cls": "ARGO_ATLS_IKTI",
-   "fleet": null,
+   "fleet": "ATLS",
    "folder": "ATLS",
    "glb": "ATLS.glb",
    "id": "235",
@@ -4024,7 +4024,7 @@
   },
   {
    "cls": "ARGO_ATLS_IKTI_ARGOS",
-   "fleet": null,
+   "fleet": "ATLS",
    "folder": "ATLS",
    "glb": "ATLS.glb",
    "id": "236",
@@ -4330,9 +4330,9 @@
   },
   {
    "cls": null,
-   "fleet": "Valkyrie",
-   "folder": "Valkyrie",
-   "glb": "Valkyrie.glb",
+   "fleet": null,
+   "folder": "Valkyrie Liberator Edition",
+   "glb": "Valkyrie_Liberator_Edition.glb",
    "id": "254",
    "markers": 0,
    "mfr": "Anvil Aerospace",
@@ -4351,19 +4351,15 @@
   "Anvil Ballista Snowblind",
   "Argo Mole Carbon Edition",
   "Argo Mole Talus Edition",
-  "Arrow",
   "Carrack Expedition w_C8X",
   "Carrack w_C8X",
   "Caterpillar Best In Show Edition 2949",
   "Caterpillar Pirate Edition",
-  "Constellation Aquila",
-  "Cutlass Black",
+  "Cutlass Black Best In Show Edition 2949",
   "Dragonfly Yellowjacket",
-  "Gladius",
   "Hammerhead Best In Show Edition 2949",
   "Nautilus Solstice Edition",
   "Nox Kue",
-  "Reclaimer Best In Show Edition 2949",
-  "Valkyrie Liberator Edition"
+  "Reclaimer Best In Show Edition 2949"
  ]
 }

@@ -55,6 +55,16 @@ import os
 import re
 import sys
 
+# RULE 15 APPLIES TO stdout, NOT ONLY TO open(). This script prints ship
+# names, and `tok.yai` is spelled San'tok.yāi with a macron - on Windows the
+# console encoder is cp1252 and printing it raises UnicodeEncodeError, killing
+# the report mid-list. The enumeration would then be BOTH wrong and loud, or
+# worse, redirected to a file that ends where the first Xi'an ship began.
+# Caught by a one-off diagnostic that did exactly that.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 
