@@ -1,4 +1,4 @@
-import base64, json, os, re, glob, sys
+import base64, json, math, os, re, glob, sys
 import datetime as _dt
 import re as _re
 
@@ -1092,6 +1092,10 @@ with open(_bl.SHIPS_JSON, encoding='utf-8') as _fh:
 _holo = os.path.join(REPO, 'data-layer', 'derived', 'holo-hardpoints',
                      'hardpoints_fleet.json')
 _marks, _mark_amb, _mark_nohit = {}, 0, 0
+_mark_inherited, _mark_stacked = 0, 0
+_NO_INHERIT = os.environ.get('CC_NO_INHERIT') == '1'
+if _NO_INHERIT:
+    print('CC_NO_INHERIT=1 - the C1 inheritance pass is OFF (the BEFORE state)')
 if os.path.exists(_holo):
     _fleet = json.loads(rd(_holo))
     _by_file = {}
@@ -1108,6 +1112,60 @@ if os.path.exists(_holo):
     _WEAPONY = {'WeaponGun', 'Turret', 'MissileLauncher', 'WeaponDefensive',
                 'WeaponMining', 'BombLauncher', 'SalvageHead', 'TractorBeam',
                 'EMP', 'Missile', 'Bomb'}
+    # -----------------------------------------------------------------
+    # C1 - A GUN INSIDE A TURRET INHERITS THE TURRET'S POSITION.
+    #
+    # THE DEFECT. The placer works from ship_mounts.json, which is a flat list
+    # of TOP-LEVEL ports. The ship page lists the ports a reader can actually
+    # change, and on a turreted hull those are the CHILDREN. On the Aegis
+    # Retaliator the placer produced twenty positions - five turret bases, four
+    # countermeasure launchers, four racks, five target selectors, two regen
+    # pools - and the page asked for `turret_left`, `turret_right` and
+    # `hardpoint_class_2`. Four markers survived: the countermeasure launchers,
+    # the only ports present on both sides. Sixteen positions were computed and
+    # thrown away, and a visitor saw four dots on a torpedo bomber with five
+    # manned turrets.
+    #
+    # THE ANCESTRY IS ALREADY IN THE PORT ID AND NOTHING HAD TO BE INFERRED.
+    # A PortId is a PATH: `15.loadout.0.loadout.0` is the gun, inside the mount
+    # `15.loadout.0`, inside the turret base `15`. Trimming one `.loadout.N`
+    # walks up one level. No name matching, no guessing, and it stays inside
+    # the L10 convention because what comes back is still a PortId - the
+    # Polaris has thirty ports called MEC and a marker must select one port and
+    # no other.
+    #
+    # THE POSITION IS INHERITED, THE ARRANGEMENT IS NOT A CLAIM. A child sits
+    # at its nearest placed ancestor, offset so that siblings do not stack -
+    # two guns in one turret at identical coordinates is one marker wearing two
+    # labels, and the label solver would make one of them unselectable. Where
+    # the port's own name carries a direction the offset follows it, because
+    # `turret_left` and `turret_right` really are on opposite sides. Where it
+    # does not, the offset is a deterministic ring and means nothing beyond
+    # "not on top of its sibling". The radius halves at each level down, so a
+    # gun sits at its own mount rather than wandering off it.
+    #
+    # NONE OF THIS MAKES THE POSITIONS REAL. The parent's position was derived
+    # from the hull and the port's name; a child inheriting it is still an
+    # estimate, and the page's provenance note must not say otherwise.
+    _RING = (0.035, 0.018, 0.009)
+
+    def _dirvec(nm):
+        """A unit offset from the port's own name, or None if it has none."""
+        nm = (nm or '').lower()
+        if 'left' in nm:
+            return (-1.0, 0.0)
+        if 'right' in nm:
+            return (1.0, 0.0)
+        if 'top' in nm or 'upper' in nm:
+            return (0.0, 1.0)
+        if 'bottom' in nm or 'lower' in nm:
+            return (0.0, -1.0)
+        return None
+
+    def _parent_pid(pid):
+        i = str(pid).rfind('.loadout.')
+        return str(pid)[:i] if i > 0 else None
+
     for _cls, _file in _model_by_class.items():
         _hull = _by_file.get(_file)
         _rec = _LS.get(_cls)
@@ -1132,6 +1190,131 @@ if os.path.exists(_holo):
                 continue
             _out.append([_cands[0]['p'], round(_u[0], 5), round(_u[1], 5),
                          round(_u[2], 5)])
+
+        # ---- the inheritance pass -------------------------------------
+        # EVERY slot is a possible ancestor, not just the eligible ones: a
+        # TurretBase carries no marker of its own and is exactly the thing a
+        # gun hangs from.
+        _slot_by_pid = {str(s['p']): s for s in _rec['slots']}
+        _kids = {}
+        for _pid in _slot_by_pid:
+            _par = _parent_pid(_pid)
+            if _par is not None:
+                _kids.setdefault(_par, []).append(_pid)
+        for _v in _kids.values():
+            _v.sort()
+
+        # A hardpoint NAME that the placer positioned. A name that got two
+        # different positions is refused rather than resolved to the first -
+        # the same rule the direct pass uses.
+        _pos_by_name, _dupe = {}, set()
+        for _hp in _hull.get('hardpoints') or []:
+            _u = _hp.get('unit')
+            _nm = _hp.get('port') or ''
+            if not (isinstance(_u, list) and len(_u) == 3) or not _nm:
+                continue
+            _key = (round(_u[0], 5), round(_u[1], 5), round(_u[2], 5))
+            if _nm in _pos_by_name and _pos_by_name[_nm] != _key:
+                _dupe.add(_nm)
+            _pos_by_name[_nm] = _key
+        for _nm in _dupe:
+            _pos_by_name.pop(_nm, None)
+
+        _resolved = {}
+
+        def _resolve(pid, depth=0):
+            """Where this port sits, or None. Memoised; cycle-safe by depth."""
+            pid = str(pid)
+            if pid in _resolved:
+                return _resolved[pid]
+            if depth > 8:
+                return None
+            _resolved[pid] = None          # guards a malformed path
+            _sl = _slot_by_pid.get(pid)
+            if _sl is None:
+                return None
+            _own = _pos_by_name.get(_LHP[_sl['h']])
+            if _own is not None:
+                _resolved[pid] = _own
+                return _own
+            _par = _parent_pid(pid)
+            if _par is None:
+                return None
+            # THE ANCESTOR IS USUALLY NOT A SLOT, AND THAT IS THE WHOLE REASON
+            # THE FIRST ATTEMPT PLACED NOTHING ON THE RETALIATOR.
+            #
+            # LOADOUT_SHIPS lists the ports a reader can act on. A TurretBase
+            # is not one of them - the Retaliator's five bases, PortIds 15, 18,
+            # 28, 94 and 96, have no slot at all - so walking the PortId path
+            # up to `15` found nothing and every child resolved to None. The
+            # markers stayed at four and the counter still said 2052 inherited
+            # fleet-wide, because plenty of OTHER hulls do carry their parent
+            # as a slot. A partial mechanism reporting a big number is exactly
+            # the shape of thing that gets mistaken for working.
+            #
+            # But the parent's NAME is on the child already: `hp` is the
+            # parent's hardpoint-name index, so `turret_left`'s parent reads
+            # `hardpoint_turret_backbottom` - which the placer DID position.
+            # So the walk tries the parent slot first, and falls back to the
+            # named parent when there is no slot to walk to.
+            _base = None
+            if _par in _slot_by_pid:
+                _base = _resolve(_par, depth + 1)
+            if _base is None and _sl.get('hp') is not None:
+                _base = _pos_by_name.get(_LHP[_sl['hp']])
+            if _base is None:
+                return None
+            _sibs = _kids.get(_par) or [pid]
+            _i = _sibs.index(pid) if pid in _sibs else 0
+            _r = _RING[min(len(_RING) - 1, str(pid).count('.loadout.') - 1)]
+            _d = _dirvec(_LHP[_sl['h']])
+            if _d is None:
+                _ang = 2.0 * math.pi * _i / max(1, len(_sibs))
+                _d = (math.cos(_ang), math.sin(_ang))
+            _p = (_base[0] + _r * _d[0], _base[1] + _r * _d[1], _base[2])
+            _resolved[pid] = _p
+            return _p
+
+        # CC_NO_INHERIT=1 IS THE BEFORE STATE, so a before/after can be
+        # MEASURED rather than described. place_fleet.py carries the same
+        # switch for the same reason. It is off unless explicitly set, and the
+        # build prints which state it ran in.
+        if _NO_INHERIT:
+            if _out:
+                _marks[_cls] = _out
+            continue
+
+        _have = {str(r[0]) for r in _out}
+        _taken = {(round(r[1], 5), round(r[2], 5), round(r[3], 5))
+                  for r in _out}
+        for _sl in sorted(_rec['slots'], key=lambda s: str(s['p'])):
+            if (_LT.get(_sl['t']) or {}).get('t') not in _WEAPONY:
+                continue
+            _pid = str(_sl['p'])
+            if _pid in _have:
+                continue
+            _p = _resolve(_pid)
+            if _p is None:
+                continue
+            # C3: NO TWO MARKERS ON A HULL MAY SHARE COORDINATES TO 5dp.
+            # Two siblings whose names give the same direction would otherwise
+            # land on each other. Nudged deterministically until unique, so the
+            # guarantee is produced rather than hoped for.
+            _x, _y, _z = round(_p[0], 5), round(_p[1], 5), round(_p[2], 5)
+            _n = 0
+            while (_x, _y, _z) in _taken and _n < 64:
+                _n += 1
+                _a = 2.0 * math.pi * _n / 8.0
+                _x = round(_p[0] + 0.006 * _n * math.cos(_a), 5)
+                _y = round(_p[1] + 0.006 * _n * math.sin(_a), 5)
+            if (_x, _y, _z) in _taken:
+                _mark_stacked += 1
+                continue
+            _taken.add((_x, _y, _z))
+            _have.add(_pid)
+            _out.append([_sl['p'], _x, _y, _z])
+            _mark_inherited += 1
+
         if _out:
             _marks[_cls] = _out
 _mark_js = (
@@ -1163,6 +1346,9 @@ print('hull markers: %d on %d hulls (%d ambiguous points dropped, %d matched '
       'no weapon port)'
       % (sum(len(v) for v in _marks.values()), len(_marks), _mark_amb,
          _mark_nohit))
+print('  of those, %d were INHERITED from a placed ancestor (C1); %d could not '
+      'be separated from a sibling and were refused'
+      % (_mark_inherited, _mark_stacked))
 
 # ---------------------------------------------------------------------------
 # M2. THE ENGINEERING LAYER - relays and fuse slots.

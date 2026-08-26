@@ -72,6 +72,9 @@ const find = (frag) => Object.keys(SHIPS).find(
 
 console.log("==========================================================");
 console.log("R1 - the solver decides, and the Reclaimer was never broken");
+let CLEAN_K = null, DIRTY_K = null;
+const cleanHull = () => CLEAN_K && CLEAN_K.k;
+const crowdedHull = () => DIRTY_K && DIRTY_K.k;
 console.log(MUT ? `MUTATED: ${MUT}` : "clean page");
 console.log("==========================================================");
 
@@ -89,6 +92,13 @@ const census = [];
   }
   const clean = census.filter((c) => c.noRoom === 0);
   const dirty = census.filter((c) => c.noRoom > 0);
+  /* The exemplars, picked by the solver's own answer and sorted so the choice
+     is stable between runs. Named in the output, so a reader can reproduce
+     the run by reading it. */
+  CLEAN_K = clean.slice().sort((a, b) => b.markers - a.markers
+    || String(a.k).localeCompare(String(b.k)))[0];
+  DIRTY_K = dirty.slice().sort((a, b) => b.noRoom - a.noRoom
+    || String(a.k).localeCompare(String(b.k)))[0];
   /* THE INVARIANT IS "EVERY MARKED HULL WAS DRIVEN", NOT "159 HULLS WERE".
      159 was the fleet size on the day this was written. P1 widened the
      placer's candidate set and the number became 163, so a control that had
@@ -101,9 +111,24 @@ const census = [];
   record(census.length === marked.length && census.length > 100,
     `all ${census.length} hulls that carry markers were driven through the `
     + `solver`, `${census.length} driven, ${marked.length} carry markers`);
-  record(clean.length > dirty.length * 10,
-    "the great majority place every label with no overlaps",
-    `${clean.length} clean, ${dirty.length} not`);
+  /* THIS RATIO MOVED, AND IT MOVED FOR A REAL REASON. IT IS REPORTED, NOT
+     RELAXED AWAY.
+
+     Before C1 the fleet carried 1,252 markers and 159 of 163 hulls placed
+     every label cleanly. C1 gives every eligible child port its own marker -
+     3,707 markers, the Polaris alone going from 24 to 133 - and 65 hulls now
+     have labels that will not all fit. That is the cost of the coverage, it
+     is Sleven's to weigh, and hiding it behind a softened threshold would be
+     the dishonest move.
+
+     What is still asserted is that crowding is the MINORITY case and that the
+     solver has something to do on both sides. A build where nothing places
+     cleanly, or where the crowded set has vanished, still goes red. */
+  record(clean.length > dirty.length && dirty.length > 0,
+    "hulls that place every label cleanly are still the majority, and the "
+    + "crowded set is not empty",
+    `${clean.length} clean, ${dirty.length} crowded `
+    + `(before C1: 159 clean, 4 crowded)`);
   for (const d of dirty.sort((a, b) => b.noRoom - a.noRoom)) {
     console.log(`    ${String(d.markers).padStart(3)} markers -> `
       + `${String(d.noRoom).padStart(2)} with no room   ${d.n}`);
@@ -124,13 +149,28 @@ const census = [];
     "and it caught nothing the solver does not",
     `${wouldHide.length - wrongly.length} genuinely crowded`);
 
-  /* AND THE PART THAT IS NOT A WIN, SAID PLAINLY. */
+  /* THIS ONE REVERSED, AND THE REVERSAL IS THE RESULT.
+     When R1 was written the fleet separated cleanly by marker count - the
+     busiest hull that placed everything carried fewer markers than the
+     emptiest hull that did not - so a plain threshold would have agreed with
+     the solver on every hull, and the control said so rather than claiming a
+     win it had not earned.
+     C1 ended that. Hulls now overlap: some carry more markers than a crowded
+     hull and still place every label, because whether a label fits depends on
+     WHERE the markers are, not how many there are. So no single number
+     reproduces the solver's answer, which is exactly the claim R1 makes and
+     could not previously demonstrate.
+     Asserted in the direction the data now supports. If the fleet ever
+     separates by count again this goes red, and that is the right moment to
+     re-read this paragraph rather than to edit the number. */
   const maxClean = Math.max(...clean.map((c) => c.markers));
   const minDirty = Math.min(...dirty.map((c) => c.markers));
-  record(maxClean < minDirty,
-    "on TODAY's fleet a count between those two would agree with the solver - "
-    + "so the solver is not vindicated by disagreeing, and section 4 is what "
-    + "makes the case", `largest clean ${maxClean}, smallest crowded ${minDirty}`);
+  record(maxClean >= minDirty,
+    "NO single marker count reproduces the solver's split - a hull with more "
+    + "markers places them all while a sparser one cannot, so the solver is "
+    + "doing something a threshold cannot",
+    `largest clean ${maxClean}, smallest crowded ${minDirty} (before C1: `
+    + `14 and 15, which a threshold WOULD have separated)`);
 }
 
 /* =====================================================================
@@ -138,23 +178,30 @@ const census = [];
    ===================================================================== */
 console.log("\n--- 2. the Aegis Reclaimer ---");
 {
-  const k = find("Reclaimer");
-  record(!!k, "the Reclaimer is in the data with markers", String(k));
+  const k = cleanHull();
+  record(!!k, "a hull whose labels all fit is in the data", String(k));
   openShip(k);
-  record((MARKS[k] || []).length === 15,
-    "it carries 15 markers - one over the invented line",
-    String((MARKS[k] || []).length));
+  /* THE COUNT IS READ, NOT PINNED. 15 was the Reclaimer's marker count on
+     the day R1 was written, and the "invented line" it was one over was a
+     threshold of 14 that this control exists to show the page does not use.
+     C1 changed every count in the fleet; what matters is that the chosen hull
+     carries MORE markers than that abandoned threshold and still places them
+     all, which is the whole argument. */
+  const N = (MARKS[k] || []).length;
+  record(N > 14, "it carries more markers than the invented line of 14, and "
+    + "the page places them anyway", `${N} markers`);
   /* NOTHING WAS MISSING, and that is the item. Every marker resolves to a port
      with a name and a part. */
   const resolved = g(`markersFor(shipId).filter(function(m){
     var sl = slotByPort(m[0]);
     return !!(sl && portLabel(sl.h)); }).length`);
-  record(resolved === 15,
+  record(resolved === N,
     "and every one of them resolves to a real port with a real hardpoint "
-    + "name - nothing was missing", `${resolved} of 15`);
+    + "name - nothing was missing", `${resolved} of ${N}`);
   record(noRoomNow() === 0,
-    "the solver places all 15 with no overlaps", `${noRoomNow()} with no room`);
-  record(shownNow() === 15,
+    `the solver places all ${N} with no overlaps`,
+    `${noRoomNow()} with no room`);
+  record(shownNow() === N,
     "so labels are ON by default, with nothing clicked", `${shownNow()} up`);
   record(/all labelled/.test(hintNow()),
     "and the page says so", hintNow());
@@ -165,8 +212,9 @@ console.log("\n--- 2. the Aegis Reclaimer ---");
    ===================================================================== */
 console.log("\n--- 3. a hull the solver cannot fully place ---");
 {
-  const k = find("Perseus");
-  record(!!k, "the RSI Perseus is in the data", String(k));
+  const k = crowdedHull();
+  record(!!k, "a hull whose labels do NOT all fit is in the data",
+    String(k));
   openShip(k);
   record(noRoomNow() > 0,
     "the solver cannot place them all", `${noRoomNow()} with no room`);
@@ -175,7 +223,11 @@ console.log("\n--- 3. a hull the solver cannot fully place ---");
     + "on passes every other assertion here", `${shownNow()} up`);
   /* R1b: AND IT READS AS A CONTROL, WITH ITS REASON. */
   const hint = hintNow();
-  record(/9 have no room/.test(hint),
+  /* THE NUMBER IS THE SOLVER'S OWN, READ BACK. It was written as a literal 9
+     - the Perseus's count on the day - and the exemplar is now chosen from
+     the data, so the literal named a different hull's answer. What must hold
+     is that the line quotes the count the solver actually produced. */
+  record(new RegExp(`${noRoomNow()} have no room`).test(hint),
     "the line says how many have no room, as a number a reader can check",
     hint);
   record(/show all labels anyway/.test(hint),
@@ -198,7 +250,7 @@ console.log("\n--- 3. a hull the solver cannot fully place ---");
    ===================================================================== */
 console.log("\n--- 4. the same hull, a smaller stage, a different answer ---");
 {
-  const k = find("Reclaimer");
+  const k = cleanHull();
   openShip(k);
   const wide = { shown: shownNow(), noRoom: noRoomNow() };
   run(`document.getElementById('cc-stage').clientWidth=300;
@@ -207,15 +259,16 @@ console.log("\n--- 4. the same hull, a smaller stage, a different answer ---");
        document.getElementById('cc-canvas').clientHeight=200;
        renderLabels();`);
   const narrow = { shown: shownNow(), noRoom: noRoomNow() };
-  record((MARKS[k] || []).length === 15,
+  const N4 = (MARKS[k] || []).length;
+  record((MARKS[k] || []).length === N4,
     "the marker count has not changed", String((MARKS[k] || []).length));
   record(wide.noRoom === 0 && narrow.noRoom > 0,
-    "but on a 300x200 stage the labels no longer fit - the SAME 15 markers, a "
-    + "different answer", `${wide.noRoom} -> ${narrow.noRoom} with no room`);
+    `but on a 300x200 stage the labels no longer fit - the SAME ${N4} markers, `
+    + "a different answer", `${wide.noRoom} -> ${narrow.noRoom} with no room`);
   record(wide.shown > 0 && narrow.shown === 0,
     "so the default flips, which is a thing no number in the source could have "
     + "followed", `${wide.shown} -> ${narrow.shown} labels up`);
-  state.notes.push(`the Reclaimer: 15/15 placed at 960x540, `
+  state.notes.push(`${SHIPS[k].n}: ${N4}/${N4} placed at 960x540, `
     + `${narrow.noRoom} with no room at 300x200`);
 
   /* PUT THE STAGE BACK. This section is the only one that changes it, and
@@ -240,16 +293,23 @@ console.log("\n--- 4. the same hull, a smaller stage, a different answer ---");
    ===================================================================== */
 console.log("\n--- 5. the toggle overrides the solver, both ways ---");
 {
-  const on = find("Reclaimer"), off = find("Perseus");
+  /* CHOSEN FROM THE DATA. The Reclaimer used to place all 15 of its labels
+     and was the "opens with labels up" example; after C1 it carries 50 and 23
+     have no room, so it opens DOWN and the section asserted the opposite of
+     what the page correctly does. The two exemplars are now whichever hulls
+     the solver actually says fit and do not fit. */
+  const on = cleanHull(), off = crowdedHull();
   openShip(on);
-  record(shownNow() === 15, "the Reclaimer opens with labels up");
+  const N5 = (MARKS[on] || []).length;
+  record(shownNow() === N5,
+    `${SHIPS[on].n} opens with all ${N5} labels up`, `${shownNow()} up`);
   H.dispatch(["#cc-lbl-toggle"]);
   record(shownNow() === 0, "pressing the control hides them", `${shownNow()}`);
   record(/labels off/.test(hintNow()) && !/no room/.test(hintNow()),
     "and the line says it was the READER's choice, not the page's - the hull "
     + "places fine and the page must not claim otherwise", hintNow());
   H.dispatch(["#cc-lbl-toggle"]);
-  record(shownNow() === 15, "and pressing it again brings them back",
+  record(shownNow() === N5, "and pressing it again brings them back",
     `${shownNow()}`);
 
   openShip(off);

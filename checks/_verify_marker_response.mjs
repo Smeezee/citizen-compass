@@ -236,8 +236,18 @@ record(!!key400i, "the Origin 400i is in the ship table", key400i || "not found"
 let silent400i = null;
 if (key400i) {
   const marks = MARKS[key400i] || [];
-  record(marks.length === 10,
-    "it carries 10 hull markers - the count Sleven saw", `${marks.length}`);
+  /* TEN WAS WHAT SLEVEN COUNTED, NOT A REQUIREMENT.
+     B8's acceptance was "all ten markers must respond", and the ten was the
+     number the 400i carried that day. C1 gave every eligible child port a
+     marker and it now carries 52. Pinning the ten turns a coverage
+     IMPROVEMENT into a failing control, and the next person's cheapest move
+     is to edit the number - which is how a count ends up being maintained
+     instead of an assertion.
+     What must never happen is the count going DOWN, or a marker going silent.
+     Both are asserted; neither is a constant. */
+  record(marks.length >= 10,
+    "it carries at least the 10 hull markers Sleven counted, and has not "
+    + "regressed", `${marks.length}`);
   openShip(key400i);
 
   const seen = { picker: 0, fixed: 0, silent: 0 };
