@@ -1,0 +1,196 @@
+==========================================================================
+E14 - SHIP GAP ENUMERATION.  254 ships in the site list
+==========================================================================
+
+DIRECTION A - site rows that cannot show a model, and why
+  221 have a ship page        228 have a model on that page
+   27 fall through to an RSI link     6 render as a plain name
+
+  model folder mapped, no .glb built       4
+      85X                                          page  Origin Jumpworks
+      Fury                                         page  Mirai
+      Mantis                                       page  Roberts Space Industries
+      PTV                                          page  Greycat Industrial
+  no game file                             6
+      Arrastra                                     RSI   Roberts Space Industries
+      CSV-FM                                       plain Argo Astronautics
+      Merchantman                                  RSI   Banu (Souli)
+      Odin                                         RSI   Anvil Aerospace
+      RAPTOR                                       plain MISC
+      Starlancer BLD                               plain MISC
+  no model folder mapped (CC_MODELS)      16
+      600i Executive Edition                       page  Origin Jumpworks
+      Arrow                                        page  Anvil Aerospace
+      Aurora Mk II                                 page  Roberts Space Industries
+      Aurora SE                                    page  Roberts Space Industries
+      Basher                                       page  Grey's Market
+      Constellation Aquila                         page  Roberts Space Industries
+      F7C-M Hornet Heartseeker Mk II               page  Anvil Aerospace
+      Gladius Dunlevy                              page  Aegis Dynamics
+      Hermes                                       page  Roberts Space Industries
+      M80                                          page  Origin Jumpworks
+      MOTH                                         page  Argo Astronautics
+      Pitbull                                      page  Drake Interplanetary
+      Starlite                                     page  MISC
+      Tiburon                                      page  Aegis Dynamics
+      Tyilui                                       page  Gatac Manufacture
+      UTV                                          page  Greycat Industrial
+
+DIRECTION B - models with no route from the site
+   14 built .glb reachable by no site row
+      Anvil_Ballista_Dunestalker.glb
+      Anvil_Ballista_Snowblind.glb
+      Argo_Mole_Carbon_Edition.glb
+      Argo_Mole_Talus_Edition.glb
+      Carrack_Expedition_w_C8X.glb
+      Carrack_w_C8X.glb
+      Caterpillar_Best_In_Show_Edition_2949.glb
+      Caterpillar_Pirate_Edition.glb
+      Dragonfly_Yellowjacket.glb
+      Hammerhead_Best_In_Show_Edition_2949.glb
+      Nautilus_Solstice_Edition.glb
+      Nox_Kue.glb
+      Reclaimer_Best_In_Show_Edition_2949.glb
+      Valkyrie_Liberator_Edition.glb
+   18 sc-ships folders with a model that was never built
+      Anvil Ballista Dunestalker
+      Anvil Ballista Snowblind
+      Argo Mole Carbon Edition
+      Argo Mole Talus Edition
+      Arrow
+      Carrack Expedition w_C8X
+      Carrack w_C8X
+      Caterpillar Best In Show Edition 2949
+      Caterpillar Pirate Edition
+      Constellation Aquila
+      Cutlass Black
+      Dragonfly Yellowjacket
+      Gladius
+      Hammerhead Best In Show Edition 2949
+      Nautilus Solstice Edition
+      Nox Kue
+      Reclaimer Best In Show Edition 2949
+      Valkyrie Liberator Edition
+
+  THE OVERLAP W4 IS ABOUT: 27 rows have a model built and shipped
+  and STILL send the visitor to RSI, because no game file means no
+  ClassName, which means no ship page and no markers either.
+      Crucible                       Crucible.glb
+      E1 Spirit                      E1_Spirit.glb
+      Endeavor                       Endeavor.glb
+      Expanse                        Expanse.glb
+      F7C-M Super Hornet Heartseeker Mk I F7C-M_Super_Hornet_Heartseeker_Mk_I.glb
+      G12                            G12.glb
+      G12a                           G12a.glb
+      G12r                           G12r.glb
+      Galaxy                         Galaxy.glb
+      Genesis Starliner              Genesis.glb
+      Hull D                         Hull_D.glb
+      Hull E                         Hull_E.glb
+      Kraken                         Kraken.glb
+      Kraken Privateer               Kraken_Privateer.glb
+      Legionnaire                    Legionnaire.glb
+      Liberator                      Liberator.glb
+      Mustang Alpha Vindicator       Mustang_Alpha_Vindicator.glb
+      Nautilus                       Nautilus.glb
+      Odyssey                        Odyssey.glb
+      Orion                          Orion.glb
+      Pioneer                        Pioneer.glb
+      Ranger CV                      Ranger_CV.glb
+      Ranger RC                      Ranger_RC.glb
+      Ranger TR                      Ranger_TR.glb
+      Valkyrie Liberator             Valkyrie.glb
+      Vulcan                         Vulcan.glb
+      Zeus Mk II MR                  Zeus_Mk_II_MR.glb
+
+MARKERS - hulls that have a page AND a model but no hardpoints
+   42 of 201 rows with both
+      600i Explorer                  not in hardpoints_fleet.json and not in the skip list
+      A2 Hercules Starlifter         not in hardpoints_fleet.json and not in the skip list
+      ATLS                           not in hardpoints_fleet.json and not in the skip list
+      ATLS GEO                       not in hardpoints_fleet.json and not in the skip list
+      ATLS GEO IKTI                  not in hardpoints_fleet.json and not in the skip list
+      ATLS IKTI                      not in hardpoints_fleet.json and not in the skip list
+      ATLS IKTI RAD                  not in hardpoints_fleet.json and not in the skip list
+      Ares Inferno                   not in hardpoints_fleet.json and not in the skip list
+      Ares Ion                       not in hardpoints_fleet.json and not in the skip list
+      Aurora CL                      not in hardpoints_fleet.json and not in the skip list
+      Aurora ES                      not in hardpoints_fleet.json and not in the skip list
+      Aurora LN                      not in hardpoints_fleet.json and not in the skip list
+      Aurora LX                      not in hardpoints_fleet.json and not in the skip list
+      Aurora MR                      not in hardpoints_fleet.json and not in the skip list
+      C2 Hercules Starlifter         not in hardpoints_fleet.json and not in the skip list
+      CSV-SM                         placed but no port name matched
+      Clipper                        proportions do not match published dims (err 0.66, ext [49.48, 13.02, 27.24], want [26.5, 21, 18])
+      Cutlass Black                  not in hardpoints_fleet.json and not in the skip list
+      Cyclone                        placed but no port name matched
+      Cyclone AA                     placed but no port name matched
+      Cyclone MT                     placed but no port name matched
+      Cyclone RC                     placed but no port name matched
+      Cyclone RN                     placed but no port name matched
+      Cyclone TR                     placed but no port name matched
+      Defender                       proportions do not match published dims (err 0.60, ext [16.85, 5.86, 37.79], want [24.5, 24.5, 5])
+      Dragonfly                      not in hardpoints_fleet.json and not in the skip list
+      Eclipse                        proportions do not match published dims (err 0.54, ext [36.92, 3.97, 20.5], want [24.5, 24.5, 5])
+      Gladius Pirate                 not in hardpoints_fleet.json and not in the skip list
+      Javelin                        no published dimensions
+      Khartu-al                      not in hardpoints_fleet.json and not in the skip list
+      M2 Hercules Starlifter         not in hardpoints_fleet.json and not in the skip list
+      MDC                            not in hardpoints_fleet.json and not in the skip list
+      MPUV Cargo                     placed but no port name matched
+      MPUV Personnel                 placed but no port name matched
+      Mercury Star Runner            not in hardpoints_fleet.json and not in the skip list
+      Mule                           placed but no port name matched
+      Nova Tank                      proportions do not match published dims (err 0.37, ext [7.3, 5.13, 15.91], want [20, 12, 11])
+      Pulse                          proportions do not match published dims (err 0.53, ext [0.79, 0.89, 2.75], want [3.5, 2.5, 1.5])
+      Pulse LX                       not in hardpoints_fleet.json and not in the skip list
+      ROC                            not in hardpoints_fleet.json and not in the skip list
+      ROC-DS                         not in hardpoints_fleet.json and not in the skip list
+      STV                            placed but no port name matched
+
+W3 - marker coverage. ports with a marker / weapon ports total
+  159 hulls have markers.  41 are under 25% coverage
+  median coverage 38%   range 6% to 100%
+      Storm AA                         5 of  85      6%
+      Hammerhead                      12 of  92     13%
+      Ballista                         2 of  15     13%
+      Ballista Dunestalker             2 of  15     13%
+      Ballista Snowblind               2 of  15     13%
+      Carrack                          3 of  19     16%
+      Carrack Expedition               3 of  19     16%
+      Sabre Firebird                   5 of  31     16%
+      Centurion                        2 of  12     17%
+      Retaliator                       4 of  24     17%
+      Ironclad Assault                11 of  65     17%
+      Starlancer TAC                  11 of  65     17%
+      Apollo Medivac                   5 of  29     17%
+      Polaris                         24 of 133     18%
+      400i                            10 of  52     19%
+      Starfarer Gemini                 6 of  31     19%
+      Constellation Andromeda         16 of  80     20%
+      F7C-R Hornet Tracker Mk I        4 of  20     20%
+      F7C-S Hornet Ghost Mk I          4 of  20     20%
+      F7C Hornet Mk I                  4 of  20     20%
+      Lynx                             1 of   5     20%
+      MTC                              1 of   5     20%
+      Redeemer                         8 of  40     20%
+      Spartan                          1 of   5     20%
+      Ursa                             1 of   5     20%
+      Ursa Medivac                     1 of   5     20%
+      Ursa Fortuna                     1 of   5     20%
+      890 Jump                        17 of  84     20%
+      Freelancer MIS                  10 of  46     22%
+      Zeus Mk II CL                    5 of  23     22%
+      Guardian MX                      8 of  36     22%
+      Prowler Utility                  3 of  13     23%
+      Talon Shrike                     8 of  34     24%
+      Apollo Triage                    5 of  21     24%
+      F7C Hornet Wildfire Mk I         5 of  21     24%
+      Valkyrie                         5 of  21     24%
+      Zeus Mk II ES                    5 of  21     24%
+      Constellation Phoenix           13 of  54     24%
+      Constellation Phoenix Emerald   13 of  54     24%
+      F7A Hornet Mk I                  7 of  29     24%
+      A1 Spirit                        8 of  33     24%
+
+wrote data-layer/derived/ship-gaps/ship_gaps.json

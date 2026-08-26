@@ -3321,11 +3321,44 @@ function noMarkerNote(){
     a hull that has markers.`;
 }
 
+/* W3. FOUR MARKERS ON A TORPEDO BOMBER READS EXACTLY LIKE NONE.
+
+   Sleven walked the list on 2026-08-23 and filed the Retaliator, the Sabre
+   Peregrine and all three Ballistas as "hardpoints not set up". All five HAVE
+   markers - 4, 2, 2, 2 and 2 - and the page gave the reader no way to tell a
+   hull with thin data from a hull with broken code. Neither could he, which is
+   why one defect arrived as five separate reports.
+
+   So the page states the ratio. `showing 4 of 24` is a fact about our data;
+   silence was an invitation to conclude the feature was broken.
+
+   COUNTED FROM THE SAME SET THE GENERATOR USES - weaponMounts() reads MARKABLE,
+   which is build_deploy.py's WEAPONY. A second definition of "a port that could
+   have a marker" would let the page claim a coverage it does not have. */
+function markerCoverage(){
+  const n=markersFor(shipId).length;
+  const wm=weaponMounts(ship()).length;
+  return {marked:n, total:wm, short:Math.max(0, wm-n)};
+}
+function coverageLine(){
+  const c=markerCoverage();
+  if(!c.total || !c.marked) return "";
+  if(c.short<=0){
+    return `<b>All ${c.total} of this ship's weapon mounts are marked.</b> `;
+  }
+  return `<b>Showing ${c.marked} of ${c.total} weapon mounts.</b> The other
+    ${c.short} ${c.short===1?"has":"have"} no derived position, so
+    ${c.short===1?"it is":"they are"} not on the hull &mdash;
+    ${c.short===1?"it is":"they are"} still in the list on the left and
+    open${c.short===1?"s":""} the same way. <b>That is thin data, not a broken
+    page.</b> `;
+}
+
 function renderMarkerNote(){
   const el=$('markernote'); if(!el) return;
   const n=markersFor(shipId).length;
   if(!n){ el.innerHTML=noMarkerNote(); return; }
-  el.innerHTML=`<b>About the ${n} dot${n===1?"":"s"} on this model.</b>
+  el.innerHTML=coverageLine()+`<b>About the ${n} dot${n===1?"":"s"} on this model.</b>
     Where they sit is worked out from each mount's <b>name</b> &mdash; a port
     called <code>hardpoint_weapon_wing_left</code> is placed on a wing &mdash;
     and then snapped to the nearest point on the hull.

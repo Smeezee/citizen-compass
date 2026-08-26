@@ -196,7 +196,18 @@ def missing_or_corrupt_3d_model_check(repo_root: Path) -> list[Finding]:
     if not ships_dir.is_dir():
         return [Finding("missing_or_corrupt_3d_model", None, "LIMITATION", f"{ships_dir} does not exist")]
 
-    for ship_dir in sorted(p for p in ships_dir.iterdir() if p.is_dir() and not p.name.startswith(".")):
+    # SCAFFOLDING IS NOT A SHIP. `_corrupt_backup`, `_to_delete` and `_stage`
+    # are housekeeping directories that this repo puts under sc-ships/, and
+    # reporting one of them as "a ship with no model.glb" is a DEFECT this
+    # checker invented. It cost a real one: the end-to-end guard pins the
+    # number of genuinely-missing models at 6, and an empty `_corrupt_backup`
+    # made it 7 - a fabricated finding hiding inside a true count.
+    # Underscore is this project's own prefix for not-content; ship names
+    # never start with one.
+    for ship_dir in sorted(p for p in ships_dir.iterdir()
+                           if p.is_dir()
+                           and not p.name.startswith(".")
+                           and not p.name.startswith("_")):
         model_path = ship_dir / "model.glb"
         image_path = ship_dir / "image.webp"
 

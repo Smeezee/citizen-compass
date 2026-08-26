@@ -6,6 +6,9 @@
  *   1. Draco quantises NORMAL, and the edge detector reads normals.
  *   2. The shipped defaults are too hot - lineInt 1.00 and glow 0.50 against
  *      the prototype captures' 0.33 and 0.04.
+ *      SUPERSEDED FOR GLOW, 2026-08-25. G1 rebuilt the rim term and its
+ *      coefficient is 6.8x smaller, so 0.04 no longer describes anything.
+ *      The shipped default is 1.0 and the assertion below says why.
  *
  * and it says: "Assert computed-normal extraction yields MORE edges than
  * stored-normal at the same threshold - if it does not, cause 1 is wrong and
@@ -270,14 +273,24 @@ console.log("\n--- 4. the shipped defaults against the prototype's captures ---"
 {
   let src = readFileSync(VIEWER, "utf-8");
   if (MUT === "--mutate-hotdefaults") {
-    const before = src;
-    src = src.replace(/lineInt: 0\.33,/, "lineInt: 1.0,")
-             .replace(/glow: 0\.04,/, "glow: 0.55,")
-             .replace(/Math\.max\(0\.12, o\)/, "Math.max(0.035, o)");
-    if (src === before) {
-      console.log("MUTATION DID NOT APPLY - the defaults are not where this "
-        + "mutator looks, so the run proves nothing.");
-      process.exit(1);
+    /* EACH REPLACEMENT IS CHECKED ON ITS OWN. Comparing only the whole string
+       before and after would report success while one of the three silently
+       matched nothing - which is exactly what happened when G1 moved the glow
+       default off 0.04 and this mutator went on citing it. A mutation that
+       plants two defects out of three is not the mutation the run claims. */
+    const edits = [
+      [/lineInt: 0\.33,/, "lineInt: 1.0,"],
+      [/glow: 1\.0,/, "glow: 0.55,"],
+      [/Math\.max\(0\.12, o\)/, "Math.max(0.035, o)"],
+    ];
+    for (const [re, to] of edits) {
+      const before = src;
+      src = src.replace(re, to);
+      if (src === before) {
+        console.log(`MUTATION DID NOT APPLY - ${re} matches nothing in the `
+          + "viewer, so the run proves nothing.");
+        process.exit(1);
+      }
     }
   }
   const lineInt = /lineInt:\s*([\d.]+)/.exec(src);
@@ -294,8 +307,21 @@ console.log("\n--- 4. the shipped defaults against the prototype's captures ---"
   record(Math.abs(parseFloat(lineInt[1]) - 0.33) < 1e-9,
     "line intensity opens at 0.33 - the setting in the captures he called "
     + "perfect, not the prototype's code default of 1.0", lineInt[1]);
-  record(Math.abs(parseFloat(glow[1]) - 0.04) < 1e-9,
-    "and glow at 0.04, likewise", glow[1]);
+  /* GLOW IS NO LONGER 0.04, AND THIS IS THE MEASUREMENT BEING RETIRED RATHER
+     THAN THE CONTROL BEING BENT TO FIT.
+
+     E7b pinned 0.04 because the rim term was `fres*(1.15*uGlow/0.55)` over a
+     surface sitting at 9% luminance, where 0.55 blew out. G1 replaced BOTH
+     halves: the surface is lit properly now and the coefficient is 0.17, 6.8x
+     smaller. At uGlow 1.0 the shipped term `fres*0.17*uGlow` equals the value
+     that was rendered and judged. cc_viewer.js states this at its own default,
+     with the arithmetic.
+
+     The assertion is kept, not deleted. A drift to any OTHER number still goes
+     red - what changed is which number a decision stands behind. */
+  record(Math.abs(parseFloat(glow[1]) - 1.0) < 1e-9,
+    "and glow at 1.0 - G1's coefficient is 6.8x smaller, so E7b's 0.04 was "
+    + "retired by measurement, not overlooked", glow[1]);
   /* THE FLOOR AND THE INTENSITY ARE ONE DECISION. H1f dropped the floor to
      0.035 because at lineInt 1.0 it was doubling the densest hull's lines into
      white. At 0.33 that pressure is gone and the floor does what it was for. */
