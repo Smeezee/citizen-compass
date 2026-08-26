@@ -79,6 +79,12 @@ if (HULLS.length < 200) {
   process.exit(2);
 }
 
+const FLAT_PROJECT = MUT === "--mutate-flatproject";
+if (FLAT_PROJECT) {
+  console.log("*** MUTATED: project() returns world coordinates unchanged - "
+    + "the no-op stub that made this control unrunnable. ***");
+}
+
 /* ---------- a THREE stub with a Box3 that actually measures ---------- */
 function makeThree() {
   const V3 = function (x, y, z) { this.x = x || 0; this.y = y || 0; this.z = z || 0; };
@@ -105,7 +111,70 @@ function makeThree() {
   V3.prototype.copy = function (o) {
     this.x = o.x; this.y = o.y; this.z = o.z; return this;
   };
-  V3.prototype.project = function () { return this; };
+  V3.prototype.dot = function (o) {
+    return this.x * o.x + this.y * o.y + this.z * o.z;
+  };
+  V3.prototype.cross = function (o) {
+    const x = this.y * o.z - this.z * o.y;
+    const y = this.z * o.x - this.x * o.z;
+    const z = this.x * o.y - this.y * o.x;
+    return this.set(x, y, z);
+  };
+  V3.prototype.distanceTo = function (o) {
+    const dx = this.x - o.x, dy = this.y - o.y, dz = this.z - o.z;
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+  };
+  /* A REAL PERSPECTIVE PROJECTION, BECAUSE THE NO-OP MADE THIS CONTROL
+     UNRUNNABLE AND WOULD HAVE MADE IT WORSE THAN UNRUNNABLE IF PATCHED
+     CARELESSLY.
+
+     `project()` used to `return this` - world coordinates, unchanged. When
+     G2 added _fitProjected(), the viewer began calling
+     `camera.updateMatrixWorld()`, which the stub camera did not have, and the
+     whole control died with a TypeError. It has been red ever since, so E5's
+     guarantee - the hull stands on the disc - has not been verified on any run
+     since that landed.
+
+     THE TEMPTING FIX IS THE DANGEROUS ONE. Adding an empty
+     `updateMatrixWorld(){}` makes the crash go away and leaves project()
+     returning metres where the viewer expects normalised device coordinates
+     between -1 and 1. Every corner would read as a massive overshoot, the fit
+     loop would push the camera away six times on every hull, and the control
+     would report PASS on a framing nobody had checked. That is the exact
+     shape rule 12 names.
+
+     So the projection is the real one: a look-at view basis built from the
+     camera's position and the target it is pointed at, then the standard
+     perspective divide. Section 0 below proves it against answers known in
+     advance before any assertion is allowed to depend on it. */
+  V3.prototype.project = function (cam) {
+    /* --mutate-flatproject: what the stub did until 2026-08-26 - world
+       coordinates returned unchanged, where the viewer expects normalised
+       device coordinates. Section 0 must catch it. */
+    if (FLAT_PROJECT) { return this; }
+    const t = cam.__target || { x: 0, y: 0, z: 0 };
+    const fwd = new V3(t.x - cam.position.x, t.y - cam.position.y,
+                       t.z - cam.position.z).normalize();
+    let right = fwd.clone().cross(new V3(0, 1, 0)).normalize();
+    if (!isFinite(right.x) || right.lengthSq() < 1e-12) {
+      right = new V3(1, 0, 0);          /* looking straight up or down */
+    }
+    /* up = right x forward. NO NEGATION: an earlier draft had one and a
+       point above the axis projected to y = -1. Section 0 caught it on the
+       first run, which is the entire reason section 0 exists - the fleet
+       assertions all PASSED with the Y axis upside down, because a symmetric
+       fit does not care which way up it is wrong. */
+    const up = right.clone().cross(fwd).normalize();
+    const d = new V3(this.x - cam.position.x, this.y - cam.position.y,
+                     this.z - cam.position.z);
+    const vx = d.dot(right), vy = d.dot(up), vz = -d.dot(fwd);
+    const f = 1 / Math.tan(cam.fov * Math.PI / 360);
+    const n = cam.near, fa = cam.far;
+    const w = -vz;
+    const cz = ((fa + n) / (n - fa)) * vz + (2 * fa * n) / (n - fa);
+    if (w === 0) { return this.set(0, 0, 2); }
+    return this.set((f / cam.aspect) * vx / w, f * vy / w, cz / w);
+  };
 
   /* THE BOX3 IS THE WHOLE POINT AND THE OTHER CONTROL'S IS A STUB THAT LIES.
      _verify_holo_render.mjs has getSize() returning 1,1,1 and getCenter()
@@ -178,6 +247,15 @@ const MUTATIONS = {
      "o.position.sub(c);"]],
   "--mutate-fixedring": [
     [/var r = \(foot \/ 2\) \* this\.TABLE_MARGIN;/, "var r = 1.50;"]],
+  /* THE NO-OP PROJECTION, PUT BACK - and it is the ONE mutation that does not
+     belong in this table.
+     Every other entry rewrites cc_viewer.js before it is loaded. project()
+     is not in cc_viewer.js; it is this control's own stub, so a source patch
+     matched nothing and the run reported "MUTATION DID NOT APPLY" - correctly,
+     and only because that guard exists. It is wired to the stub directly
+     below instead. Registered here with no patches so the unknown-mutator
+     guard still accepts the flag. */
+  "--mutate-flatproject": [],
   "--mutate-noclamp": [
     [/if \(!isFinite\(r\) \|\| r <= 0\) \{\n      \/\* Nothing measurable/,
      "if (false) {\n      /* Nothing measurable"]],
@@ -210,11 +288,20 @@ const CCV = vm.runInContext("CCViewer", sandbox);
 function viewerFor(hull) {
   const v = Object.create(CCV.Viewer.prototype);
   v.scene = new THREE.Scene();
+  /* The camera carries the target it is aimed at, because the stub's
+     project() needs a view direction and OrbitControls is what supplies one
+     in the real page. Sharing the same Vector3 with `controls.target` is what
+     makes `controls.target.set(...)` in frame() actually turn the camera,
+     exactly as controls.update() does on the page.
+     aspect is 960x540 - the harness stage size the rest of the checks use, so
+     a fit measured here is a fit at the size the page is measured at. */
+  const target = new THREE.Vector3();
   v.camera = {
-    fov: 42, position: new THREE.Vector3(), near: 0, far: 0,
-    updateProjectionMatrix() {},
+    fov: 42, aspect: 960 / 540, position: new THREE.Vector3(),
+    near: 0.1, far: 1000, __target: target,
+    updateProjectionMatrix() {}, updateMatrixWorld() {},
   };
-  v.controls = { target: new THREE.Vector3(), update() {} };
+  v.controls = { target, update() {} };
   v._colour = 0xffb545;
   const o = new THREE.Mesh({}, null);
   o.__bounds = [hull.min, hull.max];
@@ -234,6 +321,74 @@ console.log("==========================================================");
       that contradicts an order should first show it can produce the order's
       number before it says the order was measuring the wrong thing.
    ===================================================================== */
+/* =====================================================================
+   0. THE STUB'S OWN PROJECTION, AGAINST ANSWERS KNOWN IN ADVANCE.
+
+   EVERY ASSERTION BELOW DEPENDS ON THIS ARITHMETIC BEING RIGHT, and it is
+   arithmetic written for this control rather than the page's own code. A
+   projection that is quietly wrong would not crash - it would report a
+   confident framing for a camera nobody had checked, on all 239 hulls, and
+   that is a worse outcome than the TypeError it replaces.
+
+   So it is checked against a case whose answer is fixed by the definition of
+   a perspective camera: at distance d from the camera, the visible half-height
+   is exactly d*tan(fov/2) and the half-width is that times the aspect. A point
+   on that boundary lands on the edge of the frame, ndc +/-1, or the projection
+   is wrong.
+   ===================================================================== */
+console.log("--- 0. the control's own projection, on known answers ---");
+{
+  const cam = {
+    fov: 42, aspect: 960 / 540, near: 1, far: 101,
+    position: new THREE.Vector3(0, 0, 10),
+    __target: new THREE.Vector3(0, 0, 0),
+  };
+  const at = (x, y, z) => new THREE.Vector3(x, y, z).project(cam);
+  const near = (a, b, tol) => Math.abs(a - b) <= (tol || 1e-6);
+
+  const centre = at(0, 0, 0);
+  record(near(centre.x, 0) && near(centre.y, 0),
+    "a point at the camera's target lands dead centre",
+    `${centre.x.toFixed(6)}, ${centre.y.toFixed(6)}`);
+
+  /* d = 10 to the target; half-height there is 10*tan(21deg). */
+  const d = 10, hh = d * Math.tan(42 * Math.PI / 360), hw = hh * (960 / 540);
+  const top = at(0, hh, 0);
+  record(near(top.y, 1, 1e-9),
+    "a point exactly one half-height above the axis lands on the top edge",
+    `y=${top.y.toFixed(9)} at height ${hh.toFixed(4)}`);
+  const side = at(hw, 0, 0);
+  record(near(side.x, 1, 1e-9),
+    "and one half-width to the side lands on the right edge, so ASPECT is "
+    + "applied and not ignored", `x=${side.x.toFixed(9)}`);
+  const inside = at(hw * 0.5, 0, 0);
+  record(inside.x > 0.49 && inside.x < 0.51,
+    "half that distance lands halfway - the mapping is linear in the plane",
+    `x=${inside.x.toFixed(6)}`);
+
+  /* Depth: the near and far planes are -1 and +1 by definition. */
+  const onNear = at(0, 0, 10 - cam.near);
+  const onFar = at(0, 0, 10 - cam.far);
+  record(near(onNear.z, -1, 1e-9), "a point on the near plane reads z = -1",
+    onNear.z.toFixed(9));
+  record(near(onFar.z, 1, 1e-9), "a point on the far plane reads z = +1",
+    onFar.z.toFixed(9));
+
+  /* BEHIND THE CAMERA IS THE CASE _fitProjected TREATS SPECIALLY, so it has
+     to actually be detectable. */
+  const behind = at(0, 0, 20);
+  record(behind.z > 1,
+    "a point BEHIND the camera reads z > 1, which is what _fitProjected "
+    + "keys on to refuse a shrinking fit", behind.z.toFixed(4));
+
+  /* AND THE NEGATIVE: the old stub returned world coordinates unchanged.
+     If anyone reverts to that, this is the assertion that says so. */
+  const far_out = at(0, 500, 0);
+  record(Math.abs(far_out.y - 500) > 1,
+    "the projection is NOT the identity - the no-op stub this replaces would "
+    + "have returned 500 here", far_out.y.toFixed(4));
+}
+
 console.log("\n--- 1. the errata's file-space census, reproduced ---");
 {
   let bottom = 0, middle = 0, high = 0;
