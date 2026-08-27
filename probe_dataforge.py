@@ -129,46 +129,44 @@ def main():
         if off + 4 > len(raw):
             break
         counts[nm] = u32(raw, off)
-    # WHAT HAS BEEN VERIFIED SINCE, AND WHAT HAS NOT (C3 milestone 1).
+    # C3 MILESTONE 4 - A CORRECTION TO MILESTONES 1 AND 3, BOTH OF WHICH
+    # OVERCLAIMED. Recorded in full because the mistake is more useful than the
+    # claim was.
     #
-    # VERIFIED: `textLength` really is the byte length of the string region.
-    # The region runs 44,288,701 - 61,454,626 in the 4.10 blob, and
-    # end-minus-textLength lands exactly on 100% printable, null-terminated
-    # identifiers. That is one label confirmed by measurement.
+    # I reported that `textLength` was VERIFIED as the byte length of the
+    # string region, and later that the region matched it "exactly, a second
+    # independent confirmation". BOTH WERE CIRCULAR. I located the region's
+    # start by computing end-minus-textLength, so its span was 17,165,925 by
+    # CONSTRUCTION. Measuring back from that start then "confirmed" the number
+    # I had just used to derive it.
     #
-    # NOT VERIFIED, AND MEASURED NOT TO CLOSE: the remaining labels are the
-    # documented field ORDER and nothing here has confirmed that a given count
-    # belongs to the field it is printed against. Summing the definition tables
-    # and value arrays at their documented row sizes lands between 6.9 MB and
-    # 18.9 MB SHORT of where the text region actually starts, across every
-    # combination of the two genuinely uncertain row sizes (dataMapping 8 or 12,
-    # reference 8/16/20/24). Either a row size is wrong, the count order is
-    # wrong, or record instance data sits between the tables and the text.
+    # It was checkable and I did not check it. The derived start lands MID
+    # STRING - the first entry reads `TLAWPILOT1_CV_Taunt...`, a truncated
+    # `PU_OUTLAWPILOT1_...`, and the byte before it is a printable `U`. A real
+    # table boundary does not cut a string in half. Measuring the surrounding
+    # text-and-UTF8 run without assuming textLength gives 3,318,370 bytes,
+    # nowhere near 17,165,925.
     #
-    # MILESTONE 3, and it corrects two of my own earlier readings.
+    # WHAT IS ACTUALLY KNOWN, and it is less than I said:
+    #   - the blob is 331,435,556 bytes; word 0 is 0, the version is 8, words
+    #     2-3 are 0, and 25 plausible counts sit at offset 16
+    #   - a large body of packed null-terminated identifiers exists around
+    #     44-61 MB, including record-name-shaped strings of the form
+    #     <Type>.<Instance>, e.g. EntityClassDefinition.freeze
+    #   - `EntityClassDefinition` recurs 29,185 times as a TYPE PREFIX, not as
+    #     a duplicated identifier
     #
-    # The region is a PACKED NULL-TERMINATED STRING TABLE: 17,165,925 bytes
-    # exactly - matching textLength a second time, independently - holding
-    # 305,036 strings. They are fully-qualified record names of the form
-    # <Type>.<Instance>: EntityClassDefinition.freeze, GPUParticleAudio.
-    # Station_Vent, TintPaletteTree.qrt_combat_heavy_02_02_01.
+    # WHAT IS NOT KNOWN: what textLength means, where the string section
+    # actually begins and ends, the definition table layout, and how a
+    # definition refers to a name. The offset searches that returned zero were
+    # run against a base that is now known to be wrong, so they rule out less
+    # than I claimed.
     #
-    # `EntityClassDefinition` occurs 29,185 times because it is a TYPE PREFIX
-    # on 29,185 distinct record names - NOT because an identifier is
-    # duplicated. An earlier reading here took the repetition as evidence that
-    # the blob had no deduplicated string table at all. That was wrong.
+    # THE ONE DURABLE TOOL FROM THIS: judge a candidate table by the rate at
+    # which its first field lands on a STRING START, against a measured random
+    # baseline of 1.75%. And pin a section boundary by finding a complete first
+    # string, never by subtracting a header field from a guessed end.
     #
-    # STILL UNSOLVED, AND THIS IS WHERE THE NEXT PASS STARTS: how a definition
-    # REFERS to a name. Searching the entire blob for the u32 byte offset of a
-    # known string - EntityClassDefinition at table offset 10,266,192, absolute
-    # 54,554,893 - finds ZERO occurrences, in any of: absolute position, offset
-    # from the table base, offset from 116. So names are not addressed by a
-    # plain u32 byte offset from any of those bases. The remaining candidates
-    # are an offset relative to a sub-section base not yet identified, or an
-    # index into an ordered offset array.
-    #
-    # So the labels below are still printed as UNVERIFIED. Saying otherwise
-    # would be the third wrong offset of the day dressed as a fact.
     # THE NUMBERS ARE MEASURED. THE NAMES ARE NOT VERIFIED. The labels follow
     # the documented DataForge field order; this probe has not walked a table
     # to confirm that a given count belongs to the field it is printed against.
