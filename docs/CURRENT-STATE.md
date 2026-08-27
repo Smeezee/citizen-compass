@@ -76,7 +76,7 @@ every number that moves is shown, and the visitor decides what matters.
 - **A fixed port is SHOWN, counts toward the totals, and opens no picker.**
   25,875 ports render, 18,001 of them fixed.
 - **Armour is a real dimension now.** 305 of 316 records resolve hull armour
-  through their own `Loadout`; ten distinct damage-multiplier profiles; signal
+  through their own `Loadout`; **eight** distinct damage-multiplier profiles (corrected 2026-08-27 — this line said ten since 08-22 and three independent counts say eight; see `docs/FINDING_both-open-questions-closed-and-a-live-number-in-current-state-is-wrong-2026-08-27.md`); signal
   multipliers shown with the signature. A weapon strong against one hull is
   measurably weaker against another and the page shows the matchup.
 - **1,200 hull markers on 157 hulls**, each bound to the game's own `PortId`.

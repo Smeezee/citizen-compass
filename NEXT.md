@@ -203,10 +203,48 @@ Carrack, Constellation, Corsair, Hammerhead, Tiburon and others. Their
 internal-bay scores are fine; the exterior mounts miss. Decide whether that is
 the decode or CIG mounting things asymmetrically.
 
-### M5 — `CURRENT-STATE.md`
-Eleven days stale, ~20,000 words, and it opens by telling the reader that later
-sections win. **A state document that must be overridden by the document
-following it is not a state document.** Every new session pays for this.
+### M5 — `CURRENT-STATE.md` — PREMISE CORRECTED 2026-08-27 18:15
+**It is no longer eleven days stale.** It was brought forward earlier today and
+now leads with 08-27 material. The staleness half of this item is closed and I
+am not going to keep claiming it.
+
+**The structural half stands and is worse than the staleness was.** 13,554
+words, ordered newest-first, opening with an instruction that everything below a
+certain point is history. A reader cannot tell where that point is, so the only
+safe read is all of it, every session, forever.
+
+**One live number was wrong and is fixed rather than filed against.** Line 79
+said *"ten distinct damage-multiplier profiles"* since 08-22. Three independent
+counts say **eight** (`FINDING_both-open-questions-closed...`). Corrected in
+place with the correction visible, not silently.
+
+**Still to do:** split it. A short state document that is only ever current,
+plus a dated archive that nothing has to read. Not started.
+
+### M6 — THE SHIELD SENTENCE — DONE 2026-08-27 18:20, AND C3'S NUMBER WAS WRONG
+C3 ranked *"a shield stops all of a laser's damage and only 45% of a
+ballistic's"* first of six things to build, ahead of everything needing a
+calculator. **The energy half is exact. The ballistic half is the top of a
+range** — `Absorption.Physical` reads Minimum 0, Maximum 0.45, and Energy is the
+only channel where the ends meet. Measured by me on 73 shield items, one profile
+across all of them.
+
+**And shields carry a second `Shield.Resistance` block** — physical 0–0.25,
+distortion 0.75–0.95 — which is NOT the `Durability.Resistance` that
+`FINDING_both-open-questions-closed` established as item durability. Different
+block, different path. The effective-damage calculator stays blocked.
+
+**Shipped the honest version** on the ship page under the armour matchup table,
+stamped `SHIELDS · 4.9`, with the range as a range. Full working:
+`docs/FINDING_the-45-percent-is-the-top-of-a-range-2026-08-27.md`.
+
+### M7 — THE DISCLOSURE CSS IS ONE COPY AGAIN — DONE 2026-08-27 18:10
+Code extracted my `.disc` rules into `testing/_src/_disc.css` for find, keybinds
+and index, and left this page's copy alone because it is not Code's file —
+noting loadout could point at the file whenever C1 wanted. **It wanted.** The
+rules were diffed first (identical, line for line; only comments differed), then
+replaced with the build's `/* CC_DISC_CSS */` marker. The dead `.trip` rule went
+with it — zero elements carried the class.
 
 ---
 
@@ -311,4 +349,4 @@ better.
 
 ---
 
-*Maintained by C1. Last set 2026-08-27 13:22 local.*
+*Maintained by C1. Last set 2026-08-27 18:25 local.*

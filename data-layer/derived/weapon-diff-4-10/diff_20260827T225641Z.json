@@ -1,0 +1,2418 @@
+{
+ "generated_by": "scripts/diff_weapon_4_10.py",
+ "order": "docs/WORKORDER_the-4-10-pull-2026-08-27.md",
+ "snapshot": "20260827T225641Z",
+ "git_head_subject": "4.10.0-LIVE.12519617",
+ "baseline": "data-layer/derived/weapon-baseline-4-9/weapon_baseline_4_9.json",
+ "at_utc": "2026-08-27T23:14:08+00:00",
+ "verdict": {
+  "control_1": "FAIL - every subject unchanged. CORPUS MOVED (1951 of 5380 records changed) and other subjects moved, so this is the CHANGE BEING ABSENT FROM THIS BUILD, not a broken importer",
+  "control_3": "FAIL - 4 still not Size 4: Revenant Gatling=1, Revenant Gatling=1, Relentless L-21 Gatling=1, TMSB-5 Gatling=1",
+  "control_2a": "PASS - fell -10.6%",
+  "control_2b": "NOT OBSERVABLE FROM THIS SOURCE - absent before and after, as in all three snapshots held. Expected; not a hole in the extraction (21 other WeaponGun records carry the field).",
+  "control_4": "QUIET - no measured field moved"
+ },
+ "corpus_changed": 1951,
+ "corpus_common": 5380,
+ "subjects_missing": [],
+ "detail": {
+  "e4afc8b4-da61-4efb-af7e-f003d9900d96": {
+   "group": "control_1_and_3_s4_ballistic_gatlings",
+   "before": {
+    "className": "BEHR_BallisticGatling_S4",
+    "present": true,
+    "uuid": "e4afc8b4-da61-4efb-af7e-f003d9900d96",
+    "name": "AD4B Ballistic Gatling",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 4,
+    "grade": 1,
+    "manufacturer": "BEHR",
+    "tags": [
+     "BEHR",
+     "BallisticGatling",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 84.4,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 84.4,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 84.4,
+     "Modes[].DamagePerShot": [
+      84.4
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 1266,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 1266,
+     "Weapon.RateOfFire": 900
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "5a9bee40-c82f-4efb-9b05-992ac83b35e7",
+     "Ammunition.Size": 4,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 0.96,
+      "NearRadius": 0.05,
+      "FarRadius": 0.05
+     },
+     "Ammunition.Speed": 1296,
+     "Ammunition.Lifetime": 2.16,
+     "Ammunition.Range": 2799,
+     "Ammunition.Capacity": 5220,
+     "Tags": [
+      "BEHR",
+      "BallisticGatling",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "5a9bee40-c82f-4efb-9b05-992ac83b35e7",
+     "Type": "AmmoParams",
+     "Speed": 1296,
+     "Lifetime": 2.16,
+     "Range": 2799,
+     "Size": 4,
+     "ImpactDamage": {
+      "Physical": 84.4,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 5220,
+     "Capacity": 5220,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 0.96,
+      "NearRadius": 0.05,
+      "FarRadius": 0.05
+     },
+     "ConversionRateMicroScu": 137
+    },
+    "weapon_modes": [
+     {
+      "Name": "Rapid",
+      "RoundsPerMinute": 900,
+      "FireType": "rapid",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 84.4,
+      "DamagePerSecond": 1266,
+      "Alpha": 84.4,
+      "Dps": 1266
+     }
+    ]
+   },
+   "after": {
+    "className": "BEHR_BallisticGatling_S4",
+    "name": "AD4B Ballistic Gatling",
+    "weapon_size": 4,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 84.4,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 84.4,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 84.4,
+     "Modes[].DamagePerShot": [
+      84.4
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 1266,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 1266,
+     "Weapon.RateOfFire": 900
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "5a9bee40-c82f-4efb-9b05-992ac83b35e7",
+     "Ammunition.Size": 4,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1296,
+     "Ammunition.Capacity": 5220
+    }
+   }
+  },
+  "353a4aae-1fb1-470c-a38c-2ca32e61bb12": {
+   "group": "control_1_and_3_s4_ballistic_gatlings",
+   "before": {
+    "className": "GLSN_BallisticGatling_S4",
+    "present": true,
+    "uuid": "353a4aae-1fb1-470c-a38c-2ca32e61bb12",
+    "name": "Breakneck S4 Gatling",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 4,
+    "grade": 1,
+    "manufacturer": "GLSN",
+    "tags": [
+     "GLSN",
+     "BallisticGatling",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 52,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 52,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 52,
+     "Modes[].DamagePerShot": [
+      52
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 953.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 953.3,
+     "Weapon.RateOfFire": 1100
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "903d9ef8-3f71-42b2-a1f7-be2646df5fd5",
+     "Ammunition.Size": 4,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 4.8,
+      "NearRadius": 0.24,
+      "FarRadius": 0.24
+     },
+     "Ammunition.Speed": 1296,
+     "Ammunition.Lifetime": 2.16,
+     "Ammunition.Range": 2799,
+     "Ammunition.Capacity": 10500,
+     "Tags": [
+      "GLSN",
+      "BallisticGatling",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "903d9ef8-3f71-42b2-a1f7-be2646df5fd5",
+     "Type": "AmmoParams",
+     "Speed": 1296,
+     "Lifetime": 2.16,
+     "Range": 2799,
+     "Size": 4,
+     "ImpactDamage": {
+      "Physical": 52,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 10500,
+     "Capacity": 10500,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 4.8,
+      "NearRadius": 0.24,
+      "FarRadius": 0.24
+     },
+     "ConversionRateMicroScu": 137
+    },
+    "weapon_modes": [
+     {
+      "Name": "Rapid",
+      "RoundsPerMinute": 1100,
+      "FireType": "rapid",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 52,
+      "DamagePerSecond": 953.3,
+      "Alpha": 52,
+      "Dps": 953.3
+     }
+    ]
+   },
+   "after": {
+    "className": "GLSN_BallisticGatling_S4",
+    "name": "Breakneck S4 Gatling",
+    "weapon_size": 4,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 52,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 52,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 52,
+     "Modes[].DamagePerShot": [
+      52
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 953.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 953.3,
+     "Weapon.RateOfFire": 1100
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "903d9ef8-3f71-42b2-a1f7-be2646df5fd5",
+     "Ammunition.Size": 4,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1296,
+     "Ammunition.Capacity": 10500
+    }
+   }
+  },
+  "df89e9ca-8a11-477c-8abd-f4837a277dbe": {
+   "group": "control_1_and_3_s4_ballistic_gatlings",
+   "before": {
+    "className": "APAR_BallisticGatling_S4",
+    "present": true,
+    "uuid": "df89e9ca-8a11-477c-8abd-f4837a277dbe",
+    "name": "Revenant Gatling",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 4,
+    "grade": 1,
+    "manufacturer": "APAR",
+    "tags": [
+     "APAR",
+     "BallisticGatling",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 63.3,
+     "Modes[].DamagePerShot": [
+      63.3
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 1266,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 1266,
+     "Weapon.RateOfFire": 1200
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "5eff2741-2fa6-4f29-a820-8886af83cb0b",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 7.2,
+      "NearRadius": 0.36,
+      "FarRadius": 0.36
+     },
+     "Ammunition.Speed": 1296,
+     "Ammunition.Lifetime": 2.16,
+     "Ammunition.Range": 2799,
+     "Ammunition.Capacity": 3660,
+     "Tags": [
+      "APAR",
+      "BallisticGatling",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "5eff2741-2fa6-4f29-a820-8886af83cb0b",
+     "Type": "AmmoParams",
+     "Speed": 1296,
+     "Lifetime": 2.16,
+     "Range": 2799,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 3660,
+     "Capacity": 3660,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 7.2,
+      "NearRadius": 0.36,
+      "FarRadius": 0.36
+     },
+     "ConversionRateMicroScu": 137
+    },
+    "weapon_modes": [
+     {
+      "Name": "Rapid",
+      "RoundsPerMinute": 1200,
+      "FireType": "rapid",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 63.3,
+      "DamagePerSecond": 1266,
+      "Alpha": 63.3,
+      "Dps": 1266
+     }
+    ]
+   },
+   "after": {
+    "className": "APAR_BallisticGatling_S4",
+    "name": "Revenant Gatling",
+    "weapon_size": 4,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 63.3,
+     "Modes[].DamagePerShot": [
+      63.3
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 1266,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 1266,
+     "Weapon.RateOfFire": 1200
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "5eff2741-2fa6-4f29-a820-8886af83cb0b",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1296,
+     "Ammunition.Capacity": 3660
+    }
+   }
+  },
+  "83671df2-63e6-4683-8125-bdccd7d1cd7e": {
+   "group": "control_1_and_3_s4_ballistic_gatlings",
+   "before": {
+    "className": "APAR_BallisticGatling_S4_LowPoly",
+    "present": true,
+    "uuid": "83671df2-63e6-4683-8125-bdccd7d1cd7e",
+    "name": "Revenant Gatling",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 4,
+    "grade": 1,
+    "manufacturer": "APAR",
+    "tags": [
+     "APAR",
+     "BallisticGatling",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 63.3,
+     "Modes[].DamagePerShot": [
+      63.3
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 1266,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 1266,
+     "Weapon.RateOfFire": 1200
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "5eff2741-2fa6-4f29-a820-8886af83cb0b",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 7.2,
+      "NearRadius": 0.36,
+      "FarRadius": 0.36
+     },
+     "Ammunition.Speed": 1296,
+     "Ammunition.Lifetime": 2.16,
+     "Ammunition.Range": 2799,
+     "Ammunition.Capacity": 3660,
+     "Tags": [
+      "APAR",
+      "BallisticGatling",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "5eff2741-2fa6-4f29-a820-8886af83cb0b",
+     "Type": "AmmoParams",
+     "Speed": 1296,
+     "Lifetime": 2.16,
+     "Range": 2799,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 3660,
+     "Capacity": 3660,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 7.2,
+      "NearRadius": 0.36,
+      "FarRadius": 0.36
+     },
+     "ConversionRateMicroScu": 137
+    },
+    "weapon_modes": [
+     {
+      "Name": "Rapid",
+      "RoundsPerMinute": 1200,
+      "FireType": "rapid",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 63.3,
+      "DamagePerSecond": 1266,
+      "Alpha": 63.3,
+      "Dps": 1266
+     }
+    ]
+   },
+   "after": {
+    "className": "APAR_BallisticGatling_S4_LowPoly",
+    "name": "Revenant Gatling",
+    "weapon_size": 4,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 63.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 63.3,
+     "Modes[].DamagePerShot": [
+      63.3
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 1266,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 1266,
+     "Weapon.RateOfFire": 1200
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "5eff2741-2fa6-4f29-a820-8886af83cb0b",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1296,
+     "Ammunition.Capacity": 3660
+    }
+   }
+  },
+  "ea0217e9-cdbe-48d2-a192-1837c52130b9": {
+   "group": "control_1_and_3_s4_ballistic_gatlings",
+   "before": {
+    "className": "Krig_BallisticGatling_Bespoke_S4",
+    "present": true,
+    "uuid": "ea0217e9-cdbe-48d2-a192-1837c52130b9",
+    "name": "Relentless L-21 Gatling",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 4,
+    "grade": 1,
+    "manufacturer": "KRIG",
+    "tags": [
+     "BEHR",
+     "BallisticGatling",
+     "flightReady",
+     "weaponMountUsable",
+     "Wolf_Gun"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 63,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 63,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 63,
+     "Modes[].DamagePerShot": [
+      63
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 997.5,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 997.5,
+     "Weapon.RateOfFire": 950
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "63e40c3d-f69e-48b9-8205-aca54b81d045",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 0.96,
+      "NearRadius": 0.05,
+      "FarRadius": 0.05
+     },
+     "Ammunition.Speed": 1296,
+     "Ammunition.Lifetime": 2.16,
+     "Ammunition.Range": 2799,
+     "Ammunition.Capacity": 4200,
+     "Tags": [
+      "BEHR",
+      "BallisticGatling",
+      "flightReady",
+      "weaponMountUsable",
+      "Wolf_Gun"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "63e40c3d-f69e-48b9-8205-aca54b81d045",
+     "Type": "AmmoParams",
+     "Speed": 1296,
+     "Lifetime": 2.16,
+     "Range": 2799,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 63,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 4200,
+     "Capacity": 4200,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 0.96,
+      "NearRadius": 0.05,
+      "FarRadius": 0.05
+     },
+     "ConversionRateMicroScu": 137
+    },
+    "weapon_modes": [
+     {
+      "Name": "Rapid",
+      "RoundsPerMinute": 950,
+      "FireType": "rapid",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 63,
+      "DamagePerSecond": 997.5,
+      "Alpha": 63,
+      "Dps": 997.5
+     }
+    ]
+   },
+   "after": {
+    "className": "Krig_BallisticGatling_Bespoke_S4",
+    "name": "Relentless L-21 Gatling",
+    "weapon_size": 4,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 63,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 63,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 63,
+     "Modes[].DamagePerShot": [
+      63
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 997.5,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 997.5,
+     "Weapon.RateOfFire": 950
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "63e40c3d-f69e-48b9-8205-aca54b81d045",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1296,
+     "Ammunition.Capacity": 4200
+    }
+   }
+  },
+  "cfbd1437-b6aa-480a-b3a2-5d3ad001c726": {
+   "group": "control_1_and_3_s4_ballistic_gatlings",
+   "before": {
+    "className": "BEHR_BallisticGatling_Hornet_Bespoke",
+    "present": true,
+    "uuid": "cfbd1437-b6aa-480a-b3a2-5d3ad001c726",
+    "name": "TMSB-5 Gatling",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 4,
+    "grade": 1,
+    "manufacturer": "BEHR",
+    "tags": [
+     "GATS",
+     "BallisticGatling",
+     "flightReady",
+     "weaponMountUsable",
+     "ANVL_BallisticGatling_Bespoke"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 52.7,
+     "Modes[].DamagePerShot": [
+      52.7
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 922.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 922.3,
+     "Weapon.RateOfFire": 1050
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "837fdcba-50c6-4a50-aa8d-ebf5648e00e5",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 2.25,
+      "NearRadius": 0.11,
+      "FarRadius": 0.11
+     },
+     "Ammunition.Speed": 1345.5,
+     "Ammunition.Lifetime": 1.61,
+     "Ammunition.Range": 2166,
+     "Ammunition.Capacity": 5250,
+     "Tags": [
+      "GATS",
+      "BallisticGatling",
+      "flightReady",
+      "weaponMountUsable",
+      "ANVL_BallisticGatling_Bespoke"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "837fdcba-50c6-4a50-aa8d-ebf5648e00e5",
+     "Type": "AmmoParams",
+     "Speed": 1345.5,
+     "Lifetime": 1.61,
+     "Range": 2166,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 5250,
+     "Capacity": 5250,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 2.25,
+      "NearRadius": 0.11,
+      "FarRadius": 0.11
+     },
+     "ConversionRateMicroScu": 129
+    },
+    "weapon_modes": [
+     {
+      "Name": "Rapid",
+      "RoundsPerMinute": 1050,
+      "FireType": "rapid",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 52.7,
+      "DamagePerSecond": 922.3,
+      "Alpha": 52.7,
+      "Dps": 922.3
+     }
+    ]
+   },
+   "after": {
+    "className": "BEHR_BallisticGatling_Hornet_Bespoke",
+    "name": "TMSB-5 Gatling",
+    "weapon_size": 4,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 52.7,
+     "Modes[].DamagePerShot": [
+      52.7
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 922.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 922.3,
+     "Weapon.RateOfFire": 1050
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "837fdcba-50c6-4a50-aa8d-ebf5648e00e5",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1345.5,
+     "Ammunition.Capacity": 5250
+    }
+   }
+  },
+  "b837397c-47b6-45e7-b409-db290a068b47": {
+   "group": "control_3_s3_ballistic_gatlings_for_inheritance",
+   "before": {
+    "className": "GATS_BallisticGatling_S3",
+    "present": true,
+    "uuid": "b837397c-47b6-45e7-b409-db290a068b47",
+    "name": "Mantis GT-220 Gatling",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 3,
+    "grade": 1,
+    "manufacturer": "GATS",
+    "tags": [
+     "GATS",
+     "BallisticGatling",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 19,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 19,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 19,
+     "Modes[].DamagePerShot": [
+      19
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 506.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 506.7,
+     "Weapon.RateOfFire": 1600
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "a340c1bf-8802-4852-aa24-1b23d93b65fb",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 1.7,
+      "NearRadius": 0.09,
+      "FarRadius": 0.09
+     },
+     "Ammunition.Speed": 1332,
+     "Ammunition.Lifetime": 1.8,
+     "Ammunition.Range": 2398,
+     "Ammunition.Capacity": 4314,
+     "Tags": [
+      "GATS",
+      "BallisticGatling",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "a340c1bf-8802-4852-aa24-1b23d93b65fb",
+     "Type": "AmmoParams",
+     "Speed": 1332,
+     "Lifetime": 1.8,
+     "Range": 2398,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 19,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 4314,
+     "Capacity": 4314,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 1.7,
+      "NearRadius": 0.09,
+      "FarRadius": 0.09
+     },
+     "ConversionRateMicroScu": 53
+    },
+    "weapon_modes": [
+     {
+      "Name": "Rapid",
+      "RoundsPerMinute": 1600,
+      "FireType": "rapid",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 19,
+      "DamagePerSecond": 506.7,
+      "Alpha": 19,
+      "Dps": 506.7
+     }
+    ]
+   },
+   "after": {
+    "className": "GATS_BallisticGatling_S3",
+    "name": "Mantis GT-220 Gatling",
+    "weapon_size": 3,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 32,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 32,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 32,
+     "Modes[].DamagePerShot": [
+      32
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 853.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 853.3,
+     "Weapon.RateOfFire": 1600
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "a340c1bf-8802-4852-aa24-1b23d93b65fb",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1332,
+     "Ammunition.Capacity": 4314
+    }
+   }
+  },
+  "8bd04e05-8694-4f25-801f-a92c2a6b0169": {
+   "group": "control_3_s3_ballistic_gatlings_for_inheritance",
+   "before": {
+    "className": "ANVL_BallisticGatling_Bespoke",
+    "present": true,
+    "uuid": "8bd04e05-8694-4f25-801f-a92c2a6b0169",
+    "name": "Revenant Gatling",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 3,
+    "grade": 1,
+    "manufacturer": "ANVL",
+    "tags": [
+     "ANVL",
+     "BallisticGatling",
+     "flightReady",
+     "weaponMountUsable",
+     "ANVL_BallisticGatling_Bespoke"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 52.7,
+     "Modes[].DamagePerShot": [
+      52.7
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 1054,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 1054,
+     "Weapon.RateOfFire": 1200
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "837fdcba-50c6-4a50-aa8d-ebf5648e00e5",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 2.25,
+      "NearRadius": 0.11,
+      "FarRadius": 0.11
+     },
+     "Ammunition.Speed": 1345.5,
+     "Ammunition.Lifetime": 1.61,
+     "Ammunition.Range": 2166,
+     "Ammunition.Capacity": 3567,
+     "Tags": [
+      "ANVL",
+      "BallisticGatling",
+      "flightReady",
+      "weaponMountUsable",
+      "ANVL_BallisticGatling_Bespoke"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "837fdcba-50c6-4a50-aa8d-ebf5648e00e5",
+     "Type": "AmmoParams",
+     "Speed": 1345.5,
+     "Lifetime": 1.61,
+     "Range": 2166,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 3567,
+     "Capacity": 3567,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 2.25,
+      "NearRadius": 0.11,
+      "FarRadius": 0.11
+     },
+     "ConversionRateMicroScu": 129
+    },
+    "weapon_modes": [
+     {
+      "Name": "Rapid",
+      "RoundsPerMinute": 1200,
+      "FireType": "rapid",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 52.7,
+      "DamagePerSecond": 1054,
+      "Alpha": 52.7,
+      "Dps": 1054
+     }
+    ]
+   },
+   "after": {
+    "className": "ANVL_BallisticGatling_Bespoke",
+    "name": "Revenant Gatling",
+    "weapon_size": 3,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 52.7,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 52.7,
+     "Modes[].DamagePerShot": [
+      52.7
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 1054,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 1054,
+     "Weapon.RateOfFire": 1200
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "837fdcba-50c6-4a50-aa8d-ebf5648e00e5",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1345.5,
+     "Ammunition.Capacity": 3567
+    }
+   }
+  },
+  "6635dc5f-dfcd-4b72-9d9d-8d3620820352": {
+   "group": "control_2_s4_ballistic_combine_cannon",
+   "before": {
+    "className": "BEHR_BallisticCannon_S4",
+    "present": true,
+    "uuid": "6635dc5f-dfcd-4b72-9d9d-8d3620820352",
+    "name": "C-788 Cannon",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 4,
+    "grade": 1,
+    "manufacturer": "BEHR",
+    "tags": [
+     "BEHR",
+     "BallisticCannon",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 1090,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 1090,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 1090,
+     "Modes[].DamagePerShot": [
+      1090
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 908.3,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 908.3,
+     "Weapon.RateOfFire": 50
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "3ebb1edc-8662-437f-83a6-c3892e4e0652",
+     "Ammunition.Size": 0,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 2.24,
+      "NearRadius": 0.06,
+      "FarRadius": 0.09
+     },
+     "Ammunition.Speed": 1152,
+     "Ammunition.Lifetime": 3.04,
+     "Ammunition.Range": 3502,
+     "Ammunition.Capacity": 270,
+     "Tags": [
+      "BEHR",
+      "BallisticCannon",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "3ebb1edc-8662-437f-83a6-c3892e4e0652",
+     "Type": "AmmoParams",
+     "Speed": 1152,
+     "Lifetime": 3.04,
+     "Range": 3502,
+     "Size": 0,
+     "ImpactDamage": {
+      "Physical": 1090,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 270,
+     "Capacity": 270,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 2.24,
+      "NearRadius": 0.06,
+      "FarRadius": 0.09
+     },
+     "ConversionRateMicroScu": 2630
+    },
+    "weapon_modes": [
+     {
+      "Name": "Single",
+      "RoundsPerMinute": 50,
+      "FireType": "sequence",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 1090,
+      "DamagePerSecond": 908.3,
+      "Alpha": 1090,
+      "Dps": 908.3
+     }
+    ]
+   },
+   "after": {
+    "className": "BEHR_BallisticCannon_S4",
+    "name": "C-788 Cannon",
+    "weapon_size": 4,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 975,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 975,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 975,
+     "Modes[].DamagePerShot": [
+      975
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 812.5,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 812.5,
+     "Weapon.RateOfFire": 50
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "3ebb1edc-8662-437f-83a6-c3892e4e0652",
+     "Ammunition.Size": 0,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1152,
+     "Ammunition.Capacity": 270
+    }
+   }
+  },
+  "ba8c9920-9fd0-4253-a349-de32079edce2": {
+   "group": "control_4_negative_controls",
+   "before": {
+    "className": "KLWE_LaserRepeater_S1_ATLS",
+    "present": true,
+    "uuid": "ba8c9920-9fd0-4253-a349-de32079edce2",
+    "name": "CF-117 Bulldog Repeater",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 1,
+    "grade": 1,
+    "manufacturer": "KLWE",
+    "tags": [
+     "KLWE",
+     "LaserRepeater",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 0,
+      "Energy": 11.3,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 0,
+      "Energy": 11.3,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 11.3,
+     "Modes[].DamagePerShot": [
+      11.3
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 0,
+      "Energy": 141.3,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 141.3,
+     "Weapon.RateOfFire": 750
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "d1208f4e-1446-4275-b861-aba07e7e3c8a",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 0.07,
+      "NearRadius": 0,
+      "FarRadius": 0
+     },
+     "Ammunition.Speed": 1500,
+     "Ammunition.Lifetime": 1.07,
+     "Ammunition.Range": 1605,
+     "Ammunition.Capacity": 0,
+     "Tags": [
+      "KLWE",
+      "LaserRepeater",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "d1208f4e-1446-4275-b861-aba07e7e3c8a",
+     "Type": "AmmoParams",
+     "Speed": 1500,
+     "Lifetime": 1.07,
+     "Range": 1605,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 0,
+      "Energy": 11.3,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 0,
+     "Capacity": 0,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 0.07,
+      "NearRadius": 0,
+      "FarRadius": 0
+     },
+     "ConversionRateMicroScu": 129
+    },
+    "weapon_modes": [
+     {
+      "Name": "Single",
+      "RoundsPerMinute": 750,
+      "FireType": "sequence",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 11.3,
+      "DamagePerSecond": 141.3,
+      "Alpha": 11.3,
+      "Dps": 141.3
+     }
+    ]
+   },
+   "after": {
+    "className": "KLWE_LaserRepeater_S1_ATLS",
+    "name": "CF-117 Bulldog Repeater",
+    "weapon_size": 1,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 0,
+      "Energy": 11.3,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 0,
+      "Energy": 11.3,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 11.3,
+     "Modes[].DamagePerShot": [
+      11.3
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 0,
+      "Energy": 141.3,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 141.3,
+     "Weapon.RateOfFire": 750
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "d1208f4e-1446-4275-b861-aba07e7e3c8a",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1500,
+     "Ammunition.Capacity": 0
+    }
+   }
+  },
+  "1ee01303-ce47-447b-a2b6-ba0d0787be79": {
+   "group": "control_4_negative_controls",
+   "before": {
+    "className": "ESPR_LaserCannon_S2",
+    "present": true,
+    "uuid": "1ee01303-ce47-447b-a2b6-ba0d0787be79",
+    "name": "Lightstrike II Cannon",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 2,
+    "grade": 1,
+    "manufacturer": "ESPR",
+    "tags": [
+     "ESP",
+     "LaserCannon",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 0,
+      "Energy": 74.034,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 0,
+      "Energy": 74.034,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 74,
+     "Modes[].DamagePerShot": [
+      74.034
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 0,
+      "Energy": 308.5,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 308.5,
+     "Weapon.RateOfFire": 250
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "b1323754-662e-4416-b353-d834c5d32110",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 0.0255,
+      "NearRadius": 0,
+      "FarRadius": 0
+     },
+     "Ammunition.Speed": 1196,
+     "Ammunition.Lifetime": 1.81,
+     "Ammunition.Range": 2165,
+     "Ammunition.Capacity": 0,
+     "Tags": [
+      "ESP",
+      "LaserCannon",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "b1323754-662e-4416-b353-d834c5d32110",
+     "Type": "AmmoParams",
+     "Speed": 1196,
+     "Lifetime": 1.81,
+     "Range": 2165,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 0,
+      "Energy": 74.034,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 0,
+     "Capacity": 0,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 0.0255,
+      "NearRadius": 0,
+      "FarRadius": 0
+     },
+     "ConversionRateMicroScu": 129
+    },
+    "weapon_modes": [
+     {
+      "Name": "Single",
+      "RoundsPerMinute": 250,
+      "FireType": "sequence",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 74.034,
+      "DamagePerSecond": 308.5,
+      "Alpha": 74,
+      "Dps": 308.5
+     }
+    ]
+   },
+   "after": {
+    "className": "ESPR_LaserCannon_S2",
+    "name": "Lightstrike II Cannon",
+    "weapon_size": 2,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 0,
+      "Energy": 74.034,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 0,
+      "Energy": 74.034,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 74,
+     "Modes[].DamagePerShot": [
+      74.034
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 0,
+      "Energy": 308.5,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 308.5,
+     "Weapon.RateOfFire": 250
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "b1323754-662e-4416-b353-d834c5d32110",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1196,
+     "Ammunition.Capacity": 0
+    }
+   }
+  },
+  "bbfbb4b5-c26e-4bee-9d41-9679e102e860": {
+   "group": "control_4_negative_controls",
+   "before": {
+    "className": "BEHR_BallisticRepeater_S3",
+    "present": true,
+    "uuid": "bbfbb4b5-c26e-4bee-9d41-9679e102e860",
+    "name": "SW16BR3 “Shredder” Repeater",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 3,
+    "grade": 1,
+    "manufacturer": "BEHR",
+    "tags": [
+     "BEHR",
+     "BallisticRepeater",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 45,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 45,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 45,
+     "Modes[].DamagePerShot": [
+      45
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 375,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 375,
+     "Weapon.RateOfFire": 500
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "3475867f-3de3-4752-ac41-1382cf7510d0",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 1.7,
+      "NearRadius": 0.09,
+      "FarRadius": 0.09
+     },
+     "Ammunition.Speed": 1480,
+     "Ammunition.Lifetime": 1.62,
+     "Ammunition.Range": 2398,
+     "Ammunition.Capacity": 2589,
+     "Tags": [
+      "BEHR",
+      "BallisticRepeater",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "3475867f-3de3-4752-ac41-1382cf7510d0",
+     "Type": "AmmoParams",
+     "Speed": 1480,
+     "Lifetime": 1.62,
+     "Range": 2398,
+     "Size": 1,
+     "ImpactDamage": {
+      "Physical": 45,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 2589,
+     "Capacity": 2589,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 1.7,
+      "NearRadius": 0.09,
+      "FarRadius": 0.09
+     },
+     "ConversionRateMicroScu": 137
+    },
+    "weapon_modes": [
+     {
+      "Name": "Single",
+      "RoundsPerMinute": 500,
+      "FireType": "sequence",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 45,
+      "DamagePerSecond": 375,
+      "Alpha": 45,
+      "Dps": 375
+     }
+    ]
+   },
+   "after": {
+    "className": "BEHR_BallisticRepeater_S3",
+    "name": "SW16BR3 “Shredder” Repeater",
+    "weapon_size": 3,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 45,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 45,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 45,
+     "Modes[].DamagePerShot": [
+      45
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 375,
+      "Energy": 0,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 375,
+     "Weapon.RateOfFire": 500
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "3475867f-3de3-4752-ac41-1382cf7510d0",
+     "Ammunition.Size": 1,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1480,
+     "Ammunition.Capacity": 2589
+    }
+   }
+  },
+  "a9780953-9488-4644-9b56-61464e9dd6b9": {
+   "group": "control_4_negative_controls",
+   "before": {
+    "className": "TOAG_LaserRepeater_S3",
+    "present": true,
+    "uuid": "a9780953-9488-4644-9b56-61464e9dd6b9",
+    "name": "Yeng’tu Repeater",
+    "type": "WeaponGun",
+    "subType": "Gun",
+    "weapon_size": 3,
+    "grade": 1,
+    "manufacturer": "XNAA",
+    "tags": [
+     "TOAG",
+     "LaserRepeater",
+     "flightReady",
+     "weaponMountUsable"
+    ],
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 0,
+      "Energy": 41,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 0,
+      "Energy": 41,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 41,
+     "Modes[].DamagePerShot": [
+      41
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 0,
+      "Energy": 512.5,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 512.5,
+     "Weapon.RateOfFire": 750
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "9d240645-cb49-4d57-87b0-77f2babf389d",
+     "Ammunition.Size": 3,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Penetration": {
+      "BasePenetrationDistance": 0.0425,
+      "NearRadius": 0,
+      "FarRadius": 0
+     },
+     "Ammunition.Speed": 1480,
+     "Ammunition.Lifetime": 1.3,
+     "Ammunition.Range": 1924,
+     "Ammunition.Capacity": 0,
+     "Tags": [
+      "TOAG",
+      "LaserRepeater",
+      "flightReady",
+      "weaponMountUsable"
+     ]
+    },
+    "ammunition_full": {
+     "UUID": "9d240645-cb49-4d57-87b0-77f2babf389d",
+     "Type": "AmmoParams",
+     "Speed": 1480,
+     "Lifetime": 1.3,
+     "Range": 1924,
+     "Size": 3,
+     "ImpactDamage": {
+      "Physical": 0,
+      "Energy": 41,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "InitialCapacity": 0,
+     "Capacity": 0,
+     "Pierceability": 14,
+     "Mass": 0.01,
+     "ImpulseScale": 1,
+     "BulletType": -1,
+     "DamageFalloffLevel1": 0,
+     "DamageFalloffLevel2": 0,
+     "DamageFalloffLevel3": 0,
+     "MaxPenetrationThickness": 0.5,
+     "PhysicalDimensions": {
+      "Radius": 0.1,
+      "Thickness": 0.005,
+      "Length": 0.005
+     },
+     "FlightPhysics": {
+      "AirResistance": 0,
+      "DisableGravity": false
+     },
+     "Penetration": {
+      "BasePenetrationDistance": 0.0425,
+      "NearRadius": 0,
+      "FarRadius": 0
+     },
+     "ConversionRateMicroScu": 129
+    },
+    "weapon_modes": [
+     {
+      "Name": "Single",
+      "RoundsPerMinute": 750,
+      "FireType": "sequence",
+      "AmmoPerShot": 1,
+      "PelletsPerShot": 1,
+      "DamagePerShot": 41,
+      "DamagePerSecond": 512.5,
+      "Alpha": 41,
+      "Dps": 512.5
+     }
+    ]
+   },
+   "after": {
+    "className": "TOAG_LaserRepeater_S3",
+    "name": "Yeng’tu Repeater",
+    "weapon_size": 3,
+    "CONTROL_1_per_round_damage": {
+     "Ammunition.ImpactDamage": {
+      "Physical": 0,
+      "Energy": 41,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.Alpha": {
+      "Physical": 0,
+      "Energy": 41,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.AlphaTotal": 41,
+     "Modes[].DamagePerShot": [
+      41
+     ]
+    },
+    "NOT_CONTROL_1_derived_dps": {
+     "Weapon.Damage.Dps": {
+      "Physical": 0,
+      "Energy": 512.5,
+      "Distortion": 0,
+      "Thermal": 0,
+      "Biochemical": 0,
+      "Stun": 0
+     },
+     "Weapon.Damage.DpsTotal": 512.5,
+     "Weapon.RateOfFire": 750
+    },
+    "CONTROL_2_explosive": {
+     "Ammunition.ExplosionRadius": "<ABSENT>",
+     "Ammunition.ExplosionSafetyDistance": "<ABSENT>"
+    },
+    "CONTROL_3_ammunition_and_class": {
+     "Ammunition.UUID": "9d240645-cb49-4d57-87b0-77f2babf389d",
+     "Ammunition.Size": 3,
+     "Ammunition.Pierceability": 14,
+     "Ammunition.MaxPenetrationThickness": 0.5,
+     "Ammunition.Speed": 1480,
+     "Ammunition.Capacity": 0
+    }
+   }
+  }
+ }
+}

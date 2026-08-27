@@ -223,65 +223,39 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    WARNS, that reports an ERROR, or that states WHAT THE VISITOR IS LOOKING AT
    RIGHT NOW. A warning nobody reads is worse than a warning nobody styled.
 
-   Only `.disc` collapses. `.trip` and the amber `.note` treatment are
+   Only `.disc` collapses. The amber `.note` treatment is
    deliberately untouched so that a block has to be MOVED into this class by
    hand - a blanket restyle would have swept the error and empty states in with
    the explanations, which is the exact defect D1 exists to catch. */
-.disc{margin-top:11px;background:var(--panel2);border:1px solid var(--line);
- border-radius:9px;overflow:hidden}
-.disc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;
- gap:9px;padding:9px 12px;min-height:38px;box-sizing:border-box;
- font-size:12px;color:var(--muted)}
-.disc>summary::-webkit-details-marker{display:none}
-.disc>summary:hover{background:var(--panel3)}
-.disc>summary:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
-/* THE STAMP CARRIES THE ONE LOAD-BEARING FACT. Somebody who never opens this
-   still leaves knowing the patch and the source - which is the whole reason
-   this is a bar and not a triangle. */
-.disc .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
- font-size:11px;letter-spacing:.06em;color:var(--text);background:var(--panel3);
- border:1px solid var(--line);border-radius:5px;padding:2px 7px;white-space:nowrap}
-.disc .srcline{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;
- white-space:nowrap}
-.disc .opener{color:var(--accent2);white-space:nowrap}
-.disc[open]>summary{border-bottom:1px solid var(--line)}
-.disc[open] .opener::after{content:" \2039"}
-.disc:not([open]) .opener::after{content:" \203A"}
-.disc .body{padding:12px 13px 13px}
-/* SIDE BY SIDE, NOT A COLUMN OF PROSE. */
-.disc .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
- gap:13px}
-.disc .cols section{min-width:0}
-.disc .cols h5{margin:0 0 5px;font:600 11.5px inherit;letter-spacing:.04em;
- color:var(--text)}
-.disc .cols p{margin:0;font-size:11.5px;line-height:1.5;color:var(--muted)}
-/* THE NUMBERS COME OUT OF THE SENTENCES AND BECOME FIGURES. They were buried
-   mid-paragraph and nobody read them. */
-.disc .figs{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 7px}
-.disc .figs b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
- font-size:11px;font-weight:600;color:var(--text);background:var(--panel3);
- border:1px solid var(--line);border-radius:5px;padding:2px 6px}
-.disc .figs b i{font-style:normal;color:var(--muted);font-weight:400}
+/* THE DISCLOSURE BAR IS NO LONGER DEFINED HERE.
+
+   Code extracted these rules verbatim into `testing/_src/_disc.css` so find,
+   keybinds and index would share one implementation, and left this page's copy
+   alone because it is not Code's file to edit - two copies rather than four,
+   with a note that loadout could point at the file whenever C1 wanted.
+
+   IT WANTS. Two copies of a rule set are two things to change and one to
+   forget, and the page that would be forgotten is this one - the reference
+   implementation, which is exactly the copy everybody assumes is current. The
+   build substitutes the file at this marker and FAILS CLOSED IN BOTH
+   DIRECTIONS: a marker with no file stops the build, and a file no page asks
+   for is reported rather than passed over.
+
+   The rules were diffed before this was removed. Identical, line for line.
+   Only the comments differed. */
+/* CC_DISC_CSS */
 /* THE COMPARISON STAT, marked so it reads as the axis rather than as the first
    of seven equal numbers. Same weight as the rest - a brighter colour and a
-   rule under it, not a bigger font. The row must still scan as one line. */
+   rule under it, not a bigger font. The row must still scan as one line.
+   NOT a `.disc` rule, so it stays here rather than going into the shared
+   file: it styles the compare-axis line on a part row, which only this page
+   has. */
 .axisnote{padding:7px 13px;font-size:11.5px;color:var(--muted);
  border-bottom:1px solid var(--line);background:var(--panel2)}
 .axisnote b{color:var(--text);font-weight:600}
 .pi .st .lead{color:var(--text);border-bottom:1px solid var(--accent2);
  padding-bottom:1px}
 .pi .st .lead b{color:var(--accent2)}
-/* THE INLINE VARIANT, for the split case over the 3D stage. It sits inside a
-   running sentence rather than owning a row, so it drops the panel chrome and
-   keeps only the opener. The count stays in the sentence outside it. */
-.disc.inline{display:inline;background:none;border:0;border-radius:0;
- margin:0;overflow:visible}
-.disc.inline>summary{display:inline;padding:0;min-height:0;font-size:inherit;
- color:var(--accent2)}
-.disc.inline[open]>summary{border-bottom:0}
-.disc.inline>summary:hover{background:none;text-decoration:underline}
-.disc.inline .body{display:inline;padding:0}
-.disc.inline .body p{display:inline;margin:0;font-size:inherit;color:inherit}
 /* THE LEDGER. Not a log - a list of PORTS that differ from stock, each with
    its own way back. Reading it answers "what have I actually done to this
    ship", which the running totals cannot: a total says the ship got heavier,
@@ -301,8 +275,9 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .ledger button{background:none;border:0;color:var(--accent2);cursor:pointer;
  font:inherit;font-size:10.5px;padding:1px 3px}
 .ledger button:hover{text-decoration:underline}
-.trip{margin-top:11px;padding:11px 13px;background:var(--panel2);border-left:3px solid var(--accent2);
- border-radius:0 8px 8px 0;font-size:14.5px}
+/* `.trip` IS GONE. Every block that used it is a disclosure bar now, and a
+   rule with no element left to style is a rule the next person restores a
+   block into. Removed 2026-08-27; the page carried zero `class="trip"`. */
 .note{margin-top:13px;padding:11px 13px;background:var(--notebg);border:1px solid var(--noteline);
  border-radius:8px;font-size:13.5px;color:var(--notetext)}
 /* WHOSE NUMBER IS IT (L13). A badge rather than a footnote, so the
@@ -2191,6 +2166,80 @@ function renderMatchup(){
     <p>Nothing here says one gun is better. A ballistic loadout that looks weak
     against an energy-resistant hull is the stronger choice against a
     physical-resistant one, and both facts are on this table at once.</p>
+    </section></div></div></details>`;
+
+  /* THE SHIELD IS IN FRONT OF THE ARMOUR AND THE TABLE ABOVE IGNORES IT.
+     Everything above is armour: what reaches the hull AFTER the shield is
+     down or the shot got through. A reader who stops there leaves thinking
+     the matchup is the whole story, and the shield half is both simpler and
+     more useful to somebody choosing between a laser and a gatling.
+
+     MEASURED BY C1 ON DISK, ship-items.json in snapshot 20260827T030607Z:
+     73 shield items, and `Shield.Absorption` has exactly ONE profile across
+     all 73. No shield you can buy changes any of it.
+
+     AND THE NUMBER EVERYBODY WANTS TO PUBLISH IS THE TOP OF A RANGE.
+     C3's brief proposed shipping "a shield stops all of a laser's damage and
+     only 45% of a ballistic's" as the single most useful sentence on the
+     site. The energy half is exact. The ballistic half is not a value:
+
+         Physical    Minimum 0     Maximum 0.45     <- a RANGE
+         Energy      Minimum 1     Maximum 1        <- the only fixed channel
+
+     What moves absorption along that range is NOT ESTABLISHED - CURRENT-STATE
+     has carried it as an open question since 08-22 and guesses charge level.
+     At the bottom of it a shield absorbs NONE of a ballistic hit, so "45%" as
+     a flat claim is wrong in the direction that gets a new player killed.
+
+     AND THERE IS A SECOND BLOCK. Every shield also carries
+     `Shield.Resistance` - Physical 0-0.25, Distortion 0.75-0.95, zero
+     elsewhere - one profile across all 73, and whether it stacks with
+     Absorption is not established either. It is NOT the same thing as
+     `Durability.Resistance`, which is damage to the component itself; those
+     are different blocks on different paths and conflating them would close
+     this question falsely.
+
+     SO THE PAGE SAYS THE FIXED HALF AS FACT AND THE RANGE AS A RANGE. That
+     is still the ballistic-versus-laser answer a new player is asking for,
+     and it does not invent the one number nobody has established. */
+  h+=`<h2>And the shield in front of it</h2>
+    <p class="sub2">Every shield in the game carries <b>identical</b> damage
+    numbers &mdash; 73 of 73, one profile, measured in CIG's own files. No
+    shield you can buy changes any of this.
+    A raised shield stops <b>all</b> of an energy weapon's damage.
+    Against ballistics it stops <b>somewhere between none and 45%</b>, and what
+    moves it along that range is not established &mdash; so a gatling puts at
+    least half its damage through a shield that a laser cannot touch at
+    all.</p>
+    <details class="disc"><summary>
+      <span class="stamp">SHIELDS &middot; 4.9</span>
+      <span class="srcline">45% is the top of a range, not the number</span>
+      <span class="opener">What is measured and what is not</span>
+    </summary><div class="body">
+    <div class="figs"><b>73<i> shields</i></b><b>1<i> profile</i></b>
+      <b>0&ndash;0.45<i> physical absorbed</i></b><b>1.00<i> energy absorbed</i></b></div>
+    <div class="cols"><section>
+    <h5>The energy half is exact</h5>
+    <p>Energy absorption reads Minimum 1, Maximum 1 on all 73 shields. It is
+    the only channel where the two ends of the range meet, which is why it can
+    be stated flatly: a raised shield takes the whole shot.</p>
+    </section><section>
+    <h5>The ballistic half is a range and we will not flatten it</h5>
+    <p>Physical absorption reads Minimum 0, Maximum 0.45. Published as a flat
+    &ldquo;45%&rdquo; it would be wrong at the bottom of the range, where a
+    shield absorbs none of the hit. What moves it &mdash; charge level is the
+    guess &mdash; is an open question, not a finding.</p>
+    </section><section>
+    <h5>There is a second block nobody has resolved</h5>
+    <p>Shields also carry <code>Resistance</code>: physical 0&ndash;0.25,
+    distortion 0.75&ndash;0.95, zero elsewhere. Whether it stacks with
+    absorption is unestablished, so no effective-damage number is computed
+    here. This is not the item&rsquo;s own <code>Durability.Resistance</code>,
+    which is damage to the shield generator as a component.</p>
+    </section><section>
+    <h5>Patch 4.9, and it must be re-measured</h5>
+    <p>Every figure above comes from the 4.9 snapshot. The 4.10 pull is in
+    flight and these are exactly the values a balance pass moves.</p>
     </section></div></div></details>`;
   el.innerHTML=h;
 }

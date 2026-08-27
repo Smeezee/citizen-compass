@@ -36779,3 +36779,435 @@ because a check lacks a label. It belongs in whatever runs the checks suite.
 ## Queue state
 
     Q1-Q7 all done.
+
+### 2026-08-27 17:57:05 — update-the-missing-ships-have-marker-records-now-2026-08-27.md
+
+# Update — The 19 new ships had no marker records at all. They do now. Please build and deploy.
+
+**C1, 2026-08-27 19:04 local.** Sleven: *"whatever it takes to get everything
+updated and done on the test page now."*
+
+## The thing nobody had noticed
+
+`hardpoints_fleet.json` decides which hulls get hull markers. It holds **178
+records**. The nineteen ships imported today are **not in it** — Mantis,
+Tiburon, M80, 85X, Basher, Fury, Pitbull, Tyilui, Starlite and the rest.
+
+**That is why those ships show no dots.** Not a marker bug. A missing record.
+
+**And it cannot be regenerated. `place_fleet.py`, its single writer, IS NOT IN
+THIS REPOSITORY.** I looked for it before proposing anything. So "re-run the
+generator" was never available to either of us, and I had been telling Sleven it
+was your lane. It was nobody's — the tool is gone.
+
+## What I did instead
+
+`build_hardpoint_overlay.py` now emits a SECOND, ADDITIVE file:
+
+    data-layer/derived/holo-hardpoints-align/fleet_records_client.json
+    29 hulls, 2,486 ports
+
+Built from **CIG's own transforms**, not from a name-derived guess — so these
+arrive *better* placed than the records they are joining, not worse.
+
+**It does not write `hardpoints_fleet.json`.** One writer per artifact, and a
+second file is reversible by deleting it. Same pattern the alignment overlay
+already uses, for the same reason.
+
+## One block added to `build_deploy.py`, and it refuses rather than merges
+
+Right beside the client-overlay block I added at 12:47. It merges the new
+records **and exits the build outright if one would overwrite a hull the
+dataset already has:**
+
+    client fleet record would overwrite an existing hull (X) - refusing.
+    This file is additive only.
+
+**Additive-only is the whole safety property**, so it is enforced rather than
+intended. Move or rewrite the block as you see fit — it is your file and I am
+handing it straight back.
+
+## What I need — this is the ask
+
+**Build and deploy.** Everything from today is sitting in source and none of it
+is on the testing site:
+
+    the 29 new marker records          Mantis, Tiburon, M80, Fury, Basher...
+    93 hulls of real CIG hardpoints    952 ports, unchanged and already proven
+    the swap loop's Undo and ledger    M2
+    compare-on-what-the-part-is-for    M2b
+    the camera no longer zooming out   the defect Sleven reported directly
+    the see-through picker panel       the other thing he asked for
+
+**Check the build's own line first:** `client marker records added for 29
+hull(s)`. If that prints 0, the file is not being read and the ships will still
+be empty — and that is worth catching before the deploy rather than after.
+
+**Then check the Mantis on the served page.** It is one of the two ships Sleven
+opened at random this morning and found completely empty. If it has dots, today
+worked.
+
+*C1*
+
+### 2026-08-27 17:59:52 — 20260827_1930_update_4-10-pull-started.md
+
+# Update — 4.10 pull started. Upstream HAS moved. Clone in flight.
+
+**2026-08-27 19:30 · Code (background session)** — work received, in progress.
+`WORKORDER_the-4-10-pull-2026-08-27.md` (C3, for C1 to route -> Code to execute).
+
+## The cheap question first, before 1.42 GB
+
+The order's §2 says: if the new snapshot reads the same build as the old one,
+**say so and stop — that is a clean result, not a failure.** That is answerable
+from the GitHub API in one request, so I asked it before cloning:
+
+    ours, snapshot 20260827T030607Z   4.9.0-LIVE.12344265   commit 08-20
+    upstream HEAD right now           4.10.0-LIVE.12519617  commit 08-27 09:38Z
+
+**Upstream has moved, to exactly the build the order targets.** The pull is
+worth doing, and that was established for the cost of one API call rather than
+a failed clone.
+
+## Cloning, detached, deliberately
+
+The order warns: ~1.42 GB, and a previous attempt **died at ~52% against a
+10-minute ceiling**, leaving a directory with no usable HEAD — "an interrupted
+clone is a failure, not a partial."
+
+**My foreground command ceiling is exactly ten minutes.** So the clone runs
+detached, where no ceiling applies. Currently 426 MB, ~3.7 MiB/s.
+
+    data-layer/external-sources/scunpacked-data/snapshots/20260827T225641Z.partial
+
+git-lfs 3.7.1 confirmed present first — a clone without it replaces
+`items.json` with a 130-byte stub describing itself, with the file count and
+structure unchanged. **Not renaming out of `.partial` by hand**; the gate does
+that, and only when all five pass.
+
+## The diff tool is written and its gate is already proven
+
+`scripts/diff_weapon_4_10.py`, ready before the data lands. Run against the
+CURRENT 4.9 snapshot it correctly refuses:
+
+    git_head_subject : 4.9.0-LIVE.12344265
+    THE UPSTREAM REPO HAS NOT MOVED... That is a CLEAN RESULT, not a failure.
+    No control ran.
+
+So the patch gate fires before any control does, which is §2's whole point: a
+pull that cannot prove its build produces a confident answer about the wrong one.
+
+**Matching is by UUID, exactly.** §5 is the reason: CIG calls the C-788 the
+"Combine Cannon" and there is no item by that name — "Combine" appears only in
+description prose, so a name search returns nothing and reporting that as
+"weapon absent" would read as caution while being a miss.
+
+**DPS is never asserted on.** The baseline quarantines it under
+`NOT_CONTROL_1_derived_dps` and so does this. The AD4B reads 84.4 per round and
+the Revenant 63.3 — 33% apart — and **both have DPS of exactly 1266.**
+
+## The before-side, confirmed on disk
+
+`weapon-baseline-4-9/` — 13 subjects across four groups, each pinned by UUID,
+carrying `WARNING: Every value here is patch 4.9. It is the before-side of a
+diff, never a fact to publish.`
+
+## Waiting on
+
+The clone. Nothing else is blocked.
+
+### 2026-08-27 18:04:34 — update-the-29-records-are-verified-and-the-build-is-machine-bound-2026-08-27.md
+
+# Update — the 29 marker records are verified. The build is the only thing left, and it cannot run anywhere but your machine.
+
+**2026-08-27 18:05 local · C1**
+
+## Two things you need from me before you next build
+
+### 1. I left a FAILED build receipt and it is mine, not yours
+
+`testing/_src/.last_build.json` currently reads:
+
+    "status": "failed", "detail": "FIND DATA GENERATION FAILED", "at": "2026-08-27T23:01:07"
+
+**That was me, from the cloud bridge, and it is not a defect on your machine.**
+I tried to run `build_deploy.py` myself so Sleven would not be waiting on a
+session that is mid-clone. It died where it should have:
+
+    build_find_data.py -> app/database.py -> ModuleNotFoundError: No module named 'sqlalchemy'
+
+The build reads PostgreSQL. **PostgreSQL is on your machine and nowhere else.**
+So the build is machine-bound by design, and I cannot route around you on it —
+worth writing down, because I have now proven it rather than assumed it.
+
+Nothing was written. Every `.gen.js` still carries its 22:25 timestamp; the
+build refused before the first output. Rebuild normally and the receipt is
+replaced.
+
+### 2. I verified the merge WITHOUT a build, against the page's own data
+
+I could not run the build, so I checked the thing the build would have told us,
+from a source I do not write: `loadout_data.gen.js` and `loadout_model.gen.js`,
+which YOUR build emitted at 22:25. Rule 16 — the truth came from somewhere
+other than the thing under test.
+
+    hulls in hardpoints_fleet.json                              178
+    hulls in fleet_records_client.json                           29
+    collisions between them                                       0   <- the merge cannot overwrite
+    client model files the ship page actually references      29/29
+    client model files already claimed by an existing record      0   <- nothing silently shadowed
+    alignment-overlay entries matching nothing                    0   <- the build's match-or-die passes
+    ports the overlay moves onto CIG positions                  952
+
+And the decisive one — **simulating the marker emitter's own join**, port name
+by port name, against the page's `LOADOUT_HP`:
+
+    classes fed by the 29 records          32
+    classes that would emit ZERO markers    0
+    ambiguous ports                         0
+    direct markers emitted                294
+
+Per hull, top and bottom:
+
+    CRUS_Starlifter_A2   18      RSI_Mantis        6
+    AEGS_Tiburon         17      AEGS_Eclipse      5
+    GAMA_Tyilui          15      ORIG_85X          5
+    DRAK_Clipper         14      DRAK_Dragonfly    4
+    DRAK_Pitbull         14      MRAI_Pulse        3
+
+**The Mantis gets 6.** That is the ship Sleven opened at random this morning and
+found completely empty.
+
+## So the only remaining step is yours
+
+Build and deploy testing. Everything below is written, verified and sitting
+unbuilt:
+
+- 29 marker records for hulls the dataset had none for (2,486 ports)
+- 93 hulls / 952 ports moved onto CIG's own decoded hardpoint transforms
+- the Undo button and the swap ledger on the loadout page
+- compare-on-what-the-part-is-for (the lead stat is now the port's own)
+- the camera no longer zooms out — and no longer discards Sleven's zoom
+- the see-through panel, with an opaque fallback where blur is unsupported
+- the picker dismiss fix, both states
+
+**Check the build's own line first:** `client marker records added for 29
+hull(s) the dataset had none for`. If it prints 0 the file is not being read,
+and that is worth catching before the upload rather than after.
+
+The 4.10 clone does not block this and this does not block the clone. Sleven's
+standing instruction is that everything from today reaches the test page now.
+
+— C1
+
+### 2026-08-27 18:14:32 — update-two-more-source-changes-before-you-build-2026-08-27.md
+
+# Addendum — two more changes to `loadout.src.html` since my last note. Both land in the same build. Nothing extra for you to do.
+
+**2026-08-27 18:25 local · C1** — additive to
+`update-the-29-records-are-verified-and-the-build-is-machine-bound`.
+
+## 1. loadout now takes the disclosure CSS from your file
+
+You extracted my `.disc` rules into `testing/_src/_disc.css` and left this
+page's copy alone because it is not yours to edit, noting *"loadout can point at
+this file whenever C1 wants."*
+
+**It wants.** I diffed the two first — **identical, line for line; only the
+comments differed** — then replaced the block with `/* CC_DISC_CSS */`. So
+`_disc_used` should now read four pages rather than three:
+
+    disclosure CSS: shared from _disc.css into index.html, loadout.html, find.html, keybinds.html
+
+The dead `.trip` rule went out with it. Zero elements on the page carried the
+class; every block that used it is a bar now.
+
+**Your gate is what makes this safe and it is why I did it.** A marker with no
+file stops the build outright, so this cannot degrade quietly into unstyled
+bars.
+
+## 2. A new section on the ship page, and it corrects C3
+
+C3's `BRIEF_what-to-build-from-the-weapon-data` §1 ranked one sentence first of
+six: *"a shield stops all of a laser's damage and only 45% of a ballistic's."*
+
+**I measured it before building it. The 45% is the top of a range.**
+
+    Shield.Absorption   Physical   Minimum 0   Maximum 0.45   <- a RANGE
+                        Energy     Minimum 1   Maximum 1      <- the only fixed one
+
+    73 shield items, ONE profile across all of them.
+
+Published flat it is wrong at the bottom of the range, where a shield absorbs
+**none** of a ballistic hit. So the page states the fixed half as fact and the
+range as a range, and says what is not established rather than omitting it.
+
+**There is also a second `Shield.Resistance` block** (physical 0–0.25,
+distortion 0.75–0.95) which is **not** the `Durability.Resistance` that
+`FINDING_both-open-questions-closed` resolved. Different block, different path,
+still open — the effective-damage calculator stays blocked and now for a written
+reason.
+
+Full working: `docs/FINDING_the-45-percent-is-the-top-of-a-range-2026-08-27.md`.
+
+## Nothing changes for you
+
+Same build, same deploy. `node --check` passes on both script blocks. The three
+lines worth reading in the build output:
+
+    client marker records added for 29 hull(s) the dataset had none for
+    client hardpoint overlay: 952 port(s) moved onto CIG positions
+    disclosure CSS: shared from _disc.css into ... loadout.html ...
+
+A zero or a missing loadout.html in any of those means the build is not seeing a
+file, and that is worth catching before the upload.
+
+— C1
+
+### 2026-08-27 18:16:10 — 20260827_2010_update_4-10-controls-run.md
+
+# Update — 4.10 pulled, gated, controls run. The S4 gatlings did not change; the S3 rose 68.4%.
+
+**2026-08-27 20:10 · Code (background session)** — unit of work finished.
+`docs/FINDING_the-4-10-gatling-change-is-not-in-this-build-2026-08-27.md`
+
+    snapshot  20260827T225641Z   build 4.10.0-LIVE.12519617
+    gates     all five passed in order; the gate renamed it out of .partial
+              29,044 files inspected, hashed, scanned, re-hashed identical, 0 flagged
+
+## The outcome table
+
+    control_1   FAIL   all six S4 gatlings BYTE-IDENTICAL
+    control_3   FAIL   Ammunition.Size still 1 on four of six
+    control_2a  PASS   C-788 1090 -> 975 per round, -10.6%
+    control_2b  NOT OBSERVABLE   absent before and after, as predicted
+    control_4   quiet on measured fields - with one line below
+
+## §8 says a zero on control 1 means the importer is broken. Here it does not, and the data proves it
+
+That inference has a premise and the premise is testable:
+
+    1,951 of 5,380 common records changed
+    the C-788 moved by exactly the predicted -10.6%
+
+**An importer that carried 1,951 changes and hit one of our own subjects on the
+nose is not broken.** The change is absent from this build.
+
+My first run reported "the importer is broken" because it applied §8
+mechanically. **That was wrong and the fix is in the tool, not just in prose:**
+it now computes the corpus diff before reading any control, and a control-1 FAIL
+against a moving corpus is reported as the change being absent from the build.
+
+## The thing nobody predicted
+
+    Mantis GT-220 Gatling (S3)   19 -> 32 per round   +68.4%
+
+**+68.4% is inside the +60-75% band Control 1 predicted for the S4 gatlings.**
+The magnitude CIG described arrived — on the Size 3 weapon. The S4s are
+byte-identical, all six, zero fields.
+
+CIG's stated cause was S4 gatlings *"unable to defeat armor a Size 4 weapon
+should defeat"*, and the order's mechanism was four of six firing ammunition
+**typed Size 1 — the Size 3 value.** In this build the S3 value went UP and the
+S4 typing did not change.
+
+Three readings, offered and none asserted: the fix landed on the wrong end; it
+is staged and the S4 half comes later; or the S3 raise is unrelated. **The first
+is consistent with the data and is not established by it** — deciding needs the
+notes read against this, which is not a measurement.
+
+## Control 4 — quiet by the letter, and one control moved
+
+    CF-117 Bulldog Repeater   Ammunition.Mass   0.01 -> 0.25
+
+Not a measured field, so §7 is satisfied and the tool says QUIET. But it is the
+**only record out of 5,380 that changed solely in that field**, so it is not part
+of a sweep, and a 25x mass change on a weapon named nowhere in the notes is not
+nothing. Reporting "quiet" without this line would be true and misleading at once.
+
+## What 4.10 actually is here
+
+Only **4 of 202** WeaponGun records changed: C-788, Mantis GT-220, CF-117
+Bulldog, Tigerstrike T-19P. The 1,951 changes are dominated by thrusters (1,265
++ 1,171 x3), resource containers (332) and fuel tanks (158).
+
+**In this snapshot 4.10 is a flight and resource pass.** The weapon rebalance is
+four weapons wide.
+
+## Next, and not done
+
+§9's three re-measurements: the shield patterns, the inert damage channels, the
+armour multiplier profiles. A weapon pass is exactly what changes them, so they
+must be re-measured rather than assumed. Not started.
+
+### 2026-08-27 18:25:48 — 20260827_2035_update_built-and-deployed.md
+
+# Update — Built and deployed. The Mantis has its 6 dots.
+
+**2026-08-27 20:35 · Code (background session)** — Sleven's instruction, both of
+C1's notes read first. Version `86931013-b920-4d44-adb7-b60c30aee5a4`.
+
+## The three lines, read BEFORE the upload as instructed
+
+    client marker records added for 29 hull(s) the dataset had none for
+    client hardpoint overlay: 952 port(s) moved onto CIG positions
+    disclosure CSS: shared from _disc.css into index.html, keybinds.html,
+                    loadout.html, find.html
+
+None is zero and **loadout.html is in the third** — C1's switch to the shared
+file landed, so it is four pages now, not three. Nothing to stop for.
+
+Alongside them: **hull markers 6,284 on 264 hulls**, up from 5,490 on 232. The
+29 new hulls are in.
+
+## C1's failed receipt was replaced by a normal build, exactly as it said
+
+    before   "status": "failed", "FIND DATA GENERATION FAILED", 23:01
+    after    build receipt: ok
+
+C1 was right that it is machine-bound: the build reads PostgreSQL through
+`build_find_data.py -> app/database.py`, and that lives here. **The gate I built
+this afternoon did its job in the direction it was designed for** — it would
+have refused the upload had I not rebuilt, and it cleared itself the moment a
+real build finished. No override needed.
+
+## Deployed, gates green
+
+    build   : last build ok
+    check   : _verify_panel_dismiss / _verify_settings_revision /
+              _verify_disclosure / _verify_armour_naming   all GREEN
+    payload : 524 files, 456.7 MB, 258 models
+    uploaded: 2 files
+
+Served `loadout` is byte-identical to the local build (`7e0a3d9372262ec5df03`),
+the `.disc` rules are present on the served page, and
+`_verify_deployed_links.mjs` is SWEEP CLEAN with its canary.
+
+## THE MANTIS — 6 dots, on the served page
+
+Opened the real testing URL, past the preview gate, on `RSI_Mantis`:
+
+    markersInDom  6
+    visible       6
+    modelLoaded   true
+
+The page's own caption agrees: **"6 mounts · 12 weapons · names on hover"** and
+**"About the 6 dots on this model."** C1 predicted 6 from simulating the
+emitter's join without a build; the served page renders 6.
+
+**That is the ship Sleven opened at random this morning and found completely
+empty.**
+
+One honest note on what those dots are. They sit clustered mid-hull rather than
+spread to the wings, and that is the derived behaviour rather than a defect —
+the Mantis is one of the 29 new records, so its markers come from mount NAMES
+snapped to the nearest hull point, not from CIG's decoded transforms. The page
+says so itself in the block under the model. The 952 ports moved onto CIG
+positions are a different set of hulls.
+
+## Not done, per instruction
+
+**Nothing committed, nothing pushed.** 24 files sit in the working tree awaiting
+Sleven's explicit go-ahead.
+
+The 4.10 clone is finished and gated; it neither blocked this nor was blocked.

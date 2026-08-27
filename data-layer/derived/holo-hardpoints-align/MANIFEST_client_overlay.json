@@ -12,7 +12,9 @@
   {
    "class": "AEGS_Eclipse",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 59,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "AEGS_Gladius",
@@ -192,7 +194,9 @@
   {
    "class": "CRUS_Star_Runner",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 110,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "DRAK_Buccaneer",
@@ -229,7 +233,9 @@
   {
    "class": "DRAK_Dragonfly",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 55,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "DRAK_Herald",
@@ -282,7 +288,9 @@
   {
    "class": "GLSN_Basher",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 71,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "GLSN_Shiv",
@@ -303,7 +311,9 @@
   {
    "class": "MISC_Fury",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 76,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "MISC_Hull_A",
@@ -361,12 +371,16 @@
   {
    "class": "ORIG_600i",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 98,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "ORIG_85x",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 65,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "ORIG_890Jump",
@@ -395,7 +409,9 @@
   {
    "class": "RSI_Mantis",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 62,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "RSI_Scorpius",
@@ -482,7 +498,9 @@
   {
    "class": "aegs_tiburon",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 121,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "anvl_asgard",
@@ -663,37 +681,51 @@
   {
    "class": "crus_starfighter_inferno",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 72,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starfighter_inferno_collector_military",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 72,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starfighter_ion",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 72,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starfighter_ion_collector_stealth",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 72,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starlifter_a2",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 149,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starlifter_a2_collector_military",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 149,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starlifter_c2",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 149,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starlifter_m2",
@@ -703,7 +735,9 @@
   {
    "class": "drak_clipper",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 88,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "drak_golem",
@@ -732,7 +766,9 @@
   {
    "class": "drak_pitbull",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 61,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "gama_railen",
@@ -745,7 +781,9 @@
   {
    "class": "gama_tyilui",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 103,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "krig_l21_wolf",
@@ -814,7 +852,9 @@
   {
    "class": "misc_starlite",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 82,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "mrai_guardian",
@@ -835,12 +875,16 @@
   {
    "class": "mrai_pulse",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 56,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "orig_m80",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 75,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "rsi_apollo_medivac",
@@ -917,37 +961,51 @@
   {
    "class": "rsi_aurora_gs_cl",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 82,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "rsi_aurora_gs_es",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 82,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "rsi_aurora_gs_ln",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 82,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "rsi_aurora_gs_lx",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 82,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "rsi_aurora_gs_mr",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 82,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "rsi_aurora_gs_se",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 82,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "rsi_aurora_mk2",
    "emitted": 0,
-   "why": "no fleet record for this hull"
+   "added_record": true,
+   "ports_added": 77,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "rsi_constellation_andromeda",
