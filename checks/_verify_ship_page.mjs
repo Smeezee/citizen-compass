@@ -1528,16 +1528,34 @@ console.log("\n--- P5: a marker CLICK opens the picker for THAT port ---");
       `current:{},unitScale(){return 1;},project(){return{x:640,y:360,depth:0};},` +
       `spinning(){return this._s;},setSpin(v){this._s=!!v;return this._s;},` +
       `load(){return 1;}};_modelFor=shipId;sel=null;renderAll();`, sandbox);
+    /* V2: THE DOT FOR THIS PORT IS THE DOT FOR ITS MOUNT. The markup carries
+       data-mount, and the port we are asking about is reached through it -
+       directly when the mount holds one weapon, via the list when it holds
+       several. What is asserted below is unchanged: port blr2 and no other. */
     const box = el("cc-marks").innerHTML;
-    if (!box.includes(`data-port="${mark[0]}"`)) return { rendered: false };
+    const root = String(mark[0]).split(".")[0];
+    if (!box.includes(`data-mount="${root}"`)) return { rendered: false };
+    const rep = g(`(mountOf(shipId, ${JSON.stringify(mark[0])})||{}).p`) || mark[0];
     /* The element a browser would hand the handler for a click at that point. */
     const btn = {
-      tagName: "BUTTON", dataset: { port: mark[0] },
-      closest: (s) => (s === "#cc-marks button[data-port]" ? btn : null),
+      tagName: "BUTTON", dataset: { mount: root, port: rep },
+      closest: (s) => (s === "#cc-marks button[data-mount]"
+                       || s === "#cc-marks button[data-port]") ? btn : null,
     };
     let threw = null;
     for (const fn of clickHandlers) {
       try { fn({ target: btn, preventDefault() {} }); } catch (e) { threw = e.message; }
+    }
+    const openedPanel = el("cc-panel");
+    if (!openedPanel.hidden
+        && (openedPanel.innerHTML || "").includes("data-mountport")) {
+      const row = {
+        tagName: "BUTTON", dataset: { mountport: mark[0] },
+        closest: (s) => (s === "#cc-panel button[data-mountport]" ? row : null),
+      };
+      for (const fn of clickHandlers) {
+        try { fn({ target: row, preventDefault() {} }); } catch (e) { threw = e.message; }
+      }
     }
     return { rendered: true, threw, sel: JSON.parse(g("JSON.stringify(sel)")),
              picker: pickerNow() };

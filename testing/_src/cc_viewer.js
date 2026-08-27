@@ -677,15 +677,33 @@ var CCViewer = (function () {
     var max = Math.max(sz.x, sz.y, sz.z) || 1;
     var d = max / (2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov) / 2)) * 1.55;
     var ty = this._hullOrigin.y;
-    this.camera.position.set(d * 0.75, ty + d * 0.42, d * 0.85);
+    /* V1: -Z, AND THE SIGN IS THE WHOLE FIX. Forward is -Z in this model
+       frame - measured, not assumed: at the low-Z end the Sabre is 369 cm
+       wide and at the high-Z end 2338 cm, the full wingspan, and a Sabre's
+       nose is a point while its tail is the wings. place_hardpoints.py lines
+       28-34 state it and the entire hardpoint placer depends on it.
+       The camera sat at +Z, so it opened on the BACK of all 239 hulls: a
+       fighter seen tail-on from above is a shapeless mass with a wing out of
+       it, which is what Sleven described - "didn't look like a ship, just a
+       blob of colours until I rotated it". Negative Z is the front
+       three-quarter view every ship page in the genre opens on. */
+    this.camera.position.set(d * 0.75, ty + d * 0.42, -d * 0.85);
     this.controls.target.set(0, ty, 0);
     /* G2: FIT BY ITERATING THE PROJECTED BOUNDING BOX, NOT THE SPHERE.
        Sphere-fitting leaves a long thin hull tiny in frame - it reserves room
        for a radius the ship only reaches along one axis. Six passes over the
        eight projected corners, scaling the distance by the worst overshoot,
        converges without needing to solve anything. */
-    this._fitProjected(box, ty, 6);
-    this._setClip(box, ty);
+    /* THE BOX ABOVE IS WHERE THE HULL WAS, NOT WHERE IT IS. It was measured
+       before the three lines that stand the hull on the disc, so its corners
+       are the pre-translation ones. _setClip only reads the size, which is
+       translation-invariant, but _fitProjected fits the CORNERS - and fitting
+       corners the hull has moved away from is why the loop oscillated instead
+       of converging. _hullOrigin, _hullSize and _fitTable(sz) all read sz, so
+       no marker moves relative to the hull. */
+    var fitBox = new THREE.Box3().setFromObject(o);
+    this._fitProjected(fitBox, ty, 6);
+    this._setClip(fitBox, ty);
     this.controls.update();
     return { sz: sz };
   };
@@ -704,19 +722,89 @@ var CCViewer = (function () {
   };
 
   Viewer.prototype._fitProjected = function (box, ty, passes) {
+    /* A2's evidence, reset per fit so it describes THIS one. `beyondFar` is
+       the number that must stay at zero. */
+    this._fitDiag = { behind: 0, beyondFar: 0, passes: 0 };
     if (!this.camera || !this.controls) return 0;
     var target = new THREE.Vector3(0, ty, 0);
     var corners = this._boxCorners(box);
     var i, k, worst;
+
+    /* A1: THE MEASUREMENT SETS ITS OWN PLANES, BECAUSE A MEASUREMENT MUST NOT
+       DEPEND ON VALUES CHOSEN FOR A DIFFERENT SCENE.
+
+       boot() opens the camera at near 0.01 / far 10000. Those are fine for the
+       238 hulls that fit inside them and they silently defeat the fit for
+       anything that does not: the Asgard's opening distance is 11,851, every
+       corner falls beyond far, the guard below scores each one as a full
+       overshoot, and the camera runs to 1,250,895. A black page with no error.
+
+       That is a CLASS of defect, not one ship - any asset that arrives outside
+       the size range boot() happens to assume defeats it the same way, too big
+       today or too small tomorrow.
+
+       So the planes are derived from the box and the target, recomputed on
+       every pass because the camera moves, and wide enough that no corner of
+       the box handed to this function can fall outside them. They are
+       RESTORED before returning, and _setClip() runs afterwards in frame() -
+       so G2's tight depth ratio still owns every rendered frame and nothing is
+       ever drawn while these are in force. */
+    var _near0 = this.camera.near, _far0 = this.camera.far;
+    /* The box's reach from the point the camera is aimed at. */
+    var _reach = 0;
+    for (i = 0; i < corners.length; i++) {
+      _reach = Math.max(_reach, corners[i].distanceTo(target));
+    }
+    if (!(_reach > 0)) _reach = 1;
+
     for (k = 0; k < (passes || 6); k++) {
+      /* AIM BEFORE MEASURING. Without this the loop projects through a camera
+         pointing wherever boot() left it, so moving it further out does not
+         shrink the hull in frame - the hull just drifts further off-axis. The
+         loop reads that as "still overshooting", pushes again, and compounds:
+         99 m to 25,022 m in six passes on the Harbinger, ~850x the bounding
+         radius on all 239 hulls. controls.update() aims the camera, but it
+         runs in frame() AFTER this loop has finished. */
+      this.camera.lookAt(target);
+      /* A1, applied: everything from here to `_reach` behind the camera and
+         `_reach` beyond it is inside the frustum, whatever the camera's
+         distance has become. */
+      var _dist = this.camera.position.distanceTo(target);
+      this.camera.near = Math.max((_dist - _reach) * 0.5, _dist * 1e-4, 1e-6);
+      this.camera.far = (_dist + _reach) * 2 + 1;
       this.camera.updateMatrixWorld();
       this.camera.updateProjectionMatrix();
+      /* The camera is aimed at the target, so the target direction IS the view
+         direction. Used instead of matrixWorldInverse deliberately: it needs
+         only sub/normalize/dot, which keeps this readable by the stub cameras
+         the existing controls run against. */
+      var _fwd = target.clone().sub(this.camera.position);
+      if (_fwd.lengthSq() < 1e-12) _fwd.set(0, 0, -1);
+      _fwd.normalize();
       worst = 0;
       for (i = 0; i < corners.length; i++) {
+        /* A2: TWO DIFFERENT FAILURES WERE WEARING ONE TEST.
+           `p.z > 1` is true for a corner BEHIND the camera and for one BEYOND
+           THE FAR PLANE, and they call for opposite responses:
+             behind    - genuinely not visible, backing off is correct
+             beyond far - the PLANES are wrong, and backing off makes it worse.
+                          That is the 1.25 million-metre runaway.
+           After A1 the second branch cannot be reached, because the planes are
+           now built to contain the box. It is kept, counted, and asserted on
+           rather than deleted: if it ever fires again we learn about it instead
+           of watching the camera leave. */
+        var _depth = corners[i].clone().sub(this.camera.position).dot(_fwd);
+        if (_depth <= 0) {
+          this._fitDiag.behind++;
+          worst = Math.max(worst, 2);
+          continue;
+        }
+        if (_depth > this.camera.far) {
+          this._fitDiag.beyondFar++;
+          worst = Math.max(worst, 2);
+          continue;
+        }
         var p = corners[i].clone().project(this.camera);
-        /* Behind the camera projects to nonsense, so it is treated as a full
-           overshoot rather than allowed to shrink the fit. */
-        if (p.z > 1) { worst = Math.max(worst, 2); continue; }
         worst = Math.max(worst, Math.abs(p.x), Math.abs(p.y));
       }
       if (worst <= 0) break;
@@ -729,6 +817,11 @@ var CCViewer = (function () {
       if (dir.lengthSq() < 1e-12) dir.set(1, 0.5, 1);
       this.camera.position.copy(target).add(dir.multiplyScalar(scale));
     }
+    /* A1: HANDED BACK. _setClip() is what every rendered frame uses. */
+    this.camera.near = _near0;
+    this.camera.far = _far0;
+    this.camera.updateProjectionMatrix();
+    this._fitDiag.passes = k;
     return this.camera.position.distanceTo(target);
   };
 

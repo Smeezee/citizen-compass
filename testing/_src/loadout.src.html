@@ -302,6 +302,20 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 #cc-labels .hp b{display:block;color:var(--lblhead);font-weight:600;font-size:10.5px}
 #cc-labels .hp.turret{color:var(--lblturret)}
 #cc-labels .hp.hot b{color:var(--accent)}
+/* V2: a dot standing for several weapons is drawn a touch larger with a
+   ring, so "there is more than one thing here" is visible before it is
+   clicked rather than only in the tooltip. */
+#cc-marks button.many{width:13px;height:13px;
+  box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent2)}
+#cc-panel .mhead{font:700 10.5px inherit;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);padding:2px 2px 6px}
+#cc-panel button.mrow{display:block;width:100%;text-align:left;
+  background:var(--panel2);border:1px solid var(--line);border-radius:4px;
+  padding:6px 8px;margin:0 0 4px;font:inherit;color:var(--text);cursor:pointer}
+#cc-panel button.mrow:hover{border-color:var(--accent2)}
+#cc-panel button.mrow b{display:block;font-size:12px}
+#cc-panel button.mrow span{display:block;font-size:10.5px;color:var(--muted)}
+#cc-panel .mfoot{font-size:10.5px;color:var(--muted);padding:4px 2px 0}
 #cc-labelcount{position:absolute;left:9px;bottom:9px;z-index:6;font-size:11px;
  color:var(--muted);background:var(--scrim-72);border:1px solid var(--line);
  border-radius:7px;padding:4px 9px}
@@ -2685,9 +2699,62 @@ function panelPlacement(px, py, sw, sh, pw, ph, gap){
 /* THE PANEL ITSELF. Its contents are pickerHTML() or fixedPanel() - the same
    two functions the inline route uses, so the row and the dot cannot show
    different things. That identity is what B3's control asserts. */
+/* V2: WHICH MOUNT'S WEAPON LIST IS OPEN, if any. Null the moment a weapon
+   is chosen from it - the list is a step on the way to a port, never a
+   parallel selection that could disagree with `sel`. */
+let mountSel=null;
+
+/* The list a multi-weapon mount opens. Every row ends in selectPort, so a
+   turret's second gun is reached by the same call the left-hand list uses. */
+function mountPanelHTML(mo){
+  const rows=mo.ports.map(pid=>{
+    const sl=slotByPort(pid); if(!sl) return "";
+    const part=P[sl.stock];
+    const nm=part?part.n:portLabel(sl.h);
+    const fx=!swappable(sl);
+    return `<button type="button" class="mrow" data-mountport="${pid}">
+      <b>${nm}</b><span>${tname(sl.t)}${fx?" &middot; fixed in game":""}</span>
+      </button>`;
+  }).join("");
+  const sl0=slotByPort(mo.p);
+  return `<div class="mhead">${mo.n} weapons on
+    ${sl0?portLabel(sl0.h):"this mount"}</div>${rows}
+    <div class="mfoot">One dot per physical mount. Every weapon on it is
+    listed here and opens the same way as the list on the left.</div>`;
+}
+
 function renderStagePanel(){
   const el=$('cc-panel'); if(!el) return;
   const sh=ship(), slot=sel?sh.slots.find(x=>x.id===sel.slot):null;
+  /* THE MOUNT LIST TAKES THE PANEL ONLY WHEN NOTHING IS SELECTED, so the two
+     can never both be claiming it. Selecting a weapon clears mountSel at the
+     click, so this is belt and braces rather than the mechanism. */
+  if(!slot && mountSel){
+    const mo=mountOf(shipId, mountSel);
+    if(mo){
+      el.innerHTML=mountPanelHTML(mo);
+      el.hidden=false;
+      const stage=$('cc-stage');
+      const sw=(stage&&stage.clientWidth)||0, sy=(stage&&stage.clientHeight)||0;
+      const v=_view;
+      let pt=null;
+      if(v && v.project && v.unitScale){
+        const us=v.unitScale();
+        pt=v.project(mo.x*us, mo.y*us, mo.z*us);
+      }
+      const px = pt ? pt.x : (sw/2), py = pt ? pt.y : (sy/2);
+      const ph = Math.min(PANEL_MAXH, sy||PANEL_MAXH);
+      const box = panelPlacement(px, py, sw, sy, PANEL_W, ph, PANEL_GAP);
+      el.style.width = PANEL_W+"px";
+      el.style.maxHeight = ph+"px";
+      el.style.left = box.left+"px";
+      el.style.top = box.top+"px";
+      el.setAttribute("data-side", box.side);
+      if(_view && _view.setObstruction) _view.setObstruction(PANEL_W);
+      return;
+    }
+    mountSel=null;
+  }
   if(!slot || pickerHome(slot)!=="stage"){
     el.hidden=true; el.innerHTML="";
     /* E4: and the stage gets its whole width back. */
@@ -2698,12 +2765,18 @@ function renderStagePanel(){
   el.hidden=false;
   const stage=$('cc-stage');
   const sw=(stage&&stage.clientWidth)||0, sy=(stage&&stage.clientHeight)||0;
-  const mk=(MARKS[shipId]||[]).find(m=>m[0]===slot.p);
+  /* V2: ANCHOR TO THE DOT THAT IS DRAWN, NOT TO THE PORT'S OWN POINT. The
+     port still has its own marker in MARKS, but on a multi-weapon mount that
+     point is not where anything is drawn any more - anchoring to it would put
+     the panel beside an invisible position. */
+  const mo=mountOf(shipId, slot.p);
+  const mk=mo || (MARKS[shipId]||[]).find(m=>m[0]===slot.p);
   const v=_view;
   let pt=null;
   if(mk && v && v.project && v.unitScale){
     const us=v.unitScale();
-    pt=v.project(mk[1]*us, mk[2]*us, mk[3]*us);
+    pt = mo ? v.project(mo.x*us, mo.y*us, mo.z*us)
+            : v.project(mk[1]*us, mk[2]*us, mk[3]*us);
   }
   /* NO PROJECTION MEANS NO ANCHOR, and guessing one would put the panel
      somewhere with no relationship to the marker. It goes to a stated corner
@@ -2731,6 +2804,62 @@ function renderStagePanel(){
   }
 }
 function markersFor(cls){ return MARKS[cls]||[]; }
+
+/* V2: ONE DOT PER PHYSICAL MOUNT, AND THE PortId ALREADY SAYS WHICH.
+
+   C1/C2 gave every gun inside a turret its turret's position, which was right
+   - before it, the Retaliator drew 4 of its 24 weapons and the page was lying
+   by omission. But a four-gun turret then planted four markers on one spot.
+   Fleet markers went 1,252 to 3,707, twenty-one hulls carried more than forty,
+   and the label solver refused 95 of the Polaris's 133 for lack of room.
+
+   A PortId IS A PATH. `15.loadout.0.loadout.0` is a gun, inside mount
+   `15.loadout.0`, inside turret base `15`. Grouping on the first segment
+   collapses a turret to the one physical thing bolted to the hull.
+
+   NOTHING IS LOST AND NOTHING IS HIDDEN. Every port keeps its marker in MARKS,
+   so onStage() still answers truthfully for each gun and the picker still
+   opens over the stage for it. What changes is how many dots are DRAWN: a
+   turret with four guns is drawn as one turret, and clicking it lists the four.
+
+   Measured across the 165 hulls that carry markers: 3,707 -> 1,366 (63.2%
+   fewer), median 17 -> 8, and ships over 40 markers 21 -> 0. */
+function mountRoot(pid){
+  const t=String(pid), i=t.indexOf('.');
+  return i<0 ? t : t.slice(0,i);
+}
+const _mountCache={};
+function mountsFor(cls){
+  if(_mountCache[cls]) return _mountCache[cls];
+  const by={};
+  for(const m of (MARKS[cls]||[])){
+    const r=mountRoot(m[0]);
+    (by[r]||(by[r]=[])).push(m);
+  }
+  /* THE REPRESENTATIVE IS THE SHALLOWEST MEMBER, not the first one seen. The
+     generator nudges each child off its parent so no two markers share
+     coordinates, so the deeper a port sits the further it has been pushed from
+     where the mount actually is. The shallowest member is the least-nudged
+     position available, and ordering is by path depth then by name so the
+     choice is deterministic rather than dependent on object key order. */
+  const out=Object.keys(by).sort().map(r=>{
+    const ms=by[r].slice().sort((a,b)=>{
+      const da=String(a[0]).split('.loadout.').length;
+      const db=String(b[0]).split('.loadout.').length;
+      return da-db || (String(a[0])<String(b[0]) ? -1 : 1);
+    });
+    const rep=ms[0];
+    return {root:r, p:rep[0], x:rep[1], y:rep[2], z:rep[3],
+            ports:ms.map(m=>m[0]), n:ms.length};
+  });
+  _mountCache[cls]=out;
+  return out;
+}
+/* Every weapon port on the mount a given port belongs to. */
+function mountOf(cls, pid){
+  const r=mountRoot(pid);
+  return mountsFor(cls).find(m=>m.root===r)||null;
+}
 function slotByPort(pid){ return ship().slots.find(s=>s.p===pid)||null; }
 /* E11: A NAME GOES INTO AN ATTRIBUTE ESCAPED, AND 18 OF THEM NEEDED IT.
 
@@ -2756,23 +2885,30 @@ const attr = v => String(v==null?"":v)
 function renderMarkers(){
   const box=$('cc-marks'), v=_view;
   if(!box) return;
-  const list=markersFor(shipId);
+  const list=mountsFor(shipId);
   if(!list.length||!v||!v.current){ box.innerHTML=""; return; }
   if(box.childElementCount!==list.length){
     box.innerHTML=list.map(m=>{
-      const sl=slotByPort(m[0]);
+      const sl=slotByPort(m.p);
       /* B0: THE MARKER SAYS WHICH KIND IT IS BEFORE IT IS CLICKED - in its
          shape via the `fx` class, and in words via the label a screen reader
          and a tooltip both read. Neither depends on the other. */
-      const fx = !!(sl && !swappable(sl));
+      /* A mount carrying one weapon is exactly what it always was, down to
+         the `fx` shape and the wording. A mount carrying several says how many
+         and what it is, because "click to change" would be a promise this dot
+         cannot keep - it opens a list first. */
+      const fx = !!(sl && !swappable(sl) && m.n===1);
       const part = sl ? P[sl.stock] : null;
-      const label = sl
-        ? `${part?part.n+" — ":""}${tname(sl.t)} — ${portLabel(sl.h)}`
-          + (fx ? " — fixed in game, click for details"
-                : " — click to change")
-        : "port";
-      return `<button type="button" data-port="${m[0]}"
-        class="${fx?'fx':''}" title="${attr(label)}"
+      const label = m.n>1
+        ? `${m.n} weapons on ${portLabel(sl?sl.h:0)} — click to list them`
+        : (sl
+            ? `${part?part.n+" — ":""}${tname(sl.t)} — ${portLabel(sl.h)}`
+              + (fx ? " — fixed in game, click for details"
+                    : " — click to change")
+            : "port");
+      return `<button type="button" data-mount="${m.root}"
+        data-port="${m.p}" data-count="${m.n}"
+        class="${fx?'fx':''}${m.n>1?' many':''}" title="${attr(label)}"
         aria-label="${attr(label)}"></button>`;
     }).join("");
   }
@@ -2785,14 +2921,17 @@ function renderMarkers(){
   _markProj.length=0;
   for(let i=0;i<list.length;i++){
     const m=list[i], b=kids[i];
-    const p=v.project(m[1]*us, m[2]*us, m[3]*us);
+    const p=v.project(m.x*us, m.y*us, m.z*us);
     _markProj[i]=p||null;
     if(!b) continue;
     if(!p){ b.style.display='none'; continue; }
     b.style.display='';
     b.style.left=p.x+'px'; b.style.top=p.y+'px';
-    const sl=slotByPort(m[0]);
-    b.classList.toggle('sel', !!(sel&&sl&&sel.slot===sl.id));
+    /* A mount reads as selected when ANY weapon on it is the selection -
+       otherwise choosing the second gun in a turret would deselect the dot
+       that opened it. */
+    b.classList.toggle('sel', !!(sel && m.ports.some(pid=>{
+      const s2=slotByPort(pid); return s2 && sel.slot===s2.id; })));
   }
 }
 /* Where each marker landed this frame, by its index in markersFor(shipId). */
@@ -3006,7 +3145,7 @@ function _lblNow(){
 function renderLabels(){
   const box=$('cc-labels'), svg=$('cc-leaders'), v=_view;
   if(!box||!svg) return;
-  const list=markersFor(shipId);
+  const list=mountsFor(shipId);
   if(!list.length||!v||!v.current){
     _lblLive=[];
     box.innerHTML=""; svg.innerHTML="";
@@ -3017,7 +3156,7 @@ function renderLabels(){
     box.setAttribute('data-shown','0');
     box.setAttribute('data-dropped','0');
     box.setAttribute('data-total', String(list.length));
-    renderLabelCount(list.length, 0, 0, true);
+    renderLabelCount(list.length, 0, 0, true, markersFor(shipId).length);
     return; }
 
   /* PROJECT NOW, ALWAYS, RATHER THAN WHEN THE COUNT LOOKS WRONG.
@@ -3041,11 +3180,15 @@ function renderLabels(){
     _lblLive=[];
     let lh="", ls="";
     list.forEach((m,mi)=>{
-      const sl=slotByPort(m[0]); if(!sl) return;
-      const selNow = !!(sel&&sel.slot===sl.id);
+      const sl=slotByPort(m.p); if(!sl) return;
+      const selNow = !!(sel && m.ports.some(pid=>{
+        const s2=slotByPort(pid); return s2 && sel.slot===s2.id; }));
       if(!keep(sl, selNow)) return;
       const part=P[sl.stock];
-      const name=part?part.n:portLabel(sl.h);
+      /* A mount with several weapons is named by what it IS, not by whichever
+         gun happened to be the shallowest member - naming it after one of four
+         would read as a claim that the other three are not there. */
+      const name = m.n>1 ? `${m.n} weapons` : (part?part.n:portLabel(sl.h));
       const text=name+"\n"+portLabel(sl.h);
       _lblLive.push({mi:mi, box:labelBox(text), dx:0, dy:0, placed:false,
                      sx:0, sy:0});
@@ -3091,7 +3234,8 @@ function renderLabels(){
   box.setAttribute('data-shown', String(shown));
   box.setAttribute('data-total', String(list.length));
   box.setAttribute('data-dropped', String(noRoom));
-  renderLabelCount(list.length, shown, noRoom, show);
+  renderLabelCount(list.length, shown, noRoom, show,
+                   markersFor(shipId).length);
   /* Stamped LAST, so the frame loop's comparison is against the geometry this
      decision was actually made with rather than the geometry it started with. */
   _lblSizeKey=_lblBoxes();
@@ -3199,8 +3343,17 @@ function positionLabels(){
    a new costume - a thing the page decided not to show you, silently. So the
    hint says how many hardpoints there are, how many carry a label, and offers
    the toggle by name. */
-function renderLabelCount(total, shown, dropped, showing){
+function renderLabelCount(total, shown, dropped, showing, weapons){
   const el=$('cc-labelcount'); if(!el) return;
+  /* V2: THE LINE SAYS WHAT IT NOW MEANS. It said "34 hardpoints" when there
+     were 34 dots and 34 guns. There are now 13 dots and still 34 guns on the
+     Harbinger, and reporting the smaller number under the old word would be
+     the page quietly changing what it counts. So both are stated: the mounts
+     you can point at, and the weapons on them. Where every mount holds one
+     weapon the second half is noise and is left off. */
+  const what = (weapons && weapons!==total)
+    ? `<b>${total} mounts</b> &middot; ${weapons} weapons`
+    : `<b>${total} hardpoints</b>`;
   if(!total){ el.innerHTML=""; el.hidden=true; return; }
   el.hidden=false;
   /* R1b: WHEN LABELS ARE OFF, THIS HAS TO READ AS A CONTROL SOMEBODY WANTS TO
@@ -3213,18 +3366,18 @@ function renderLabelCount(total, shown, dropped, showing){
     msg = dropped
       /* THE PAGE'S OWN DECISION, WITH ITS REASON. Not "this hull is busy" -
          a number the reader can check. */
-      ? `<b>${total} hardpoints</b> &middot; ${dropped} ${
+      ? `${what} &middot; ${dropped} ${
           dropped===1?"has":"have"} no room`
       /* THE READER'S OWN DECISION. The page must not claim a reason it does
          not have. */
-      : `<b>${total} hardpoints</b> &middot; labels off`;
+      : `${what} &middot; labels off`;
     act = dropped ? "show all labels anyway" : "show all labels";
   }else if(dropped){
-    msg=`<b>${total} hardpoints</b> &middot; ${shown} labelled, ${dropped} with
+    msg=`${what} &middot; ${shown} labelled, ${dropped} with
       no room`;
     act="hide labels";
   }else{
-    msg=`<b>${total} hardpoints</b> &middot; all labelled`;
+    msg=`${what} &middot; all labelled`;
     act="hide labels";
   }
   el.classList.toggle('off', !showing);
@@ -3356,7 +3509,11 @@ function coverageLine(){
 
 function renderMarkerNote(){
   const el=$('markernote'); if(!el) return;
-  const n=markersFor(shipId).length;
+  /* V2: THE DOTS, NOT THE PORTS. This sentence is about what is drawn on the
+     model, and what is drawn is one dot per mount. markerCoverage() below
+     still counts PORTS, because that is a claim about how many of the ship's
+     weapon mounts we could place at all - a different question. */
+  const n=mountsFor(shipId).length;
   if(!n){ el.innerHTML=noMarkerNote(); return; }
   el.innerHTML=coverageLine()+`<b>About the ${n} dot${n===1?"":"s"} on this model.</b>
     Where they sit is worked out from each mount's <b>name</b> &mdash; a port
@@ -3799,14 +3956,27 @@ document.addEventListener('keydown',e=>{
   if(e.key!=='Escape') return;
   /* The look panel first: if both are open, Escape closes the thing on top. */
   if(tuneIsOpen()){ tuneOpen(false); return; }
+  if(mountSel){ mountSel=null; renderAll(); return; }
   if(sel){ sel=null; renderAll(); }
 });
 document.addEventListener('click',e=>{
-  const mk=e.target.closest('#cc-marks button[data-port]');
+  const mk=e.target.closest('#cc-marks button[data-mount]');
   if(mk){
-    /* THE SECOND ROUTE, AND IT IS THE SAME ROUTE. Identical call, identical
-       window. A marker resolves to its port by the game's own PortId. */
+    /* THE SECOND ROUTE, AND IT IS STILL THE SAME ROUTE. A mount carrying one
+       weapon goes straight to selectPort, exactly as every marker did before
+       V2 - identical call, identical window.
+       A mount carrying several opens the list of what is on it, and every row
+       in that list calls the SAME selectPort. The extra step is a
+       disambiguation, not a second selection path, which is what keeps
+       selectPort the one place a port gets selected. */
+    const mo=mountOf(shipId, mk.dataset.mount);
+    if(mo && mo.n>1){ mountSel=mo.root; sel=null; renderAll(); return; }
+    mountSel=null;
     selectPort(slotByPort(mk.dataset.port), editing); return;}
+  const mr=e.target.closest('#cc-panel button[data-mountport]');
+  if(mr){
+    mountSel=null;
+    selectPort(slotByPort(mr.dataset.mountport), editing); return;}
   const sl=e.target.closest('.slot[data-slot]');
   if(sl){
     const s=ship().slots.find(x=>x.id===sl.dataset.slot);
@@ -4031,6 +4201,25 @@ $('ship').value=shipId;
 renderAll();
 /* E6: LAST, so the panel opens over a page that already has a ship in it
    rather than over an empty stage. */
-offerPanelOnce();
+/* V3, 2026-08-26: THE FIRST-VISIT AUTO-OPEN IS RETIRED, and this is the line
+   that did it. E6's offerPanelOnce() opened the panel over the model on a
+   first visit. The panel is ~250px on a stage that is often 900px wide, so it
+   covered most of the hull - including in every screenshot taken of this page
+   in the four days the fleet was framed at 850x and people were arguing from
+   those screenshots about how the hull renders.
+
+   WHAT E6 ARGUED, KEPT ON THE RECORD BECAUSE IT IS NOT WRONG: settings persist
+   indefinitely, so somebody who loses their storage lands on defaults and has
+   to find the panel to get back to what they had, and clearing storage clears
+   the seen-flag too, so the recovery path and the first-visit path are the
+   same path. Retiring the auto-open costs that path its automatic prompt.
+
+   WHY IT IS STILL THE RIGHT TRADE: Q3 gave the control a gear and the word
+   `Display`, which is what E6 was compensating for. A findable button that
+   never covers the ship beats an unfindable one that opens itself over it.
+
+   offerPanelOnce(), panelSeen() and rememberPanelSeen() are deliberately LEFT
+   IN PLACE and deliberately NOT CALLED. If C1 reverses this, restoring the
+   behaviour is re-adding this one call - not rebuilding the feature. */
 </script>
 </html>

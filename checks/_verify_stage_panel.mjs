@@ -126,14 +126,30 @@ const slot = SHIPS[key400i].slots.find((x) => x.p === swapMark[0]);
 state.notes.push(`driven with ${SHIPS[key400i].n}, port `
   + `${H.portName(slot)} (${slot.id})`);
 
+/* V2: A DOT ADDRESSES A MOUNT NOW, so this clicks the way a person does -
+   the dot, then the weapon if the mount asked which one. The assertion below
+   is unchanged: this port's own panel must open, anchored where the dot is. */
 const clickMarker = (portId) => {
+  const root = String(portId).split(".")[0];
+  const rep = H.g(`(mountOf(shipId, ${JSON.stringify(portId)})||{}).p`) || portId;
   const btn = {
-    tagName: "BUTTON", dataset: { port: portId },
-    closest: (s) => (s === "#cc-marks button[data-port]" ? btn : null),
+    tagName: "BUTTON", dataset: { mount: root, port: rep },
+    closest: (s) => (s === "#cc-marks button[data-mount]"
+                     || s === "#cc-marks button[data-port]") ? btn : null,
   };
   let threw = null;
   for (const fn of H.clickHandlers) {
     try { fn({ target: btn, preventDefault() {} }); } catch (e) { threw = e.message; }
+  }
+  const opened = el("cc-panel");
+  if (!opened.hidden && (opened.innerHTML || "").includes("data-mountport")) {
+    const row = {
+      tagName: "BUTTON", dataset: { mountport: portId },
+      closest: (s) => (s === "#cc-panel button[data-mountport]" ? row : null),
+    };
+    for (const fn of H.clickHandlers) {
+      try { fn({ target: row, preventDefault() {} }); } catch (e) { threw = e.message; }
+    }
   }
   return threw;
 };

@@ -432,6 +432,10 @@ function makeThree() {
   V3.prototype.add = function (o) { this.x+=o.x; this.y+=o.y; this.z+=o.z; return this; };
   V3.prototype.sub = function (o) { this.x-=o.x; this.y-=o.y; this.z-=o.z; return this; };
   V3.prototype.multiplyScalar = function (s) { this.x*=s; this.y*=s; this.z*=s; return this; };
+  /* A2 needs a dot product to tell a corner BEHIND the camera from one
+     BEYOND THE FAR PLANE. Standard three.js Vector3 arithmetic that this
+     stub had simply never been asked for - not a concession. */
+  V3.prototype.dot = function (o) { return this.x*o.x + this.y*o.y + this.z*o.z; };
   V3.prototype.lengthSq = function () { return this.x*this.x+this.y*this.y+this.z*this.z; };
   V3.prototype.length = function () { return Math.sqrt(this.lengthSq()); };
   V3.prototype.normalize = function () {
@@ -517,6 +521,11 @@ function makeThree() {
         fov: fov, aspect: 16/9, near: 0.1, far: 100,
         position: new V3(), __target: new V3(),
         updateProjectionMatrix() {}, updateMatrixWorld() {},
+        /* See the long note in _verify_stage_floor.mjs. The stub's projection
+           already assumes a camera aimed at __target; _fitProjected's lookAt
+           makes that assumption true of the real camera, so recording the aim
+           point is the faithful implementation, not a silencing no-op. */
+        lookAt(t) { this.__target.copy(t); },
       };
       return c;
     },

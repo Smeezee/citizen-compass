@@ -37,6 +37,15 @@
 import { loadPage, reporter } from "./_loadout_harness.mjs";
 
 const MUTS = {
+  /* V2's OWN FAILURE PATH. The grouping's whole licence is that nothing is
+     lost - every weapon still reachable, just drawn under one dot. This plants
+     a mountsFor() that keeps only the representative and drops the rest, which
+     is precisely the "quietly showing you less" defect the grouping would be
+     if it were wrong. The ports-accounted-for assertion must catch it. */
+  "--mutate-losesweapons": [
+    [/ports:ms\.map\(m=>m\[0\]\), n:ms\.length\}/,
+     "ports:[ms[0][0]], n:ms.length}"],
+  ],
   "--mutate-alwayson": [
     [/function labelsWanted\(dropped\)\{\s*if\(allLabels!==null\) return allLabels;\s*return !dropped;\s*\}/,
      "function labelsWanted(dropped){ if(allLabels!==null) return allLabels;"
@@ -187,17 +196,30 @@ console.log("\n--- 2. the Aegis Reclaimer ---");
      C1 changed every count in the fleet; what matters is that the chosen hull
      carries MORE markers than that abandoned threshold and still places them
      all, which is the whole argument. */
-  const N = (MARKS[k] || []).length;
-  record(N > 14, "it carries more markers than the invented line of 14, and "
-    + "the page places them anyway", `${N} markers`);
+  /* V2: THE LABELS ARE PER MOUNT NOW, so the count that has to clear the
+     abandoned threshold of 14 is the number of DOTS the page draws. The ports
+     are still all there and still all resolve - asserted separately below,
+     because "nothing was hidden" is the claim V2 has to keep. */
+  const N = Number(g(`mountsFor(${JSON.stringify(k)}).length`));
+  const NP = (MARKS[k] || []).length;
+  record(N > 14, "it carries more mounts than the invented line of 14, and "
+    + "the page places them anyway", `${N} mounts, ${NP} weapons`);
   /* NOTHING WAS MISSING, and that is the item. Every marker resolves to a port
-     with a name and a part. */
+     with a name and a part - counted over the PORTS, not the mounts, because
+     this is the assertion that no weapon was dropped by the grouping. */
   const resolved = g(`markersFor(shipId).filter(function(m){
     var sl = slotByPort(m[0]);
     return !!(sl && portLabel(sl.h)); }).length`);
-  record(resolved === N,
+  record(resolved === NP,
     "and every one of them resolves to a real port with a real hardpoint "
-    + "name - nothing was missing", `${resolved} of ${N}`);
+    + "name - nothing was missing", `${resolved} of ${NP}`);
+  /* V2's OWN GUARANTEE, ASSERTED: every port is on exactly one mount, and the
+     mounts account for every port. If grouping ever dropped one this fails. */
+  const covered = g(`mountsFor(shipId).reduce(function(a,m){
+    return a + m.ports.length; }, 0)`);
+  record(covered === NP,
+    "and the mounts account for every one of them - no weapon lost to the "
+    + "grouping", `${covered} of ${NP}`);
   record(noRoomNow() === 0,
     `the solver places all ${N} with no overlaps`,
     `${noRoomNow()} with no room`);
@@ -300,7 +322,8 @@ console.log("\n--- 5. the toggle overrides the solver, both ways ---");
      the solver actually says fit and do not fit. */
   const on = cleanHull(), off = crowdedHull();
   openShip(on);
-  const N5 = (MARKS[on] || []).length;
+  /* V2: mounts, because that is what carries a label. */
+  const N5 = Number(g(`mountsFor(${JSON.stringify(on)}).length`));
   record(shownNow() === N5,
     `${SHIPS[on].n} opens with all ${N5} labels up`, `${shownNow()} up`);
   H.dispatch(["#cc-lbl-toggle"]);

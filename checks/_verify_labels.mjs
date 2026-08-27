@@ -124,7 +124,8 @@ for (const nm of SHIPS_UNDER_TEST) {
   openShip(k);
   run("allLabels=true;renderLabels();");
   const labels = rendered();
-  const n = (MARKS[k] || []).length;
+  /* V2: mounts, not ports - one label per physical mount. */
+  const n = Number(g(`mountsFor(${JSON.stringify(k)}).length`));
   let clash = [];
   for (let i = 0; i < labels.length; i++) {
     for (let j = i + 1; j < labels.length; j++) {

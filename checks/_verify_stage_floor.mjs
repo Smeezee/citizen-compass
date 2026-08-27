@@ -300,6 +300,18 @@ function viewerFor(hull) {
     fov: 42, aspect: 960 / 540, position: new THREE.Vector3(),
     near: 0.1, far: 1000, __target: target,
     updateProjectionMatrix() {}, updateMatrixWorld() {},
+    /* THE STUB ALWAYS BELIEVED THIS AND THE REAL CAMERA DID NOT DO IT.
+       project() above builds its view basis from position and __target, i.e.
+       it models a camera that is aimed at its target. Until 2026-08-26 the
+       page never called lookAt at all, so that belief was false and this
+       control could not see it - the fleet framed at ~850x the hull radius
+       while 23 assertions stayed green.
+       _fitProjected now aims the camera on every pass, which makes the stub's
+       standing assumption TRUE rather than merely convenient. Recording the
+       aim point is therefore the faithful implementation here, NOT a no-op
+       added to silence a TypeError: if the viewer ever aims somewhere other
+       than the fit target, project() follows it. */
+    lookAt(t) { this.__target.copy(t); },
   };
   v.controls = { target, update() {} };
   v._colour = 0xffb545;

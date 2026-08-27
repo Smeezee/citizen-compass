@@ -26,7 +26,9 @@
  *
  * MUTATORS
  *   --mutate-oldlabel   the control goes back to a bare `Look`.
- *   --mutate-nofirst    the first visit no longer opens it.
+ *   --mutate-autoopen   the first visit opens the panel over the hull
+ *                       again - V3 retired that, and this is how this
+ *                       section is proven able to fail.
  *   --mutate-nagforever the seen-flag is never written, so it opens on EVERY
  *                       visit - the opposite failure, and the one an
  *                       auto-opening panel invites.
@@ -53,8 +55,17 @@ const MARKUP_MUTS = {
   ],
 };
 const MUTS = {
-  "--mutate-nofirst": [
-    [/\nofferPanelOnce\(\);/, "\n"],
+  /* V3, 2026-08-26: `--mutate-nofirst` IS GONE BECAUSE IT SHIPPED. It
+     planted the removal of `offerPanelOnce();` as known-bad input, and
+     that removal is now the intended behaviour - the mutation became the
+     product. The assertion it fed is inverted in section 2.
+     `--mutate-autoopen` replaces it and plants the OPPOSITE defect, the
+     panel opening itself over the hull again, so section 2 still has a
+     failure path it can be proven against. A section whose mutator was
+     deleted rather than replaced is a section that can no longer fail. */
+  "--mutate-autoopen": [
+    ["/* V3, 2026-08-26: THE FIRST-VISIT AUTO-OPEN IS RETIRED",
+     "offerPanelOnce();\n/* V3, 2026-08-26: THE FIRST-VISIT AUTO-OPEN IS RETIRED"],
   ],
   "--mutate-nagforever": [
     [/  rememberPanelSeen\(\);\n  tuneOpen\(true\);/, "  tuneOpen(true);"],
@@ -143,16 +154,34 @@ console.log("\n--- 1. the way in ---");
 }
 
 /* =====================================================================
-   2. THE FIRST VISIT OPENS IT. ONCE.
+   2. THE FIRST VISIT DOES NOT OPEN IT - V3 INVERTED THIS SECTION.
+
+   It asserted the opposite until 2026-08-26, and the reasoning it asserted was
+   never wrong: this panel holds settings that persist indefinitely, so
+   somebody who loses their storage lands on defaults and needs a way back to
+   what they had, and clearing storage clears the seen-flag too, which makes
+   the first-visit path and the recovery path the same path.
+
+   WHAT CHANGED IS THE COST, WHICH NOBODY HAD MEASURED. The panel is 250px on
+   a stage that is often 900px wide, so it opened OVER THE HULL - including in
+   every screenshot taken of this page during the four days the fleet was
+   framed at 850x and those screenshots were being used to argue about how the
+   hull renders.
+
+   Q3's gear glyph and the word `Display` are what E6's auto-open was
+   compensating for, and they shipped. So the guarantee is now: the button is
+   findable (section 1, unchanged), its state persists (section 4, unchanged),
+   and it never opens itself over the model.
    ===================================================================== */
 console.log("\n--- 2. a first visit, and every visit after ---");
 {
   const first = boot({ local: {} });
-  record(first.g("tuneIsOpen()") === true,
-    "on a first visit the panel opens itself - the thing itself, not a tip "
-    + "about it");
-  record(first.local._dump().ccPanelSeen === "1",
-    "and that is remembered", JSON.stringify(first.local._dump()));
+  record(first.g("tuneIsOpen()") === false,
+    "on a first visit the panel does NOT open itself over the hull - the ship "
+    + "is what the page opens on");
+  record(!first.local._dump().ccPanelSeen,
+    "and nothing is written to storage for an offer that was never made",
+    JSON.stringify(first.local._dump()));
 
   /* THE SECOND VISIT IS SEEDED FROM WHAT THE FIRST ONE STORED, not from a
      flag typed in here. Seeding it by hand would pass against a build that
@@ -160,7 +189,7 @@ console.log("\n--- 2. a first visit, and every visit after ---");
      auto-opening panel invites, and the one --mutate-nagforever plants. */
   const second = boot({ local: first.local._dump() });
   record(second.g("tuneIsOpen()") === false,
-    "the next visit opens closed - it offers once and then stops",
+    "and neither does any visit after it",
     JSON.stringify(first.local._dump()));
 
   /* AN EMPTY PANEL MUST NOT OPEN ITSELF. renderTunePanel() draws nothing
@@ -168,10 +197,15 @@ console.log("\n--- 2. a first visit, and every visit after ---");
      empty box - worse than nothing, and it would spend the one offer this
      feature gets. Both halves are asserted: no viewer means no offer, and a
      viewer means the offer arrives full. */
+  /* V3: THE PANEL IS OPENED BY HAND HERE. What this asserts - that it arrives
+     full rather than as an empty box - is still true and still worth
+     asserting; it is just no longer reachable by loading the page, so the
+     control presses the button the way a visitor does. */
+  first.g("tuneOpen(true)");
   const body = first.el("cc-tune-panel").innerHTML || "";
   record(/data-style=/.test(body) && /data-colour=/.test(body),
-    "and it opens with its controls already in it, not as an empty box",
-    `${body.length} chars`);
+    "and when a visitor DOES open it, it arrives with its controls already in "
+    + "it, not as an empty box", `${body.length} chars`);
   /* THE OTHER HALF. renderTunePanel() draws nothing without a viewer, so on a
      machine with no WebGL the offer would be an empty box - worse than
      nothing, and it would spend the one offer this feature gets. Not offered
@@ -252,13 +286,24 @@ console.log("\n--- 4. the settings the panel holds are permanent ---");
    ===================================================================== */
 console.log("\n--- 5. somebody who loses their settings can get back ---");
 {
-  /* Clearing site data takes the settings AND the seen-flag. That is the whole
-     reason the flag lives beside them: the person who most needs to find the
-     panel is the one whose settings just vanished. */
+  /* V3 CHANGED WHAT THIS SECTION CAN PROMISE, AND THE LOSS IS RECORDED HERE
+     RATHER THAN DELETED.
+
+     Clearing site data takes the settings AND the seen-flag, so the person who
+     most needs to find the panel is the one whose settings just vanished. E6
+     answered that by opening the panel for them. V3 retired the auto-open
+     because it opened over the hull, so THAT ANSWER IS GONE: recovery now
+     depends entirely on the visitor noticing the `Display` button.
+
+     This assertion is inverted rather than removed so the change is visible to
+     whoever reads this file next, and so the remaining half - that they land on
+     working defaults rather than on nothing - is still checked. If Sleven wants
+     the recovery prompt back, this is the section that says what it cost. */
   const cleared = boot({ local: {} });
-  record(cleared.g("tuneIsOpen()") === true,
-    "a person whose site data was cleared gets the panel opened for them "
-    + "again - the recovery path and the first-visit path are the same path");
+  record(cleared.g("tuneIsOpen()") === false,
+    "a person whose site data was cleared is NOT shown the panel - V3 traded "
+    + "the recovery prompt for an uncovered hull, and the `Display` button is "
+    + "the whole of the way back");
   record(cleared.g("CC_THEME.level") === 0,
     "and lands on the defaults rather than on nothing",
     String(cleared.g("CC_THEME.level")));

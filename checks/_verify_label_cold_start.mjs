@@ -158,9 +158,14 @@ console.log("\n--- 3. the normal case: the stage already has a size ---");
 {
   coldBoot(960, 540);
   const ls = labelsNow();
-  record(ls.length === (MARKS[key] || []).length,
+  /* V2: ONE LABEL PER MOUNT, NOT PER PORT. The expected number is asked of the
+     page's own mountsFor() rather than recomputed here - a control that
+     re-implements the grouping it is checking would agree with itself whatever
+     the page did. */
+  const want = Number(g(`mountsFor(${JSON.stringify(key)}).length`));
+  record(ls.length === want,
     "every label is up the moment the model arrives, with nothing clicked",
-    `${ls.length} of ${(MARKS[key] || []).length}`);
+    `${ls.length} of ${want}`);
   record(!inCorner(ls),
     "and they are on the hull rather than piled at the origin",
     JSON.stringify(ls));

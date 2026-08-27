@@ -198,13 +198,35 @@ function openShip(key) {
    value, which is what the previous control trusted. */
 function clickMarker(portId) {
   vm.runInContext(`sel=null;renderPicker();`, sandbox);
+  /* V2: A DOT IS A MOUNT NOW, SO THIS CLICKS LIKE A PERSON DOES.
+     Markers used to be one per port and this faked a button carrying that
+     port. They are one per physical mount, and a mount holding several weapons
+     opens the list of them first. So: click the mount, and if a list came up,
+     click the row for the port we were actually asking about. Two clicks
+     where the page needs two clicks - the assertion that this port's picker
+     opens is unchanged and still has to hold. */
+  const root = String(portId).split(".")[0];
+  const rep = g(`(mountOf(shipId, ${JSON.stringify(portId)})||{}).p`) || portId;
+  const cnt = Number(g(`(mountOf(shipId, ${JSON.stringify(portId)})||{}).n`) || 1);
   const btn = {
-    tagName: "BUTTON", dataset: { port: portId },
-    closest: (s) => (s === "#cc-marks button[data-port]" ? btn : null),
+    tagName: "BUTTON", dataset: { mount: root, port: rep, count: String(cnt) },
+    closest: (s) => (s === "#cc-marks button[data-mount]"
+                     || s === "#cc-marks button[data-port]") ? btn : null,
   };
   let threw = null;
   for (const fn of clickHandlers) {
     try { fn({ target: btn, preventDefault() {} }); } catch (e) { threw = e.message; }
+  }
+  /* If the mount asked which weapon, answer it. */
+  const opened = el("cc-panel");
+  if (!opened.hidden && (opened.innerHTML || "").includes("data-mountport")) {
+    const row = {
+      tagName: "BUTTON", dataset: { mountport: portId },
+      closest: (s) => (s === "#cc-panel button[data-mountport]" ? row : null),
+    };
+    for (const fn of clickHandlers) {
+      try { fn({ target: row, preventDefault() {} }); } catch (e) { threw = e.message; }
+    }
   }
   /* WHERE THE ANSWER APPEARS MOVED IN B2, AND SO DID THIS.
      A fixed port's panel is still in the picker pane. A swappable port's

@@ -91,13 +91,31 @@ record(Object.keys(SHIPS).length > 300,
   "the served page's script runs, against the served data",
   `${Object.keys(SHIPS).length} ships`);
 
+/* V2: A DOT ADDRESSES A MOUNT. Clicked the way a person clicks it - the dot,
+   then the weapon if the mount asked which one. What is asserted downstream is
+   unchanged: every port must still be reachable and must still answer, read
+   off the SERVED bytes. */
 const clickMarker = (portId) => {
+  const root = String(portId).split(".")[0];
+  const rep = H.g(`(mountOf(shipId, ${JSON.stringify(portId)})||{}).p`) || portId;
   const btn = {
-    tagName: "BUTTON", dataset: { port: portId },
-    closest: (s) => (s === "#cc-marks button[data-port]" ? btn : null),
+    tagName: "BUTTON", dataset: { mount: root, port: rep },
+    closest: (s) => (s === "#cc-marks button[data-mount]"
+                     || s === "#cc-marks button[data-port]") ? btn : null,
   };
   for (const fn of H.clickHandlers) {
     try { fn({ target: btn, preventDefault() {} }); } catch (e) { return e.message; }
+  }
+  const opened = H.el("cc-panel");
+  if (opened && !opened.hidden
+      && (opened.innerHTML || "").includes("data-mountport")) {
+    const row = {
+      tagName: "BUTTON", dataset: { mountport: portId },
+      closest: (s) => (s === "#cc-panel button[data-mountport]" ? row : null),
+    };
+    for (const fn of H.clickHandlers) {
+      try { fn({ target: row, preventDefault() {} }); } catch (e) { return e.message; }
+    }
   }
   return null;
 };
