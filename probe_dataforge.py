@@ -129,6 +129,24 @@ def main():
         if off + 4 > len(raw):
             break
         counts[nm] = u32(raw, off)
+    # WHAT HAS BEEN VERIFIED SINCE, AND WHAT HAS NOT (C3 milestone 1).
+    #
+    # VERIFIED: `textLength` really is the byte length of the string region.
+    # The region runs 44,288,701 - 61,454,626 in the 4.10 blob, and
+    # end-minus-textLength lands exactly on 100% printable, null-terminated
+    # identifiers. That is one label confirmed by measurement.
+    #
+    # NOT VERIFIED, AND MEASURED NOT TO CLOSE: the remaining labels are the
+    # documented field ORDER and nothing here has confirmed that a given count
+    # belongs to the field it is printed against. Summing the definition tables
+    # and value arrays at their documented row sizes lands between 6.9 MB and
+    # 18.9 MB SHORT of where the text region actually starts, across every
+    # combination of the two genuinely uncertain row sizes (dataMapping 8 or 12,
+    # reference 8/16/20/24). Either a row size is wrong, the count order is
+    # wrong, or record instance data sits between the tables and the text.
+    #
+    # So the labels below are still printed as UNVERIFIED. Saying otherwise
+    # would be the third wrong offset of the day dressed as a fact.
     # THE NUMBERS ARE MEASURED. THE NAMES ARE NOT VERIFIED. The labels follow
     # the documented DataForge field order; this probe has not walked a table
     # to confirm that a given count belongs to the field it is printed against.
