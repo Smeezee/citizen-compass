@@ -35203,3 +35203,88 @@ is one command with no `-WhatIf`, and that is **Sleven's alone** — the script'
 own header says it has never been run for real.
 
 Nothing committed.
+
+### 2026-08-27 14:00:25 — 20260827_1620_update_committed.md
+
+# Update — Committed. 801 files, 29.2 MB. Not pushed.
+
+**2026-08-27 16:20 · Code (background session)** — Sleven said "commit everything".
+
+    6e0fd3d  Nineteen ships get a model, and the checks that would have caught
+             it earlier
+
+801 files, 29.2 MB. On `main`, matching how every recent commit landed.
+
+**Not pushed.** He said commit; push is a separate word and rule 2 treats it as
+a separate go-ahead.
+
+## Nine files were deliberately NOT committed, and this is the only thing to
+## disagree with
+
+    citizen-collector/collector-master.exe.old              12.11 MB
+    citizen-collector/collector.exe.pre-G7-20260819         11.18 MB
+    citizen-collector/collector-master.exe.pre-G7-20260819  11.02 MB
+    citizen-collector/collector-settings.txt.bak-20260813
+    data-layer/derived/holo-hardpoints/hardpoints_fleet.json.pre-A3-20260826
+    data-layer/derived/holo-hardpoints/hardpoints_fleet.pre-P1-20260826.json
+    data-layer/derived/holo-hardpoints/matched.pre-P1-20260826.json
+    data-layer/derived/holo-hardpoints/placement_report.json.pre-A3-20260826
+    data-layer/derived/holo-hardpoints/placement_report.pre-P1-20260826.json
+
+All nine are sidecar BACKUPS of files that are themselves in the commit. **34 MB
+of it is stale binaries.** Git history is the one place in this repo where
+"move it aside instead" does not apply — once a binary is in, it is in every
+clone forever, and taking it out means rewriting history.
+
+That is a decision worth one sentence rather than a silent 34 MB. **Say the word
+and they go in.**
+
+## Checked before staging, not after
+
+    .env                    gitignored, confirmed
+    secrets/tokens/keys     none in the change set
+    sc-ships/               gitignored - the 19 new models did NOT go in
+    testing/_deploy/        gitignored
+    _to_delete/             0 files staged
+    largest staged file     3.25 MB
+
+The models themselves are on disk and gitignored by design, which is the
+existing convention for a 7.3 GB directory. The provenance records that describe
+them ARE committed - `MODEL_SOURCE.txt` per ship, the import manifest, the scale
+fix report and the fleet audit - so the record survives without the payload.
+
+### 2026-08-27 14:01:49 — 20260827_1625_update_pushed.md
+
+# Update — Pushed. origin/main is current for the first time in 81 commits.
+
+**2026-08-27 16:25 · Code (background session)** — Sleven said "push it".
+
+    6a51245..6e0fd3d  main -> main
+
+**81 commits** went up, not one. `origin/main` was 81 behind — today's work is
+the last of them, and everything from the trademark constant, the community
+mark and the off switch through the hardpoint picker had been sitting locally
+unpushed.
+
+Confirmed from the remote rather than from the push message: `git fetch` then
+compared `HEAD` against `origin/main` — identical.
+
+    https://github.com/Smeezee/citizen-compass
+
+## Still not committed, by choice
+
+The nine backup sidecars from the 16:20 update, 34 MB of which is stale
+binaries. They are on disk and untouched. Unchanged position: git history is
+the one place "move it aside" cannot undo, so they wait for a word.
+
+## Where things stand
+
+    live site        NOT published. worker 404, verified from outside.
+                     One command without -WhatIf, and it is Sleven's alone.
+    testing site     current - e94a6f08
+    origin/main      current - 6e0fd3d
+    the queue        empty of items I can start
+
+**Waiting on Sleven:** the three PART A decisions in NEXT.md — which single
+front gets finished to the public site, the Windows runner, and proposed hard
+rule 16 — plus whether the nine backups go in.

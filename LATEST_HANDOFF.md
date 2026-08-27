@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #704 — 2026-08-27 1:56 PM
+# LATEST_HANDOFF.md — Update #707 — 2026-08-27 2:02 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-27 13:56:41 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-27 14:02:19 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,96 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 90183 files (12401.77 MB)
 
-**Scripts:** 48  |  **3D models:** 1077  |  **Docs:** 1248
+**Scripts:** 48  |  **3D models:** 1077  |  **Docs:** 1251
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-27 14:01:49 — 20260827_1625_update_pushed.md
+
+# Update — Pushed. origin/main is current for the first time in 81 commits.
+
+**2026-08-27 16:25 · Code (background session)** — Sleven said "push it".
+
+    6a51245..6e0fd3d  main -> main
+
+**81 commits** went up, not one. `origin/main` was 81 behind — today's work is
+the last of them, and everything from the trademark constant, the community
+mark and the off switch through the hardpoint picker had been sitting locally
+unpushed.
+
+Confirmed from the remote rather than from the push message: `git fetch` then
+compared `HEAD` against `origin/main` — identical.
+
+    https://github.com/Smeezee/citizen-compass
+
+## Still not committed, by choice
+
+The nine backup sidecars from the 16:20 update, 34 MB of which is stale
+binaries. They are on disk and untouched. Unchanged position: git history is
+the one place "move it aside" cannot undo, so they wait for a word.
+
+## Where things stand
+
+    live site        NOT published. worker 404, verified from outside.
+                     One command without -WhatIf, and it is Sleven's alone.
+    testing site     current - e94a6f08
+    origin/main      current - 6e0fd3d
+    the queue        empty of items I can start
+
+**Waiting on Sleven:** the three PART A decisions in NEXT.md — which single
+front gets finished to the public site, the Windows runner, and proposed hard
+rule 16 — plus whether the nine backups go in.
+
+### 2026-08-27 14:00:25 — 20260827_1620_update_committed.md
+
+# Update — Committed. 801 files, 29.2 MB. Not pushed.
+
+**2026-08-27 16:20 · Code (background session)** — Sleven said "commit everything".
+
+    6e0fd3d  Nineteen ships get a model, and the checks that would have caught
+             it earlier
+
+801 files, 29.2 MB. On `main`, matching how every recent commit landed.
+
+**Not pushed.** He said commit; push is a separate word and rule 2 treats it as
+a separate go-ahead.
+
+## Nine files were deliberately NOT committed, and this is the only thing to
+## disagree with
+
+    citizen-collector/collector-master.exe.old              12.11 MB
+    citizen-collector/collector.exe.pre-G7-20260819         11.18 MB
+    citizen-collector/collector-master.exe.pre-G7-20260819  11.02 MB
+    citizen-collector/collector-settings.txt.bak-20260813
+    data-layer/derived/holo-hardpoints/hardpoints_fleet.json.pre-A3-20260826
+    data-layer/derived/holo-hardpoints/hardpoints_fleet.pre-P1-20260826.json
+    data-layer/derived/holo-hardpoints/matched.pre-P1-20260826.json
+    data-layer/derived/holo-hardpoints/placement_report.json.pre-A3-20260826
+    data-layer/derived/holo-hardpoints/placement_report.pre-P1-20260826.json
+
+All nine are sidecar BACKUPS of files that are themselves in the commit. **34 MB
+of it is stale binaries.** Git history is the one place in this repo where
+"move it aside instead" does not apply — once a binary is in, it is in every
+clone forever, and taking it out means rewriting history.
+
+That is a decision worth one sentence rather than a silent 34 MB. **Say the word
+and they go in.**
+
+## Checked before staging, not after
+
+    .env                    gitignored, confirmed
+    secrets/tokens/keys     none in the change set
+    sc-ships/               gitignored - the 19 new models did NOT go in
+    testing/_deploy/        gitignored
+    _to_delete/             0 files staged
+    largest staged file     3.25 MB
+
+The models themselves are on disk and gitignored by design, which is the
+existing convention for a 7.3 GB directory. The provenance records that describe
+them ARE committed - `MODEL_SOURCE.txt` per ship, the import manifest, the scale
+fix report and the fleet audit - so the record survives without the payload.
 
 ### 2026-08-27 13:54:53 — 20260827_1610_update_q1b-live-dry-run.md
 
@@ -1497,182 +1582,7 @@ disarm the control.
 
 Nothing committed.
 
-### 2026-08-27 12:40:29 — update-I-edited-build_deploy-and-why-2026-08-27.md
-
-# Update — I have edited `testing/_src/build_deploy.py`. Read this before your next build.
-
-**C1, 2026-08-27 12:47 local. Rule 14 notice, not a request.**
-
-Sleven told me to stop asking and wire it in. I did. **One block added, nothing
-removed, nothing reordered.** Backup at `/tmp/bd.bak` on the mount.
-
-## Where, and why there rather than anywhere else
-
-`build_deploy.py`, immediately after `_fleet = json.loads(rd(_holo))` — about
-line 1185, before `_by_file` is built.
-
-**Because that is where the ship page's markers are actually born, and it was
-the one place no overlay reached.** `build_holo_data.py` has read
-`alignment_overlay.json` for weeks, and it feeds `holo_data.gen.js` — the HOLO
-page. The loadout page's markers come from this block, which read
-`hardpoints_fleet.json` **raw**. So every alignment correction ever made moved
-one page and not the other, and the page Sleven actually opens is the one it
-missed. That is worth knowing independently of anything I did today.
-
-The block applies `alignment_overlay_client.json` with the **same match-or-die
-rule** your other overlay uses: an entry naming a ship or a port that is not
-present exits the build. It prints how many ports moved, or says the overlay is
-absent and the markers stay derived.
-
-**It is inert if the file is missing.** Delete
-`data-layer/derived/holo-hardpoints-align/alignment_overlay_client.json` and the
-build behaves exactly as it did this morning. That is the revert.
-
-## What it does, measured on real hulls before you run anything
-
-Simulated against the current `loadout_marker.gen.js`, in normalised units where
-1.0 is the hull's longest half-extent:
-
-    DRAK_Vulture   4 of 6 markers move
-      hardpoint_weapon_nose_left    moves 1.102
-      hardpoint_weapon_nose_right   moves 1.102
-      hardpoint_cm_launcher_left    moves 0.368
-
-    AEGS_Gladius   9 of 18 markers move
-      hardpoint_gun_left_wing       moves 0.629   -> -0.445
-      hardpoint_gun_right_wing      moves 0.630   -> +0.446
-      hardpoint_missilerack_*_outer moves 0.15    -> +-0.703
-      hardpoint_countermeasure_*    moves 0.660   -> +-0.071
-
-**The Vulture's nose guns were more than a full half-extent from where the game
-puts them.** Note the old positions were already SYMMETRIC (-0.544 / +0.545) —
-the name-based placer got left-versus-right right and the position wrong, which
-is exactly why this looked plausible for so long.
-
-## What I need from you
-
-**Run the build and let the guard speak.** My entries are emitted only from the
-intersection with the fleet record, so by construction none can miss — and by
-construction is weaker than a test. If it exits, the construction is wrong and I
-want to know.
-
-If you would rather this block lived somewhere else, or read the file through a
-helper next to your other loaders, **move it — it is your file and I am handing
-it straight back.** I put it inline to keep the change small enough to revert by
-eye.
-
-## Separately: `build_holo_data.py` HAS NOT RUN SINCE 17 AUGUST AND CANNOT
-
-It exits in `merge_join` before reaching any overlay:
-
-    7 recovered ship(s) collide with ships already placed. Refusing to emit
-      ATLS, C8R_Pisces, Khartu-Al, M50, MDC, ROC, ROC-DS
-
-`holo_data.gen.js` is stamped 08-17; `hardpoints_fleet.json` is 08-27 02:52.
-**This is NOT from your M5 import** — the fleet file predates it by ten hours.
-It is older breakage that nobody has hit because `build_deploy.py` does not call
-this generator. I have not touched it beyond the two-overlay change, which sits
-after the failure point and is currently unreachable. Recording it so it stops
-being invisible; it is not urgent and it is not yours unless you want it.
-
-*C1*
-
-### 2026-08-27 12:27:19 — update-the-real-hardpoints-are-ready-to-wire-2026-08-27.md
-
-# Update — 754 real hardpoint positions, in the overlay format your build already reads
-
-**C1, 2026-08-27 12:41 local.** Not a request to start now — you are mid scale
-fix and this deliberately does not collide with it. Read the last section first
-if you only read one.
-
-## What is on disk
-
-    data-layer/derived/holo-hardpoints-align/alignment_overlay_client.json
-    data-layer/derived/holo-hardpoints-align/MANIFEST_client_overlay.json
-
-**64 hulls, 754 ports.** Real per-hardpoint coordinates out of CIG's own
-geometry in `Data.p4k`, not derived from mount names.
-
-Written BESIDE `alignment_overlay.json`, never over it. **Nothing reads it yet.**
-
-## The join is an exact string equality, and that is the whole trick
-
-`ships.json` gives every port a `HardpointName`. It is the SAME STRING as the
-node name in the ship's `.cga`:
-
-    HardpointName      hardpoint_weapon_nose_left
-    .cga node name     hardpoint_weapon_nose_left
-
-So the port a reader clicks and the transform the game uses to place that gun
-are joined on CIG's own identifier. No fuzzy matching, no name similarity, no
-vocabulary translation. 796 port names matched across 68 hulls on the first
-attempt.
-
-## How wrong the current markers are — measured, not asserted
-
-Distance between each current marker and the real mount, normalised so 1.0 is
-the hull's longest half-extent:
-
-    median across 64 hulls        0.488
-    AEGS_Reclaimer                1.090 median, 1.507 worst
-    ESPR_Prowler                  0.963 median, 1.669 worst
-    ANVL_Gladiator                0.895
-    AEGS_Vanguard                 0.874
-    DRAK_Corsair                  0.830
-    best hull (ANVL_Arrow)        0.181
-
-**The typical marker is about half a hull-length from the gun it names.** On the
-Reclaimer the average marker is further from its mount than the hull's own
-half-length. That is what Sleven has been reporting for three weeks.
-
-## Checked before filing
-
-    T1  overlay keys not in the fleet record            0
-        overlay ports not in the fleet record           0
-    T2  mirrored left/right pairs still mirrored        199 / 208
-    T3  units outside +-1.05 of the half-extent         8 of 754
-
-T1 is the one that matters to you: `build_holo_data.py` sys.exits if an overlay
-entry matches nothing, and this emits only from the intersection, so it cannot
-trip that guard. **That is by construction, which is weaker than a test - run
-the build and let the guard speak for itself.**
-
-The eight in T3 are named in the manifest. Herald's `weapon_regen_pool` is an
-abstract port with no physical location; the Asgard's CML entries want an eye.
-
-## THE PART THAT MATTERS TO YOUR SCALE FIX — and it is good news
-
-**Rescaling a model does not invalidate these positions.**
-
-    unit = pos_glb / H
-    pos_glb = metres x glb_extent / Length      H = glb_extent / 2
-
-Scale the model by f and `glb_extent` scales by f, so `pos_glb` scales by f and
-`H` scales by f. **The ratio is unchanged.** The `unit` values in this overlay
-are invariant to any rescale you apply.
-
-`pos_model` is NOT invariant - it is scaled back out using each hull's own
-existing `unit`/`pos_model` pair, so it moves with the model. **Regenerate this
-file after your rescale lands** (`python3 build_hardpoint_overlay.py`, a few
-seconds, no p4k access needed) and `pos_model` follows. The `unit` values will
-come out identical, which is itself a check on the rescale: if a hull's `unit`
-values MOVE after a rescale, something scaled the position and the box by
-different amounts.
-
-## Not started, not ordered, waiting on Sleven
-
-Wiring it in means either merging into `alignment_overlay.json` or teaching
-`build_holo_data.py` to read both. **The second is better** - the hand-made
-overlay is somebody's deliberate correction and should not be silently
-outvoted by a generated file, and keeping them apart means a bad generation can
-be reverted by deleting one path.
-
-Sequence, when he says go: your rescale lands, this regenerates, then wire, then
-build, then the marker distances get measured again against the deployed page.
-
-*C1*
-
-*(+461 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+463 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

@@ -1,0 +1,74 @@
+# citizen-collector settings
+#
+# Plain text. One setting per line, "name = value".
+# Lines starting with # are notes and are ignored.
+# Delete this file to go back to the defaults - a fresh one is written on the
+# next run.
+
+# Capture automatically while the game is running.
+auto = true
+
+# Take a picture every this many SECONDS even when nothing changes.
+# Set to 0 to turn the timer off completely.
+#
+# This used to be interval_minutes. An old file that still says interval_minutes
+# keeps working - it is converted, and the log says so - but interval_seconds is
+# the setting to use now.
+interval_seconds = 60
+
+# How often to check the game log, in seconds.
+poll_seconds = 2
+
+# Never take two pictures closer together than this, in seconds.
+debounce_seconds = 3
+
+# Where the pictures go. Relative names are next to this file.
+out = captures
+
+# --- added 2026-08-08 ---------------------------------------------------
+
+# Take pictures on menu changes, loading screens and spawning too.
+#
+# OFF by default. Of 40 real captures audited on 2026-08-08, twenty-three were
+# fired by exactly those three things and none were of a shop. They are still
+# watched and still written to the log; they just no longer cost a picture.
+capture_low_value = false
+
+# While a shop or inventory terminal is open, keep taking pictures this often,
+# in seconds, so a list longer than the screen is recorded as you scroll it.
+# Set to 0 to take a single picture when the terminal opens instead.
+burst_seconds = 2
+
+# Never take more than this many pictures for one terminal. A hard ceiling, so
+# a burst that somehow does not end is still bounded.
+burst_max_frames = 24
+
+# Take a picture when YOU press a key. Empty = off.
+#
+#   capture_keys = tab:scan, alt+m:mining laser, v:salvage beam
+#
+# A mining ping lasts ~3 seconds and the game logs nothing about it - checked
+# across 227 sessions. A timer will never catch it; your keypress will.
+# It only READS whether the key is down. It never intercepts or sends anything,
+# so the game receives every press exactly as it would have.
+capture_keys =
+
+# Keys you HOLD for an activity. Keeps shooting while down, stops on release.
+# Mouse buttons work here.
+#
+#   capture_keys_held = mouse1:guns, m:mining laser, v:salvage beam
+capture_keys_held =
+
+# Where SEND MY DATA sends to. Leave empty and the button just writes a zip to
+# your disk, which is yours to hand over however you like.
+#
+# When set, one click packages AND uploads. Your pictures are only cleared
+# afterwards, and only if the receiver confirms it has a byte-identical copy.
+# If anything goes wrong you keep everything.
+send_url =
+send_key =
+
+# After a send is CONFIRMED by the receiver, clear the pictures that were in it.
+# Only those - anything taken since, or held back, is untouched. Set to false to
+# keep everything locally as well.
+clear_after_send = true
