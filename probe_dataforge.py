@@ -145,6 +145,28 @@ def main():
     # reference 8/16/20/24). Either a row size is wrong, the count order is
     # wrong, or record instance data sits between the tables and the text.
     #
+    # MILESTONE 3, and it corrects two of my own earlier readings.
+    #
+    # The region is a PACKED NULL-TERMINATED STRING TABLE: 17,165,925 bytes
+    # exactly - matching textLength a second time, independently - holding
+    # 305,036 strings. They are fully-qualified record names of the form
+    # <Type>.<Instance>: EntityClassDefinition.freeze, GPUParticleAudio.
+    # Station_Vent, TintPaletteTree.qrt_combat_heavy_02_02_01.
+    #
+    # `EntityClassDefinition` occurs 29,185 times because it is a TYPE PREFIX
+    # on 29,185 distinct record names - NOT because an identifier is
+    # duplicated. An earlier reading here took the repetition as evidence that
+    # the blob had no deduplicated string table at all. That was wrong.
+    #
+    # STILL UNSOLVED, AND THIS IS WHERE THE NEXT PASS STARTS: how a definition
+    # REFERS to a name. Searching the entire blob for the u32 byte offset of a
+    # known string - EntityClassDefinition at table offset 10,266,192, absolute
+    # 54,554,893 - finds ZERO occurrences, in any of: absolute position, offset
+    # from the table base, offset from 116. So names are not addressed by a
+    # plain u32 byte offset from any of those bases. The remaining candidates
+    # are an offset relative to a sub-section base not yet identified, or an
+    # index into an ordered offset array.
+    #
     # So the labels below are still printed as UNVERIFIED. Saying otherwise
     # would be the third wrong offset of the day dressed as a fact.
     # THE NUMBERS ARE MEASURED. THE NAMES ARE NOT VERIFIED. The labels follow
