@@ -3,6 +3,7 @@
  "model": "Guardian_MX.glb",
  "hardpoints_from": "mrai_guardian_mx",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.0636,
  "scale_estimates": {
   "length": 1.0636,

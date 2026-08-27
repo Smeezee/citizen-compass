@@ -1,0 +1,5965 @@
+{
+ "board": 1,
+ "cards": {
+  "355": {
+   "name": "Helmet Polish & Lighting Improvements",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "ed1e525d016099f6"
+  },
+  "335": {
+   "name": "Performance Optimization",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "e73084397a795c37"
+  },
+  "333": {
+   "name": "Ship AI to Subsumption",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "986ff26103d7da34"
+  },
+  "326": {
+   "name": "Preacher Armament Distortion Scattergun",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "0fbac7ae0e473d78"
+  },
+  "325": {
+   "name": "Gallenson Tactical Systems GT-Series",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "d2f158d4c6e7ee95"
+  },
+  "321": {
+   "name": "Gemini R97 Shotgun",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "e2714c884289bb43"
+  },
+  "320": {
+   "name": "Amon & Reese Omnisky",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "8ede859ae350306c"
+  },
+  "316": {
+   "name": "Ship Weapon Balance",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "7ccdf6bef9756bb1"
+  },
+  "305": {
+   "name": "Visor and HUD Displays",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "b3edb93e26e5deac"
+  },
+  "298": {
+   "name": "Planet Tech Improvements",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "c039c593df253e6b"
+  },
+  "287": {
+   "name": "Ship Damage",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "2d7022cce5ec4f9c"
+  },
+  "286": {
+   "name": "IFCS - Balance/Tuning iteration tasks",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "6c0e3795b7167428"
+  },
+  "285": {
+   "name": "Personal Manager App",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "d94ee456ac51a2fe"
+  },
+  "281": {
+   "name": "Character Customizer",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "981221209a2e720d"
+  },
+  "258": {
+   "name": " [Service Beacon] Distress Call",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "40f0184340d09b90"
+  },
+  "222": {
+   "name": "MISC Razor",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "c35463d41e7bb6ea"
+  },
+  "206": {
+   "name": "Tumbril Cyclone",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "142cbd3693f37979"
+  },
+  "202": {
+   "name": "Aopoa Nox Kue",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "e4a84feb95e7679a"
+  },
+  "201": {
+   "name": "Aegis Reclaimer",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "f3a125725a40f193"
+  },
+  "193": {
+   "name": "Anvil Terrapin",
+   "release": "3.1",
+   "released": 1,
+   "status": "Released",
+   "h": "9bddabeadab435f1"
+  },
+  "353": {
+   "name": "Legacy Heavy Outlaw",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "cec2bbf9f1e5dfe1"
+  },
+  "352": {
+   "name": "Legacy Light Marine",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "e2c51607d7fecf67"
+  },
+  "351": {
+   "name": "Legacy Light Outlaw",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "d7d0b74208ad8142"
+  },
+  "350": {
+   "name": "Legacy Medium Outlaw",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "93efa71a6897246d"
+  },
+  "349": {
+   "name": "Legacy Medium Marine",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "1247801032c07a4b"
+  },
+  "346": {
+   "name": "Port Olisar Collection",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "9a95c9a669447237"
+  },
+  "344": {
+   "name": "Legacy Heavy Marine",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "9385a981acb02fea"
+  },
+  "324": {
+   "name": "Associated Science and Development Distortion Repeater",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "f1c1bced42625543"
+  },
+  "322": {
+   "name": "Klaus & Werner Demeco",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "7673a2ad4ca9c521"
+  },
+  "319": {
+   "name": "Gemini F55",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "d7b344b949c1285b"
+  },
+  "314": {
+   "name": "Kastak Arms Scalpel",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "18beb4ebdbe6b2ed"
+  },
+  "311": {
+   "name": "Remotely Operated Turrets on Vehicles",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "be53411d40d5a660"
+  },
+  "309": {
+   "name": "Improvements to Manned Turrets on Vehicles",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "aa040f4328623a8d"
+  },
+  "304": {
+   "name": "[Flight] AI Behaviors",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "afd6118868561df7"
+  },
+  "297": {
+   "name": "Performance Optimization",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "f9de9aca8214060a"
+  },
+  "282": {
+   "name": "Quantum Travel Improvements",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "19ddc28e94b695f1"
+  },
+  "278": {
+   "name": "Item Kiosk Shopping",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "37211d63100107ba"
+  },
+  "264": {
+   "name": "Economy Polish 3.2",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "cbe67f175b884c9f"
+  },
+  "263": {
+   "name": "Mining on Planetary Bodies",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "b98a9eded1805bb2"
+  },
+  "262": {
+   "name": "Groups System",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "166aedb8619dd986"
+  },
+  "260": {
+   "name": "Quantum Linking",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "36f8c3fb4a2ed137"
+  },
+  "257": {
+   "name": "Ship Persistence Improvements",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "5da9208c54982b93"
+  },
+  "256": {
+   "name": "PMA / VMA Improvements",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "b23d9668e10085cb"
+  },
+  "225": {
+   "name": "Item 2.0 Ship Systems & Weapons - Power Allocation",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "e60783b85f51f229"
+  },
+  "223": {
+   "name": "Aegis Avenger Stalker Revision",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "62add029e456152b"
+  },
+  "210": {
+   "name": "Anvil Hurricane",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "93626914a7c35137"
+  },
+  "207": {
+   "name": "Aegis Avenger Titan Revision",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "fda3b23c0a5b6208"
+  },
+  "205": {
+   "name": "Aegis Avenger Warlock Revision",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "cda1149ac24dbf75"
+  },
+  "203": {
+   "name": "Origin 600i",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "673b7b44f9b3021a"
+  },
+  "192": {
+   "name": "Aegis Eclipse",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "855f3a54f8714321"
+  },
+  "191": {
+   "name": "Vanduul Blade",
+   "release": "3.2",
+   "released": 1,
+   "status": "Released",
+   "h": "162567f8a1442065"
+  },
+  "385": {
+   "name": "Anvil Valkyrie",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "53417fdb558675ed"
+  },
+  "306": {
+   "name": "Object Container Streaming",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "a355adf09d48364e"
+  },
+  "214": {
+   "name": "Aegis Hammerhead",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "361af1a8a4953d42"
+  },
+  "308": {
+   "name": "Ship System Degradation",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "020b24b38ae0f994"
+  },
+  "288": {
+   "name": "Object Container Streaming: Background Spawning",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "3d7e6465323813aa"
+  },
+  "383": {
+   "name": "Mission Giver: Recco Battaglia",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "d57768362be14b50"
+  },
+  "195": {
+   "name": "Consolidated Outland Mustang Alpha",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "a8468d81cb517f2d"
+  },
+  "291": {
+   "name": "Scramble Race Missions",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "14074f9b176d9674"
+  },
+  "290": {
+   "name": "Improvements to Retrieval and Delivery missions",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "427bfcd309b63ca7"
+  },
+  "289": {
+   "name": "FPS Combat: Missions",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "8fa06957fe2afbd8"
+  },
+  "270": {
+   "name": "Asteroid Mining",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "0bae4bc3bf2a5ddd"
+  },
+  "269": {
+   "name": "Improvements to Mining on Planetary Bodies",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "2501ef593589b03b"
+  },
+  "259": {
+   "name": "Transit Systems",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "8b6c4f15657dbe81"
+  },
+  "261": {
+   "name": "Shipboard Ping & Scanning",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "ef2c3caa29ce523c"
+  },
+  "315": {
+   "name": "Object Container Streaming: Asynchronous Background Spawning",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "37984850a55711ba"
+  },
+  "220": {
+   "name": "Consolidated Outland Mustang Beta",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "59523076a7a2c0bd"
+  },
+  "251": {
+   "name": "Kastak Arms Karna ",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "4af68423d2035b27"
+  },
+  "237": {
+   "name": "Hurston Dynamics Dominance Series",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "e91d6e3f4d5f6566"
+  },
+  "236": {
+   "name": "Hurston Dynamics Attrition Series",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "03b43913245ea498"
+  },
+  "235": {
+   "name": "Flight: Improved AI Behaviors",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "15c2c2b5e9b58f7d"
+  },
+  "234": {
+   "name": "Arena Commander REC Rentals",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "7176765e813944d3"
+  },
+  "233": {
+   "name": "Groups System Improvements",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "e93bfeddd712ed8a"
+  },
+  "232": {
+   "name": "Improvements to Manned and Remote Turrets on Vehicles",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "7059a05df463da24"
+  },
+  "317": {
+   "name": "Object Container Streaming: GameObjectExtensions Conversion",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "1b4247aba8580d0a"
+  },
+  "347": {
+   "name": "RSI Odyssey Flightsuit Rework",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "fd080ca22ea39338"
+  },
+  "208": {
+   "name": "Consolidated Outland Mustang Delta Revision",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "27adbef25dc8b9c4"
+  },
+  "230": {
+   "name": "Item Kiosk Shopping Improvements",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "1ab9011ca5bcefc4"
+  },
+  "229": {
+   "name": "FPS Combat: Movement Smoothing",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "7e7552c3960ba6b1"
+  },
+  "228": {
+   "name": "FPS Combat: First Reactions",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "89ef258dec400f12"
+  },
+  "227": {
+   "name": "FPS Combat: Multiple Enemy Combat Behaviors",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "bd9519173f1bf192"
+  },
+  "226": {
+   "name": "FPS Combat: Search Behavior",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "44c38dddd589685f"
+  },
+  "318": {
+   "name": "Object Container Streaming: Code Conversion",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "48adf10c11edeca9"
+  },
+  "209": {
+   "name": " Consolidated Outland Mustang Gamma/Omega Revision",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "a95bffa7a2a514a6"
+  },
+  "204": {
+   "name": "RSI Constellation Phoenix",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "3cdde8dfd3cb49f0"
+  },
+  "328": {
+   "name": "Network Entity Streaming",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "db583e82e883faf8"
+  },
+  "213": {
+   "name": "Tumbril Cyclone-AA",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "06a668fecb95d423"
+  },
+  "331": {
+   "name": "Network Bind Culling",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "f0bbb470ad256247"
+  },
+  "342": {
+   "name": "Small Rest Stops",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "397697a1324134f1"
+  },
+  "212": {
+   "name": "Tumbril Cyclone-RC",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "049e400dd6b674eb"
+  },
+  "332": {
+   "name": "VoIP & FoIP Integration",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "8cd62e1ac6c65c05"
+  },
+  "194": {
+   "name": "Tumbril Cyclone-RN",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "4e66a86bca428c2d"
+  },
+  "211": {
+   "name": "Tumbril Cyclone-TR",
+   "release": "3.3",
+   "released": 1,
+   "status": "Released",
+   "h": "d52f78339071f3c8"
+  },
+  "338": {
+   "name": "Hurston Planet",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "0fa124318f5ca81a"
+  },
+  "348": {
+   "name": "Mission Giver: Clovus Darneely",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "a0c607fe20e01a81"
+  },
+  "341": {
+   "name": "Lorville Landing Zone",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "0fa6cba33feeb51a"
+  },
+  "376": {
+   "name": "Hurston Moons: Aberdeen",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "23df3789c931640c"
+  },
+  "381": {
+   "name": "Hurston Moons: Arial",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "84387d1a06de5264"
+  },
+  "231": {
+   "name": "No-Fly Zones",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "8a608abb3aed510e"
+  },
+  "343": {
+   "name": "Hurston Clothing Collection",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "08da338c68408fa7"
+  },
+  "379": {
+   "name": "Hurston Moons: Ita",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "886518c4a35beb80"
+  },
+  "380": {
+   "name": "Hurston Moons: Magda",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "b26dc868fe265499"
+  },
+  "345": {
+   "name": "Virgil TrueDef-Pro Armor",
+   "release": "3.3.5",
+   "released": 0,
+   "status": "Released",
+   "h": "75b84c333f86cfd6"
+  },
+  "296": {
+   "name": "Performance Optimization",
+   "release": "3.3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "2bfeda7ad1bc4c8c"
+  },
+  "400": {
+   "name": "Mission Giver: Constantine Hurston",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "f43e9f9f1d102ae0"
+  },
+  "398": {
+   "name": " Mining Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "78247020ef281821"
+  },
+  "397": {
+   "name": "Ship Item Rental",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "87f48aced52ec6af"
+  },
+  "384": {
+   "name": "Mission Giver: Wallace Klim",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "1b2ed45cedc55efa"
+  },
+  "396": {
+   "name": "Patrol Mission Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "bee7c4207435a897"
+  },
+  "395": {
+   "name": "Video Comm Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "f84710818d917132"
+  },
+  "391": {
+   "name": "VoIP & FoIP Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "42af02c2c53ec05b"
+  },
+  "390": {
+   "name": "Player Interaction Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "d1d42e1275555848"
+  },
+  "388": {
+   "name": "Scramble Race Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "29089a70a222073c"
+  },
+  "399": {
+   "name": "Shipjacker Armor",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "056c534d1a3ef757"
+  },
+  "364": {
+   "name": "Quantum Travel Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "801d85c2c403d298"
+  },
+  "216": {
+   "name": "Anvil Hawk",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "130711951ac7a2bb"
+  },
+  "334": {
+   "name": "Kastak Arms Ravager-212 Twin",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "e1ff68103d43ef25"
+  },
+  "313": {
+   "name": "Joker Engineering Suckerpunch Cannon Revision",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "e03ddff41e8305ca"
+  },
+  "312": {
+   "name": "Behring Sawbuck Repeater Revision",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "3553bdc762808431"
+  },
+  "243": {
+   "name": "FPS Combat: Smooth Locomotion Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "56e0393df1ff404f"
+  },
+  "382": {
+   "name": "Lorville Business District",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "70157137c7f6cd75"
+  },
+  "363": {
+   "name": "Origin 600i Touring Module",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "95979bf12e73b751"
+  },
+  "198": {
+   "name": "MISC Freelancer MAX",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "f149f29380ce3187"
+  },
+  "197": {
+   "name": "MISC Freelancer DUR",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "ce791c1864373ee2"
+  },
+  "196": {
+   "name": "MISC Freelancer MIS",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "e3153c5db8774b12"
+  },
+  "358": {
+   "name": "MISC Reliant Kore Improvements",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "99e08af8ce294c0a"
+  },
+  "295": {
+   "name": "Performance Optimization",
+   "release": "3.4",
+   "released": 1,
+   "status": "Released",
+   "h": "25fdf1b70c9fd5a2"
+  },
+  "829": {
+   "name": "DebugGUI / In-Engine Debugging Tools",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "8b76f65575805740"
+  },
+  "646": {
+   "name": "Star Marine: Demien Comms & Quality of Life Improvements",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "3ca7b02906969c63"
+  },
+  "644": {
+   "name": "Ursa Rover Fortuna",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "c29b8fd61e789f52"
+  },
+  "643": {
+   "name": "Anvil Hornet F7C-M Heartseeker",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "537ee7ee61be3070"
+  },
+  "577": {
+   "name": "FPS: Collision Avoidance v2",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "2887f9caf2e5840d"
+  },
+  "548": {
+   "name": "Basic Gunship Behavior ",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "d3d533f43ca72972"
+  },
+  "535": {
+   "name": "Mission Giver: Tecia Pacheco",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "aa99e0ee327a03d1"
+  },
+  "534": {
+   "name": "Ship AI: Flight Model Update",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "9d3fdbd39d818120"
+  },
+  "533": {
+   "name": "System: Heat",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "4e64584265b208c9"
+  },
+  "531": {
+   "name": "Banu Singe Tachyon Cannon",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "b42d3f565a2a102b"
+  },
+  "530": {
+   "name": "Network OCS Stall Fixes",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "b84cf4a46dd7c613"
+  },
+  "529": {
+   "name": "AI Bounty Hunting in Environmental Missions",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "4ce5d78c8ed9ab1b"
+  },
+  "528": {
+   "name": "Vehicle Scanning HUD Improvements",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "6d64a678d7cd52f0"
+  },
+  "527": {
+   "name": "AI Distress Beacons",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "8076f27027a63ae4"
+  },
+  "526": {
+   "name": "Vehicle Radar v2",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "86bd69c732abf144"
+  },
+  "525": {
+   "name": "Quantum Travel Improvements",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "f3d6caf4f0681e51"
+  },
+  "524": {
+   "name": "Vehicle Scanning Improvements",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "5b828211409a1ed7"
+  },
+  "523": {
+   "name": "Ship System: Degradation Improvements",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "c0f49d4e528eaf7d"
+  },
+  "522": {
+   "name": "Vehicle Tech Updates v1",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "239e151f64f7093f"
+  },
+  "521": {
+   "name": "Groups System Improvements v4",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "69df6f3176f45681"
+  },
+  "520": {
+   "name": "VOIP & FOIP Improvements v3",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "7b12ea10653ddc74"
+  },
+  "518": {
+   "name": "Distortion Damage Improvements",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "c694fd7a9ba62884"
+  },
+  "517": {
+   "name": "Gimbal Weapon Improvements v1",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "cac021059a8304a8"
+  },
+  "516": {
+   "name": "Ship AI: Combat Behaviour Improvements",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "ae3c154b2dfc70da"
+  },
+  "515": {
+   "name": "Extending Delivery Missions to ArcCorp",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "12a344d2b749241c"
+  },
+  "393": {
+   "name": "New Flight Model",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "52c0f1e8cba83988"
+  },
+  "199": {
+   "name": "Origin 300i Rework",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "a00b6e77617a189f"
+  },
+  "373": {
+   "name": "DNA Face Customization",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "29ad7e666cbb11f0"
+  },
+  "361": {
+   "name": "Origin 315p Rework",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "87dd236fafffb3af"
+  },
+  "360": {
+   "name": "Origin 325a Rework",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "8acea41529fb5858"
+  },
+  "359": {
+   "name": "Origin 350R Rework",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "35c9abdeed8f9460"
+  },
+  "371": {
+   "name": "Projectile Manager",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "8398670ed4dc6191"
+  },
+  "368": {
+   "name": "Hard Surface Shader Improvements",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "792e15f8f2895951"
+  },
+  "339": {
+   "name": "ArcCorp Planet",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "4032a6724671e5f0"
+  },
+  "250": {
+   "name": "Gemini S71",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "911537bd53a4bce8"
+  },
+  "310": {
+   "name": "Playable Female Characters",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "756af3ee1a9ece68"
+  },
+  "249": {
+   "name": "Gallenson Tactical Systems GT-870 Tarantula Revision",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "f2a5783046c91d8a"
+  },
+  "248": {
+   "name": "Kastak Arms Coda",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "314cb9ed69ca1ff3"
+  },
+  "245": {
+   "name": "Performance Optimization",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "04f87b0554de2768"
+  },
+  "378": {
+   "name": "ArcCorp Moon: Lyria",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "c30a932325aa3f74"
+  },
+  "219": {
+   "name": "MISC Reliant Tana",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "1e21145bdf88ebcb"
+  },
+  "218": {
+   "name": "MISC Reliant Sen",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "ad52dd1694ce0c0e"
+  },
+  "217": {
+   "name": "MISC Reliant Mako",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "c8f575c79f6f719b"
+  },
+  "377": {
+   "name": "ArcCorp Moon: Wala",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "ac1bdfa243bc3501"
+  },
+  "336": {
+   "name": "Area18 Landing Zone",
+   "release": "3.5",
+   "released": 1,
+   "status": "Released",
+   "h": "ebbba4684939b2a3"
+  },
+  "674": {
+   "name": "Anvil Ballista",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "afdd1bf1981d9ceb"
+  },
+  "672": {
+   "name": "Ship Purchasing Kiosk",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "6fbc70f2fd8e2cc8"
+  },
+  "669": {
+   "name": "Black Market Economy",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "3ad76b1de2af4856"
+  },
+  "649": {
+   "name": "Hover Mode",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "3b1732452eaa681e"
+  },
+  "631": {
+   "name": "Client to Server Actor Networking Rework",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "aaec7e5137d0b429"
+  },
+  "619": {
+   "name": "Weapon Attachments",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "d6ed558c7d92ff74"
+  },
+  "532": {
+   "name": "Asynchronous Disconnection Refactor",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "7b2841eab6962374"
+  },
+  "615": {
+   "name": "Player Free Look",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "653a2695dc79ed25"
+  },
+  "614": {
+   "name": "Ragdoll Improvements",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "5ba3d931b75d64e2"
+  },
+  "613": {
+   "name": "Player Jump v2",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "20e3b8975471c04d"
+  },
+  "611": {
+   "name": "Ship System: Degradation Improvements v2",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "32dc757184c5b6e5"
+  },
+  "610": {
+   "name": "Distribution and Ecosystem Improvements",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "2017e0d37659c122"
+  },
+  "585": {
+   "name": "Rest Stop Space Stations: Exterior Variations",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "bd0e6aaaee019b24"
+  },
+  "581": {
+   "name": "Behring S38 Pistol",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "f6d05b80fc5f6768"
+  },
+  "575": {
+   "name": "System: Misfires",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "5a71731a973caf3d"
+  },
+  "564": {
+   "name": "Player Carriables v2",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "99ecf7505e9b5048"
+  },
+  "561": {
+   "name": "Harvestable Entity Spawning",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "0e45157783482e3a"
+  },
+  "554": {
+   "name": "Transit Systems v2",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "274fa89c7fddae78"
+  },
+  "540": {
+   "name": "AEGIS Vanguard Warden Update",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "70c7efc82239817b"
+  },
+  "362": {
+   "name": "Kruger Intergalactic P-72 Archimedes",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "6db8027f00b1225b"
+  },
+  "366": {
+   "name": "Law System v1",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "9f203543d80a0817"
+  },
+  "323": {
+   "name": "MaxOx Neutron Repeaters",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "8fbf9e9541dc3f5f"
+  },
+  "247": {
+   "name": "Klaus & Werner Lumin V",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "3bf4a04d03f126b5"
+  },
+  "215": {
+   "name": "Origin 890 Jump",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "4b0e02aff4697a7d"
+  },
+  "224": {
+   "name": "Performance Optimization",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "3b6a8256035141b0"
+  },
+  "356": {
+   "name": "Kruger P52 Merlin Improvements",
+   "release": "3.6",
+   "released": 1,
+   "status": "Released",
+   "h": "1e14b3c56cef7ccc"
+  },
+  "710": {
+   "name": "Anvil Pisces",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "a3cac7fe9eff9a21"
+  },
+  "699": {
+   "name": "MacFlex \"Rucksack\" Core",
+   "release": "3.7",
+   "released": 0,
+   "status": "Released",
+   "h": "d6be52b625bf6bb5"
+  },
+  "698": {
+   "name": "Quantum Enforcement v1",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "67fa5c4675527dc2"
+  },
+  "697": {
+   "name": "Glowstick V1",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "a93df53e998d2be0"
+  },
+  "696": {
+   "name": "RSI Mantis",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "a111d06127250867"
+  },
+  "695": {
+   "name": "Star Marine Map: The Good Doctor ",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "f9c763668a32ec3b"
+  },
+  "686": {
+   "name": "FPS Mining",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "82cde78fd6033307"
+  },
+  "691": {
+   "name": "Caves (Rocky)",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "d3a64f613fba8842"
+  },
+  "679": {
+   "name": "Mission Sharing",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "c3a12a42de03bdd1"
+  },
+  "681": {
+   "name": "Personal Commodity Inventory",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "ccb06b3e829f6e8a"
+  },
+  "688": {
+   "name": "Human AI Combat v2",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "b4a83da29b582122"
+  },
+  "690": {
+   "name": "Harvestables",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "11c625f4e970db85"
+  },
+  "694": {
+   "name": "Arena Commander:  Pirate Swarm Improvements",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "f7e76bf30957aaf9"
+  },
+  "617": {
+   "name": "Ship Rentals",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "fc80d36c667d02f9"
+  },
+  "684": {
+   "name": "AI Dogfight Combat v2",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "cca89ea9473a6155"
+  },
+  "678": {
+   "name": "IFCS Proximity Assist",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "41afa50754e95dd3"
+  },
+  "683": {
+   "name": "Weapon Attachments v2",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "97559caace5b0fc3"
+  },
+  "670": {
+   "name": "Character Customization System v2",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "bf930eab40844132"
+  },
+  "556": {
+   "name": "Performance Optimization",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "c961431299e6a4da"
+  },
+  "579": {
+   "name": "Hedeby Salvo Frag Pistol",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "2d3c474f7c5a10e0"
+  },
+  "578": {
+   "name": "Kroneg FL-33 Laser Cannon",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "dda897b208efcabb"
+  },
+  "547": {
+   "name": "AEGIS Vanguard Harbinger",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "0c0ceb765fc49c5c"
+  },
+  "546": {
+   "name": "AEGIS Vanguard Sentinel",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "3beff675ab3f4b47"
+  },
+  "221": {
+   "name": "Banu Defender",
+   "release": "3.7",
+   "released": 1,
+   "status": "Released",
+   "h": "46e385ec2f3cb05b"
+  },
+  "712": {
+   "name": "Planetary Weather Effects",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "ca1b38ab1ab9bb0d"
+  },
+  "711": {
+   "name": "Server-side Object Container Streaming (SOCS)",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "ce20c11c35791f57"
+  },
+  "709": {
+   "name": "ARGO Mole",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "7794205b2a77246b"
+  },
+  "706": {
+   "name": "Vehicle Look Ahead Camera",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "72a9cdb1b1d29abb"
+  },
+  "705": {
+   "name": "Planet Tech V4",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "36b12e77c79d4205"
+  },
+  "704": {
+   "name": "Vehicle Third Person Camera",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "eb2111eb808c95c4"
+  },
+  "703": {
+   "name": "Rescue Hijacked 890 Jump",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "87a632b8b75617db"
+  },
+  "702": {
+   "name": "Law System v2: Fines",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "5eec4c0f9564d827"
+  },
+  "701": {
+   "name": "Mining Heads",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "746f7a067ceb7401"
+  },
+  "680": {
+   "name": "Annunciator Panels",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "73b50dc83d1eb882"
+  },
+  "594": {
+   "name": "Anvil Carrack",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "2b25d6c5196df098"
+  },
+  "630": {
+   "name": "Ship AI: 3D Pathfinding v2",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "a96537dc881621c5"
+  },
+  "638": {
+   "name": "microTech Planet",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "da0b40ac293f3cc3"
+  },
+  "633": {
+   "name": "Advanced Gunship Defensive Maneuvers",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "c391f86a7262e18c"
+  },
+  "582": {
+   "name": "Apocalypse Arms Animus Missile Launcher",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "4b7f54bd789a62ef"
+  },
+  "637": {
+   "name": "New Babbage Landing Zone - Exteriors",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "9a7bdb2b300b2cd9"
+  },
+  "584": {
+   "name": "Rest Stop Space Station: Interior Variants",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "2ea6248136e757dd"
+  },
+  "651": {
+   "name": "Behring P6-LR Ballistic Sniper Rifle",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "7380280e6dcf7c42"
+  },
+  "557": {
+   "name": "Atmosphere Tech Improvements",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "82909a1954fc9749"
+  },
+  "566": {
+   "name": "FPS: Close Combat ",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "2a496f5a02837376"
+  },
+  "596": {
+   "name": "Performance Optimization",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "d659c28bc0152609"
+  },
+  "542": {
+   "name": "Drake Cutlass Red",
+   "release": "3.8",
+   "released": 1,
+   "status": "Released",
+   "h": "1b8bb05327b5d0f8"
+  },
+  "739": {
+   "name": "Contacts List Refactor/Friends List Unification",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "a558d57d1c8f0091"
+  },
+  "723": {
+   "name": "Player Interaction System Improvements",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "23c9a9d0d45ba8ba"
+  },
+  "742": {
+   "name": "Drake Cutlass Blue",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "77fa625f67353120"
+  },
+  "718": {
+   "name": "Ship AI: 3D Navigation - Collision Avoidance",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "b325817e1aecb9e5"
+  },
+  "717": {
+   "name": "Ship AI: 3D Pathfinding - Planet Side",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "644462caf3db1bc3"
+  },
+  "715": {
+   "name": "Weather Locomotion",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "d67ed82028aa22dd"
+  },
+  "708": {
+   "name": "Prison Uniform",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "725f29b8b5fa2a69"
+  },
+  "707": {
+   "name": "Klescher Automated Prison",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "aa6095dcaf0830fa"
+  },
+  "700": {
+   "name": "Prison Missions",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "ad4139fa382440b7"
+  },
+  "664": {
+   "name": "New Babbage Landing Zone - Interiors",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "0101c10860ebc5b2"
+  },
+  "593": {
+   "name": "Esperia Prowler",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "a44b16b32c491162"
+  },
+  "640": {
+   "name": "microTech Collection",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "9f6dd03b41cfb002"
+  },
+  "635": {
+   "name": "microTech Moon: Calliope",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "941c545102c0a9d4"
+  },
+  "648": {
+   "name": " Performance Optimization",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "15588ddf3dbd701d"
+  },
+  "609": {
+   "name": "microTech Moon: Clio",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "491b8ed79b88fec6"
+  },
+  "608": {
+   "name": "microTech Moon: Euterpe",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "b603fbedf3df4354"
+  },
+  "612": {
+   "name": "Player Status System v1",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "64dd04a5c4694ae5"
+  },
+  "519": {
+   "name": "Bounty Mission NPC Improvements",
+   "release": "3.9",
+   "released": 1,
+   "status": "Released",
+   "h": "13325a82805016b9"
+  },
+  "756": {
+   "name": "Player Trading",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "a24da9c5bd599a22"
+  },
+  "755": {
+   "name": "Law System v2: Impoundment Improvements",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "ac50f4c78efd7945"
+  },
+  "754": {
+   "name": "Electron Damage",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "f201de5811b451ff"
+  },
+  "753": {
+   "name": "Turret and Gunnery Improvements",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "aa449aaa027fdcb9"
+  },
+  "749": {
+   "name": "Kruger Intergalactic P-72 Archimedes Emerald",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "7952aa497ac32241"
+  },
+  "748": {
+   "name": "Thruster Efficiency Curves and Aerodynamics",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "b0aafaca863ce52e"
+  },
+  "747": {
+   "name": "Ocean Shader Improvements",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "e8337d361988e14f"
+  },
+  "743": {
+   "name": "Heightmap Improvements",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "e302868f890c8678"
+  },
+  "744": {
+   "name": "New Babbage - Shop Additions",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "132e79860846ecd8"
+  },
+  "357": {
+   "name": "Origin m50 Improvements",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "fc849fb7442cb2e5"
+  },
+  "740": {
+   "name": "GrimHEX Improvements",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "adf619e6265d5dec"
+  },
+  "720": {
+   "name": "New Targeting Methodology",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "aa3132c1e78d9252"
+  },
+  "722": {
+   "name": "Body Dragging ",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "8766ee79c4b598e0"
+  },
+  "719": {
+   "name": "High Speed Combat",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "f7f3b12504fa5571"
+  },
+  "721": {
+   "name": "Ship HUD Rework",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "f200e0893c9c11f0"
+  },
+  "714": {
+   "name": "Lightning Bolt Co. Atzkav Electron Sniper Rifle",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "166f4a421a178d2d"
+  },
+  "682": {
+   "name": "Restricted Area Rework",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "55a542b563a5b877"
+  },
+  "713": {
+   "name": "Gemini C54 Ballistic SMG",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "91ef5738a69698b2"
+  },
+  "583": {
+   "name": "FPS Combat: Weapon Types",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "97e8af43a086a875"
+  },
+  "650": {
+   "name": "Lightning Bolt Co. Yubarev Electron Pistol",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "abb84f1ed27a8787"
+  },
+  "550": {
+   "name": " FPS: Cover Usage v1 ",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "38abe41e6536207e"
+  },
+  "603": {
+   "name": "Klaus & Werner Sledge Mass Driver Revision",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "bf9ecfefcace8d76"
+  },
+  "553": {
+   "name": "NPC Improvements: Bartender",
+   "release": "3.10",
+   "released": 1,
+   "status": "Released",
+   "h": "e3955d7da8b22040"
+  },
+  "786": {
+   "name": "Consolidated Outland Nomad",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "1cd8e79874289f0a"
+  },
+  "770": {
+   "name": "Relaxation of Armistice Restrictions",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "1231d00fceb6f9ad"
+  },
+  "769": {
+   "name": "Repainting Existing Planets & Moons",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "382030e92c0abd64"
+  },
+  "768": {
+   "name": "Updated Ground Textures",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "699d8253b8e27b9f"
+  },
+  "767": {
+   "name": "Updated Geology",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "365efa60079b22cb"
+  },
+  "766": {
+   "name": "Force Reactions",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "0758f71a81457d68"
+  },
+  "765": {
+   "name": "Player & External Inventory",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "c028faedfb2a904e"
+  },
+  "762": {
+   "name": "Behring BR2 Ballistic Shotgun",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "37e61b3768721e7c"
+  },
+  "757": {
+   "name": "Ground Cover Buoyancy",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "ffd8bafa5d86cadf"
+  },
+  "752": {
+   "name": "Origin 100i ",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "4a84c644ae1d08c7"
+  },
+  "750": {
+   "name": "Origin 125a",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "7346a43c1ceedf6b"
+  },
+  "751": {
+   "name": "Origin 135c",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "8d4f064602d08553"
+  },
+  "738": {
+   "name": "Space Station - Cargo Deck",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "106c1e8c839915ed"
+  },
+  "731": {
+   "name": "Improved Throw",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "6e743b09f00d3d78"
+  },
+  "725": {
+   "name": "Mercury Star Runner",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "110b99606d635d93"
+  },
+  "580": {
+   "name": "Behring GP-33 Grenade Launcher",
+   "release": "3.11",
+   "released": 1,
+   "status": "Released",
+   "h": "e13676f92189cf5d"
+  },
+  "785": {
+   "name": "Stanton System Planetary Improvements",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "ffcb0fd13532fbe1"
+  },
+  "784": {
+   "name": "Reputation V1 - Reputation and Org Service",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "15826be72ce08da3"
+  },
+  "783": {
+   "name": "Landing Services Update - Ordnance Replenishment",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "77fdfa5bdc785ad7"
+  },
+  "782": {
+   "name": "Mining UI Refactor ",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "95e182031b18b544"
+  },
+  "781": {
+   "name": "Counter Measures v1.1",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "4907cde5f445340d"
+  },
+  "780": {
+   "name": "Torpedo Attack, Counter-Balance and Behavior ",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "968b42ca26801422"
+  },
+  "779": {
+   "name": "AI Intercepting Torpedoes",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "e9c8ad6aee6b006d"
+  },
+  "778": {
+   "name": "AI Fire Mode Usage and Targeting Priorities",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "b720d56bbd15d4be"
+  },
+  "777": {
+   "name": "AI Accuracy Convergence ",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "e650a72dbd64d916"
+  },
+  "776": {
+   "name": "Capital Ship Combat Behavior Improvements",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "67c3eb2b47b1104f"
+  },
+  "775": {
+   "name": "Capital Ships, Turrets and Torpedoes VFX/SFX Improvements ",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "652c54d30e0899c6"
+  },
+  "774": {
+   "name": "Behring FS-9 LMG",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "dd9526eaceb3cf6c"
+  },
+  "773": {
+   "name": "Gemini A03 Sniper Rifle",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "5f14cfb3ce161941"
+  },
+  "772": {
+   "name": "Vehicle Entry Identification",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "56c986357d0599c1"
+  },
+  "771": {
+   "name": "Stanton System Spacescaping",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "2a6de54b2ed24958"
+  },
+  "764": {
+   "name": "Esperia Talon",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "259eada11b5f9722"
+  },
+  "763": {
+   "name": "Esperia Talon Shrike",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "d68d5b790ca8d474"
+  },
+  "760": {
+   "name": "Station-based Refining",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "2a4ca8155ef43637"
+  },
+  "759": {
+   "name": "Multi-Tool Tractor Beam Attachment ",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "1ea9f3828fbc9abd"
+  },
+  "758": {
+   "name": "Weapon Zeroing - T0",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "24883380d1e26963"
+  },
+  "741": {
+   "name": "Space Stations - Refinery Decks",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "1610a1c89a6ba2ca"
+  },
+  "745": {
+   "name": "Elevator Panel Updates",
+   "release": "3.12",
+   "released": 0,
+   "status": "Released",
+   "h": "cf0085b2a13b75e8"
+  },
+  "823": {
+   "name": "Missions - Spawn Closets ",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "cf157fb2c7230c8f"
+  },
+  "841": {
+   "name": "UI - Reputation",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "74229bf9fd053c8a"
+  },
+  "842": {
+   "name": "Mining Sub-Components ",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "45d1b26b7060b305"
+  },
+  "843": {
+   "name": "Shield Effects v2",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "7954c8859db3521f"
+  },
+  "844": {
+   "name": "Missions - Timed Multi-Drop Deliveries",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "4d7664a0f355e0d1"
+  },
+  "845": {
+   "name": "Missions - Quantum-Sensitive Deliveries",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "196c6f14096dc40c"
+  },
+  "846": {
+   "name": "Tumbril Cyclone-MT",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "9f6ce09c31ecf6f2"
+  },
+  "848": {
+   "name": "Greycat ROC-DS",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "977ad52cf3068f58"
+  },
+  "805": {
+   "name": "Tumbril Nova",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "a75fda262cda94ce"
+  },
+  "800": {
+   "name": "Refinery Stations - Non-Commercial Overlays",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "faa94d5e9ddd28d8"
+  },
+  "799": {
+   "name": "Stanton System Polish",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "d475ee0060aa9a71"
+  },
+  "798": {
+   "name": "New Asteroids - Stanton System",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "1b811cf7c1da97aa"
+  },
+  "797": {
+   "name": "Cave Entrances - Drive-In & Sinkhole",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "f60cead468b22efa"
+  },
+  "796": {
+   "name": "Mounted Guns",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "7de3715fb4b25a63"
+  },
+  "795": {
+   "name": "Force Reactions",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "ea753e15399516b1"
+  },
+  "792": {
+   "name": "Vehicle Names and Serial Numbers",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "1150b9fc107465e9"
+  },
+  "791": {
+   "name": "Vehicle Visual Degradation",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "86c525758efa1ea4"
+  },
+  "789": {
+   "name": "Merlin/Constellation Docking",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "c4e0f0f025fd1139"
+  },
+  "788": {
+   "name": "Crusader M2 Hercules Starlifter",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "d89f11ecf6ca0f92"
+  },
+  "787": {
+   "name": "Crusader C2 Hercules Starlifter",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "d5bb4f4d2b9f1755"
+  },
+  "623": {
+   "name": "Ship to Station Docking",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "8f0b053a53dd2c80"
+  },
+  "730": {
+   "name": "Object Push & Pull ",
+   "release": "3.13",
+   "released": 0,
+   "status": "Released",
+   "h": "9ea5daf086a62f4e"
+  },
+  "850": {
+   "name": "Planetary Volumetric Clouds v1",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "477123275157c803"
+  },
+  "856": {
+   "name": "Power Management v2",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "055c6476d0b1ec9b"
+  },
+  "857": {
+   "name": "Canvas Sliced Ship HUDs",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "c97b56c09fd8b57b"
+  },
+  "818": {
+   "name": "Radar, Scanning, and Ping",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "e9c7b9329b415d3e"
+  },
+  "200": {
+   "name": "RSI Constellation Taurus",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "5fcc2f57eebf7684"
+  },
+  "794": {
+   "name": "Missiles - Guidance & Control Rework",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "f74bcff67b56a374"
+  },
+  "663": {
+   "name": "Planet - Crusader",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "ceacbf15da7560a2"
+  },
+  "728": {
+   "name": "Missile Operator Mode",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "e1d3d236cb55d674"
+  },
+  "716": {
+   "name": "Law System v2: Surrender",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "9904125a0c8a9b6e"
+  },
+  "665": {
+   "name": "Orison Landing Zone",
+   "release": "3.14",
+   "released": 1,
+   "status": "Released",
+   "h": "b23f2e9068b81192"
+  },
+  "833": {
+   "name": "Orison v2",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "226cd14f28ddf8df"
+  },
+  "835": {
+   "name": "Greycat Multi-tool Healing Attachment",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "b090ece427fde153"
+  },
+  "836": {
+   "name": "Curelife Medical Tool",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "06219f8376555e14"
+  },
+  "837": {
+   "name": "Behring S7 Laser Cannon",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "2a427e0e61d1130f"
+  },
+  "838": {
+   "name": "Behring S7 Ballistic Gatling",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "1e872870c93c3cb4"
+  },
+  "860": {
+   "name": "New Babbage Hospital",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "7805ea3342520583"
+  },
+  "861": {
+   "name": "Orison Hospital",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "01b14db9354aa643"
+  },
+  "862": {
+   "name": "Rest Stops: Space Station Clinics",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "1819a87903977404"
+  },
+  "863": {
+   "name": "GrimHex Clinic",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "4ea7996de3f87efa"
+  },
+  "868": {
+   "name": "Loot Generation T0",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "0a1f545aece6fe2e"
+  },
+  "869": {
+   "name": "Asset Manager mobiGlas App ",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "c5fc15f36256d9fc"
+  },
+  "870": {
+   "name": "Physical/Local Inventory Support",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "dafaa086904a193e"
+  },
+  "871": {
+   "name": "Infiltrate and Defend Missions",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "2c60b35c2f2c59c2"
+  },
+  "872": {
+   "name": "Updates - Broken Moon Map",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "1ad2a5ea6fddd2c5"
+  },
+  "874": {
+   "name": "Doctor, Nurse AI Behaviors",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "2fda73aa81b4a0c8"
+  },
+  "877": {
+   "name": "Scoreboard UI Improvements",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "2f1eff274bae2840"
+  },
+  "878": {
+   "name": "Origin 400i",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "a27ad3fb0c5bbefe"
+  },
+  "890": {
+   "name": "Argo RAFT",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "c042eb02861553f8"
+  },
+  "891": {
+   "name": "Anvil Spartan",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "c2f2f897d15bfadb"
+  },
+  "819": {
+   "name": "Actor Feature - Personal Inventory",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "2a004f72c4223817"
+  },
+  "815": {
+   "name": "Tech - Healing T0",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "e88d9c8a1282d8f2"
+  },
+  "808": {
+   "name": "Bombs",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "8bea3461580a41e1"
+  },
+  "804": {
+   "name": "Aegis Redeemer",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "65a418dce1fddfaf"
+  },
+  "803": {
+   "name": "Crusader A2 Hercules Starlifter",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "e7a879a9991b16d9"
+  },
+  "802": {
+   "name": "Crusader Ares Starfighter Ion",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "22837cf4388bfd26"
+  },
+  "801": {
+   "name": "Crusader Ares Starfighter Inferno",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "c4012a074c9d06df"
+  },
+  "569": {
+   "name": "NPC Healing",
+   "release": "3.15",
+   "released": 0,
+   "status": "Released",
+   "h": "8f46cd38d9de86a0"
+  },
+  "864": {
+   "name": "Area 18 Hospital",
+   "release": "3.16",
+   "released": 0,
+   "status": "Released",
+   "h": "7cfe110a06b032f6"
+  },
+  "875": {
+   "name": "Laser Trip Mine T0",
+   "release": "3.16",
+   "released": 0,
+   "status": "Released",
+   "h": "fc294ce4b48fdc07"
+  },
+  "881": {
+   "name": "Derelict Spaceships - Points of Interest",
+   "release": "3.16",
+   "released": 0,
+   "status": "Released",
+   "h": "c415025d47658204"
+  },
+  "883": {
+   "name": "Updates - Dying Star Map",
+   "release": "3.16",
+   "released": 0,
+   "status": "Released",
+   "h": "83c80ce38cfbb0ba"
+  },
+  "884": {
+   "name": "Gravlev Physics Rework",
+   "release": "3.16",
+   "released": 0,
+   "status": "Released",
+   "h": "c21bd2ce42d8cac3"
+  },
+  "892": {
+   "name": "Jumptown 2.0",
+   "release": "3.16",
+   "released": 0,
+   "status": "Released",
+   "h": "70530683f48ab02d"
+  },
+  "893": {
+   "name": "Drake Cutlass Steel",
+   "release": "3.16",
+   "released": 0,
+   "status": "Released",
+   "h": "521ff28ac6748eb4"
+  },
+  "894": {
+   "name": "Consolidated Outland HoverQuad",
+   "release": "3.16",
+   "released": 0,
+   "status": "Released",
+   "h": "fa87589afda7ebb9"
+  },
+  "849": {
+   "name": "RSI Scorpius",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "e1f429b408926995"
+  },
+  "852": {
+   "name": "MISC Hull A",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "90a921d956118408"
+  },
+  "865": {
+   "name": "Lorville Hospital: Maria Pure of Heart",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "2b9b5baec91f38dc"
+  },
+  "880": {
+   "name": "Mining Gadgets",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "2e060eb5c8fff5b3"
+  },
+  "882": {
+   "name": "Ship to Ship Refueling",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "d2fc802fdbd50fa8"
+  },
+  "885": {
+   "name": "DNA Head Textures Update",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "1dcdc8d0daca7d5e"
+  },
+  "886": {
+   "name": "Selling Items To Shops",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "dc837d9e117aab43"
+  },
+  "895": {
+   "name": "Coffee Shop Vendor",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "65049a176efce30e"
+  },
+  "897": {
+   "name": "Space Station Clinics: Variations",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "40f3e40caa4e518b"
+  },
+  "900": {
+   "name": "Rivers - Core Tech",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "845ddaae700dd5c7"
+  },
+  "902": {
+   "name": "Derelict Reclaimer Settlement - Point of Interest",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "cbe697f5a1f64166"
+  },
+  "903": {
+   "name": "Illegal Delivery Missions",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "b9e3097cdbe8a6c5"
+  },
+  "904": {
+   "name": "AI - Planetary Navigation",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "78acb8257eb03bce"
+  },
+  "907": {
+   "name": "Drake Mule",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "a7654d4b511c37c9"
+  },
+  "908": {
+   "name": "Siege of Orison",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "49b1cf0667ca657a"
+  },
+  "909": {
+   "name": "Additional Stanton Lagrange Points",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "557d4310b4140796"
+  },
+  "910": {
+   "name": "Derelict Reclaimer Space Missions",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "b71069307c48cd2f"
+  },
+  "911": {
+   "name": "Colonialism Outposts - Derelict",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "9245826b35353c7c"
+  },
+  "912": {
+   "name": "AI - Dropships and Reinforcements",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "c4b21564f6793bf6"
+  },
+  "913": {
+   "name": "Anvil Centurion",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "ef668e787cf1b88c"
+  },
+  "925": {
+   "name": "Drake Corsair",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "29660aed4fea6e3f"
+  },
+  "926": {
+   "name": "Greycat STV",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "0be4faae828c3822"
+  },
+  "929": {
+   "name": "Drake Cutter",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "3d052baf09242cb0"
+  },
+  "930": {
+   "name": "Anvil C8R Pisces",
+   "release": "3.17",
+   "released": 0,
+   "status": "Released",
+   "h": "ee3df7f3f951b982"
+  },
+  "839": {
+   "name": "Greycat Multi-tool Salvage Attachment",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "da2eceb6cfbae80d"
+  },
+  "879": {
+   "name": "Drake Vulture",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "302ee64220a4f28e"
+  },
+  "889": {
+   "name": "Cargo System Refactor",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "360ed42b6ac59989"
+  },
+  "906": {
+   "name": "Persistent Entity Streaming",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "130df91696ea010d"
+  },
+  "915": {
+   "name": "Daymar Crash Site",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "7c76478317f5cf27"
+  },
+  "916": {
+   "name": "New Rivers in Stanton",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "11591fb7c6d5a2eb"
+  },
+  "918": {
+   "name": "Sandbox Prison Activities",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "fb0b640591a1f841"
+  },
+  "919": {
+   "name": "Security Post Kareah Reactivation",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "bd242abf12a4773f"
+  },
+  "920": {
+   "name": "New Missions - Orison",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "b919705e5a997fcf"
+  },
+  "921": {
+   "name": "Sand Cave Archetype",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "4b04fef18bd4235f"
+  },
+  "924": {
+   "name": "Greycat PTV Race Track",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "5f06b023fbc41248"
+  },
+  "927": {
+   "name": "Time Trial Race Missions",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "f9c457ee08b1decf"
+  },
+  "928": {
+   "name": "Gen12 Scene Renderer",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "8e1ae76f6e30c1aa"
+  },
+  "935": {
+   "name": "RSI Scorpius Antares",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "edbffeddc19fbbbf"
+  },
+  "888": {
+   "name": "Salvage - Hull Stripping",
+   "release": "3.18",
+   "released": 0,
+   "status": "Released",
+   "h": "18245c24bfeb61c0"
+  },
+  "931": {
+   "name": "Lorville Cityscape",
+   "release": "3.19",
+   "released": 0,
+   "status": "Released",
+   "h": "aafaf80cd35a481d"
+  },
+  "932": {
+   "name": "New Player Experience",
+   "release": "3.19",
+   "released": 0,
+   "status": "Released",
+   "h": "a24177fbdf829348"
+  },
+  "933": {
+   "name": "New Missions - Salvage Contracts",
+   "release": "3.19",
+   "released": 0,
+   "status": "Released",
+   "h": "9b528a43414090d2"
+  },
+  "934": {
+   "name": "New Missions - Ghost Hollow PVP Mission",
+   "release": "3.19",
+   "released": 0,
+   "status": "Released",
+   "h": "a0d3a0aef5eb4714"
+  },
+  "941": {
+   "name": "Tractor Beam - Attach and Detach",
+   "release": "3.19",
+   "released": 0,
+   "status": "Released",
+   "h": "3b500dada86179eb"
+  },
+  "945": {
+   "name": "RSI Lynx",
+   "release": "3.19",
+   "released": 0,
+   "status": "Released",
+   "h": "026ca1dac85d8f3e"
+  },
+  "954": {
+   "name": "Mirai Fury",
+   "release": "3.19",
+   "released": 0,
+   "status": "Released",
+   "h": "5337f749302abd18"
+  },
+  "955": {
+   "name": "Mirai Fury MX",
+   "release": "3.19",
+   "released": 0,
+   "status": "Released",
+   "h": "9bd7e723cc7d6e36"
+  },
+  "946": {
+   "name": "Arena Commander: Frontend Update",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "d213c54a7739c72b"
+  },
+  "947": {
+   "name": "Arena Commander: New Racetracks",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "7f0fd893f19c9cae"
+  },
+  "948": {
+   "name": "Arena Commander: New Horizon Speedway Rework",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "24806d1d81a9453e"
+  },
+  "949": {
+   "name": "Arena Commander: New Dogfighting Map - Jericho Station",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "b7c020ca768f0be6"
+  },
+  "950": {
+   "name": "Arena Commander: New Elimination Map - Echo11",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "8bc5a3912b4d252d"
+  },
+  "951": {
+   "name": "Arena Commander: Experimental Game Modes",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "cdf2d786dca68ab5"
+  },
+  "952": {
+   "name": "Arena Commander: New Dogfighting Map - Winner's Circle",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "d08d87c1d1f6389f"
+  },
+  "953": {
+   "name": "Arena Commander: New Map - Security Post Kareah",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "8aba404ca9866f0d"
+  },
+  "956": {
+   "name": "Wheeled Vehicle Handling Improvements",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "01cc9a45f36423bf"
+  },
+  "957": {
+   "name": "New Missions - Salvage Contracts: Coverup",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "c1fc785526a98209"
+  },
+  "958": {
+   "name": "Seraphim Station",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "1e04c673bfc651eb"
+  },
+  "960": {
+   "name": "MISC Hull C",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "4ded1df5251c8a6a"
+  },
+  "962": {
+   "name": "Physicalized Cargo Updates",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "ae07d25704840ea6"
+  },
+  "965": {
+   "name": "Mirai Fury LX",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "10c00977155a74e4"
+  },
+  "971": {
+   "name": "Anvil F8C Lightning",
+   "release": "3.20",
+   "released": 0,
+   "status": "Released",
+   "h": "7bd8dad14dcbba16"
+  },
+  "944": {
+   "name": "New Missions - Retrieve Consignment",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "b4a0dc0cc56fc112"
+  },
+  "959": {
+   "name": "New Crusader Platforms",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "e37acf9ed91a646c"
+  },
+  "961": {
+   "name": "Crusader A1 Spirit",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "aa4d40f473d03ebc"
+  },
+  "963": {
+   "name": "Crusader C1 Spirit",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "8906a4a6c869c932"
+  },
+  "964": {
+   "name": "Tumbril Storm",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "500aff30906e0262"
+  },
+  "967": {
+   "name": "Vehicle Tractor Beams",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "983ee9f29f65f461"
+  },
+  "968": {
+   "name": "Argo SRV",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "8713e10200ddafd6"
+  },
+  "970": {
+   "name": "New Missions - Steal Evidence",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "495c675b893f81c4"
+  },
+  "972": {
+   "name": "Drake Cutter Scout",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "b5b03640fa9ba558"
+  },
+  "973": {
+   "name": "Ship Trespass",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "262e8381b28fa095"
+  },
+  "981": {
+   "name": "New Missions - Data Heist",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "240d7bf75cb97a41"
+  },
+  "987": {
+   "name": "Gatac Syulen",
+   "release": "3.21",
+   "released": 0,
+   "status": "Released",
+   "h": "fbc75f31a20c133f"
+  },
+  "974": {
+   "name": "Aopoa San'tok.yāi",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "6e2642fb4ecf95d2"
+  },
+  "975": {
+   "name": "Origin X1",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "0f06f3cf24a05884"
+  },
+  "976": {
+   "name": "Origin X1 Velocity",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "dbb56f145a7b818c"
+  },
+  "977": {
+   "name": "Origin X1 Force",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "292e45787f86ab8e"
+  },
+  "978": {
+   "name": "Salvage - Structural",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "afc9b4ba56a63e54"
+  },
+  "979": {
+   "name": "Player Hair Update",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "e53a9e4f479d59be"
+  },
+  "982": {
+   "name": "Inventory - Cargo Containers",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "b856a6d67d4637b9"
+  },
+  "983": {
+   "name": "New Derelict Settlements",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "57ef7b7c445bf4bc"
+  },
+  "984": {
+   "name": "Arena Commander: New Map - Bloodshot Ridge",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "25ab3611f67ff7bc"
+  },
+  "985": {
+   "name": "Arena Commander: New Map - Maker's Point",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "7c485a27bf7efb4a"
+  },
+  "986": {
+   "name": "Arena Commander: Multicrew & Spawn Locations",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "49da3728e84c0bd4"
+  },
+  "1008": {
+   "name": "Arena Commander: Gravlev Racing",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "b14c6b2e368a4103"
+  },
+  "1015": {
+   "name": "Anvil Hornet F7C Mk II",
+   "release": "3.22",
+   "released": 0,
+   "status": "Released",
+   "h": "ebf68ff356bb504d"
+  },
+  "969": {
+   "name": "Replication Layer Update",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "391b5af71d293dc0"
+  },
+  "991": {
+   "name": "Starmap Rework",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "69391a08c3f56abb"
+  },
+  "992": {
+   "name": "Dynamic Crosshair",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "e0f2fd3043e88be0"
+  },
+  "993": {
+   "name": "Reputation - Hostility",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "fea826e375350fab"
+  },
+  "994": {
+   "name": "Master Modes",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "9a0410bf6fa6fcea"
+  },
+  "996": {
+   "name": "EVA T2",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "91f52337e173c577"
+  },
+  "997": {
+   "name": "Player Interaction Experience",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "63259d13617f15e1"
+  },
+  "998": {
+   "name": "Visor & Lens HUD Rework",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "5dd8885ca05cd51d"
+  },
+  "999": {
+   "name": "New Character Customizer",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "bd1724b21b56818d"
+  },
+  "1002": {
+   "name": "Distribution Centers",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "755db2d3b226bd74"
+  },
+  "1004": {
+   "name": "FPS Map System",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "c0c067b69d652e21"
+  },
+  "1005": {
+   "name": "FPS Loot Screen",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "c3075565c9ff802a"
+  },
+  "1006": {
+   "name": "mobiGlas Rework",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "cf3014333d79a1d0"
+  },
+  "1009": {
+   "name": "Arena Commander: Custom Lobbies",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "561392cb5590d1d8"
+  },
+  "1011": {
+   "name": "Arena Commander: Engineering Experimental Mode",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "18eb8cd0c4580780"
+  },
+  "1012": {
+   "name": "Arena Commander: New Flight Map - Miner's Lament",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "f44844536226ad61"
+  },
+  "1013": {
+   "name": "Image Upscaling",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "fe75f3c31df9abbd"
+  },
+  "1014": {
+   "name": "Volumetric Clouds Update",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "0950daae59b80b94"
+  },
+  "1017": {
+   "name": "Aegis Retaliator - Gold Standard",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "858c23d6a915748e"
+  },
+  "1018": {
+   "name": "Fauna - Marok",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "0db43b5a340e86a7"
+  },
+  "1019": {
+   "name": "Fauna - Kopion",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "20857d857212e119"
+  },
+  "1020": {
+   "name": "Vehicle Modularity",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "185cac4b9c13a9a6"
+  },
+  "1021": {
+   "name": "New Missions - Creature Hunting",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "d13814ef91f4ca3c"
+  },
+  "1022": {
+   "name": "Water Simulation & Rendering Improvements",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "9efb799ae3897028"
+  },
+  "1023": {
+   "name": "Vulkan Graphics API Support",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "810a9ffa4229c212"
+  },
+  "1063": {
+   "name": "Mirai Pulse",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "93b502f7cce3e517"
+  },
+  "1064": {
+   "name": "Mirai Pulse LX",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "7fd333031b698888"
+  },
+  "1065": {
+   "name": "RSI Ursa Medivac",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "d7ba45ea0497d2f5"
+  },
+  "1066": {
+   "name": "Argo MPUV Tractor",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "2ceaf516543c464f"
+  },
+  "1067": {
+   "name": "Aegis Sabre Firebird",
+   "release": "3.23",
+   "released": 0,
+   "status": "Released",
+   "h": "b8f1b107d7aa4f7f"
+  },
+  "988": {
+   "name": "Freight Elevators",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "f689616d2cd10c36"
+  },
+  "1003": {
+   "name": "New Missions - Cargo Hauling",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "8342df7fb4ef0d17"
+  },
+  "1007": {
+   "name": "Personal and Instanced Hangars",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "27614c44b82a61e1"
+  },
+  "1016": {
+   "name": "Storage Access",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "859af410d5faf20a"
+  },
+  "1047": {
+   "name": "MFD Rework and New Displays",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "7a39a2f1979c8c95"
+  },
+  "1049": {
+   "name": "Additional Player Customization",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "4bd0c8b84d74bc9c"
+  },
+  "1050": {
+   "name": "RSI Zeus Mk II ES",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "894e42924605a965"
+  },
+  "1052": {
+   "name": "Multi-Tool Updates",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "0f16a51d651fde82"
+  },
+  "1068": {
+   "name": "RSI Zeus Mk II CL",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "0ab5f4a07c13781f"
+  },
+  "1069": {
+   "name": "Acidic Caves",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "7c9075c874515e3e"
+  },
+  "1070": {
+   "name": "Rock Caves",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "923c7d7c4bc3eadd"
+  },
+  "1075": {
+   "name": "Aegis Sabre Peregrine",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "c67e36eabc812a58"
+  },
+  "1076": {
+   "name": "Argo ATLS",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "3398148e019734c2"
+  },
+  "1084": {
+   "name": "MISC Starlancer MAX",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "97c57bdd512ed488"
+  },
+  "1085": {
+   "name": "Argo CSV-SM",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "fe2c5877f56cb056"
+  },
+  "1160": {
+   "name": "RSI Polaris",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "e7f839afe3f352a3"
+  },
+  "1161": {
+   "name": "ANVIL Hornet F7CS Mk II",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "c0327a052734c1a4"
+  },
+  "1162": {
+   "name": "ANVIL Hornet F7CR Mk II",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "cd690a05cfb8e95a"
+  },
+  "1174": {
+   "name": "Anvil Terrapin Medic",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "a7d620d8d47663f5"
+  },
+  "1001": {
+   "name": "Dynamic Event: Blockade Runner",
+   "release": "3.24",
+   "released": 0,
+   "status": "Released",
+   "h": "7ce7a1603e7779d9"
+  },
+  "1030": {
+   "name": "Ignis",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "473b839fe7bf8610"
+  },
+  "1031": {
+   "name": "Vatra",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "8178265487a5344a"
+  },
+  "1032": {
+   "name": "Adir",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "1dc7500cbd089dc9"
+  },
+  "1033": {
+   "name": "Fairo",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "812f428a838fd573"
+  },
+  "1034": {
+   "name": "Fuego",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "f3b89af667e55e70"
+  },
+  "1035": {
+   "name": "Vuur",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "6fb95d169ccaf5c3"
+  },
+  "1038": {
+   "name": "Pyro Space Stations",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "c5c1b9226a86ac97"
+  },
+  "1040": {
+   "name": "Outposts - Colonialism",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "43ecda51bdb31ed3"
+  },
+  "1041": {
+   "name": "Pyro Jump Points",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "645b5bf91430c091"
+  },
+  "1048": {
+   "name": "Fauna - Quasi Grazer",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "e317a6e615f7b1dd"
+  },
+  "1053": {
+   "name": "Server Meshing V1",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "e38ff528da7e67f2"
+  },
+  "1054": {
+   "name": "Mission System Refactor",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "c22726c6ded50287"
+  },
+  "1056": {
+   "name": "Pyro VI - Terminus",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "e449bcfa6311cfd3"
+  },
+  "1057": {
+   "name": "Pyro V",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "90325c17bc09d428"
+  },
+  "1058": {
+   "name": "Pyro IV",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "5762860c83d5f0c8"
+  },
+  "1059": {
+   "name": "Pyro III - Bloom",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "73ff75d7e3b54c45"
+  },
+  "1060": {
+   "name": "Pyro II - Monox",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "0c9b79eceee66421"
+  },
+  "1061": {
+   "name": "Pyro I",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "bac7d0cbd861bceb"
+  },
+  "1071": {
+   "name": "Asteroid Bases",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "63049800c7a57345"
+  },
+  "1072": {
+   "name": "Space Stations - Contested Zones",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "c5e8d683c4006c10"
+  },
+  "1173": {
+   "name": "Mirai Guardian",
+   "release": "4.0",
+   "released": 1,
+   "status": "Released",
+   "h": "880af314f8fdc2b6"
+  },
+  "1199": {
+   "name": "Save Stanton & Fight For Pyro",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "65ab8a2805377b69"
+  },
+  "1200": {
+   "name": "Supply or Die",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "90ad4ca2a7c8fba1"
+  },
+  "1205": {
+   "name": "MISC Fortune",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "de546683d1311350"
+  },
+  "1206": {
+   "name": "Anvil Hornet F7C-M Super Hornet Heartseeker",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "fa451367effeaff4"
+  },
+  "1207": {
+   "name": "Anvil Hornet F7C-M Super Hornet Mk II",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "422927ffe003b00f"
+  },
+  "1460": {
+   "name": "Executive Ships (Contested Zones)",
+   "release": "4.0",
+   "released": 0,
+   "status": "Released",
+   "h": "0853c54221f1e6c6"
+  },
+  "1074": {
+   "name": "New Missions - Location Repair",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "9fb31de624995d08"
+  },
+  "1324": {
+   "name": "Anvil Asgard",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "c39e138712226be8"
+  },
+  "1323": {
+   "name": "MISC Starlancer TAC",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "e16db0901ee092c5"
+  },
+  "1218": {
+   "name": "Hathor Ground Alignment Stations",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "d15669ba012bf818"
+  },
+  "1220": {
+   "name": "Hathor Mining Stations",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "fd8b2d1aa4a2924f"
+  },
+  "1223": {
+   "name": "Heavy Combat Armor \"Antium\"",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "d2cd323132724b05"
+  },
+  "1226": {
+   "name": "Mission Giver - Wikelo",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "57d1ffd8fa5b609e"
+  },
+  "1227": {
+   "name": "Mission Giver Location - Wikelo's Emporium",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "0d0b8c52addabba5"
+  },
+  "1228": {
+   "name": "Align and Mine",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "5efc5b07328909bf"
+  },
+  "1230": {
+   "name": "Arena Commander: New Map - Crossroads of Crime",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "ec5cdfaf57623ae8"
+  },
+  "1231": {
+   "name": "Arena Commander: New Map - Astor's Clearing",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "456111e2841b48fa"
+  },
+  "1322": {
+   "name": "Mirai Guardian MX",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "eb18693d00479c6a"
+  },
+  "1321": {
+   "name": "Greycat MTC",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "29b235928a039df9"
+  },
+  "1236": {
+   "name": "Juvenile Valakkar",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "f4c5d97b679cec94"
+  },
+  "1320": {
+   "name": "Aegis Idris-P",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "e24935768271ae4b"
+  },
+  "1282": {
+   "name": "Missions - Animal Population Control",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "043c2d12d999229b"
+  },
+  "1272": {
+   "name": "\"Armor with Horn and String\" Wikelo Special",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "e492a718786173f2"
+  },
+  "1249": {
+   "name": "New Hairstyles (4.1.0)",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "1e75a661494905ab"
+  },
+  "1250": {
+   "name": "New Hairstyles (4.1.1)",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "858e04c23beda507"
+  },
+  "1251": {
+   "name": "Missions - Local Site Maintenance",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "40d0c9b62395fee7"
+  },
+  "1252": {
+   "name": "Item Recovery T0",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "87354e4b5a8fb4b9"
+  },
+  "1253": {
+   "name": "Collision Physics Update",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "0d5603c8057de2c7"
+  },
+  "1255": {
+   "name": "Ground Vehicle and FPS Mining Update",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "a221c6e38ee8c785"
+  },
+  "1234": {
+   "name": "Argo ATLS GEO",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "141e4b08d37481e4"
+  },
+  "1232": {
+   "name": "Drake Golem",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "ebbac25baebce4dd"
+  },
+  "1217": {
+   "name": "VOLT SMG \"Quartz\"",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "6684b00c502e05b2"
+  },
+  "1254": {
+   "name": "Heavy Fighter Archetype Balance Pass",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "269f644f48dbf9b7"
+  },
+  "1257": {
+   "name": "Ships and Vehicles Update",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "7d0c404f9df9963c"
+  },
+  "1258": {
+   "name": "Ship Turret Updates",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "24d32a4e88081566"
+  },
+  "1274": {
+   "name": "Mission - Hunt The Polaris",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "1d6daea93df2924c"
+  },
+  "1247": {
+   "name": "Space Combat Mission - Patrol",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "dc2f0e5f7036406c"
+  },
+  "1216": {
+   "name": "VOLT AR \"Parallax\"",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "f9cc743f3b5d5282"
+  },
+  "1256": {
+   "name": "Grenade Launcher Balance Pass",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "c87000e494c0e0b8"
+  },
+  "1246": {
+   "name": "Space Combat Mission - Ambush",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "323f35946f761ef1"
+  },
+  "1248": {
+   "name": "Space Combat Mission - UEE Training Missions",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "2f75a194a51f84c7"
+  },
+  "1283": {
+   "name": "Wikelo Special Ships (4.1.0)",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "dbe0282481442f91"
+  },
+  "1284": {
+   "name": "Components Balance Pass",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "a06730e10234abb7"
+  },
+  "1311": {
+   "name": "Wikelo Special Ships (4.1.1)",
+   "release": "4.1",
+   "released": 0,
+   "status": "Released",
+   "h": "2db4ce4e149a634a"
+  },
+  "1305": {
+   "name": "VOLT Shotgun \"Prism\"",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "b2e98eb6b9e2dc79"
+  },
+  "1309": {
+   "name": "Dynamic Rain",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "f1c67ffdeb032a60"
+  },
+  "1312": {
+   "name": "Radiation",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "c03e25cf2f04778c"
+  },
+  "1304": {
+   "name": "Sterling Exploration Suit",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "3eccf498aa88c9d3"
+  },
+  "1318": {
+   "name": "Irradiated Apex Valakkar",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "39430e5b6097710a"
+  },
+  "1325": {
+   "name": "VOLT Pistol \"Pulse\"",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "c9c32d5579c1dd1c"
+  },
+  "1334": {
+   "name": "Global Event Tracking Service",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "a29dcf26e1d12db4"
+  },
+  "1522": {
+   "name": "Lazarus Complexes",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "a6c5fc8701050f70"
+  },
+  "1302": {
+   "name": "Farro Datacenters",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "be16cf1bbe75c624"
+  },
+  "1306": {
+   "name": "ARGO ATLS IKTI",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "5fa40d8ab3a49a71"
+  },
+  "1313": {
+   "name": "New Hairstyles (4.2.0)",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "60798da7432e0547"
+  },
+  "1317": {
+   "name": "Irradiated Adult Valakkar",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "c8194379871ca569"
+  },
+  "1347": {
+   "name": "Global Event: Resource Drive (4.2.1)",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "38d55b530c3f7821"
+  },
+  "1316": {
+   "name": "Irradiated Juvenile Valakkar",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "53200bdbcbcf3d67"
+  },
+  "1319": {
+   "name": "New Wikelo Special Ships (4.2.0)",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "8b972557d2fc15f3"
+  },
+  "1337": {
+   "name": "Medium Utility Armor \"Strata\" - Corporation Liveries",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "0ffa35eedd907c4a"
+  },
+  "1340": {
+   "name": "Space Combat Mission - Support Ship (4.2.1)",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "a39b9b484f70a65a"
+  },
+  "1315": {
+   "name": "Irradiated Kopion",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "ec219f751668c159"
+  },
+  "1326": {
+   "name": "Esperia Prowler Utility",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "c8ee461833c3cd7a"
+  },
+  "1328": {
+   "name": "New Hairstyles (4.2.1)",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "31e02c98733177ca"
+  },
+  "1332": {
+   "name": "Missions - Collection",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "2cd802dbd67dd9e1"
+  },
+  "1364": {
+   "name": "RSI Meteor",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "e8f2df681267a7ed"
+  },
+  "1365": {
+   "name": "Ship Flight Tuning Changes: Medium & Heavy Fighters (4.2.1)",
+   "release": "4.2",
+   "released": 0,
+   "status": "Released",
+   "h": "301161d8fcb42c56"
+  },
+  "1396": {
+   "name": "Frontier Fighters Finale",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "81b4bb59ab69811f"
+  },
+  "1368": {
+   "name": "Ship Flight Tuning Changes: Light Fighters (4.3.0)",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "592e1dd5016ba69d"
+  },
+  "1363": {
+   "name": "Kruger L-21 Wolf",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "70185878074b3b43"
+  },
+  "1338": {
+   "name": "Ladder Improvements",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "49aa732ef2647fa5"
+  },
+  "1352": {
+   "name": "NPC Dropships",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "7cae6506c217ad62"
+  },
+  "1350": {
+   "name": "Dynamic Snow",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "bd535dee42dc5112"
+  },
+  "1372": {
+   "name": "Medical Gameplay Improvements",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "aba2ed913de2069f"
+  },
+  "1354": {
+   "name": "Wikelo Special Ships (4.3.0)",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "b3f6668c2234efea"
+  },
+  "1329": {
+   "name": "VOLT Sniper \"Zenith\"",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "daec78ef5c5e3442"
+  },
+  "1333": {
+   "name": "Sniper Light Armor \"Geist\"",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "932803c0541f45fb"
+  },
+  "1331": {
+   "name": "Onyx Facilities (4.3.0)",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "430166db4d349dd6"
+  },
+  "1375": {
+   "name": "Armor and Ballistic Damage Update",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "95422f5e319cc1fb"
+  },
+  "1356": {
+   "name": "Wikelo Light Combat Stealth Suit",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "2a669821d94dc3bc"
+  },
+  "1358": {
+   "name": "VOLT LMG \"Fresnel\"",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "4b76a55c1c0738d9"
+  },
+  "1366": {
+   "name": "RSI Apollo Triage",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "402c5ad704a2adcd"
+  },
+  "1370": {
+   "name": "Onyx Facilities (4.3.1)",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "0e8eeeeb923283a6"
+  },
+  "1394": {
+   "name": "Yormandi",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "6159cde8b5666ef6"
+  },
+  "1357": {
+   "name": "ASD Light Combat Stealth Suit",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "353e76b916ba890d"
+  },
+  "1367": {
+   "name": "RSI Apollo Medivac",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "6b87a0f852deaf10"
+  },
+  "1369": {
+   "name": "Behring Laser Cannon Art Refactors",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "bf7a3c59a0b2e2c9"
+  },
+  "1395": {
+   "name": "Yormandi Cave",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "8369b6d508fa5928"
+  },
+  "1374": {
+   "name": "Missiles Damage Radius Update",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "e328cdf542c14fba"
+  },
+  "1349": {
+   "name": "New Hairstyles (4.3.0)",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "888010ec41c40449"
+  },
+  "1377": {
+   "name": "Structural Salvage Update",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "ba7e1537695a5d33"
+  },
+  "1392": {
+   "name": "New Wikelo Ship Offerings (4.3.2)",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "e6da499218a46dfa"
+  },
+  "1391": {
+   "name": "Klaus & Werner Laser Repeater Art Refactors",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "69109ea62cb1757c"
+  },
+  "1344": {
+   "name": "Mission Pickup on Location",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "f67f567993c915c1"
+  },
+  "1401": {
+   "name": "Anvil Paladin",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "a88d4f26e0d6d89e"
+  },
+  "1429": {
+   "name": "Assault Rifle \"Killshot Rifle\"",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "f96da0882f2e7794"
+  },
+  "1359": {
+   "name": "New Hairstyles (4.3.1)",
+   "release": "4.3",
+   "released": 0,
+   "status": "Tentative",
+   "h": "fea9e1f92871353c"
+  },
+  "1402": {
+   "name": "Esperia Stinger",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "2d75b7d11576130b"
+  },
+  "1428": {
+   "name": "LMG \"Pulverizer\"",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "6bdd8847889da1da"
+  },
+  "1403": {
+   "name": "Grey's Market Shiv",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "28dffdae592fa884"
+  },
+  "1423": {
+   "name": "Blade \"VCK-1\"",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "7690aa2beac282da"
+  },
+  "1373": {
+   "name": "Heavy Utility Tech Armor \"Corbel\"",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "e1eb478187b214a5"
+  },
+  "1400": {
+   "name": "Monocular Range Finders",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "5469f566f079e887"
+  },
+  "1386": {
+   "name": "Heavy Battle Tech Armor \"Palatino\"",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "8c0cee4a64be6f9e"
+  },
+  "1387": {
+   "name": "New Hairstyles (4.3.2)",
+   "release": "4.3",
+   "released": 0,
+   "status": "Released",
+   "h": "d144775ac74390f7"
+  },
+  "1405": {
+   "name": "Interstellar Hauling Missions",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "9b3d13b03cd8491e"
+  },
+  "1418": {
+   "name": "New Hairstyles (4.4.0)",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "0ec674fb04ad0e01"
+  },
+  "1432": {
+   "name": "Nyx System",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "c28bb8b88b64fa65"
+  },
+  "1436": {
+   "name": "Delamar",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "572923c7c21bcbdc"
+  },
+  "1438": {
+   "name": "Sworn Enemies",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "617dbeb8e8a24f9c"
+  },
+  "1439": {
+   "name": "New Wikelo Ship Offerings (4.4.0)",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "294063aaa5da84e5"
+  },
+  "1393": {
+   "name": "AI FPS Turrets",
+   "release": "4.4",
+   "released": 0,
+   "status": "Tentative",
+   "h": "8ab4d1657f38701a"
+  },
+  "1406": {
+   "name": "Exterior Freight Elevators",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "98feabf6768226bc"
+  },
+  "1419": {
+   "name": "Medium Battle Tech Armor",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "f9d15f1e4f33f192"
+  },
+  "1434": {
+   "name": "Nyx Missions (Pack 1)",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "d40105fdb18cda06"
+  },
+  "1463": {
+   "name": "RSI Perseus",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "b501dd9bcbf24ceb"
+  },
+  "1420": {
+   "name": "Wikelo Medium Battle Tech Armor",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "e5d9ed87774ff016"
+  },
+  "1437": {
+   "name": "Glaciem Ring",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "ea69f948e99e8f52"
+  },
+  "1468": {
+   "name": "RSI Salvation",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "9c6b1136533ea807"
+  },
+  "1425": {
+   "name": "Shotgun Pistol \"TripleDown\"",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "f7d7eab6abb36be3"
+  },
+  "1433": {
+   "name": "Nyx Jump Points",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "87257d64c23bcd1d"
+  },
+  "1435": {
+   "name": "Levski",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "658195e7ccfe915e"
+  },
+  "1464": {
+   "name": "Drake Clipper",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "78bb28bee8ceb93f"
+  },
+  "1427": {
+   "name": "Missile Launcher \"Boomtube\"",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "d39de6add869cfb8"
+  },
+  "1430": {
+   "name": "Vanduul NPC Pilots",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "34365d7b71f97c28"
+  },
+  "1431": {
+   "name": "QV Logistics Stations",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "d5c413a110b961ca"
+  },
+  "1465": {
+   "name": "Drake Golem OX",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "db61c854cad00ea0"
+  },
+  "1441": {
+   "name": "MaxOx Neutron Cannon Art Refactors Size 1-2",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "2d1d78a31126574f"
+  },
+  "1466": {
+   "name": "Kruger L-22 Alpha Wolf",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "ef2844090852624c"
+  },
+  "1467": {
+   "name": "Greycat MDC",
+   "release": "4.4",
+   "released": 0,
+   "status": "Released",
+   "h": "7ac5ab89a7626fca"
+  },
+  "1446": {
+   "name": "Physical Helmets",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "7938120d87eed41f"
+  },
+  "1449": {
+   "name": "Vulkan Renderer Improvements",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "1d18baf9e4582aef"
+  },
+  "1450": {
+   "name": "FPS AI Improvements",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "8c90f5ae2dea0c4b"
+  },
+  "1451": {
+   "name": "New Hairstyles (4.5.0)",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "11d358e75ead1b8e"
+  },
+  "1461": {
+   "name": "RSI Meteor (Contested Zones)",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "7cdce1a092e4ddbf"
+  },
+  "1469": {
+   "name": "Engineering Gameplay",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "36a40743189107fc"
+  },
+  "1455": {
+   "name": "New Weapon Attachments",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "b9517a9e648da4d0"
+  },
+  "1470": {
+   "name": "Fire Hazards",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "7fb0a54d38b479c2"
+  },
+  "1453": {
+   "name": "Loot Refresh",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "fcb2e254cf819bc7"
+  },
+  "1459": {
+   "name": "Ship Flight Tuning Changes: Snub Fighters & Interceptors",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "7f16aa3a9dd5ae31"
+  },
+  "1462": {
+   "name": "New Wikelo Ship Offerings (4.5.0)",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "da5097dea0eefa33"
+  },
+  "1458": {
+   "name": "Wikelo Rebalance (4.5.0)",
+   "release": "4.5",
+   "released": 0,
+   "status": "Released",
+   "h": "87e688b536f56ff0"
+  },
+  "1471": {
+   "name": "Clearing The Air",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "b310207426b8eac7"
+  },
+  "1473": {
+   "name": "Kel-To Ship Supply Kiosks",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "bc5febd419d0a9c4"
+  },
+  "1475": {
+   "name": "FPS Weapons Art Refactor",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "031be1e42a4e73df"
+  },
+  "1476": {
+   "name": "Cockpit Light Amplification (LAMP)",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "c4014ce5e2e9ed56"
+  },
+  "1489": {
+   "name": "RSI Aurora Series - Gold Standard",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "4b9091be2192c0a2"
+  },
+  "1490": {
+   "name": "Medical Light Armor \"Chiron\"",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "62704d9bc91506d9"
+  },
+  "1474": {
+   "name": "New Resource Gathering Missions",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "cbc935bb49dbe538"
+  },
+  "1477": {
+   "name": "Ground Vehicles Missiles",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "8c2e0b42a57a24b6"
+  },
+  "1485": {
+   "name": "RSI Hermes",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "53c82c8c62a73da6"
+  },
+  "1491": {
+   "name": "Argo MOTH",
+   "release": "4.6",
+   "released": 0,
+   "status": "Released",
+   "h": "ffdbaddd90d1bc5c"
+  },
+  "1488": {
+   "name": "New Hairstyles (4.7.0)",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "a0a770c7b2d78f16"
+  },
+  "1495": {
+   "name": "Crafting T0",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "093809368a3b7ff4"
+  },
+  "1497": {
+   "name": "FPS Weapons Art Refactor",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "7d6196338ff3bc5e"
+  },
+  "1498": {
+   "name": "New Wikelo Ship Offerings (4.7.0)",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "8454eb826e4e22a1"
+  },
+  "1499": {
+   "name": "Ice Juvenile Valakkar",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "35dba7e668166a16"
+  },
+  "1502": {
+   "name": "People's Service Stations",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "5e1b25ffbb3987bc"
+  },
+  "1530": {
+   "name": "Nyx Missions (Pack 2)",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "92a7460277d1b1d8"
+  },
+  "1486": {
+   "name": "MaxOx Neutron Cannon Size 3",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "c8046df0d9498310"
+  },
+  "1493": {
+   "name": "Light Combat Armor \"Clash\"",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "27580c7a8cecfd72"
+  },
+  "1496": {
+   "name": "Inventory Rework",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "6fed405ade08a3aa"
+  },
+  "1500": {
+   "name": "Ice Adult Valakkar",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "8e4f6ed44217e5c1"
+  },
+  "1501": {
+   "name": "QV Breaker Stations",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "cacb7917d5f9128f"
+  },
+  "1519": {
+   "name": "RSI Aurora Mk II",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "ecd91fd53be8dec1"
+  },
+  "1494": {
+   "name": "Heavy Combat Armor \"Monde\"",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "3e59b5a1177e2683"
+  },
+  "1526": {
+   "name": "MISC Hull B",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "dc5f6c6c87833d01"
+  },
+  "1492": {
+   "name": "Claw Salamanders Faction Outfits",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "30a639a4da8ade7a"
+  },
+  "1527": {
+   "name": "Greycat UTV",
+   "release": "4.7",
+   "released": 0,
+   "status": "Released",
+   "h": "7d299629f37c5818"
+  },
+  "1505": {
+   "name": "Refueling Missions",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "b35c8dce4c12141a"
+  },
+  "1518": {
+   "name": "Aegis Hammerhead - Gold Standard",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "a662759cc406d45c"
+  },
+  "1520": {
+   "name": "QV Extraction Stations",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "3d5cb2f815a897b2"
+  },
+  "1521": {
+   "name": "Tactical Strike Groups",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "4eee0335a2bbf97d"
+  },
+  "1524": {
+   "name": "New Hairstyles (4.8.0)",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "93a485692ff1dae4"
+  },
+  "1528": {
+   "name": "Transport System",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "29c64e9782dabb94"
+  },
+  "1531": {
+   "name": "UltiFlex \"Novian\" Crossbow",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "205526346f0f4afb"
+  },
+  "1534": {
+   "name": "New Wikelo Ship Offerings (4.8.0)",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "e6ea8cf44d7957d3"
+  },
+  "1508": {
+   "name": "Refueling Improvements",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "d2158809baf0ec43"
+  },
+  "1523": {
+   "name": "Kastak Arms - Plasma Grenade",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "f872c21d3b758871"
+  },
+  "1525": {
+   "name": "Space Combat Missions - Defend Location",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "5ce7ec7d91da92db"
+  },
+  "1529": {
+   "name": "Flight Suit \"Tailwind\"",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "9edb68ad995b8be6"
+  },
+  "1533": {
+   "name": "Item Recovery: Vehicle Loadouts",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "1eb76752a0819c19"
+  },
+  "1509": {
+   "name": "Flight Suits G-Force Resistance",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "714643e4b22af500"
+  },
+  "1532": {
+   "name": "FPS Weapons Art Refactor",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "1cc516254f2ea62b"
+  },
+  "1535": {
+   "name": "Drake Ironclad",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "ae6019b96c459879"
+  },
+  "1510": {
+   "name": "Ship Hangar Service T0",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "11e6025e7222729e"
+  },
+  "1536": {
+   "name": "Drake Ironclad Assault",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "072c95402d626505"
+  },
+  "1511": {
+   "name": "Vehicle Command Module",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "3071ccaa8637d381"
+  },
+  "1537": {
+   "name": "Drake Pitbull",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "6cc855ee3e814506"
+  },
+  "1538": {
+   "name": "Origin M80",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "d080a637ab14bcb3"
+  },
+  "1539": {
+   "name": "MISC Starlite",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "8212e3764c10cd1c"
+  },
+  "1540": {
+   "name": "Aegis Tiburon",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "9c3efd68d411c9f8"
+  },
+  "1559": {
+   "name": "Gatac Railen",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "53096c6f3a02e479"
+  },
+  "1560": {
+   "name": "Gatac Tyilui",
+   "release": "4.8",
+   "released": 0,
+   "status": "Released",
+   "h": "f75bfce9a95e9420"
+  },
+  "1554": {
+   "name": "New Hairstyles (4.9.0)",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "7c107b3db2fc1670"
+  },
+  "1555": {
+   "name": "Ordnance Cargo Holder",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "a6f4f4fd1bc77697"
+  },
+  "1556": {
+   "name": "Behring \"CQ7\" Bullpup Rifle",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "94f06e34acdc19cd"
+  },
+  "1562": {
+   "name": "\"Support the Miners\" Mission Pack",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "f62f445f2fa2397d"
+  },
+  "1567": {
+   "name": "Juvenile and Adult Valakkar Behavior Updates",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "11c35f4458615f61"
+  },
+  "1568": {
+   "name": "Ship Fly-By Audio",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "2e4f5d5173ac11c5"
+  },
+  "1570": {
+   "name": "Grey's Market Basher",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "c1de03b2d86aacc7"
+  },
+  "1552": {
+   "name": "Bellator Combat Suit",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "2f07203978c87fd3"
+  },
+  "1563": {
+   "name": "Ship Combat UI Improvements",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "5cdb854d6b1278b6"
+  },
+  "1569": {
+   "name": "Battaglia's Alliance Ships",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "66c4a6ed70a031ac"
+  },
+  "1557": {
+   "name": "Nine Tails Armor Update",
+   "release": "4.9",
+   "released": 0,
+   "status": "Released",
+   "h": "6761eaaa3a54d52c"
+  },
+  "1542": {
+   "name": "Apocalypse Arms \"Vendetta\" HMG",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "24f2c8564633ae48"
+  },
+  "1543": {
+   "name": "Siege of Orison",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "69f7f439c7ab4a30"
+  },
+  "1544": {
+   "name": "Instancing",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "49e68417a7b9e32b"
+  },
+  "1561": {
+   "name": "Mission Giver: Recco Battaglia",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "1ee16895ddcf543e"
+  },
+  "1566": {
+   "name": "New Wikelo Ship Offerings (4.10.0)",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "e15eaa927b15a523"
+  },
+  "1573": {
+   "name": "Orison Relief Support",
+   "release": "4.10",
+   "released": 0,
+   "status": "Tentative",
+   "h": "75bc8dad184dc0ab"
+  },
+  "1551": {
+   "name": "Super Heavy Combat \"BUL-H4\" Armor",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "8f0437a2ef26b6f7"
+  },
+  "1564": {
+   "name": "Fuel Tanks and Consumption Rebalance",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "f050ebb1b8e9fb0a"
+  },
+  "1571": {
+   "name": "Hedeby Gunworks \"Arlington\" Lever Action Rifle",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "e2ad16ef9146e8ea"
+  },
+  "1597": {
+   "name": "Kruger Stingray",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "5bde66bd32069534"
+  },
+  "1572": {
+   "name": "New Weapon Attachment: Hedeby Gunworks S2 Optic",
+   "release": "4.10",
+   "released": 0,
+   "status": "Released",
+   "h": "c15965330452363a"
+  },
+  "1580": {
+   "name": "Heavy Combat Armor \"Monolith\"",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "646ec9bdbb63cb35"
+  },
+  "1582": {
+   "name": "Kastak Arms \"Verdict\" LMG",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "da3e59d3a400ca22"
+  },
+  "1584": {
+   "name": "New Wikelo Ship Offerings: Tiburon",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "5ce4336eb865f154"
+  },
+  "1589": {
+   "name": "Nyx I",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "846478d2f9f4ec26"
+  },
+  "1599": {
+   "name": "Genesis: Starchitect",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "9fc6379a23c833a4"
+  },
+  "1600": {
+   "name": "Starchitect Mission Pack",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "7ae6de12327b2dce"
+  },
+  "1581": {
+   "name": "Character Customization Update (Brows)",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "db58039dcdf5cc18"
+  },
+  "1583": {
+   "name": "Kastak Arms \"Hellion\" Pistol",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "b1cfa9ad63ce9e59"
+  },
+  "1587": {
+   "name": "Genesis: Planet Tech v5",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "6b8b42afb723e9d2"
+  },
+  "1595": {
+   "name": "Nyx II",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "bea8786f38ec4b52"
+  },
+  "1578": {
+   "name": "Genesis: Population Manager",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "4d206993e375ba52"
+  },
+  "1593": {
+   "name": "Associated Science And Development \"Model-K2\" DMR",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "6237db53f532376d"
+  },
+  "1596": {
+   "name": "Nyx III",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "835920cc610fab0c"
+  },
+  "1558": {
+   "name": "Item Recovery: Ship Loadout Improvements",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "35a809be77f226b5"
+  },
+  "1594": {
+   "name": "Lightning Bold Company \"Skarnov\" Assault Rifle",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "248983c207587fdc"
+  },
+  "1601": {
+   "name": "Starchitect POIs",
+   "release": "4.11",
+   "released": 0,
+   "status": "Tentative",
+   "h": "98481f7b6bf0deb4"
+  },
+  "1120": {
+   "name": "Imperial Sports Federation",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "cdcf63b9f892a5c1"
+  },
+  "1121": {
+   "name": "The Council",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "cc81698401f36cde"
+  },
+  "1122": {
+   "name": "Mercenary Guild",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "53ee52a0b5930074"
+  },
+  "1123": {
+   "name": "Academy of Sciences",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "7ad968e59d84a7bb"
+  },
+  "1124": {
+   "name": "United Resource Workers",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "60c7a4bf2fbc23ae"
+  },
+  "1125": {
+   "name": "Interstellar Transport Guild",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "e0884b29ae5210c6"
+  },
+  "1126": {
+   "name": "Player Space Stations",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "10a99d5cb1fad907"
+  },
+  "1127": {
+   "name": "Crafting",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "d3411d2753a435d9"
+  },
+  "1128": {
+   "name": "Building Interiors",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "47456028214b970c"
+  },
+  "1129": {
+   "name": "Base Building",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "14d05f0939b0cefe"
+  },
+  "1130": {
+   "name": "Nyx System",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "557e3d15338c180d"
+  },
+  "1131": {
+   "name": "Castra System",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "7b0d1859f45b82cb"
+  },
+  "1132": {
+   "name": "Terra System",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "480e0a3798dc815e"
+  },
+  "1133": {
+   "name": "Dynamic Server Meshing",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "919b21b55c6e7012"
+  },
+  "1134": {
+   "name": "Player-to-Player Trading",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "9465080824a673b4"
+  },
+  "1135": {
+   "name": "Player Organizations",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "c97c67be36527355"
+  },
+  "1136": {
+   "name": "Social mobiGlas App",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "9e9352d8a2e59ea1"
+  },
+  "1137": {
+   "name": "Citizenship",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "e45800c8d3a589ba"
+  },
+  "1138": {
+   "name": "Station Warfare",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "3cf14655c8cb7171"
+  },
+  "1139": {
+   "name": "StarAudio",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "2b702140c16e0afb"
+  },
+  "1222": {
+   "name": "Realistic Audio Mode",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "e8c9accc7a9c6450"
+  },
+  "1143": {
+   "name": "Global Illumination",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "f092c8ca5724ae5c"
+  },
+  "1146": {
+   "name": "Planetary Shields",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "c36a2de22008908a"
+  },
+  "1148": {
+   "name": "Ownership",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "2e9a6b04fe1b0c25"
+  },
+  "1149": {
+   "name": "Main Story",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "b75e4fb7b921fdf5"
+  },
+  "1152": {
+   "name": "Location Stories",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "43505267ed6a8679"
+  },
+  "1155": {
+   "name": "Guilds System",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "fcd82cc859247964"
+  },
+  "1157": {
+   "name": "Insurance, Taxes & Warranty",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "eb9361747d520c23"
+  },
+  "1158": {
+   "name": "Law & Security",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "37ce2bb4585f54b3"
+  },
+  "1159": {
+   "name": "Reputation V2",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "58dc2fddfc21ce71"
+  },
+  "1164": {
+   "name": "New Player Professions",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "581f4e3c5a75796f"
+  },
+  "1165": {
+   "name": "StarWear",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "08fa12d15fac2bec"
+  },
+  "1166": {
+   "name": "Death of a Spaceman",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "a2946ae1206f42bb"
+  },
+  "1167": {
+   "name": "AI Blades",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "53c2dbbad6c66ee9"
+  },
+  "1169": {
+   "name": "StarSim",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "d41c069c8af41e25"
+  },
+  "1170": {
+   "name": "Utility Tunnels",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "85351f3aa3d719af"
+  },
+  "1175": {
+   "name": "Quantum Travel",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "f13aab47cce31630"
+  },
+  "1176": {
+   "name": "Item Misfire & Wear",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "d4be2784261f52eb"
+  },
+  "1178": {
+   "name": "Charge & Drain",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "765d9cef2ccb4f0e"
+  },
+  "1179": {
+   "name": "Life Support",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "86587d85d71eb16a"
+  },
+  "1181": {
+   "name": "Solar Flare",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "0995752c206561d6"
+  },
+  "1183": {
+   "name": "Vehicle Radar & Scanning Rework",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "f93dc281d93973b3"
+  },
+  "1184": {
+   "name": "FPS Radar & Scanning",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "c781bc18e90fe31f"
+  },
+  "1185": {
+   "name": "IFCS and Control Surfaces",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "fe6fed48cb4c86fb"
+  },
+  "1186": {
+   "name": "Hangar Upgrades",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "6c28b75b14ea5d3c"
+  },
+  "1187": {
+   "name": "Weapon Overheat",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "d3f74c80b716fbcb"
+  },
+  "1140": {
+   "name": "Genesis: Dynamic Weather",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "11724ac78d7bdf24"
+  },
+  "1503": {
+   "name": "Maelstrom",
+   "release": "Star Citizen 1.0",
+   "released": 0,
+   "status": "Tentative",
+   "h": "5d67b8764668e9bc"
+  }
+ },
+ "releases": {
+  "9": {
+   "name": "3.1",
+   "released": 1
+  },
+  "8": {
+   "name": "3.2",
+   "released": 1
+  },
+  "10": {
+   "name": "3.3",
+   "released": 1
+  },
+  "14": {
+   "name": "3.3.5",
+   "released": 1
+  },
+  "11": {
+   "name": "3.4",
+   "released": 1
+  },
+  "12": {
+   "name": "3.5",
+   "released": 1
+  },
+  "13": {
+   "name": "3.6",
+   "released": 1
+  },
+  "25": {
+   "name": "3.7",
+   "released": 1
+  },
+  "26": {
+   "name": "3.8",
+   "released": 0
+  },
+  "28": {
+   "name": "3.8",
+   "released": 1
+  },
+  "27": {
+   "name": "3.9",
+   "released": 1
+  },
+  "38": {
+   "name": "3.10",
+   "released": 1
+  },
+  "39": {
+   "name": "3.11",
+   "released": 1
+  },
+  "40": {
+   "name": "3.12",
+   "released": 1
+  },
+  "41": {
+   "name": "3.13",
+   "released": 1
+  },
+  "43": {
+   "name": "3.14",
+   "released": 1
+  },
+  "42": {
+   "name": "3.15",
+   "released": 1
+  },
+  "44": {
+   "name": "3.16",
+   "released": 1
+  },
+  "46": {
+   "name": "3.17",
+   "released": 1
+  },
+  "49": {
+   "name": "3.18",
+   "released": 1
+  },
+  "52": {
+   "name": "3.19",
+   "released": 1
+  },
+  "54": {
+   "name": "3.20",
+   "released": 1
+  },
+  "55": {
+   "name": "3.21",
+   "released": 1
+  },
+  "57": {
+   "name": "3.22",
+   "released": 1
+  },
+  "58": {
+   "name": "3.23",
+   "released": 1
+  },
+  "60": {
+   "name": "3.24",
+   "released": 1
+  },
+  "59": {
+   "name": "4.0",
+   "released": 1
+  },
+  "63": {
+   "name": "4.1",
+   "released": 1
+  },
+  "64": {
+   "name": "4.2",
+   "released": 1
+  },
+  "65": {
+   "name": "4.3",
+   "released": 1
+  },
+  "66": {
+   "name": "4.4",
+   "released": 1
+  },
+  "67": {
+   "name": "4.5",
+   "released": 1
+  },
+  "70": {
+   "name": "4.6",
+   "released": 0
+  },
+  "71": {
+   "name": "4.7",
+   "released": 0
+  },
+  "72": {
+   "name": "4.8",
+   "released": 0
+  },
+  "73": {
+   "name": "4.9",
+   "released": 0
+  },
+  "74": {
+   "name": "4.10",
+   "released": 0
+  },
+  "75": {
+   "name": "4.11",
+   "released": 0
+  },
+  "62": {
+   "name": "Star Citizen 1.0",
+   "released": 0
+  }
+ },
+ "counts": {
+  "cards": 828,
+  "releases": 39,
+  "unreleased_cards": 518
+ },
+ "fetched_at_utc": "2026-08-27T22:36:12+00:00"
+}

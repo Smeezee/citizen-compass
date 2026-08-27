@@ -3,6 +3,7 @@
  "model": "P-52_Merlin.glb",
  "hardpoints_from": "KRIG_P52_Merlin",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.00271,
  "scale_estimates": {
   "length": 1.00271,

@@ -280,6 +280,11 @@
    "pos_model": true
   },
   {
+   "class": "GLSN_Basher",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
    "class": "GLSN_Shiv",
    "fleet_key": "Shiv",
    "emitted": 14,
@@ -294,6 +299,11 @@
    "median_move": 0.2018,
    "max_move": 0.7416,
    "pos_model": true
+  },
+  {
+   "class": "MISC_Fury",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
   },
   {
    "class": "MISC_Hull_A",
@@ -354,6 +364,11 @@
    "why": "no fleet record for this hull"
   },
   {
+   "class": "ORIG_85x",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
    "class": "ORIG_890Jump",
    "fleet_key": "890 Jump",
    "emitted": 18,
@@ -376,6 +391,11 @@
    "median_move": 0.4849,
    "max_move": 0.7108,
    "pos_model": true
+  },
+  {
+   "class": "RSI_Mantis",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
   },
   {
    "class": "RSI_Scorpius",
@@ -458,6 +478,11 @@
    "median_move": 0.7443,
    "max_move": 1.553,
    "pos_model": true
+  },
+  {
+   "class": "aegs_tiburon",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
   },
   {
    "class": "anvl_asgard",
@@ -705,12 +730,22 @@
    "pos_model": true
   },
   {
+   "class": "drak_pitbull",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
    "class": "gama_railen",
    "fleet_key": "Railen",
    "emitted": 16,
    "median_move": 0.747,
    "max_move": 1.2199,
    "pos_model": true
+  },
+  {
+   "class": "gama_tyilui",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
   },
   {
    "class": "krig_l21_wolf",
@@ -777,6 +812,11 @@
    "pos_model": true
   },
   {
+   "class": "misc_starlite",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
    "class": "mrai_guardian",
    "fleet_key": "Guardian",
    "emitted": 10,
@@ -794,6 +834,11 @@
   },
   {
    "class": "mrai_pulse",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "orig_m80",
    "emitted": 0,
    "why": "no fleet record for this hull"
   },
@@ -891,6 +936,16 @@
   },
   {
    "class": "rsi_aurora_gs_mr",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "rsi_aurora_gs_se",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "rsi_aurora_mk2",
    "emitted": 0,
    "why": "no fleet record for this hull"
   },

@@ -3,6 +3,7 @@
  "model": "Nox.glb",
  "hardpoints_from": "XIAN_Nox",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 0.99773,
  "scale_estimates": {
   "length": 0.99773,

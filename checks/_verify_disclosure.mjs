@@ -1,4 +1,9 @@
 /**
+ * RULE16: INDEPENDENT - the page is read in a real browser and the rule it
+ * is judged against comes from the ORDER, encoded here by a different author
+ * than the page - and the three mutations inject shapes the build never
+ * emitted.
+ *
  * D1 / D2 - THE DISCLOSURE BAR'S TWO CONTROLS.
  *
  * ORDER: docs/ORDER_the-disclosure-bar-2026-08-27.md, section "Rule 12 - two

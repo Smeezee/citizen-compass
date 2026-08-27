@@ -3,6 +3,7 @@
  "model": "Apollo_Medivac.glb",
  "hardpoints_from": "rsi_apollo",
  "inherited_from_base_hull": true,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.12748,
  "scale_estimates": {
   "length": 1.12748,

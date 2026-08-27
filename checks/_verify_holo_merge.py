@@ -1,4 +1,9 @@
 """Prove build_holo_data.merge_join tells a duplicate from a real collision.
+RULE16: INDEPENDENT - every case is a fixture written here - same model on
+    both sides, different models, a record with no model at all - and
+    merge_join has no access to what the fixture intended. The dangerous case
+    is exercised, not modelled.
+
 
 Q6. The guard used to exit on ANY repeated key. That stalled the generator from
 17 August to 27 August over seven duplicates, and the holo page was served from

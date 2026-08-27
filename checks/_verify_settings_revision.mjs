@@ -1,4 +1,10 @@
 /**
+ * RULE16: UNPROVEN - the expected defaults are read from CCViewer.HOLO - the
+ * module under test - so a wrong DEFAULT_COLOUR would be asserted against
+ * itself and pass. What IS independent is the behaviour: the discard, the
+ * re-stamp and the survival are driven through real localStorage in a real
+ * browser, and both mutations are planted in the served bytes.
+ *
  * P4e / P4f - THE APPEARANCE REVISION, IN BOTH DIRECTIONS.
  *
  * ORDER: docs/ORDER_the-panel-will-not-close-2026-08-27.md, P4e and P4f,

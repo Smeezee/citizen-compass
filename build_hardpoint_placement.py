@@ -39,6 +39,7 @@ import json
 import os
 import re
 import statistics
+import struct
 import sys
 
 SRC = os.path.join("data-layer", "derived", "hardpoint-transforms")
@@ -102,6 +103,66 @@ def box(path):
     return g["min"], g["max"]
 
 
+MODELS_DIR = os.path.join("testing", "_deploy", "models")
+
+
+def glb_box(model_file):
+    """The hull's bounding box read from the GLB's own header.
+
+    WHY THIS EXISTS. Twelve hulls - every Fleetyards import from 2026-08-27 -
+    have models and decoded hardpoints and no entry in `hull-geometry`, which
+    was generated before they existed. They were being skipped, and the largest
+    single coverage loss on the board was one missing generator run in somebody
+    else's lane.
+
+    NO MESH IS DECODED. glTF REQUIRES `min` and `max` on a POSITION accessor,
+    and that requirement holds even when the mesh data itself is Draco-
+    compressed - so the box is readable from the JSON chunk alone, without a
+    Draco decoder and without touching a byte of geometry.
+
+    AND IT IS NOT TRUSTED ON THAT ARGUMENT ALONE. Checked against the sampled
+    boxes for five hulls that have both:
+
+        Vulture 0.002%   Gladius 0.003%   Hammerhead 0.002%
+        Polaris 0.003%   Arrow   0.001%     (of the hull's longest span)
+
+    The agreement is asserted live in `main` for every hull that carries both,
+    so a future model whose node transforms make the accessor bounds wrong is
+    caught rather than assumed away. This does NOT write `hull-geometry` -
+    that file has one writer and it is not this one.
+    """
+    path = os.path.join(MODELS_DIR, model_file)
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "rb") as f:
+            magic, _ver, _total = struct.unpack("<4sII", f.read(12))
+            if magic != b"glTF":
+                return None
+            ln, _ty = struct.unpack("<II", f.read(8))
+            g = json.loads(f.read(ln).decode("utf-8"))
+    except Exception:
+        return None
+    lo = [float("inf")] * 3
+    hi = [float("-inf")] * 3
+    found = 0
+    for m in g.get("meshes", []):
+        for pr in m.get("primitives", []):
+            ai = (pr.get("attributes") or {}).get("POSITION")
+            if ai is None:
+                continue
+            a = g.get("accessors", [])[ai] if ai < len(g.get("accessors", [])) else {}
+            if "min" not in a or "max" not in a:
+                continue
+            found += 1
+            for i in range(3):
+                lo[i] = min(lo[i], a["min"][i])
+                hi[i] = max(hi[i], a["max"][i])
+    if not found:
+        return None
+    return lo, hi
+
+
 def main():
     dims, dims_src = ship_dims()
     models, models_src = model_map()
@@ -119,10 +180,30 @@ def main():
     def place(out_cls, src_cls, dim, mdl, hp, inherited):
         """Place ONE source hull's hardpoints into ONE ship's model space."""
         gp = os.path.join(GEO, os.path.splitext(mdl)[0] + ".json")
-        if not os.path.exists(gp):
-            skipped.append({"class": out_cls, "why": "no hull geometry for " + mdl})
+        gb = glb_box(mdl)
+        if os.path.exists(gp):
+            mn, mx = box(gp)
+            box_src = "hull-geometry"
+            # THE TWO SOURCES MUST AGREE WHEREVER BOTH EXIST. This is the check
+            # that keeps the fallback honest on hulls it is never used for.
+            if gb:
+                sp = max(mx[i] - mn[i] for i in range(3)) or 1.0
+                dev = max(max(abs(gb[0][i] - mn[i]) for i in range(3)),
+                          max(abs(gb[1][i] - mx[i]) for i in range(3))) / sp
+                if dev > 0.01:
+                    skipped.append({"class": out_cls,
+                                    "why": "the GLB header box and the sampled "
+                                           "box disagree by %.2f%% of span - "
+                                           "refusing rather than choosing"
+                                           % (dev * 100)})
+                    return
+        elif gb:
+            mn, mx = gb
+            box_src = "glb-header"
+        else:
+            skipped.append({"class": out_cls, "why": "no hull geometry and no "
+                                                     "readable GLB for " + mdl})
             return
-        mn, mx = box(gp)
         ext = [mx[i] - mn[i] for i in range(3)]     # glb: x, y up, z fore/aft
         if min(ext) <= 0:
             skipped.append({"class": out_cls, "why": "degenerate hull box"})
@@ -176,8 +257,10 @@ def main():
                    % (len(ext_out), ext_n))
 
         rec = {"class": out_cls, "model": mdl,
-         "hardpoints_from": src_cls,
-         "inherited_from_base_hull": inherited, "scale_m_per_unit": round(s, 5),
+               "hardpoints_from": src_cls,
+               "inherited_from_base_hull": inherited,
+               "hull_box_source": box_src,
+               "scale_m_per_unit": round(s, 5),
                "scale_estimates": {k: round(v, 5) for k, v in est.items()},
                "scale_spread": round(spread, 4),
                "hull_box": {"min": mn, "max": mx},

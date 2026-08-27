@@ -3,6 +3,7 @@
  "model": "RAFT.glb",
  "hardpoints_from": "ARGO_RAFT",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 0.9777,
  "scale_estimates": {
   "length": 0.9777,

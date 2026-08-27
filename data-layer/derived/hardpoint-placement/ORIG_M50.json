@@ -3,6 +3,7 @@
  "model": "M50.glb",
  "hardpoints_from": "ORIG_M50",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.04908,
  "scale_estimates": {
   "length": 1.04908,

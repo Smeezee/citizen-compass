@@ -199,16 +199,74 @@ EXTERIOR = re.compile(
     r"|countermeasure|pylon|mount)", re.I)
 
 
-def _mirror(hp, rx=None):
-    """(mirrored, pairs) over names differing only by _left / _right."""
-    pairs = [(a, a.replace("_left", "_right")) for a in hp
-             if "_left" in a and a.replace("_left", "_right") in hp
-             and (rx is None or rx.search(a))]
-    m = sum(1 for a, b in pairs
-            if abs(hp[a][0] + hp[b][0]) < 0.05
-            and abs(hp[a][1] - hp[b][1]) < 0.05
-            and abs(hp[a][2] - hp[b][2]) < 0.05)
-    return m, len(pairs)
+def _mirror(hp, rx=None, tol_override=None):
+    """(mirrored, pairs) over left/right FAMILIES.
+
+    TWO THINGS THE FIRST VERSION GOT WRONG, both found by reading the hulls it
+    rejected rather than by re-reading the code.
+
+    1. THE TOLERANCE WAS ABSOLUTE - 5 cm, applied identically to a 3-metre PTV
+       and a 123-metre Carrack. The Carrack's turret controllers sit at
+       y = -28.498 and -28.248: a quarter-metre apart, 0.2% of that ship, and
+       it was being called a failed mirror. The same 25 cm on a Gladius would
+       be 1.2% and would deserve to fail. A FIXED TOLERANCE IS A DIFFERENT TEST
+       ON EVERY HULL, so it now scales with the hull's own longest span.
+
+    2. LEFT AND RIGHT ARE NOT ALWAYS NUMBERED IN THE SAME ORDER. On the
+       ANVL_Hornet_F7A_MK1:
+
+           countermeasure_left_01  (-2.599, -1.147, -0.996)
+           countermeasure_right_02 ( 2.580, -1.147, -0.996)   <- its mirror
+           countermeasure_left_02  (-2.599, -0.736, -1.265)
+           countermeasure_right_01 ( 2.580, -0.736, -1.265)   <- its mirror
+
+       Every mount is perfectly mirrored and CIG numbered the sides in opposite
+       order. Pairing _left_01 to _right_01 by name scored 0 of 2 on a hull
+       that is exactly symmetric. THE NAME SAYS WHICH FAMILY, NOT WHICH MEMBER.
+
+    So a family is matched as a SET: each left takes the nearest unclaimed
+    right. A member with no partner inside tolerance still counts as a failure,
+    and a scrambled hull still fails because no assignment works - which keeps
+    this a control rather than a tolerance widened until it passes.
+    """
+    names = [a for a in hp if rx is None or rx.search(a)]
+    if not names:
+        return 0, 0
+    span = 0.0
+    for i in range(3):
+        vals = [p[i] for p in hp.values()]
+        span = max(span, max(vals) - min(vals))
+    tol = tol_override if tol_override is not None else max(0.05, span * 0.004)
+
+    fam = {}
+    for a in names:
+        if "_left" in a:
+            key = re.sub(r"_\d+$", "", a.replace("_left", "|"))
+            fam.setdefault(key, [[], []])[0].append(a)
+    for b in names:
+        if "_right" in b:
+            key = re.sub(r"_\d+$", "", b.replace("_right", "|"))
+            if key in fam:
+                fam[key][1].append(b)
+
+    pairs = matched = 0
+    for key, (ls, rs) in fam.items():
+        free = list(rs)
+        for a in ls:
+            if not free:
+                break
+            pairs += 1
+            best, bd = None, None
+            for b in free:
+                d = max(abs(hp[a][0] + hp[b][0]),
+                        abs(hp[a][1] - hp[b][1]),
+                        abs(hp[a][2] - hp[b][2]))
+                if bd is None or d < bd:
+                    best, bd = b, d
+            free.remove(best)
+            if bd < tol:
+                matched += 1
+    return matched, pairs
 
 
 def accept(nodes):
@@ -226,11 +284,13 @@ def accept(nodes):
     xs = [p[0] for p in hp.values()]
     ys = [p[1] for p in hp.values()]
     zs = [p[2] for p in hp.values()]
+    span_max = max(max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs))
     stats = {"hardpoints": len(hp), "finite": finite,
              "exterior_pairs": ep, "exterior_mirrored": em,
              "all_pairs": ip, "all_mirrored": im,
              "span": [round(max(xs) - min(xs), 3), round(max(ys) - min(ys), 3),
-                      round(max(zs) - min(zs), 3)]}
+                      round(max(zs) - min(zs), 3)],
+             "span_max": round(span_max, 3)}
 
     if finite != len(hp):
         return False, "%d of %d transforms are not finite" % (
@@ -241,8 +301,41 @@ def accept(nodes):
     if ep == 0:
         return False, ("no named left/right EXTERIOR mount - nothing here "
                        "could have failed"), stats
-    if em / ep < 0.8:
-        return False, "only %d of %d exterior mount pairs mirror" % (em, ep), stats
+
+    # THE GATE ASKS FOR PROOF THE DECODE IS RIGHT, NOT FOR ABSENCE OF ASYMMETRY.
+    #
+    # The 80%-of-pairs rule was rejecting eleven hulls that decode perfectly and
+    # are simply not symmetric. Read them and it is obvious:
+    #
+    #   VNCL_Scythe   gun_nose_left/right   dx 0.000   exact
+    #                 gun_wing_left/right   dx 4.061   and different in all
+    #                                                  three axes
+    #   drak_clipper  weapon_left/right     dx 0.008
+    #                 missile_rack x3       right side offset ~2.5 m throughout
+    #
+    # Vanduul hulls and the Clipper are ASYMMETRIC BY DESIGN. Blocking them
+    # meant eleven real ships got no markers because their designer did not
+    # build them square - which is the page punishing the data for being true.
+    #
+    # SO THE QUESTION CHANGED. A wrong stride scrambles names across transforms,
+    # and a scrambled hull cannot produce an EXACTLY mirrored pair - dx 0.000 on
+    # the Scythe's nose guns is not something a wrong offset does by accident.
+    # One exact pair proves the decode; the ratio only ever described the ship.
+    #
+    # THIS IS A WEAKENING AND IT IS SAID SO. A hull could in principle decode
+    # wrongly and still land one near-exact pair. What stops that being the
+    # whole story is that placement runs a SECOND, independent geometric test -
+    # every exterior mount must fall inside that hull's own measured box - and
+    # the two do not share an assumption. The ratio stays in the manifest as a
+    # diagnostic so a hull that USED to be symmetric and stopped is still
+    # visible.
+    exact = max(0.02, stats["span_max"] * 0.001)
+    proof = _mirror(hp, EXTERIOR, exact)[0]
+    stats["exact_mirrored"] = proof
+    if proof < 1:
+        return False, ("no exterior mount pair mirrors exactly (%d of %d within "
+                       "%.3f m) - nothing here proves the decode"
+                       % (proof, ep, exact)), stats
     return True, "", stats
 
 

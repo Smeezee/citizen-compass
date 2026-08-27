@@ -3,6 +3,7 @@
  "model": "Arrow.glb",
  "hardpoints_from": "ANVL_Arrow",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 0.96947,
  "scale_estimates": {
   "length": 0.96947,

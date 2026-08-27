@@ -3,6 +3,7 @@
  "model": "F7A_Hornet_Mk_II.glb",
  "hardpoints_from": "ANVL_Hornet_F7A",
  "inherited_from_base_hull": true,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.00998,
  "scale_estimates": {
   "length": 1.00998,

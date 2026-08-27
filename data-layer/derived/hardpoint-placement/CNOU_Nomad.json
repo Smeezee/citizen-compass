@@ -3,6 +3,7 @@
  "model": "Nomad.glb",
  "hardpoints_from": "CNOU_Nomad",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.07054,
  "scale_estimates": {
   "length": 1.07054,

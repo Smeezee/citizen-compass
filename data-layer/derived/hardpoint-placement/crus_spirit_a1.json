@@ -3,6 +3,7 @@
  "model": "A1_Spirit.glb",
  "hardpoints_from": "crus_spirit",
  "inherited_from_base_hull": true,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.01753,
  "scale_estimates": {
   "length": 1.01753,

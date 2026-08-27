@@ -3,6 +3,7 @@
  "model": "Talon.glb",
  "hardpoints_from": "ESPR_Talon",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.02266,
  "scale_estimates": {
   "length": 1.02266,

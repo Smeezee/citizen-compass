@@ -3,6 +3,7 @@
  "model": "Clipper.glb",
  "hardpoints_from": "drak_clipper",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 0.97294,
  "scale_estimates": {
   "length": 0.97294,

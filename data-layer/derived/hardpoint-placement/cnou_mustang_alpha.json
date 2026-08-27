@@ -3,6 +3,7 @@
  "model": "Mustang_Alpha.glb",
  "hardpoints_from": "CNOU_Mustang",
  "inherited_from_base_hull": true,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 0.9641,
  "scale_estimates": {
   "length": 0.9641,

@@ -3,6 +3,7 @@
  "model": "Avenger_Titan.glb",
  "hardpoints_from": "AEGS_Avenger",
  "inherited_from_base_hull": true,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.02468,
  "scale_estimates": {
   "length": 1.02468,

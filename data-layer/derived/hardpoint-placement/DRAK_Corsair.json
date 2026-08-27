@@ -3,6 +3,7 @@
  "model": "Corsair.glb",
  "hardpoints_from": "DRAK_Corsair",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.12716,
  "scale_estimates": {
   "length": 1.12716,

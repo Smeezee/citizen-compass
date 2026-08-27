@@ -1,4 +1,13 @@
 /**
+ * RULE16: UNPROVEN - for the 19 Fleetyards imports the MODEL and the
+ * PUBLISHED DIMENSIONS both come from the same Fleetyards record, so this
+ * can only show that source agreeing with itself - if Fleetyards is wrong
+ * about a ship's length, the model is scaled to that wrong length and this
+ * reports ratio 1.000. It is genuinely independent for the 12 pre-existing
+ * ships, whose geometry is ours and whose target is not. An independent
+ * source would be CIG's own published dimensions or an in-game measurement,
+ * and neither was used.
+ *
  * THE IMPORTED SHIPS ARE THE SIZE THEY SAY THEY ARE.
  *
  * WHY THIS EXISTS

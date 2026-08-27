@@ -3,6 +3,7 @@
  "model": "Vulture.glb",
  "hardpoints_from": "DRAK_Vulture",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 2.64098,
  "scale_estimates": {
   "length": 2.64098,

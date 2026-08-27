@@ -3,6 +3,7 @@
  "model": "Prowler_Utility.glb",
  "hardpoints_from": "ESPR_Prowler_Utility",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.02385,
  "scale_estimates": {
   "length": 1.02385,

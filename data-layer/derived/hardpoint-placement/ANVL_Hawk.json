@@ -3,6 +3,7 @@
  "model": "Hawk.glb",
  "hardpoints_from": "ANVL_Hawk",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.35152,
  "scale_estimates": {
   "length": 1.35152,

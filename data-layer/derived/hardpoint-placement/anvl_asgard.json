@@ -3,6 +3,7 @@
  "model": "Asgard.glb",
  "hardpoints_from": "anvl_asgard",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 0.98851,
  "scale_estimates": {
   "length": 0.98851,

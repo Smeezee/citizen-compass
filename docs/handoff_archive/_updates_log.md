@@ -36324,3 +36324,458 @@ their boxes exist.
 which is one of the two Sleven opened at random and found empty.
 
 *C1*
+
+### 2026-08-27 17:31:03 — 20260827_1805_update_committed-pushed.md
+
+# Update — Committed and pushed. Working tree clean.
+
+**2026-08-27 18:05 · Code (background session)** — Sleven: *"commit and push"*.
+
+    f667d7d  Armour stops naming the wrong ship, and a failed build stops
+             reaching a deploy
+    1b6ba1d..f667d7d  main -> main
+
+193 files. Confirmed from the remote rather than from the push output: fetched
+and compared `HEAD` to `origin/main`, identical. Working tree clean.
+
+## A stale git lock had to be cleared first, and it is worth recording
+
+`git add -A` failed with:
+
+    fatal: Unable to create '.git/index.lock': File exists.
+
+**Checked before touching it**, because that file existing usually means another
+process is mid-write and removing it corrupts the index: 0 bytes, created
+17:28:18, and `Get-Process git` returned nothing. Stale, left by my own
+interrupted `git add`.
+
+**Moved to `_to_delete/stale_git_locks/index.lock.20260827T172945`, not
+deleted** — rule 1 does not carve out an exception for files that look like
+scaffolding, and "obviously junk" has been wrong in this repo before.
+
+## Vetted before staging, as last time
+
+    .env / tokens / keys    none in the change set
+    sc-ships/               0 files (gitignored - the models stay out)
+    testing/_deploy/        0 files
+    _to_delete/             0 files
+    .last_build.json        0 files (gitignored - per-machine build state)
+    largest staged          3.73 MB, testing/_src/loadout_data.gen.js
+
+The commit also carries C1's uncommitted work in its own lane -
+`loadout.src.html`, `decode_cga_nodes.py`, `build_hardpoint_placement.py` and
+the hardpoint-transforms data - which was sitting in the tree alongside mine.
+
+## Standing state
+
+    working tree     clean
+    origin/main      current - f667d7d
+    testing site     current, 4 browser checks green at the gate
+    live site        NOT published. Off the queue until Sleven raises it.
+
+Next on the queue: Q5 the roadmap watcher past R0, Q6 the collector selftest,
+Q7 labelling checks that cannot meet hard rule 16.
+
+### 2026-08-27 17:36:37 — 20260827_1830_update_q5-roadmap-watcher.md
+
+# Update — Q5 done. The watcher reports a real board state. Not scheduled.
+
+**2026-08-27 18:30 · Code (background session)** — queue item closed.
+`scripts/roadmap_watch.py`, `checks/_verify_roadmap_watch.py`.
+
+## It runs, and it reports the real board
+
+    board 1: 828 cards across 39 releases, 518 unreleased
+    no change since 2026-08-27T22:35:07+00:00
+
+R0 gave the board; this is R1-R3.
+
+## R1 — proven end to end, not just in the log
+
+A change has to reach a document or the watcher is indistinguishable from one
+that detected nothing. Proven by perturbing the stored state — dropping one real
+4.11 card and renaming another — and running it for real:
+
+    CHANGED: 1 added, 0 removed, 1 altered
+      + Heavy Combat Armor "Monolith" (4.11)
+      ~ Kastak Arms "Verdict" LMG
+    wrote docs\FINDING_roadmap-change-2026-08-27.md
+
+The finding names the board, the fetch time, and every card added, removed and
+altered with its before and after. The proof artefacts were moved to
+`_to_delete/r1_proof/` and the real state restored — confirmed by a clean run
+afterwards.
+
+## The load-bearing assertion is a NEGATIVE one
+
+Two failures are possible and the second is worse:
+
+- a watcher that misses a real change — the defect it exists to fix
+- a watcher that reports a change that is not one — **worse, because it trains
+  everybody to ignore it**
+
+The amends is explicit: **never key on the modification date**, because the API
+returns Aug 2024 for a card the UI renders as Aug 2021. So `time_modified`,
+`time_created`, `order`, `thumbnail` and `url_slug` are excluded from the hash
+BY NAME, and the check asserts silence when only they move.
+
+`checks/_verify_roadmap_watch.py` — 9 checks, 0 failed:
+
+    pass  an added / removed / renamed card is reported
+    pass  a card going released is reported
+    pass  a changed BODY is reported          <- the counterweight
+    pass  TIME_MODIFIED ALONE IS SILENCE      <- the amends' own warning
+    pass  order/thumbnail/slug alone are silence
+    pass  CONTROL - identical snapshots are silence
+    pass  the watcher refuses a board that is not the release view
+
+The body test matters as much as the silence tests: without it, "ignore the
+volatile fields" could be taken too far and real news would be dropped quietly.
+
+## R0's gate runs at STARTUP, every run
+
+The watcher imports the R0 check rather than reimplementing it, and refuses a
+board with no unreleased cards or no 4.x release — proven by pointing it at
+board 2, the Squadron 42 board, which it rejects. A watcher on a board of
+finished history reports "no change" forever and is correct every time.
+
+## R2 — the roundups are a pointer, never the evidence
+
+The finding carries a Comm-Link field and it is left **"not matched"** rather
+than guessed at. The API is the route; the articles return page metadata to a
+fetch and this does not try to read them.
+
+## R3 — a different question from `last_verified_patch`
+
+Nothing here touches it. The site knows which patch its DATA was verified
+against; this answers what CIG has ANNOUNCED since.
+
+## NOT DONE, and it is Sleven's to approve
+
+**It does not schedule itself.** Registering a Windows scheduled task is hard
+rule 6. `--once` is the only entry point, and running without it refuses with
+that reason rather than doing nothing quietly. The timer and "check now" are
+the same function called the same way — the amends asks for that by name, "a
+second path is a second thing to be wrong."
+
+**It does not act on a change.** The watcher reports. Whether a Nyx planet
+changes what this site does is Sleven's call, as the amends says.
+
+## Queue state
+
+    Q1-Q5 done
+    Q6 collector selftest - next
+    Q7 label checks that cannot meet hard rule 16
+
+### 2026-08-27 17:40:41 — update-M4-the-mirror-test-was-wrong-not-the-hulls-2026-08-27.md
+
+# Update — M4. Sixteen hulls were being failed by my test, not by their data. And it did NOT move coverage.
+
+**C1, 2026-08-27 18:34 local.** My files. Overlay regenerated and unchanged at
+93 hulls / 952 ports — **read the last section before assuming this bought
+anything.**
+
+    transforms acceptance   80 passing  ->  96 passing   (of 116)
+    overlay                 93 hulls / 952 ports  ->  UNCHANGED
+
+## Three faults, all in the test
+
+**1. The tolerance was absolute.** 5 cm, applied identically to a 3-metre PTV
+and a 123-metre Carrack. The Carrack's turret controllers sit a quarter-metre
+apart — **0.2% of that ship** — and were being called a failed mirror. The same
+25 cm on a Gladius is 1.2% and deserves to fail. **A fixed tolerance is a
+different test on every hull.** Now 0.4% of the hull's own span.
+
+**2. Left and right are not always numbered in the same order.** On the
+ANVL_Hornet_F7A_MK1:
+
+    countermeasure_left_01  (-2.599, -1.147, -0.996)
+    countermeasure_right_02 ( 2.580, -1.147, -0.996)   <- its mirror
+    countermeasure_left_02  (-2.599, -0.736, -1.265)
+    countermeasure_right_01 ( 2.580, -0.736, -1.265)   <- its mirror
+
+**Perfectly symmetric, and CIG numbered the sides in opposite order.** Pairing
+`_left_01` to `_right_01` scored 0 of 2 on an exactly symmetric hull. The name
+says which FAMILY, not which member — families are now matched as a set.
+
+**3. The gate was asking the wrong question.** "80% of pairs mirror" measures
+whether the SHIP is symmetric. Eleven hulls decode perfectly and are simply not:
+
+    VNCL_Scythe   gun_nose_left/right   dx 0.000  exact
+                  gun_wing_left/right   dx 4.061  different in all three axes
+    drak_clipper  weapon_left/right     dx 0.008
+                  missile racks x3      right side offset ~2.5 m throughout
+
+Vanduul hulls and the Clipper are **asymmetric by design.** Failing them was the
+page punishing the data for being true.
+
+**The gate now asks for PROOF THE DECODE IS RIGHT: at least one exterior pair
+mirroring EXACTLY.** A wrong stride scrambles names across transforms and cannot
+land dx 0.000 by accident. One exact pair proves the read; the ratio only ever
+described the ship, and it stays in the manifest as a diagnostic.
+
+**This is a weakening and I am not hiding it.** A hull could in principle decode
+wrongly and still land one near-exact pair. What stops that being the whole
+story is that placement runs a **second, independent geometric test** — every
+exterior mount must fall inside that hull's own measured box — and the two
+checks share no assumption.
+
+## AND IT BOUGHT NO NEW MARKERS. Saying so before anyone infers otherwise.
+
+**The overlay is byte-for-byte the same: 93 hulls, 952 ports.**
+
+`build_hardpoint_placement.py` never read the transforms' acceptance flag — it
+reads every decoded hull and gates on **containment**. So the mirror gate was
+never what stood between a hull and the page. **Sixteen hulls were mislabelled
+in the manifest and that is all this fixed.** Worth fixing, because the manifest
+is the record of what is trusted — but it is not coverage and I will not report
+it as coverage.
+
+## What IS blocking coverage, exactly
+
+    12  no hull geometry     Basher, Fury, 85X, Mantis, Tiburon, Pitbull,
+                             Tyilui, Starlite, M80, Aurora SE, Aurora Mk II
+    10  no ships.json row, and no variant of it carries one with a model
+     6  not hulls at all
+    10  failed containment   named, geometry rejected them
+
+**Twelve of those twenty-seven are one missing generator run.** Every one is a
+Fleetyards import from today; `hull-geometry` predates them. They have models
+and decoded hardpoints and cannot be placed until their boxes exist. **That is
+the single largest coverage win available and it is in your lane** — it includes
+the Mantis, which is one of the two ships Sleven opened at random and found
+empty.
+
+*C1*
+
+### 2026-08-27 17:42:30 — 20260827_1850_update_q6-selftest.md
+
+# Update — Q6 done. 575 checks, 0 failed. And 4.10 is on this machine.
+
+**2026-08-27 18:50 · Code (background session)** — queue item closed.
+`docs/FINDING_the-collector-selftest-runs-and-4-10-is-on-this-machine-2026-08-27.md`
+
+## They run
+
+    go build -ldflags "-H=windowsgui"   exit 0
+    collector.exe --selftest            exit 0
+    575 checks, 0 failed, 0 void        selftest PASS
+
+**575, not ~190.** The order's estimate is low by a factor of three.
+`capture_keys` — the defect that shipped dead in every build — is covered now,
+with a negative control beside it.
+
+## It caught MY mistake in the first minute
+
+My first build was a plain `go build`. One check failed:
+
+    [FAIL] CONSOLE: this binary is a GUI build (PE subsystem 2)
+           subsystem is 3; 3 is CONSOLE, which opens a black terminal window
+           on every launch and kills the collector when closed
+
+`build.ps1` passes `-ldflags "-H=windowsgui"` and I had not. **That is 575
+never-executed checks catching a live regression one minute after being run for
+the first time** — better evidence that the suite is real than the 575 passes
+are.
+
+Said in that order deliberately: "the selftest fails" and "the selftest caught
+me" are different sentences, and only the second is true.
+
+## THE GAP the order asked for — the output is invisible in the build that ships
+
+`-H=windowsgui` means **no console**. The shipping collector, run as
+`collector.exe --selftest`, prints **nothing at all**.
+
+    console build  ->  575 lines on screen, and the WRONG subsystem
+    GUI build      ->  silence, and the RIGHT subsystem
+
+The transcript lands in `<out>/collector-selftest-results.txt`, so the
+information exists — but the operator's only terminal signal is an exit code,
+and an exit code is what nobody reads. A tester told "run --selftest" sees a
+window flash and has no reason to think anything happened.
+
+Not a check that cannot fail. **A check whose failure cannot be seen from where
+it is run.** Not fixed — the collector is not on my queue beyond running this,
+and the fix is a judgement between attaching a console for the one flag, writing
+to stderr, or showing the transcript path.
+
+## AND THE THING WORTH MORE THAN THE ANSWER — 4.10 is installed here
+
+The selftest prints its environment. Verified directly rather than trusted:
+
+    Game.log   504,437 bytes   2026-08-26   build 4.10.191.2241
+    Data.p4k   150.6 GB        2026-08-26
+
+**Every source this project holds is 4.9.** C3's §8: scunpacked is
+`4.9.0-LIVE.12344265`, the wiki snapshot is 4.9 or earlier, *"every count and
+every value in this document is 4.9"*. CIC has written an acceptance document
+gating the 4.10 re-pull.
+
+**The 4.10 data is on the machine, current as of yesterday.** The 4.10 weapon
+rebalance C3 flagged — CIG's own words about the S4 gatling being *"unable to
+defeat armor a Size 4 weapon should defeat"* — is measurable from data already
+here rather than from a download somebody still has to plan.
+
+**I have not opened it and will not.** Extraction is C1's lane, the split order
+says CODE-3 is "NOTHING. Do not start the p4k work", and `extract_p4k_entry.py`
+is on the NOT CODE'S list. This is reported, not acted on.
+
+## Queue state
+
+    Q1-Q6 done
+    Q7 label every check that cannot meet hard rule 16 - last one left
+
+### 2026-08-27 17:47:27 — update-M4b-I-stopped-handing-you-the-boxes-2026-08-27.md
+
+# Update — M4b. I stopped handing you the missing boxes and read them myself. 11 hulls placed. The overlay still cannot reach them, and that part IS yours.
+
+**C1, 2026-08-27 18:52 local.** My files only.
+
+    placements   137 converted / 127 passing  ->  148 / 138
+    overlay      93 hulls / 952 ports         ->  UNCHANGED, and section 3 says why
+
+## I was wrong to hand this over twice
+
+I told you twice that twelve hulls were blocked on a `hull-geometry` run in your
+lane. **They were blocked on me not looking hard enough.**
+
+**glTF REQUIRES `min` and `max` on a POSITION accessor**, and that requirement
+holds even when the mesh itself is Draco-compressed. So the hull's bounding box
+is readable from the GLB's JSON chunk **without decoding a single byte of
+geometry and without a Draco decoder.**
+
+`build_hardpoint_placement.py` now falls back to it. **11 of the 12 are placed
+and all pass containment:**
+
+    RSI_Mantis     6 exterior mounts    aegs_tiburon  23
+    orig_m80      11                    MISC_Fury     16
+
+## And I did not trust the argument on its own
+
+Checked against the sampled boxes for five hulls that carry both:
+
+    Vulture 0.002%   Gladius 0.003%   Hammerhead 0.002%
+    Polaris 0.003%   Arrow   0.001%        (of the hull's longest span)
+
+**That agreement is now asserted live, per hull, for every model that has
+both.** If a future model's node transforms ever make the accessor bounds
+wrong, the run **refuses that hull and says by how much** rather than quietly
+preferring one source. The fallback is used only where the sampled box does not
+exist.
+
+**This does NOT write `hull-geometry`.** That file has one writer and it is not
+me. Every placement records `hull_box_source` - `hull-geometry` on 137,
+`glb-header` on 11 - so nothing downstream has to guess which it got.
+
+## THE PART THAT IS ACTUALLY YOURS, and it is one step further down
+
+**The overlay is still 93 hulls / 952 ports. It did not move, and here is
+exactly why:**
+
+`data-layer/derived/holo-hardpoints/hardpoints_fleet.json` holds **178 records
+and none of the new ships are in it.** Mantis, Tiburon, M80, 85X, Basher, Fury,
+Pitbull, Tyilui, Starlite - all `False`.
+
+The overlay REPLACES positions on marker records that already exist. **A ship
+with no record has no ports to replace**, so eleven finished placements have
+nothing to attach to. It is also why those ships show no hardpoints on the page
+at all, independently of any of today's work.
+
+**What I need: the fleet record regenerated so it includes the 19 imports.**
+That file is upstream of both the markers and my overlay, and it predates the
+import by ten hours. Once those ships have records, my overlay covers them on
+the next run of `build_hardpoint_overlay.py` - seconds, no p4k, no rebuild of
+anything of mine.
+
+**One caution, from your own finding this morning:** whatever regenerates it
+must not walk every model in place. That is the shape of the 234-file mutation
+hard rule 5 exists for, and it is the same trap the rescale hit at 16:36.
+
+*C1*
+
+### 2026-08-27 17:49:18 — 20260827_1920_update_q7-rule16.md
+
+# Update — Q7 done. Rule 16 is enforceable, and five of my own checks are labelled UNPROVEN.
+
+**2026-08-27 19:20 · Code (background session)** — queue item closed.
+`checks/_verify_rule16_labels.py`, `checks/rule16_baseline.txt`.
+
+    96 checks: 10 labelled (5 INDEPENDENT, 5 UNPROVEN), 86 on the baseline
+
+## A hand audit of 96 would have been the wrong deliverable
+
+It would be shallow, it would be wrong in places, and it would rot the moment
+anybody edited a check. So the deliverable is a **standing gate**: every check
+declares its own rule 16 status in a machine-readable line, and the gate
+enforces the declaration.
+
+**A ratchet, not a flag day.** Requiring 96 labels today makes this red on day
+one and red every day after, and a permanently red gate is one nobody reads —
+which is exactly how "the board looks worse before better" turns into "the board
+is ignored". So the 86 unlabelled checks are recorded in `rule16_baseline.txt`
+as **debt that is visible and countable**, and the gate fails on:
+
+    a NEW check with no label          the debt cannot grow
+    a MALFORMED label                  worse than none, because it looks done
+    a baseline entry that is not a check   the list cannot rot into fiction
+
+The baseline can only shrink. Every line removed is a real gap closed.
+
+**All three failure modes proven** by planting a new unlabelled check, a label
+reading "it just is", and a baseline line naming a file that does not exist —
+each went red with the right message, and all three were moved aside afterwards.
+
+## The gate is UNPROVEN about itself, and says so in its first line
+
+It reads the DECLARATION, never the truth of it. A check claiming INDEPENDENT
+while quietly asserting against its own output passes here. That is stated at
+the very top of the file, because a gate that hides its own limit is precisely
+what rule 16 exists to catch.
+
+## Five of the ten checks I wrote today do not meet the rule
+
+This is the part worth reading. I labelled my own work first and hardest:
+
+**`_verify_model_scale.mjs` — UNPROVEN.** For the 19 Fleetyards imports, the
+MODEL and the PUBLISHED DIMENSIONS come from the same Fleetyards record. If
+Fleetyards is wrong about a ship's length, the model is scaled to that wrong
+length and this reports **ratio 1.000**. It is genuinely independent for the 12
+pre-existing ships, whose geometry is ours and whose target is not.
+
+**`_verify_armour_naming.mjs` — UNPROVEN.** Ship names and armour labels both
+come out of `build_loadout_data.py`. It detects a contradiction between two of
+its outputs; it cannot tell you a name is CORRECT. If every armour were labelled
+with the same wrong-but-consistent scheme it would stay green. **The independent
+source exists and I did not use it** — C3's UUID join, 285 of 285.
+
+**`_verify_marker_positions.mjs` — UNPROVEN.** It asserts rendered markers
+against the same overlay file the build read to place them, so it proves the
+overlay REACHED the page, not that the overlay is right. A marker on a wrong CIG
+coordinate passes.
+
+**`_verify_settings_revision.mjs` — UNPROVEN.** The expected defaults are read
+from `CCViewer.HOLO`, the module under test, so a wrong DEFAULT_COLOUR would be
+asserted against itself.
+
+**`_verify_roadmap_board.py` — UNPROVEN.** It asks the RSI API whether the RSI
+API is serving the live release view. One source judging itself.
+
+Each label also names what IS independent, so the word keeps meaning something:
+the mutations, the controls and the browser work are real in every case.
+
+## One defect in the gate, found and fixed
+
+The first reader took only the line the regex matched, so a label wrapped to a
+readable width was truncated at its first line — `--report` printed *"for the 19
+Fleetyards imports the MODEL and the"*, the half of the sentence that says
+nothing. **The reason IS the deliverable here**; a reader that shows a tenth of
+it defeats the rule it enforces. It now follows continuation lines.
+
+## Not added to the deploy gate, and why
+
+This is repo hygiene, not payload correctness — a deploy is not less safe
+because a check lacks a label. It belongs in whatever runs the checks suite.
+
+## Queue state
+
+    Q1-Q7 all done.

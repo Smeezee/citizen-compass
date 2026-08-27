@@ -3,6 +3,7 @@
  "model": "Zeus_Mk_II_CL.glb",
  "hardpoints_from": "RSI_Zeus",
  "inherited_from_base_hull": true,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.00677,
  "scale_estimates": {
   "length": 1.00677,

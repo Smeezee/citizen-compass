@@ -3,6 +3,7 @@
  "model": "Paladin.glb",
  "hardpoints_from": "ANVL_Paladin",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 0.99983,
  "scale_estimates": {
   "length": 0.99983,

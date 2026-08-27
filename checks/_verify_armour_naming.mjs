@@ -1,4 +1,12 @@
 /**
+ * RULE16: UNPROVEN - the ship names and the armour labels both come out of
+ * build_loadout_data.py, so this detects a CONTRADICTION between two of its
+ * outputs and cannot tell you a name is correct - only that it does not name
+ * a different ship. If every armour were labelled with the same wrong-but-
+ * consistent scheme this would stay green. The independent source exists and
+ * was not used: C3's UUID join from the wiki's vehicle.armor.uuid to
+ * scunpacked's stdItem.UUID, 285 of 285.
+ *
  * NO SHIP PAGE PRINTS ANOTHER SHIP'S NAME ON ITS ARMOUR.
  *
  * ORDER: NEXT.md Q1, from

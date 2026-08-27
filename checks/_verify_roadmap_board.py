@@ -1,4 +1,10 @@
 """R0 - the board the roadmap watcher polls is the LIVE release view.
+RULE16: UNPROVEN - it asks the RSI API whether the RSI API is serving the
+    live release view, which is one source judging itself - a board that lied
+    about its own contents would pass. What is independent is the
+    discriminator: board 2 is a real, unrelated board that answers 200 with
+    unreleased cards and no 4.x release, and it is rejected.
+
 
 Order: docs/AMENDS_roadmap-watcher-board-1-is-wrong-2026-08-27.md, R0.
     "Write the check that could fail: assert the polled board contains at least

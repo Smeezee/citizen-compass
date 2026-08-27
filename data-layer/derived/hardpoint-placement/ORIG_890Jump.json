@@ -3,6 +3,7 @@
  "model": "890_Jump.glb",
  "hardpoints_from": "ORIG_890Jump",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.02176,
  "scale_estimates": {
   "length": 1.02176,

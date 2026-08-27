@@ -7,10 +7,10 @@
  "scale_rule": "CIG's Length against the hull box's fore/aft extent. Width and Height are recorded as diagnostics only - CIG measures them with gear deployed and the GLB is one stowed pose.",
  "acceptance": "every EXTERIOR mount inside the hull box laterally and vertically, 6% margin. The fore/aft axis is where the scale came from and is deliberately NOT tested - that would be marking our own homework. A transposed axis puts mounts outside sideways.",
  "counts": {
-  "converted": 137,
-  "passed": 127,
+  "converted": 148,
+  "passed": 138,
   "failed": 10,
-  "skipped": 27
+  "skipped": 16
  },
  "ships": [
   {
@@ -410,6 +410,17 @@
    "note": ""
   },
   {
+   "class": "GLSN_Basher",
+   "hardpoints": 71,
+   "exterior_mounts": 13,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.0312,
+   "spread": 0.8941,
+   "acceptance": true,
+   "note": ""
+  },
+  {
    "class": "GLSN_Shiv",
    "hardpoints": 118,
    "exterior_mounts": 6,
@@ -428,6 +439,17 @@
    "outside_any": 0,
    "scale": 1.0027,
    "spread": 0.3771,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "MISC_Fury",
+   "hardpoints": 76,
+   "exterior_mounts": 16,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.8163,
+   "spread": 0.4021,
    "acceptance": true,
    "note": ""
   },
@@ -520,6 +542,17 @@
    "note": ""
   },
   {
+   "class": "ORIG_85x",
+   "hardpoints": 65,
+   "exterior_mounts": 7,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0692,
+   "spread": 0.5412,
+   "acceptance": true,
+   "note": ""
+  },
+  {
    "class": "ORIG_890Jump",
    "hardpoints": 122,
    "exterior_mounts": 14,
@@ -549,6 +582,17 @@
    "outside_any": 6,
    "scale": 0.9816,
    "spread": 0.5312,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "RSI_Mantis",
+   "hardpoints": 62,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.0476,
+   "spread": 0.9469,
    "acceptance": true,
    "note": ""
   },
@@ -670,6 +714,17 @@
    "outside_any": 0,
    "scale": 1.0119,
    "spread": 0.0882,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "aegs_tiburon",
+   "hardpoints": 121,
+   "exterior_mounts": 23,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 8.6475,
+   "spread": 0.9513,
    "acceptance": true,
    "note": ""
   },
@@ -1070,6 +1125,17 @@
    "note": ""
   },
   {
+   "class": "drak_pitbull",
+   "hardpoints": 61,
+   "exterior_mounts": 15,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 2.2555,
+   "spread": 0.78,
+   "acceptance": true,
+   "note": ""
+  },
+  {
    "class": "gama_railen",
    "hardpoints": 97,
    "exterior_mounts": 14,
@@ -1077,6 +1143,17 @@
    "outside_any": 0,
    "scale": 1.2389,
    "spread": 0.3862,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "gama_tyilui",
+   "hardpoints": 103,
+   "exterior_mounts": 17,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.001,
+   "spread": 0.011,
    "acceptance": true,
    "note": ""
   },
@@ -1169,6 +1246,17 @@
    "note": ""
   },
   {
+   "class": "misc_starlite",
+   "hardpoints": 82,
+   "exterior_mounts": 7,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.4672,
+   "spread": 0.8769,
+   "acceptance": true,
+   "note": ""
+  },
+  {
    "class": "mrai_guardian",
    "hardpoints": 80,
    "exterior_mounts": 10,
@@ -1198,6 +1286,17 @@
    "outside_any": 0,
    "scale": 1.2743,
    "spread": 1.4709,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "orig_m80",
+   "hardpoints": 75,
+   "exterior_mounts": 11,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.8328,
+   "spread": 0.9123,
    "acceptance": true,
    "note": ""
   },
@@ -1352,6 +1451,28 @@
    "outside_any": 0,
    "scale": 1.0258,
    "spread": 0.0381,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "rsi_aurora_gs_se",
+   "hardpoints": 82,
+   "exterior_mounts": 11,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0269,
+   "spread": 0.9027,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "rsi_aurora_mk2",
+   "hardpoints": 77,
+   "exterior_mounts": 10,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.2653,
+   "spread": 0.9241,
    "acceptance": true,
    "note": ""
   },
@@ -1585,50 +1706,6 @@
   {
    "class": "recreation",
    "why": "no ships.json row for this class, and no variant of it carries one with a model"
-  },
-  {
-   "class": "GLSN_Basher",
-   "why": "no hull geometry for Basher.glb"
-  },
-  {
-   "class": "MISC_Fury",
-   "why": "no hull geometry for Fury.glb"
-  },
-  {
-   "class": "ORIG_85x",
-   "why": "no hull geometry for 85X.glb"
-  },
-  {
-   "class": "RSI_Mantis",
-   "why": "no hull geometry for Mantis.glb"
-  },
-  {
-   "class": "aegs_tiburon",
-   "why": "no hull geometry for Tiburon.glb"
-  },
-  {
-   "class": "drak_pitbull",
-   "why": "no hull geometry for Pitbull.glb"
-  },
-  {
-   "class": "gama_tyilui",
-   "why": "no hull geometry for Tyilui.glb"
-  },
-  {
-   "class": "misc_starlite",
-   "why": "no hull geometry for Starlite.glb"
-  },
-  {
-   "class": "orig_m80",
-   "why": "no hull geometry for M80.glb"
-  },
-  {
-   "class": "rsi_aurora_gs_se",
-   "why": "no hull geometry for Aurora_SE.glb"
-  },
-  {
-   "class": "rsi_aurora_mk2",
-   "why": "no hull geometry for Aurora_Mk_II.glb"
   }
  ]
 }

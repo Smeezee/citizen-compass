@@ -3,6 +3,7 @@
  "model": "Retaliator.glb",
  "hardpoints_from": "aegs_retaliator",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.0119,
  "scale_estimates": {
   "length": 1.0119,

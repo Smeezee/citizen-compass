@@ -1,4 +1,9 @@
 """Prove the M4 sweep's gates by making each one fail on demand.
+RULE16: INDEPENDENT - every assertion runs against fixtures built inside
+    this file - duplicate keys, a planted name collision, a case-folded near-
+    match, a short cache. None of them come from the Fleetyards pull or from
+    the join under test.
+
 
 Hard rule 12: a check that cannot fail is not a check. Everything in
 scripts/sweep_model_availability.py that claims to protect the output is fed

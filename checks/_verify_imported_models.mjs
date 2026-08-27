@@ -1,4 +1,9 @@
 /**
+ * RULE16: INDEPENDENT - geometry is measured in a real browser through the
+ * site's own viewer, and the decisive control is a valid GLB with no meshes
+ * SYNTHESISED HERE - a file the build has never produced and cannot have
+ * agreed with.
+ *
  * M5e - THE IMPORTED SHIPS RENDER SOMETHING, AND THE CHECK CAN TELL WHEN ONE
  *       DOES NOT.
  *

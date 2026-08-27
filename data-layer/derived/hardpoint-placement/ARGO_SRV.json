@@ -3,6 +3,7 @@
  "model": "SRV.glb",
  "hardpoints_from": "ARGO_SRV",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.14143,
  "scale_estimates": {
   "length": 1.14143,

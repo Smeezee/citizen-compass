@@ -1,4 +1,11 @@
 /**
+ * RULE16: UNPROVEN - it asserts rendered markers against
+ * alignment_overlay_client.json, which is the same file the build read to
+ * place them - so it proves the overlay REACHED the page, not that the
+ * overlay is right. A marker on a wrong CIG coordinate passes. The overlay-
+ * removed control is genuinely independent evidence of the first claim and
+ * of nothing beyond it.
+ *
  * Q2 - THE MARKERS ON THE PAGE ARE ON CIG'S OWN COORDINATES.
  *
  * ORDER: NEXT.md Q2 / ORDER_the-queue-2026-08-27.md.

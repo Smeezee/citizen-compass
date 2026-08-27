@@ -3,6 +3,7 @@
  "model": "Hull_A.glb",
  "hardpoints_from": "MISC_Hull_A",
  "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.38884,
  "scale_estimates": {
   "length": 1.38884,
