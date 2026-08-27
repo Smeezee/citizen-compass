@@ -305,6 +305,105 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 /* V2: a dot standing for several weapons is drawn a touch larger with a
    ring, so "there is more than one thing here" is visible before it is
    clicked rather than only in the tooltip. */
+/* H1: THE HOVER CHIP. Rounded, softly translucent, hairline border, faint
+   corner brackets - the treatment Sleven chose. It is pointer-events:none so
+   it can never sit between the cursor and the dot it belongs to, which is what
+   would make it flicker. */
+/* THE LOOK, and Sleven named its parts: the angles from the glass style, the
+   corner marks and monospace figures from the HUD style, the colours from the
+   quiet style. Hairline borders rather than heavy ones. A desaturated
+   blue-grey accent rather than hard cyan. Muted green and red on deltas rather
+   than alarm colours. The fitted row is a soft tint and a small tag - it must
+   not be the loudest thing in the panel. */
+#cc-plead{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:visible}
+#cc-plead line{stroke:var(--accent2);stroke-width:1;stroke-dasharray:3 3;
+ opacity:.7}
+#cc-panel .dk{position:relative}
+#cc-panel .dkh{position:relative;padding:2px 22px 8px 2px}
+#cc-panel .dkh b{display:block;font-size:12.5px;letter-spacing:.02em}
+#cc-panel .dkh span{display:block;font-size:10.5px;color:var(--muted);
+ letter-spacing:.05em}
+#cc-panel .dkx{position:absolute;right:-2px;top:-4px;background:none;border:0;
+ color:var(--muted);font-size:17px;line-height:1;cursor:pointer;padding:2px 4px}
+#cc-panel .dkx:hover{color:var(--text)}
+#cc-panel .dkt{display:flex;gap:3px;margin:0 0 7px;flex-wrap:nowrap}
+#cc-panel .dkt button{flex:1 1 auto;background:none;border:1px solid var(--line);
+ border-radius:5px;padding:3px 4px;font:inherit;font-size:10px;
+ letter-spacing:.03em;color:var(--muted);cursor:pointer;white-space:nowrap}
+#cc-panel .dkt button:hover{border-color:var(--accent2);color:var(--text)}
+#cc-panel .dkt button.on{border-color:var(--accent2);color:var(--text);
+ background:var(--panel2)}
+#cc-panel .dkl{display:flex;flex-direction:column;gap:3px}
+/* H3: NO SCROLLBAR HERE, EVER. Five rows is the design, so there is nothing to
+   scroll - and saying so in the stylesheet stops a later change quietly
+   turning the footer's promise into a lie. */
+#cc-panel .dkl{overflow:visible}
+#cc-panel button.drow{display:flex;align-items:center;justify-content:space-between;
+ gap:8px;width:100%;text-align:left;background:var(--panel2);
+ border:1px solid var(--line);border-radius:6px;padding:5px 7px;font:inherit;
+ color:var(--text);cursor:pointer}
+#cc-panel button.drow:hover{border-color:var(--accent2)}
+#cc-panel button.drow.fitted{background:var(--scrim-55);
+ border-color:var(--accent2)}
+#cc-panel button.drow .l{min-width:0;display:block}
+#cc-panel button.drow .nm{display:block;font-size:11.5px;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis}
+/* THE DELTAS ARE MUTED HERE, not alarm colours. The order chose the quiet
+   palette for this panel specifically, and the page-wide chip is tuned for the
+   stat rail where a change is the whole point of the row. Same semantics, same
+   direction, lower volume - and only inside #cc-panel, so the rail is
+   untouched. */
+#cc-panel .d{font-size:10.5px;font-weight:600;padding:1px 5px;
+ font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+#cc-panel .d.up{background:transparent;color:var(--good);opacity:.85}
+#cc-panel .d.down{background:transparent;color:var(--bad);opacity:.85}
+#cc-panel .d.flat{background:transparent;color:var(--muted)}
+#cc-panel button.drow .l{flex:1 1 auto}
+#cc-panel button.drow .mk{display:block;font-size:9.5px;color:var(--muted);
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cc-panel button.drow .r{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+#cc-panel button.drow .val{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:11.5px}
+#cc-panel .sz{font-style:normal;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:9.5px;border:1px solid var(--line);border-radius:3px;padding:0 3px;
+ margin-right:5px;color:var(--muted)}
+#cc-panel .fittag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:9.5px;letter-spacing:.08em;color:var(--muted);border:1px solid var(--line);
+ border-radius:3px;padding:1px 4px}
+#cc-panel .dkm{display:flex;align-items:center;gap:6px;margin-top:7px;
+ font-size:10.5px;color:var(--muted);cursor:pointer}
+#cc-panel .dkf{margin-top:7px;padding-top:6px;border-top:1px solid var(--line);
+ font-size:10px;color:var(--muted);letter-spacing:.03em}
+#cc-panel .dkempty{font-size:10.5px;color:var(--muted);padding:4px 2px}
+#cc-panel .dkfix .fxn{font-size:12px;margin-bottom:2px}
+#cc-panel .dkfix .fxm{font-size:10px;color:var(--muted);margin-bottom:6px}
+#cc-panel .dkfix .fxp{font-size:9.5px;color:var(--muted);margin-bottom:4px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cc-panel .dkfix .fxr{display:flex;justify-content:space-between;gap:10px;
+ font-size:10.5px;padding:2px 0;border-bottom:1px solid var(--line)}
+#cc-panel .dkfix .fxr b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-weight:500}
+/* H7: the twin, marked while the switch is on. */
+#cc-marks button.twin{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+#cc-chip{position:absolute;z-index:8;pointer-events:none;transform:translate(-50%,-100%);
+ background:var(--scrim-90);border:1px solid var(--line);border-radius:7px;
+ padding:5px 9px;white-space:nowrap;font-size:11px;line-height:1.3;
+ color:var(--text);box-shadow:0 2px 10px var(--scrim-72)}
+#cc-chip[hidden]{display:none}
+#cc-chip b{display:block;font-weight:600;font-size:11.5px}
+#cc-chip span{display:block;color:var(--muted);font-size:10px;letter-spacing:.04em}
+#cc-chip::before,#cc-chip::after{content:"";position:absolute;width:6px;height:6px;
+ border-color:var(--accent2);opacity:.75}
+#cc-chip::before{left:-1px;top:-1px;border-left:1px solid;border-top:1px solid;
+ border-top-left-radius:7px}
+#cc-chip::after{right:-1px;bottom:-1px;border-right:1px solid;border-bottom:1px solid;
+ border-bottom-right-radius:7px}
+/* H1: A MOUNT THE GAME FIXES MUST NOT LOOK LIKE A BUTTON.
+   Smaller, thinner border, no glow, no hover-grow. The shape difference is
+   what carries it - it reads the same in greyscale as in colour. */
+#cc-marks button.fx{box-shadow:none}
+#cc-marks button.fx:hover,#cc-marks button.fx:focus{
+ transform:translate(-50%,-50%)}
 #cc-marks button.many{width:13px;height:13px;
   box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent2)}
 #cc-panel .mhead{font:700 10.5px inherit;letter-spacing:.06em;
@@ -1029,6 +1128,15 @@ CC_THEME.apply();
       <!-- B3: the picker, over the model, anchored near the dot it belongs to.
            Choosing a gun happens where the gun is. -->
       <div id="cc-panel" hidden></div>
+      <!-- H1: the hover chip. One at a time, just above the dot, gone on
+           mouse-out. It is aria-hidden because the dot itself already carries
+           the same text in its aria-label - announcing it twice would make the
+           hull noisier for a screen reader than it is for everyone else. -->
+      <div id="cc-chip" hidden aria-hidden="true"></div>
+      <!-- H2: the panel's own leader. Separate from #cc-leaders, which belongs
+           to the labels: one artifact, one writer. It is dotted so it reads as
+           a tie rather than as structure. -->
+      <svg id="cc-plead" aria-hidden="true"></svg>
       <!-- H1f: the look controls. ONE control opens them; they float over the
            stage so they cost the page no height, exactly as B3's picker does.
            Closed by default - progressive disclosure, this project's own
@@ -2615,10 +2723,16 @@ let spinOn = storedSpin() === true;
 function applySpin(){
   const b=$('cc-spin'); if(!b) return;
   if(_view) _view.setSpin(spinOn);
-  b.textContent = spinOn ? "Stop spin" : "Start spin";
-  b.title = spinOn ? "Stop the ship rotating" : "Start the ship rotating";
-  b.setAttribute("aria-pressed", spinOn ? "false" : "true");
-  b.classList.toggle("off", !spinOn);
+  /* H9: THE LABEL IS READ FROM THE VIEWER, NOT FROM THE LOCAL VARIABLE.
+     `spinOn` is what was ASKED for; spinning() is what IS. They diverge the
+     moment anything else touches autoRotate - which is exactly the defect
+     Sleven reported once already, a button saying "Stop spin" over a ship that
+     was not spinning. Ask the thing that knows. */
+  const on = (_view && _view.spinning) ? _view.spinning() : spinOn;
+  b.textContent = on ? "Stop spin" : "Start spin";
+  b.title = on ? "Stop the ship rotating" : "Start the ship rotating";
+  b.setAttribute("aria-pressed", on ? "false" : "true");
+  b.classList.toggle("off", !on);
 }
 function toggleSpin(){ spinOn=!spinOn; rememberSpin(spinOn); applySpin(); }
 
@@ -2757,11 +2871,15 @@ function renderStagePanel(){
   }
   if(!slot || pickerHome(slot)!=="stage"){
     el.hidden=true; el.innerHTML="";
+    _dockAnchor=null; _dockTwinRoot=null; dockMirror=false; drawDockLeader();
     /* E4: and the stage gets its whole width back. */
     if(_view && _view.setObstruction) _view.setObstruction(0);
     return;
   }
-  el.innerHTML = swappable(slot) ? pickerHTML(slot) : fixedPanel(slot);
+  /* H2/H6: the picker that opens FROM THE HULL is the docked one. The inline
+     picker in the left column is untouched - it is a different surface with a
+     different job, and this order is scoped to the marker loop. */
+  el.innerHTML = swappable(slot) ? dockedPickerHTML(slot) : fixedDockHTML(slot);
   el.hidden=false;
   const stage=$('cc-stage');
   const sw=(stage&&stage.clientWidth)||0, sy=(stage&&stage.clientHeight)||0;
@@ -2782,13 +2900,34 @@ function renderStagePanel(){
      somewhere with no relationship to the marker. It goes to a stated corner
      and says nothing about being anchored. */
   const px = pt ? pt.x : (sw/2), py = pt ? pt.y : (sy/2);
-  const ph = Math.min(PANEL_MAXH, sy||PANEL_MAXH);
-  const box = panelPlacement(px, py, sw, sy, PANEL_W, ph, PANEL_GAP);
+  /* H2: CLAMPED ON WHAT IT MEASURES, NOT ON WHAT IT PREDICTS.
+     This used to size the box from PANEL_MAXH - a constant - and the
+     prototype's coolers ran off the bottom of the screen because the real
+     panel was taller than the formula said. The panel is in the DOM by now, so
+     its height is a fact: read it, then place. Both axes, every time. */
   el.style.width = PANEL_W+"px";
-  el.style.maxHeight = ph+"px";
+  el.style.maxHeight = "none";
+  el.style.left = "0px"; el.style.top = "0px";
+  /* MEASURED WHERE MEASURING IS POSSIBLE. A real element always has
+     getBoundingClientRect; the stub DOM the checks/ harness runs against does
+     not, and an unguarded call threw before any assertion ran. The fallback is
+     the OLD estimate, and it is only ever reached in that harness - which is
+     also why the real clamp is proven in a browser rather than here. */
+  const measured = (typeof el.getBoundingClientRect === "function")
+    ? el.getBoundingClientRect() : null;
+  const ph = Math.max(1, Math.min((measured && measured.height) || PANEL_MAXH,
+                                  sy || 1e5));
+  const box = panelPlacement(px, py, sw, sy, PANEL_W, ph, PANEL_GAP);
   el.style.left = box.left+"px";
   el.style.top = box.top+"px";
   el.setAttribute("data-side", box.side);
+  /* The dot this panel belongs to, so the leader can follow it every frame
+     while the panel itself stays exactly where it was put. */
+  const _tw = swappable(slot) ? mirrorTwinRoot(slot) : null;
+  _dockTwinRoot = _tw ? _tw.root : null;
+  _dockAnchor = { root: mountRoot(String(slot.p)),
+                  left: box.left, top: box.top, h: ph };
+  drawDockLeader();
   el.setAttribute("data-for", slot.id);
   el.setAttribute("data-anchor", pt ? (Math.round(px)+","+Math.round(py)) : "none");
   /* E4: THE STAGE REFRAMES AROUND WHAT IS LEFT OF IT.
@@ -2932,16 +3071,345 @@ function renderMarkers(){
        that opened it. */
     b.classList.toggle('sel', !!(sel && m.ports.some(pid=>{
       const s2=slotByPort(pid); return s2 && sel.slot===s2.id; })));
+    /* H7: the mirror twin is marked while the switch is on - a different class
+       from `sel`, because it is not selected, it is about to be changed too. */
+    b.classList.toggle('twin', !!(dockMirror && _dockTwinRoot
+                                  && m.root===_dockTwinRoot));
   }
 }
 /* Where each marker landed this frame, by its index in markersFor(shipId). */
 const _markProj=[];
+
+/* Re-render the panel's CONTENT without touching where it sits. A tab press
+   changes what is in the box, never the box. */
+function renderStagePanelBody(){
+  const el=$('cc-panel'); if(!el||el.hidden) return;
+  const sh=ship(), slot=sel?sh.slots.find(x=>x.id===sel.slot):null;
+  if(!slot) return;
+  el.innerHTML = swappable(slot) ? dockedPickerHTML(slot) : fixedDockHTML(slot);
+  drawDockLeader();
+}
+
+/* H2: THE PANEL STOPS MOVING, AND THE LINE DOES NOT.
+   The prototype re-anchored the panel every frame, so rotating the hull
+   dragged it around the screen - Sleven's verdict was that it looked
+   interesting for four seconds and was annoying after that. So the panel is
+   placed once, on open, and left alone; the DOTTED LEADER is what keeps the
+   tie to the mount visible while the ship turns under it. */
+let _dockAnchor=null;
+/* The twin's mount root, resolved once when the panel opens rather than on
+   every frame. */
+let _dockTwinRoot=null;
+function drawDockLeader(){
+  const svg=$('cc-plead'); if(!svg) return;
+  const el=$('cc-panel'), v=_view;
+  /* THIS IS BROWSER-ONLY DRAWING AND IT SAYS SO ONCE, HERE. It needs a real
+     element to read the placement side off; the stub DOM in checks/ has no
+     getAttribute, and guarding each call separately would scatter the same
+     decision across the function. One gate at the top: if this cannot be
+     drawn, it is not drawn. The clamp and the line are proven in a real
+     browser, which is where they mean anything. */
+  if(!el || typeof el.getAttribute!=="function") return;
+  if(!_dockAnchor || !el || el.hidden || !v || !v.current){
+    svg.innerHTML=""; return;
+  }
+  const mo=mountOf(shipId, _dockAnchor.root);
+  if(!mo || !v.project || !v.unitScale){ svg.innerHTML=""; return; }
+  const us=v.unitScale();
+  const p=v.project(mo.x*us, mo.y*us, mo.z*us);
+  if(!p){ svg.innerHTML=""; return; }
+  /* From the panel's nearest edge, not its corner: a line to the corner reads
+     as a pointer to the panel rather than as a tie between the two. */
+  const side=el.getAttribute("data-side")==="left";
+  const x1=_dockAnchor.left + (side ? PANEL_W : 0);
+  const y1=_dockAnchor.top + Math.min(_dockAnchor.h, 44);
+  svg.innerHTML=`<line x1="${x1}" y1="${y1}" x2="${p.x}" y2="${p.y}"></line>`;
+}
+
+/* ================= THE DOCKED HARDPOINT PICKER (H2-H8) ==================
+
+   H4: THE TABS USE THIS SITE'S OWN WORDS. loadout.html's WATCH table already
+   settled the stat names - Sustained DPS, Alpha strike, Effective HP, Shield
+   regen, EM signature, IR signature, Total mass - and the tabs carry the short
+   form a player says out loud. Nothing here invents a word.
+
+   AND THE TABS ARE A PROPERTY OF THE COMPONENT, NOT OF THE PAGE. A cooler is
+   never offered "Alpha": the offer is built from the stats the parts that fit
+   THIS port actually carry. Type-specific stats lead, then EM, then Mass -
+   which is what makes a weapon read DPS / Alpha / EM / Mass and a cooler read
+   Cooling / EM / Mass without either being written down as a special case. */
+const DOCK_TABS=[
+  /* key, tab word, unit, lower-is-better, the WATCH label it is short for */
+  ["dps",  "DPS",       "",   false, "Sustained DPS"],
+  ["alpha","Alpha",     "",   false, "Alpha strike"],
+  ["ehp",  "Shield HP", "",   false, "Effective HP"],
+  ["regen","Regen",     "",   false, "Shield regen"],
+  ["cool", "Cooling",   "",   false, "Cooling"],
+  ["cap",  "Power",     "",   false, "Power"],
+  ["em",   "EM",        "",   true,  "EM signature"],
+  ["ir",   "IR",        "",   true,  "IR signature"],
+  ["ms",   "Mass",      "",   true,  "Total mass"]
+];
+const DOCK_LEAD=new Set(["dps","alpha","ehp","regen","cool","cap"]);
+function dockTabsFor(slot){
+  const ids=fitsFor(slot);
+  const has=k=>ids.some(id=>{ const v=(P[id]||{})[k]; return v!=null && v!==0; });
+  const lead=DOCK_TABS.filter(t=>DOCK_LEAD.has(t[0]) && has(t[0])).slice(0,2);
+  const sig =DOCK_TABS.filter(t=>t[0]==="em" && has("em"));
+  const irx =DOCK_TABS.filter(t=>t[0]==="ir" && has("ir"));
+  const mass=DOCK_TABS.filter(t=>t[0]==="ms" && has("ms"));
+  /* IR only earns a tab when nothing else has claimed the slots - a weapon
+     carries both signatures and the order's own example lists EM, not IR. */
+  let out=lead.concat(sig);
+  if(out.length<3) out=out.concat(irx);
+  out=out.concat(mass);
+  return out.slice(0,4);
+}
+/* Which tab is active. Reset when a different mount opens, because "biggest
+   hit" is not a question about a cooler. */
+let dockAxis=null;
+/* H7: the mirror switch, OFF by default and per-mount. Whether it should
+   remember across mounts is deliberately unresolved in the order - it resets,
+   and that is the state to judge after somebody has swapped four pairs. */
+let dockMirror=false;
+function dockAxisFor(slot){
+  const tabs=dockTabsFor(slot);
+  if(dockAxis && tabs.some(t=>t[0]===dockAxis)) return dockAxis;
+  return tabs.length ? tabs[0][0] : null;
+}
+/* H7: the twin, found on the port's OWN name rather than on geometry.
+   `hardpoint_gunmount_left` has a twin called `hardpoint_gunmount_right`; a
+   mount whose name says neither has no twin, and on that mount the switch does
+   not exist. That is the difference between an option and a feature. */
+function mirrorTwinRoot(slot){
+  const raw=HPN[slot.h]||"";
+  let other=null;
+  if(/left/i.test(raw))      other=raw.replace(/left/gi, m=>m[0]==="L"?"Right":"right");
+  else if(/right/i.test(raw))other=raw.replace(/right/gi,m=>m[0]==="R"?"Left":"left");
+  if(!other||other===raw) return null;
+  const sh=ship(); if(!sh) return null;
+  const twin=sh.slots.find(x=>HPN[x.h]===other && x.t===slot.t);
+  if(!twin) return null;
+  const mo=mountOf(shipId, String(twin.p));
+  return mo ? {root:mo.root, slot:twin} : null;
+}
+function dockStatText(part, key, unit){
+  const v=(part||{})[key];
+  if(v==null) return null;
+  return fmt(v)+(unit?" "+unit:"");
+}
+
+/* H5: EVERY ROW EARNS ITS PLACE - its own size chip, the name, the maker and
+   family, the active stat with its unit, and the delta against what is fitted.
+   The delta is computed through the page's own delta(), which already knows
+   that lower EM and lower mass are IMPROVEMENTS. Getting that backwards would
+   colour a quieter gun red.
+   The row carries `pi` and `data-part` deliberately: that is the hook the page
+   ALREADY uses to preview a change in the right rail on hover, so H8 is
+   satisfied by reusing the site's own mechanism rather than by adding a second
+   one that could disagree with it. */
+function dockRow(id, key, unit, lower, fittedId, isFitted){
+  const p=P[id]||{}, f=P[fittedId]||{};
+  const size=(p.s==null)?"":`<i class="sz">S${p.s}</i>`;
+  const fam=[p.m, p.nn].filter(Boolean).join(" · ");
+  let right;
+  if(isFitted){
+    right=`<span class="fittag">FITTED</span>`;
+  }else{
+    const val=dockStatText(p,key,unit);
+    const a=f[key], b=p[key];
+    const d=(a==null||b==null)?null:delta(a,b,lower);
+    right=`<span class="val">${val==null?"&mdash;":val}</span>`
+        + (d?deltaChip(d):"");
+  }
+  return `<button type="button" class="pi drow${isFitted?" fitted":""}"
+    data-part="${attr(id)}" title="${attr(p.n||id)}">
+    <span class="l">${size}<span class="nm">${attr(p.n||id)}</span>
+    <span class="mk">${attr(fam)}</span></span>
+    <span class="r">${right}</span></button>`;
+}
+
+/* H3: NO SCROLLING INSIDE THE PICKER. EVER.
+   Best 4 by the active sort plus the fitted part pinned - five rows, on every
+   ship and every component type. The footer states the truth plainly, and
+   re-sorting is how a person reaches the rest. A scrollbar here would be the
+   page hiding 22 of 26 options behind a gesture nobody is told about. */
+const DOCK_SHOW=4;
+function dockedPickerHTML(slot){
+  const build=editing==="A"?A:B, cur=build[slot.id];
+  const tabs=dockTabsFor(slot);
+  const key=dockAxisFor(slot);
+  const meta=DOCK_TABS.find(t=>t[0]===key)||["","","",false,""];
+  const unit=meta[2], lower=!!meta[3];
+  const ids=fitsFor(slot).slice();
+  ids.sort((x,y)=>{
+    const a=(P[x]||{})[key], b=(P[y]||{})[key];
+    const av=(a==null)?(lower?Infinity:-Infinity):a;
+    const bv=(b==null)?(lower?Infinity:-Infinity):b;
+    if(av!==bv) return lower ? av-bv : bv-av;
+    return String((P[x]||{}).n||x).localeCompare(String((P[y]||{}).n||y));
+  });
+  const rest=ids.filter(k=>k!==cur).slice(0, DOCK_SHOW);
+  const win=(slot.s==null)?"":` · S${slot.s}`;
+  const twin=mirrorTwinRoot(slot);
+
+  let h=`<div class="dk">
+    <div class="dkh"><b>${attr(tname(slot.t))}${win}</b>
+      <button type="button" class="dkx" id="dockclose"
+        aria-label="Close">&times;</button>
+      <span>${attr(portLabel(slot.h))}</span></div>`;
+  if(tabs.length>1){
+    h+=`<div class="dkt" role="tablist">`;
+    tabs.forEach(t=>{
+      h+=`<button type="button" role="tab" data-dockaxis="${t[0]}"
+        aria-selected="${t[0]===key?"true":"false"}"
+        class="${t[0]===key?"on":""}" title="${attr(t[4])}">${t[1]}</button>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`<div class="dkl">`;
+  if(!ids.length){
+    h+=`<div class="dkempty">The game files list no part that fits this port
+      at this size. Nothing is offered here rather than something that would
+      not mount.</div>`;
+  }
+  if(cur && P[cur]) h+=dockRow(cur, key, unit, lower, cur, true);
+  rest.forEach(k=>{ h+=dockRow(k, key, unit, lower, cur, false); });
+  h+=`</div>`;
+  if(twin){
+    h+=`<label class="dkm"><input type="checkbox" id="dockmirror"
+      ${dockMirror?"checked":""}> Also change the other side to match</label>`;
+  }
+  const shown=Math.min(DOCK_SHOW, Math.max(0, ids.length-(cur&&P[cur]?1:0)));
+  /* THE FOOTER STATES THE TRUTH, AND "RE-SORT" IS ONLY TRUE IF IT CAN BE DONE.
+     A mount whose parts carry one comparable stat gets no tab bar - there is
+     nothing to choose between - and on that mount "re-sort to see others" is
+     an instruction pointing at a control that is not there. Caught on the
+     Polaris, which has such a mount. Where there is no re-sort, the line says
+     what it is showing and stops. */
+  const hidden=Math.max(0, ids.length-(cur&&P[cur]?1:0)-shown);
+  h+=`<div class="dkf">${
+    tabs.length>1
+      ? `best ${shown} of ${ids.length} · re-sort to see others`
+      : (hidden
+          ? `best ${shown} of ${ids.length} · ${hidden} more in the list on the left`
+          : `all ${ids.length} shown`)
+  }</div>`;
+  return h+`</div>`;
+}
+
+/* H6: A FIXED MOUNT SHOWS ITS DATA, NOT AN APOLOGY.
+   The first prototype put a sentence where the numbers should be and Sleven
+   could not read anything about the part. The part is real, it is on his ship,
+   and it counts toward every number on the right - so it gets its stats under
+   this site's own labels. Where CIG publishes nothing, that is stated as a
+   fact about the DATA rather than dressed up as an explanation. */
+function fixedDockHTML(slot){
+  const build=editing==="A"?A:B, id=build[slot.id]||slot.stock, p=P[id]||{};
+  const rows=[["Sustained DPS","dps",""],["Alpha strike","alpha",""],
+    ["Effective HP","ehp",""],["Shield regen","regen",""],
+    ["Cooling","cool",""],["Power","cap",""],["Power draw","pw",""],
+    ["Quantum range","qt","Gm"],["Fitted containers","scu",""],
+    ["EM signature","em",""],["IR signature","ir",""],["Total mass","ms",""]]
+    .map(([lab,k,u])=>{
+      const v=p[k]; if(v==null||v==="") return "";
+      return `<div class="fxr"><span>${lab}</span><b>${fmt(v)}${u?" "+u:""}</b></div>`;
+    }).join("");
+  const fam=[p.m,p.nn].filter(Boolean).join(" · ");
+  /* IT CARRIES THE SITE'S OWN `fixedpanel` CLASS. That class is how the rest
+     of the page - and every control - recognises "this is the fixed-mount
+     panel" as distinct from a picker. Renaming the surface without keeping it
+     made eight fixed mounts read as SILENT to marker_response: the panel was
+     rendering perfectly and nothing could tell. */
+  return `<div class="dk"><div class="fixedpanel">
+    <div class="dkh"><b>${attr(tname(slot.t))}${slot.s==null?"":" · S"+slot.s}</b>
+      <button type="button" class="dkx" id="dockclose"
+        aria-label="Close">&times;</button>
+      <span>${attr(portLabel(slot.h))}</span></div>
+    <div class="dkfix">
+      <!-- THE PORT IN THE GAME'S OWN VOCABULARY. portLabel() prettifies the
+           name for reading; this is the string CIG actually uses, so somebody
+           can find this mount in the game files. An existing promise of this
+           panel, and H6 does not replace it - H6 is about showing the part's
+           STATS instead of an apology, which is a different sentence. -->
+      <div class="fxp"><code>${attr(HPN[slot.h]||"")}</code></div>
+      <div class="fxn">${p.s==null?"":`<i class="sz">S${p.s}</i>`}
+        ${attr(p.n||id||"this mount")}</div>
+      ${fam?`<div class="fxm">${attr(fam)}</div>`:""}
+      ${rows||`<div class="dkempty">No stats published for this part.</div>`}
+    </div>
+    <div class="dkf">Fixed by the game, and still counts toward every number
+      on the right.</div></div></div>`;
+}
+
+/* ---------------- H1: the hover chip ----------------------------------
+   ONE CHIP, MOVED - never one per dot. The order's own acceptance test is
+   that it must not flicker between neighbouring dots at 29 and 37 mounts, and
+   the way to fail that is to hide on every mouseout and show on every
+   mouseover: crossing a 2px gap between two dots would blink.
+   So: mouseout only hides when the pointer has actually left the marker
+   layer, and moving from one dot straight to another just re-points the same
+   chip. The chip is pointer-events:none so it can never become the thing the
+   pointer is over. */
+function chipFor(mount){
+  const sl=slotByPort(mount.p); if(!sl) return null;
+  const part=P[sl.stock];
+  const name = mount.n>1 ? `${mount.n} weapons`
+                         : (part?part.n:portLabel(sl.h));
+  const kind = mount.n>1 ? portLabel(sl.h)
+                         : `${tname(sl.t)} · ${portLabel(sl.h)}`;
+  return {name, kind};
+}
+function showChip(btn){
+  const el=$('cc-chip'); if(!el||!btn) return;
+  const root=mountRoot(btn.dataset.mount||btn.dataset.port||"");
+  const mo=mountOf(shipId, root); if(!mo) return;
+  const c=chipFor(mo); if(!c) return;
+  el.innerHTML=`<b>${attr(c.name)}</b><span>${attr(c.kind)}</span>`;
+  /* ANCHORED TO THE DOT'S OWN BOX, not to a remembered projection. The dot may
+     have moved since the last frame and the chip must sit on where it IS. */
+  const stage=$('cc-stage');
+  if(!stage) return;
+  if(typeof btn.getBoundingClientRect!=="function"
+     || typeof stage.getBoundingClientRect!=="function") return;
+  const b=btn.getBoundingClientRect(), s=stage.getBoundingClientRect();
+  el.hidden=false;
+  el.style.left=(b.left - s.left + b.width/2)+"px";
+  el.style.top=(b.top - s.top - 8)+"px";
+}
+function hideChip(){ const el=$('cc-chip'); if(el){ el.hidden=true; } }
+(function wireChip(){
+  const box=$('cc-marks');
+  /* FEATURE-DETECTED, NOT ASSUMED. This runs at parse time, and the stub DOM
+     the checks/ harness loads the page against has elements without listener
+     support - so an unguarded call threw before any control reached its first
+     assertion and took 21 of them down at once. The page must not assume more
+     of an element than it needs. */
+  if(!box || typeof box.addEventListener!=="function") return;
+  box.addEventListener('mouseover',e=>{
+    const b=e.target.closest('button[data-mount]'); if(b) showChip(b);
+  });
+  box.addEventListener('mouseout',e=>{
+    const b=e.target.closest('button[data-mount]'); if(!b) return;
+    const to=e.relatedTarget;
+    /* Straight onto another dot: the chip moves rather than blinking. */
+    if(to && to.closest && to.closest('#cc-marks button[data-mount]')) return;
+    hideChip();
+  });
+  /* Focus is a route to the same information for anybody on a keyboard. */
+  box.addEventListener('focusin',e=>{
+    const b=e.target.closest('button[data-mount]'); if(b) showChip(b);
+  });
+  box.addEventListener('focusout',hideChip);
+})();
 
 /* THE FRAME. Markers first, because the labels read what it recorded. Wiring
    the viewer straight to renderMarkers was the whole of E11 - the labels were
    never in the loop at all. */
 function onFrameTick(){
   renderMarkers();
+  /* The line follows the dot every frame. The panel does not. */
+  drawDockLeader();
   /* R1: THE DEFAULT IS RE-DECIDED WHEN THE STAGE CHANGES SIZE, and this is not
      a nicety - it is the same defect E11b was, arriving through the door R1
      opened.
@@ -3080,7 +3548,17 @@ function layoutLabels(items, stageW, stageH){
 let allLabels=null;   /* null = follow the solver; true/false = the choice */
 function labelsWanted(dropped){
   if(allLabels!==null) return allLabels;
-  return !dropped;
+  /* H1: THE HULL SHOWS NOTHING UNTIL IT IS ASKED.
+     Labels used to be on by default whenever the solver could place them all.
+     They fight each other and the ship for the same pixels, and on anything
+     busier than a fighter they cover the model they describe - Sleven's own
+     diagnosis and his own fix. A dot now carries its name on HOVER, and the
+     picker carries it on click.
+     THE TOGGLE IS KEPT AND STILL WORKS. This defaults them off; it does not
+     remove them. Somebody who wants every name at once still has the control
+     the count line already offers, and `dropped` still governs what that line
+     SAYS about crowding. */
+  return false;
 }
 
 /* ================= E11: THE LABELS FOLLOW THE SHIP ========================
@@ -3362,7 +3840,17 @@ function renderLabelCount(total, shown, dropped, showing, weapons){
      its job: "labels off on a hull this busy" is a status caption, and a
      status caption is what a person reads past. */
   let msg, act;
-  if(!showing){
+  /* H1: THE PAGE MUST NOT CLAIM A REASON IT DOES NOT HAVE - the line's own
+     standing rule, now pointing the other way. Labels are off BY DEFAULT
+     because the hull shows nothing until it is asked, and a name arrives on
+     hover. Saying "13 have no room" about that state blames crowding for a
+     decision the design made, on a hull that may place all of them fine. Once
+     the reader has touched the toggle, allLabels is set and the old wording is
+     correct again. */
+  if(!showing && allLabels===null){
+    msg = `${what} &middot; names on hover`;
+    act = "show all labels";
+  }else if(!showing){
     msg = dropped
       /* THE PAGE'S OWN DECISION, WITH ITS REASON. Not "this hull is busy" -
          a number the reader can check. */
@@ -3814,7 +4302,8 @@ function renderTunePanel(){
     <input type="range" id="tune-glo" data-slider="glow" min="0" max="150"
       value="${Math.round(_view.slider('glow')*100)}">
     </div><div class="grp2"><h4>View</h4><div class="row2">
-    <button type="button" data-view="spin" class="${spinOn?'on':''}">Auto-spin</button>
+    <button type="button" data-view="spin" class="${(_view.spinning&&_view.spinning())?'on':''}">Auto-spin</button>
+    <button type="button" data-view="reset">Reset view</button>
     <button type="button" data-view="grid" class="${_view.gridOn()?'on':''}">Grid</button>
     <button type="button" data-view="scan" class="${_view.scanlines()?'on':''}">Scanlines</button>
     </div></div>`;
@@ -3973,6 +4462,17 @@ document.addEventListener('click',e=>{
     if(mo && mo.n>1){ mountSel=mo.root; sel=null; renderAll(); return; }
     mountSel=null;
     selectPort(slotByPort(mk.dataset.port), editing); return;}
+  /* H4: a tab re-sorts in place. The panel is NOT re-placed - re-anchoring on
+     a sort would move the thing the reader is looking at. */
+  /* H7: the twin's dot lights while the switch is on, so the SECOND thing
+     being changed is visible before it changes. */
+  if(e.target.id==='dockmirror'){
+    dockMirror=!!e.target.checked; renderMarkers(); return;
+  }
+  const dt=e.target.closest('#cc-panel button[data-dockaxis]');
+  if(dt){ dockAxis=dt.dataset.dockaxis; renderStagePanelBody(); return; }
+  if(e.target.closest('#cc-panel #dockclose')){ sel=null; mountSel=null;
+    renderAll(); return; }
   const mr=e.target.closest('#cc-panel button[data-mountport]');
   if(mr){
     mountSel=null;
@@ -4022,6 +4522,11 @@ document.addEventListener('click',e=>{
   if(tv&&_view){
     const k=tv.dataset.view;
     if(k==='spin') toggleSpin();
+    /* H9: RESET VIEW. frame() is what placed the camera when the model
+       arrived, so re-running it against the hull that is loaded returns to
+       exactly the opening shot rather than to a remembered pose that may have
+       been taken before the fit loop settled. */
+    else if(k==='reset'){ if(_view.current) _view.frame(_view.current); }
     else if(k==='grid') _view.setGrid(!_view.gridOn());
     else if(k==='scan') _view.setScanlines(!_view.scanlines());
     _view.remember(); renderTunePanel(); return; }

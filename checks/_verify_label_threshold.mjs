@@ -223,10 +223,20 @@ console.log("\n--- 2. the Aegis Reclaimer ---");
   record(noRoomNow() === 0,
     `the solver places all ${N} with no overlaps`,
     `${noRoomNow()} with no room`);
+  /* H1 INVERTED THE DEFAULT. The hull shows nothing until it is asked - names
+     arrive on hover - so "on by default" is no longer the behaviour. What this
+     section is really about survives and is asserted one step later: that on a
+     hull the solver places cleanly, ASKING for labels puts all N up and the
+     page says so, rather than the old invented threshold of 14 refusing them. */
+  record(shownNow() === 0,
+    "nothing is drawn over the hull until it is asked", `${shownNow()} up`);
+  run("allLabels=true;renderLabels();");
   record(shownNow() === N,
-    "so labels are ON by default, with nothing clicked", `${shownNow()} up`);
+    "and asking puts all of them up - no invented threshold refuses them",
+    `${shownNow()} up`);
   record(/all labelled/.test(hintNow()),
     "and the page says so", hintNow());
+  run("allLabels=null;renderLabels();");
 }
 
 /* =====================================================================
@@ -249,11 +259,21 @@ console.log("\n--- 3. a hull the solver cannot fully place ---");
      - the Perseus's count on the day - and the exemplar is now chosen from
      the data, so the literal named a different hull's answer. What must hold
      is that the line quotes the count the solver actually produced. */
-  record(new RegExp(`${noRoomNow()} have no room`).test(hint),
-    "the line says how many have no room, as a number a reader can check",
-    hint);
-  record(/show all labels anyway/.test(hint),
-    "and offers the way past it in words that invite a press", hint);
+  /* THE CROWDING NUMBER IS ASKED FOR NOW. Labels default off under H1, and in
+     that state the line says "names on hover" - blaming crowding for a design
+     decision would be the same false-reason defect this section exists to
+     prevent, pointing the other way. Turn them on, which is when crowding is
+     something the reader is actually looking at, and the number must be there. */
+  run("allLabels=true;renderLabels();");
+  const hintOn=hintNow();
+  record(new RegExp(`${noRoomNow()} (?:has|have|with) no room`).test(hintOn),
+    "with labels on, the line says how many have no room, as a number a "
+    + "reader can check", hintOn);
+  record(/hide labels/.test(hintOn),
+    "and offers the way back in words that invite a press", hintOn);
+  run("allLabels=null;renderLabels();");
+  record(/names on hover/.test(hint),
+    "and with them off it says what it is doing instead", hint);
   record(!/this busy/.test(hint),
     "and does NOT fall back to a status caption about the hull being busy");
   /* Both the other two of the four. */
@@ -287,8 +307,13 @@ console.log("\n--- 4. the same hull, a smaller stage, a different answer ---");
   record(wide.noRoom === 0 && narrow.noRoom > 0,
     `but on a 300x200 stage the labels no longer fit - the SAME ${N4} markers, `
     + "a different answer", `${wide.noRoom} -> ${narrow.noRoom} with no room`);
-  record(wide.shown > 0 && narrow.shown === 0,
-    "so the default flips, which is a thing no number in the source could have "
+  /* H1: THE DEFAULT NO LONGER FLIPS, BECAUSE THERE IS NO LONGER A DEFAULT TO
+     FLIP - the hull shows nothing until it is asked, on every stage size. What
+     this section actually demonstrates is untouched and is asserted above: the
+     SOLVER's answer depends on the stage, which is a thing no number in the
+     source could have followed. Kept, inverted, so the measurement stays. */
+  record(wide.shown === 0 && narrow.shown === 0,
+    "and neither stage size draws anything unasked, which is now the default "
     + "followed", `${wide.shown} -> ${narrow.shown} labels up`);
   state.notes.push(`${SHIPS[k].n}: ${N4}/${N4} placed at 960x540, `
     + `${narrow.noRoom} with no room at 300x200`);
@@ -324,16 +349,23 @@ console.log("\n--- 5. the toggle overrides the solver, both ways ---");
   openShip(on);
   /* V2: mounts, because that is what carries a label. */
   const N5 = Number(g(`mountsFor(${JSON.stringify(on)}).length`));
-  record(shownNow() === N5,
-    `${SHIPS[on].n} opens with all ${N5} labels up`, `${shownNow()} up`);
+  /* H1 REVERSED THE DIRECTION OF THIS PAIR. The hull opens with nothing on it,
+     the control turns them ON, and pressing it again puts them away. The
+     property under test is unchanged and is the one that matters: the control
+     round-trips, and the line attributes the state to whoever chose it. */
+  record(shownNow() === 0,
+    `${SHIPS[on].n} opens with nothing drawn over it`, `${shownNow()} up`);
   H.dispatch(["#cc-lbl-toggle"]);
-  record(shownNow() === 0, "pressing the control hides them", `${shownNow()}`);
-  record(/labels off/.test(hintNow()) && !/no room/.test(hintNow()),
-    "and the line says it was the READER's choice, not the page's - the hull "
-    + "places fine and the page must not claim otherwise", hintNow());
-  H.dispatch(["#cc-lbl-toggle"]);
-  record(shownNow() === N5, "and pressing it again brings them back",
+  record(shownNow() === N5, "pressing the control shows all " + N5,
     `${shownNow()}`);
+  record(/all labelled/.test(hintNow()) && !/no room/.test(hintNow()),
+    "and the line says they all fit - the hull places fine and the page must "
+    + "not claim otherwise", hintNow());
+  H.dispatch(["#cc-lbl-toggle"]);
+  record(shownNow() === 0, "and pressing it again puts them away",
+    `${shownNow()}`);
+  record(/labels off/.test(hintNow()),
+    "and that state is the READER's choice, said in those words", hintNow());
 
   openShip(off);
   record(shownNow() === 0, "the Perseus opens with labels down");

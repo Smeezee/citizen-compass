@@ -163,12 +163,25 @@ console.log("\n--- 3. the normal case: the stage already has a size ---");
      re-implements the grouping it is checking would agree with itself whatever
      the page did. */
   const want = Number(g(`mountsFor(${JSON.stringify(key)}).length`));
-  record(ls.length === want,
-    "every label is up the moment the model arrives, with nothing clicked",
-    `${ls.length} of ${want}`);
-  record(!inCorner(ls),
+  /* H1 INVERTED THIS. The hull now shows NOTHING until it is asked: names
+     arrive on hover and on click, not as permanent boxes over the model. The
+     old assertion - every label up the moment the model arrives - was the
+     behaviour Sleven diagnosed as covering the ship it was describing.
+     What this section still guarantees is the part that matters and that E8
+     and Q1 bought: when labels ARE asked for, they arrive with the model and
+     land ON THE HULL rather than piled at the origin. So the request is made
+     explicitly and the rest of the section is unchanged. */
+  record(ls.length === 0,
+    "nothing is drawn over the hull until it is asked - names arrive on hover",
+    `${ls.length} drawn`);
+  run("allLabels=true;renderLabels();");
+  const asked = labelsNow();
+  record(asked.length === want,
+    "and asking for them puts every one up, with the model already there",
+    `${asked.length} of ${want}`);
+  record(!inCorner(asked),
     "and they are on the hull rather than piled at the origin",
-    JSON.stringify(ls));
+    JSON.stringify(asked));
 }
 
 console.log("\n--- 4. THE RACE: the model arrives before the stage is sized ---");
@@ -190,10 +203,10 @@ console.log("\n--- 4. THE RACE: the model arrives before the stage is sized ---"
 
   /* THE STAGE GAINS ITS SIZE AND ONE FRAME RUNS. NOTHING IS CLICKED. */
   canvas(960, 540);
-  run("onFrameTick();");
+  run("allLabels=true;renderLabels();onFrameTick();");
   const after = labelsNow();
   record(after.length > 0,
-    "the labels are up once the stage has a size",
+    "the labels are up once the stage has a size, when they are asked for",
     `${after.length}`);
   record(!inCorner(after),
     "AND THEY MOVE ONTO THE HULL ON THE NEXT FRAME, with no interaction of "

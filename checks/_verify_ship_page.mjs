@@ -106,6 +106,19 @@ function el(id) {
    filled, which is what a person looking at the screen does.
    Slicing to the end of the column is safe: `data-part` appears only inside
    the picker's own rows, never on a slot row. */
+/* THE OFFER LIST, WHICHEVER SURFACE IS SHOWING IT.
+   Since the hardpoint-picker order, a hull-mounted port opens the DOCKED
+   picker, which deliberately shows five rows (H3): best 4 by the active sort
+   plus the fitted part pinned. The assertions below are about WHICH PARTS A
+   PORT ADMITS - a property of the list, not of how many of it one surface
+   chooses to draw - so they read the list renderer directly and keep their
+   full strength. Reading the docked surface instead would test H3's cap and
+   report a working page as offering 5 of 16.
+   The surface itself is asserted separately, where it belongs: that a marker
+   opens a panel at all, and that the panel is the fixed one for a fixed port. */
+function offerListFor(slotId) {
+  return g("pickerHTML(ship().slots.find(x=>x.id===" + JSON.stringify(slotId) + "))");
+}
 function pickerNow() {
   /* THREE HOMES SINCE B3. A hull-mounted port's picker is a panel over the
      model stage, an internal component's is inline under its row, and the pane
@@ -294,7 +307,14 @@ console.log("\n--- L3: a part the port accepts APPEARS; one it does not is ABSEN
 const target = editSlots.find(s => (FITS[s.fit] || []).length > 4);
 record(!!target, "found an editable port with a real list of alternatives");
 vm.runInContext(`editing="A";sel={slot:${JSON.stringify(target.id)}};renderAll();`, sandbox);
-const picker = pickerNow();
+/* THE OFFER LIST, for the same reason as the sweep below: both halves of L3 -
+   an accepted part APPEARS, a rejected one is ABSENT - are claims about what
+   the port admits. The docked picker draws five of that list by design, so
+   asserting them against the surface would fail on a part that is offered and
+   simply not in the top four. That the surface opens at all, and opens the
+   right KIND of panel, is asserted by _verify_stage_panel and
+   _verify_marker_response. */
+const picker = offerListFor(target.id);
 
 const offered = FITS[target.fit] || [];
 const accepted = offered[0];
@@ -328,7 +348,8 @@ notes.push(`L3 ABSENT (rendered): ${PARTS[wrong].n} (size ${PARTS[wrong].s}) ` +
 // The picker offers ONLY what the port admits - all of it, checked, not a spot
 // check. A page that offered every part of the type would pass the two
 // assertions above and fail this one.
-const inPicker = [...picker.matchAll(/data-part="([^"]+)"/g)].map(m => m[1]);
+const inPicker = [...offerListFor(target.id).matchAll(/data-part="([^"]+)"/g)]
+  .map(m => m[1]);
 record(inPicker.length === offered.length,
   `the picker offers exactly the ${offered.length} parts the port admits`,
   `rendered ${inPicker.length}`);
@@ -340,8 +361,7 @@ console.log("\n--- L3 across every editable port on the ship, not one sample ---
 let bad = 0, checked = 0;
 for (const s of editSlots) {
   vm.runInContext(`sel={slot:${JSON.stringify(s.id)}};renderAll();`, sandbox);
-  const h = pickerNow();
-  const got = [...h.matchAll(/data-part="([^"]+)"/g)].map(m => m[1]);
+  const got = [...offerListFor(s.id).matchAll(/data-part="([^"]+)"/g)].map(m => m[1]);
   const want = (FITS[s.fit] || []).concat(
     s.also && !(FITS[s.fit] || []).includes(s.also) ? [s.also] : []);
   checked++;

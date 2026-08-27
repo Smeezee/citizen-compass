@@ -94,7 +94,19 @@ record(!!(fittedKey && PARTS[fittedKey]),
    the turret mount below is hull-mounted - so the pinning half of this item is
    asserted through the harness's pickerNow(), which reads every home. Pinning
    is a property of the LIST, not of where the list is drawn. */
-const openPicker = () => H.pickerNow().any;
+/* READ THE LIST RENDERER DIRECTLY, not whichever surface happens to be open.
+   This control's subject is the ORDER of the offer list and the pin at the top
+   of it - "a property of the LIST, not of where the list is drawn", as the
+   note above already says. Since the hardpoint-picker order, a mount with a
+   hull marker opens the DOCKED picker, which deliberately shows five rows
+   (H3): best 4 by the active sort plus the fitted part. Reading that surface
+   would test H3's cap instead of the sort, and would make `order.length > 40`
+   fail on a page that is working exactly as specified.
+   pickerHTML() is the function that builds the full list, and it is unchanged
+   by that order - so the assertions below keep their full strength rather than
+   being relaxed to fit a surface they were never about. */
+const openPicker = (slotId) =>
+  H.g("pickerHTML(ship().slots.find(x=>x.id===" + JSON.stringify(slotId) + "))");
 
 /* E10 RENAMED THESE. `best` is gone - the site does not decide what is best
    - and `quiet` split into ir and em. The old names silently fell through
@@ -103,7 +115,7 @@ const openPicker = () => H.pickerNow().any;
 for (const mode of ["head", "ir", "em", "mass"]) {
   run(`sort=${JSON.stringify(mode)};sel={slot:${JSON.stringify(turret.id)}};`
     + `editing="A";renderAll();`);
-  const pick = openPicker();
+  const pick = openPicker(turret.id);
   const order = [...pick.matchAll(/data-part="([^"]+)"/g)].map((m) => m[1]);
   record(order.length > 40, `the ${mode} list rendered its parts`,
     `${order.length} rendered`);
@@ -128,7 +140,7 @@ for (const mode of ["head", "ir", "em", "mass"]) {
     /* EVERYTHING below the pinned entry, not the first handful: two sorts can
        agree on their opening rows and still be different orders, and a check
        that only looked at five would call that a failure. */
-    seen[mode] = [...openPicker().matchAll(/data-part="([^"]+)"/g)]
+    seen[mode] = [...openPicker(turret.id).matchAll(/data-part="([^"]+)"/g)]
       .map((m) => m[1]).slice(1).join(",");
   }
   record(seen.head !== seen.mass,

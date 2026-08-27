@@ -227,10 +227,18 @@ for (const nm of SHIPS_UNDER_TEST) {
        it. Asserted on what the page must say rather than on the old wording,
        so this reads as a requirement and not as a spelling. */
     const hint = el("cc-labelcount").innerHTML || "";
-    record(/\d+\s+(?:has|have)\s+no room/.test(hint),
-      "and says why in a number a reader can check, rather than simply "
-      + "showing nothing", hint.replace(/<[^>]*>/g, " ").trim());
-    record(/show all labels anyway/.test(hint),
+    /* H1 CHANGED WHAT THIS LINE HAS TO SAY, and the requirement behind it is
+       unchanged: the page must never simply show nothing without saying so,
+       and must always offer the way past it.
+       It used to have to state a crowding number, because crowding was why
+       labels were down. Labels are now down BY DESIGN - the hull shows nothing
+       until it is asked and a name arrives on hover - so a crowding number
+       there would blame the hull for a decision the design made. The line says
+       what is true instead, and still offers the control. */
+    record(/names on hover/.test(hint),
+      "and says what it is doing instead of simply showing nothing",
+      hint.replace(/<[^>]*>/g, " ").trim());
+    record(/show all labels/.test(hint),
       "and offers the way past it");
     H.dispatch(["#cc-lbl-toggle"]);
     record(Number(el("cc-labels")["data-shown"] || 0) > 10,
@@ -311,14 +319,37 @@ console.log("\n--- 5. labels are there before anything is clicked ---");
     record(g("__loadCb") !== null,
       "the page asked the viewer to load and kept the callback");
 
+    /* E8's GUARANTEE, AND IT MUST NOT BE TESTED BY CALLING THE THING THAT IS
+       MISSING. The defect --mutate-latelabels plants is that onLoad no longer
+       renders the labels, so they wait for the next renderAll(). If this asks
+       for labels and then calls renderLabels() itself, it draws them by hand
+       and the planted defect passes - which is exactly what happened on the
+       first attempt at inverting this section for H1.
+       So the request is made BEFORE the model arrives, and then nothing is
+       called: whether they are on screen afterwards is entirely the load
+       path's doing. */
+    run("allLabels=true;");
     /* The model arrives. NOTHING IS CLICKED. */
     run(`_view.current={};
       __loadCb.onLoad({seconds:0.2,size:{x:1,y:1,z:1}});`);
-    const afterLoad = el("cc-labels").innerHTML || "";
+    const lateHtml = el("cc-labels").innerHTML || "";
+    record(/class="hp/.test(lateHtml)
+      && Number(el("cc-labels")["data-shown"] || 0) > 0,
+      "and with labels asked for, the model's own arrival draws them - "
+      + "nothing else had to run", `${el("cc-labels")["data-shown"]} labels`);
+    run("allLabels=null;renderLabels();");
+    run(`_view.current={};
+      __loadCb.onLoad({seconds:0.2,size:{x:1,y:1,z:1}});`);
     const shownAfterLoad = Number(el("cc-labels")["data-shown"] || 0);
-    record(/class="hp/.test(afterLoad) && shownAfterLoad > 0,
-      "and the labels are drawn the moment the model arrives, with no "
-      + "interaction at all", `${shownAfterLoad} labels`);
+    record(shownAfterLoad === 0,
+      "and the model arrives with NOTHING drawn over it - H1's whole point",
+      `${shownAfterLoad} labels`);
+    /* PUT IT BACK. allLabels is shared mutable state and the section below
+       measures whether selecting and dismissing a marker RETURNS the label
+       state to where it started - which is meaningless if this assertion left
+       the page in a different state than it found it. Caught by that section
+       reporting 0 -> 4 -> 4. */
+    run("allLabels=null;renderLabels();");
 
     /* AND BACK AGAIN. Select a marker, dismiss it, and the state must be what
        it was - not what the selection left behind. */
