@@ -101,3 +101,16 @@ citizen-collector/.dev.vars
 citizen-collector/collector-destination.json
 citizen-collector/collector-last-send.txt
 citizen-collector/*.rolledback
+
+# Decoded hull vertices (data-layer/derived/hull-geometry/) - ~380 MB of point
+# clouds regenerated on demand by testing/_src/decode_glb_points.js from the
+# models already in testing/_deploy. An input to the hardpoint matcher controls
+# via CC_GEO_DIR, not source, and it is derived from data that is itself
+# gitignored.
+data-layer/derived/hull-geometry/
+
+# F3: Playwright's Chromium, pinned INSIDE the repo by PLAYWRIGHT_BROWSERS_PATH
+# so the install honours "under checks/" rather than writing to the user's
+# AppData. 703 MB of browser is not a source artifact - test-only, never
+# shipped, and _deploy/ contains no part of it.
+checks/.playwright-browsers/

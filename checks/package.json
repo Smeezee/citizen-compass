@@ -1,0 +1,13 @@
+{
+  "name": "citizen-compass-browser-checks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Test-only. Playwright and a headless Chromium for the real-browser controls. NEVER shipped - _deploy/ contains no part of this, exactly as testing/_src/package.json already works. Authorised by docs/DECISION_the-checks-get-a-real-browser-2026-08-26.md.",
+  "scripts": {
+    "install-browser": "playwright install chromium",
+    "camera": "node _verify_camera_framing.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}
