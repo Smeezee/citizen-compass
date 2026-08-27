@@ -1,0 +1,38 @@
+{
+ "dataset": "model-fingerprints",
+ "produced_by": "C3 (Cowork), 2026-08-14",
+ "files": {
+  "model_fingerprints.json": {
+   "models": 235,
+   "key": "model file name without .glb, as it appears in testing/_deploy/models"
+  },
+  "_raw_hashes.tsv": {
+   "what": "sha256 + byte size for all 235 .glb, computed on Sleven's machine",
+   "why_kept": "provenance. The hashes in model_fingerprints.json are derived from this file and nothing else."
+  },
+  "_jsonchunks.tgz": {
+   "what": "the glTF JSON chunk (chunk 0 only, no binary) of the 61 models that had no renderer-extracted geometry",
+   "why_kept": "provenance for the 61 gltf-accessor measurements. 8 KB compressed. Safe to bin once the fingerprints are trusted."
+  }
+ },
+ "what_this_is": "A content fingerprint per model: sha256, byte size, vertex count, and the hull's own bounding box, plus the placement frame and scale where the ship was placed.",
+ "what_this_is_FOR": "Detecting that a model CHANGED. A ship rework changes the hull. If a .glb stops matching its fingerprint here, that is evidence of a rework arriving before, or instead of, an announcement. It is the one Constellation-rework tripwire nobody outside this project can run.",
+ "what_this_is_NOT": "Not a claim about which ships CIG intends to rework. It records what the models are today so a future comparison means something.",
+ "units": "bbox and extent are in the MODEL's own units, which are NOT consistent across the library. scale_class and model_units_per_metre say which. Never compare extents across ships without them.",
+ "measurement": {
+  "renderer": 174,
+  "gltf-accessor": 61,
+  "cross_check": "the four Carrack files were measured two by each method and agree to 0.002 units, which is the only calibration point available and the reason both methods sit in one table"
+ },
+ "counts": {
+  "files": 235,
+  "distinct_sha256": 213,
+  "distinct_geometry": 211,
+  "byte_identical_groups": 16,
+  "geometry_identical_groups": 18
+ },
+ "consumers": [
+  "none yet - this is a baseline, and the comparison job is not written"
+ ],
+ "next": "an auditor that re-fingerprints the library and flags any model whose sha256 or vertex count moved. Flag only, per the auditor rule."
+}

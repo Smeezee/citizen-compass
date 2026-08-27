@@ -1,0 +1,988 @@
+{
+ "generated_by": "build_hardpoint_placement.py",
+ "source_transforms": "data-layer/derived/hardpoint-transforms",
+ "dimensions": "data-layer/external-sources/scunpacked-data/snapshots/20260827T030607Z/ships.json",
+ "model_map": "testing/_deploy/loadout_model.gen.js",
+ "frame": "GLB units. X lateral, Y up, forward is -Z.",
+ "scale_rule": "CIG's Length against the hull box's fore/aft extent. Width and Height are recorded as diagnostics only - CIG measures them with gear deployed and the GLB is one stowed pose.",
+ "acceptance": "every EXTERIOR mount inside the hull box laterally and vertically, 6% margin. The fore/aft axis is where the scale came from and is deliberately NOT tested - that would be marking our own homework. A transposed axis puts mounts outside sideways.",
+ "counts": {
+  "converted": 75,
+  "passed": 70,
+  "failed": 5,
+  "skipped": 36
+ },
+ "ships": [
+  {
+   "class": "AEGS_Eclipse",
+   "hardpoints": 59,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.1953,
+   "spread": 0.4989,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "AEGS_Gladius",
+   "hardpoints": 64,
+   "exterior_mounts": 12,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0632,
+   "spread": 0.0786,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "AEGS_Hammerhead",
+   "hardpoints": 97,
+   "exterior_mounts": 14,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0318,
+   "spread": 0.0607,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "AEGS_Reclaimer",
+   "hardpoints": 163,
+   "exterior_mounts": 10,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0118,
+   "spread": 0.2509,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "AEGS_Redeemer",
+   "hardpoints": 100,
+   "exterior_mounts": 27,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0061,
+   "spread": 0.0582,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "AEGS_Sabre",
+   "hardpoints": 63,
+   "exterior_mounts": 11,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0259,
+   "spread": 0.128,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "AEGS_Sabre_Firebird",
+   "hardpoints": 67,
+   "exterior_mounts": 7,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0374,
+   "spread": 0.6254,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "AEGS_Sabre_Peregrine",
+   "hardpoints": 63,
+   "exterior_mounts": 5,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0373,
+   "spread": 0.6215,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "AEGS_Vanguard",
+   "hardpoints": 100,
+   "exterior_mounts": 21,
+   "exterior_outside": 0,
+   "outside_any": 1,
+   "scale": 1.2499,
+   "spread": 0.1806,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Arrow",
+   "hardpoints": 61,
+   "exterior_mounts": 10,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9695,
+   "spread": 0.5172,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Carrack",
+   "hardpoints": 137,
+   "exterior_mounts": 25,
+   "exterior_outside": 0,
+   "outside_any": 19,
+   "scale": 1.0034,
+   "spread": 0.1734,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Gladiator",
+   "hardpoints": 65,
+   "exterior_mounts": 11,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0175,
+   "spread": 0.083,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Hawk",
+   "hardpoints": 73,
+   "exterior_mounts": 12,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.3515,
+   "spread": 0.4498,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Hornet_F7A_MK1",
+   "hardpoints": 68,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.2508,
+   "spread": 0.2316,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Hornet_F7CM",
+   "hardpoints": 72,
+   "exterior_mounts": 10,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.1696,
+   "spread": 0.1297,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Hurricane",
+   "hardpoints": 66,
+   "exterior_mounts": 12,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.124,
+   "spread": 0.3755,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Paladin",
+   "hardpoints": 96,
+   "exterior_mounts": 8,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9998,
+   "spread": 0.1743,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ANVL_Valkyrie",
+   "hardpoints": 88,
+   "exterior_mounts": 19,
+   "exterior_outside": 3,
+   "outside_any": 9,
+   "scale": 1.0529,
+   "spread": 0.0716,
+   "acceptance": false,
+   "note": "3 of 19 exterior mounts land outside the hull"
+  },
+  {
+   "class": "ARGO_MOLE",
+   "hardpoints": 103,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0651,
+   "spread": 0.1074,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ARGO_RAFT",
+   "hardpoints": 79,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9777,
+   "spread": 0.0451,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ARGO_SRV",
+   "hardpoints": 67,
+   "exterior_mounts": 5,
+   "exterior_outside": 2,
+   "outside_any": 4,
+   "scale": 1.1414,
+   "spread": 0.2254,
+   "acceptance": false,
+   "note": "2 of 5 exterior mounts land outside the hull"
+  },
+  {
+   "class": "BANU_Defender",
+   "hardpoints": 79,
+   "exterior_mounts": 11,
+   "exterior_outside": 2,
+   "outside_any": 8,
+   "scale": 0.6483,
+   "spread": 1.2433,
+   "acceptance": false,
+   "note": "2 of 11 exterior mounts land outside the hull"
+  },
+  {
+   "class": "CNOU_Hoverquad",
+   "hardpoints": 52,
+   "exterior_mounts": 3,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.1918,
+   "spread": 0.4604,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "CNOU_Nomad",
+   "hardpoints": 94,
+   "exterior_mounts": 12,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0705,
+   "spread": 0.2579,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "CRUS_Star_Runner",
+   "hardpoints": 110,
+   "exterior_mounts": 12,
+   "exterior_outside": 0,
+   "outside_any": 1,
+   "scale": 1.3568,
+   "spread": 0.3923,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "DRAK_Buccaneer",
+   "hardpoints": 82,
+   "exterior_mounts": 4,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.1486,
+   "spread": 0.4473,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "DRAK_Caterpillar",
+   "hardpoints": 147,
+   "exterior_mounts": 14,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9995,
+   "spread": 0.0165,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "DRAK_Corsair",
+   "hardpoints": 143,
+   "exterior_mounts": 10,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.1272,
+   "spread": 0.5083,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "DRAK_Cutter",
+   "hardpoints": 106,
+   "exterior_mounts": 12,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0054,
+   "spread": 0.2508,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "DRAK_Dragonfly",
+   "hardpoints": 55,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 1,
+   "scale": 1.0794,
+   "spread": 0.3607,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "DRAK_Herald",
+   "hardpoints": 78,
+   "exterior_mounts": 9,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0527,
+   "spread": 0.0293,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "DRAK_Vulture",
+   "hardpoints": 88,
+   "exterior_mounts": 7,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 2.641,
+   "spread": 0.0206,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ESPR_Prowler",
+   "hardpoints": 142,
+   "exterior_mounts": 23,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0238,
+   "spread": 0.1475,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ESPR_Prowler_Utility",
+   "hardpoints": 119,
+   "exterior_mounts": 11,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0239,
+   "spread": 0.1661,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ESPR_Talon",
+   "hardpoints": 74,
+   "exterior_mounts": 7,
+   "exterior_outside": 0,
+   "outside_any": 1,
+   "scale": 1.0227,
+   "spread": 0.7929,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "GAMA_Syulen",
+   "hardpoints": 90,
+   "exterior_mounts": 8,
+   "exterior_outside": 0,
+   "outside_any": 1,
+   "scale": 1.4056,
+   "spread": 0.2795,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "GLSN_Shiv",
+   "hardpoints": 118,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0495,
+   "spread": 0.2453,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "KRIG_P52_Merlin",
+   "hardpoints": 65,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0027,
+   "spread": 0.3771,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "MISC_Prospector",
+   "hardpoints": 80,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 1,
+   "scale": 1.1184,
+   "spread": 0.0753,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "MISC_Razor",
+   "hardpoints": 61,
+   "exterior_mounts": 8,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0911,
+   "spread": 0.2162,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "MISC_Reliant",
+   "hardpoints": 90,
+   "exterior_mounts": 11,
+   "exterior_outside": 2,
+   "outside_any": 12,
+   "scale": 1.8473,
+   "spread": 0.9172,
+   "acceptance": false,
+   "note": "2 of 11 exterior mounts land outside the hull"
+  },
+  {
+   "class": "MISC_Starfarer",
+   "hardpoints": 107,
+   "exterior_mounts": 7,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0086,
+   "spread": 0.0832,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ORIG_100i",
+   "hardpoints": 75,
+   "exterior_mounts": 8,
+   "exterior_outside": 0,
+   "outside_any": 5,
+   "scale": 1.0866,
+   "spread": 0.7201,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ORIG_400i",
+   "hardpoints": 88,
+   "exterior_mounts": 11,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9455,
+   "spread": 0.3046,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ORIG_600i",
+   "hardpoints": 98,
+   "exterior_mounts": 13,
+   "exterior_outside": 0,
+   "outside_any": 4,
+   "scale": 0.999,
+   "spread": 0.0267,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ORIG_890Jump",
+   "hardpoints": 122,
+   "exterior_mounts": 14,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0218,
+   "spread": 0.1852,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ORIG_M50",
+   "hardpoints": 64,
+   "exterior_mounts": 9,
+   "exterior_outside": 0,
+   "outside_any": 7,
+   "scale": 1.0491,
+   "spread": 0.3568,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "ORIG_X1",
+   "hardpoints": 66,
+   "exterior_mounts": 2,
+   "exterior_outside": 0,
+   "outside_any": 6,
+   "scale": 0.9816,
+   "spread": 0.5312,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "RSI_Scorpius",
+   "hardpoints": 79,
+   "exterior_mounts": 15,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.3099,
+   "spread": 0.4385,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "VNCL_Scythe",
+   "hardpoints": 65,
+   "exterior_mounts": 10,
+   "exterior_outside": 1,
+   "outside_any": 2,
+   "scale": 1.0731,
+   "spread": 0.3192,
+   "acceptance": false,
+   "note": "1 of 10 exterior mounts land outside the hull"
+  },
+  {
+   "class": "XIAN_Nox",
+   "hardpoints": 67,
+   "exterior_mounts": 5,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9977,
+   "spread": 0.2315,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "XIAN_Scout",
+   "hardpoints": 70,
+   "exterior_mounts": 5,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 2.9755,
+   "spread": 0.8994,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "XNAA_SanTokYai",
+   "hardpoints": 86,
+   "exterior_mounts": 13,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 113.3766,
+   "spread": 0.1178,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "aegs_retaliator",
+   "hardpoints": 128,
+   "exterior_mounts": 16,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0119,
+   "spread": 0.0882,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "anvl_asgard",
+   "hardpoints": 106,
+   "exterior_mounts": 23,
+   "exterior_outside": 0,
+   "outside_any": 2,
+   "scale": 0.9885,
+   "spread": 0.2242,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "anvl_hornet_f7cm_mk2",
+   "hardpoints": 73,
+   "exterior_mounts": 12,
+   "exterior_outside": 0,
+   "outside_any": 4,
+   "scale": 1.0051,
+   "spread": 0.2428,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "anvl_terrapin",
+   "hardpoints": 82,
+   "exterior_mounts": 5,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0155,
+   "spread": 0.0631,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "crus_intrepid",
+   "hardpoints": 82,
+   "exterior_mounts": 7,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0015,
+   "spread": 0.1421,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "drak_clipper",
+   "hardpoints": 88,
+   "exterior_mounts": 14,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9729,
+   "spread": 0.9844,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "drak_golem_ox",
+   "hardpoints": 66,
+   "exterior_mounts": 9,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0062,
+   "spread": 0.4469,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "drak_ironclad",
+   "hardpoints": 168,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9771,
+   "spread": 0.2138,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "gama_railen",
+   "hardpoints": 97,
+   "exterior_mounts": 14,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.2389,
+   "spread": 0.3862,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "misc_fortune",
+   "hardpoints": 94,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9069,
+   "spread": 0.4598,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "misc_hull_b",
+   "hardpoints": 159,
+   "exterior_mounts": 8,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.4417,
+   "spread": 0.5896,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "misc_hull_c",
+   "hardpoints": 142,
+   "exterior_mounts": 10,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.8727,
+   "spread": 0.3075,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "misc_starlancer_tac",
+   "hardpoints": 109,
+   "exterior_mounts": 21,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 107.7448,
+   "spread": 0.1463,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "mrai_guardian",
+   "hardpoints": 80,
+   "exterior_mounts": 10,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.97,
+   "spread": 0.0585,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "mrai_guardian_mx",
+   "hardpoints": 78,
+   "exterior_mounts": 9,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0636,
+   "spread": 0.2022,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "mrai_pulse",
+   "hardpoints": 56,
+   "exterior_mounts": 4,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.2743,
+   "spread": 1.4709,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "rsi_meteor",
+   "hardpoints": 70,
+   "exterior_mounts": 14,
+   "exterior_outside": 0,
+   "outside_any": 3,
+   "scale": 1.0116,
+   "spread": 0.1448,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "rsi_perseus",
+   "hardpoints": 161,
+   "exterior_mounts": 9,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 0.9948,
+   "spread": 0.2679,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "rsi_polaris",
+   "hardpoints": 187,
+   "exterior_mounts": 18,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 2.8902,
+   "spread": 0.1253,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "rsi_salvation",
+   "hardpoints": 64,
+   "exterior_mounts": 6,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.1207,
+   "spread": 0.0916,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "vncl_blade",
+   "hardpoints": 59,
+   "exterior_mounts": 10,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0261,
+   "spread": 0.2193,
+   "acceptance": true,
+   "note": ""
+  },
+  {
+   "class": "vncl_stinger",
+   "hardpoints": 80,
+   "exterior_mounts": 17,
+   "exterior_outside": 0,
+   "outside_any": 0,
+   "scale": 1.0398,
+   "spread": 0.0916,
+   "acceptance": true,
+   "note": ""
+  }
+ ],
+ "skipped": [
+  {
+   "class": "AEGS_Avenger",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "ANVL_Hornet",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "ANVL_Hornet_F7A",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "ANVL_Hornet_F7C_R",
+   "why": "no hardpoint nodes"
+  },
+  {
+   "class": "ANVL_Hornet_F7C_S",
+   "why": "no hardpoint nodes"
+  },
+  {
+   "class": "ANVL_Pisces",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "AR_Omnisky_VIIII_laser_cannon",
+   "why": "no hardpoint nodes"
+  },
+  {
+   "class": "CNOU_Mustang",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "CRUS_Starfighter",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "CRUS_Starlifter",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "GLSN_Basher",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "MISC_Fury",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "MISC_Prospector_Drill_Arm",
+   "why": "no hardpoint nodes"
+  },
+  {
+   "class": "ORIG_85x",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "RSI_Aurora",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "RSI_Bengal",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "RSI_Constellation",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "RSI_Mantis",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "RSI_Zeus",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "Refuel_Arm",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "aegs_hammerhead_gs",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "aegs_tiburon",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "argo_moth",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "crus_spirit",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "drak_command_module",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "drak_pitbull",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "elevator_600i",
+   "why": "no hardpoint nodes"
+  },
+  {
+   "class": "gama_tyilui",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "krig_s65_stingray",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "misc_starfarer_console_fuelpods",
+   "why": "no hardpoint nodes"
+  },
+  {
+   "class": "misc_starlancer",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "misc_starlite",
+   "why": "no model in the page's map"
+  },
+  {
+   "class": "recreation",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "rsi_apollo",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "rsi_aurora_gs",
+   "why": "no ships.json row for this class"
+  },
+  {
+   "class": "rsi_aurora_mk2",
+   "why": "no model in the page's map"
+  }
+ ]
+}

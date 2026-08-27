@@ -1,0 +1,515 @@
+[
+ {
+  "our_name": "85X",
+  "our_class": "ORIG_85X",
+  "our_stem": "orig_85x",
+  "our_manufacturer": "Origin Jumpworks",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "model folder mapped, no .glb built",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "dac63e16-788f-4f4d-ba2f-17fb00fbef42",
+   "name": "85X",
+   "slug": "orig-85x",
+   "scIdentifier": "orig_85x",
+   "rsiSlug": "85x",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2025-12-03T21:22:38Z"
+  },
+  "holo": {
+   "file_name": "holo-v2-52f6d287-d5ce-4022-b798-eabed34386d5.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImM5M2Y4ZWQ4LTY1Y2EtNGNiOS1iZWU1LTkzOWYxMDJhZmYxMiIsInB1ciI6ImJsb2JfaWQifX0=--b7dca0ae434c9012a95a8fd58c4e79323b833f42/holo-v2-52f6d287-d5ce-4022-b798-eabed34386d5.gltf/",
+   "size_bytes": 6341223,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:46:57.649+02:00"
+  }
+ },
+ {
+  "our_name": "Arrastra",
+  "our_class": null,
+  "our_stem": null,
+  "our_manufacturer": "Roberts Space Industries",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no game file",
+  "join_rule": "name",
+  "fleetyards": {
+   "id": "34612a08-d45a-40d4-ad21-d3c02fd0ec14",
+   "name": "Arrastra",
+   "slug": "rsi-arrastra",
+   "scIdentifier": "rsi_arrastra",
+   "rsiSlug": "arrastra",
+   "productionStatus": "in-concept",
+   "lastUpdatedAt": "2025-12-03T21:21:58Z"
+  },
+  "holo": {
+   "file_name": "holo-46f55b6e-c771-48cf-bb84-fd4a82df0677.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImMxZGQ5OWMzLTFmOWItNGFkZi1hODBkLWQ0NDAyYzhmMTZjYyIsInB1ciI6ImJsb2JfaWQifX0=--db204acf1cd75aaf69cbccdcca7a21d395052669/holo-46f55b6e-c771-48cf-bb84-fd4a82df0677.gltf/",
+   "size_bytes": 45586707,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:34:35.988+02:00"
+  }
+ },
+ {
+  "our_name": "Aurora Mk II",
+  "our_class": "RSI_Aurora_Mk2",
+  "our_stem": "rsi_aurora_mk2",
+  "our_manufacturer": "Roberts Space Industries",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "ba7408b9-06fe-4089-b51b-8a542528ebdc",
+   "name": "Aurora Mk II",
+   "slug": "rsi-aurora-mk-ii",
+   "scIdentifier": "rsi_aurora_mk2",
+   "rsiSlug": "aurora-mk-ii",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-05-27T18:00:28Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImZlYjgwMjI4LTAzN2MtNGQyYy04OWQzLTU0NmQxMDYzOWE5ZiIsInB1ciI6ImJsb2JfaWQifX0=--18180187cb9430e4bd97c53fea48c6b2a0729bf4/holo.gltf/",
+   "size_bytes": 9623039,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-04-10T21:00:47.950+02:00"
+  }
+ },
+ {
+  "our_name": "Aurora SE",
+  "our_class": "RSI_Aurora_GS_SE",
+  "our_stem": "rsi_aurora_gs_se",
+  "our_manufacturer": "Roberts Space Industries",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier",
+  "fleetyards": {
+   "id": "025e4428-e839-404f-818d-2b252de31ed8",
+   "name": "Aurora Mk I SE",
+   "slug": "rsi-aurora-mk-i-se",
+   "scIdentifier": "rsi_aurora_gs_se",
+   "rsiSlug": "aurora-mk-i-se",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-06-09T14:39:49Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjIzMzg1MWJiLTJhYWUtNDU4NC04MmRkLTE0ZTRhNjk5ZWZhNyIsInB1ciI6ImJsb2JfaWQifX0=--b76359066decedac0df6a266620d2aadbd1b7eb1/holo.gltf/",
+   "size_bytes": 6038504,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-04-10T21:02:37.281+02:00"
+  }
+ },
+ {
+  "our_name": "Basher",
+  "our_class": "GLSN_Basher",
+  "our_stem": "glsn_basher",
+  "our_manufacturer": "Grey's Market",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "name",
+  "fleetyards": {
+   "id": "c97e6151-4849-4c63-bfae-04c5ca0d441a",
+   "name": "Basher",
+   "slug": "grey-basher",
+   "scIdentifier": "grey_basher",
+   "rsiSlug": "basher",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-08-05T14:13:42Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjYyYTNkYzA5LWUwZjgtNDg3NC04Y2E1LWJmMTE5YzNkNjY0ZiIsInB1ciI6ImJsb2JfaWQifX0=--c6e579a05e3aa87535126656820aa8e2326dba61/holo.gltf/",
+   "size_bytes": 860946,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-08-06T19:21:21.231+02:00"
+  }
+ },
+ {
+  "our_name": "Fury",
+  "our_class": "MISC_Fury",
+  "our_stem": "misc_fury",
+  "our_manufacturer": "Mirai",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "model folder mapped, no .glb built",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "92cd80e2-18fb-4268-bca6-e241946f8aca",
+   "name": "Fury",
+   "slug": "mrai-fury",
+   "scIdentifier": "misc_fury",
+   "rsiSlug": "fury",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-05-27T18:01:13Z"
+  },
+  "holo": {
+   "file_name": "holo-fly-v4-d311ce4d-661f-49a9-a009-b85677710f33.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjI5MTYyZWY3LTJkOGUtNDkxMi04MTM3LWY5YzQ4YmM3MDMwMiIsInB1ciI6ImJsb2JfaWQifX0=--daf549e73958258cd03a0bb00469effad59a4d98/holo-fly-v4-d311ce4d-661f-49a9-a009-b85677710f33.gltf/",
+   "size_bytes": 18643337,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:42:07.014+02:00"
+  }
+ },
+ {
+  "our_name": "Hermes",
+  "our_class": "RSI_Hermes",
+  "our_stem": "rsi_hermes",
+  "our_manufacturer": "Roberts Space Industries",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "f7ac61be-43e7-4bea-bcd2-15d6fc5048cb",
+   "name": "Hermes",
+   "slug": "rsi-hermes",
+   "scIdentifier": "rsi_hermes",
+   "rsiSlug": "hermes",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-07-01T13:43:19Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImQ4MGZkNTUwLTQ3N2UtNGE4Yi05MWJiLWE3YjVkNzVlOTJlOSIsInB1ciI6ImJsb2JfaWQifX0=--3ca5ec14382d2f7e2cb57c1dd4769dea7ef5e5c2/holo.gltf/",
+   "size_bytes": 17647793,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-04-10T21:04:31.320+02:00"
+  }
+ },
+ {
+  "our_name": "M80",
+  "our_class": "ORIG_m80",
+  "our_stem": "orig_m80",
+  "our_manufacturer": "Origin Jumpworks",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "30a4f13f-0b8e-49b5-a877-fe2b2db40849",
+   "name": "M80",
+   "slug": "orig-m80",
+   "scIdentifier": "orig_m80",
+   "rsiSlug": "m80",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-05-27T18:00:27Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImFmMGUyNTBmLWYwNTUtNGU3OC04ZWQyLWEzMGE0MzM1OGU4NyIsInB1ciI6ImJsb2JfaWQifX0=--21e82fad6b5974527c220487ac9f26a06b4ab499/holo.gltf/",
+   "size_bytes": 13450618,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-05-16T21:11:59.747+02:00"
+  }
+ },
+ {
+  "our_name": "Mantis",
+  "our_class": "RSI_Mantis",
+  "our_stem": "rsi_mantis",
+  "our_manufacturer": "Roberts Space Industries",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "model folder mapped, no .glb built",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "4ccc346d-f559-42fd-91a9-c6765a2b0ca3",
+   "name": "Mantis",
+   "slug": "rsi-mantis",
+   "scIdentifier": "rsi_mantis",
+   "rsiSlug": "mantis",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-05-27T18:01:41Z"
+  },
+  "holo": {
+   "file_name": "holo-5bb741e1-3489-4bf8-bcd9-0310f8e107b3.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImZlZTA5MTFlLTE1NDctNGExZS05MGExLTZlMDQyNWFhYTE2NyIsInB1ciI6ImJsb2JfaWQifX0=--f287d2c19d18d52e62599b771a6636cbeb64f409/holo-5bb741e1-3489-4bf8-bcd9-0310f8e107b3.gltf/",
+   "size_bytes": 1283668,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:36:56.935+02:00"
+  }
+ },
+ {
+  "our_name": "Merchantman",
+  "our_class": null,
+  "our_stem": null,
+  "our_manufacturer": "Banu (Souli)",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no game file",
+  "join_rule": "name",
+  "fleetyards": {
+   "id": "f1e967a0-3ca8-4eef-b022-b5e38b964051",
+   "name": "Merchantman",
+   "slug": "banu-merchantman",
+   "scIdentifier": "banu_merchantman",
+   "rsiSlug": "merchantman",
+   "productionStatus": "in-concept",
+   "lastUpdatedAt": "2025-12-03T21:40:05Z"
+  },
+  "holo": {
+   "file_name": "holo-bdc42db4-6ab3-4361-8338-c948e06b23c5.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjEyZjllOGY3LWJiNTktNDNmNS04MDg1LTQ0YTA3NjFkZDhhNiIsInB1ciI6ImJsb2JfaWQifX0=--c0b8fa2eaac2d76be398f49bc0602ed12817e022/holo-bdc42db4-6ab3-4361-8338-c948e06b23c5.gltf/",
+   "size_bytes": 8198540,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:48:42.592+02:00"
+  }
+ },
+ {
+  "our_name": "MOTH",
+  "our_class": "ARGO_MOTH",
+  "our_stem": "argo_moth",
+  "our_manufacturer": "Argo Astronautics",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "de2fe5da-67c6-4b10-90cd-72e68a9b4ece",
+   "name": "MOTH",
+   "slug": "argo-moth",
+   "scIdentifier": "argo_moth",
+   "rsiSlug": "moth",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-07-13T11:50:07Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjIzZjZjNzY5LTc0ODgtNGU3Yy1iYTU4LTI4NDU5MGY4NzBiZiIsInB1ciI6ImJsb2JfaWQifX0=--e620d094c2ba1d1688cb849a3f63b5b6c19971e0/holo.gltf/",
+   "size_bytes": 22616822,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-04-10T21:06:11.731+02:00"
+  }
+ },
+ {
+  "our_name": "Odin",
+  "our_class": null,
+  "our_stem": null,
+  "our_manufacturer": "Anvil Aerospace",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no game file",
+  "join_rule": "name",
+  "fleetyards": {
+   "id": "ad2514af-a6d7-4139-9640-8c10d1140929",
+   "name": "Odin",
+   "slug": "anvl-odin",
+   "scIdentifier": "anvl_odin",
+   "rsiSlug": "odin",
+   "productionStatus": "in-concept",
+   "lastUpdatedAt": "2026-05-24T14:55:06Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImE3MTFjOWEzLWJlODUtNGI3Ni1iZjRlLWNkYTczMzNjNjk3NyIsInB1ciI6ImJsb2JfaWQifX0=--d47617ad3d9dcd46e6ed42b83ccc56634363d916/holo.gltf/",
+   "size_bytes": 6712084,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-05-09T14:56:27.909+02:00"
+  }
+ },
+ {
+  "our_name": "Pitbull",
+  "our_class": "DRAK_Pitbull",
+  "our_stem": "drak_pitbull",
+  "our_manufacturer": "Drake Interplanetary",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "a1ac4031-d18e-48df-9bfe-96df1241abe1",
+   "name": "Pitbull",
+   "slug": "drak-pitbull",
+   "scIdentifier": "drak_pitbull",
+   "rsiSlug": "pitbull",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-05-27T18:00:24Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImM2MGI2NTljLWM2NGItNDgzZi1hM2YwLTg0M2ZjYzM4NTBhMyIsInB1ciI6ImJsb2JfaWQifX0=--ccdb92e7fc65e2ab26072779725a989a0897013c/holo.gltf/",
+   "size_bytes": 12076310,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-05-14T23:39:20.612+02:00"
+  }
+ },
+ {
+  "our_name": "PTV",
+  "our_class": "GRIN_PTV",
+  "our_stem": "grin_ptv",
+  "our_manufacturer": "Greycat Industrial",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "model folder mapped, no .glb built",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "558e63fb-3478-44a1-b2bf-4d6d02458615",
+   "name": "PTV",
+   "slug": "grin-ptv",
+   "scIdentifier": "grin_ptv",
+   "rsiSlug": "ptv",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-04-08T19:48:22Z"
+  },
+  "holo": {
+   "file_name": "holo-d2fcb7e7-6dc6-41cc-9520-1e050c17caf6.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjUwMmY5Zjc1LTUxZWQtNDJiMy1hOTIyLTVjZmM2ZDg2ZDE0MiIsInB1ciI6ImJsb2JfaWQifX0=--095c80a8e9851351863c2563b825180a7d784dd2/holo-d2fcb7e7-6dc6-41cc-9520-1e050c17caf6.gltf/",
+   "size_bytes": 597151,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:37:35.030+02:00"
+  }
+ },
+ {
+  "our_name": "Starlite",
+  "our_class": "MISC_Starlite",
+  "our_stem": "misc_starlite",
+  "our_manufacturer": "MISC",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "78d37cc1-223e-4c44-9349-095fd2051e5d",
+   "name": "Starlite",
+   "slug": "misc-starlite",
+   "scIdentifier": "misc_starlite",
+   "rsiSlug": "starlite",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-05-27T18:00:23Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjFiY2ZkZDE5LTA1NzItNDViMS04Y2JmLTZmMjY5MWFiNTYxZCIsInB1ciI6ImJsb2JfaWQifX0=--0c8a1a019aa0a5159a3a734acb6b52dc636b9227/holo.gltf/",
+   "size_bytes": 20104313,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-05-18T23:48:58.605+02:00"
+  }
+ },
+ {
+  "our_name": "Tiburon",
+  "our_class": "AEGS_Tiburon",
+  "our_stem": "aegs_tiburon",
+  "our_manufacturer": "Aegis Dynamics",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "e37344d6-fb90-41d0-9e31-9acb09c44eb5",
+   "name": "Tiburon",
+   "slug": "aegs-tiburon",
+   "scIdentifier": "aegs_tiburon",
+   "rsiSlug": "tiburon",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-05-27T18:00:26Z"
+  },
+  "holo": {
+   "file_name": "holo.glb",
+   "extension": "glb",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImZkMzU2MGVjLTAxMTYtNDg4Zi1hODUzLThjZjVkNGMyODJjZCIsInB1ciI6ImJsb2JfaWQifX0=--e17fd1b214503e6096225708776f759157c625c4/holo.glb/",
+   "size_bytes": 16749180,
+   "content_type": "model/gltf-binary",
+   "uploaded_at": "2026-05-22T10:37:11.946+02:00"
+  }
+ },
+ {
+  "our_name": "Tyilui",
+  "our_class": "GAMA_Tyilui",
+  "our_stem": "gama_tyilui",
+  "our_manufacturer": "Gatac Manufacture",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "25e7c419-6d43-4e60-a682-bfba1f456354",
+   "name": "Tyilui",
+   "slug": "gama-tyilui",
+   "scIdentifier": "gama_tyilui",
+   "rsiSlug": "tyilui",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-06-17T14:40:57Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjZlZTc1ODgxLWJjYzQtNDEyZi1iZDk2LWFlMDI2ZTYyNzVlNSIsInB1ciI6ImJsb2JfaWQifX0=--08b1116db1f7d72ed47112604180235167db350c/holo.gltf/",
+   "size_bytes": 36159882,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-08-06T18:57:54.167+02:00"
+  }
+ },
+ {
+  "our_name": "UTV",
+  "our_class": "GRIN_UTV",
+  "our_stem": "grin_utv",
+  "our_manufacturer": "Greycat Industrial",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier+name",
+  "fleetyards": {
+   "id": "ff024138-b917-4c69-9bb8-6a9f863c8587",
+   "name": "UTV",
+   "slug": "grin-utv",
+   "scIdentifier": "grin_utv",
+   "rsiSlug": "utv",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2026-04-08T13:57:54Z"
+  },
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjVlNGE5Y2NjLTBiOTktNGE0OS1iMGY2LWEwOTY0YjYwNDcxNiIsInB1ciI6ImJsb2JfaWQifX0=--b41ca9f1c010fe793f4084419e1ae912b40f533c/holo.gltf/",
+   "size_bytes": 5967033,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-04-10T21:12:23.768+02:00"
+  }
+ },
+ {
+  "our_name": "600i Executive Edition",
+  "our_class": "ORIG_600i_Executive_Edition",
+  "our_stem": "orig_600i_executive_edition",
+  "our_manufacturer": "Origin Jumpworks",
+  "we_have_a_model": false,
+  "our_glb": null,
+  "why_no_model": "no model folder mapped (CC_MODELS)",
+  "join_rule": "scIdentifier",
+  "fleetyards": {
+   "id": "c7335cc7-8505-463f-a333-c7054d46f8b4",
+   "name": "600i Executive-Edition",
+   "slug": "orig-600i-executive-edition",
+   "scIdentifier": "orig_600i_executive_edition",
+   "rsiSlug": "600i-executive-edition",
+   "productionStatus": "flight-ready",
+   "lastUpdatedAt": "2019-10-10T18:41:22Z"
+  },
+  "holo": {
+   "file_name": "holo-08bd15d9-0b5b-41e8-8527-bc34735c0dc1.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6Ijg5OWI0MzYyLTE1YTctNDc4Zi1hZmZiLTVhOWU2NGZkODcwYyIsInB1ciI6ImJsb2JfaWQifX0=--dec2a6b79b614025fc0eef2cd79724efe8fcc98e/holo-08bd15d9-0b5b-41e8-8527-bc34735c0dc1.gltf/",
+   "size_bytes": 8880974,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:44:59.434+02:00"
+  }
+ }
+]

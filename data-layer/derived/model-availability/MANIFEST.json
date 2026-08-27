@@ -1,0 +1,39 @@
+{
+ "generated_by": "scripts/sweep_model_availability.py",
+ "order": "docs/ORDER_the-fifteen-are-not-missing-2026-08-27.md (M4)",
+ "run_id": "20260827T163116Z",
+ "fetched_at_utc": "2026-08-27T16:31:16+00:00",
+ "source": {
+  "name": "Fleetyards public API",
+  "endpoint": "https://api.fleetyards.net/v1/models",
+  "pagination": "page/perPage=240, run to exhaustion",
+  "auth": "none - public, no key, not under /media/",
+  "records_returned": 244,
+  "api_reported_total": 244,
+  "raw_snapshot_sha256": "870b4da4ed1812a427989b3aa54446b9a9ff6380d091837f90caf6f6d9972944",
+  "note": "live pull"
+ },
+ "our_fleet": {
+  "file": "data-layer/derived/ship-gaps/ship_gaps.json",
+  "rows": 254
+ },
+ "join_rule": "EXACT ONLY. Rule 1: our row's stem == Fleetyards scIdentifier (the in-game class identifier). Rule 2: our row's name == Fleetyards name. A row joins if either rule matches. If BOTH rules match but to DIFFERENT Fleetyards records, the row is NOT joined - it goes to needs_human_review.json as a name collision. No fuzzy matching, no similarity scoring, no case folding on the primary join: our stem field is already the project's published lowercase form of cls.",
+ "counts": {
+  "fleetyards_records": 244,
+  "fleetyards_with_holo": 243,
+  "our_rows_joined": 238,
+  "our_rows_unjoined": 16,
+  "name_collisions_held_back": 0,
+  "fleetyards_residue": 6,
+  "our_ships_with_no_model": 24,
+  "gap_fillable": 19,
+  "gap_not_fillable_from_this_source": 5,
+  "inherited_variants_fleetyards_has_its_own_model_for": 0,
+  "m4d_control_base_hulls_that_join": "49 of 49"
+ },
+ "what_this_is_not": [
+  "Not an import. No model file was downloaded by this script.",
+  "Not a rights determination - see RULING_community-practice-is-the-standard-2026-08-22.md.",
+  "Not a claim that a Fleetyards holo has usable node hierarchy. These are the same welded meshes; hardpoints are unaffected."
+ ]
+}

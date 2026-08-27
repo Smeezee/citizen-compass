@@ -58,10 +58,38 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [string] $ProjectPath = 'C:\Users\david\citizen-compass',
-    [switch] $SkipVerify
+    [switch] $SkipVerify,
+
+    # Name the browser check(s) to deploy past, by FILENAME, e.g.
+    #   -IgnoreRedCheck '_verify_panel_dismiss.mjs'
+    # Deliberately not a bare -Force: see the gate below for why.
+    [string[]] $IgnoreRedCheck = @()
 )
 
 $ErrorActionPreference = 'Stop'
+
+# -IgnoreRedCheck HAS TO SURVIVE THE WAY THIS SCRIPT IS ACTUALLY INVOKED.
+#
+# Everything calls this with `powershell -File .\scripts\deploy_testing.ps1`.
+# Under -File, PowerShell hands every argument over as a LITERAL STRING: the
+# array syntax `-IgnoreRedCheck 'a.mjs','b.mjs'` arrives as the single element
+# "a.mjs,b.mjs", and a -contains test against it is false for both names.
+#
+# The first version of this gate had exactly that defect. It failed CLOSED - the
+# deploy refused rather than proceeding - so nothing unsafe happened, but the
+# documented override did not work and the error message told the operator to
+# type a command that would not have helped. It was found by running the three
+# paths, not by reading the code, which is the whole of hard rule 12's second
+# half: prove the flag by behaviour.
+#
+# So the names are normalised here: split on comma or semicolon, trimmed,
+# empties dropped. Both invocation styles now reach the same list.
+$IgnoreRedCheck = @(
+    $IgnoreRedCheck |
+        ForEach-Object { $_ -split '[,;]' } |
+        ForEach-Object { $_.Trim() } |
+        Where-Object   { $_ }
+)
 
 $config    = Join-Path $ProjectPath 'testing\wrangler.toml'
 $assetsDir = Join-Path $ProjectPath 'testing\_deploy'
@@ -162,6 +190,90 @@ if ($guardCode -eq 0) {
     # Exit 2 is the checker's own "could not check", and any other code is a
     # crash. Both mean unverified, and unverified is refused.
     Fail "deploy guard could not verify $assetsDir (exit $guardCode) - refusing to deploy. This is reported as NOT CHECKED, never as clean."
+}
+
+# --- THE BROWSER CHECKS GATE THE UPLOAD -------------------------------------
+#
+# C1's ruling of 2026-08-27 11:57: browser checks gate the DEPLOY, not the
+# build. The build's own gates are in-process and fast; these drive a real
+# browser against testing\_deploy and take a minute each. Running them here
+# means the thing that is about to be published is the thing that was checked.
+#
+# WHY AN OVERRIDE EXISTS AT ALL. Sleven overrode a red check this morning and
+# was right to: the failure was in the check's own fixture, the build was sound,
+# and holding the deploy would have left him unable to see a day's work. That
+# has to stay possible. What it must never be is quiet.
+#
+# SO THE OVERRIDE NAMES THE CHECK. -IgnoreRedCheck takes the check's FILENAME,
+# not a bare -Force. You cannot wave the whole gate through; you have to type
+# which specific check you are ignoring, which means knowing what it was. A
+# blanket switch is a switch people set once and forget, and this project has
+# already been bitten by a safety flag that silently did not apply.
+#
+# A MISSING CHECK IS A FAILED CHECK. If the file is gone, that is reported as
+# NOT CHECKED and refused - never treated as passing. Same rule as the deploy
+# guard above, and the same reason.
+$browserChecks = @(
+    'checks\_verify_panel_dismiss.mjs',
+    'checks\_verify_settings_revision.mjs',
+    # Added 2026-08-27 once the disclosure bar existed. It was deliberately kept
+    # OUT of this list while the feature was unbuilt: D2 correctly exits
+    # non-zero when there are no collapsed bars to inspect, and adding it then
+    # would have blocked every deploy on a control doing its job.
+    'checks\_verify_disclosure.mjs'
+)
+$ignoredChecks = @()
+foreach ($rel in $browserChecks) {
+    $chk  = Join-Path $ProjectPath $rel
+    $name = Split-Path $chk -Leaf
+    if (-not (Test-Path $chk)) {
+        Fail "browser check missing: $rel - refusing to deploy unverified content. A check that is not there has not passed."
+    }
+    Write-Host "check   : $name ..." -NoNewline
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $chkOut  = & node $chk 2>&1 | ForEach-Object { [string]$_ }
+    $chkCode = $LASTEXITCODE
+    $ErrorActionPreference = $prevEAP
+
+    if ($null -eq $chkCode) {
+        Write-Host ""
+        Fail "$name did not report an exit code - reported as NOT CHECKED, never as clean."
+    }
+    if ($chkCode -eq 0) {
+        Write-Host " GREEN" -ForegroundColor Green
+        continue
+    }
+
+    Write-Host " RED (exit $chkCode)" -ForegroundColor Red
+    $chkOut | Select-Object -Last 20 | ForEach-Object { Write-Host "  $_" }
+
+    if ($IgnoreRedCheck -contains $name) {
+        Write-Host ""
+        Write-Host "  ***********************************************************" -ForegroundColor Yellow
+        Write-Host "  OVERRIDE: deploying past a RED check, because you asked." -ForegroundColor Yellow
+        Write-Host "  IGNORING: $name (exit $chkCode)" -ForegroundColor Yellow
+        Write-Host "  The failures printed above are going live unfixed." -ForegroundColor Yellow
+        Write-Host "  ***********************************************************" -ForegroundColor Yellow
+        Write-Host ""
+        $ignoredChecks += "$name (exit $chkCode)"
+    } else {
+        Fail @"
+$name is RED (exit $chkCode). Refusing to upload.
+
+To deploy anyway you must name the check:
+
+    .\scripts\deploy_testing.ps1 -IgnoreRedCheck '$name'
+
+That is deliberately more typing than -Force. Overriding is allowed; doing it
+without knowing which check you silenced is not.
+"@
+    }
+}
+if ($ignoredChecks.Count) {
+    Write-Host "checks  : $($ignoredChecks.Count) RED check(s) OVERRIDDEN - $($ignoredChecks -join ', ')" -ForegroundColor Yellow
+} else {
+    Write-Host "checks  : all browser checks green" -ForegroundColor Green
 }
 
 # --- sanity-check the payload BEFORE uploading ------------------------------
@@ -301,7 +413,16 @@ Write-Host ""
 Write-Host "deploy finished. Exit code 0 is NOT proof it works." -ForegroundColor Yellow
 Write-Host "Run the verification below before believing it:" -ForegroundColor Yellow
 Write-Host "  1. index.html serves (not a 404 or Cloudflare placeholder)"
-Write-Host "  2. the page contains id=`"cc-kb`" and cc-ship::after"
+# `cc-ship::after` used to be item 2's second marker. It is in NO build, and
+# has not been in one for some time - it lives in testing/_src/kb_overlay.inc.html,
+# which nothing includes any more. So item 2 could not be satisfied by any
+# payload, and an instruction that ALWAYS fails teaches the operator to skip it -
+# which kills the one check-shape that has already caught a keybinds overlay
+# vanishing before a deploy.
+# Replaced with id="cc-panel", verified present in the served index.html, the
+# local build and loadout.html - and still able to fail if the panel is dropped.
+# kb_overlay.inc.html is left alone; that orphan is a separate question.
+Write-Host "  2. the page contains id=`"cc-kb`" and id=`"cc-panel`""
 Write-Host "  3. a MODEL serves - e.g. /models/Hammerhead.glb returns 200 with a"
 Write-Host "     plausible byte count. A deploy that dropped the models folder"
 Write-Host "     still loads and still looks right."

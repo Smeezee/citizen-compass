@@ -1,0 +1,114 @@
+[
+ {
+  "our_name": "CSV-FM",
+  "our_class": null,
+  "our_stem": null,
+  "we_have_a_model": false,
+  "why_no_model": "no game file"
+ },
+ {
+  "our_name": "Genesis Starliner",
+  "our_class": null,
+  "our_stem": null,
+  "we_have_a_model": true,
+  "why_no_model": "no game file"
+ },
+ {
+  "our_name": "RAPTOR",
+  "our_class": null,
+  "our_stem": null,
+  "we_have_a_model": false,
+  "why_no_model": "no game file"
+ },
+ {
+  "our_name": "Starlancer BLD",
+  "our_class": null,
+  "our_stem": null,
+  "we_have_a_model": false,
+  "why_no_model": "no game file"
+ },
+ {
+  "our_name": "ATLS GEO IKTI",
+  "our_class": "ARGO_ATLS_GEO_IKTI",
+  "our_stem": "argo_atls_geo_ikti",
+  "we_have_a_model": true,
+  "why_no_model": null
+ },
+ {
+  "our_name": "ATLS IKTI",
+  "our_class": "ARGO_ATLS_IKTI",
+  "our_stem": "argo_atls_ikti",
+  "we_have_a_model": true,
+  "why_no_model": null
+ },
+ {
+  "our_name": "ATLS IKTI RAD",
+  "our_class": "ARGO_ATLS_IKTI_ARGOS",
+  "our_stem": "argo_atls_ikti_argos",
+  "we_have_a_model": true,
+  "why_no_model": null
+ },
+ {
+  "our_name": "Ballista Dunestalker",
+  "our_class": "ANVL_Ballista_Dunestalker",
+  "our_stem": "anvl_ballista_dunestalker",
+  "we_have_a_model": true,
+  "why_no_model": null
+ },
+ {
+  "our_name": "Ballista Snowblind",
+  "our_class": "ANVL_Ballista_Snowblind",
+  "our_stem": "anvl_ballista_snowblind",
+  "we_have_a_model": true,
+  "why_no_model": null
+ },
+ {
+  "our_name": "Carrack Expedition",
+  "our_class": "ANVL_Carrack_Expedition",
+  "our_stem": "anvl_carrack_expedition",
+  "we_have_a_model": true,
+  "why_no_model": null
+ },
+ {
+  "our_name": "Constellation Phoenix Emerald",
+  "our_class": "RSI_Constellation_Phoenix_Emerald",
+  "our_stem": "rsi_constellation_phoenix_emerald",
+  "we_have_a_model": true,
+  "why_no_model": null
+ },
+ {
+  "our_name": "F7C-M Hornet Heartseeker Mk II",
+  "our_class": "ANVL_Hornet_F7CM_Mk2_Heartseeker",
+  "our_stem": "anvl_hornet_f7cm_mk2_heartseeker",
+  "we_have_a_model": false,
+  "why_no_model": "no model folder mapped (CC_MODELS)"
+ },
+ {
+  "our_name": "Gladius Dunlevy",
+  "our_class": "AEGS_Gladius_Dunlevy",
+  "our_stem": "aegs_gladius_dunlevy",
+  "we_have_a_model": false,
+  "why_no_model": "no model folder mapped (CC_MODELS)"
+ },
+ {
+  "our_name": "Mustang Alpha Vindicator",
+  "our_class": null,
+  "our_stem": null,
+  "we_have_a_model": true,
+  "why_no_model": "no game file"
+ },
+ {
+  "our_name": "P-72 Archimedes Emerald",
+  "our_class": "KRIG_P72_Archimedes_Emerald",
+  "our_stem": "krig_p72_archimedes_emerald",
+  "we_have_a_model": true,
+  "why_no_model": null
+ },
+ {
+  "our_name": "Valkyrie Liberator",
+  "our_class": null,
+  "our_stem": null,
+  "we_have_a_model": true,
+  "why_no_model": "no game file"
+ }
+]

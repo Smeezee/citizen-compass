@@ -1,0 +1,19 @@
+{
+  "extracted_utc": "2026-08-27T00:54:24Z",
+  "source_archive": "C:\\Program Files\\Roberts Space Industries\\StarCitizen\\LIVE\\Data.p4k",
+  "archive_bytes": 161671868416,
+  "game_branch": "sc-alpha-4.10.0",
+  "game_version": "4.10.191.2241",
+  "p4_change": "12519617",
+  "build_date_stamp": "Wed Aug 26 2026",
+  "entry_path": "Data\\Libs\\Config\\defaultProfile.xml",
+  "compression_method": 100,
+  "compressed_bytes": 37950,
+  "uncompressed_bytes": 183915,
+  "cryxml_nodes": 1531,
+  "cryxml_attributes": 8386,
+  "output_bytes": 218770,
+  "output_sha256": "f67f403f7f5da627eefd4199961ec53600f6396f0a9a48a1e8134d5a4cc02e26",
+  "zstd_library": "C:\\Program Files\\Git\\mingw64\\bin\\libzstd.dll",
+  "method": "docs/workorder-keybind-01-extraction-done.md section 2"
+}

@@ -1,0 +1,32 @@
+{
+ "generated_by": "checks/_verify_roadmap_board.py --write-manifest",
+ "order": "docs/AMENDS_roadmap-watcher-board-1-2026-08-27.md (R0)",
+ "verified_at_utc": "2026-08-27T18:37:54+00:00",
+ "endpoint": "https://robertsspaceindustries.com/api/roadmap/v1/boards/1",
+ "board_id": 1,
+ "evidence": {
+  "board": 1,
+  "name": "Release View",
+  "slug": "Release-View",
+  "releases": 39,
+  "releases_4x_or_higher": [
+   "4.0",
+   "4.1",
+   "4.2",
+   "4.3",
+   "4.4",
+   "4.5",
+   "4.6",
+   "4.7",
+   "4.8",
+   "4.9",
+   "4.10",
+   "4.11"
+  ],
+  "unreleased_cards": 518,
+  "highest_major": 4
+ },
+ "evidence_sha256": "137c0f79ed1d2ab747912affc7161be3ab1ae9572681147841e7090917e3511a",
+ "control_board": 2,
+ "correction": "AMENDS_roadmap-watcher-board-1-is-wrong states that board 1 is not the current release view and returns 2018. The endpoint returns 39 releases from 3.1 to Star Citizen 1.0; the 2018 entries are the start of the list, not the whole of it. Board 1 IS the Release View."
+}

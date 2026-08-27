@@ -1,0 +1,8536 @@
+{
+ "dataset": "model-fingerprints",
+ "produced_by": "C3 (Cowork), 2026-08-14",
+ "what_this_is": "One fingerprint per .glb in testing/_deploy/models. Content hash, byte size, vertex count, and the hull's own bounding box. Purpose: detect when a model CHANGES, without waiting for CIG to announce anything.",
+ "why": "A ship rework changes the hull. If a Constellation .glb ever stops matching its fingerprint here, that is evidence of a rework that arrived before, or instead of, an announcement. Same test works for all 235 models.",
+ "how_measured": {
+  "renderer": "174 models decoded in a real GL context; verts and bbox read off the decoded mesh",
+  "gltf-accessor": "61 models read from the glTF JSON chunk only: POSITION accessor count and min/max, no DRACO decode needed",
+  "cross_check": "the four Carrack files were measured two files by each method and agree to 0.002 units, which is why both methods sit in one table"
+ },
+ "units": "bbox and extent are in the MODEL's own units, which are not consistent across the library. scale_class and model_units_per_metre say which. Never compare extents across ships without them.",
+ "counts": {
+  "files": 235,
+  "distinct_sha256": 213,
+  "distinct_geometry": 211,
+  "byte_identical_groups": 16,
+  "geometry_identical_groups": 18
+ },
+ "duplicates": {
+  "byte_identical": [
+   [
+    "Anvil_Ballista_Dunestalker",
+    "Anvil_Ballista_Snowblind",
+    "Ballista"
+   ],
+   [
+    "Argo_Mole_Carbon_Edition",
+    "Argo_Mole_Talus_Edition"
+   ],
+   [
+    "Aurora_CL",
+    "Aurora_ES",
+    "Aurora_LN",
+    "Aurora_MR"
+   ],
+   [
+    "Avenger_Titan",
+    "Avenger_Titan_Renegade"
+   ],
+   [
+    "C8R_Pisces",
+    "C8_Pisces"
+   ],
+   [
+    "Carrack",
+    "Carrack_Expedition",
+    "Carrack_Expedition_w_C8X",
+    "Carrack_w_C8X"
+   ],
+   [
+    "Caterpillar",
+    "Caterpillar_Best_In_Show_Edition_2949",
+    "Caterpillar_Pirate_Edition"
+   ],
+   [
+    "Cutlass_Black_Best_In_Show_Edition_2949",
+    "Cutlass_Steel"
+   ],
+   [
+    "F7A_Hornet_Mk_I",
+    "F7C_Hornet_Mk_I"
+   ],
+   [
+    "F7C-M_Super_Hornet_Heartseeker_Mk_I",
+    "F7C-M_Super_Hornet_Mk_I"
+   ],
+   [
+    "F8C_Lightning",
+    "F8C_Lightning_Executive_Edition"
+   ],
+   [
+    "Mustang_Alpha",
+    "Mustang_Alpha_Vindicator"
+   ],
+   [
+    "Mustang_Gamma",
+    "Mustang_Omega"
+   ],
+   [
+    "Nox",
+    "Nox_Kue"
+   ],
+   [
+    "Pulse",
+    "Pulse_LX"
+   ],
+   [
+    "Ursa",
+    "Ursa_Fortuna"
+   ]
+  ],
+  "geometry_identical_but_not_byte_identical": [
+   [
+    "Reclaimer",
+    "Reclaimer_Best_In_Show_Edition_2949"
+   ],
+   [
+    "Valkyrie",
+    "Valkyrie_Liberator_Edition"
+   ]
+  ],
+  "same_bbox_different_verts": [
+   {
+    "files": [
+     "Nautilus",
+     "Nautilus_Solstice_Edition"
+    ],
+    "verts": {
+     "Nautilus": 689406,
+     "Nautilus_Solstice_Edition": 689405
+    },
+    "delta_verts": 1
+   },
+   {
+    "files": [
+     "Kraken",
+     "Kraken_Privateer"
+    ],
+    "verts": {
+     "Kraken": 459077,
+     "Kraken_Privateer": 459079
+    },
+    "delta_verts": 2
+   },
+   {
+    "files": [
+     "X1",
+     "X1_Force"
+    ],
+    "verts": {
+     "X1": 394611,
+     "X1_Force": 394613
+    },
+    "delta_verts": 2
+   },
+   {
+    "files": [
+     "Scorpius",
+     "Scorpius_Antares"
+    ],
+    "verts": {
+     "Scorpius": 456411,
+     "Scorpius_Antares": 456419
+    },
+    "delta_verts": 8
+   },
+   {
+    "files": [
+     "Ironclad",
+     "Ironclad_Assault"
+    ],
+    "verts": {
+     "Ironclad": 578936,
+     "Ironclad_Assault": 578947
+    },
+    "delta_verts": 11
+   },
+   {
+    "files": [
+     "P-72_Archimedes",
+     "P-72_Archimedes_Emerald"
+    ],
+    "verts": {
+     "P-72_Archimedes": 187679,
+     "P-72_Archimedes_Emerald": 187691
+    },
+    "delta_verts": 12
+   },
+   {
+    "files": [
+     "Sabre",
+     "Sabre_Comet"
+    ],
+    "verts": {
+     "Sabre": 353731,
+     "Sabre_Comet": 353743
+    },
+    "delta_verts": 12
+   },
+   {
+    "files": [
+     "Constellation_Phoenix",
+     "Constellation_Phoenix_Emerald"
+    ],
+    "verts": {
+     "Constellation_Phoenix": 494725,
+     "Constellation_Phoenix_Emerald": 494739
+    },
+    "delta_verts": 14
+   },
+   {
+    "files": [
+     "Freelancer_DUR",
+     "Freelancer_MIS"
+    ],
+    "verts": {
+     "Freelancer_DUR": 262693,
+     "Freelancer_MIS": 258846
+    },
+    "delta_verts": 3847
+   },
+   {
+    "files": [
+     "Talon",
+     "Talon_Shrike"
+    ],
+    "verts": {
+     "Talon": 292653,
+     "Talon_Shrike": 279919
+    },
+    "delta_verts": 12734
+   }
+  ]
+ },
+ "models": {
+  "100i": {
+   "file": "100i.glb",
+   "ship": "100i",
+   "sha256": "9872a24a4cd27c58183649594f95a66b863905d3ddb06ded85a0e98a626196d8",
+   "bytes": 1487156,
+   "verts": 222427,
+   "meshes": 1,
+   "bbox_min": [
+    -5.716,
+    -1.365,
+    -8.742
+   ],
+   "bbox_max": [
+    5.716,
+    1.364,
+    8.743
+   ],
+   "extent": [
+    11.432,
+    2.729,
+    17.485
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9203,
+   "published_dim": {
+    "length": 19,
+    "width": 12,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.129,
+   "measured_by": "renderer"
+  },
+  "125a": {
+   "file": "125a.glb",
+   "ship": "125a",
+   "sha256": "45853da44dcbc99a983f96c65caf1667822f54e159b31373ffb6b713e44bb281",
+   "bytes": 1516744,
+   "verts": 263191,
+   "meshes": 1,
+   "bbox_min": [
+    -5.715,
+    -1.365,
+    -8.742
+   ],
+   "bbox_max": [
+    5.716,
+    1.364,
+    8.742
+   ],
+   "extent": [
+    11.431,
+    2.729,
+    17.484
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9202,
+   "published_dim": {
+    "length": 19,
+    "width": 12,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.129,
+   "measured_by": "renderer"
+  },
+  "135c": {
+   "file": "135c.glb",
+   "ship": "135c",
+   "sha256": "9939e680b270d619bd2f321407d6cc8f6fb3acd6e7e75c4d247c7e9bfbb034b1",
+   "bytes": 1530568,
+   "verts": 225230,
+   "meshes": 1,
+   "bbox_min": [
+    -5.715,
+    -1.363,
+    -8.743
+   ],
+   "bbox_max": [
+    5.715,
+    1.363,
+    8.743
+   ],
+   "extent": [
+    11.43,
+    2.726,
+    17.486
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9203,
+   "published_dim": {
+    "length": 19,
+    "width": 12,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.129,
+   "measured_by": "renderer"
+  },
+  "300i": {
+   "file": "300i.glb",
+   "ship": "300i",
+   "sha256": "cbdd50b8624ff2324685bd1055fb4b1f8b0a28893fa5fed7c81a7b72ec591eb8",
+   "bytes": 657260,
+   "verts": 139379,
+   "meshes": 1,
+   "bbox_min": [
+    -8.152,
+    -2.762,
+    -12.421
+   ],
+   "bbox_max": [
+    8.153,
+    2.762,
+    12.422
+   ],
+   "extent": [
+    16.305,
+    5.524,
+    24.843
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9201,
+   "published_dim": {
+    "length": 27,
+    "width": 17,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.101,
+   "measured_by": "renderer"
+  },
+  "315p": {
+   "file": "315p.glb",
+   "ship": "315p",
+   "sha256": "cdb41a7746cb0011663ccb22c3dfb77d596cec546bde90a83ca273325c442870",
+   "bytes": 1593100,
+   "verts": 444791,
+   "meshes": 1,
+   "bbox_min": [
+    -8.129,
+    -2.711,
+    -11.277
+   ],
+   "bbox_max": [
+    8.129,
+    2.712,
+    11.025
+   ],
+   "extent": [
+    16.258,
+    5.423,
+    22.302
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.826,
+   "published_dim": {
+    "length": 27,
+    "width": 17,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.152,
+   "measured_by": "renderer"
+  },
+  "325a": {
+   "file": "325a.glb",
+   "ship": "325a",
+   "sha256": "ab9b27ebb8ff9c18c0dda16620254b751fdb8c4d1f93754548ae9d370c7ff8a6",
+   "bytes": 1410040,
+   "verts": 441782,
+   "meshes": 1,
+   "bbox_min": [
+    -8.033,
+    -2.694,
+    -11.513
+   ],
+   "bbox_max": [
+    8.032,
+    2.694,
+    11.513
+   ],
+   "extent": [
+    16.065,
+    5.388,
+    23.026
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8373,
+   "published_dim": {
+    "length": 27.5,
+    "width": 17,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.136,
+   "measured_by": "renderer"
+  },
+  "350r": {
+   "file": "350r.glb",
+   "ship": "350r",
+   "sha256": "650d12a3e49939460100ba705dd924ab3c0abdbe9635a55c9151b3ebf63877bf",
+   "bytes": 674280,
+   "verts": 143264,
+   "meshes": 1,
+   "bbox_min": [
+    -8.154,
+    -2.762,
+    -12.421
+   ],
+   "bbox_max": [
+    8.154,
+    2.762,
+    12.421
+   ],
+   "extent": [
+    16.308,
+    5.524,
+    24.842
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9201,
+   "published_dim": {
+    "length": 27,
+    "width": 17,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.101,
+   "measured_by": "renderer"
+  },
+  "400i": {
+   "file": "400i.glb",
+   "ship": "400i",
+   "sha256": "1373b3d0167b8bb4337ab41e90fd32e37bbd3020da8ab2944732cd31e0ee0a5b",
+   "bytes": 1408260,
+   "verts": 305596,
+   "meshes": 1,
+   "bbox_min": [
+    -15.827,
+    -4.894,
+    -29.613
+   ],
+   "bbox_max": [
+    15.808,
+    5.239,
+    29.612
+   ],
+   "extent": [
+    31.635,
+    10.133,
+    59.225
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0576,
+   "published_dim": {
+    "length": 56,
+    "width": 32,
+    "height": 12.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.089,
+   "measured_by": "renderer"
+  },
+  "600i_Explorer": {
+   "file": "600i_Explorer.glb",
+   "ship": null,
+   "sha256": "92a181c021b6b595a1790b14637388d4122ca8fb5d3ecee77cbca5b7a437e005",
+   "bytes": 1252496,
+   "verts": 275886,
+   "meshes": 1,
+   "bbox_min": [
+    -26.0745,
+    -8.3018,
+    -45.7949
+   ],
+   "bbox_max": [
+    26.0739,
+    8.3023,
+    45.7954
+   ],
+   "extent": [
+    52.148,
+    16.604,
+    91.59
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "600i_Touring": {
+   "file": "600i_Touring.glb",
+   "ship": "600i Touring",
+   "sha256": "52f8bdf444d592648dfb815cd837efdb3afa8393d011bd506686fc679df8643a",
+   "bytes": 1253276,
+   "verts": 295371,
+   "meshes": 1,
+   "bbox_min": [
+    -26.117,
+    -8.164,
+    -45.79
+   ],
+   "bbox_max": [
+    26.12,
+    8.164,
+    45.789
+   ],
+   "extent": [
+    52.237,
+    16.328,
+    91.579
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0009,
+   "published_dim": {
+    "length": 91.5,
+    "width": 52,
+    "height": 17
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.01,
+   "measured_by": "renderer"
+  },
+  "890_Jump": {
+   "file": "890_Jump.glb",
+   "ship": "890 Jump",
+   "sha256": "59226a8f0d88a658e50ee812b7bee965736bc5fd70ba61cd4de68c71b0dd37dc",
+   "bytes": 1032328,
+   "verts": 222297,
+   "meshes": 1,
+   "bbox_min": [
+    -35.539,
+    -18.583,
+    -102.763
+   ],
+   "bbox_max": [
+    35.543,
+    18.576,
+    102.766
+   ],
+   "extent": [
+    71.082,
+    37.159,
+    205.529
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9787,
+   "published_dim": {
+    "length": 210,
+    "width": 80,
+    "height": 45
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.069,
+   "measured_by": "renderer"
+  },
+  "A1_Spirit": {
+   "file": "A1_Spirit.glb",
+   "ship": "A1 Spirit",
+   "sha256": "2b136eb826a71cb3d1b647cdbf8321888080547a8487adfd5cb3dc40ff050f01",
+   "bytes": 2689668,
+   "verts": 587324,
+   "meshes": 1,
+   "bbox_min": [
+    -22.233,
+    -2.199,
+    -23.367
+   ],
+   "bbox_max": [
+    22.124,
+    6.369,
+    23.315
+   ],
+   "extent": [
+    44.357,
+    8.568,
+    46.682
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9828,
+   "published_dim": {
+    "length": 47.5,
+    "width": 44,
+    "height": 10
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.051,
+   "measured_by": "renderer"
+  },
+  "A2_Hercules": {
+   "file": "A2_Hercules.glb",
+   "ship": null,
+   "sha256": "8f47425e28a53ae35afedd9a357c195dbd8476189ff64a6d900904f3f356a167",
+   "bytes": 1958668,
+   "verts": 463099,
+   "meshes": 1,
+   "bbox_min": [
+    -34.9968,
+    -12.2908,
+    -47.1333
+   ],
+   "bbox_max": [
+    35.2286,
+    12.3894,
+    47.2424
+   ],
+   "extent": [
+    70.225,
+    24.68,
+    94.376
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "ATLS": {
+   "file": "ATLS.glb",
+   "ship": null,
+   "sha256": "efd583ab2db9fbf833ba33996314b861b52b92f5aa11d1529199e8971875861e",
+   "bytes": 795480,
+   "verts": 128368,
+   "meshes": 1,
+   "bbox_min": [
+    -0.8807,
+    -1.4289,
+    -1.015
+   ],
+   "bbox_max": [
+    0.8806,
+    1.4289,
+    1.0149
+   ],
+   "extent": [
+    1.761,
+    2.858,
+    2.03
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "ATLS_GEO": {
+   "file": "ATLS_GEO.glb",
+   "ship": null,
+   "sha256": "797a9f0961e1f1e8b5096bb7469a4e460e42dd61a6623448778f7c415082f3ac",
+   "bytes": 1036312,
+   "verts": 190209,
+   "meshes": 1,
+   "bbox_min": [
+    -0.8807,
+    -1.4525,
+    -1.3145
+   ],
+   "bbox_max": [
+    0.8807,
+    1.4526,
+    1.3146
+   ],
+   "extent": [
+    1.761,
+    2.905,
+    2.629
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Anvil_Ballista_Dunestalker": {
+   "file": "Anvil_Ballista_Dunestalker.glb",
+   "ship": null,
+   "sha256": "a46564be4fa05f25956dca58c48027667afd6ff5f2cdd9d3ef17f71ef13d6d59",
+   "bytes": 933384,
+   "verts": 173809,
+   "meshes": 1,
+   "bbox_min": [
+    -3.3691,
+    -2.68,
+    -8.3596
+   ],
+   "bbox_max": [
+    3.369,
+    2.68,
+    8.3595
+   ],
+   "extent": [
+    6.738,
+    5.36,
+    16.719
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Anvil_Ballista_Snowblind": {
+   "file": "Anvil_Ballista_Snowblind.glb",
+   "ship": null,
+   "sha256": "a46564be4fa05f25956dca58c48027667afd6ff5f2cdd9d3ef17f71ef13d6d59",
+   "bytes": 933384,
+   "verts": 173809,
+   "meshes": 1,
+   "bbox_min": [
+    -3.3691,
+    -2.68,
+    -8.3596
+   ],
+   "bbox_max": [
+    3.369,
+    2.68,
+    8.3595
+   ],
+   "extent": [
+    6.738,
+    5.36,
+    16.719
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Apollo_Medivac": {
+   "file": "Apollo_Medivac.glb",
+   "ship": "Apollo Medivac",
+   "sha256": "d4a725185168a5e037e47a0359bc5d2129a0db45265683e58d6ef90173b21476",
+   "bytes": 2350360,
+   "verts": 438508,
+   "meshes": 1,
+   "bbox_min": [
+    -27.503,
+    -7.126,
+    -32.373
+   ],
+   "bbox_max": [
+    27.502,
+    7.125,
+    32.373
+   ],
+   "extent": [
+    55.005,
+    14.251,
+    64.746
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8869,
+   "published_dim": {
+    "length": 73,
+    "width": 54,
+    "height": 14
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.138,
+   "measured_by": "renderer"
+  },
+  "Apollo_Triage": {
+   "file": "Apollo_Triage.glb",
+   "ship": "Apollo Triage",
+   "sha256": "fc5bdd67263209465b7a9f067f8adfbfdf44046835c89a8fabb9a08265cf8118",
+   "bytes": 2340424,
+   "verts": 436650,
+   "meshes": 1,
+   "bbox_min": [
+    -27.503,
+    -7.126,
+    -32.373
+   ],
+   "bbox_max": [
+    27.502,
+    7.126,
+    32.374
+   ],
+   "extent": [
+    55.005,
+    14.252,
+    64.747
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8869,
+   "published_dim": {
+    "length": 73,
+    "width": 54,
+    "height": 14
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.138,
+   "measured_by": "renderer"
+  },
+  "Ares_Inferno": {
+   "file": "Ares_Inferno.glb",
+   "ship": null,
+   "sha256": "dcd38a0f7ce4a20872b57a94d0b5c7566d89f8457942f267fcd620a48576acb7",
+   "bytes": 727780,
+   "verts": 141895,
+   "meshes": 1,
+   "bbox_min": [
+    -14.9532,
+    -2.6742,
+    -13.1287
+   ],
+   "bbox_max": [
+    14.8102,
+    2.7378,
+    13.1969
+   ],
+   "extent": [
+    29.763,
+    5.412,
+    26.326
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Ares_Ion": {
+   "file": "Ares_Ion.glb",
+   "ship": null,
+   "sha256": "f7e39f0c21e71d5fdb504cd0e339faa17e66200191a1f651fa80c36ae90d7e16",
+   "bytes": 848912,
+   "verts": 137788,
+   "meshes": 1,
+   "bbox_min": [
+    -14.9523,
+    -2.6888,
+    -13.2736
+   ],
+   "bbox_max": [
+    14.8107,
+    2.7191,
+    13.3763
+   ],
+   "extent": [
+    29.763,
+    5.408,
+    26.65
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Argo_Mole_Carbon_Edition": {
+   "file": "Argo_Mole_Carbon_Edition.glb",
+   "ship": null,
+   "sha256": "9afc4a2397e6e2144fc1d3dff9c1f053f4fad7af10fa8eb14422c75a730b6c21",
+   "bytes": 2531932,
+   "verts": 489370,
+   "meshes": 1,
+   "bbox_min": [
+    -12.8635,
+    -6.666,
+    -21.1249
+   ],
+   "bbox_max": [
+    12.8639,
+    6.666,
+    21.1247
+   ],
+   "extent": [
+    25.727,
+    13.332,
+    42.25
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Argo_Mole_Talus_Edition": {
+   "file": "Argo_Mole_Talus_Edition.glb",
+   "ship": null,
+   "sha256": "9afc4a2397e6e2144fc1d3dff9c1f053f4fad7af10fa8eb14422c75a730b6c21",
+   "bytes": 2531932,
+   "verts": 489370,
+   "meshes": 1,
+   "bbox_min": [
+    -12.8635,
+    -6.666,
+    -21.1249
+   ],
+   "bbox_max": [
+    12.8639,
+    6.666,
+    21.1247
+   ],
+   "extent": [
+    25.727,
+    13.332,
+    42.25
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Asgard": {
+   "file": "Asgard.glb",
+   "ship": "Asgard",
+   "sha256": "90c488f49fa6fd424a910d8f8765da62d8341f0349daadb8818c79c8645c454b",
+   "bytes": 215592,
+   "verts": 57684,
+   "meshes": 1,
+   "bbox_min": [
+    -1693.701,
+    -666.504,
+    -2427.825
+   ],
+   "bbox_max": [
+    1694.053,
+    666.665,
+    2427.955
+   ],
+   "extent": [
+    3387.754,
+    1333.169,
+    4855.78
+   ],
+   "scale_class": "centimetres",
+   "model_units_per_metre": 101.1621,
+   "published_dim": {
+    "length": 48,
+    "width": 38,
+    "height": 12
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.119,
+   "measured_by": "renderer"
+  },
+  "Aurora_CL": {
+   "file": "Aurora_CL.glb",
+   "ship": null,
+   "sha256": "6b503199236e6822154dcd36b842935335a150ab6fb9eb233289c612185ecc06",
+   "bytes": 1179348,
+   "verts": 267000,
+   "meshes": 1,
+   "bbox_min": [
+    -4.1083,
+    -2.1775,
+    -9.2611
+   ],
+   "bbox_max": [
+    4.1084,
+    2.1771,
+    9.2612
+   ],
+   "extent": [
+    8.217,
+    4.355,
+    18.522
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Aurora_ES": {
+   "file": "Aurora_ES.glb",
+   "ship": null,
+   "sha256": "6b503199236e6822154dcd36b842935335a150ab6fb9eb233289c612185ecc06",
+   "bytes": 1179348,
+   "verts": 267000,
+   "meshes": 1,
+   "bbox_min": [
+    -4.1083,
+    -2.1775,
+    -9.2611
+   ],
+   "bbox_max": [
+    4.1084,
+    2.1771,
+    9.2612
+   ],
+   "extent": [
+    8.217,
+    4.355,
+    18.522
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Aurora_LN": {
+   "file": "Aurora_LN.glb",
+   "ship": null,
+   "sha256": "6b503199236e6822154dcd36b842935335a150ab6fb9eb233289c612185ecc06",
+   "bytes": 1179348,
+   "verts": 267000,
+   "meshes": 1,
+   "bbox_min": [
+    -4.1083,
+    -2.1775,
+    -9.2611
+   ],
+   "bbox_max": [
+    4.1084,
+    2.1771,
+    9.2612
+   ],
+   "extent": [
+    8.217,
+    4.355,
+    18.522
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Aurora_LX": {
+   "file": "Aurora_LX.glb",
+   "ship": null,
+   "sha256": "0b7766c0632450dc8fb9216810148c6ea3210a9f8b9285863c44cd9fdd9754e2",
+   "bytes": 168688,
+   "verts": 28153,
+   "meshes": 1,
+   "bbox_min": [
+    -4.1219,
+    -1.7373,
+    -8.1665
+   ],
+   "bbox_max": [
+    4.1217,
+    1.9955,
+    10.3696
+   ],
+   "extent": [
+    8.244,
+    3.733,
+    18.536
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Aurora_MR": {
+   "file": "Aurora_MR.glb",
+   "ship": null,
+   "sha256": "6b503199236e6822154dcd36b842935335a150ab6fb9eb233289c612185ecc06",
+   "bytes": 1179348,
+   "verts": 267000,
+   "meshes": 1,
+   "bbox_min": [
+    -4.1083,
+    -2.1775,
+    -9.2611
+   ],
+   "bbox_max": [
+    4.1084,
+    2.1771,
+    9.2612
+   ],
+   "extent": [
+    8.217,
+    4.355,
+    18.522
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Avenger_Stalker": {
+   "file": "Avenger_Stalker.glb",
+   "ship": "Avenger Stalker",
+   "sha256": "26c3a536321810a0eb3cefc56712e5aeab1cabfa0349551739b6eeba20d7e273",
+   "bytes": 765808,
+   "verts": 132501,
+   "meshes": 1,
+   "bbox_min": [
+    -0.7,
+    -0.247,
+    -0.953
+   ],
+   "bbox_max": [
+    0.7,
+    0.247,
+    0.953
+   ],
+   "extent": [
+    1.4,
+    0.494,
+    1.906
+   ],
+   "scale_class": "other",
+   "model_units_per_metre": 0.0953,
+   "published_dim": {
+    "length": 20,
+    "width": 15,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.081,
+   "measured_by": "renderer"
+  },
+  "Avenger_Titan": {
+   "file": "Avenger_Titan.glb",
+   "ship": "Avenger Titan",
+   "sha256": "bbec2d160ccae76742b2619781d8051f32e4a6cc0437cdd5f27a80c4acce883c",
+   "bytes": 837384,
+   "verts": 187174,
+   "meshes": 1,
+   "bbox_min": [
+    -6.997,
+    -2.702,
+    -9.759
+   ],
+   "bbox_max": [
+    6.998,
+    2.702,
+    9.759
+   ],
+   "extent": [
+    13.995,
+    5.404,
+    19.518
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9759,
+   "published_dim": {
+    "length": 20,
+    "width": 15,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.081,
+   "measured_by": "renderer"
+  },
+  "Avenger_Titan_Renegade": {
+   "file": "Avenger_Titan_Renegade.glb",
+   "ship": "Avenger Titan Renegade",
+   "sha256": "bbec2d160ccae76742b2619781d8051f32e4a6cc0437cdd5f27a80c4acce883c",
+   "bytes": 837384,
+   "verts": 187174,
+   "meshes": 1,
+   "bbox_min": [
+    -6.997,
+    -2.702,
+    -9.759
+   ],
+   "bbox_max": [
+    6.998,
+    2.702,
+    9.759
+   ],
+   "extent": [
+    13.995,
+    5.404,
+    19.518
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9759,
+   "published_dim": {
+    "length": 20,
+    "width": 15,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.081,
+   "measured_by": "renderer"
+  },
+  "Avenger_Warlock": {
+   "file": "Avenger_Warlock.glb",
+   "ship": "Avenger Warlock",
+   "sha256": "c9fc68e6acef5648c2509f3f3caeb5ff85aaba2657d393dfc9320cab7a7c870a",
+   "bytes": 684036,
+   "verts": 149224,
+   "meshes": 1,
+   "bbox_min": [
+    -6.997,
+    -2.702,
+    -9.759
+   ],
+   "bbox_max": [
+    6.997,
+    2.702,
+    9.759
+   ],
+   "extent": [
+    13.994,
+    5.404,
+    19.518
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9759,
+   "published_dim": {
+    "length": 20,
+    "width": 15,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.081,
+   "measured_by": "renderer"
+  },
+  "Ballista": {
+   "file": "Ballista.glb",
+   "ship": "Ballista",
+   "sha256": "a46564be4fa05f25956dca58c48027667afd6ff5f2cdd9d3ef17f71ef13d6d59",
+   "bytes": 933384,
+   "verts": 173809,
+   "meshes": 1,
+   "bbox_min": [
+    -3.369,
+    -2.68,
+    -8.36
+   ],
+   "bbox_max": [
+    3.369,
+    2.68,
+    8.36
+   ],
+   "extent": [
+    6.738,
+    5.36,
+    16.72
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9835,
+   "published_dim": {
+    "length": 17,
+    "width": 7,
+    "height": 5.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.012,
+   "measured_by": "renderer"
+  },
+  "Blade": {
+   "file": "Blade.glb",
+   "ship": "Blade",
+   "sha256": "e6014905ab0eeb1e010bdd45ebf7ac02f287a94c1a78c77af70788c23aa792cd",
+   "bytes": 1650364,
+   "verts": 300428,
+   "meshes": 1,
+   "bbox_min": [
+    -9.869,
+    -2.511,
+    -9.99
+   ],
+   "bbox_max": [
+    10.73,
+    3.522,
+    9.99
+   ],
+   "extent": [
+    20.599,
+    6.033,
+    19.98
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0048,
+   "published_dim": {
+    "length": 20.5,
+    "width": 16.5,
+    "height": 5.5
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": -1
+   },
+   "shape_err": 0.19,
+   "measured_by": "renderer"
+  },
+  "Buccaneer": {
+   "file": "Buccaneer.glb",
+   "ship": "Buccaneer",
+   "sha256": "ffb5c7b3a57f916326592e34621bd1e4796e771f1e13ace203c37a7a950fa755",
+   "bytes": 541420,
+   "verts": 80549,
+   "meshes": 1,
+   "bbox_min": [
+    -7.953,
+    -1.866,
+    -7.291
+   ],
+   "bbox_max": [
+    7.953,
+    1.869,
+    7.292
+   ],
+   "extent": [
+    15.906,
+    3.735,
+    14.583
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9496,
+   "published_dim": {
+    "length": 16.75,
+    "width": 15.25,
+    "height": 5.5
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.1,
+   "measured_by": "renderer"
+  },
+  "C1_Spirit": {
+   "file": "C1_Spirit.glb",
+   "ship": "C1 Spirit",
+   "sha256": "29cad445a886d77fe6d2b3116050d45f306a65fe4c60e22e3cfe04d8b9b7e277",
+   "bytes": 2432684,
+   "verts": 518522,
+   "meshes": 1,
+   "bbox_min": [
+    -21.798,
+    -4.316,
+    -23.361
+   ],
+   "bbox_max": [
+    21.799,
+    4.579,
+    23.3
+   ],
+   "extent": [
+    43.597,
+    8.895,
+    46.661
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9823,
+   "published_dim": {
+    "length": 47.5,
+    "width": 44,
+    "height": 10
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.028,
+   "measured_by": "renderer"
+  },
+  "C2_Hercules": {
+   "file": "C2_Hercules.glb",
+   "ship": null,
+   "sha256": "4e97f00a758cdbdbc0c7118d5e4af9bb5fc6532b6fb7969a6727cef0bd06f233",
+   "bytes": 1539084,
+   "verts": 368048,
+   "meshes": 1,
+   "bbox_min": [
+    -35.5195,
+    -10.7969,
+    -47.26
+   ],
+   "bbox_max": [
+    35.5203,
+    10.9581,
+    47.2609
+   ],
+   "extent": [
+    71.04,
+    21.755,
+    94.521
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "C8R_Pisces": {
+   "file": "C8R_Pisces.glb",
+   "ship": null,
+   "sha256": "0232cf4df4d0093d956835e85afe7c2abeaabb9940e1afd4e24045baf48f5a13",
+   "bytes": 331360,
+   "verts": 74013,
+   "meshes": 1,
+   "bbox_min": [
+    -5.1116,
+    -1.5003,
+    -6.1822
+   ],
+   "bbox_max": [
+    5.1116,
+    1.5004,
+    6.1819
+   ],
+   "extent": [
+    10.223,
+    3.001,
+    12.364
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "C8X_Pisces_Expedition": {
+   "file": "C8X_Pisces_Expedition.glb",
+   "ship": "C8X Pisces Expedition",
+   "sha256": "048856c0e76c836efcff7e97435404dc52d46d4e205a3ea70d4ee3dadce421d2",
+   "bytes": 437160,
+   "verts": 101679,
+   "meshes": 1,
+   "bbox_min": [
+    -5.112,
+    -1.5,
+    -6.182
+   ],
+   "bbox_max": [
+    5.112,
+    1.5,
+    6.182
+   ],
+   "extent": [
+    10.224,
+    3.0,
+    12.364
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.7728,
+   "published_dim": {
+    "length": 16,
+    "width": 12,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.334,
+   "measured_by": "renderer"
+  },
+  "C8_Pisces": {
+   "file": "C8_Pisces.glb",
+   "ship": "C8 Pisces",
+   "sha256": "0232cf4df4d0093d956835e85afe7c2abeaabb9940e1afd4e24045baf48f5a13",
+   "bytes": 331360,
+   "verts": 74013,
+   "meshes": 1,
+   "bbox_min": [
+    -5.112,
+    -1.5,
+    -6.182
+   ],
+   "bbox_max": [
+    5.111,
+    1.5,
+    6.182
+   ],
+   "extent": [
+    10.223,
+    3.0,
+    12.364
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.7728,
+   "published_dim": {
+    "length": 16,
+    "width": 12,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.334,
+   "measured_by": "renderer"
+  },
+  "CSV-SM": {
+   "file": "CSV-SM.glb",
+   "ship": "CSV-SM",
+   "sha256": "ab9890d4e08179961d771bf3f71589c0ccec3df24c0b934f7ce95c6784438d5b",
+   "bytes": 897952,
+   "verts": 179335,
+   "meshes": 1,
+   "bbox_min": [
+    -2.077,
+    -1.382,
+    -2.916
+   ],
+   "bbox_max": [
+    2.06,
+    1.52,
+    3.159
+   ],
+   "extent": [
+    4.137,
+    2.902,
+    6.075
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.6943,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": 1
+   },
+   "shape_err": 0.082,
+   "measured_by": "renderer"
+  },
+  "Carrack": {
+   "file": "Carrack.glb",
+   "ship": "Carrack",
+   "sha256": "04a5cd5261534c69ed5e0aad9f654b460ad1c6a97fbb91937df90081cebd40ff",
+   "bytes": 579848,
+   "verts": 117144,
+   "meshes": 1,
+   "bbox_min": [
+    -38.136,
+    -12.613,
+    -56.404
+   ],
+   "bbox_max": [
+    38.137,
+    23.557,
+    69.17
+   ],
+   "extent": [
+    76.273,
+    36.17,
+    125.574
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9966,
+   "published_dim": {
+    "length": 126,
+    "width": 74,
+    "height": 30
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.07,
+   "measured_by": "renderer"
+  },
+  "Carrack_Expedition": {
+   "file": "Carrack_Expedition.glb",
+   "ship": "Carrack Expedition",
+   "sha256": "04a5cd5261534c69ed5e0aad9f654b460ad1c6a97fbb91937df90081cebd40ff",
+   "bytes": 579848,
+   "verts": 117144,
+   "meshes": 1,
+   "bbox_min": [
+    -38.136,
+    -12.613,
+    -56.404
+   ],
+   "bbox_max": [
+    38.137,
+    23.557,
+    69.17
+   ],
+   "extent": [
+    76.273,
+    36.17,
+    125.574
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9966,
+   "published_dim": {
+    "length": 126,
+    "width": 74,
+    "height": 30
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.07,
+   "measured_by": "renderer"
+  },
+  "Carrack_Expedition_w_C8X": {
+   "file": "Carrack_Expedition_w_C8X.glb",
+   "ship": null,
+   "sha256": "04a5cd5261534c69ed5e0aad9f654b460ad1c6a97fbb91937df90081cebd40ff",
+   "bytes": 579848,
+   "verts": 117144,
+   "meshes": 1,
+   "bbox_min": [
+    -38.1362,
+    -12.6133,
+    -56.4041
+   ],
+   "bbox_max": [
+    38.1391,
+    23.5559,
+    69.1704
+   ],
+   "extent": [
+    76.275,
+    36.169,
+    125.575
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Carrack_w_C8X": {
+   "file": "Carrack_w_C8X.glb",
+   "ship": null,
+   "sha256": "04a5cd5261534c69ed5e0aad9f654b460ad1c6a97fbb91937df90081cebd40ff",
+   "bytes": 579848,
+   "verts": 117144,
+   "meshes": 1,
+   "bbox_min": [
+    -38.1362,
+    -12.6133,
+    -56.4041
+   ],
+   "bbox_max": [
+    38.1391,
+    23.5559,
+    69.1704
+   ],
+   "extent": [
+    76.275,
+    36.169,
+    125.575
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Caterpillar": {
+   "file": "Caterpillar.glb",
+   "ship": "Caterpillar",
+   "sha256": "07941103ff0b12aedb91eaa74246c73a2580872230d4358f91f16905a1ba5591",
+   "bytes": 977188,
+   "verts": 175310,
+   "meshes": 1,
+   "bbox_min": [
+    -19.752,
+    -6.531,
+    -55.781
+   ],
+   "bbox_max": [
+    19.751,
+    6.66,
+    55.78
+   ],
+   "extent": [
+    39.503,
+    13.191,
+    111.561
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0005,
+   "published_dim": {
+    "length": 111.5,
+    "width": 39.5,
+    "height": 13.4
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.002,
+   "measured_by": "renderer"
+  },
+  "Caterpillar_Best_In_Show_Edition_2949": {
+   "file": "Caterpillar_Best_In_Show_Edition_2949.glb",
+   "ship": null,
+   "sha256": "07941103ff0b12aedb91eaa74246c73a2580872230d4358f91f16905a1ba5591",
+   "bytes": 977188,
+   "verts": 175310,
+   "meshes": 1,
+   "bbox_min": [
+    -19.7517,
+    -6.5305,
+    -55.781
+   ],
+   "bbox_max": [
+    19.7531,
+    6.6616,
+    55.78
+   ],
+   "extent": [
+    39.505,
+    13.192,
+    111.561
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Caterpillar_Pirate_Edition": {
+   "file": "Caterpillar_Pirate_Edition.glb",
+   "ship": null,
+   "sha256": "07941103ff0b12aedb91eaa74246c73a2580872230d4358f91f16905a1ba5591",
+   "bytes": 977188,
+   "verts": 175310,
+   "meshes": 1,
+   "bbox_min": [
+    -19.7517,
+    -6.5305,
+    -55.781
+   ],
+   "bbox_max": [
+    19.7531,
+    6.6616,
+    55.78
+   ],
+   "extent": [
+    39.505,
+    13.192,
+    111.561
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Centurion": {
+   "file": "Centurion.glb",
+   "ship": "Centurion",
+   "sha256": "89b4d7a8807ff7ef9b77db5f5162ea4cf251a6df05eac48ffeb9255e735fa19e",
+   "bytes": 1733096,
+   "verts": 305228,
+   "meshes": 1,
+   "bbox_min": [
+    -3.403,
+    -2.677,
+    -8.326
+   ],
+   "bbox_max": [
+    3.352,
+    2.577,
+    8.321
+   ],
+   "extent": [
+    6.755,
+    5.254,
+    16.647
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9792,
+   "published_dim": {
+    "length": 17,
+    "width": 7,
+    "height": 5.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.014,
+   "measured_by": "renderer"
+  },
+  "Clipper": {
+   "file": "Clipper.glb",
+   "ship": null,
+   "sha256": "8b2f5a9891f68a0b63a3bc3232d784694a9636c965b8fd748dd102f2cad91ffd",
+   "bytes": 2141280,
+   "verts": 486400,
+   "meshes": 1,
+   "bbox_min": [
+    -21.136,
+    -6.347,
+    -14.547
+   ],
+   "bbox_max": [
+    28.345,
+    6.676,
+    12.69
+   ],
+   "extent": [
+    49.481,
+    13.023,
+    27.237
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "renderer"
+  },
+  "Constellation_Andromeda": {
+   "file": "Constellation_Andromeda.glb",
+   "ship": "Constellation Andromeda",
+   "sha256": "50e0bdabfe597da41ed34c91bc36298f42b2455016be53ed83d7aa062d8c1aea",
+   "bytes": 2602528,
+   "verts": 551174,
+   "meshes": 1,
+   "bbox_min": [
+    -13.136,
+    -6.628,
+    -30.403
+   ],
+   "bbox_max": [
+    13.135,
+    6.63,
+    30.404
+   ],
+   "extent": [
+    26.271,
+    13.258,
+    60.807
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9576,
+   "published_dim": {
+    "length": 63.5,
+    "width": 27.75,
+    "height": 15.25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.027,
+   "measured_by": "renderer"
+  },
+  "Constellation_Phoenix": {
+   "file": "Constellation_Phoenix.glb",
+   "ship": "Constellation Phoenix",
+   "sha256": "f90025060aa28fe04b2ad4c53cf76a7b5ea82b89231171588aa3c30d52a1532f",
+   "bytes": 2349984,
+   "verts": 494725,
+   "meshes": 1,
+   "bbox_min": [
+    -13.313,
+    -6.579,
+    -30.379
+   ],
+   "bbox_max": [
+    13.313,
+    6.679,
+    30.377
+   ],
+   "extent": [
+    26.626,
+    13.258,
+    60.756
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9568,
+   "published_dim": {
+    "length": 63.5,
+    "width": 27.75,
+    "height": 15.25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.023,
+   "measured_by": "renderer"
+  },
+  "Constellation_Phoenix_Emerald": {
+   "file": "Constellation_Phoenix_Emerald.glb",
+   "ship": "Constellation Phoenix Emerald",
+   "sha256": "91a5002da8dbea23e5c79470594f5c248afbe4f7d0e9a8588055ca079a6dc76c",
+   "bytes": 2350036,
+   "verts": 494739,
+   "meshes": 1,
+   "bbox_min": [
+    -13.313,
+    -6.579,
+    -30.379
+   ],
+   "bbox_max": [
+    13.313,
+    6.679,
+    30.377
+   ],
+   "extent": [
+    26.626,
+    13.258,
+    60.756
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9568,
+   "published_dim": {
+    "length": 63.5,
+    "width": 27.75,
+    "height": 15.25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.023,
+   "measured_by": "renderer"
+  },
+  "Constellation_Taurus": {
+   "file": "Constellation_Taurus.glb",
+   "ship": "Constellation Taurus",
+   "sha256": "889cdf0f8e6415864ec3aa3dc5cd16a1478ff5afe5dd97570c1505aa98b14cc2",
+   "bytes": 1948060,
+   "verts": 404814,
+   "meshes": 1,
+   "bbox_min": [
+    -13.136,
+    -6.099,
+    -29.456
+   ],
+   "bbox_max": [
+    13.137,
+    7.156,
+    29.457
+   ],
+   "extent": [
+    26.273,
+    13.255,
+    58.913
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8416,
+   "published_dim": {
+    "length": 70,
+    "width": 27.75,
+    "height": 15.25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.057,
+   "measured_by": "renderer"
+  },
+  "Corsair": {
+   "file": "Corsair.glb",
+   "ship": "Corsair",
+   "sha256": "ee5c4864c299d69ef5821f9a55de138797730a4c690ee4df8eff8e3cf7e292d6",
+   "bytes": 2560604,
+   "verts": 593951,
+   "meshes": 1,
+   "bbox_min": [
+    -27.063,
+    -12.897,
+    -23.51
+   ],
+   "bbox_max": [
+    27.064,
+    12.896,
+    23.511
+   ],
+   "extent": [
+    54.127,
+    25.793,
+    47.021
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0213,
+   "published_dim": {
+    "length": 53,
+    "width": 30,
+    "height": 25
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.308,
+   "measured_by": "renderer"
+  },
+  "Crucible": {
+   "file": "Crucible.glb",
+   "ship": null,
+   "sha256": "07e7afef1e75d1b48671bb0dc2777672c3bae8c0e541f725622d67c2b3f1a6cb",
+   "bytes": 1261624,
+   "verts": 238382,
+   "meshes": 1,
+   "bbox_min": [
+    -0.36,
+    -0.1363,
+    -0.445
+   ],
+   "bbox_max": [
+    0.36,
+    0.1362,
+    0.445
+   ],
+   "extent": [
+    0.72,
+    0.272,
+    0.89
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Cutlass_Black_Best_In_Show_Edition_2949": {
+   "file": "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+   "ship": null,
+   "sha256": "1c2dac61eaa38be8a4a8e6e02204bb7ab2e9aab335d22c037b45dc4d081e9971",
+   "bytes": 728552,
+   "verts": 150610,
+   "meshes": 1,
+   "bbox_min": [
+    -13.0732,
+    -5.1179,
+    -17.8591
+   ],
+   "bbox_max": [
+    13.0724,
+    5.1178,
+    17.8584
+   ],
+   "extent": [
+    26.146,
+    10.236,
+    35.718
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Cutlass_Blue": {
+   "file": "Cutlass_Blue.glb",
+   "ship": "Cutlass Blue",
+   "sha256": "cdbcf8c8940ecb3b2c163e1c0038a06a24e1c57de8add18c6df2a835be4eb2db",
+   "bytes": 1831956,
+   "verts": 339852,
+   "meshes": 1,
+   "bbox_min": [
+    -13.064,
+    -5.116,
+    -17.869
+   ],
+   "bbox_max": [
+    13.063,
+    5.117,
+    17.869
+   ],
+   "extent": [
+    26.127,
+    10.233,
+    35.738
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.953,
+   "published_dim": {
+    "length": 37.5,
+    "width": 26.5,
+    "height": 11.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.045,
+   "measured_by": "renderer"
+  },
+  "Cutlass_Red": {
+   "file": "Cutlass_Red.glb",
+   "ship": "Cutlass Red",
+   "sha256": "936f4f362c36468d36db18032edee15cbc6fbf85b2a0794aa571782f7e6da3d3",
+   "bytes": 1232064,
+   "verts": 213113,
+   "meshes": 1,
+   "bbox_min": [
+    -13.064,
+    -5.404,
+    -13.993
+   ],
+   "bbox_max": [
+    13.063,
+    4.584,
+    22.065
+   ],
+   "extent": [
+    26.127,
+    9.988,
+    36.058
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9615,
+   "published_dim": {
+    "length": 37.5,
+    "width": 26.5,
+    "height": 11.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.048,
+   "measured_by": "renderer"
+  },
+  "Cutlass_Steel": {
+   "file": "Cutlass_Steel.glb",
+   "ship": "Cutlass Steel",
+   "sha256": "1c2dac61eaa38be8a4a8e6e02204bb7ab2e9aab335d22c037b45dc4d081e9971",
+   "bytes": 728552,
+   "verts": 150610,
+   "meshes": 1,
+   "bbox_min": [
+    -13.073,
+    -5.118,
+    -17.859
+   ],
+   "bbox_max": [
+    13.073,
+    5.118,
+    17.858
+   ],
+   "extent": [
+    26.146,
+    10.236,
+    35.717
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9525,
+   "published_dim": {
+    "length": 37.5,
+    "width": 26.5,
+    "height": 11.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.045,
+   "measured_by": "renderer"
+  },
+  "Cutter": {
+   "file": "Cutter.glb",
+   "ship": "Cutter",
+   "sha256": "87fda4fcecdd01be249c016f968328f54604d8057a0ea924a6861b2c990cee8a",
+   "bytes": 2478560,
+   "verts": 513067,
+   "meshes": 1,
+   "bbox_min": [
+    -6.337,
+    -2.793,
+    -9.932
+   ],
+   "bbox_max": [
+    6.386,
+    2.766,
+    9.961
+   ],
+   "extent": [
+    12.723,
+    5.559,
+    19.893
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9947,
+   "published_dim": {
+    "length": 20,
+    "width": 16,
+    "height": 6
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.181,
+   "measured_by": "renderer"
+  },
+  "Cutter_Rambler": {
+   "file": "Cutter_Rambler.glb",
+   "ship": "Cutter Rambler",
+   "sha256": "490921e63c7f64ffcbf78df9b8172c0c6fff115d1b6c257c68583c472d83cbc4",
+   "bytes": 2493664,
+   "verts": 509385,
+   "meshes": 1,
+   "bbox_min": [
+    -6.361,
+    -3.264,
+    -9.855
+   ],
+   "bbox_max": [
+    6.361,
+    3.264,
+    9.855
+   ],
+   "extent": [
+    12.722,
+    6.528,
+    19.71
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9855,
+   "published_dim": {
+    "length": 20,
+    "width": 16,
+    "height": 6
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.186,
+   "measured_by": "renderer"
+  },
+  "Cutter_Scout": {
+   "file": "Cutter_Scout.glb",
+   "ship": "Cutter Scout",
+   "sha256": "fcf28fab5c0a278f8474b7ad04f21b614f2ab564a67261505db2b926945f68de",
+   "bytes": 2150600,
+   "verts": 488228,
+   "meshes": 1,
+   "bbox_min": [
+    -6.361,
+    -2.851,
+    -9.655
+   ],
+   "bbox_max": [
+    6.362,
+    3.642,
+    9.733
+   ],
+   "extent": [
+    12.723,
+    6.493,
+    19.388
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9694,
+   "published_dim": {
+    "length": 20,
+    "width": 16,
+    "height": 6
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.179,
+   "measured_by": "renderer"
+  },
+  "Cyclone": {
+   "file": "Cyclone.glb",
+   "ship": "Cyclone",
+   "sha256": "6ef25f7f9b9ea001474c91c26e3d686b4d6c4e583f34598ef9e7c55d00bc6d58",
+   "bytes": 481080,
+   "verts": 81341,
+   "meshes": 1,
+   "bbox_min": [
+    -1.878,
+    -0.001,
+    -2.845
+   ],
+   "bbox_max": [
+    1.878,
+    2.309,
+    2.832
+   ],
+   "extent": [
+    3.756,
+    2.31,
+    5.677
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.6488,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.031,
+   "measured_by": "renderer"
+  },
+  "Cyclone_AA": {
+   "file": "Cyclone_AA.glb",
+   "ship": "Cyclone AA",
+   "sha256": "98f0a7d038241d198bfe18205c3ae6a222f2724836b9d405d61148fcafa29b02",
+   "bytes": 1991512,
+   "verts": 304124,
+   "meshes": 1,
+   "bbox_min": [
+    -1.609,
+    -0.939,
+    -3.247
+   ],
+   "bbox_max": [
+    1.591,
+    1.637,
+    2.439
+   ],
+   "extent": [
+    3.2,
+    2.576,
+    5.686
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.6498,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.176,
+   "measured_by": "renderer"
+  },
+  "Cyclone_MT": {
+   "file": "Cyclone_MT.glb",
+   "ship": "Cyclone MT",
+   "sha256": "8d60d135e482393cad26b45b0b89c4140fc614b93ceac4ba88b7ddf830e70e53",
+   "bytes": 1175508,
+   "verts": 201656,
+   "meshes": 1,
+   "bbox_min": [
+    -1.882,
+    -1.951,
+    -2.837
+   ],
+   "bbox_max": [
+    1.882,
+    1.95,
+    2.837
+   ],
+   "extent": [
+    3.764,
+    3.901,
+    5.674
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.6485,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 1,
+    "up": 0,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.265,
+   "measured_by": "renderer"
+  },
+  "Cyclone_RC": {
+   "file": "Cyclone_RC.glb",
+   "ship": "Cyclone RC",
+   "sha256": "dcf8e1cd863dd7d5ded2e6232d5d65c4adb92ff05925044f43ccec3cbd94333d",
+   "bytes": 1662280,
+   "verts": 257477,
+   "meshes": 1,
+   "bbox_min": [
+    -1.609,
+    -0.939,
+    -3.247
+   ],
+   "bbox_max": [
+    1.591,
+    1.316,
+    2.439
+   ],
+   "extent": [
+    3.2,
+    2.255,
+    5.686
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.6498,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.126,
+   "measured_by": "renderer"
+  },
+  "Cyclone_RN": {
+   "file": "Cyclone_RN.glb",
+   "ship": "Cyclone RN",
+   "sha256": "0331d0c0ca8a558f05aead3979df4e3252b24cb82cc0bfd0793faaa60a9e9052",
+   "bytes": 2372672,
+   "verts": 376278,
+   "meshes": 1,
+   "bbox_min": [
+    -1.609,
+    -0.939,
+    -3.247
+   ],
+   "bbox_max": [
+    1.591,
+    1.393,
+    2.439
+   ],
+   "extent": [
+    3.2,
+    2.332,
+    5.686
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.6498,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.133,
+   "measured_by": "renderer"
+  },
+  "Cyclone_TR": {
+   "file": "Cyclone_TR.glb",
+   "ship": "Cyclone TR",
+   "sha256": "483eb89ff8318c00d31fa23987432829c47422484967db866ab7bec2bbdb72f8",
+   "bytes": 1739352,
+   "verts": 263895,
+   "meshes": 1,
+   "bbox_min": [
+    -1.609,
+    -0.939,
+    -3.247
+   ],
+   "bbox_max": [
+    1.591,
+    1.854,
+    2.439
+   ],
+   "extent": [
+    3.2,
+    2.793,
+    5.686
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.6498,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.214,
+   "measured_by": "renderer"
+  },
+  "Defender": {
+   "file": "Defender.glb",
+   "ship": null,
+   "sha256": "c65bf8ac0c39726870b70db05d7e038fd81290da5a22f533ec01a019feee5544",
+   "bytes": 1134996,
+   "verts": 228093,
+   "meshes": 1,
+   "bbox_min": [
+    -8.424,
+    -2.929,
+    -18.896
+   ],
+   "bbox_max": [
+    8.423,
+    2.93,
+    18.896
+   ],
+   "extent": [
+    16.847,
+    5.859,
+    37.792
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "renderer"
+  },
+  "Dragonfly_Black": {
+   "file": "Dragonfly_Black.glb",
+   "ship": null,
+   "sha256": "072aba8f52b43bb9f86662008553913e198115a21eb6d40eff394364959a390d",
+   "bytes": 2478732,
+   "verts": 515679,
+   "meshes": 1,
+   "bbox_min": [
+    -1.1364,
+    -0.6807,
+    -3.2425
+   ],
+   "bbox_max": [
+    1.1364,
+    0.681,
+    3.2425
+   ],
+   "extent": [
+    2.273,
+    1.362,
+    6.485
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Dragonfly_Yellowjacket": {
+   "file": "Dragonfly_Yellowjacket.glb",
+   "ship": "Dragonfly Yellowjacket",
+   "sha256": "fd43579a5522fd81a7b813f1d795a8994796e6e57a4e90d58845359b0cd63472",
+   "bytes": 2478668,
+   "verts": 515667,
+   "meshes": 1,
+   "bbox_min": [
+    -1.136,
+    -0.681,
+    -3.242
+   ],
+   "bbox_max": [
+    1.136,
+    0.681,
+    3.243
+   ],
+   "extent": [
+    2.272,
+    1.362,
+    6.485
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9264,
+   "published_dim": {
+    "length": 7,
+    "width": 2.5,
+    "height": 2
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.082,
+   "measured_by": "renderer"
+  },
+  "E1_Spirit": {
+   "file": "E1_Spirit.glb",
+   "ship": null,
+   "sha256": "13f2bba1fd53629bbd0cea9cdbb28582e081c9c74c3c789c6b51c48a8a0ef99e",
+   "bytes": 2523576,
+   "verts": 536329,
+   "meshes": 1,
+   "bbox_min": [
+    -21.9196,
+    -4.2472,
+    -23.3849
+   ],
+   "bbox_max": [
+    21.7185,
+    4.5484,
+    23.3299
+   ],
+   "extent": [
+    43.638,
+    8.796,
+    46.715
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Eclipse": {
+   "file": "Eclipse.glb",
+   "ship": null,
+   "sha256": "c900392bfa36cbf22d2489b0d458ee56bcb179c7f7df1fd87e1eab684b79801b",
+   "bytes": 796012,
+   "verts": 175211,
+   "meshes": 1,
+   "bbox_min": [
+    -18.459,
+    -1.985,
+    -10.249
+   ],
+   "bbox_max": [
+    18.459,
+    1.984,
+    10.248
+   ],
+   "extent": [
+    36.918,
+    3.969,
+    20.497
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "renderer"
+  },
+  "Endeavor": {
+   "file": "Endeavor.glb",
+   "ship": null,
+   "sha256": "1bffc537592e967e2bfe418654539c75028cedc95e0962c53fd7eaafc129ed6c",
+   "bytes": 1347740,
+   "verts": 273761,
+   "meshes": 1,
+   "bbox_min": [
+    -2.0135,
+    -0.875,
+    -8.5567
+   ],
+   "bbox_max": [
+    2.0134,
+    0.8748,
+    8.5562
+   ],
+   "extent": [
+    4.027,
+    1.75,
+    17.113
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Expanse": {
+   "file": "Expanse.glb",
+   "ship": null,
+   "sha256": "d014c1312d5788824dacf22fd63122a510365d33a71c25c0cc1501cec533fd57",
+   "bytes": 3097720,
+   "verts": 520131,
+   "meshes": 1,
+   "bbox_min": [
+    -10.6448,
+    -5.0424,
+    -17.7707
+   ],
+   "bbox_max": [
+    10.7309,
+    5.057,
+    17.8144
+   ],
+   "extent": [
+    21.376,
+    10.099,
+    35.585
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "F7A_Hornet_Mk_I": {
+   "file": "F7A_Hornet_Mk_I.glb",
+   "ship": "F7A Hornet Mk I",
+   "sha256": "885d58bb46ba04d9b16fc47f4408cc51e2a1a8f2f56726e1a4a771f403f3e6f7",
+   "bytes": 1221236,
+   "verts": 340369,
+   "meshes": 1,
+   "bbox_min": [
+    -10.887,
+    -2.566,
+    -11.293
+   ],
+   "bbox_max": [
+    10.886,
+    2.567,
+    11.292
+   ],
+   "extent": [
+    21.773,
+    5.133,
+    22.585
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.7995,
+   "published_dim": {
+    "length": 28.25,
+    "width": 25.5,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.1,
+   "measured_by": "renderer"
+  },
+  "F7A_Hornet_Mk_II": {
+   "file": "F7A_Hornet_Mk_II.glb",
+   "ship": "F7A Hornet Mk II",
+   "sha256": "2cc643e4ef510938c061941cd2d5c3e6569cb384974bd88c4a79f361cbc205f3",
+   "bytes": 1116088,
+   "verts": 195337,
+   "meshes": 1,
+   "bbox_min": [
+    -10.984,
+    -2.425,
+    -11.123
+   ],
+   "bbox_max": [
+    10.985,
+    2.294,
+    11.154
+   ],
+   "extent": [
+    21.969,
+    4.719,
+    22.277
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9901,
+   "published_dim": {
+    "length": 22.5,
+    "width": 22,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.085,
+   "measured_by": "renderer"
+  },
+  "F7C-M_Super_Hornet_Heartseeker_Mk_I": {
+   "file": "F7C-M_Super_Hornet_Heartseeker_Mk_I.glb",
+   "ship": null,
+   "sha256": "8706f55e0223b3c4f922a17806a3cef935f1f0f4c7e6a495e64602bd8920563d",
+   "bytes": 1544684,
+   "verts": 500190,
+   "meshes": 1,
+   "bbox_min": [
+    -12.1673,
+    -3.126,
+    -12.0767
+   ],
+   "bbox_max": [
+    12.1677,
+    3.1262,
+    12.0765
+   ],
+   "extent": [
+    24.335,
+    6.252,
+    24.153
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "F7C-M_Super_Hornet_Mk_I": {
+   "file": "F7C-M_Super_Hornet_Mk_I.glb",
+   "ship": "F7C-M Super Hornet Mk I",
+   "sha256": "8706f55e0223b3c4f922a17806a3cef935f1f0f4c7e6a495e64602bd8920563d",
+   "bytes": 1544684,
+   "verts": 500190,
+   "meshes": 1,
+   "bbox_min": [
+    -12.167,
+    -3.126,
+    -12.077
+   ],
+   "bbox_max": [
+    12.168,
+    3.126,
+    12.077
+   ],
+   "extent": [
+    24.335,
+    6.252,
+    24.154
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8614,
+   "published_dim": {
+    "length": 28.25,
+    "width": 25.5,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.098,
+   "measured_by": "renderer"
+  },
+  "F7C-M_Super_Hornet_Mk_II": {
+   "file": "F7C-M_Super_Hornet_Mk_II.glb",
+   "ship": "F7C-M Super Hornet Mk II",
+   "sha256": "a85f0b6906d882c86937ba123a5a3593266016af14c534b3afbaf23bc63deec9",
+   "bytes": 905224,
+   "verts": 208251,
+   "meshes": 1,
+   "bbox_min": [
+    -12.942,
+    -2.63,
+    -12.38
+   ],
+   "bbox_max": [
+    11.257,
+    2.629,
+    11.498
+   ],
+   "extent": [
+    24.199,
+    5.259,
+    23.878
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9949,
+   "published_dim": {
+    "length": 24,
+    "width": 24,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.067,
+   "measured_by": "renderer"
+  },
+  "F7C-R_Hornet_Tracker_Mk_I": {
+   "file": "F7C-R_Hornet_Tracker_Mk_I.glb",
+   "ship": "F7C-R Hornet Tracker Mk I",
+   "sha256": "05dc0fa0aec655814f7f8ad71a00496e5f4b58a700f14862957a90ce426facc1",
+   "bytes": 1587644,
+   "verts": 433774,
+   "meshes": 1,
+   "bbox_min": [
+    -10.891,
+    -3.309,
+    -11.832
+   ],
+   "bbox_max": [
+    10.891,
+    3.309,
+    11.832
+   ],
+   "extent": [
+    21.782,
+    6.618,
+    23.664
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8377,
+   "published_dim": {
+    "length": 28.25,
+    "width": 25.5,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.032,
+   "measured_by": "renderer"
+  },
+  "F7C-R_Hornet_Tracker_Mk_II": {
+   "file": "F7C-R_Hornet_Tracker_Mk_II.glb",
+   "ship": "F7C-R Hornet Tracker Mk II",
+   "sha256": "b317808cb5c948248efea9b3bcc2cf726a6e757b34b053a42912accf98bfe198",
+   "bytes": 735252,
+   "verts": 122893,
+   "meshes": 1,
+   "bbox_min": [
+    -10.984,
+    -2.609,
+    -11.333
+   ],
+   "bbox_max": [
+    10.985,
+    2.609,
+    11.333
+   ],
+   "extent": [
+    21.969,
+    5.218,
+    22.666
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0074,
+   "published_dim": {
+    "length": 22.5,
+    "width": 22,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.067,
+   "measured_by": "renderer"
+  },
+  "F7C-S_Hornet_Ghost_Mk_I": {
+   "file": "F7C-S_Hornet_Ghost_Mk_I.glb",
+   "ship": "F7C-S Hornet Ghost Mk I",
+   "sha256": "b5d2af065398e17513e6f710c4142b97369a48e4c39e7f90389aea4e5269a0ef",
+   "bytes": 1263832,
+   "verts": 361430,
+   "meshes": 1,
+   "bbox_min": [
+    -10.887,
+    -3.154,
+    -11.293
+   ],
+   "bbox_max": [
+    10.886,
+    3.155,
+    11.292
+   ],
+   "extent": [
+    21.773,
+    6.309,
+    22.585
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.7995,
+   "published_dim": {
+    "length": 28.25,
+    "width": 25.5,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.075,
+   "measured_by": "renderer"
+  },
+  "F7C-S_Hornet_Ghost_Mk_II": {
+   "file": "F7C-S_Hornet_Ghost_Mk_II.glb",
+   "ship": "F7C-S Hornet Ghost Mk II",
+   "sha256": "6c7f7d1b3f46c1a850f540e7e04387f2ac00a5b82151116a137d0eadead0b2c4",
+   "bytes": 647124,
+   "verts": 106435,
+   "meshes": 1,
+   "bbox_min": [
+    -10.984,
+    -2.437,
+    -11.102
+   ],
+   "bbox_max": [
+    10.985,
+    2.437,
+    11.103
+   ],
+   "extent": [
+    21.969,
+    4.874,
+    22.205
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9869,
+   "published_dim": {
+    "length": 22.5,
+    "width": 22,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.081,
+   "measured_by": "renderer"
+  },
+  "F7C_Hornet_Mk_I": {
+   "file": "F7C_Hornet_Mk_I.glb",
+   "ship": "F7C Hornet Mk I",
+   "sha256": "885d58bb46ba04d9b16fc47f4408cc51e2a1a8f2f56726e1a4a771f403f3e6f7",
+   "bytes": 1221236,
+   "verts": 340369,
+   "meshes": 1,
+   "bbox_min": [
+    -10.887,
+    -2.566,
+    -11.293
+   ],
+   "bbox_max": [
+    10.886,
+    2.567,
+    11.292
+   ],
+   "extent": [
+    21.773,
+    5.133,
+    22.585
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.7995,
+   "published_dim": {
+    "length": 28.25,
+    "width": 25.5,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.1,
+   "measured_by": "renderer"
+  },
+  "F7C_Hornet_Mk_II": {
+   "file": "F7C_Hornet_Mk_II.glb",
+   "ship": "F7C Hornet Mk II",
+   "sha256": "d3a4a0cb7476f8335f2e17e7561fa91084a101ed1e5389dc534728b3a021108d",
+   "bytes": 679648,
+   "verts": 116097,
+   "meshes": 1,
+   "bbox_min": [
+    -10.984,
+    -1.075,
+    -10.829
+   ],
+   "bbox_max": [
+    10.984,
+    3.751,
+    11.431
+   ],
+   "extent": [
+    21.968,
+    4.826,
+    22.26
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9893,
+   "published_dim": {
+    "length": 22.5,
+    "width": 22,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.081,
+   "measured_by": "renderer"
+  },
+  "F7C_Hornet_Wildfire_Mk_I": {
+   "file": "F7C_Hornet_Wildfire_Mk_I.glb",
+   "ship": "F7C Hornet Wildfire Mk I",
+   "sha256": "4e33c3657ff89357e7b5200c4685ebbf59843b154fa3459b41d73aecfa459244",
+   "bytes": 890436,
+   "verts": 196703,
+   "meshes": 1,
+   "bbox_min": [
+    -10.815,
+    -2.63,
+    -11.277
+   ],
+   "bbox_max": [
+    10.815,
+    2.63,
+    11.277
+   ],
+   "extent": [
+    21.63,
+    5.26,
+    22.554
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.7984,
+   "published_dim": {
+    "length": 28.25,
+    "width": 25.5,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.089,
+   "measured_by": "renderer"
+  },
+  "F8C_Lightning": {
+   "file": "F8C_Lightning.glb",
+   "ship": "F8C Lightning",
+   "sha256": "5c5f9b36e922b02fb31371654e7298b666df3953eca26168d360595ed88052e3",
+   "bytes": 1021772,
+   "verts": 167621,
+   "meshes": 1,
+   "bbox_min": [
+    -12.815,
+    -2.859,
+    -12.143
+   ],
+   "bbox_max": [
+    12.815,
+    2.859,
+    12.143
+   ],
+   "extent": [
+    25.63,
+    5.718,
+    24.286
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9858,
+   "published_dim": {
+    "length": 26,
+    "width": 25,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": -1
+   },
+   "shape_err": 0.099,
+   "measured_by": "renderer"
+  },
+  "F8C_Lightning_Executive_Edition": {
+   "file": "F8C_Lightning_Executive_Edition.glb",
+   "ship": "F8C Lightning Executive Edition",
+   "sha256": "5c5f9b36e922b02fb31371654e7298b666df3953eca26168d360595ed88052e3",
+   "bytes": 1021772,
+   "verts": 167621,
+   "meshes": 1,
+   "bbox_min": [
+    -12.815,
+    -2.859,
+    -12.143
+   ],
+   "bbox_max": [
+    12.815,
+    2.859,
+    12.143
+   ],
+   "extent": [
+    25.63,
+    5.718,
+    24.286
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9858,
+   "published_dim": {
+    "length": 26,
+    "width": 25,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": -1
+   },
+   "shape_err": 0.099,
+   "measured_by": "renderer"
+  },
+  "Fortune": {
+   "file": "Fortune.glb",
+   "ship": "MISC Fortune",
+   "sha256": "42b0dca25ee3af5e59d0f8e33e03f836e9f50d5bbecd39ec1ada5765ab7e4d4c",
+   "bytes": 1165628,
+   "verts": 243099,
+   "meshes": 1,
+   "bbox_min": [
+    -7.636,
+    -3.021,
+    -14.61
+   ],
+   "bbox_max": [
+    7.635,
+    3.022,
+    14.61
+   ],
+   "extent": [
+    15.271,
+    6.043,
+    29.22
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.1026,
+   "published_dim": {
+    "length": 26.5,
+    "width": 16.5,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.195,
+   "measured_by": "renderer"
+  },
+  "Freelancer": {
+   "file": "Freelancer.glb",
+   "ship": "MISC Freelancer",
+   "sha256": "c8917321e1f4a03989e2204f140b02a1240227ff93394eb2cfcae5fa4de8009e",
+   "bytes": 3570780,
+   "verts": 862557,
+   "meshes": 1,
+   "bbox_min": [
+    -12.446,
+    -4.051,
+    -16.084
+   ],
+   "bbox_max": [
+    12.446,
+    4.052,
+    16.085
+   ],
+   "extent": [
+    24.892,
+    8.103,
+    32.169
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8466,
+   "published_dim": {
+    "length": 38,
+    "width": 23.5,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.157,
+   "measured_by": "renderer"
+  },
+  "Freelancer_DUR": {
+   "file": "Freelancer_DUR.glb",
+   "ship": "MISC Freelancer DUR",
+   "sha256": "6dbda6e9f7fc06bf8fc6ee0cdc759476e55e86906f14817d0d6c900a0b19029d",
+   "bytes": 1172016,
+   "verts": 262693,
+   "meshes": 1,
+   "bbox_min": [
+    -11.293,
+    -4.398,
+    -18.586
+   ],
+   "bbox_max": [
+    11.292,
+    4.399,
+    18.586
+   ],
+   "extent": [
+    22.585,
+    8.797,
+    37.172
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9782,
+   "published_dim": {
+    "length": 38,
+    "width": 23.5,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.024,
+   "measured_by": "renderer"
+  },
+  "Freelancer_MAX": {
+   "file": "Freelancer_MAX.glb",
+   "ship": "MISC Freelancer MAX",
+   "sha256": "53b2d72ba828365a1e6ae60c4956a6c9042ee871d9fa994bb28e5549ab2b4c54",
+   "bytes": 1087284,
+   "verts": 246052,
+   "meshes": 1,
+   "bbox_min": [
+    -15.695,
+    -4.398,
+    -18.357
+   ],
+   "bbox_max": [
+    15.695,
+    4.398,
+    18.358
+   ],
+   "extent": [
+    31.39,
+    8.796,
+    36.715
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9662,
+   "published_dim": {
+    "length": 38,
+    "width": 34,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.05,
+   "measured_by": "renderer"
+  },
+  "Freelancer_MIS": {
+   "file": "Freelancer_MIS.glb",
+   "ship": "MISC Freelancer MIS",
+   "sha256": "62e7e97c6cbfbe0f4134168d67fa35e2dddcc0aed6235a1817d5731a05c5707b",
+   "bytes": 1155148,
+   "verts": 258846,
+   "meshes": 1,
+   "bbox_min": [
+    -11.292,
+    -4.398,
+    -18.586
+   ],
+   "bbox_max": [
+    11.293,
+    4.399,
+    18.586
+   ],
+   "extent": [
+    22.585,
+    8.797,
+    37.172
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9782,
+   "published_dim": {
+    "length": 38,
+    "width": 23.5,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.024,
+   "measured_by": "renderer"
+  },
+  "Fury_LX": {
+   "file": "Fury_LX.glb",
+   "ship": "Fury LX",
+   "sha256": "f9db3169732f0137e94852c0dd75a90c56177cd003d2dfadda11de21e6983ff1",
+   "bytes": 923328,
+   "verts": 142074,
+   "meshes": 1,
+   "bbox_min": [
+    -2.529,
+    -0.999,
+    -3.501
+   ],
+   "bbox_max": [
+    2.516,
+    1.564,
+    2.961
+   ],
+   "extent": [
+    5.045,
+    2.563,
+    6.462
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9231,
+   "published_dim": {
+    "length": 7,
+    "width": 5.4,
+    "height": 3
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.041,
+   "measured_by": "renderer"
+  },
+  "Fury_MX": {
+   "file": "Fury_MX.glb",
+   "ship": "Fury MX",
+   "sha256": "5262fdc046aa65fe68361e30bdb7e60c2414ca57cd2be028f14cee971e69c863",
+   "bytes": 806940,
+   "verts": 139350,
+   "meshes": 1,
+   "bbox_min": [
+    -2.668,
+    -1.433,
+    -3.034
+   ],
+   "bbox_max": [
+    2.668,
+    1.151,
+    3.291
+   ],
+   "extent": [
+    5.336,
+    2.584,
+    6.325
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9036,
+   "published_dim": {
+    "length": 7,
+    "width": 5.4,
+    "height": 3
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.092,
+   "measured_by": "renderer"
+  },
+  "G12": {
+   "file": "G12.glb",
+   "ship": null,
+   "sha256": "3fc096b7877abe22237d06884ad21d786365f4ac889b3d3b6f13ee716ff7303e",
+   "bytes": 2311448,
+   "verts": 440829,
+   "meshes": 1,
+   "bbox_min": [
+    -2.8901,
+    -1.5803,
+    -3.6037
+   ],
+   "bbox_max": [
+    2.8901,
+    1.5803,
+    3.6037
+   ],
+   "extent": [
+    5.78,
+    3.161,
+    7.207
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "G12a": {
+   "file": "G12a.glb",
+   "ship": null,
+   "sha256": "1ec93944c0e40acd3ad751f7d2c6189dc6537c1be936a9b847f46c3776290fee",
+   "bytes": 2686408,
+   "verts": 487915,
+   "meshes": 1,
+   "bbox_min": [
+    -2.8948,
+    -1.6934,
+    -3.8383
+   ],
+   "bbox_max": [
+    2.8949,
+    1.6934,
+    3.8384
+   ],
+   "extent": [
+    5.79,
+    3.387,
+    7.677
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "G12r": {
+   "file": "G12r.glb",
+   "ship": null,
+   "sha256": "f42457f7356cbf007783204197f8a8a9da08500e40349d092353a702c522538c",
+   "bytes": 2338076,
+   "verts": 440409,
+   "meshes": 1,
+   "bbox_min": [
+    -2.8914,
+    -1.5208,
+    -3.6995
+   ],
+   "bbox_max": [
+    2.8914,
+    1.5206,
+    3.6997
+   ],
+   "extent": [
+    5.783,
+    3.041,
+    7.399
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Galaxy": {
+   "file": "Galaxy.glb",
+   "ship": null,
+   "sha256": "847965a0078334084578f2d0473a8383a0a1e65b28e7f3cafcf3627db157eb88",
+   "bytes": 1803568,
+   "verts": 435000,
+   "meshes": 1,
+   "bbox_min": [
+    -29.924,
+    -9.9017,
+    -54.9326
+   ],
+   "bbox_max": [
+    29.8065,
+    10.0084,
+    55.0138
+   ],
+   "extent": [
+    59.73,
+    19.91,
+    109.946
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Genesis": {
+   "file": "Genesis.glb",
+   "ship": null,
+   "sha256": "27f16e1e3b51633e1db238bd3934e3106ee32bae452ced7a0d63d2fc9e03c89b",
+   "bytes": 708232,
+   "verts": 151946,
+   "meshes": 1,
+   "bbox_min": [
+    -0.2056,
+    -0.0512,
+    -0.2166
+   ],
+   "bbox_max": [
+    0.2174,
+    0.0512,
+    0.2166
+   ],
+   "extent": [
+    0.423,
+    0.102,
+    0.433
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Gladiator": {
+   "file": "Gladiator.glb",
+   "ship": "Gladiator",
+   "sha256": "ac3347cc611464de88dd028ba08c236b6995200666d07f593b723e0f57f083bf",
+   "bytes": 998328,
+   "verts": 173537,
+   "meshes": 1,
+   "bbox_min": [
+    -11.253,
+    -3.157,
+    -11.18
+   ],
+   "bbox_max": [
+    11.253,
+    3.157,
+    11.179
+   ],
+   "extent": [
+    22.506,
+    6.314,
+    22.359
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9893,
+   "published_dim": {
+    "length": 22.75,
+    "width": 21,
+    "height": 6
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": -1
+   },
+   "shape_err": 0.087,
+   "measured_by": "renderer"
+  },
+  "Gladius_Pirate_Edition": {
+   "file": "Gladius_Pirate_Edition.glb",
+   "ship": null,
+   "sha256": "bd358c62b6fd4ad94ceddb82dd30f253edcf9bf6054bf91f0f2bb8c35d5a67d1",
+   "bytes": 1240936,
+   "verts": 221709,
+   "meshes": 1,
+   "bbox_min": [
+    -8.477,
+    -2.8073,
+    -9.8756
+   ],
+   "bbox_max": [
+    8.4768,
+    2.807,
+    9.8758
+   ],
+   "extent": [
+    16.954,
+    5.614,
+    19.751
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Gladius_Valiant": {
+   "file": "Gladius_Valiant.glb",
+   "ship": "Gladius Valiant",
+   "sha256": "1f488071676b7c20bffb53e040859c4dd32c93e0f8851fd87f1878e654249901",
+   "bytes": 870912,
+   "verts": 194853,
+   "meshes": 1,
+   "bbox_min": [
+    -8.677,
+    -2.563,
+    -10.438
+   ],
+   "bbox_max": [
+    8.677,
+    2.563,
+    10.438
+   ],
+   "extent": [
+    17.354,
+    5.126,
+    20.876
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9941,
+   "published_dim": {
+    "length": 21,
+    "width": 17.5,
+    "height": 5.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.018,
+   "measured_by": "renderer"
+  },
+  "Glaive": {
+   "file": "Glaive.glb",
+   "ship": "Glaive",
+   "sha256": "67083418561dc59a1143addeba5fb28fa13e27bdfd889f9c9ea895b88c4dd68a",
+   "bytes": 749884,
+   "verts": 115300,
+   "meshes": 1,
+   "bbox_min": [
+    -10.446,
+    -4.205,
+    -15.377
+   ],
+   "bbox_max": [
+    10.446,
+    4.203,
+    15.378
+   ],
+   "extent": [
+    20.892,
+    8.408,
+    30.755
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.932,
+   "published_dim": {
+    "length": 33,
+    "width": 24,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": 1
+   },
+   "shape_err": 0.049,
+   "measured_by": "renderer"
+  },
+  "Golem": {
+   "file": "Golem.glb",
+   "ship": "Golem",
+   "sha256": "f903f4d99ec9c2d640ecc9876052ce40e661a990ddd30cd803752e1966d9dae5",
+   "bytes": 946072,
+   "verts": 187477,
+   "meshes": 1,
+   "bbox_min": [
+    -3.728,
+    -2.179,
+    -7.702
+   ],
+   "bbox_max": [
+    3.728,
+    2.179,
+    7.702
+   ],
+   "extent": [
+    7.456,
+    4.358,
+    15.404
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9938,
+   "published_dim": {
+    "length": 15.5,
+    "width": 7,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.072,
+   "measured_by": "renderer"
+  },
+  "Golem_OX": {
+   "file": "Golem_OX.glb",
+   "ship": "Golem OX",
+   "sha256": "188414b925f768fcd1a6c0e0a31616f79802dbf99e70309883c9d7c04e396a99",
+   "bytes": 2681164,
+   "verts": 542329,
+   "meshes": 1,
+   "bbox_min": [
+    -5.019,
+    -2.18,
+    -7.702
+   ],
+   "bbox_max": [
+    5.019,
+    2.179,
+    7.702
+   ],
+   "extent": [
+    10.038,
+    4.359,
+    15.404
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9938,
+   "published_dim": {
+    "length": 15.5,
+    "width": 7,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.24,
+   "measured_by": "renderer"
+  },
+  "Guardian": {
+   "file": "Guardian.glb",
+   "ship": "Guardian",
+   "sha256": "7937e74dd4435992810f9a8b889d1e7d8de19feb9d5fe749211fdc54f542db42",
+   "bytes": 1782720,
+   "verts": 333655,
+   "meshes": 1,
+   "bbox_min": [
+    -8.353,
+    -4.431,
+    -12.526
+   ],
+   "bbox_max": [
+    8.354,
+    4.431,
+    12.526
+   ],
+   "extent": [
+    16.707,
+    8.862,
+    25.052
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0309,
+   "published_dim": {
+    "length": 24.3,
+    "width": 16.3,
+    "height": 9.1
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.025,
+   "measured_by": "renderer"
+  },
+  "Guardian_MX": {
+   "file": "Guardian_MX.glb",
+   "ship": "Guardian MX",
+   "sha256": "691fc0297f5704eef1a56c2b1fb3e5151f0b6457a94197c96df440c4b9e0fb74",
+   "bytes": 1898140,
+   "verts": 331158,
+   "meshes": 1,
+   "bbox_min": [
+    -10.018,
+    -5.731,
+    -12.222
+   ],
+   "bbox_max": [
+    10.017,
+    5.73,
+    12.223
+   ],
+   "extent": [
+    20.035,
+    11.461,
+    24.445
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9402,
+   "published_dim": {
+    "length": 26,
+    "width": 17,
+    "height": 10
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.25,
+   "measured_by": "renderer"
+  },
+  "Guardian_QI": {
+   "file": "Guardian_QI.glb",
+   "ship": "Guardian QI",
+   "sha256": "ccb070960a36690b3698a20d4b56dc0bac99182206dbdebd40c7ba9475e5e712",
+   "bytes": 1862172,
+   "verts": 348172,
+   "meshes": 1,
+   "bbox_min": [
+    -8.353,
+    -4.431,
+    -12.526
+   ],
+   "bbox_max": [
+    8.353,
+    4.431,
+    12.804
+   ],
+   "extent": [
+    16.706,
+    8.862,
+    25.33
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0424,
+   "published_dim": {
+    "length": 24.3,
+    "width": 16.3,
+    "height": 9.1
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.036,
+   "measured_by": "renderer"
+  },
+  "Hammerhead": {
+   "file": "Hammerhead.glb",
+   "ship": "Hammerhead",
+   "sha256": "e1fec5029088b2b6246993db128147ec1b6c64300780601aa165c0f32071c9bc",
+   "bytes": 3608636,
+   "verts": 605220,
+   "meshes": 1,
+   "bbox_min": [
+    -37.143,
+    -8.203,
+    -58.149
+   ],
+   "bbox_max": [
+    37.144,
+    8.202,
+    58.148
+   ],
+   "extent": [
+    74.287,
+    16.405,
+    116.297
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9691,
+   "published_dim": {
+    "length": 120,
+    "width": 72,
+    "height": 16
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": 1
+   },
+   "shape_err": 0.046,
+   "measured_by": "renderer"
+  },
+  "Hammerhead_Best_In_Show_Edition_2949": {
+   "file": "Hammerhead_Best_In_Show_Edition_2949.glb",
+   "ship": null,
+   "sha256": "9b35410a872dcd1efd2ae8fc09f11b11a17cb6a69ecc580da1bafd4f71851f4d",
+   "bytes": 3608560,
+   "verts": 605214,
+   "meshes": 1,
+   "bbox_min": [
+    -37.1427,
+    -8.203,
+    -58.1486
+   ],
+   "bbox_max": [
+    37.1421,
+    8.2038,
+    58.1476
+   ],
+   "extent": [
+    74.285,
+    16.407,
+    116.296
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Hawk": {
+   "file": "Hawk.glb",
+   "ship": "Hawk",
+   "sha256": "5f890c0255822cc04ac1eae7ced516ea84427933793a4965b5db7abd5a4cdc4e",
+   "bytes": 1915564,
+   "verts": 347812,
+   "meshes": 1,
+   "bbox_min": [
+    -11.43,
+    -4.415,
+    -7.087
+   ],
+   "bbox_max": [
+    11.43,
+    2.363,
+    9.931
+   ],
+   "extent": [
+    22.86,
+    6.778,
+    17.018
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9939,
+   "published_dim": {
+    "length": 23,
+    "width": 17,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": -1
+   },
+   "shape_err": 0.057,
+   "measured_by": "renderer"
+  },
+  "Herald": {
+   "file": "Herald.glb",
+   "ship": "Herald",
+   "sha256": "3f8b36fd6760d6b36d4fc841a1bf8e341e903d67d1d5d4112fdfe3c26d470ebd",
+   "bytes": 1048440,
+   "verts": 211132,
+   "meshes": 1,
+   "bbox_min": [
+    -6.064,
+    -4.404,
+    -11.755
+   ],
+   "bbox_max": [
+    6.065,
+    4.403,
+    11.756
+   ],
+   "extent": [
+    12.129,
+    8.807,
+    23.511
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9499,
+   "published_dim": {
+    "length": 24.75,
+    "width": 12.5,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.022,
+   "measured_by": "renderer"
+  },
+  "HoverQuad": {
+   "file": "HoverQuad.glb",
+   "ship": "HoverQuad",
+   "sha256": "1002a5e20e74b1ea83ec76f90d4f8c03c06a534c703a032c593b5153dd989e60",
+   "bytes": 824584,
+   "verts": 137509,
+   "meshes": 1,
+   "bbox_min": [
+    -1.127,
+    -0.614,
+    -2.163
+   ],
+   "bbox_max": [
+    1.127,
+    0.621,
+    2.158
+   ],
+   "extent": [
+    2.254,
+    1.235,
+    4.321
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.839,
+   "published_dim": {
+    "length": 5.15,
+    "width": 1.45,
+    "height": 1.32
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": 1
+   },
+   "shape_err": 0.27,
+   "measured_by": "renderer"
+  },
+  "Hull_A": {
+   "file": "Hull_A.glb",
+   "ship": "MISC Hull A",
+   "sha256": "a091d877ad393e8b20e3089cb309edf965f6b1eb8b0fdb152999048e70080c31",
+   "bytes": 579688,
+   "verts": 106144,
+   "meshes": 1,
+   "bbox_min": [
+    -5.072,
+    -1.852,
+    -11.98
+   ],
+   "bbox_max": [
+    5.63,
+    2.414,
+    9.621
+   ],
+   "extent": [
+    10.702,
+    4.266,
+    21.601
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.72,
+   "published_dim": {
+    "length": 30,
+    "width": 12.5,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.148,
+   "measured_by": "renderer"
+  },
+  "Hull_B": {
+   "file": "Hull_B.glb",
+   "ship": "MISC Hull B",
+   "sha256": "65bdef8cab2fdd097102fec46f5227a5610332cc24b4e54d1653e302e9bac9f6",
+   "bytes": 944264,
+   "verts": 178181,
+   "meshes": 1,
+   "bbox_min": [
+    -9.121,
+    -8.725,
+    -26.361
+   ],
+   "bbox_max": [
+    8.874,
+    9.36,
+    22.888
+   ],
+   "extent": [
+    17.995,
+    18.085,
+    49.249
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.6936,
+   "published_dim": {
+    "length": 71,
+    "width": 16.7,
+    "height": 10.7
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.347,
+   "measured_by": "renderer"
+  },
+  "Hull_C": {
+   "file": "Hull_C.glb",
+   "ship": "MISC Hull C",
+   "sha256": "14d3fafdc67df58444b4f6fb9578ead51b7c510cb160ef8df019784b602a63af",
+   "bytes": 1784872,
+   "verts": 323166,
+   "meshes": 1,
+   "bbox_min": [
+    -21.659,
+    -22.905,
+    -46.633
+   ],
+   "bbox_max": [
+    21.823,
+    20.577,
+    57.835
+   ],
+   "extent": [
+    43.482,
+    43.482,
+    104.468
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.1459,
+   "published_dim": {
+    "length": 91.17,
+    "width": 36.05,
+    "height": 26.28
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.149,
+   "measured_by": "renderer"
+  },
+  "Hull_D": {
+   "file": "Hull_D.glb",
+   "ship": null,
+   "sha256": "8d7f25c366bd63c79f1f688680c4982bf4c299e0b0e2f321939b5a0873acf8be",
+   "bytes": 2494788,
+   "verts": 456996,
+   "meshes": 1,
+   "bbox_min": [
+    -37.9591,
+    -39.9004,
+    -85.8919
+   ],
+   "bbox_max": [
+    38.4314,
+    36.4903,
+    123.6832
+   ],
+   "extent": [
+    76.391,
+    76.391,
+    209.575
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Hull_E": {
+   "file": "Hull_E.glb",
+   "ship": null,
+   "sha256": "5e14a203ddd35511e3fba90529d2af91a2ae46143ad38b876bba163c09f57fd7",
+   "bytes": 3701160,
+   "verts": 700297,
+   "meshes": 1,
+   "bbox_min": [
+    -56.1883,
+    -57.7471,
+    -179.7073
+   ],
+   "bbox_max": [
+    56.3202,
+    54.7289,
+    191.5785
+   ],
+   "extent": [
+    112.508,
+    112.476,
+    371.286
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Hurricane": {
+   "file": "Hurricane.glb",
+   "ship": "Hurricane",
+   "sha256": "6b2b55792f04562593064f85b0092ef471f1275227a7b0dd28513a06764e41a5",
+   "bytes": 2299776,
+   "verts": 435046,
+   "meshes": 1,
+   "bbox_min": [
+    -9.13,
+    -3.326,
+    -9.744
+   ],
+   "bbox_max": [
+    9.13,
+    1.203,
+    11.609
+   ],
+   "extent": [
+    18.26,
+    4.529,
+    21.353
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8897,
+   "published_dim": {
+    "length": 24,
+    "width": 18.5,
+    "height": 6.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.143,
+   "measured_by": "renderer"
+  },
+  "Idris-M": {
+   "file": "Idris-M.glb",
+   "ship": "Idris-M",
+   "sha256": "8852030bc1840d562fd0f515415596576e2556f3ed420b224e0905abb407857c",
+   "bytes": 2107264,
+   "verts": 395792,
+   "meshes": 1,
+   "bbox_min": [
+    -63.328,
+    -25.699,
+    -119.199
+   ],
+   "bbox_max": [
+    63.329,
+    25.697,
+    119.199
+   ],
+   "extent": [
+    126.657,
+    51.396,
+    238.398
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9811,
+   "published_dim": {
+    "length": 243,
+    "width": 127,
+    "height": 57.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.03,
+   "measured_by": "renderer"
+  },
+  "Idris-P": {
+   "file": "Idris-P.glb",
+   "ship": "Idris-P",
+   "sha256": "f0a15115e8c5d47d965299a49c351e672147f9321a4c6f11b83edb8632707ceb",
+   "bytes": 2045856,
+   "verts": 384487,
+   "meshes": 1,
+   "bbox_min": [
+    -63.328,
+    -22.626,
+    -116.604
+   ],
+   "bbox_max": [
+    63.333,
+    22.626,
+    116.603
+   ],
+   "extent": [
+    126.661,
+    45.252,
+    233.207
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9597,
+   "published_dim": {
+    "length": 243,
+    "width": 127,
+    "height": 57.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.063,
+   "measured_by": "renderer"
+  },
+  "Intrepid": {
+   "file": "Intrepid.glb",
+   "ship": "Intrepid",
+   "sha256": "2f10e400950bc603a979e0550e741cb68f4e6046753fd70fc24491d9bd47b22c",
+   "bytes": 1354028,
+   "verts": 286288,
+   "meshes": 1,
+   "bbox_min": [
+    -10.189,
+    -2.706,
+    -11.518
+   ],
+   "bbox_max": [
+    10.188,
+    2.706,
+    11.518
+   ],
+   "extent": [
+    20.377,
+    5.412,
+    23.036
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9985,
+   "published_dim": {
+    "length": 23.07,
+    "width": 20.18,
+    "height": 6.13
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.041,
+   "measured_by": "renderer"
+  },
+  "Ironclad": {
+   "file": "Ironclad.glb",
+   "ship": "Ironclad",
+   "sha256": "2bfb5f127b758f87459ef88ab4cca4ee088874995956826f8767d435cd9ce069",
+   "bytes": 2850596,
+   "verts": 578936,
+   "meshes": 1,
+   "bbox_min": [
+    -24.269,
+    -10.538,
+    -59.85
+   ],
+   "bbox_max": [
+    24.122,
+    10.54,
+    59.887
+   ],
+   "extent": [
+    48.391,
+    21.078,
+    119.737
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0234,
+   "published_dim": {
+    "length": 117,
+    "width": 50,
+    "height": 25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.061,
+   "measured_by": "renderer"
+  },
+  "Ironclad_Assault": {
+   "file": "Ironclad_Assault.glb",
+   "ship": "Ironclad Assault",
+   "sha256": "c2ef6f8a41c7b1105ef6b045260e51ab539d17e6998296ba2d3969638a945f99",
+   "bytes": 2850672,
+   "verts": 578947,
+   "meshes": 1,
+   "bbox_min": [
+    -24.269,
+    -10.538,
+    -59.85
+   ],
+   "bbox_max": [
+    24.122,
+    10.54,
+    59.887
+   ],
+   "extent": [
+    48.391,
+    21.078,
+    119.737
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0234,
+   "published_dim": {
+    "length": 117,
+    "width": 50,
+    "height": 25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.061,
+   "measured_by": "renderer"
+  },
+  "Javelin": {
+   "file": "Javelin.glb",
+   "ship": null,
+   "sha256": "2f43f2e25089ce3b89aa74ef19a6cb55962a9e1332831159ce26b87b1aed4efb",
+   "bytes": 2554276,
+   "verts": 564995,
+   "meshes": 1,
+   "bbox_min": [
+    -113.056,
+    -43.241,
+    -234.527
+   ],
+   "bbox_max": [
+    113.068,
+    43.252,
+    234.527
+   ],
+   "extent": [
+    226.124,
+    86.493,
+    469.054
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "renderer"
+  },
+  "Khartu-Al": {
+   "file": "Khartu-Al.glb",
+   "ship": null,
+   "sha256": "58aaa8c81372eb0f52251e41aceaad4ea37f006ef4334c5afa5f82c8e418f285",
+   "bytes": 420104,
+   "verts": 125289,
+   "meshes": 1,
+   "bbox_min": [
+    -9.3968,
+    -14.6214,
+    -5.3773
+   ],
+   "bbox_max": [
+    9.3962,
+    14.6216,
+    5.3779
+   ],
+   "extent": [
+    18.793,
+    29.243,
+    10.755
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Kraken": {
+   "file": "Kraken.glb",
+   "ship": null,
+   "sha256": "7f9e8cc60a121f5a044c6577163abc558d0e190cad437b8ab5195eae38e7e934",
+   "bytes": 2268356,
+   "verts": 459077,
+   "meshes": 1,
+   "bbox_min": [
+    -53.6309,
+    -32.2206,
+    -140.4408
+   ],
+   "bbox_max": [
+    53.6283,
+    32.2164,
+    140.446
+   ],
+   "extent": [
+    107.259,
+    64.437,
+    280.887
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Kraken_Privateer": {
+   "file": "Kraken_Privateer.glb",
+   "ship": null,
+   "sha256": "6757b840d9f99e970ee016d10d011888020c305b279be8ca813798d4b034ccd7",
+   "bytes": 2268360,
+   "verts": 459079,
+   "meshes": 1,
+   "bbox_min": [
+    -53.6309,
+    -32.2206,
+    -140.4408
+   ],
+   "bbox_max": [
+    53.6283,
+    32.2164,
+    140.446
+   ],
+   "extent": [
+    107.259,
+    64.437,
+    280.887
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "L-21_Wolf": {
+   "file": "L-21_Wolf.glb",
+   "ship": "L-21 Wolf",
+   "sha256": "0992d83e56bfe8ac87ffd109eb250f1a8d7113de21de1972b715b737f0f201b8",
+   "bytes": 1166188,
+   "verts": 215148,
+   "meshes": 1,
+   "bbox_min": [
+    -5.271,
+    -2.45,
+    -10.802
+   ],
+   "bbox_max": [
+    5.27,
+    2.45,
+    10.802
+   ],
+   "extent": [
+    10.541,
+    4.9,
+    21.604
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0048,
+   "published_dim": {
+    "length": 21.5,
+    "width": 10.5,
+    "height": 4.2
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.032,
+   "measured_by": "renderer"
+  },
+  "L-22_Alpha_Wolf": {
+   "file": "L-22_Alpha_Wolf.glb",
+   "ship": "L-22 Alpha Wolf",
+   "sha256": "b59827cb71ba0956f91aec2d30a3342c7b6dcc1a35ba0a0f95cd61f2e19d0471",
+   "bytes": 1250420,
+   "verts": 238212,
+   "meshes": 1,
+   "bbox_min": [
+    -5.271,
+    -1.759,
+    -10.767
+   ],
+   "bbox_max": [
+    5.27,
+    1.759,
+    10.768
+   ],
+   "extent": [
+    10.541,
+    3.518,
+    21.535
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0016,
+   "published_dim": {
+    "length": 21.5,
+    "width": 10.5,
+    "height": 4.2
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.033,
+   "measured_by": "renderer"
+  },
+  "Legionnaire": {
+   "file": "Legionnaire.glb",
+   "ship": null,
+   "sha256": "85f571790c49d5e623381f850ec9c20908a3c5446920c125daa7bb38d3c60a8c",
+   "bytes": 2374724,
+   "verts": 457246,
+   "meshes": 1,
+   "bbox_min": [
+    -11.6845,
+    -5.4207,
+    -15.6806
+   ],
+   "bbox_max": [
+    11.7421,
+    5.5374,
+    15.6957
+   ],
+   "extent": [
+    23.427,
+    10.958,
+    31.376
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Liberator": {
+   "file": "Liberator.glb",
+   "ship": null,
+   "sha256": "59bf6ac41faa4daaead62a0a5f2b471c2da76de3716889c9fdbe6ed5ff6ada62",
+   "bytes": 4595664,
+   "verts": 1102122,
+   "meshes": 1,
+   "bbox_min": [
+    -33.4278,
+    -12.5748,
+    -59.1303
+   ],
+   "bbox_max": [
+    33.4531,
+    12.6242,
+    59.1652
+   ],
+   "extent": [
+    66.881,
+    25.199,
+    118.296
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Lynx": {
+   "file": "Lynx.glb",
+   "ship": "Lynx",
+   "sha256": "7462ee223dd3a67b59715599100361e116601bfeab7320dfd697722a7068b7c3",
+   "bytes": 438736,
+   "verts": 69223,
+   "meshes": 1,
+   "bbox_min": [
+    -2.759,
+    -1.593,
+    -3.873
+   ],
+   "bbox_max": [
+    2.739,
+    1.582,
+    3.872
+   ],
+   "extent": [
+    5.498,
+    3.175,
+    7.745
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9994,
+   "published_dim": {
+    "length": 7.75,
+    "width": 5.7,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.067,
+   "measured_by": "renderer"
+  },
+  "M2_Hercules": {
+   "file": "M2_Hercules.glb",
+   "ship": null,
+   "sha256": "f7c5810154ccb81b5bda49301e6b0f1ed69394e4863614d8cdffb12bdd1c73a7",
+   "bytes": 1692356,
+   "verts": 394987,
+   "meshes": 1,
+   "bbox_min": [
+    -35.5053,
+    2.2347,
+    -41.6775
+   ],
+   "bbox_max": [
+    35.5343,
+    23.9907,
+    52.8421
+   ],
+   "extent": [
+    71.04,
+    21.756,
+    94.52
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "M50": {
+   "file": "M50.glb",
+   "ship": null,
+   "sha256": "a3b87d60f2450f6396de9c7dc3f9c25e8de5dad5c4cf61eb46c12a0ea22b5e77",
+   "bytes": 851980,
+   "verts": 167665,
+   "meshes": 1,
+   "bbox_min": [
+    -5.0188,
+    -1.2296,
+    -5.481
+   ],
+   "bbox_max": [
+    5.019,
+    1.2296,
+    5.4811
+   ],
+   "extent": [
+    10.038,
+    2.459,
+    10.962
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "MDC": {
+   "file": "MDC.glb",
+   "ship": null,
+   "sha256": "3e58fe7f90af617489df646d66cf27472aca470126167bdf9a37aa563fa061d6",
+   "bytes": 452288,
+   "verts": 62613,
+   "meshes": 1,
+   "bbox_min": [
+    -2.6193,
+    -1.8998,
+    -3.6252
+   ],
+   "bbox_max": [
+    2.6196,
+    1.9003,
+    3.6254
+   ],
+   "extent": [
+    5.239,
+    3.8,
+    7.251
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "MOLE": {
+   "file": "MOLE.glb",
+   "ship": "MOLE",
+   "sha256": "e231f3ba4c1d255b3308758ff505d0fa53659d8055735d494e10fe3d0b8c3c3c",
+   "bytes": 2531940,
+   "verts": 489371,
+   "meshes": 1,
+   "bbox_min": [
+    -12.863,
+    -6.666,
+    -21.125
+   ],
+   "bbox_max": [
+    12.863,
+    6.667,
+    21.125
+   ],
+   "extent": [
+    25.726,
+    13.333,
+    42.25
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9389,
+   "published_dim": {
+    "length": 45,
+    "width": 26,
+    "height": 15
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.049,
+   "measured_by": "renderer"
+  },
+  "MPUV_Cargo": {
+   "file": "MPUV_Cargo.glb",
+   "ship": "MPUV Cargo",
+   "sha256": "b9e2fd04a4d30728cb0962cd16500cf4d862689a06e8eb3d9a32565c41e4820a",
+   "bytes": 903824,
+   "verts": 168093,
+   "meshes": 1,
+   "bbox_min": [
+    -4.255,
+    -2.145,
+    -4.609
+   ],
+   "bbox_max": [
+    4.255,
+    2.145,
+    4.609
+   ],
+   "extent": [
+    8.51,
+    4.29,
+    9.218
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8779,
+   "published_dim": {
+    "length": 10.5,
+    "width": 9,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.077,
+   "measured_by": "renderer"
+  },
+  "MPUV_Personnel": {
+   "file": "MPUV_Personnel.glb",
+   "ship": "MPUV Personnel",
+   "sha256": "39c998f8f11181ff4066c31a6b1609ad5243cc5a2ca2f9866e925e5902289bb4",
+   "bytes": 1034152,
+   "verts": 187392,
+   "meshes": 1,
+   "bbox_min": [
+    -4.255,
+    -2.147,
+    -4.738
+   ],
+   "bbox_max": [
+    4.255,
+    2.147,
+    4.738
+   ],
+   "extent": [
+    8.51,
+    4.294,
+    9.476
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9025,
+   "published_dim": {
+    "length": 10.5,
+    "width": 9,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.064,
+   "measured_by": "renderer"
+  },
+  "MPUV_Tractor": {
+   "file": "MPUV_Tractor.glb",
+   "ship": "MPUV Tractor",
+   "sha256": "25bdb7f31470f8e55f8c7a0113a7eb1d3052367e6e199bee3b70e3ce374e63ef",
+   "bytes": 841136,
+   "verts": 149642,
+   "meshes": 1,
+   "bbox_min": [
+    -3.878,
+    -2.066,
+    -4.602
+   ],
+   "bbox_max": [
+    3.878,
+    2.066,
+    4.602
+   ],
+   "extent": [
+    7.756,
+    4.132,
+    9.204
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8766,
+   "published_dim": {
+    "length": 10.5,
+    "width": 9,
+    "height": 5.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.089,
+   "measured_by": "renderer"
+  },
+  "MTC": {
+   "file": "MTC.glb",
+   "ship": "MTC",
+   "sha256": "79052666205519b6e427ffba5deb7e251591732c33ce8e2216e852eef0d47c55",
+   "bytes": 518032,
+   "verts": 98486,
+   "meshes": 1,
+   "bbox_min": [
+    -2.618,
+    -2.054,
+    -3.513
+   ],
+   "bbox_max": [
+    2.618,
+    2.054,
+    3.513
+   ],
+   "extent": [
+    5.236,
+    4.108,
+    7.026
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.803,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.073,
+   "measured_by": "renderer"
+  },
+  "Mercury": {
+   "file": "Mercury.glb",
+   "ship": null,
+   "sha256": "ce4e2841eb9bffd910746a1234be614205f04c499e2784c74fe2d5b77418e85e",
+   "bytes": 2443924,
+   "verts": 440034,
+   "meshes": 1,
+   "bbox_min": [
+    -18.7391,
+    -3.0501,
+    -20.7351
+   ],
+   "bbox_max": [
+    18.7396,
+    7.0089,
+    19.8016
+   ],
+   "extent": [
+    37.479,
+    10.059,
+    40.537
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Meteor": {
+   "file": "Meteor.glb",
+   "ship": "Meteor",
+   "sha256": "6711acbeb7f4a32c1a317d24bcf522172c6e16d9998b050d157cbad8b43223ec",
+   "bytes": 570992,
+   "verts": 89542,
+   "meshes": 1,
+   "bbox_min": [
+    -8.406,
+    -3.24,
+    -14.828
+   ],
+   "bbox_max": [
+    8.407,
+    3.239,
+    14.827
+   ],
+   "extent": [
+    16.813,
+    6.479,
+    29.655
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9885,
+   "published_dim": {
+    "length": 30,
+    "width": 17,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.032,
+   "measured_by": "renderer"
+  },
+  "Mule": {
+   "file": "Mule.glb",
+   "ship": "Mule",
+   "sha256": "2613a5d20042fbb8df6d0b30cde51308316dc51612639b600aab455ef2a0b8b7",
+   "bytes": 1172188,
+   "verts": 245828,
+   "meshes": 1,
+   "bbox_min": [
+    -1.507,
+    -1.352,
+    -2.098
+   ],
+   "bbox_max": [
+    1.507,
+    1.343,
+    2.103
+   ],
+   "extent": [
+    3.014,
+    2.695,
+    4.201
+   ],
+   "scale_class": "other",
+   "model_units_per_metre": 0.4801,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.273,
+   "measured_by": "renderer"
+  },
+  "Mustang_Alpha": {
+   "file": "Mustang_Alpha.glb",
+   "ship": "Mustang Alpha",
+   "sha256": "7e473ccefb4d56504687669e17b967c0301f6ef6d49c185490df5b3c770706d2",
+   "bytes": 1012072,
+   "verts": 179862,
+   "meshes": 1,
+   "bbox_min": [
+    -9.026,
+    -2.735,
+    -11.15
+   ],
+   "bbox_max": [
+    9.025,
+    2.736,
+    11.15
+   ],
+   "extent": [
+    18.051,
+    5.471,
+    22.3
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0372,
+   "published_dim": {
+    "length": 21.5,
+    "width": 18,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.201,
+   "measured_by": "renderer"
+  },
+  "Mustang_Alpha_Vindicator": {
+   "file": "Mustang_Alpha_Vindicator.glb",
+   "ship": null,
+   "sha256": "7e473ccefb4d56504687669e17b967c0301f6ef6d49c185490df5b3c770706d2",
+   "bytes": 1012072,
+   "verts": 179862,
+   "meshes": 1,
+   "bbox_min": [
+    -9.026,
+    -2.735,
+    -11.1505
+   ],
+   "bbox_max": [
+    9.0256,
+    2.7352,
+    11.1502
+   ],
+   "extent": [
+    18.052,
+    5.47,
+    22.301
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Mustang_Beta": {
+   "file": "Mustang_Beta.glb",
+   "ship": "Mustang Beta",
+   "sha256": "1c6b7991fb9c92e4a8fafce93da2f7f3b288c3642ab8e5ac273a89507d8e35ee",
+   "bytes": 964544,
+   "verts": 172246,
+   "meshes": 1,
+   "bbox_min": [
+    -9.026,
+    -2.735,
+    -11.15
+   ],
+   "bbox_max": [
+    9.027,
+    2.734,
+    11.151
+   ],
+   "extent": [
+    18.053,
+    5.469,
+    22.301
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0373,
+   "published_dim": {
+    "length": 21.5,
+    "width": 18,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.201,
+   "measured_by": "renderer"
+  },
+  "Mustang_Delta": {
+   "file": "Mustang_Delta.glb",
+   "ship": "Mustang Delta",
+   "sha256": "6290da122cecb049e1db11a27c39b3d591c34afdc3b30c30abf5e6d6d37e0c42",
+   "bytes": 1290116,
+   "verts": 239359,
+   "meshes": 1,
+   "bbox_min": [
+    -9.026,
+    -2.735,
+    -11.15
+   ],
+   "bbox_max": [
+    9.026,
+    2.736,
+    11.15
+   ],
+   "extent": [
+    18.052,
+    5.471,
+    22.3
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0372,
+   "published_dim": {
+    "length": 21.5,
+    "width": 18,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.201,
+   "measured_by": "renderer"
+  },
+  "Mustang_Gamma": {
+   "file": "Mustang_Gamma.glb",
+   "ship": "Mustang Gamma",
+   "sha256": "35c906231550d5a2cf2eae4bcfbc5c8bca4685378e3c80cc36e947f6e81045a2",
+   "bytes": 910196,
+   "verts": 159566,
+   "meshes": 1,
+   "bbox_min": [
+    -9.026,
+    -2.735,
+    -10.61
+   ],
+   "bbox_max": [
+    9.026,
+    2.735,
+    10.61
+   ],
+   "extent": [
+    18.052,
+    5.47,
+    21.22
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.987,
+   "published_dim": {
+    "length": 21.5,
+    "width": 18,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.174,
+   "measured_by": "renderer"
+  },
+  "Mustang_Omega": {
+   "file": "Mustang_Omega.glb",
+   "ship": "Mustang Omega",
+   "sha256": "35c906231550d5a2cf2eae4bcfbc5c8bca4685378e3c80cc36e947f6e81045a2",
+   "bytes": 910196,
+   "verts": 159566,
+   "meshes": 1,
+   "bbox_min": [
+    -9.026,
+    -2.735,
+    -10.61
+   ],
+   "bbox_max": [
+    9.026,
+    2.735,
+    10.61
+   ],
+   "extent": [
+    18.052,
+    5.47,
+    21.22
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.987,
+   "published_dim": {
+    "length": 21.5,
+    "width": 18,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.174,
+   "measured_by": "renderer"
+  },
+  "Nautilus": {
+   "file": "Nautilus.glb",
+   "ship": null,
+   "sha256": "e8f50056d160dc6c0111770e0bb5910fe0853ee81c301f5def13b57fade9f35f",
+   "bytes": 2993780,
+   "verts": 689406,
+   "meshes": 1,
+   "bbox_min": [
+    -14.7542,
+    -7.1977,
+    -25.192
+   ],
+   "bbox_max": [
+    14.7538,
+    6.0539,
+    27.7686
+   ],
+   "extent": [
+    29.508,
+    13.252,
+    52.961
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Nautilus_Solstice_Edition": {
+   "file": "Nautilus_Solstice_Edition.glb",
+   "ship": null,
+   "sha256": "27059582a81b879e1566865430a96eec9d395f6d64d220fe8a6ed3a780fce8df",
+   "bytes": 2993852,
+   "verts": 689405,
+   "meshes": 1,
+   "bbox_min": [
+    -14.7542,
+    -7.1977,
+    -25.192
+   ],
+   "bbox_max": [
+    14.7538,
+    6.0539,
+    27.7686
+   ],
+   "extent": [
+    29.508,
+    13.252,
+    52.961
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Nomad": {
+   "file": "Nomad.glb",
+   "ship": "Nomad",
+   "sha256": "8deb0fa2b4b557fd2bbb67f89b669b6ede3a27e2b11be2c3097ab337c5fc02c1",
+   "bytes": 882768,
+   "verts": 167312,
+   "meshes": 1,
+   "bbox_min": [
+    -9.147,
+    -3.803,
+    -12.611
+   ],
+   "bbox_max": [
+    9.148,
+    3.803,
+    12.61
+   ],
+   "extent": [
+    18.295,
+    7.606,
+    25.221
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9341,
+   "published_dim": {
+    "length": 27,
+    "width": 19,
+    "height": 10
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.09,
+   "measured_by": "renderer"
+  },
+  "Nova": {
+   "file": "Nova.glb",
+   "ship": null,
+   "sha256": "44fc2031cebf479f696e1f22606b53a9cf63a439459c89310bffa87a60586cfc",
+   "bytes": 2848088,
+   "verts": 501408,
+   "meshes": 1,
+   "bbox_min": [
+    -3.651,
+    -2.55,
+    -7.956
+   ],
+   "bbox_max": [
+    3.651,
+    2.575,
+    7.955
+   ],
+   "extent": [
+    7.302,
+    5.125,
+    15.911
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "renderer"
+  },
+  "Nox": {
+   "file": "Nox.glb",
+   "ship": "Nox",
+   "sha256": "87eb0e5c17145b4e200a902427d2d8ce4552279f45f9edde7d29dabab17565b4",
+   "bytes": 421772,
+   "verts": 82772,
+   "meshes": 1,
+   "bbox_min": [
+    -0.659,
+    -0.782,
+    -2.144
+   ],
+   "bbox_max": [
+    0.659,
+    0.735,
+    3.018
+   ],
+   "extent": [
+    1.318,
+    1.517,
+    5.162
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0023,
+   "published_dim": {
+    "length": 5.15,
+    "width": 1.45,
+    "height": 1.32
+   },
+   "frame_axes": {
+    "lat": 1,
+    "up": 0,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.013,
+   "measured_by": "renderer"
+  },
+  "Nox_Kue": {
+   "file": "Nox_Kue.glb",
+   "ship": "Nox Kue",
+   "sha256": "87eb0e5c17145b4e200a902427d2d8ce4552279f45f9edde7d29dabab17565b4",
+   "bytes": 421772,
+   "verts": 82772,
+   "meshes": 1,
+   "bbox_min": [
+    -0.659,
+    -0.782,
+    -2.144
+   ],
+   "bbox_max": [
+    0.659,
+    0.735,
+    3.018
+   ],
+   "extent": [
+    1.318,
+    1.517,
+    5.162
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0023,
+   "published_dim": {
+    "length": 5.15,
+    "width": 1.45,
+    "height": 1.32
+   },
+   "frame_axes": {
+    "lat": 1,
+    "up": 0,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.013,
+   "measured_by": "renderer"
+  },
+  "Odyssey": {
+   "file": "Odyssey.glb",
+   "ship": null,
+   "sha256": "f77dd4cb114b7be9f07c8e52df930a88dd30e41347f56cda50ab2ae65f7995cc",
+   "bytes": 3243176,
+   "verts": 529652,
+   "meshes": 1,
+   "bbox_min": [
+    -39.9194,
+    -14.8613,
+    -77.0604
+   ],
+   "bbox_max": [
+    40.022,
+    14.3945,
+    77.0736
+   ],
+   "extent": [
+    79.941,
+    29.256,
+    154.134
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Orion": {
+   "file": "Orion.glb",
+   "ship": null,
+   "sha256": "cca76023e876599aafdac15a2602e2cbed6579b77787dbf429d26132182261bd",
+   "bytes": 4646168,
+   "verts": 693088,
+   "meshes": 1,
+   "bbox_min": [
+    -0.2607,
+    -0.2591,
+    -0.8519
+   ],
+   "bbox_max": [
+    0.2575,
+    0.2591,
+    0.8519
+   ],
+   "extent": [
+    0.518,
+    0.518,
+    1.704
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "P-52_Merlin": {
+   "file": "P-52_Merlin.glb",
+   "ship": "P-52 Merlin",
+   "sha256": "83c7eea39934edbaf4321fc19cd09e0f01b0b4e1f85ac6504ba19df464d77706",
+   "bytes": 559360,
+   "verts": 83226,
+   "meshes": 1,
+   "bbox_min": [
+    -3.858,
+    -1.139,
+    -5.991
+   ],
+   "bbox_max": [
+    3.848,
+    1.215,
+    5.977
+   ],
+   "extent": [
+    7.706,
+    2.354,
+    11.968
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9973,
+   "published_dim": {
+    "length": 12,
+    "width": 7.75,
+    "height": 3.25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.076,
+   "measured_by": "renderer"
+  },
+  "P-72_Archimedes": {
+   "file": "P-72_Archimedes.glb",
+   "ship": "P-72 Archimedes",
+   "sha256": "f04bbf0d36a9aded8d1eaecc9aa96322d4b8c497984a02c8d39a71b30fed80a7",
+   "bytes": 1069340,
+   "verts": 187679,
+   "meshes": 1,
+   "bbox_min": [
+    -4.111,
+    -1.144,
+    -6.121
+   ],
+   "bbox_max": [
+    4.111,
+    1.144,
+    6.122
+   ],
+   "extent": [
+    8.222,
+    2.288,
+    12.243
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0203,
+   "published_dim": {
+    "length": 12,
+    "width": 7.75,
+    "height": 3.25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.11,
+   "measured_by": "renderer"
+  },
+  "P-72_Archimedes_Emerald": {
+   "file": "P-72_Archimedes_Emerald.glb",
+   "ship": "P-72 Archimedes Emerald",
+   "sha256": "79e44ed26b0f79c06ed5a7f39ae725e1870f2ee17dc5c46dd8e84d61d82a7648",
+   "bytes": 1069384,
+   "verts": 187691,
+   "meshes": 1,
+   "bbox_min": [
+    -4.111,
+    -1.144,
+    -6.121
+   ],
+   "bbox_max": [
+    4.111,
+    1.144,
+    6.122
+   ],
+   "extent": [
+    8.222,
+    2.288,
+    12.243
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0203,
+   "published_dim": {
+    "length": 12,
+    "width": 7.75,
+    "height": 3.25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.11,
+   "measured_by": "renderer"
+  },
+  "Paladin": {
+   "file": "Paladin.glb",
+   "ship": "Paladin",
+   "sha256": "8fc40aa518b8bcfe5e0bc0a182ca98b6292b1d5caec17b3547b4c7f4e4eba472",
+   "bytes": 329120,
+   "verts": 60832,
+   "meshes": 1,
+   "bbox_min": [
+    -18.72,
+    -6.601,
+    -26.755
+   ],
+   "bbox_max": [
+    18.72,
+    6.601,
+    26.754
+   ],
+   "extent": [
+    37.44,
+    13.202,
+    53.509
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0002,
+   "published_dim": {
+    "length": 53.5,
+    "width": 38,
+    "height": 15.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.054,
+   "measured_by": "renderer"
+  },
+  "Perseus": {
+   "file": "Perseus.glb",
+   "ship": "Perseus",
+   "sha256": "2f86a0dade91afc13994ee6b0a3eafc8a43fabcde2d962c5f28261b48802843f",
+   "bytes": 2147960,
+   "verts": 438921,
+   "meshes": 1,
+   "bbox_min": [
+    -28.38,
+    -10.894,
+    -50.262
+   ],
+   "bbox_max": [
+    28.384,
+    10.895,
+    50.263
+   ],
+   "extent": [
+    56.764,
+    21.789,
+    100.525
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0052,
+   "published_dim": {
+    "length": 100,
+    "width": 50,
+    "height": 25
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.098,
+   "measured_by": "renderer"
+  },
+  "Pioneer": {
+   "file": "Pioneer.glb",
+   "ship": null,
+   "sha256": "dee739e3fe4b22d859a51d0f6d1041ad87c82970eb17c3b6de582396fa5f368f",
+   "bytes": 3380824,
+   "verts": 546915,
+   "meshes": 1,
+   "bbox_min": [
+    -0.6884,
+    -0.2686,
+    -1.2331
+   ],
+   "bbox_max": [
+    0.6885,
+    0.2686,
+    1.233
+   ],
+   "extent": [
+    1.377,
+    0.537,
+    2.466
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Polaris": {
+   "file": "Polaris.glb",
+   "ship": "Polaris",
+   "sha256": "2c344f5ae595773848d4c9ff2d6cb8279fc88566489e9a3a0587245536ef3c0f",
+   "bytes": 2636048,
+   "verts": 532484,
+   "meshes": 1,
+   "bbox_min": [
+    -16.252,
+    -6.859,
+    -31.279
+   ],
+   "bbox_max": [
+    16.186,
+    8.963,
+    31.346
+   ],
+   "extent": [
+    32.438,
+    15.822,
+    62.625
+   ],
+   "scale_class": "other",
+   "model_units_per_metre": 0.346,
+   "published_dim": {
+    "length": 181,
+    "width": 87,
+    "height": 40
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.069,
+   "measured_by": "renderer"
+  },
+  "Prospector": {
+   "file": "Prospector.glb",
+   "ship": "MISC Prospector",
+   "sha256": "a7b8226929707255474cfa26f336441b5022016b7dba3a992b2da444b326b714",
+   "bytes": 1738732,
+   "verts": 277615,
+   "meshes": 1,
+   "bbox_min": [
+    -7.6,
+    -3.357,
+    -11.811
+   ],
+   "bbox_max": [
+    7.48,
+    3.431,
+    11.883
+   ],
+   "extent": [
+    15.08,
+    6.788,
+    23.694
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8941,
+   "published_dim": {
+    "length": 26.5,
+    "width": 16.5,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.029,
+   "measured_by": "renderer"
+  },
+  "Prowler": {
+   "file": "Prowler.glb",
+   "ship": "Prowler",
+   "sha256": "6a559ffcead062ece5260866ae422dfcfc56920dbd3d55f7c0702222639cf6e3",
+   "bytes": 1529348,
+   "verts": 264702,
+   "meshes": 1,
+   "bbox_min": [
+    -13.619,
+    -6.67,
+    -16.604
+   ],
+   "bbox_max": [
+    13.619,
+    6.67,
+    16.605
+   ],
+   "extent": [
+    27.238,
+    13.34,
+    33.209
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9767,
+   "published_dim": {
+    "length": 34,
+    "width": 32,
+    "height": 15
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": 1
+   },
+   "shape_err": 0.16,
+   "measured_by": "renderer"
+  },
+  "Prowler_Utility": {
+   "file": "Prowler_Utility.glb",
+   "ship": "Prowler Utility",
+   "sha256": "00a712dfe0bc51e8d0f3caff694f38ae89bac840729533086db8f296c6e8a4ca",
+   "bytes": 1789024,
+   "verts": 321405,
+   "meshes": 1,
+   "bbox_min": [
+    -13.401,
+    -6.663,
+    -16.604
+   ],
+   "bbox_max": [
+    13.402,
+    6.663,
+    16.604
+   ],
+   "extent": [
+    26.803,
+    13.326,
+    33.208
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9767,
+   "published_dim": {
+    "length": 34,
+    "width": 32,
+    "height": 15
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.174,
+   "measured_by": "renderer"
+  },
+  "Pulse": {
+   "file": "Pulse.glb",
+   "ship": null,
+   "sha256": "55f983b584b3a248b5c08060e646ed1b855cbea3b9b9c14ad76ecfb23227f8ef",
+   "bytes": 1060988,
+   "verts": 166113,
+   "meshes": 1,
+   "bbox_min": [
+    -0.397,
+    -0.444,
+    -1.373
+   ],
+   "bbox_max": [
+    0.397,
+    0.444,
+    1.373
+   ],
+   "extent": [
+    0.794,
+    0.888,
+    2.746
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "renderer"
+  },
+  "Pulse_LX": {
+   "file": "Pulse_LX.glb",
+   "ship": null,
+   "sha256": "55f983b584b3a248b5c08060e646ed1b855cbea3b9b9c14ad76ecfb23227f8ef",
+   "bytes": 1060988,
+   "verts": 166113,
+   "meshes": 1,
+   "bbox_min": [
+    -0.397,
+    -0.444,
+    -1.373
+   ],
+   "bbox_max": [
+    0.397,
+    0.444,
+    1.373
+   ],
+   "extent": [
+    0.794,
+    0.888,
+    2.746
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "renderer"
+  },
+  "RAFT": {
+   "file": "RAFT.glb",
+   "ship": "RAFT",
+   "sha256": "5a549f88d060b9d34da4d453700a31ab5df4b600625ce5bffd0337ae878a3ca1",
+   "bytes": 2701700,
+   "verts": 591505,
+   "meshes": 1,
+   "bbox_min": [
+    -11.803,
+    -5.246,
+    -19.427
+   ],
+   "bbox_max": [
+    11.829,
+    6.549,
+    20.974
+   ],
+   "extent": [
+    23.632,
+    11.795,
+    40.401
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0228,
+   "published_dim": {
+    "length": 39.5,
+    "width": 23,
+    "height": 12
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.015,
+   "measured_by": "renderer"
+  },
+  "ROC": {
+   "file": "ROC.glb",
+   "ship": null,
+   "sha256": "3981dd37dee300b619d3c58ffb1537379dae0f270ef78112e7db2c5359ccdc18",
+   "bytes": 848808,
+   "verts": 155044,
+   "meshes": 1,
+   "bbox_min": [
+    -1.879,
+    -1.5874,
+    -3.7654
+   ],
+   "bbox_max": [
+    1.8788,
+    1.5873,
+    3.7655
+   ],
+   "extent": [
+    3.758,
+    3.175,
+    7.531
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "ROC-DS": {
+   "file": "ROC-DS.glb",
+   "ship": null,
+   "sha256": "a6e9eb38ce12958ceaf57a84c5cfadf84fd643d277fe7e14283534a9e427cf81",
+   "bytes": 1163336,
+   "verts": 203578,
+   "meshes": 1,
+   "bbox_min": [
+    -2.4149,
+    -1.6967,
+    -3.2596
+   ],
+   "bbox_max": [
+    2.415,
+    1.6966,
+    3.2595
+   ],
+   "extent": [
+    4.83,
+    3.393,
+    6.519
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Railen": {
+   "file": "Railen.glb",
+   "ship": "Railen",
+   "sha256": "accf1977ac1d8659ed17f34b77728baba1e0ca56d38f5b7c44e86e82d92a4267",
+   "bytes": 2742356,
+   "verts": 400333,
+   "meshes": 1,
+   "bbox_min": [
+    -25.732,
+    -33.702,
+    -27.037
+   ],
+   "bbox_max": [
+    26.346,
+    34.68,
+    27.045
+   ],
+   "extent": [
+    52.078,
+    68.382,
+    54.082
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0206,
+   "published_dim": {
+    "length": 67,
+    "width": 53,
+    "height": 52
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 0,
+    "len": 1,
+    "nose_sign": -1
+   },
+   "shape_err": 0.015,
+   "measured_by": "renderer"
+  },
+  "Ranger_CV": {
+   "file": "Ranger_CV.glb",
+   "ship": null,
+   "sha256": "711aeda67241ac13c31dd13bab892f319bafb0408e927f35e6d7111100b87b11",
+   "bytes": 1701252,
+   "verts": 376495,
+   "meshes": 1,
+   "bbox_min": [
+    -0.4536,
+    -0.7505,
+    -1.8785
+   ],
+   "bbox_max": [
+    0.4535,
+    0.7506,
+    1.8784
+   ],
+   "extent": [
+    0.907,
+    1.501,
+    3.757
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Ranger_RC": {
+   "file": "Ranger_RC.glb",
+   "ship": null,
+   "sha256": "701ac40acd1e206ae7b0414e3bbc96d3149eb80df6f6cc2cfc56bea1ef58b571",
+   "bytes": 2087076,
+   "verts": 395315,
+   "meshes": 1,
+   "bbox_min": [
+    -0.4536,
+    -0.2207,
+    -3.1625
+   ],
+   "bbox_max": [
+    0.4535,
+    1.1374,
+    0.6423
+   ],
+   "extent": [
+    0.907,
+    1.358,
+    3.805
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Ranger_TR": {
+   "file": "Ranger_TR.glb",
+   "ship": null,
+   "sha256": "d1fbe90a2fda108ea13d7570b3a113db8b297e1b9c5251be9d5c73800b615b6c",
+   "bytes": 1987320,
+   "verts": 469131,
+   "meshes": 1,
+   "bbox_min": [
+    -0.6244,
+    -0.679,
+    -1.8785
+   ],
+   "bbox_max": [
+    0.6243,
+    0.679,
+    1.8785
+   ],
+   "extent": [
+    1.249,
+    1.358,
+    3.757
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Razor": {
+   "file": "Razor.glb",
+   "ship": "Razor",
+   "sha256": "f510b86dedef92c2652ffa3269d3606f8f7d4e6f8a63ceeb8995136b84602cf8",
+   "bytes": 501820,
+   "verts": 72820,
+   "meshes": 1,
+   "bbox_min": [
+    -3.966,
+    -1.131,
+    -5.728
+   ],
+   "bbox_max": [
+    3.966,
+    1.13,
+    5.728
+   ],
+   "extent": [
+    7.932,
+    2.261,
+    11.456
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9165,
+   "published_dim": {
+    "length": 12.5,
+    "width": 9,
+    "height": 3
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.07,
+   "measured_by": "renderer"
+  },
+  "Razor_EX": {
+   "file": "Razor_EX.glb",
+   "ship": "Razor EX",
+   "sha256": "ef2f2886bda1572e17a713e251678aa19bb52adf048b9d2feaca9e10b6676903",
+   "bytes": 614424,
+   "verts": 139379,
+   "meshes": 1,
+   "bbox_min": [
+    -3.966,
+    -1.145,
+    -5.728
+   ],
+   "bbox_max": [
+    3.965,
+    1.145,
+    5.728
+   ],
+   "extent": [
+    7.931,
+    2.29,
+    11.456
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9165,
+   "published_dim": {
+    "length": 12.5,
+    "width": 9,
+    "height": 3
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.068,
+   "measured_by": "renderer"
+  },
+  "Razor_LX": {
+   "file": "Razor_LX.glb",
+   "ship": "Razor LX",
+   "sha256": "99fbb7ceb0edff994fd8313bdfc5caf2434a0c9835eca451c62763cd948dd255",
+   "bytes": 652568,
+   "verts": 148538,
+   "meshes": 1,
+   "bbox_min": [
+    -3.966,
+    -1.192,
+    -5.728
+   ],
+   "bbox_max": [
+    3.966,
+    1.192,
+    5.728
+   ],
+   "extent": [
+    7.932,
+    2.384,
+    11.456
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9165,
+   "published_dim": {
+    "length": 12.5,
+    "width": 9,
+    "height": 3
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.06,
+   "measured_by": "renderer"
+  },
+  "Reclaimer": {
+   "file": "Reclaimer.glb",
+   "ship": "Reclaimer",
+   "sha256": "99682c8660f1a5f3366068624cd4d4c9d79ea7a15afc526759ba5ad9a2e87dea",
+   "bytes": 3215104,
+   "verts": 860242,
+   "meshes": 1,
+   "bbox_min": [
+    -47.406,
+    -24.954,
+    -79.068
+   ],
+   "bbox_max": [
+    47.41,
+    24.949,
+    79.067
+   ],
+   "extent": [
+    94.816,
+    49.903,
+    158.135
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9883,
+   "published_dim": {
+    "length": 160,
+    "width": 120,
+    "height": 55
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": 1
+   },
+   "shape_err": 0.179,
+   "measured_by": "renderer"
+  },
+  "Reclaimer_Best_In_Show_Edition_2949": {
+   "file": "Reclaimer_Best_In_Show_Edition_2949.glb",
+   "ship": null,
+   "sha256": "10404052f4a17b7717be5faf356066226b8c517081d7c79cdcc1a1282334f0b6",
+   "bytes": 3215108,
+   "verts": 860242,
+   "meshes": 1,
+   "bbox_min": [
+    -47.4055,
+    -24.9536,
+    -79.0685
+   ],
+   "bbox_max": [
+    47.4065,
+    24.954,
+    79.0669
+   ],
+   "extent": [
+    94.812,
+    49.908,
+    158.135
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Redeemer": {
+   "file": "Redeemer.glb",
+   "ship": "Redeemer",
+   "sha256": "c33522a17d9c5afedf23987ce577059e19729552d708b38bc7cb7662ad11a6dd",
+   "bytes": 2604188,
+   "verts": 563911,
+   "meshes": 1,
+   "bbox_min": [
+    -11.723,
+    -3.832,
+    -26.636
+   ],
+   "bbox_max": [
+    11.758,
+    9.482,
+    24.055
+   ],
+   "extent": [
+    23.481,
+    13.314,
+    50.691
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9939,
+   "published_dim": {
+    "length": 51,
+    "width": 25,
+    "height": 14
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.039,
+   "measured_by": "renderer"
+  },
+  "Reliant_Kore": {
+   "file": "Reliant_Kore.glb",
+   "ship": "MISC Reliant Kore",
+   "sha256": "6bff6d5eca5963c096eee0b1a0765fc28a47f479467a81ca67bea1e60f2c886f",
+   "bytes": 764280,
+   "verts": 118279,
+   "meshes": 1,
+   "bbox_min": [
+    -6.357,
+    -15.024,
+    -6.501
+   ],
+   "bbox_max": [
+    4.746,
+    14.405,
+    8.928
+   ],
+   "extent": [
+    11.103,
+    29.429,
+    15.429
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0326,
+   "published_dim": {
+    "length": 28.5,
+    "width": 14.75,
+    "height": 4.5
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 0,
+    "len": 1,
+    "nose_sign": 1
+   },
+   "shape_err": 0.226,
+   "measured_by": "renderer"
+  },
+  "Reliant_Mako": {
+   "file": "Reliant_Mako.glb",
+   "ship": "MISC Reliant Mako",
+   "sha256": "fe55ef9b02a1b4d3a1f26157c208601045e49057636ff916732bdf08798e7d77",
+   "bytes": 1081104,
+   "verts": 181081,
+   "meshes": 1,
+   "bbox_min": [
+    -15.184,
+    -2.448,
+    -7.126
+   ],
+   "bbox_max": [
+    14.25,
+    2.667,
+    8.29
+   ],
+   "extent": [
+    29.434,
+    5.115,
+    15.416
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0328,
+   "published_dim": {
+    "length": 28.5,
+    "width": 14.75,
+    "height": 4.5
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.022,
+   "measured_by": "renderer"
+  },
+  "Reliant_Sen": {
+   "file": "Reliant_Sen.glb",
+   "ship": "MISC Reliant Sen",
+   "sha256": "d18b26f162cbc22abc248c330df5493483df80a5fe7622149c9088d257f3b3da",
+   "bytes": 1015060,
+   "verts": 170028,
+   "meshes": 1,
+   "bbox_min": [
+    -14.174,
+    -2.548,
+    -7.738
+   ],
+   "bbox_max": [
+    15.347,
+    2.63,
+    7.637
+   ],
+   "extent": [
+    29.521,
+    5.178,
+    15.375
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0358,
+   "published_dim": {
+    "length": 28.5,
+    "width": 14.75,
+    "height": 4.5
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.021,
+   "measured_by": "renderer"
+  },
+  "Reliant_Tana": {
+   "file": "Reliant_Tana.glb",
+   "ship": "MISC Reliant Tana",
+   "sha256": "97c846cd0ff216f5411488ad295f62a4e0cfbbe5a44f54e61ff62f71dbf12d45",
+   "bytes": 1056756,
+   "verts": 176007,
+   "meshes": 1,
+   "bbox_min": [
+    -15.357,
+    -2.42,
+    -5.561
+   ],
+   "bbox_max": [
+    15.202,
+    2.84,
+    8.123
+   ],
+   "extent": [
+    30.559,
+    5.26,
+    13.684
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0722,
+   "published_dim": {
+    "length": 28.5,
+    "width": 14.75,
+    "height": 4.5
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.084,
+   "measured_by": "renderer"
+  },
+  "Retaliator": {
+   "file": "Retaliator.glb",
+   "ship": "Retaliator",
+   "sha256": "7bafdbfb708fb3a6f2dd7741741d40ad58741a7cac12eddab143f217c470d331",
+   "bytes": 1410652,
+   "verts": 254123,
+   "meshes": 1,
+   "bbox_min": [
+    -21.243,
+    -6.131,
+    -34.834
+   ],
+   "bbox_max": [
+    21.245,
+    6.13,
+    34.837
+   ],
+   "extent": [
+    42.488,
+    12.261,
+    69.671
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9882,
+   "published_dim": {
+    "length": 70.5,
+    "width": 44,
+    "height": 13.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.03,
+   "measured_by": "renderer"
+  },
+  "SRV": {
+   "file": "SRV.glb",
+   "ship": "SRV",
+   "sha256": "6aeae44bbc50b876a4714a103e35ccac633041d3702b2b595a959376cfc00835",
+   "bytes": 2140016,
+   "verts": 505039,
+   "meshes": 1,
+   "bbox_min": [
+    -9.616,
+    -5.003,
+    -12.624
+   ],
+   "bbox_max": [
+    9.616,
+    1.905,
+    14.973
+   ],
+   "extent": [
+    19.232,
+    6.908,
+    27.597
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8761,
+   "published_dim": {
+    "length": 31.5,
+    "width": 21.5,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.066,
+   "measured_by": "renderer"
+  },
+  "STV": {
+   "file": "STV.glb",
+   "ship": "STV",
+   "sha256": "6e4f9a3f0afc7ebb538d178607e540da38b08f54662e3ee42d1ba4a981abfc96",
+   "bytes": 1072256,
+   "verts": 210042,
+   "meshes": 1,
+   "bbox_min": [
+    -1.374,
+    -1.004,
+    -2.11
+   ],
+   "bbox_max": [
+    1.374,
+    0.986,
+    2.105
+   ],
+   "extent": [
+    2.748,
+    1.99,
+    4.215
+   ],
+   "scale_class": "other",
+   "model_units_per_metre": 0.4817,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.106,
+   "measured_by": "renderer"
+  },
+  "Sabre": {
+   "file": "Sabre.glb",
+   "ship": "Sabre",
+   "sha256": "d1162bf4c676f16f0eaa95ee294c2199d910e3a7c85ebb979484e48de27f0090",
+   "bytes": 1772312,
+   "verts": 353731,
+   "meshes": 1,
+   "bbox_min": [
+    -11.691,
+    -2.16,
+    -11.94
+   ],
+   "bbox_max": [
+    11.692,
+    2.16,
+    11.94
+   ],
+   "extent": [
+    23.383,
+    4.32,
+    23.88
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9747,
+   "published_dim": {
+    "length": 24.5,
+    "width": 24.5,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.044,
+   "measured_by": "renderer"
+  },
+  "Sabre_Comet": {
+   "file": "Sabre_Comet.glb",
+   "ship": "Sabre Comet",
+   "sha256": "767ecbb05d8f79bf07d7caafbf52fd5b827cef22de63ee09732ee593cbc198a8",
+   "bytes": 1772312,
+   "verts": 353743,
+   "meshes": 1,
+   "bbox_min": [
+    -11.691,
+    -2.16,
+    -11.94
+   ],
+   "bbox_max": [
+    11.692,
+    2.16,
+    11.94
+   ],
+   "extent": [
+    23.383,
+    4.32,
+    23.88
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9747,
+   "published_dim": {
+    "length": 24.5,
+    "width": 24.5,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.044,
+   "measured_by": "renderer"
+  },
+  "Sabre_Firebird": {
+   "file": "Sabre_Firebird.glb",
+   "ship": "Sabre Firebird",
+   "sha256": "d161a4ee187d8143f05bf0484909d86eaeabf60a368d8604a39d230d7298301d",
+   "bytes": 817904,
+   "verts": 171825,
+   "meshes": 1,
+   "bbox_min": [
+    -9.973,
+    -1.483,
+    -11.808
+   ],
+   "bbox_max": [
+    9.972,
+    1.482,
+    11.808
+   ],
+   "extent": [
+    19.945,
+    2.965,
+    23.616
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9639,
+   "published_dim": {
+    "length": 24.5,
+    "width": 24.5,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": 1
+   },
+   "shape_err": 0.234,
+   "measured_by": "renderer"
+  },
+  "Sabre_Peregrine": {
+   "file": "Sabre_Peregrine.glb",
+   "ship": "Sabre Peregrine",
+   "sha256": "a99279e9711880182ac6337b04aa7247c58e4557b43c1253e9bf012618569f90",
+   "bytes": 460692,
+   "verts": 82645,
+   "meshes": 1,
+   "bbox_min": [
+    -9.975,
+    -1.487,
+    -11.81
+   ],
+   "bbox_max": [
+    9.975,
+    1.486,
+    11.81
+   ],
+   "extent": [
+    19.95,
+    2.973,
+    23.62
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9641,
+   "published_dim": {
+    "length": 24.5,
+    "width": 24.5,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.234,
+   "measured_by": "renderer"
+  },
+  "Sabre_Raven": {
+   "file": "Sabre_Raven.glb",
+   "ship": "Sabre Raven",
+   "sha256": "0db58d11692fcec690b7e98bcfe40a2f771040c745724a0b067cf6cca50b3e8b",
+   "bytes": 1090492,
+   "verts": 256687,
+   "meshes": 1,
+   "bbox_min": [
+    -9.804,
+    -3.457,
+    -11.788
+   ],
+   "bbox_max": [
+    9.805,
+    3.457,
+    11.788
+   ],
+   "extent": [
+    19.609,
+    6.914,
+    23.576
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9623,
+   "published_dim": {
+    "length": 24.5,
+    "width": 24.5,
+    "height": 5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.257,
+   "measured_by": "renderer"
+  },
+  "Salvation": {
+   "file": "Salvation.glb",
+   "ship": "Salvation",
+   "sha256": "a50af4399687035fea8e2363164bc455771008ce9d8f3d9a2cb03c50ae220e8c",
+   "bytes": 1222340,
+   "verts": 228778,
+   "meshes": 1,
+   "bbox_min": [
+    -4.175,
+    -1.8,
+    -6.469
+   ],
+   "bbox_max": [
+    4.174,
+    1.8,
+    6.469
+   ],
+   "extent": [
+    8.349,
+    3.6,
+    12.938
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8923,
+   "published_dim": {
+    "length": 14.5,
+    "width": 8.5,
+    "height": 4
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.061,
+   "measured_by": "renderer"
+  },
+  "San_tok.y_i": {
+   "file": "San_tok.y_i.glb",
+   "ship": "San'tok.y\u0101i",
+   "sha256": "7eaacd70a71f0674a026f8dbe6200c496385c8507bb298e41673b8d7ff59cd96",
+   "bytes": 1870308,
+   "verts": 330298,
+   "meshes": 1,
+   "bbox_min": [
+    -0.115,
+    -0.077,
+    -0.123
+   ],
+   "bbox_max": [
+    0.115,
+    0.146,
+    0.088
+   ],
+   "extent": [
+    0.23,
+    0.223,
+    0.211
+   ],
+   "scale_class": "normalised",
+   "model_units_per_metre": 0.0096,
+   "published_dim": {
+    "length": 24,
+    "width": 23,
+    "height": 23
+   },
+   "frame_axes": {
+    "lat": 1,
+    "up": 2,
+    "len": 0,
+    "nose_sign": -1
+   },
+   "shape_err": 0.052,
+   "measured_by": "renderer"
+  },
+  "Scorpius": {
+   "file": "Scorpius.glb",
+   "ship": "Scorpius",
+   "sha256": "9a113523e9ff01415f68b1e2c6991f9160e8e1baecb9a1061e0e5f76f51043be",
+   "bytes": 2548148,
+   "verts": 456411,
+   "meshes": 1,
+   "bbox_min": [
+    -16.472,
+    -6.598,
+    -20.732
+   ],
+   "bbox_max": [
+    16.161,
+    6.303,
+    3.698
+   ],
+   "extent": [
+    32.633,
+    12.901,
+    24.43
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0198,
+   "published_dim": {
+    "length": 32,
+    "width": 24,
+    "height": 13
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.012,
+   "measured_by": "renderer"
+  },
+  "Scorpius_Antares": {
+   "file": "Scorpius_Antares.glb",
+   "ship": "Scorpius Antares",
+   "sha256": "64ff8504f9ab061aec916ebb8df0f1f10eb9ba9653b247b08216eefafd951b75",
+   "bytes": 2548256,
+   "verts": 456419,
+   "meshes": 1,
+   "bbox_min": [
+    -16.472,
+    -6.598,
+    -20.732
+   ],
+   "bbox_max": [
+    16.161,
+    6.303,
+    3.698
+   ],
+   "extent": [
+    32.633,
+    12.901,
+    24.43
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0198,
+   "published_dim": {
+    "length": 32,
+    "width": 24,
+    "height": 13
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.012,
+   "measured_by": "renderer"
+  },
+  "Scythe": {
+   "file": "Scythe.glb",
+   "ship": "Vanduul Scythe",
+   "sha256": "13ced47b8c76e251516ee8022fe2bf485e6c4dd3d9e7e5c6e1450e50db0613a1",
+   "bytes": 1125416,
+   "verts": 247532,
+   "meshes": 1,
+   "bbox_min": [
+    -8.494,
+    -4.205,
+    -15.376
+   ],
+   "bbox_max": [
+    8.493,
+    4.205,
+    15.375
+   ],
+   "extent": [
+    16.987,
+    8.41,
+    30.751
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9318,
+   "published_dim": {
+    "length": 33,
+    "width": 24,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.176,
+   "measured_by": "renderer"
+  },
+  "Shiv": {
+   "file": "Shiv.glb",
+   "ship": "Shiv",
+   "sha256": "fb8d32b736999b62ca1701b872ff1a7377b3542b887f4b015191991cd21ce636",
+   "bytes": 2155488,
+   "verts": 401877,
+   "meshes": 1,
+   "bbox_min": [
+    -13.87,
+    -4.741,
+    -17.866
+   ],
+   "bbox_max": [
+    13.87,
+    4.742,
+    17.866
+   ],
+   "extent": [
+    27.74,
+    9.483,
+    35.732
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9529,
+   "published_dim": {
+    "length": 37.5,
+    "width": 26.5,
+    "height": 11.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.111,
+   "measured_by": "renderer"
+  },
+  "Spartan": {
+   "file": "Spartan.glb",
+   "ship": "Spartan",
+   "sha256": "6c1c5a93d267866fe6691292c7f89d8b0cd10aafe995de461a274aab9b0ee7e3",
+   "bytes": 885764,
+   "verts": 157704,
+   "meshes": 1,
+   "bbox_min": [
+    -3.22,
+    -2.342,
+    -8.331
+   ],
+   "bbox_max": [
+    3.221,
+    2.339,
+    8.332
+   ],
+   "extent": [
+    6.441,
+    4.681,
+    16.663
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9802,
+   "published_dim": {
+    "length": 17,
+    "width": 7,
+    "height": 5.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.068,
+   "measured_by": "renderer"
+  },
+  "Starfarer": {
+   "file": "Starfarer.glb",
+   "ship": "MISC Starfarer",
+   "sha256": "4fe748b5a1148e914ef5c48d12f2019fe5554fbabd074a65ed374c68b831a877",
+   "bytes": 1478832,
+   "verts": 297050,
+   "meshes": 1,
+   "bbox_min": [
+    -23.368,
+    -11.214,
+    -50.565
+   ],
+   "bbox_max": [
+    23.368,
+    11.212,
+    50.566
+   ],
+   "extent": [
+    46.736,
+    22.426,
+    101.131
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9915,
+   "published_dim": {
+    "length": 102,
+    "width": 48.5,
+    "height": 24.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.032,
+   "measured_by": "renderer"
+  },
+  "Starfarer_Gemini": {
+   "file": "Starfarer_Gemini.glb",
+   "ship": "MISC Starfarer Gemini",
+   "sha256": "7f402f93e1254117275724751f99f504404c26a858ae30722152f57871e688cd",
+   "bytes": 5478516,
+   "verts": 1058630,
+   "meshes": 1,
+   "bbox_min": [
+    -20.82,
+    -14.069,
+    -46.135
+   ],
+   "bbox_max": [
+    20.823,
+    12.948,
+    46.136
+   ],
+   "extent": [
+    41.643,
+    27.017,
+    92.271
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9046,
+   "published_dim": {
+    "length": 102,
+    "width": 48.5,
+    "height": 24.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.077,
+   "measured_by": "renderer"
+  },
+  "Starlancer_MAX": {
+   "file": "Starlancer_MAX.glb",
+   "ship": "MISC Starlancer MAX",
+   "sha256": "0c37765f00a8f88316e8543c41a7fcaa348149a3be807829b77e37591fc29c75",
+   "bytes": 2041280,
+   "verts": 494195,
+   "meshes": 1,
+   "bbox_min": [
+    -0.262,
+    -0.075,
+    -0.507
+   ],
+   "bbox_max": [
+    0.262,
+    0.075,
+    0.507
+   ],
+   "extent": [
+    0.524,
+    0.15,
+    1.014
+   ],
+   "scale_class": "normalised",
+   "model_units_per_metre": 0.0113,
+   "published_dim": {
+    "length": 90,
+    "width": 60,
+    "height": 20
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.224,
+   "measured_by": "renderer"
+  },
+  "Starlancer_TAC": {
+   "file": "Starlancer_TAC.glb",
+   "ship": "MISC Starlancer TAC",
+   "sha256": "75730dfb093c89136dd499d3a46d5ac6d1fccf328d61fc2a8418f3ad70b7c27b",
+   "bytes": 2104640,
+   "verts": 491013,
+   "meshes": 1,
+   "bbox_min": [
+    -0.262,
+    -0.081,
+    -0.418
+   ],
+   "bbox_max": [
+    0.262,
+    0.081,
+    0.418
+   ],
+   "extent": [
+    0.524,
+    0.162,
+    0.836
+   ],
+   "scale_class": "normalised",
+   "model_units_per_metre": 0.0093,
+   "published_dim": {
+    "length": 90,
+    "width": 60,
+    "height": 20
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.068,
+   "measured_by": "renderer"
+  },
+  "Stinger": {
+   "file": "Stinger.glb",
+   "ship": "Stinger",
+   "sha256": "a161e39f1e88196e117bc26cdab416deb3c42a50010eb1f9088907e51b81516a",
+   "bytes": 1411668,
+   "verts": 269900,
+   "meshes": 1,
+   "bbox_min": [
+    -15.668,
+    -4.926,
+    -17.312
+   ],
+   "bbox_max": [
+    15.667,
+    4.926,
+    17.311
+   ],
+   "extent": [
+    31.335,
+    9.852,
+    34.623
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9618,
+   "published_dim": {
+    "length": 36,
+    "width": 32,
+    "height": 11
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": 1
+   },
+   "shape_err": 0.037,
+   "measured_by": "renderer"
+  },
+  "Storm": {
+   "file": "Storm.glb",
+   "ship": "Storm",
+   "sha256": "f1dbde8fb6f2c8aba4d3b46446de834151bd3e86a202cfbe6c2e4d8792d5375c",
+   "bytes": 1048924,
+   "verts": 178813,
+   "meshes": 1,
+   "bbox_min": [
+    -3.749,
+    -1.789,
+    -5.105
+   ],
+   "bbox_max": [
+    3.742,
+    1.77,
+    5.099
+   ],
+   "extent": [
+    7.491,
+    3.559,
+    10.204
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9955,
+   "published_dim": {
+    "length": 10.25,
+    "width": 7.65,
+    "height": 4
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.054,
+   "measured_by": "renderer"
+  },
+  "Storm_AA": {
+   "file": "Storm_AA.glb",
+   "ship": "Storm AA",
+   "sha256": "aa16c861b605f840f4f9438114655ae96fd19332adaf9748a3e4d0ed3e170556",
+   "bytes": 847328,
+   "verts": 170071,
+   "meshes": 1,
+   "bbox_min": [
+    -3.745,
+    -1.843,
+    -5.099
+   ],
+   "bbox_max": [
+    3.745,
+    1.844,
+    5.099
+   ],
+   "extent": [
+    7.49,
+    3.687,
+    10.198
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9949,
+   "published_dim": {
+    "length": 10.25,
+    "width": 7.65,
+    "height": 4
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.041,
+   "measured_by": "renderer"
+  },
+  "Syulen": {
+   "file": "Syulen.glb",
+   "ship": "Syulen",
+   "sha256": "8d561de4bd6dc08c352dc389e2c5e431936290017c8b4459f03881f1daac3e82",
+   "bytes": 588872,
+   "verts": 87604,
+   "meshes": 1,
+   "bbox_min": [
+    -11.451,
+    -7.934,
+    -9.896
+   ],
+   "bbox_max": [
+    11.165,
+    7.866,
+    10.025
+   ],
+   "extent": [
+    22.616,
+    15.8,
+    19.921
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8077,
+   "published_dim": {
+    "length": 28,
+    "width": 25,
+    "height": 16
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": -1
+   },
+   "shape_err": 0.139,
+   "measured_by": "renderer"
+  },
+  "Talon": {
+   "file": "Talon.glb",
+   "ship": "Talon",
+   "sha256": "cb6ede4d98969844c99cd0b88ad13abc975be2223c74080811ffd71769732afa",
+   "bytes": 1300200,
+   "verts": 292653,
+   "meshes": 1,
+   "bbox_min": [
+    -9.669,
+    -2.521,
+    -11.734
+   ],
+   "bbox_max": [
+    9.669,
+    2.521,
+    11.734
+   ],
+   "extent": [
+    19.338,
+    5.042,
+    23.468
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9778,
+   "published_dim": {
+    "length": 24,
+    "width": 15,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.318,
+   "measured_by": "renderer"
+  },
+  "Talon_Shrike": {
+   "file": "Talon_Shrike.glb",
+   "ship": "Talon Shrike",
+   "sha256": "5ff22bbc755c3126e45bbefda89b51fd06125b2b5e8e3fede558c165b97e4847",
+   "bytes": 1239884,
+   "verts": 279919,
+   "meshes": 1,
+   "bbox_min": [
+    -9.669,
+    -2.521,
+    -11.734
+   ],
+   "bbox_max": [
+    9.669,
+    2.521,
+    11.734
+   ],
+   "extent": [
+    19.338,
+    5.042,
+    23.468
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9778,
+   "published_dim": {
+    "length": 24,
+    "width": 15,
+    "height": 8
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.318,
+   "measured_by": "renderer"
+  },
+  "Terrapin": {
+   "file": "Terrapin.glb",
+   "ship": "Terrapin",
+   "sha256": "df0ff2369dd6383ee7c13057abc6ea3b0e358eee1e1197669a84d08253274176",
+   "bytes": 459376,
+   "verts": 58798,
+   "meshes": 1,
+   "bbox_min": [
+    -7.656,
+    -3.164,
+    -9.849
+   ],
+   "bbox_max": [
+    7.655,
+    3.784,
+    9.847
+   ],
+   "extent": [
+    15.311,
+    6.948,
+    19.696
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9848,
+   "published_dim": {
+    "length": 20,
+    "width": 16.5,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.07,
+   "measured_by": "renderer"
+  },
+  "Terrapin_Medic": {
+   "file": "Terrapin_Medic.glb",
+   "ship": "Terrapin Medic",
+   "sha256": "1557dd01d1ef66b4d914589d9f5a93c6b2182f059f7ace0dd711803e5eb394b1",
+   "bytes": 1326728,
+   "verts": 211613,
+   "meshes": 1,
+   "bbox_min": [
+    -8.202,
+    -3.473,
+    -9.852
+   ],
+   "bbox_max": [
+    8.202,
+    3.473,
+    9.852
+   ],
+   "extent": [
+    16.404,
+    6.946,
+    19.704
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9852,
+   "published_dim": {
+    "length": 20,
+    "width": 16.5,
+    "height": 7.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.03,
+   "measured_by": "renderer"
+  },
+  "Ursa": {
+   "file": "Ursa.glb",
+   "ship": "Ursa",
+   "sha256": "59d21b0c8ac482a269857871daab9217147dfdbbf6e4431d119a37eb251d5b0b",
+   "bytes": 576272,
+   "verts": 92577,
+   "meshes": 1,
+   "bbox_min": [
+    -2.749,
+    -0.023,
+    -3.806
+   ],
+   "bbox_max": [
+    2.749,
+    3.209,
+    3.806
+   ],
+   "extent": [
+    5.498,
+    3.232,
+    7.612
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8699,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.061,
+   "measured_by": "renderer"
+  },
+  "Ursa_Fortuna": {
+   "file": "Ursa_Fortuna.glb",
+   "ship": "Ursa Fortuna",
+   "sha256": "59d21b0c8ac482a269857871daab9217147dfdbbf6e4431d119a37eb251d5b0b",
+   "bytes": 576272,
+   "verts": 92577,
+   "meshes": 1,
+   "bbox_min": [
+    -2.749,
+    -0.023,
+    -3.806
+   ],
+   "bbox_max": [
+    2.749,
+    3.209,
+    3.806
+   ],
+   "extent": [
+    5.498,
+    3.232,
+    7.612
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8699,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.061,
+   "measured_by": "renderer"
+  },
+  "Ursa_Medivac": {
+   "file": "Ursa_Medivac.glb",
+   "ship": "Ursa Medivac",
+   "sha256": "466841ccb43bdf6165d7db3fa387f8fc26fad1a2a9cfe34b6ca3c1fc7dc268ad",
+   "bytes": 721772,
+   "verts": 113690,
+   "meshes": 1,
+   "bbox_min": [
+    -2.749,
+    -1.616,
+    -3.804
+   ],
+   "bbox_max": [
+    2.749,
+    1.616,
+    3.804
+   ],
+   "extent": [
+    5.498,
+    3.232,
+    7.608
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8695,
+   "published_dim": {
+    "length": 8.75,
+    "width": 6,
+    "height": 3.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.062,
+   "measured_by": "renderer"
+  },
+  "Valkyrie": {
+   "file": "Valkyrie.glb",
+   "ship": "Valkyrie",
+   "sha256": "25cb9dfe60ba5ac8126afe62904db08f89c4f2d4d022480a89b6491981f6079d",
+   "bytes": 2017064,
+   "verts": 399765,
+   "meshes": 1,
+   "bbox_min": [
+    -17.421,
+    -7.005,
+    -20.172
+   ],
+   "bbox_max": [
+    17.422,
+    3.63,
+    25.415
+   ],
+   "extent": [
+    34.843,
+    10.635,
+    45.587
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9497,
+   "published_dim": {
+    "length": 48,
+    "width": 38,
+    "height": 12
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.044,
+   "measured_by": "renderer"
+  },
+  "Valkyrie_Liberator_Edition": {
+   "file": "Valkyrie_Liberator_Edition.glb",
+   "ship": null,
+   "sha256": "ca1f2877acfb792df417b115b31296b4c7ac368f515dad65d2f041a2d17d6691",
+   "bytes": 2017064,
+   "verts": 399765,
+   "meshes": 1,
+   "bbox_min": [
+    -17.421,
+    -7.0053,
+    -20.1716
+   ],
+   "bbox_max": [
+    17.4209,
+    3.6297,
+    25.4148
+   ],
+   "extent": [
+    34.842,
+    10.635,
+    45.586
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Vanguard_Harbinger": {
+   "file": "Vanguard_Harbinger.glb",
+   "ship": "Vanguard Harbinger",
+   "sha256": "c49a91e1e0a3d76a9814f6bd81cd5d7df44f858268fe09276f6801c859d6c0d5",
+   "bytes": 946352,
+   "verts": 215483,
+   "meshes": 1,
+   "bbox_min": [
+    -18.979,
+    -6.166,
+    -16.856
+   ],
+   "bbox_max": [
+    18.98,
+    1.958,
+    23.822
+   ],
+   "extent": [
+    37.959,
+    8.124,
+    40.678
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8475,
+   "published_dim": {
+    "length": 48,
+    "width": 40,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.102,
+   "measured_by": "renderer"
+  },
+  "Vanguard_Hoplite": {
+   "file": "Vanguard_Hoplite.glb",
+   "ship": "Vanguard Hoplite",
+   "sha256": "05df4f6093de2c36f7574f7209161698ff2a45b8cfccede9210445437c083776",
+   "bytes": 1075708,
+   "verts": 234924,
+   "meshes": 1,
+   "bbox_min": [
+    -18.972,
+    -4.634,
+    -19.47
+   ],
+   "bbox_max": [
+    18.972,
+    4.636,
+    19.47
+   ],
+   "extent": [
+    37.944,
+    9.27,
+    38.94
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8112,
+   "published_dim": {
+    "length": 48,
+    "width": 40,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.181,
+   "measured_by": "renderer"
+  },
+  "Vanguard_Sentinel": {
+   "file": "Vanguard_Sentinel.glb",
+   "ship": "Vanguard Sentinel",
+   "sha256": "3c0c8944a7c901a83a6002d76037054ab5395e2fd2c79080d3907f385d0ba362",
+   "bytes": 1106960,
+   "verts": 251369,
+   "meshes": 1,
+   "bbox_min": [
+    -18.979,
+    -6.109,
+    -17.023
+   ],
+   "bbox_max": [
+    18.979,
+    1.954,
+    23.432
+   ],
+   "extent": [
+    37.958,
+    8.063,
+    40.455
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8428,
+   "published_dim": {
+    "length": 48,
+    "width": 40,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.106,
+   "measured_by": "renderer"
+  },
+  "Vanguard_Warden": {
+   "file": "Vanguard_Warden.glb",
+   "ship": "Vanguard Warden",
+   "sha256": "32b1afee8e7d9447b88bea3278992350396ae45a3f820d1c0b369a8678f64614",
+   "bytes": 2740368,
+   "verts": 472437,
+   "meshes": 1,
+   "bbox_min": [
+    -19.528,
+    -3.972,
+    -19.201
+   ],
+   "bbox_max": [
+    19.528,
+    4.658,
+    19.202
+   ],
+   "extent": [
+    39.056,
+    8.63,
+    38.403
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.8137,
+   "published_dim": {
+    "length": 48,
+    "width": 40,
+    "height": 9.5
+   },
+   "frame_axes": {
+    "lat": 2,
+    "up": 1,
+    "len": 0,
+    "nose_sign": 1
+   },
+   "shape_err": 0.173,
+   "measured_by": "renderer"
+  },
+  "Vulcan": {
+   "file": "Vulcan.glb",
+   "ship": null,
+   "sha256": "565889e9e57a28e64d80e174de5b830656576d9d8dcaf8cb77e7f3c1161e68dc",
+   "bytes": 3400516,
+   "verts": 762314,
+   "meshes": 1,
+   "bbox_min": [
+    -20.5829,
+    -12.1083,
+    -48.6349
+   ],
+   "bbox_max": [
+    20.584,
+    12.1072,
+    48.6357
+   ],
+   "extent": [
+    41.167,
+    24.215,
+    97.271
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  },
+  "Vulture": {
+   "file": "Vulture.glb",
+   "ship": "Vulture",
+   "sha256": "ca471c21ee89f2d4f18e4dfa8e895d681abad980131e6d91fc4c27b4e0c9d55e",
+   "bytes": 2588540,
+   "verts": 516777,
+   "meshes": 1,
+   "bbox_min": [
+    -3.084,
+    -1.699,
+    -5.887
+   ],
+   "bbox_max": [
+    3.085,
+    1.699,
+    6.987
+   ],
+   "extent": [
+    6.169,
+    3.398,
+    12.874
+   ],
+   "scale_class": "other",
+   "model_units_per_metre": 0.3786,
+   "published_dim": {
+    "length": 34,
+    "width": 16,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.009,
+   "measured_by": "renderer"
+  },
+  "X1": {
+   "file": "X1.glb",
+   "ship": "X1",
+   "sha256": "8b4e3889d24381dc436081ad76e74383e92c55863d958d0647a6fcc5aa7a40f0",
+   "bytes": 1841040,
+   "verts": 394611,
+   "meshes": 1,
+   "bbox_min": [
+    -0.622,
+    -0.771,
+    -2.644
+   ],
+   "bbox_max": [
+    0.622,
+    0.772,
+    2.644
+   ],
+   "extent": [
+    1.244,
+    1.543,
+    5.288
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0189,
+   "published_dim": {
+    "length": 5.19,
+    "width": 1.87,
+    "height": 1.55
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.132,
+   "measured_by": "renderer"
+  },
+  "X1_Force": {
+   "file": "X1_Force.glb",
+   "ship": "X1 Force",
+   "sha256": "65ae646f8d4fffbbb3358007b55edf56d8a5c13171708a0a0caacb2e0c444041",
+   "bytes": 1841024,
+   "verts": 394613,
+   "meshes": 1,
+   "bbox_min": [
+    -0.622,
+    -0.771,
+    -2.644
+   ],
+   "bbox_max": [
+    0.622,
+    0.772,
+    2.644
+   ],
+   "extent": [
+    1.244,
+    1.543,
+    5.288
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 1.0189,
+   "published_dim": {
+    "length": 5.19,
+    "width": 1.87,
+    "height": 1.55
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.132,
+   "measured_by": "renderer"
+  },
+  "X1_Velocity": {
+   "file": "X1_Velocity.glb",
+   "ship": "X1 Velocity",
+   "sha256": "adf5d7e02db412c692d46a73c35341c4bd880148854948dae5a5f1cb0ff3044b",
+   "bytes": 1356368,
+   "verts": 263882,
+   "meshes": 1,
+   "bbox_min": [
+    -0.622,
+    -0.771,
+    -2.573
+   ],
+   "bbox_max": [
+    0.622,
+    0.771,
+    2.573
+   ],
+   "extent": [
+    1.244,
+    1.542,
+    5.146
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9915,
+   "published_dim": {
+    "length": 5.19,
+    "width": 1.87,
+    "height": 1.55
+   },
+   "frame_axes": {
+    "lat": 1,
+    "up": 0,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.118,
+   "measured_by": "renderer"
+  },
+  "Zeus_Mk_II_CL": {
+   "file": "Zeus_Mk_II_CL.glb",
+   "ship": "Zeus Mk II CL",
+   "sha256": "c86f0c44fcef84598f55de41a7362acac5be0b7715e88042b8b2fe11d2bcfd43",
+   "bytes": 560284,
+   "verts": 118218,
+   "meshes": 1,
+   "bbox_min": [
+    -17.156,
+    -3.498,
+    -22.845
+   ],
+   "bbox_max": [
+    17.156,
+    3.499,
+    22.845
+   ],
+   "extent": [
+    34.312,
+    6.997,
+    45.69
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9933,
+   "published_dim": {
+    "length": 46,
+    "width": 35,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.052,
+   "measured_by": "renderer"
+  },
+  "Zeus_Mk_II_ES": {
+   "file": "Zeus_Mk_II_ES.glb",
+   "ship": "Zeus Mk II ES",
+   "sha256": "1a06ed10479ae7044e3891db8ea6c6cc5e8019b01954edc0a8a087e654cd8692",
+   "bytes": 725904,
+   "verts": 153230,
+   "meshes": 1,
+   "bbox_min": [
+    -17.194,
+    -3.761,
+    -22.847
+   ],
+   "bbox_max": [
+    17.118,
+    3.76,
+    22.858
+   ],
+   "extent": [
+    34.312,
+    7.521,
+    45.705
+   ],
+   "scale_class": "metres",
+   "model_units_per_metre": 0.9936,
+   "published_dim": {
+    "length": 46,
+    "width": 35,
+    "height": 9
+   },
+   "frame_axes": {
+    "lat": 0,
+    "up": 1,
+    "len": 2,
+    "nose_sign": -1
+   },
+   "shape_err": 0.041,
+   "measured_by": "renderer"
+  },
+  "Zeus_Mk_II_MR": {
+   "file": "Zeus_Mk_II_MR.glb",
+   "ship": null,
+   "sha256": "6c4fa4246c1cd8d17b30357a0a103c4d1fcde2121e79bfe709c7b7dccd112e93",
+   "bytes": 797280,
+   "verts": 153163,
+   "meshes": 1,
+   "bbox_min": [
+    -17.1562,
+    -3.761,
+    -22.8453
+   ],
+   "bbox_max": [
+    17.1563,
+    3.7617,
+    22.8449
+   ],
+   "extent": [
+    34.312,
+    7.523,
+    45.69
+   ],
+   "scale_class": "no-placement-frame",
+   "model_units_per_metre": null,
+   "published_dim": null,
+   "frame_axes": null,
+   "shape_err": null,
+   "measured_by": "gltf-accessor"
+  }
+ },
+ "geometry_match_tolerance": "identical vertex count AND every bounding-box extent within 0.1% relative. The tolerance exists because 174 models were measured through a renderer and 61 from the glTF header; the two agree to about 0.002 units on the four Carracks, which is the only overlap available to calibrate against."
+}

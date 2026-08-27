@@ -1,0 +1,37 @@
+[
+ {
+  "class": "ANVL_Lightning_F8",
+  "entry": "Data\\Objects\\Spaceships\\Ships\\ANVL\\Lightning_F8\\ANVL_Lightning_F8.cga",
+  "why": "the node indices are not a permutation of 0..158, so the join to the name table is not sound"
+ },
+ {
+  "class": "drak_golem",
+  "entry": "Data\\Objects\\Spaceships\\Ships\\DRAK\\Golem\\drak_golem.cga",
+  "why": "the node indices are not a permutation of 0..206, so the join to the name table is not sound"
+ },
+ {
+  "class": "krig_l21_wolf",
+  "entry": "Data\\Objects\\Spaceships\\Ships\\KRIG\\l21_wolf\\krig_l21_wolf.cga",
+  "why": "node index 65535 appears twice - the index field is not the join key it looked like"
+ },
+ {
+  "class": "krig_l22_alpha_wolf",
+  "entry": "Data\\Objects\\Spaceships\\Ships\\KRIG\\l22_alpha_wolf\\krig_l22_alpha_wolf.cga",
+  "why": "node index 65535 appears twice - the index field is not the join key it looked like"
+ },
+ {
+  "class": "MISC_Hull_A",
+  "entry": "Data\\Objects\\Spaceships\\Ships\\MISC\\Hull_A\\exterior\\MISC_Hull_A.cga",
+  "why": "the node indices are not a permutation of 0..160, so the join to the name table is not sound"
+ },
+ {
+  "class": "orig_m80",
+  "entry": "Data\\Objects\\Spaceships\\Ships\\ORIG\\m80\\exterior\\orig_m80.cga",
+  "why": "node index 65535 appears twice - the index field is not the join key it looked like"
+ },
+ {
+  "class": "VNCL_Glaive",
+  "entry": "Data\\Objects\\Spaceships\\Ships\\VNCL\\Glaive\\VNCL_Glaive.cga",
+  "why": "node index 65535 appears twice - the index field is not the join key it looked like"
+ }
+]

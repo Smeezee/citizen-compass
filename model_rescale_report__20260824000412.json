@@ -1,0 +1,6008 @@
+[
+  {
+    "ship": "100i",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\100i",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1143.0994873046875,
+      1748.505859375,
+      272.9226379394531
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      11.430994987487793,
+      17.485057830810547,
+      2.7292263507843018
+    ]
+  },
+  {
+    "ship": "125a",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\125a",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1143.091552734375,
+      1748.45703125,
+      272.884033203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      11.430915832519531,
+      17.484569549560547,
+      2.7288401126861572
+    ]
+  },
+  {
+    "ship": "135c",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\135c",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1143.0537109375,
+      1748.5328369140625,
+      272.62969970703125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      11.430536270141602,
+      17.485328674316406,
+      2.726296901702881
+    ]
+  },
+  {
+    "ship": "300i",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\300i",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1630.38916015625,
+      2484.306640625,
+      552.352783203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.303890228271484,
+      24.843067169189453,
+      5.523527145385742
+    ]
+  },
+  {
+    "ship": "315p",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\315p",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1625.710693359375,
+      2230.13720703125,
+      542.2587890625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.25710678100586,
+      22.30137062072754,
+      5.4225873947143555
+    ]
+  },
+  {
+    "ship": "325a",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\325a",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1606.53955078125,
+      2302.640380859375,
+      538.895263671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.06539535522461,
+      23.026403427124023,
+      5.388952732086182
+    ]
+  },
+  {
+    "ship": "350r",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\350r",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1630.8780517578125,
+      2484.23583984375,
+      552.33203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.308780670166016,
+      24.842357635498047,
+      5.523320198059082
+    ]
+  },
+  {
+    "ship": "400i",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\400i",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3163.567626953125,
+      5922.5048828125,
+      1013.4173583984375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      31.63567543029785,
+      59.22504425048828,
+      10.134173393249512
+    ]
+  },
+  {
+    "ship": "600i Explorer",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\600i Explorer",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      5214.8349609375,
+      9159.0244140625,
+      1660.4063720703125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      52.14834976196289,
+      91.59024047851562,
+      16.60406494140625
+    ]
+  },
+  {
+    "ship": "600i Touring",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\600i Touring",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      5223.654296875,
+      9157.9052734375,
+      1633.017333984375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      52.236541748046875,
+      91.57904815673828,
+      16.33017349243164
+    ]
+  },
+  {
+    "ship": "85X",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\85X",
+    "status": "MISSING - model.glb not found",
+    "before_scale": null,
+    "before_dimensions": null
+  },
+  {
+    "ship": "890 Jump",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\890 Jump",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7108.09619140625,
+      20552.830078125,
+      3716.2431640625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      71.08096313476562,
+      205.52828979492188,
+      37.16242980957031
+    ]
+  },
+  {
+    "ship": "A1 Spirit",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\A1 Spirit",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4435.6240234375,
+      4668.1708984375,
+      856.720703125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      44.356239318847656,
+      46.68170928955078,
+      8.567206382751465
+    ]
+  },
+  {
+    "ship": "A2 Hercules",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\A2 Hercules",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7022.5390625,
+      9437.57421875,
+      2468.024658203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      70.22539520263672,
+      94.37574005126953,
+      24.680246353149414
+    ]
+  },
+  {
+    "ship": "ATLS",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\ATLS",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      176.132568359375,
+      202.98289489746094,
+      285.784423828125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.7613255977630615,
+      2.0298290252685547,
+      2.857844352722168
+    ]
+  },
+  {
+    "ship": "ATLS GEO",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\ATLS GEO",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      176.138671875,
+      262.91986083984375,
+      290.51776123046875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.7613866329193115,
+      2.6291985511779785,
+      2.905177354812622
+    ]
+  },
+  {
+    "ship": "Anvil Ballista Dunestalker",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Anvil Ballista Dunestalker",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      673.810302734375,
+      1671.9091796875,
+      536.0006103515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      6.738102912902832,
+      16.719091415405273,
+      5.360006332397461
+    ]
+  },
+  {
+    "ship": "Anvil Ballista Snowblind",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Anvil Ballista Snowblind",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      673.810302734375,
+      1671.9091796875,
+      536.0006103515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      6.738102912902832,
+      16.719091415405273,
+      5.360006332397461
+    ]
+  },
+  {
+    "ship": "Apollo Medivac",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Apollo Medivac",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      5500.541015625,
+      6474.6337890625,
+      1425.09912109375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      55.00541305541992,
+      64.746337890625,
+      14.25098991394043
+    ]
+  },
+  {
+    "ship": "Apollo Triage",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Apollo Triage",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      5500.5234375,
+      6474.66552734375,
+      1425.131591796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      55.00523376464844,
+      64.74665832519531,
+      14.251315116882324
+    ]
+  },
+  {
+    "ship": "Ares Inferno",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ares Inferno",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2976.3349609375,
+      2632.5625,
+      541.2042236328125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      29.763347625732422,
+      26.325624465942383,
+      5.412041664123535
+    ]
+  },
+  {
+    "ship": "Ares Ion",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ares Ion",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2976.29931640625,
+      2664.9912109375,
+      540.786865234375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      29.762990951538086,
+      26.649911880493164,
+      5.407868385314941
+    ]
+  },
+  {
+    "ship": "Argo Mole Carbon Edition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Argo Mole Carbon Edition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2572.736328125,
+      4224.9599609375,
+      1333.195068359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      25.72736167907715,
+      42.249603271484375,
+      13.331949234008789
+    ]
+  },
+  {
+    "ship": "Argo Mole Talus Edition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Argo Mole Talus Edition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2572.736328125,
+      4224.9599609375,
+      1333.195068359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      25.72736167907715,
+      42.249603271484375,
+      13.331949234008789
+    ]
+  },
+  {
+    "ship": "Arrastra",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Arrastra",
+    "status": "MISSING - model.glb not found",
+    "before_scale": null,
+    "before_dimensions": null
+  },
+  {
+    "ship": "Arrow",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Arrow",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1202.707275390625,
+      1779.317626953125,
+      305.95465087890625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      12.027071952819824,
+      17.793176651000977,
+      3.05954647064209
+    ]
+  },
+  {
+    "ship": "Asgard",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Asgard",
+    "status": "CORRUPT - model.glb failed to load: Error: Couldn't parse glTF. Check that the file is valid\n",
+    "before_scale": null,
+    "before_dimensions": null
+  },
+  {
+    "ship": "Aurora CL",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Aurora CL",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      821.6715698242188,
+      1852.22900390625,
+      435.46160888671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.216714859008789,
+      18.522289276123047,
+      4.354616165161133
+    ]
+  },
+  {
+    "ship": "Aurora ES",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Aurora ES",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      821.6715698242188,
+      1852.22900390625,
+      435.46160888671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.216714859008789,
+      18.522289276123047,
+      4.354616165161133
+    ]
+  },
+  {
+    "ship": "Aurora LN",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Aurora LN",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      821.6715698242188,
+      1852.22900390625,
+      435.46160888671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.216714859008789,
+      18.522289276123047,
+      4.354616165161133
+    ]
+  },
+  {
+    "ship": "Aurora LX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Aurora LX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      824.3603515625,
+      1853.60498046875,
+      373.2848205566406
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.243602752685547,
+      18.536048889160156,
+      3.7328481674194336
+    ]
+  },
+  {
+    "ship": "Aurora MR",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Aurora MR",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      821.6715698242188,
+      1852.22900390625,
+      435.46160888671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.216714859008789,
+      18.522289276123047,
+      4.354616165161133
+    ]
+  },
+  {
+    "ship": "Avenger Stalker",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Avenger Stalker",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      139.94467163085938,
+      190.50711059570312,
+      49.368003845214844
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.399446725845337,
+      1.9050711393356323,
+      0.4936800003051758
+    ]
+  },
+  {
+    "ship": "Avenger Titan",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Avenger Titan",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1399.53271484375,
+      1951.8193359375,
+      540.3665161132812
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      13.99532699584961,
+      19.5181941986084,
+      5.403665065765381
+    ]
+  },
+  {
+    "ship": "Avenger Titan Renegade",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Avenger Titan Renegade",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1399.53271484375,
+      1951.8193359375,
+      540.3665161132812
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      13.99532699584961,
+      19.5181941986084,
+      5.403665065765381
+    ]
+  },
+  {
+    "ship": "Avenger Warlock",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Avenger Warlock",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1399.531982421875,
+      1951.8150634765625,
+      540.34423828125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      13.995319366455078,
+      19.518150329589844,
+      5.4034423828125
+    ]
+  },
+  {
+    "ship": "Ballista",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ballista",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      673.810302734375,
+      1671.9091796875,
+      536.0006103515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      6.738102912902832,
+      16.719091415405273,
+      5.360006332397461
+    ]
+  },
+  {
+    "ship": "Blade",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Blade",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2059.9365234375,
+      1997.90478515625,
+      603.3355712890625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      20.599365234375,
+      19.979045867919922,
+      6.033355712890625
+    ]
+  },
+  {
+    "ship": "Buccaneer",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Buccaneer",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1590.665283203125,
+      1458.348388671875,
+      373.49462890625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      15.906652450561523,
+      14.583483695983887,
+      3.7349460124969482
+    ]
+  },
+  {
+    "ship": "C1 Spirit",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\C1 Spirit",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4359.591796875,
+      4666.1552734375,
+      889.45751953125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      43.595916748046875,
+      46.66154861450195,
+      8.894575119018555
+    ]
+  },
+  {
+    "ship": "C2 Hercules",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\C2 Hercules",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7103.9765625,
+      9452.0859375,
+      2175.501220703125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      71.03976440429688,
+      94.5208511352539,
+      21.75501251220703
+    ]
+  },
+  {
+    "ship": "C8 Pisces",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\C8 Pisces",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1022.3214111328125,
+      1236.4130859375,
+      300.076171875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      10.223214149475098,
+      12.364130020141602,
+      3.0007617473602295
+    ]
+  },
+  {
+    "ship": "C8R Pisces",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\C8R Pisces",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1022.3214111328125,
+      1236.4130859375,
+      300.076171875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      10.223214149475098,
+      12.364130020141602,
+      3.0007617473602295
+    ]
+  },
+  {
+    "ship": "C8X Pisces Expedition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\C8X Pisces Expedition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1022.3021850585938,
+      1236.4349365234375,
+      300.0616760253906
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      10.223021507263184,
+      12.364349365234375,
+      3.0006165504455566
+    ]
+  },
+  {
+    "ship": "CSV-SM",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\CSV-SM",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      413.77435302734375,
+      607.4668579101562,
+      290.22369384765625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      4.1377434730529785,
+      6.0746684074401855,
+      2.9022367000579834
+    ]
+  },
+  {
+    "ship": "Carrack",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Carrack",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7627.53466796875,
+      12557.451171875,
+      3616.9228515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      76.27534484863281,
+      125.57450866699219,
+      36.169227600097656
+    ]
+  },
+  {
+    "ship": "Carrack Expedition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Carrack Expedition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7627.53466796875,
+      12557.451171875,
+      3616.9228515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      76.27534484863281,
+      125.57450866699219,
+      36.169227600097656
+    ]
+  },
+  {
+    "ship": "Carrack Expedition w_C8X",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Carrack Expedition w_C8X",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7627.53466796875,
+      12557.451171875,
+      3616.9228515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      76.27534484863281,
+      125.57450866699219,
+      36.169227600097656
+    ]
+  },
+  {
+    "ship": "Carrack w_C8X",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Carrack w_C8X",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7627.53466796875,
+      12557.451171875,
+      3616.9228515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      76.27534484863281,
+      125.57450866699219,
+      36.169227600097656
+    ]
+  },
+  {
+    "ship": "Caterpillar",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Caterpillar",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3950.48046875,
+      11156.1015625,
+      1319.213134765625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      39.50480270385742,
+      111.56100463867188,
+      13.192130088806152
+    ]
+  },
+  {
+    "ship": "Caterpillar Best In Show Edition 2949",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Caterpillar Best In Show Edition 2949",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3950.48046875,
+      11156.1015625,
+      1319.213134765625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      39.50480270385742,
+      111.56100463867188,
+      13.192130088806152
+    ]
+  },
+  {
+    "ship": "Caterpillar Pirate Edition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Caterpillar Pirate Edition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3950.48046875,
+      11156.1015625,
+      1319.213134765625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      39.50480270385742,
+      111.56100463867188,
+      13.192130088806152
+    ]
+  },
+  {
+    "ship": "Centurion",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Centurion",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      675.4732666015625,
+      1664.7568359375,
+      525.4449462890625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      6.754732131958008,
+      16.647567749023438,
+      5.254449844360352
+    ]
+  },
+  {
+    "ship": "Clipper",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Clipper",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4948.142578125,
+      2723.73779296875,
+      1302.241455078125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      49.481422424316406,
+      27.237377166748047,
+      13.022415161132812
+    ]
+  },
+  {
+    "ship": "Constellation Andromeda",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Constellation Andromeda",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2627.042724609375,
+      6080.7001953125,
+      1325.64208984375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.27042579650879,
+      60.807003021240234,
+      13.256420135498047
+    ]
+  },
+  {
+    "ship": "Constellation Aquila",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Constellation Aquila",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2649.7421875,
+      6090.1611328125,
+      1323.780029296875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.497421264648438,
+      60.90160369873047,
+      13.237799644470215
+    ]
+  },
+  {
+    "ship": "Constellation Phoenix",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Constellation Phoenix",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2662.70947265625,
+      6075.5439453125,
+      1325.6116943359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.627094268798828,
+      60.75543975830078,
+      13.25611686706543
+    ]
+  },
+  {
+    "ship": "Constellation Phoenix Emerald",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Constellation Phoenix Emerald",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2662.70947265625,
+      6075.5439453125,
+      1325.6116943359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.627094268798828,
+      60.75543975830078,
+      13.25611686706543
+    ]
+  },
+  {
+    "ship": "Constellation Taurus",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Constellation Taurus",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2627.1376953125,
+      5891.34619140625,
+      1325.53759765625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.271377563476562,
+      58.91345977783203,
+      13.255376815795898
+    ]
+  },
+  {
+    "ship": "Corsair",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Corsair",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      5412.755859375,
+      4701.97021484375,
+      2579.413330078125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      54.127559661865234,
+      47.01969909667969,
+      25.794132232666016
+    ]
+  },
+  {
+    "ship": "Crucible",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Crucible",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      71.994384765625,
+      89.00527954101562,
+      27.244422912597656
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.7199437618255615,
+      0.8900527358055115,
+      0.2724442183971405
+    ]
+  },
+  {
+    "ship": "Cutlass Black",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cutlass Black",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2614.555908203125,
+      3571.7490234375,
+      1023.5657348632812
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.145559310913086,
+      35.71748733520508,
+      10.23565673828125
+    ]
+  },
+  {
+    "ship": "Cutlass Black Best In Show Edition 2949",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cutlass Black Best In Show Edition 2949",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2614.555908203125,
+      3571.7490234375,
+      1023.5657348632812
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.145559310913086,
+      35.71748733520508,
+      10.23565673828125
+    ]
+  },
+  {
+    "ship": "Cutlass Blue",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cutlass Blue",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2612.729248046875,
+      3573.84033203125,
+      1023.31640625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.12729263305664,
+      35.7384033203125,
+      10.233163833618164
+    ]
+  },
+  {
+    "ship": "Cutlass Red",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cutlass Red",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2612.83984375,
+      3605.81982421875,
+      998.89111328125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.128398895263672,
+      36.058197021484375,
+      9.988910675048828
+    ]
+  },
+  {
+    "ship": "Cutlass Steel",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cutlass Steel",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2614.555908203125,
+      3571.7490234375,
+      1023.5657348632812
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.145559310913086,
+      35.71748733520508,
+      10.23565673828125
+    ]
+  },
+  {
+    "ship": "Cutter",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cutter",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1272.266357421875,
+      1989.270263671875,
+      555.9263916015625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      12.722662925720215,
+      19.892702102661133,
+      5.559263229370117
+    ]
+  },
+  {
+    "ship": "Cutter Rambler",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cutter Rambler",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1272.3096923828125,
+      1971.0482177734375,
+      652.8471069335938
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      12.72309684753418,
+      19.710481643676758,
+      6.528470993041992
+    ]
+  },
+  {
+    "ship": "Cutter Scout",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cutter Scout",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1272.29736328125,
+      1938.838134765625,
+      649.3483276367188
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      12.722972869873047,
+      19.38838005065918,
+      6.493483543395996
+    ]
+  },
+  {
+    "ship": "Cyclone",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cyclone",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      375.667724609375,
+      567.7090454101562,
+      230.94937133789062
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      3.7566771507263184,
+      5.677090644836426,
+      2.3094935417175293
+    ]
+  },
+  {
+    "ship": "Cyclone AA",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cyclone AA",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      320.005859375,
+      568.5985107421875,
+      257.58758544921875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      3.2000584602355957,
+      5.6859846115112305,
+      2.575875997543335
+    ]
+  },
+  {
+    "ship": "Cyclone MT",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cyclone MT",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      376.33074951171875,
+      567.3385009765625,
+      390.0982666015625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      3.763307571411133,
+      5.673384666442871,
+      3.9009828567504883
+    ]
+  },
+  {
+    "ship": "Cyclone RC",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cyclone RC",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      320.0234375,
+      568.6049194335938,
+      225.5334930419922
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      3.2002344131469727,
+      5.686049461364746,
+      2.2553348541259766
+    ]
+  },
+  {
+    "ship": "Cyclone RN",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cyclone RN",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      320.02978515625,
+      568.6016845703125,
+      233.24575805664062
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      3.2002978324890137,
+      5.686017036437988,
+      2.3324575424194336
+    ]
+  },
+  {
+    "ship": "Cyclone TR",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Cyclone TR",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      319.9975891113281,
+      568.599365234375,
+      279.295166015625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      3.1999759674072266,
+      5.6859941482543945,
+      2.7929515838623047
+    ]
+  },
+  {
+    "ship": "Defender",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Defender",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1684.712158203125,
+      3779.2294921875,
+      585.897216796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.84712028503418,
+      37.792293548583984,
+      5.85897159576416
+    ]
+  },
+  {
+    "ship": "Dragonfly Black",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Dragonfly Black",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      227.2799072265625,
+      648.497802734375,
+      136.16455078125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      2.272799015045166,
+      6.484978199005127,
+      1.3616454601287842
+    ]
+  },
+  {
+    "ship": "Dragonfly Yellowjacket",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Dragonfly Yellowjacket",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      227.2799072265625,
+      648.497802734375,
+      136.16455078125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      2.272799015045166,
+      6.484978199005127,
+      1.3616454601287842
+    ]
+  },
+  {
+    "ship": "E1 Spirit",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\E1 Spirit",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4363.81005859375,
+      4671.4736328125,
+      879.5618896484375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      43.638099670410156,
+      46.71473693847656,
+      8.795618057250977
+    ]
+  },
+  {
+    "ship": "Eclipse",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Eclipse",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3691.864501953125,
+      2049.80810546875,
+      396.91851806640625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      36.918643951416016,
+      20.498079299926758,
+      3.9691851139068604
+    ]
+  },
+  {
+    "ship": "Endeavor",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Endeavor",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      402.6950378417969,
+      1711.2833251953125,
+      174.98460388183594
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      4.026950359344482,
+      17.11283302307129,
+      1.7498459815979004
+    ]
+  },
+  {
+    "ship": "Expanse",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Expanse",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2137.57568359375,
+      3558.50439453125,
+      1009.93212890625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.37575912475586,
+      35.585044860839844,
+      10.099321365356445
+    ]
+  },
+  {
+    "ship": "F7A Hornet Mk I",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7A Hornet Mk I",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2177.3310546875,
+      2258.467041015625,
+      513.311279296875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.77330780029297,
+      22.584671020507812,
+      5.133112907409668
+    ]
+  },
+  {
+    "ship": "F7A Hornet Mk II",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7A Hornet Mk II",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2196.8984375,
+      2227.766357421875,
+      471.875244140625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.968984603881836,
+      22.277664184570312,
+      4.718752384185791
+    ]
+  },
+  {
+    "ship": "F7C Hornet Mk I",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C Hornet Mk I",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2177.3310546875,
+      2258.467041015625,
+      513.311279296875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.77330780029297,
+      22.584671020507812,
+      5.133112907409668
+    ]
+  },
+  {
+    "ship": "F7C Hornet Mk II",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C Hornet Mk II",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2196.908203125,
+      2225.94873046875,
+      482.6436767578125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.96908187866211,
+      22.25948715209961,
+      4.826436519622803
+    ]
+  },
+  {
+    "ship": "F7C Hornet Wildfire Mk I",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C Hornet Wildfire Mk I",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2162.9423828125,
+      2255.376220703125,
+      525.96826171875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.62942123413086,
+      22.553762435913086,
+      5.259682655334473
+    ]
+  },
+  {
+    "ship": "F7C-M Super Hornet Heartseeker Mk I",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C-M Super Hornet Heartseeker Mk I",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2433.49169921875,
+      2415.3203125,
+      625.2185668945312
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      24.334915161132812,
+      24.153202056884766,
+      6.252185821533203
+    ]
+  },
+  {
+    "ship": "F7C-M Super Hornet Mk I",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C-M Super Hornet Mk I",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2433.49169921875,
+      2415.3203125,
+      625.2185668945312
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      24.334915161132812,
+      24.153202056884766,
+      6.252185821533203
+    ]
+  },
+  {
+    "ship": "F7C-M Super Hornet Mk II",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C-M Super Hornet Mk II",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2419.880859375,
+      2387.880859375,
+      526.0506591796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      24.198806762695312,
+      23.878807067871094,
+      5.2605061531066895
+    ]
+  },
+  {
+    "ship": "F7C-R Hornet Tracker Mk I",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C-R Hornet Tracker Mk I",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2178.198486328125,
+      2366.4326171875,
+      661.8609619140625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.781984329223633,
+      23.664325714111328,
+      6.618609428405762
+    ]
+  },
+  {
+    "ship": "F7C-R Hornet Tracker Mk II",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C-R Hornet Tracker Mk II",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2196.9189453125,
+      2266.637451171875,
+      521.9127197265625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.969188690185547,
+      22.66637420654297,
+      5.2191267013549805
+    ]
+  },
+  {
+    "ship": "F7C-S Hornet Ghost Mk I",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C-S Hornet Ghost Mk I",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2177.3173828125,
+      2258.48046875,
+      630.7776489257812
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.773174285888672,
+      22.58480453491211,
+      6.30777645111084
+    ]
+  },
+  {
+    "ship": "F7C-S Hornet Ghost Mk II",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F7C-S Hornet Ghost Mk II",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2196.94775390625,
+      2220.518798828125,
+      487.37554931640625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      21.969478607177734,
+      22.205188751220703,
+      4.87375545501709
+    ]
+  },
+  {
+    "ship": "F8C Lightning",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F8C Lightning",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2563.049560546875,
+      2428.66650390625,
+      571.7313232421875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      25.6304931640625,
+      24.286663055419922,
+      5.717313289642334
+    ]
+  },
+  {
+    "ship": "F8C Lightning Executive Edition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\F8C Lightning Executive Edition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2563.049560546875,
+      2428.66650390625,
+      571.7313232421875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      25.6304931640625,
+      24.286663055419922,
+      5.717313289642334
+    ]
+  },
+  {
+    "ship": "Fortune",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Fortune",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1527.208740234375,
+      2922.07666015625,
+      604.2325439453125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      15.272087097167969,
+      29.22076416015625,
+      6.042325496673584
+    ]
+  },
+  {
+    "ship": "Freelancer",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Freelancer",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2489.20751953125,
+      3216.8759765625,
+      810.25732421875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      24.89207649230957,
+      32.168758392333984,
+      8.10257339477539
+    ]
+  },
+  {
+    "ship": "Freelancer DUR",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Freelancer DUR",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2258.56396484375,
+      3717.212890625,
+      879.6629638671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      22.58563995361328,
+      37.17212677001953,
+      8.796628952026367
+    ]
+  },
+  {
+    "ship": "Freelancer MAX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Freelancer MAX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3139.04248046875,
+      3671.48193359375,
+      879.6656494140625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      31.390426635742188,
+      36.714820861816406,
+      8.796655654907227
+    ]
+  },
+  {
+    "ship": "Freelancer MIS",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Freelancer MIS",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2258.44580078125,
+      3717.22802734375,
+      879.5738525390625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      22.584457397460938,
+      37.172279357910156,
+      8.795738220214844
+    ]
+  },
+  {
+    "ship": "Fury",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Fury",
+    "status": "MISSING - model.glb not found",
+    "before_scale": null,
+    "before_dimensions": null
+  },
+  {
+    "ship": "Fury LX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Fury LX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      504.54754638671875,
+      646.1844482421875,
+      256.2508544921875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.045475482940674,
+      6.461843967437744,
+      2.5625085830688477
+    ]
+  },
+  {
+    "ship": "Fury MX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Fury MX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      533.658203125,
+      632.5081176757812,
+      258.37359619140625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.336582183837891,
+      6.325080871582031,
+      2.583735942840576
+    ]
+  },
+  {
+    "ship": "G12",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\G12",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      578.02490234375,
+      720.7395629882812,
+      316.059814453125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.78024959564209,
+      7.207395553588867,
+      3.1605982780456543
+    ]
+  },
+  {
+    "ship": "G12a",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\G12a",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      578.96875,
+      767.6660766601562,
+      338.68634033203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.789687633514404,
+      7.676660537719727,
+      3.3868632316589355
+    ]
+  },
+  {
+    "ship": "G12r",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\G12r",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      578.2813110351562,
+      739.92041015625,
+      304.134033203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.78281307220459,
+      7.399203300476074,
+      3.0413403511047363
+    ]
+  },
+  {
+    "ship": "Galaxy",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Galaxy",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      5973.0498046875,
+      10994.6416015625,
+      1991.01416015625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      59.730499267578125,
+      109.9464111328125,
+      19.910140991210938
+    ]
+  },
+  {
+    "ship": "Genesis",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Genesis",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      42.300315856933594,
+      43.32206726074219,
+      10.231884002685547
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.4230031371116638,
+      0.43322068452835083,
+      0.10231883823871613
+    ]
+  },
+  {
+    "ship": "Gladiator",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Gladiator",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2250.5625,
+      2235.90771484375,
+      631.3468017578125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      22.50562286376953,
+      22.35907554626465,
+      6.313467979431152
+    ]
+  },
+  {
+    "ship": "Gladius",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Gladius",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1695.38427734375,
+      1975.136962890625,
+      561.4256591796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.953842163085938,
+      19.75136947631836,
+      5.614256858825684
+    ]
+  },
+  {
+    "ship": "Gladius Pirate Edition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Gladius Pirate Edition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1695.38427734375,
+      1975.136962890625,
+      561.4256591796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.953842163085938,
+      19.75136947631836,
+      5.614256858825684
+    ]
+  },
+  {
+    "ship": "Gladius Valiant",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Gladius Valiant",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1735.419921875,
+      2087.6171875,
+      512.641845703125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      17.354198455810547,
+      20.876171112060547,
+      5.126418113708496
+    ]
+  },
+  {
+    "ship": "Glaive",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Glaive",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2089.193359375,
+      3075.52880859375,
+      840.812255859375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      20.89193344116211,
+      30.755287170410156,
+      8.408123016357422
+    ]
+  },
+  {
+    "ship": "Golem",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Golem",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      745.5517578125,
+      1540.338623046875,
+      435.76019287109375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.455517292022705,
+      15.403386116027832,
+      4.357601642608643
+    ]
+  },
+  {
+    "ship": "Golem OX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Golem OX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1003.7947387695312,
+      1540.408447265625,
+      435.943359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      10.037946701049805,
+      15.404085159301758,
+      4.359433650970459
+    ]
+  },
+  {
+    "ship": "Guardian",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Guardian",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1670.736572265625,
+      2505.1484375,
+      886.2301025390625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.70736312866211,
+      25.051483154296875,
+      8.862300872802734
+    ]
+  },
+  {
+    "ship": "Guardian MX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Guardian MX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2003.50244140625,
+      2444.53173828125,
+      1146.14501953125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      20.035022735595703,
+      24.445316314697266,
+      11.461450576782227
+    ]
+  },
+  {
+    "ship": "Guardian QI",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Guardian QI",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1670.6473388671875,
+      2532.93896484375,
+      886.2678833007812
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.706472396850586,
+      25.329387664794922,
+      8.862678527832031
+    ]
+  },
+  {
+    "ship": "Hammerhead",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hammerhead",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7428.47265625,
+      11629.625,
+      1640.681396484375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      74.28472900390625,
+      116.29624938964844,
+      16.406814575195312
+    ]
+  },
+  {
+    "ship": "Hammerhead Best In Show Edition 2949",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hammerhead Best In Show Edition 2949",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7428.47265625,
+      11629.625,
+      1640.681396484375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      74.28472900390625,
+      116.29624938964844,
+      16.406814575195312
+    ]
+  },
+  {
+    "ship": "Hawk",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hawk",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2286.0205078125,
+      1701.779541015625,
+      677.9314575195312
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      22.860204696655273,
+      17.017793655395508,
+      6.779314041137695
+    ]
+  },
+  {
+    "ship": "Herald",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Herald",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1212.883056640625,
+      2351.10791015625,
+      880.7340087890625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      12.128830909729004,
+      23.511079788208008,
+      8.807340621948242
+    ]
+  },
+  {
+    "ship": "HoverQuad",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\HoverQuad",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      225.49615478515625,
+      432.12115478515625,
+      123.44612121582031
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      2.2549614906311035,
+      4.321211814880371,
+      1.2344610691070557
+    ]
+  },
+  {
+    "ship": "Hull A",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hull A",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1070.1806640625,
+      2160.08203125,
+      426.6116943359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      10.701805114746094,
+      21.600818634033203,
+      4.266117095947266
+    ]
+  },
+  {
+    "ship": "Hull B",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hull B",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1799.5372314453125,
+      4924.89208984375,
+      1808.338623046875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      17.995372772216797,
+      49.24892044067383,
+      18.083385467529297
+    ]
+  },
+  {
+    "ship": "Hull C",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hull C",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4348.1767578125,
+      10446.775390625,
+      4348.18359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      43.48176574707031,
+      104.46774291992188,
+      43.481834411621094
+    ]
+  },
+  {
+    "ship": "Hull D",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hull D",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7639.0546875,
+      20957.51953125,
+      7639.0673828125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      76.39054107666016,
+      209.5751953125,
+      76.39067077636719
+    ]
+  },
+  {
+    "ship": "Hull E",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hull E",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      11250.8427734375,
+      37128.58203125,
+      11247.603515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      112.5084228515625,
+      371.28582763671875,
+      112.47602844238281
+    ]
+  },
+  {
+    "ship": "Hurricane",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Hurricane",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1825.9815673828125,
+      2135.23779296875,
+      452.8503723144531
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.259815216064453,
+      21.352378845214844,
+      4.528503894805908
+    ]
+  },
+  {
+    "ship": "Idris-M",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Idris-M",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      12665.4912109375,
+      23839.853515625,
+      5139.79443359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      126.6549072265625,
+      238.39852905273438,
+      51.39794158935547
+    ]
+  },
+  {
+    "ship": "Idris-P",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Idris-P",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      12665.623046875,
+      23320.75,
+      4525.142578125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      126.65621948242188,
+      233.20748901367188,
+      45.251426696777344
+    ]
+  },
+  {
+    "ship": "Intrepid",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Intrepid",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2037.6953125,
+      2303.587890625,
+      541.1580810546875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      20.376953125,
+      23.035877227783203,
+      5.411581039428711
+    ]
+  },
+  {
+    "ship": "Ironclad",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ironclad",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4839.3798828125,
+      11973.6826171875,
+      2107.54736328125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      48.393798828125,
+      119.73682403564453,
+      21.07547378540039
+    ]
+  },
+  {
+    "ship": "Ironclad Assault",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ironclad Assault",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4839.3798828125,
+      11973.6826171875,
+      2107.54736328125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      48.393798828125,
+      119.73682403564453,
+      21.07547378540039
+    ]
+  },
+  {
+    "ship": "Javelin",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Javelin",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      22611.40234375,
+      46905.359375,
+      8648.2734375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      226.114013671875,
+      469.0535583496094,
+      86.48273468017578
+    ]
+  },
+  {
+    "ship": "Khartu-Al",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Khartu-Al",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1879.301513671875,
+      1075.526123046875,
+      2924.30126953125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.793014526367188,
+      10.755260467529297,
+      29.243011474609375
+    ]
+  },
+  {
+    "ship": "Kraken",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Kraken",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      10725.91796875,
+      28088.6796875,
+      6443.7021484375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      107.25918579101562,
+      280.88677978515625,
+      64.43702697753906
+    ]
+  },
+  {
+    "ship": "Kraken Privateer",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Kraken Privateer",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      10725.91796875,
+      28088.6796875,
+      6443.7021484375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      107.25918579101562,
+      280.88677978515625,
+      64.43702697753906
+    ]
+  },
+  {
+    "ship": "L-21 Wolf",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\L-21 Wolf",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1054.122802734375,
+      2160.479736328125,
+      489.989013671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      10.541227340698242,
+      21.60479736328125,
+      4.899889945983887
+    ]
+  },
+  {
+    "ship": "L-22 Alpha Wolf",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\L-22 Alpha Wolf",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1054.1363525390625,
+      2153.50927734375,
+      351.7047119140625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      10.541363716125488,
+      21.535091400146484,
+      3.5170469284057617
+    ]
+  },
+  {
+    "ship": "Legionnaire",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Legionnaire",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2342.65869140625,
+      3137.63134765625,
+      1095.8087158203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      23.426586151123047,
+      31.376314163208008,
+      10.958086967468262
+    ]
+  },
+  {
+    "ship": "Liberator",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Liberator",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      6688.08935546875,
+      11829.552734375,
+      2519.9052734375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      66.88088989257812,
+      118.29551696777344,
+      25.199050903320312
+    ]
+  },
+  {
+    "ship": "Lynx",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Lynx",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      549.805419921875,
+      774.543212890625,
+      317.5712890625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.498054504394531,
+      7.745431900024414,
+      3.175712823867798
+    ]
+  },
+  {
+    "ship": "M2 Hercules",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\M2 Hercules",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7103.95751953125,
+      9451.95703125,
+      2175.599853515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      71.0395736694336,
+      94.51956176757812,
+      21.755998611450195
+    ]
+  },
+  {
+    "ship": "M50",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\M50",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1003.7880249023438,
+      1096.201904296875,
+      245.9239501953125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      10.037879943847656,
+      10.962018966674805,
+      2.4592394828796387
+    ]
+  },
+  {
+    "ship": "MDC",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\MDC",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      523.8935546875,
+      725.059326171875,
+      380.0119323730469
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.238935470581055,
+      7.250593185424805,
+      3.800119400024414
+    ]
+  },
+  {
+    "ship": "MOLE",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\MOLE",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2572.736328125,
+      4224.9599609375,
+      1333.195068359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      25.72736167907715,
+      42.249603271484375,
+      13.331949234008789
+    ]
+  },
+  {
+    "ship": "MPUV Cargo",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\MPUV Cargo",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      851.04541015625,
+      921.7882080078125,
+      429.01202392578125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.510454177856445,
+      9.21788215637207,
+      4.2901201248168945
+    ]
+  },
+  {
+    "ship": "MPUV Personnel",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\MPUV Personnel",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      851.0855102539062,
+      947.660400390625,
+      429.29876708984375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.510854721069336,
+      9.476604461669922,
+      4.292987823486328
+    ]
+  },
+  {
+    "ship": "MPUV Tractor",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\MPUV Tractor",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      775.5567626953125,
+      920.4234619140625,
+      413.1214599609375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.75556755065918,
+      9.20423412322998,
+      4.131214618682861
+    ]
+  },
+  {
+    "ship": "MTC",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\MTC",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      523.5213623046875,
+      702.5577392578125,
+      410.8555908203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.235213279724121,
+      7.025576591491699,
+      4.108555793762207
+    ]
+  },
+  {
+    "ship": "Mantis",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mantis",
+    "status": "MISSING - model.glb not found",
+    "before_scale": null,
+    "before_dimensions": null
+  },
+  {
+    "ship": "Merchantman",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Merchantman",
+    "status": "MISSING - model.glb not found",
+    "before_scale": null,
+    "before_dimensions": null
+  },
+  {
+    "ship": "Mercury",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mercury",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3747.8681640625,
+      4053.669921875,
+      1005.906005859375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      37.47867965698242,
+      40.53669738769531,
+      10.059060096740723
+    ]
+  },
+  {
+    "ship": "Meteor",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Meteor",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1681.1796875,
+      2965.5078125,
+      647.8201904296875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.811798095703125,
+      29.65507698059082,
+      6.478201866149902
+    ]
+  },
+  {
+    "ship": "Mule",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mule",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      301.4353942871094,
+      420.07183837890625,
+      269.45916748046875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      3.0143537521362305,
+      4.200718402862549,
+      2.694591760635376
+    ]
+  },
+  {
+    "ship": "Mustang Alpha",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mustang Alpha",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1805.16064453125,
+      2230.063720703125,
+      547.022216796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.051605224609375,
+      22.300636291503906,
+      5.470222473144531
+    ]
+  },
+  {
+    "ship": "Mustang Alpha Vindicator",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mustang Alpha Vindicator",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1805.16064453125,
+      2230.063720703125,
+      547.022216796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.051605224609375,
+      22.300636291503906,
+      5.470222473144531
+    ]
+  },
+  {
+    "ship": "Mustang Beta",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mustang Beta",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1805.240966796875,
+      2230.133056640625,
+      547.004150390625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.052410125732422,
+      22.30133056640625,
+      5.470041275024414
+    ]
+  },
+  {
+    "ship": "Mustang Delta",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mustang Delta",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1805.19189453125,
+      2230.05517578125,
+      547.0375366210938
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.051918029785156,
+      22.30055046081543,
+      5.470375061035156
+    ]
+  },
+  {
+    "ship": "Mustang Gamma",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mustang Gamma",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1805.212646484375,
+      2121.96826171875,
+      546.9734497070312
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.052125930786133,
+      21.219684600830078,
+      5.469734191894531
+    ]
+  },
+  {
+    "ship": "Mustang Omega",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Mustang Omega",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1805.212646484375,
+      2121.96826171875,
+      546.9734497070312
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.052125930786133,
+      21.219684600830078,
+      5.469734191894531
+    ]
+  },
+  {
+    "ship": "Nautilus",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Nautilus",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2950.79345703125,
+      5296.0634765625,
+      1325.16162109375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      29.5079345703125,
+      52.96063232421875,
+      13.251616477966309
+    ]
+  },
+  {
+    "ship": "Nautilus Solstice Edition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Nautilus Solstice Edition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2950.79345703125,
+      5296.0634765625,
+      1325.16162109375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      29.5079345703125,
+      52.96063232421875,
+      13.251616477966309
+    ]
+  },
+  {
+    "ship": "Nomad",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Nomad",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1829.495361328125,
+      2522.083251953125,
+      760.679443359375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      18.294952392578125,
+      25.22083282470703,
+      7.606794357299805
+    ]
+  },
+  {
+    "ship": "Nova",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Nova",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      730.26513671875,
+      1591.117919921875,
+      512.5075073242188
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.302651405334473,
+      15.911179542541504,
+      5.125075340270996
+    ]
+  },
+  {
+    "ship": "Nox",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Nox",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      131.7379150390625,
+      516.1732788085938,
+      151.7664794921875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.3173789978027344,
+      5.1617326736450195,
+      1.517664909362793
+    ]
+  },
+  {
+    "ship": "Nox Kue",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Nox Kue",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      131.7379150390625,
+      516.1732788085938,
+      151.7664794921875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.3173789978027344,
+      5.1617326736450195,
+      1.517664909362793
+    ]
+  },
+  {
+    "ship": "Odyssey",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Odyssey",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      7994.1318359375,
+      15413.3984375,
+      2925.575927734375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      79.94131469726562,
+      154.1339874267578,
+      29.25575828552246
+    ]
+  },
+  {
+    "ship": "Orion",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Orion",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      51.82283020019531,
+      170.38442993164062,
+      51.82283020019531
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.51822829246521,
+      1.7038443088531494,
+      0.51822829246521
+    ]
+  },
+  {
+    "ship": "P-52 Merlin",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\P-52 Merlin",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      770.61181640625,
+      1196.7523193359375,
+      235.37899780273438
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.706117630004883,
+      11.967522621154785,
+      2.353789806365967
+    ]
+  },
+  {
+    "ship": "P-72 Archimedes",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\P-72 Archimedes",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      822.282958984375,
+      1224.3037109375,
+      228.78854370117188
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.222829818725586,
+      12.243036270141602,
+      2.2878854274749756
+    ]
+  },
+  {
+    "ship": "P-72 Archimedes Emerald",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\P-72 Archimedes Emerald",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      822.282958984375,
+      1224.3037109375,
+      228.78854370117188
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.222829818725586,
+      12.243036270141602,
+      2.2878854274749756
+    ]
+  },
+  {
+    "ship": "PTV",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\PTV",
+    "status": "MISSING - model.glb not found",
+    "before_scale": null,
+    "before_dimensions": null
+  },
+  {
+    "ship": "Paladin",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Paladin",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3744.08154296875,
+      5350.9033203125,
+      1320.254150390625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      37.440818786621094,
+      53.509029388427734,
+      13.20254135131836
+    ]
+  },
+  {
+    "ship": "Perseus",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Perseus",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      5676.060546875,
+      10052.51953125,
+      2178.84521484375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      56.76060485839844,
+      100.52519226074219,
+      21.7884521484375
+    ]
+  },
+  {
+    "ship": "Pioneer",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Pioneer",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      137.68902587890625,
+      246.60862731933594,
+      53.717529296875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.3768903017044067,
+      2.4660861492156982,
+      0.5371752977371216
+    ]
+  },
+  {
+    "ship": "Polaris",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Polaris",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3243.714599609375,
+      6262.49462890625,
+      1581.989501953125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      32.4371452331543,
+      62.62494659423828,
+      15.819894790649414
+    ]
+  },
+  {
+    "ship": "Prospector",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Prospector",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1507.97265625,
+      2369.41064453125,
+      678.896728515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      15.079727172851562,
+      23.69410514831543,
+      6.788967132568359
+    ]
+  },
+  {
+    "ship": "Prowler",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Prowler",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2723.77587890625,
+      3320.88037109375,
+      1333.929931640625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      27.23775863647461,
+      33.20880126953125,
+      13.339298248291016
+    ]
+  },
+  {
+    "ship": "Prowler Utility",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Prowler Utility",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2680.2099609375,
+      3320.7978515625,
+      1332.5927734375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      26.802101135253906,
+      33.207977294921875,
+      13.325927734375
+    ]
+  },
+  {
+    "ship": "Pulse",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Pulse",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      79.39976501464844,
+      274.6622314453125,
+      88.84288024902344
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.7939976453781128,
+      2.746622323989868,
+      0.8884287476539612
+    ]
+  },
+  {
+    "ship": "Pulse LX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Pulse LX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      79.39976501464844,
+      274.6622314453125,
+      88.84288024902344
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.7939976453781128,
+      2.746622323989868,
+      0.8884287476539612
+    ]
+  },
+  {
+    "ship": "RAFT",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\RAFT",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2363.22314453125,
+      4040.104248046875,
+      1179.446533203125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      23.632230758666992,
+      40.40104293823242,
+      11.794465065002441
+    ]
+  },
+  {
+    "ship": "ROC",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\ROC",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      375.78680419921875,
+      753.0843505859375,
+      317.4643859863281
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      3.7578678131103516,
+      7.530843257904053,
+      3.1746437549591064
+    ]
+  },
+  {
+    "ship": "ROC-DS",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\ROC-DS",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      482.98602294921875,
+      651.90478515625,
+      339.3319091796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      4.829860687255859,
+      6.519047737121582,
+      3.3933188915252686
+    ]
+  },
+  {
+    "ship": "Railen",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Railen",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      5207.68359375,
+      5408.00048828125,
+      6838.150390625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      52.07683181762695,
+      54.08000183105469,
+      68.38150024414062
+    ]
+  },
+  {
+    "ship": "Ranger CV",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ranger CV",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      90.70787048339844,
+      375.6932678222656,
+      150.1097412109375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.9070786833763123,
+      3.756932497024536,
+      1.501097321510315
+    ]
+  },
+  {
+    "ship": "Ranger RC",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ranger RC",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      90.71095275878906,
+      380.4761657714844,
+      135.81016540527344
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.9071094989776611,
+      3.8047616481781006,
+      1.3581016063690186
+    ]
+  },
+  {
+    "ship": "Ranger TR",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ranger TR",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      124.86869812011719,
+      375.69677734375,
+      135.80490112304688
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.2486869096755981,
+      3.756967544555664,
+      1.358048915863037
+    ]
+  },
+  {
+    "ship": "Razor",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Razor",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      793.138916015625,
+      1145.5966796875,
+      226.0909423828125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.931389331817627,
+      11.455965995788574,
+      2.26090931892395
+    ]
+  },
+  {
+    "ship": "Razor EX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Razor EX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      793.1058349609375,
+      1145.58056640625,
+      229.04408264160156
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.931057929992676,
+      11.455806732177734,
+      2.290440797805786
+    ]
+  },
+  {
+    "ship": "Razor LX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Razor LX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      793.09326171875,
+      1145.6077880859375,
+      238.39317321777344
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.930932521820068,
+      11.456077575683594,
+      2.3839316368103027
+    ]
+  },
+  {
+    "ship": "Reclaimer",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Reclaimer",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      9481.205078125,
+      15813.54296875,
+      4990.75341796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      94.81204986572266,
+      158.1354217529297,
+      49.90753173828125
+    ]
+  },
+  {
+    "ship": "Reclaimer Best In Show Edition 2949",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Reclaimer Best In Show Edition 2949",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      9481.205078125,
+      15813.54296875,
+      4990.75341796875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      94.81204986572266,
+      158.1354217529297,
+      49.90753173828125
+    ]
+  },
+  {
+    "ship": "Redeemer",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Redeemer",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2348.11865234375,
+      5069.072265625,
+      1331.4820556640625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      23.481185913085938,
+      50.69071960449219,
+      13.314821243286133
+    ]
+  },
+  {
+    "ship": "Reliant Kore",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Reliant Kore",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1110.2703857421875,
+      1542.8223876953125,
+      2942.85107421875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      11.102704048156738,
+      15.428223609924316,
+      29.428508758544922
+    ]
+  },
+  {
+    "ship": "Reliant Mako",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Reliant Mako",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2943.448486328125,
+      1541.56787109375,
+      511.58880615234375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      29.43448257446289,
+      15.415678024291992,
+      5.115887641906738
+    ]
+  },
+  {
+    "ship": "Reliant Sen",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Reliant Sen",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2952.080078125,
+      1537.56591796875,
+      517.8572998046875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      29.520797729492188,
+      15.375659942626953,
+      5.178572654724121
+    ]
+  },
+  {
+    "ship": "Reliant Tana",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Reliant Tana",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3055.86767578125,
+      1368.3228759765625,
+      525.9984741210938
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      30.55867576599121,
+      13.6832275390625,
+      5.259984970092773
+    ]
+  },
+  {
+    "ship": "Retaliator",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Retaliator",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4248.6533203125,
+      6967.0771484375,
+      1226.091552734375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      42.486534118652344,
+      69.6707763671875,
+      12.260915756225586
+    ]
+  },
+  {
+    "ship": "SRV",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\SRV",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1923.220703125,
+      2759.70556640625,
+      690.7485961914062
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      19.232206344604492,
+      27.597055435180664,
+      6.9074859619140625
+    ]
+  },
+  {
+    "ship": "STV",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\STV",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      274.76043701171875,
+      421.475830078125,
+      198.96060180664062
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      2.7476043701171875,
+      4.214758396148682,
+      1.9896059036254883
+    ]
+  },
+  {
+    "ship": "Sabre",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Sabre",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2338.1796875,
+      2388.076171875,
+      432.0379638671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      23.38179588317871,
+      23.880760192871094,
+      4.320379734039307
+    ]
+  },
+  {
+    "ship": "Sabre Comet",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Sabre Comet",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2338.1796875,
+      2388.076171875,
+      432.0379638671875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      23.38179588317871,
+      23.880760192871094,
+      4.320379734039307
+    ]
+  },
+  {
+    "ship": "Sabre Firebird",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Sabre Firebird",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1994.54736328125,
+      2361.66357421875,
+      296.5536804199219
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      19.945472717285156,
+      23.616636276245117,
+      2.9655368328094482
+    ]
+  },
+  {
+    "ship": "Sabre Peregrine",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Sabre Peregrine",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1994.859375,
+      2361.9970703125,
+      297.30767822265625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      19.948593139648438,
+      23.619972229003906,
+      2.973076343536377
+    ]
+  },
+  {
+    "ship": "Sabre Raven",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Sabre Raven",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1960.873291015625,
+      2357.672119140625,
+      691.346923828125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      19.608732223510742,
+      23.57672119140625,
+      6.913469314575195
+    ]
+  },
+  {
+    "ship": "Salvation",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Salvation",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      834.9429321289062,
+      1293.828369140625,
+      359.92559814453125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      8.3494291305542,
+      12.938283920288086,
+      3.5992558002471924
+    ]
+  },
+  {
+    "ship": "San'tok.y\u0101i",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\San'tok.y\u0101i",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      22.995943069458008,
+      21.168235778808594,
+      22.304561614990234
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.2299594283103943,
+      0.21168234944343567,
+      0.22304561734199524
+    ]
+  },
+  {
+    "ship": "Scorpius",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Scorpius",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3263.27392578125,
+      2442.95068359375,
+      1290.1910400390625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      32.63273620605469,
+      24.429506301879883,
+      12.901909828186035
+    ]
+  },
+  {
+    "ship": "Scorpius Antares",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Scorpius Antares",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3263.27392578125,
+      2442.95068359375,
+      1290.1910400390625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      32.63273620605469,
+      24.429506301879883,
+      12.901909828186035
+    ]
+  },
+  {
+    "ship": "Scythe",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Scythe",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1698.786865234375,
+      3075.15478515625,
+      840.97021484375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.987869262695312,
+      30.75154685974121,
+      8.40970230102539
+    ]
+  },
+  {
+    "ship": "Shiv",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Shiv",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2773.984375,
+      3573.16796875,
+      948.2371215820312
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      27.739845275878906,
+      35.7316780090332,
+      9.482370376586914
+    ]
+  },
+  {
+    "ship": "Spartan",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Spartan",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      644.0382080078125,
+      1666.2554931640625,
+      468.06146240234375
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      6.4403815269470215,
+      16.662555694580078,
+      4.680614471435547
+    ]
+  },
+  {
+    "ship": "Starfarer",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Starfarer",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4673.5283203125,
+      10113.154296875,
+      2242.5439453125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      46.73528289794922,
+      101.13154602050781,
+      22.425437927246094
+    ]
+  },
+  {
+    "ship": "Starfarer Gemini",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Starfarer Gemini",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4164.1884765625,
+      9227.021484375,
+      2813.0546875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      41.64188003540039,
+      92.27021789550781,
+      28.13054656982422
+    ]
+  },
+  {
+    "ship": "Starlancer MAX",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Starlancer MAX",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      52.446556091308594,
+      101.32786560058594,
+      15.003927230834961
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.5244655609130859,
+      1.0132787227630615,
+      0.15003927052021027
+    ]
+  },
+  {
+    "ship": "Starlancer TAC",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Starlancer TAC",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      52.44677734375,
+      83.53067779541016,
+      16.19115447998047
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.5244677662849426,
+      0.8353067636489868,
+      0.16191153228282928
+    ]
+  },
+  {
+    "ship": "Stinger",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Stinger",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3133.55419921875,
+      3462.345703125,
+      985.2733764648438
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      31.335540771484375,
+      34.62345886230469,
+      9.852733612060547
+    ]
+  },
+  {
+    "ship": "Storm",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Storm",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      749.064208984375,
+      1020.32177734375,
+      355.9449768066406
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.4906415939331055,
+      10.203217506408691,
+      3.5594496726989746
+    ]
+  },
+  {
+    "ship": "Storm AA",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Storm AA",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      749.035400390625,
+      1019.8829345703125,
+      368.6418151855469
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      7.490353584289551,
+      10.198829650878906,
+      3.686418056488037
+    ]
+  },
+  {
+    "ship": "Syulen",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Syulen",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      2261.53369140625,
+      1992.123291015625,
+      1580.01025390625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      22.615337371826172,
+      19.921232223510742,
+      15.800102233886719
+    ]
+  },
+  {
+    "ship": "Talon",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Talon",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1933.792236328125,
+      2346.8173828125,
+      504.21099853515625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      19.337921142578125,
+      23.46817398071289,
+      5.042109966278076
+    ]
+  },
+  {
+    "ship": "Talon Shrike",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Talon Shrike",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1933.83740234375,
+      2346.824462890625,
+      504.19073486328125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      19.3383731842041,
+      23.468242645263672,
+      5.04190731048584
+    ]
+  },
+  {
+    "ship": "Terrapin",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Terrapin",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1531.0797119140625,
+      1969.567626953125,
+      694.7695922851562
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      15.310796737670898,
+      19.695674896240234,
+      6.947695732116699
+    ]
+  },
+  {
+    "ship": "Terrapin Medic",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Terrapin Medic",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      1640.3941650390625,
+      1970.316162109375,
+      694.5289306640625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.403942108154297,
+      19.703161239624023,
+      6.945289611816406
+    ]
+  },
+  {
+    "ship": "Ursa",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ursa",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      549.7395629882812,
+      761.1873779296875,
+      323.2383728027344
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.4973955154418945,
+      7.611873626708984,
+      3.2323834896087646
+    ]
+  },
+  {
+    "ship": "Ursa Fortuna",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ursa Fortuna",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      549.7395629882812,
+      761.1873779296875,
+      323.2383728027344
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.4973955154418945,
+      7.611873626708984,
+      3.2323834896087646
+    ]
+  },
+  {
+    "ship": "Ursa Medivac",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Ursa Medivac",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      549.7229614257812,
+      760.7423706054688,
+      323.2449035644531
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      5.49722957611084,
+      7.607423782348633,
+      3.2324490547180176
+    ]
+  },
+  {
+    "ship": "Valkyrie",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Valkyrie",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3484.189453125,
+      4558.64306640625,
+      1063.505126953125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      34.841896057128906,
+      45.586429595947266,
+      10.635050773620605
+    ]
+  },
+  {
+    "ship": "Valkyrie Liberator Edition",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Valkyrie Liberator Edition",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3484.189453125,
+      4558.64306640625,
+      1063.505126953125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      34.841896057128906,
+      45.586429595947266,
+      10.635050773620605
+    ]
+  },
+  {
+    "ship": "Vanguard Harbinger",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Vanguard Harbinger",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3795.79541015625,
+      4067.78076171875,
+      812.3019409179688
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      37.95795440673828,
+      40.67780303955078,
+      8.123019218444824
+    ]
+  },
+  {
+    "ship": "Vanguard Hoplite",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Vanguard Hoplite",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3794.3037109375,
+      3893.988037109375,
+      926.8638916015625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      37.94303894042969,
+      38.93988037109375,
+      9.268638610839844
+    ]
+  },
+  {
+    "ship": "Vanguard Sentinel",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Vanguard Sentinel",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3795.87109375,
+      4045.47802734375,
+      806.1156616210938
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      37.958709716796875,
+      40.45478057861328,
+      8.061156272888184
+    ]
+  },
+  {
+    "ship": "Vanguard Warden",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Vanguard Warden",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3905.57861328125,
+      3840.229248046875,
+      862.9783935546875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      39.0557861328125,
+      38.40229034423828,
+      8.629783630371094
+    ]
+  },
+  {
+    "ship": "Vulcan",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Vulcan",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      4116.6923828125,
+      9727.060546875,
+      2421.5498046875
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      41.16692352294922,
+      97.27059936523438,
+      24.215496063232422
+    ]
+  },
+  {
+    "ship": "Vulture",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Vulture",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      616.841796875,
+      1287.403076171875,
+      339.86700439453125
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      6.168417930603027,
+      12.874029159545898,
+      3.398669958114624
+    ]
+  },
+  {
+    "ship": "X1",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\X1",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      124.424560546875,
+      528.721435546875,
+      154.2826385498047
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.2442455291748047,
+      5.2872138023376465,
+      1.5428264141082764
+    ]
+  },
+  {
+    "ship": "X1 Force",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\X1 Force",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      124.424560546875,
+      528.721435546875,
+      154.2826385498047
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.2442455291748047,
+      5.2872138023376465,
+      1.5428264141082764
+    ]
+  },
+  {
+    "ship": "X1 Velocity",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\X1 Velocity",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      124.415283203125,
+      514.5380859375,
+      154.27598571777344
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      1.2441527843475342,
+      5.145380973815918,
+      1.542759895324707
+    ]
+  },
+  {
+    "ship": "Zeus Mk II CL",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Zeus Mk II CL",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3431.263916015625,
+      4569.06640625,
+      699.6609497070312
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      34.31263732910156,
+      45.69065856933594,
+      6.996609687805176
+    ]
+  },
+  {
+    "ship": "Zeus Mk II ES",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Zeus Mk II ES",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3431.24365234375,
+      4570.53369140625,
+      752.2645874023438
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      34.312435150146484,
+      45.70533752441406,
+      7.522645950317383
+    ]
+  },
+  {
+    "ship": "Zeus Mk II MR",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\Zeus Mk II MR",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      3431.25146484375,
+      4569.01904296875,
+      752.2645874023438
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      34.31251525878906,
+      45.690189361572266,
+      7.522645950317383
+    ]
+  },
+  {
+    "ship": "_corrupt_backup",
+    "path": "C:\\Users\\david\\AppData\\Local\\Temp\\claude\\C--Users-david-citizen-compass\\56eed803-6938-4cf6-aeac-6c54abf4dd5a\\scratchpad\\sc-ships-dryrun\\_corrupt_backup",
+    "status": "MISSING - model.glb not found",
+    "before_scale": null,
+    "before_dimensions": null
+  }
+]

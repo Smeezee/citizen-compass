@@ -1,0 +1,7 @@
+# Raw landed snapshots of the Fleetyards model list. Same separation the repo
+# already uses for data-layer/external-sources/: the raw pull is gitignored,
+# the provenance record is not. ../MANIFEST.json carries the source endpoint,
+# the fetch timestamp, the record count and the sha256 of the snapshot, so the
+# record survives even though the 5.9 MB payload is not committed.
+*.json
+!.gitignore

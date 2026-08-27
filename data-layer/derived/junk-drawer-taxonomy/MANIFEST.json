@@ -1,0 +1,34 @@
+{
+ "generated_by": "C3 (Cowork), 2026-08-07",
+ "purpose": "366-item classification pass on the 'junk drawer' catalog items (things sitting under Miscellaneous/Other in the source data with no real bucket) - proposes a real destination bucket for each item instead of leaving them all lumped as Misc.",
+ "why_relocated_here": "Originally dropped in inbox/, ended up stuck in _needs_review/ because the file's top level is a JSON array and the inbox watcher's classifier requires a JSON object at the top level - a format mismatch, not a data problem. Moved directly into data-layer/derived/ (C3's authorized path) rather than reshaping it to satisfy the watcher, since this is derived analysis output, not a doc/handoff for the watcher to route.",
+ "source_breakdown": {
+  "current_section": {"Miscellaneous": 325, "Other": 41},
+  "total_items": 366
+ },
+ "proposed_bucket_breakdown": {
+  "trophies_tat": 131,
+  "organic_food": 60,
+  "data_schematics": 38,
+  "ship_armour": 38,
+  "ship_models_takuetsu": 30,
+  "UNCLASSIFIED": 28,
+  "artifact_fragments": 22,
+  "countermeasures": 14,
+  "scrip_tokens": 5
+ },
+ "fields": {
+  "name": "item name as it appears in the source catalog",
+  "uuid": "source UUID if the catalog had one; often blank for junk-drawer items",
+  "current_section": "the section the item currently sits under (almost all Miscellaneous/Other)",
+  "current_category": "the category the item currently sits under",
+  "company": "manufacturer/company if known, else null",
+  "proposed_bucket": "this pass's proposed destination bucket; UNCLASSIFIED means no confident call was made",
+  "proposed_destination": "free-text explanation of the proposed move, including SPLIT cases where an item may belong in two places (e.g. commodity-matched items should go to Commodities, decorative duplicates stay as collectibles)",
+  "commodity_name_match_204endpoint": "true if the item's name matches an entry in the 204-endpoint commodity name list, meaning it may actually be a sellable commodity rather than a collectible"
+ },
+ "open_items_for_sleven": "28 UNCLASSIFIED items and all SPLIT-flagged proposed_destination entries still need a human call on final bucket placement - this file proposes, it doesn't decide. Ties into the standing open item-taxonomy ruling in CURRENT-STATE.md.",
+ "companion_files": {
+  "junk-drawer-366-classified.json": "the 366 classified items, array of objects, fields as above."
+ }
+}

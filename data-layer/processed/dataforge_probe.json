@@ -1,0 +1,52 @@
+{
+  "game_branch": "sc-alpha-4.10.0",
+  "p4_change": "12519617",
+  "entries": {
+    "Data\\Game2.dcb": {
+      "method": 100,
+      "compressed": 29718272,
+      "uncompressed": 331435556
+    }
+  },
+  "largest": "Data\\Game2.dcb",
+  "decompressed_bytes": 331435556,
+  "header_version": 8,
+  "counts_offset": 16,
+  "table_counts": {
+    "structDefinitions": 6694,
+    "propertyDefinitions": 23788,
+    "enumDefinitions": 774,
+    "dataMappings": 6694,
+    "recordDefinitions": 116921,
+    "booleanValues": 45993,
+    "int8Values": 10,
+    "int16Values": 10,
+    "int32Values": 774,
+    "int64Values": 10667,
+    "uint8Values": 10,
+    "uint16Values": 10,
+    "uint32Values": 36,
+    "uint64Values": 10,
+    "singleValues": 76674,
+    "doubleValues": 10,
+    "guidValues": 159,
+    "stringValues": 100648,
+    "localeValues": 6831,
+    "enumValues": 144160,
+    "strongValues": 1815563,
+    "weakValues": 184099,
+    "referenceValues": 748179,
+    "enumOptionValues": 6351,
+    "textLength": 17165925
+  },
+  "counts_plausible": true,
+  "literal_strings_found": {
+    "ANVL_Carrack": 245,
+    "DRAK_Cutlass_Black": 86,
+    "AEGS_Vanguard_Harbinger": 38,
+    "RSI_Polaris": 352,
+    "ANVL_Asgard": 82,
+    "EntityClassDefinition": 29185
+  },
+  "status": "probe only - header read and measured, ship records confirmed present as text, NO records decoded and no schema claimed"
+}

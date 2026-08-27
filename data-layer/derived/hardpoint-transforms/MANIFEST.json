@@ -1,0 +1,1821 @@
+{
+ "generated_by": "build_hardpoint_transforms.py",
+ "finding": "docs/FINDING_the-coordinates-are-in-the-client-2026-08-27.md",
+ "source": "/sessions/rcw-01whu5tgna3qv6jzwrtsqpuh/mnt/StarCitizen/LIVE/Data.p4k",
+ "frame": "CIG/CryEngine. X lateral, Y fore/aft, Z up. METRES.",
+ "hull_rule": "the .cga whose basename equals its folder name. Exact, case-insensitive. No fuzzy matching.",
+ "not_converted": "Viewer frame is y-up / -Z forward and each GLB carries its own unit scale. Conversion is per-hull against that hull's measured box and is NOT done here.",
+ "acceptance": "every hardpoint finite; at least 80% of NAMED left/right pairs mirrored to 5 cm. A hull with no named pair FAILS - a check that could not have failed is not a check.",
+ "counts": {
+  "hulls_indexed": 116,
+  "decoded": 109,
+  "passed": 77,
+  "failed_acceptance": 32,
+  "errored": 7
+ },
+ "ships": [
+  {
+   "class": "AEGS_Avenger",
+   "nodes": 126,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 64,
+   "finite": 64,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 13,
+   "all_mirrored": 13,
+   "span": [
+    11.124,
+    21.145,
+    4.308
+   ]
+  },
+  {
+   "class": "AEGS_Eclipse",
+   "nodes": 179,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 59,
+   "finite": 59,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 6,
+   "all_mirrored": 6,
+   "span": [
+    16.133,
+    16.41,
+    2.903
+   ]
+  },
+  {
+   "class": "AEGS_Gladius",
+   "nodes": 273,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 64,
+   "finite": 64,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 14,
+   "all_mirrored": 13,
+   "span": [
+    15.334,
+    17.424,
+    2.584
+   ]
+  },
+  {
+   "class": "AEGS_Hammerhead",
+   "nodes": 204,
+   "acceptance": false,
+   "note": "only 4 of 6 exterior mount pairs mirror",
+   "hardpoints": 97,
+   "finite": 97,
+   "exterior_pairs": 6,
+   "exterior_mirrored": 4,
+   "all_pairs": 22,
+   "all_mirrored": 18,
+   "span": [
+    49.97,
+    106.956,
+    11.186
+   ]
+  },
+  {
+   "class": "AEGS_Reclaimer",
+   "nodes": 335,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 163,
+   "finite": 163,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 39,
+   "all_mirrored": 25,
+   "span": [
+    106.0,
+    145.794,
+    45.5
+   ]
+  },
+  {
+   "class": "AEGS_Redeemer",
+   "nodes": 253,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 100,
+   "finite": 100,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 18,
+   "all_mirrored": 16,
+   "span": [
+    19.736,
+    44.597,
+    9.375
+   ]
+  },
+  {
+   "class": "aegs_retaliator",
+   "nodes": 301,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 128,
+   "finite": 128,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 17,
+   "all_mirrored": 8,
+   "span": [
+    19.906,
+    50.25,
+    8.173
+   ]
+  },
+  {
+   "class": "AEGS_Sabre",
+   "nodes": 217,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 63,
+   "finite": 63,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 9,
+   "all_mirrored": 9,
+   "span": [
+    9.5,
+    21.4,
+    2.592
+   ]
+  },
+  {
+   "class": "AEGS_Sabre_Firebird",
+   "nodes": 298,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 67,
+   "finite": 67,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 9,
+   "all_mirrored": 8,
+   "span": [
+    10.432,
+    18.464,
+    2.379
+   ]
+  },
+  {
+   "class": "AEGS_Sabre_Peregrine",
+   "nodes": 267,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 63,
+   "finite": 63,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 8,
+   "all_mirrored": 7,
+   "span": [
+    10.432,
+    18.464,
+    2.379
+   ]
+  },
+  {
+   "class": "AEGS_Vanguard",
+   "nodes": 194,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 100,
+   "finite": 100,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 9,
+   "all_mirrored": 8,
+   "span": [
+    17.246,
+    31.48,
+    15.236
+   ]
+  },
+  {
+   "class": "aegs_hammerhead_gs",
+   "nodes": 182,
+   "acceptance": false,
+   "note": "only 4 of 6 exterior mount pairs mirror",
+   "hardpoints": 107,
+   "finite": 107,
+   "exterior_pairs": 6,
+   "exterior_mirrored": 4,
+   "all_pairs": 25,
+   "all_mirrored": 21,
+   "span": [
+    49.97,
+    106.956,
+    11.918
+   ]
+  },
+  {
+   "class": "aegs_tiburon",
+   "nodes": 225,
+   "acceptance": false,
+   "note": "only 6 of 10 exterior mount pairs mirror",
+   "hardpoints": 121,
+   "finite": 121,
+   "exterior_pairs": 10,
+   "exterior_mirrored": 6,
+   "all_pairs": 31,
+   "all_mirrored": 25,
+   "span": [
+    62.394,
+    106.943,
+    11.303
+   ]
+  },
+  {
+   "class": "ANVL_Arrow",
+   "nodes": 134,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 61,
+   "finite": 61,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 14,
+   "all_mirrored": 11,
+   "span": [
+    8.714,
+    11.566,
+    1.853
+   ]
+  },
+  {
+   "class": "anvl_asgard",
+   "nodes": 243,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 106,
+   "finite": 106,
+   "exterior_pairs": 7,
+   "exterior_mirrored": 6,
+   "all_pairs": 24,
+   "all_mirrored": 19,
+   "span": [
+    31.329,
+    45.601,
+    9.563
+   ]
+  },
+  {
+   "class": "ANVL_Carrack",
+   "nodes": 249,
+   "acceptance": false,
+   "note": "only 5 of 7 exterior mount pairs mirror",
+   "hardpoints": 137,
+   "finite": 137,
+   "exterior_pairs": 7,
+   "exterior_mirrored": 5,
+   "all_pairs": 21,
+   "all_mirrored": 16,
+   "span": [
+    68.0,
+    112.441,
+    35.25
+   ]
+  },
+  {
+   "class": "ANVL_Gladiator",
+   "nodes": 172,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 65,
+   "finite": 65,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 13,
+   "all_mirrored": 13,
+   "span": [
+    14.07,
+    16.115,
+    5.338
+   ]
+  },
+  {
+   "class": "ANVL_Hawk",
+   "nodes": 175,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 73,
+   "finite": 73,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 16,
+   "all_mirrored": 13,
+   "span": [
+    11.893,
+    15.689,
+    6.619
+   ]
+  },
+  {
+   "class": "ANVL_Hornet",
+   "nodes": 163,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 61,
+   "finite": 61,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 12,
+   "all_mirrored": 12,
+   "span": [
+    18.729,
+    14.005,
+    3.272
+   ]
+  },
+  {
+   "class": "ANVL_Hornet_F7A",
+   "nodes": 227,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 71,
+   "finite": 71,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 18,
+   "all_mirrored": 18,
+   "span": [
+    16.125,
+    16.572,
+    5.5
+   ]
+  },
+  {
+   "class": "ANVL_Hornet_F7A_MK1",
+   "nodes": 256,
+   "acceptance": false,
+   "note": "only 0 of 2 exterior mount pairs mirror",
+   "hardpoints": 68,
+   "finite": 68,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 0,
+   "all_pairs": 15,
+   "all_mirrored": 13,
+   "span": [
+    18.739,
+    14.005,
+    3.125
+   ]
+  },
+  {
+   "class": "ANVL_Hornet_F7CM",
+   "nodes": 183,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 72,
+   "finite": 72,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 11,
+   "all_mirrored": 11,
+   "span": [
+    20.332,
+    16.215,
+    3.952
+   ]
+  },
+  {
+   "class": "ANVL_Hornet_F7C_R",
+   "nodes": 7,
+   "acceptance": false,
+   "note": "not a hull: no hardpoint nodes",
+   "hardpoints": 0
+  },
+  {
+   "class": "ANVL_Hornet_F7C_S",
+   "nodes": 2,
+   "acceptance": false,
+   "note": "not a hull: no hardpoint nodes",
+   "hardpoints": 0
+  },
+  {
+   "class": "anvl_hornet_f7cm_mk2",
+   "nodes": 244,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 73,
+   "finite": 73,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 17,
+   "all_mirrored": 17,
+   "span": [
+    16.122,
+    14.262,
+    4.749
+   ]
+  },
+  {
+   "class": "ANVL_Hurricane",
+   "nodes": 126,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 66,
+   "finite": 66,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    9.624,
+    18.076,
+    2.674
+   ]
+  },
+  {
+   "class": "ANVL_Paladin",
+   "nodes": 434,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 96,
+   "finite": 96,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 11,
+   "all_mirrored": 11,
+   "span": [
+    34.5,
+    48.625,
+    8.621
+   ]
+  },
+  {
+   "class": "ANVL_Pisces",
+   "nodes": 124,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 66,
+   "finite": 66,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    7.0,
+    11.046,
+    2.089
+   ]
+  },
+  {
+   "class": "anvl_terrapin",
+   "nodes": 365,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 82,
+   "finite": 82,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 16,
+   "all_mirrored": 15,
+   "span": [
+    12.913,
+    18.039,
+    5.168
+   ]
+  },
+  {
+   "class": "ANVL_Valkyrie",
+   "nodes": 138,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 88,
+   "finite": 88,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 4,
+   "all_pairs": 21,
+   "all_mirrored": 17,
+   "span": [
+    33.946,
+    42.939,
+    7.001
+   ]
+  },
+  {
+   "class": "ARGO_MOLE",
+   "nodes": 237,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 103,
+   "finite": 103,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 22,
+   "all_mirrored": 21,
+   "span": [
+    23.146,
+    40.475,
+    9.587
+   ]
+  },
+  {
+   "class": "ARGO_RAFT",
+   "nodes": 183,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 79,
+   "finite": 79,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 12,
+   "all_mirrored": 10,
+   "span": [
+    21.127,
+    36.53,
+    10.315
+   ]
+  },
+  {
+   "class": "ARGO_SRV",
+   "nodes": 200,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 67,
+   "finite": 67,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 5,
+   "all_mirrored": 5,
+   "span": [
+    19.606,
+    29.342,
+    5.237
+   ]
+  },
+  {
+   "class": "argo_moth",
+   "nodes": 277,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 90,
+   "finite": 90,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 20,
+   "all_mirrored": 19,
+   "span": [
+    23.146,
+    41.681,
+    10.289
+   ]
+  },
+  {
+   "class": "BANU_Defender",
+   "nodes": 132,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 79,
+   "finite": 79,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 18,
+   "all_mirrored": 18,
+   "span": [
+    17.015,
+    20.789,
+    4.358
+   ]
+  },
+  {
+   "class": "CNOU_Hoverquad",
+   "nodes": 204,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 52,
+   "finite": 52,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 12,
+   "all_mirrored": 12,
+   "span": [
+    1.963,
+    3.545,
+    1.115
+   ]
+  },
+  {
+   "class": "CNOU_Mustang",
+   "nodes": 226,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 73,
+   "finite": 73,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    12.979,
+    18.866,
+    4.02
+   ]
+  },
+  {
+   "class": "CNOU_Nomad",
+   "nodes": 166,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 94,
+   "finite": 94,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 17,
+   "all_mirrored": 17,
+   "span": [
+    15.414,
+    21.529,
+    7.619
+   ]
+  },
+  {
+   "class": "CRUS_Star_Runner",
+   "nodes": 170,
+   "acceptance": false,
+   "note": "only 2 of 3 exterior mount pairs mirror",
+   "hardpoints": 110,
+   "finite": 110,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 2,
+   "all_pairs": 18,
+   "all_mirrored": 14,
+   "span": [
+    39.378,
+    49.249,
+    11.75
+   ]
+  },
+  {
+   "class": "recreation",
+   "nodes": 28,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 1,
+   "finite": 1,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 0,
+   "all_mirrored": 0,
+   "span": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "class": "CRUS_Starfighter",
+   "nodes": 231,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 72,
+   "finite": 72,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    25.34,
+    22.943,
+    3.854
+   ]
+  },
+  {
+   "class": "CRUS_Starlifter",
+   "nodes": 322,
+   "acceptance": false,
+   "note": "only 0 of 1 exterior mount pairs mirror",
+   "hardpoints": 149,
+   "finite": 149,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 0,
+   "all_pairs": 31,
+   "all_mirrored": 22,
+   "span": [
+    60.436,
+    76.412,
+    20.547
+   ]
+  },
+  {
+   "class": "crus_intrepid",
+   "nodes": 120,
+   "acceptance": false,
+   "note": "only 1 of 2 exterior mount pairs mirror",
+   "hardpoints": 82,
+   "finite": 82,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 1,
+   "all_pairs": 17,
+   "all_mirrored": 15,
+   "span": [
+    19.89,
+    20.491,
+    3.217
+   ]
+  },
+  {
+   "class": "crus_spirit",
+   "nodes": 244,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 92,
+   "finite": 92,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 21,
+   "all_mirrored": 20,
+   "span": [
+    41.088,
+    37.582,
+    6.629
+   ]
+  },
+  {
+   "class": "DRAK_Buccaneer",
+   "nodes": 152,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 82,
+   "finite": 82,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 4,
+   "all_mirrored": 4,
+   "span": [
+    15.511,
+    13.152,
+    4.362
+   ]
+  },
+  {
+   "class": "DRAK_Caterpillar",
+   "nodes": 296,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 147,
+   "finite": 147,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 18,
+   "all_mirrored": 13,
+   "span": [
+    26.291,
+    102.007,
+    12.031
+   ]
+  },
+  {
+   "class": "DRAK_Corsair",
+   "nodes": 319,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 143,
+   "finite": 143,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 31,
+   "all_mirrored": 24,
+   "span": [
+    28.777,
+    50.013,
+    13.952
+   ]
+  },
+  {
+   "class": "DRAK_Cutter",
+   "nodes": 175,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 106,
+   "finite": 106,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 17,
+   "all_mirrored": 17,
+   "span": [
+    11.42,
+    18.05,
+    4.237
+   ]
+  },
+  {
+   "class": "DRAK_Dragonfly",
+   "nodes": 104,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 55,
+   "finite": 55,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 10,
+   "all_mirrored": 10,
+   "span": [
+    1.952,
+    6.095,
+    1.616
+   ]
+  },
+  {
+   "class": "drak_golem_ox",
+   "nodes": 448,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 66,
+   "finite": 66,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 16,
+   "all_mirrored": 16,
+   "span": [
+    8.908,
+    14.869,
+    3.99
+   ]
+  },
+  {
+   "class": "DRAK_Herald",
+   "nodes": 139,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 78,
+   "finite": 78,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 16,
+   "all_mirrored": 14,
+   "span": [
+    8.8,
+    21.261,
+    6.161
+   ]
+  },
+  {
+   "class": "drak_ironclad",
+   "nodes": 503,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 168,
+   "finite": 168,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 42,
+   "all_mirrored": 39,
+   "span": [
+    41.135,
+    98.69,
+    18.794
+   ]
+  },
+  {
+   "class": "DRAK_Vulture",
+   "nodes": 286,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 88,
+   "finite": 88,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 21,
+   "all_mirrored": 18,
+   "span": [
+    12.9,
+    30.612,
+    6.694
+   ]
+  },
+  {
+   "class": "drak_clipper",
+   "nodes": 236,
+   "acceptance": false,
+   "note": "only 0 of 6 exterior mount pairs mirror",
+   "hardpoints": 88,
+   "finite": 88,
+   "exterior_pairs": 6,
+   "exterior_mirrored": 0,
+   "all_pairs": 8,
+   "all_mirrored": 1,
+   "span": [
+    38.246,
+    22.594,
+    12.68
+   ]
+  },
+  {
+   "class": "drak_command_module",
+   "nodes": 164,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 82,
+   "finite": 82,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 9,
+   "all_mirrored": 8,
+   "span": [
+    7.8,
+    25.9,
+    6.707
+   ]
+  },
+  {
+   "class": "drak_pitbull",
+   "nodes": 143,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 61,
+   "finite": 61,
+   "exterior_pairs": 7,
+   "exterior_mirrored": 7,
+   "all_pairs": 9,
+   "all_mirrored": 9,
+   "span": [
+    5.666,
+    4.718,
+    2.166
+   ]
+  },
+  {
+   "class": "ESPR_Prowler",
+   "nodes": 236,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 142,
+   "finite": 142,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 24,
+   "all_mirrored": 22,
+   "span": [
+    29.792,
+    30.097,
+    11.777
+   ]
+  },
+  {
+   "class": "ESPR_Prowler_Utility",
+   "nodes": 282,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 119,
+   "finite": 119,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 24,
+   "all_mirrored": 22,
+   "span": [
+    25.555,
+    29.542,
+    11.138
+   ]
+  },
+  {
+   "class": "ESPR_Talon",
+   "nodes": 336,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 74,
+   "finite": 74,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 20,
+   "all_mirrored": 19,
+   "span": [
+    18.091,
+    16.495,
+    5.304
+   ]
+  },
+  {
+   "class": "GAMA_Syulen",
+   "nodes": 334,
+   "acceptance": false,
+   "note": "only 1 of 2 exterior mount pairs mirror",
+   "hardpoints": 90,
+   "finite": 90,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 1,
+   "all_pairs": 22,
+   "all_mirrored": 19,
+   "span": [
+    26.269,
+    13.18,
+    22.771
+   ]
+  },
+  {
+   "class": "gama_railen",
+   "nodes": 189,
+   "acceptance": false,
+   "note": "only 4 of 7 exterior mount pairs mirror",
+   "hardpoints": 97,
+   "finite": 97,
+   "exterior_pairs": 7,
+   "exterior_mirrored": 4,
+   "all_pairs": 25,
+   "all_mirrored": 20,
+   "span": [
+    40.992,
+    44.5,
+    49.494
+   ]
+  },
+  {
+   "class": "gama_tyilui",
+   "nodes": 204,
+   "acceptance": false,
+   "note": "only 4 of 7 exterior mount pairs mirror",
+   "hardpoints": 103,
+   "finite": 103,
+   "exterior_pairs": 7,
+   "exterior_mirrored": 4,
+   "all_pairs": 25,
+   "all_mirrored": 20,
+   "span": [
+    49.055,
+    54.75,
+    45.257
+   ]
+  },
+  {
+   "class": "GLSN_Shiv",
+   "nodes": 197,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 118,
+   "finite": 118,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 6,
+   "all_mirrored": 4,
+   "span": [
+    23.529,
+    33.359,
+    7.769
+   ]
+  },
+  {
+   "class": "KRIG_P52_Merlin",
+   "nodes": 120,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 65,
+   "finite": 65,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 11,
+   "all_mirrored": 11,
+   "span": [
+    4.562,
+    11.27,
+    1.933
+   ]
+  },
+  {
+   "class": "krig_s65_stingray",
+   "nodes": 365,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 69,
+   "finite": 69,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 5,
+   "all_pairs": 17,
+   "all_mirrored": 17,
+   "span": [
+    18.079,
+    13.813,
+    3.038
+   ]
+  },
+  {
+   "class": "MISC_Fury",
+   "nodes": 491,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 76,
+   "finite": 76,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 5,
+   "all_pairs": 16,
+   "all_mirrored": 16,
+   "span": [
+    3.0,
+    4.998,
+    2.859
+   ]
+  },
+  {
+   "class": "misc_hull_c",
+   "nodes": 344,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 142,
+   "finite": 142,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 17,
+   "all_mirrored": 15,
+   "span": [
+    35.352,
+    87.439,
+    22.6
+   ]
+  },
+  {
+   "class": "MISC_Prospector_Drill_Arm",
+   "nodes": 33,
+   "acceptance": false,
+   "note": "not a hull: no hardpoint nodes",
+   "hardpoints": 0
+  },
+  {
+   "class": "MISC_Prospector",
+   "nodes": 255,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 80,
+   "finite": 80,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 11,
+   "all_mirrored": 11,
+   "span": [
+    7.466,
+    26.855,
+    6.575
+   ]
+  },
+  {
+   "class": "MISC_Razor",
+   "nodes": 128,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 61,
+   "finite": 61,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 9,
+   "all_mirrored": 9,
+   "span": [
+    3.173,
+    9.888,
+    2.4
+   ]
+  },
+  {
+   "class": "MISC_Reliant",
+   "nodes": 171,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 90,
+   "finite": 90,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 10,
+   "all_mirrored": 9,
+   "span": [
+    26.709,
+    9.236,
+    2.495
+   ]
+  },
+  {
+   "class": "misc_starfarer_console_fuelpods",
+   "nodes": 5,
+   "acceptance": false,
+   "note": "not a hull: no hardpoint nodes",
+   "hardpoints": 0
+  },
+  {
+   "class": "MISC_Starfarer",
+   "nodes": 233,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 107,
+   "finite": 107,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 14,
+   "all_mirrored": 13,
+   "span": [
+    38.6,
+    93.75,
+    20.797
+   ]
+  },
+  {
+   "class": "Refuel_Arm",
+   "nodes": 6,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 1,
+   "finite": 1,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 0,
+   "all_mirrored": 0,
+   "span": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "class": "misc_fortune",
+   "nodes": 302,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 94,
+   "finite": 94,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    13.136,
+    27.354,
+    5.611
+   ]
+  },
+  {
+   "class": "misc_hull_b",
+   "nodes": 443,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 159,
+   "finite": 159,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 51,
+   "all_mirrored": 48,
+   "span": [
+    15.154,
+    43.269,
+    7.58
+   ]
+  },
+  {
+   "class": "misc_starlancer",
+   "nodes": 267,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 101,
+   "finite": 101,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 16,
+   "all_mirrored": 13,
+   "span": [
+    35.66,
+    77.522,
+    11.569
+   ]
+  },
+  {
+   "class": "misc_starlancer_tac",
+   "nodes": 241,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 109,
+   "finite": 109,
+   "exterior_pairs": 7,
+   "exterior_mirrored": 7,
+   "all_pairs": 20,
+   "all_mirrored": 18,
+   "span": [
+    35.66,
+    78.257,
+    11.569
+   ]
+  },
+  {
+   "class": "misc_starlite",
+   "nodes": 127,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 82,
+   "finite": 82,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 10,
+   "all_mirrored": 9,
+   "span": [
+    19.186,
+    28.891,
+    7.507
+   ]
+  },
+  {
+   "class": "mrai_guardian",
+   "nodes": 272,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 80,
+   "finite": 80,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 18,
+   "all_mirrored": 18,
+   "span": [
+    15.496,
+    24.706,
+    6.535
+   ]
+  },
+  {
+   "class": "mrai_guardian_mx",
+   "nodes": 674,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 78,
+   "finite": 78,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 18,
+   "all_mirrored": 18,
+   "span": [
+    18.238,
+    23.07,
+    8.76
+   ]
+  },
+  {
+   "class": "mrai_pulse",
+   "nodes": 221,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 56,
+   "finite": 56,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 12,
+   "all_mirrored": 12,
+   "span": [
+    0.8,
+    2.253,
+    0.845
+   ]
+  },
+  {
+   "class": "ORIG_100i",
+   "nodes": 132,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 75,
+   "finite": 75,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 15,
+   "all_mirrored": 14,
+   "span": [
+    11.23,
+    17.473,
+    4.0
+   ]
+  },
+  {
+   "class": "ORIG_400i",
+   "nodes": 151,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 88,
+   "finite": 88,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    31.054,
+    55.056,
+    8.211
+   ]
+  },
+  {
+   "class": "ORIG_600i",
+   "nodes": 204,
+   "acceptance": false,
+   "note": "only 1 of 4 exterior mount pairs mirror",
+   "hardpoints": 98,
+   "finite": 98,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 1,
+   "all_pairs": 24,
+   "all_mirrored": 19,
+   "span": [
+    40.914,
+    83.304,
+    17.641
+   ]
+  },
+  {
+   "class": "elevator_600i",
+   "nodes": 4,
+   "acceptance": false,
+   "note": "not a hull: no hardpoint nodes",
+   "hardpoints": 0
+  },
+  {
+   "class": "ORIG_85x",
+   "nodes": 140,
+   "acceptance": false,
+   "note": "only 0 of 1 exterior mount pairs mirror",
+   "hardpoints": 65,
+   "finite": 65,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 0,
+   "all_pairs": 13,
+   "all_mirrored": 11,
+   "span": [
+    6.676,
+    10.341,
+    1.329
+   ]
+  },
+  {
+   "class": "ORIG_890Jump",
+   "nodes": 264,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 122,
+   "finite": 122,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 26,
+   "all_mirrored": 25,
+   "span": [
+    67.508,
+    178.979,
+    33.811
+   ]
+  },
+  {
+   "class": "ORIG_M50",
+   "nodes": 153,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 64,
+   "finite": 64,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 14,
+   "all_mirrored": 14,
+   "span": [
+    6.176,
+    9.644,
+    2.225
+   ]
+  },
+  {
+   "class": "ORIG_X1",
+   "nodes": 294,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 66,
+   "finite": 66,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    1.46,
+    3.655,
+    0.745
+   ]
+  },
+  {
+   "class": "rsi_apollo",
+   "nodes": 464,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 151,
+   "finite": 151,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 39,
+   "all_mirrored": 38,
+   "span": [
+    37.951,
+    62.438,
+    10.344
+   ]
+  },
+  {
+   "class": "RSI_Aurora",
+   "nodes": 129,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 79,
+   "finite": 79,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 1,
+   "all_mirrored": 1,
+   "span": [
+    6.538,
+    16.436,
+    2.733
+   ]
+  },
+  {
+   "class": "RSI_Bengal",
+   "nodes": 814,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 766,
+   "finite": 766,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 23,
+   "all_mirrored": 4,
+   "span": [
+    425.462,
+    944.543,
+    145.421
+   ]
+  },
+  {
+   "class": "RSI_Constellation",
+   "nodes": 591,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 138,
+   "finite": 138,
+   "exterior_pairs": 8,
+   "exterior_mirrored": 7,
+   "all_pairs": 35,
+   "all_mirrored": 26,
+   "span": [
+    23.168,
+    56.369,
+    11.132
+   ]
+  },
+  {
+   "class": "RSI_Mantis",
+   "nodes": 172,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 62,
+   "finite": 62,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 14,
+   "all_mirrored": 13,
+   "span": [
+    13.365,
+    25.642,
+    5.457
+   ]
+  },
+  {
+   "class": "rsi_meteor",
+   "nodes": 185,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 70,
+   "finite": 70,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 5,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    13.365,
+    21.508,
+    5.638
+   ]
+  },
+  {
+   "class": "rsi_polaris",
+   "nodes": 705,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 187,
+   "finite": 187,
+   "exterior_pairs": 6,
+   "exterior_mirrored": 6,
+   "all_pairs": 35,
+   "all_mirrored": 32,
+   "span": [
+    75.477,
+    159.41,
+    24.427
+   ]
+  },
+  {
+   "class": "rsi_salvation",
+   "nodes": 192,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 64,
+   "finite": 64,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 17,
+   "all_mirrored": 16,
+   "span": [
+    6.8,
+    12.057,
+    2.59
+   ]
+  },
+  {
+   "class": "RSI_Scorpius",
+   "nodes": 407,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 79,
+   "finite": 79,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 5,
+   "all_pairs": 17,
+   "all_mirrored": 15,
+   "span": [
+    9.408,
+    25.926,
+    3.921
+   ]
+  },
+  {
+   "class": "RSI_Zeus",
+   "nodes": 269,
+   "acceptance": false,
+   "note": "only 2 of 3 exterior mount pairs mirror",
+   "hardpoints": 132,
+   "finite": 132,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 2,
+   "all_pairs": 29,
+   "all_mirrored": 25,
+   "span": [
+    25.515,
+    40.857,
+    5.997
+   ]
+  },
+  {
+   "class": "rsi_aurora_gs",
+   "nodes": 286,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 82,
+   "finite": 82,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 4,
+   "all_mirrored": 4,
+   "span": [
+    6.538,
+    17.357,
+    2.646
+   ]
+  },
+  {
+   "class": "rsi_aurora_mk2",
+   "nodes": 395,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 77,
+   "finite": 77,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 5,
+   "all_pairs": 18,
+   "all_mirrored": 18,
+   "span": [
+    9.651,
+    22.773,
+    3.533
+   ]
+  },
+  {
+   "class": "rsi_perseus",
+   "nodes": 476,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 161,
+   "finite": 161,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 34,
+   "all_mirrored": 33,
+   "span": [
+    37.43,
+    91.015,
+    17.172
+   ]
+  },
+  {
+   "class": "vncl_blade",
+   "nodes": 142,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 59,
+   "finite": 59,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 13,
+   "all_mirrored": 12,
+   "span": [
+    17.966,
+    14.056,
+    3.409
+   ]
+  },
+  {
+   "class": "VNCL_Scythe",
+   "nodes": 184,
+   "acceptance": false,
+   "note": "only 1 of 4 exterior mount pairs mirror",
+   "hardpoints": 65,
+   "finite": 65,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 1,
+   "all_pairs": 16,
+   "all_mirrored": 1,
+   "span": [
+    15.271,
+    21.933,
+    6.496
+   ]
+  },
+  {
+   "class": "vncl_stinger",
+   "nodes": 401,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 80,
+   "finite": 80,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 5,
+   "all_pairs": 17,
+   "all_mirrored": 16,
+   "span": [
+    28.0,
+    23.194,
+    6.887
+   ]
+  },
+  {
+   "class": "XIAN_Nox",
+   "nodes": 100,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 67,
+   "finite": 67,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 15,
+   "all_mirrored": 15,
+   "span": [
+    0.996,
+    4.461,
+    0.96
+   ]
+  },
+  {
+   "class": "XIAN_Scout",
+   "nodes": 193,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 70,
+   "finite": 70,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 13,
+   "all_mirrored": 9,
+   "span": [
+    12.294,
+    6.538,
+    15.229
+   ]
+  },
+  {
+   "class": "XNAA_SanTokYai",
+   "nodes": 401,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 86,
+   "finite": 86,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 5,
+   "all_pairs": 22,
+   "all_mirrored": 22,
+   "span": [
+    20.924,
+    13.57,
+    14.4
+   ]
+  }
+ ]
+}

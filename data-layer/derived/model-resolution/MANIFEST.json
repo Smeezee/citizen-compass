@@ -1,0 +1,26 @@
+{
+ "dataset": "model-resolution",
+ "produced_by": "C3 (Cowork), 2026-08-22",
+ "ask": "Resolve every ship to a model, by hand, with no fuzzy matching. C1 task of 2026-08-22.",
+ "files": {
+  "table1_orphan_files.json": "one row per .glb that no ship references - 40 rows",
+  "table2_ships_without_model.json": "one row per ship rendering nothing - 115 rows",
+  "table3_fankit.json": "the Fan Kit's 14 .ctm, and which fill a gap"
+ },
+ "regenerated_figures": {
+  "ships_in_data": 316,
+  "glb_files_on_disk": 235,
+  "ships_wired_to_a_model": 201,
+  "distinct_files_referenced": 195,
+  "orphan_files": 40,
+  "ships_rendering_nothing": 115,
+  "agreed_with_C1": true
+ },
+ "method": {
+  "automatic": "exact normalised name, then ClassName, then stop. NO fuzzy matching.",
+  "by_hand": "rows marked by=hand were judged individually. Every hand pair is named in the finding with the reason it was not caught automatically.",
+  "manufacturer_check": "every claimed pair was checked against the ship's manufacturer field independently of the name."
+ },
+ "what_this_is_NOT": "Not a build input yet. Table 2's SHARED_HULL rows assert that an edition shares its base hull; that follows the 2026-08-14 shared-hull ruling but no ship was compared visually in game.",
+ "consumers": ["none yet"]
+}

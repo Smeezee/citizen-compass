@@ -56,6 +56,10 @@
  --scrim-90:rgba(7,13,22,0.9); --scrim-78:rgba(7,13,22,0.78);
  --scrim-82:rgba(7,13,22,0.82); --scrim-drop:rgba(0,0,0,0.55);
  --scrim-code:rgba(0,0,0,0.3); --scrim-label:rgba(0,0,0,0.85);
+ /* P2: the stage panel's corner brackets. A TOKEN rather than a literal cyan,
+    because the accent is themeable and a hard-coded #22D3EE would outlive the
+    theme that justified it. */
+ --bracket:rgba(34,211,238,0.30);
  --leaderline:rgba(255,170,60,0.62)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
@@ -205,6 +209,63 @@ th{text-align:left;color:var(--muted);font-size:11.5px;text-transform:uppercase;
 td{padding:7px;border-bottom:1px solid var(--panel3)}
 td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .conf{font-size:11.5px;color:var(--muted)}
+/* THE DISCLOSURE BAR. ORDER_the-disclosure-bar-2026-08-27.
+
+   THE RULE THIS ENCODES, because it is the load-bearing half and it is not
+   about pixels: COLLAPSE A BLOCK THAT EXPLAINS. NEVER collapse a block that
+   WARNS, that reports an ERROR, or that states WHAT THE VISITOR IS LOOKING AT
+   RIGHT NOW. A warning nobody reads is worse than a warning nobody styled.
+
+   Only `.disc` collapses. `.trip` and the amber `.note` treatment are
+   deliberately untouched so that a block has to be MOVED into this class by
+   hand - a blanket restyle would have swept the error and empty states in with
+   the explanations, which is the exact defect D1 exists to catch. */
+.disc{margin-top:11px;background:var(--panel2);border:1px solid var(--line);
+ border-radius:9px;overflow:hidden}
+.disc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+ gap:9px;padding:9px 12px;min-height:38px;box-sizing:border-box;
+ font-size:12px;color:var(--muted)}
+.disc>summary::-webkit-details-marker{display:none}
+.disc>summary:hover{background:var(--panel3)}
+.disc>summary:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
+/* THE STAMP CARRIES THE ONE LOAD-BEARING FACT. Somebody who never opens this
+   still leaves knowing the patch and the source - which is the whole reason
+   this is a bar and not a triangle. */
+.disc .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:11px;letter-spacing:.06em;color:var(--text);background:var(--panel3);
+ border:1px solid var(--line);border-radius:5px;padding:2px 7px;white-space:nowrap}
+.disc .srcline{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;
+ white-space:nowrap}
+.disc .opener{color:var(--accent2);white-space:nowrap}
+.disc[open]>summary{border-bottom:1px solid var(--line)}
+.disc[open] .opener::after{content:" \2039"}
+.disc:not([open]) .opener::after{content:" \203A"}
+.disc .body{padding:12px 13px 13px}
+/* SIDE BY SIDE, NOT A COLUMN OF PROSE. */
+.disc .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+ gap:13px}
+.disc .cols section{min-width:0}
+.disc .cols h5{margin:0 0 5px;font:600 11.5px inherit;letter-spacing:.04em;
+ color:var(--text)}
+.disc .cols p{margin:0;font-size:11.5px;line-height:1.5;color:var(--muted)}
+/* THE NUMBERS COME OUT OF THE SENTENCES AND BECOME FIGURES. They were buried
+   mid-paragraph and nobody read them. */
+.disc .figs{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 7px}
+.disc .figs b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:11px;font-weight:600;color:var(--text);background:var(--panel3);
+ border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+.disc .figs b i{font-style:normal;color:var(--muted);font-weight:400}
+/* THE INLINE VARIANT, for the split case over the 3D stage. It sits inside a
+   running sentence rather than owning a row, so it drops the panel chrome and
+   keeps only the opener. The count stays in the sentence outside it. */
+.disc.inline{display:inline;background:none;border:0;border-radius:0;
+ margin:0;overflow:visible}
+.disc.inline>summary{display:inline;padding:0;min-height:0;font-size:inherit;
+ color:var(--accent2)}
+.disc.inline[open]>summary{border-bottom:0}
+.disc.inline>summary:hover{background:none;text-decoration:underline}
+.disc.inline .body{display:inline;padding:0}
+.disc.inline .body p{display:inline;margin:0;font-size:inherit;color:inherit}
 .trip{margin-top:11px;padding:11px 13px;background:var(--panel2);border-left:3px solid var(--accent2);
  border-radius:0 8px 8px 0;font-size:14.5px}
 .note{margin-top:13px;padding:11px 13px;background:var(--notebg);border:1px solid var(--noteline);
@@ -431,9 +492,28 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    numbers live in one place and the CSS is told. Two copies of 320 would drift
    the first time somebody widened it, and the panel would start covering the
    marker it is anchored to with nothing reporting it. */
+/* P2: THE PANEL NO LONGER OUTLINES ITSELF IN THE ACCENT.
+   Sleven: "it's got a light line, like a border all the way around it... it
+   stands out too much from everything else." That is literally true and it was
+   measurable: EVERY other panel on this page borders in var(--line) - .col,
+   .panel, .stat, .bud, .res, .paint, .buy, .picker .ph, .picker .sortrow, the
+   selects, the buttons. #cc-panel was the single exception in the stylesheet,
+   at full-strength var(--accent2). It stood out from everything else because it
+   was the only thing doing it.
+   The tie to the hull does not come from the outline - it comes from the dotted
+   leader, which is left at full strength on purpose. What replaces the outline
+   is the Fusion corner bracket Sleven approved: a mark at two opposing corners,
+   pulled inside the radius, in the accent at low alpha. */
 #cc-panel{position:absolute;z-index:6;background:var(--panel);
- border:1px solid var(--accent2);border-radius:10px;overflow:hidden;
+ border:1px solid var(--line);border-radius:10px;overflow:hidden;
  box-shadow:0 14px 34px var(--scrim-drop);display:flex;flex-direction:column}
+#cc-panel::before,#cc-panel::after{content:"";position:absolute;
+ width:13px;height:13px;pointer-events:none;z-index:1;
+ border-color:var(--bracket);border-style:solid;border-width:0}
+#cc-panel::before{top:5px;left:5px;
+ border-top-width:1px;border-left-width:1px;border-top-left-radius:5px}
+#cc-panel::after{bottom:5px;right:5px;
+ border-bottom-width:1px;border-right-width:1px;border-bottom-right-radius:5px}
 #cc-panel[hidden]{display:none}
 /* H1f: the opener and the panel. Both absolutely positioned INSIDE the stage,
    which is what makes "costs zero page height" true rather than hoped for -
@@ -479,6 +559,9 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 #cc-tune-panel label{display:block;margin:6px 0 2px;color:var(--muted);
  font-size:11px}
 #cc-tune-panel input[type=range]{width:100%}
+#cc-tune-panel .tunenote{margin:0 0 9px;padding:6px 8px;border-radius:7px;
+ background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+ font-size:10.5px;line-height:1.35}
 #cc-panel .plist{overflow:auto;flex:1 1 auto}
 #cc-panel .ph{display:grid;grid-template-columns:1fr auto;
  grid-template-areas:"title close" "sub sub";align-items:start;gap:4px 10px}
@@ -1423,36 +1506,68 @@ function fillShipList(){
 function fillProvenance(){
   const n=$('sourcenote');
   if(!n) return;
-  n.innerHTML=`<strong>Where these numbers come from.</strong>
-    Component names, manufacturers, sizes and stats are read from Star Citizen's
-    own game files — scunpacked snapshot <b>${META.snapshot||"unknown"}</b>,
-    ${META.ships||0} ships and ${META.parts||0} fittable components across
-    ${(META.types||[]).length} component types, last verified against patch
-    <b>${META.last_verified_patch||"?"}</b>.
-    <br><br>
-    <strong>What can be changed, and what cannot.</strong> Whether a port can be
-    swapped is stated by the game <em>on that port, on that ship</em> — never by
-    the kind of component. A fuel tank is fixed on 436 ports, but every external
-    fuel tank on a refueller is swappable, and the same is true of the mining
-    bags on a MOLE. So this page reads each port and shows what that port says.
-    ${META.editable_component_ports||0} ports on this dataset can be changed;
-    ${META.fixed_component_ports||0} are fixed and are shown anyway, because a
-    part you cannot change is still part of the ship and still counts.
-    <br><br>
-    <strong>Whose figure is whose.</strong> For a stock loadout the totals are
-    CIG's own precomputed numbers, read straight off the ship record and marked
-    <span class="src cig">CIG</span>. As soon as you change a part there is no
-    CIG figure for that build, so the page sums the fitted components itself and
-    marks it <span class="src ours">summed</span>. Our sum reproduces CIG's
-    pilot DPS on 272 of the 275 ships CIG publishes one for.
-    <br><br>
-    <strong>What is not here.</strong> Prices and shop locations are market data
-    and are not in the game files. Doors, seats and screens are not fittable
-    components in CIG's data — that is a category boundary, not missing data.
-    ${META.ports_with_no_part?`${META.ports_with_no_part} ports on this dataset
-    accept a component type that has no matching part in the game files at that
-    size; they are shown, and they say so, rather than opening an empty window.`:""}
-    <div class="recrow" id="recrow"></div>`;
+  /* COLLAPSED, because this block EXPLAINS. The count of what is on the page
+     and the patch it was verified against stay VISIBLE in the bar, so the two
+     facts that matter survive for a reader who never clicks. Nothing is
+     dropped - every sentence below is the same sentence it was. */
+  const _pat=META.last_verified_patch||"?";
+  const _snap=META.snapshot||"unknown";
+  n.innerHTML=`<details class="disc" id="provdisc">
+    <summary>
+      <span class="stamp">PATCH ${_pat}</span>
+      <span class="srcline">from Star Citizen's game files &middot;
+        scunpacked ${_snap}</span>
+      <span class="opener">Where these numbers come from</span>
+    </summary>
+    <div class="body">
+      <div class="figs">
+        <b>${META.ships||0}<i> ships</i></b>
+        <b>${META.parts||0}<i> components</i></b>
+        <b>${(META.types||[]).length}<i> types</i></b>
+        <b>${META.editable_component_ports||0}<i> can change</i></b>
+        <b>${META.fixed_component_ports||0}<i> fixed</i></b>
+      </div>
+      <div class="cols">
+        <section>
+          <h5>Where these numbers come from</h5>
+          <p>Component names, manufacturers, sizes and stats are read from Star
+          Citizen's own game files &mdash; scunpacked snapshot <b>${_snap}</b>,
+          last verified against patch <b>${_pat}</b>.</p>
+        </section>
+        <section>
+          <h5>What can be changed, and what cannot</h5>
+          <p>Whether a port can be swapped is stated by the game <em>on that
+          port, on that ship</em> &mdash; never by the kind of component. A fuel
+          tank is fixed on 436 ports, but every external fuel tank on a refueller
+          is swappable, and the same is true of the mining bags on a MOLE. So
+          this page reads each port and shows what that port says. Fixed ports
+          are shown anyway, because a part you cannot change is still part of the
+          ship and still counts.</p>
+        </section>
+        <section>
+          <h5>Whose figure is whose</h5>
+          <p>For a stock loadout the totals are CIG's own precomputed numbers,
+          read straight off the ship record and marked
+          <span class="src cig">CIG</span>. As soon as you change a part there is
+          no CIG figure for that build, so the page sums the fitted components
+          itself and marks it <span class="src ours">summed</span>. Our sum
+          reproduces CIG's pilot DPS on 272 of the 275 ships CIG publishes one
+          for.</p>
+        </section>
+        <section>
+          <h5>What is not here</h5>
+          <p>Prices and shop locations are market data and are not in the game
+          files. Doors, seats and screens are not fittable components in CIG's
+          data &mdash; that is a category boundary, not missing data.${
+          META.ports_with_no_part?` ${META.ports_with_no_part} ports accept a
+          component type that has no matching part in the game files at that
+          size; they are shown, and they say so, rather than opening an empty
+          window.`:""}</p>
+        </section>
+      </div>
+      <div class="recrow" id="recrow"></div>
+    </div>
+  </details>`;
   renderRecord();
 }
 
@@ -3987,12 +4102,26 @@ function coverageLine(){
   if(c.short<=0){
     return `<b>All ${c.total} of this ship's weapon mounts are marked.</b> `;
   }
-  return `<b>Showing ${c.marked} of ${c.total} weapon mounts.</b> The other
+  /* THE SPLIT CASE, and it is the one the order singles out. This block does
+     TWO things: it states WHAT YOU ARE LOOKING AT and then explains WHY in four
+     sentences. Those two halves get opposite treatment.
+
+     THE COUNT NEVER COLLAPSES. "Showing 14 of 15" is not an explanation, it is
+     the reader's answer to "is this page showing me everything" - and a reader
+     who has to click to find out that something is missing has been misled by
+     the layout. The four sentences of reasoning behind it DO collapse, because
+     they explain.
+
+     This sits across the bottom of the 3D stage, which is the one surface this
+     site has that nobody else does, and it was spending four lines of it. */
+  return `<b>Showing ${c.marked} of ${c.total} weapon mounts.</b>
+    <details class="disc inline"><summary><span class="opener">why</span></summary>
+    <div class="body"><p>The other
     ${c.short} ${c.short===1?"has":"have"} no derived position, so
     ${c.short===1?"it is":"they are"} not on the hull &mdash;
     ${c.short===1?"it is":"they are"} still in the list on the left and
     open${c.short===1?"s":""} the same way. <b>That is thin data, not a broken
-    page.</b> `;
+    page.</b></p></div></details> `;
 }
 
 function renderMarkerNote(){
@@ -4283,7 +4412,15 @@ function renderTunePanel(){
   const el=$('cc-tune-panel'); if(!el||!_view) return;
   const cur=_view.style, col=_view.colour();
   const modes=_view.modes(), cols=_view.colours();
-  let h=`<div class="grp2"><h4>Style</h4><div class="row2">`;
+  /* P3d: the one quiet line, only on the load where the discard happened.
+     Not a modal and not a toast - it must not steal focus from the stage. */
+  let h='';
+  if(_view.settingsWereReset && _view.settingsWereReset()){
+    h+=`<p class="tunenote">The viewer's appearance was updated, so your saved
+      look was replaced with the current one. Set it again below and it will
+      stick.</p>`;
+  }
+  h+=`<div class="grp2"><h4>Style</h4><div class="row2">`;
   modes.forEach(m=>{ h+=`<button type="button" data-style="${m[0]}"
     class="${m[0]===cur?'on':''}">${m[1]}</button>`; });
   h+=`</div></div><div class="grp2"><h4>Colour</h4><div class="row2">`;
@@ -4448,7 +4585,42 @@ document.addEventListener('keydown',e=>{
   if(mountSel){ mountSel=null; renderAll(); return; }
   if(sel){ sel=null; renderAll(); }
 });
+/* P1e: THE SURFACES THAT ARE NOT "SOMEWHERE ELSE".
+
+   ONE LIST, CONSULTED ONCE. The first fix put the dismiss at the END of the
+   click handler, which was right about ordering and wrong about reach: every
+   branch above it returns, so a click on the tab bar switched tab and the
+   panel never heard about it. Code measured exactly that on the deployed
+   bytes - the page margin and the header dismissed, the tab bar did not.
+   Chasing it by adding `sel=null` to the tabs branch would fix the tab bar and
+   leave the next branch somebody adds with the same defect.
+
+   So the QUESTION is asked before any branch runs, and the ANSWER does not
+   swallow the click. A tab still switches tab. A related-ship link still
+   navigates. They just no longer leave a panel hanging over a hull nobody is
+   looking at any more.
+
+   What is NOT "somewhere else": the panel and its contents, the hull markers,
+   the left list's own picker, and the stage's own control cluster - toggling
+   spin or opening the look panel is working ON the thing the panel belongs to,
+   not walking away from it. */
+function panelKeepsOpen(t){
+  if(!t || !t.closest) return false;
+  return !!(t.closest('#cc-panel') || t.closest('#cc-marks')
+    || t.closest('.inlinepick') || t.closest('.slot[data-slot]')
+    || t.closest('.pi[data-part]')
+    || t.closest('#cc-spin') || t.closest('#cc-tune')
+    || t.closest('#cc-tune-panel') || t.closest('#cc-dim')
+    || t.closest('#cc-lbl-toggle'));
+}
 document.addEventListener('click',e=>{
+  /* P1e. Cleared HERE, rendered on the next tick - deliberately. Rendering now
+     would rebuild the DOM underneath the branches that have not run yet, and
+     every branch below re-renders for its own reasons anyway. The deferred
+     call lands last and settles the panel whichever branch took the click. */
+  if((sel||mountSel) && !panelKeepsOpen(e.target)){
+    sel=null; mountSel=null; setTimeout(renderAll,0);
+  }
   const mk=e.target.closest('#cc-marks button[data-mount]');
   if(mk){
     /* THE SECOND ROUTE, AND IT IS STILL THE SAME ROUTE. A mount carrying one
@@ -4550,12 +4722,6 @@ document.addEventListener('click',e=>{
     if(sort===so.dataset.s) sortDesc=!sortDesc;
     else { sort=so.dataset.s; sortDesc=!(sort==="ir"||sort==="em"||sort==="mass"); }
     renderAll();return;}
-  /* B3: CLICKING THE MODEL BACKGROUND CLOSES IT. Checked AFTER the marker and
-     the panel's own contents, so clicking inside the panel or on another dot
-     does what it says rather than being swallowed as a background click. */
-  if(sel && e.target.closest('#cc-stage')
-     && !e.target.closest('#cc-panel') && !e.target.closest('#cc-marks')){
-    sel=null; renderAll(); return; }
   const pi=e.target.closest('.pi[data-part]');
   if(pi&&sel){
     const b=editing==="A"?A:B;
@@ -4565,6 +4731,34 @@ document.addEventListener('click',e=>{
     b[sel.slot]=pi.dataset.part; ghost=null;
     markChanges(before, calc(b));
     renderAll();return;}
+  /* P1: CLICKING AWAY CLOSES IT, FROM EITHER STATE, FROM ANYWHERE.
+
+     THE DEFECT THIS REPLACES, because it is worth not repeating. The old test
+     read `if(sel && e.target.closest('#cc-stage') ...)` and was wrong twice.
+
+     ONE. It tested `sel` alone. THE PANEL HAS TWO STATES: renderStagePanel()
+     opens #cc-panel for a selected port (`sel`), and opens the SAME panel, at
+     the same anchor, for a mount carrying more than one weapon (`mountSel`,
+     with `sel` deliberately null so the two can never both claim it). On any
+     multi-weapon mount the first term was false and the click did nothing.
+     Escape handled both; this did not. Sleven hit it on the Anvil Arrow -
+     9 mounts, 19 weapons - where most dots take exactly that route.
+
+     TWO. It required the click to land inside #cc-stage, so finishing with the
+     panel and moving to the spec table left it hanging over the hull.
+
+     The test now names BOTH states, and a third state added later will fail
+     loudly here rather than quietly joining mountSel in the gap.
+
+     AND IT IS LAST IN THE HANDLER ON PURPOSE. Every specific branch above has
+     already had its chance to return, so this is the genuine "clicked nothing
+     in particular" case. The exclusions are the surfaces that are NOT nothing:
+     the panel itself, the hull markers, and the left list's own picker - which
+     lives outside #cc-stage and is the reason the old stage scoping accidentally
+     worked. Move this branch back up and part selection dies with it. */
+  /* The dismiss lives at the TOP of this handler now, as P1e. It has to be
+     asked before any branch returns, and nothing belongs down here: a second
+     copy would re-render on every click that matched nothing. */
 });
 /* B0. THE PANEL A FIXED PORT OPENS, AND WHY IT IS A PANEL RATHER THAN A SHRUG.
    782 of the fleet's 1,200 hull markers - 65% of them, and EVERY marker on 61

@@ -1,0 +1,41 @@
+{
+  "note": "Every shop-related emitting class seen, with counts. This is the early-warning for a CIG rename: a name that stops appearing in new builds is a parser about to go silent.",
+  "rows": [
+    {
+      "class": "CEntityComponentShopUIProvider::RmShopFlowResponse",
+      "lines": 256
+    },
+    {
+      "class": "CEntityComponentShopUIProvider::SendShopBuyRequest",
+      "lines": 249
+    },
+    {
+      "class": "CEntityComponentShopUIProvider::ClGetSelectedLocationData",
+      "lines": 153
+    },
+    {
+      "class": "CEntityComponentShoppingProvider::OnGainedAuthority",
+      "lines": 64
+    },
+    {
+      "class": "CEntityComponentShoppingProvider::RmTokenInventoryIdResponse",
+      "lines": 58
+    },
+    {
+      "class": "CEntityComponentShoppingProvider::SendStandardItemBuyRequest",
+      "lines": 29
+    },
+    {
+      "class": "CEntityComponentShoppingProvider::RmShopFlowResponse",
+      "lines": 29
+    },
+    {
+      "class": "CEntityComponentShopUIProvider::ClOnSubLocationsChanged",
+      "lines": 14
+    },
+    {
+      "class": "CEntityComponentShopUIProvider::SendShopSellRequest",
+      "lines": 8
+    }
+  ]
+}

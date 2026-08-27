@@ -194,6 +194,34 @@ for ship_name in ship_folders:
                     obj.scale = (target_scale, target_scale, target_scale)
 
             bpy.ops.object.select_all(action='SELECT')
+
+            # MULTI-USER MESH DATA HAS TO BE MADE SINGLE-USER FIRST, OR THE
+            # WHOLE SHIP FAILS.
+            #
+            # Blender refuses transform_apply on a mesh datablock shared by more
+            # than one object:
+            #   Error: Cannot apply to a multi user: Object "...", Mesh "...",
+            #   aborting
+            # and the operator aborts for EVERY object in the file, so the ship
+            # exports nothing at all. It is not a partial result - it is a total
+            # one.
+            #
+            # Found 2026-08-27 importing the Fleetyards models: the 85X and the
+            # Fury both instance their meshes (cockpit, blades, fuel ports,
+            # ejection seats reused across objects) and both failed outright,
+            # while 17 ships in the same run went through untouched. That is a
+            # defect in this path rather than in those two files - instanced
+            # geometry is ordinary in an exported hull, and it was simply never
+            # hit before.
+            #
+            # make_single_user on data that is ALREADY single-user is a no-op,
+            # so this changes nothing for any ship that worked before. An active
+            # object is required or the operator has no context to run in.
+            if bpy.context.selected_objects and not bpy.context.view_layer.objects.active:
+                bpy.context.view_layer.objects.active = bpy.context.selected_objects[0]
+            bpy.ops.object.make_single_user(type='SELECTED_OBJECTS',
+                                            object=True, obdata=True)
+
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
             bpy.ops.export_scene.gltf(filepath=scaled_path, export_format='GLB')

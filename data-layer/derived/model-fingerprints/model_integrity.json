@@ -1,0 +1,275 @@
+{
+ "dataset": "model-integrity",
+ "produced_by": "C3 (Cowork), 2026-08-14",
+ "revision": 2,
+ "supersedes": "revision 1, which flagged shared hulls as problems. Sleven's ruling of 2026-08-14 makes most of them non-issues by design. See DECISION_shared-hulls-are-fine-unless-the-shape-differs-2026-08-14.md.",
+ "the_rule": "The 3D viewer renders bare geometry - wireframe/hologram, no textures, no interiors. A livery difference and an interior difference are both invisible in it BY CONSTRUCTION. Therefore a shared hull is CORRECT unless the two ships differ in EXTERNAL SHAPE. Everything that distinguishes the ships otherwise - components, DPS, crew, cargo - lives on the ship page and comes from CIG's data.",
+ "what_this_means_for_flags": "Sharing a model is not a defect and is not shown to the reader. Only an external-shape disagreement is.",
+ "how_shape_is_tested": "CIG's published length, width, height and mass from ship_specs.json. This is a PROXY and a weak one: two ships can share an envelope and still differ in shape. It is what is available. Anyone who compares two of these in game beats it.",
+ "verdicts": {
+  "shape_defect": "the geometry contradicts an external-shape claim. Show the reader.",
+  "shape_inconsistent": "the geometry disagrees with CIG's own published figures. Show the reader.",
+  "shared_hull_ok": "shares a model with another ship. Under the rule above this is correct and is NOT shown to the reader. Recorded so it is not re-flagged as a bug by the next pass."
+ },
+ "flagged": [
+  {
+   "files": [
+    "Carrack_w_C8X.glb",
+    "Carrack_Expedition_w_C8X.glb"
+   ],
+   "verdict": "shape_defect",
+   "why": "A docked C8X snub is an EXTERNAL shape difference - the one kind the viewer can actually show. These files are byte-identical to Carrack.glb, so they do not contain it. This survives the rule because the difference is geometric, not livery and not interior.",
+   "identical_to": "Carrack.glb",
+   "sha256": "04a5cd5261534c69ed5e0aad9f654b460ad1c6a97fbb91937df90081cebd40ff",
+   "verts": 117144,
+   "open_question": "whether a correct Carrack-with-snub model exists anywhere. Ours is not one; that a better one is obtainable was never established."
+  },
+  {
+   "files": [
+    "Aurora_LX.glb"
+   ],
+   "verdict": "shape_inconsistent",
+   "why": "Not a shared-hull case - the reverse. Four Aurora Mk I variants share one 267,000-vertex model; the LX has its own 28,153-vertex model. Its measured height is 3.733 against 4.355 for the shared model, while CIG publishes 4.5 m height for EVERY Aurora Mk I variant including the LX. The file that does not share disagrees with CIG; the four that do share match.",
+   "lx": {
+    "verts": 28153,
+    "extent": [
+     8.244,
+     3.733,
+     18.536
+    ]
+   },
+   "shared_model": {
+    "files": [
+     "Aurora_CL.glb",
+     "Aurora_ES.glb",
+     "Aurora_LN.glb",
+     "Aurora_MR.glb"
+    ],
+    "verts": 267000,
+    "extent": [
+     8.217,
+     4.355,
+     18.522
+    ]
+   },
+   "cig_published": {
+    "length": 19,
+    "width": 8.75,
+    "height": 4.5,
+    "identical_across_all_Mk_I_variants": true
+   }
+  },
+  {
+   "files": [
+    "Kraken.glb",
+    "Kraken_Privateer.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Sleven, 2026-08-14: the Privateer and the Kraken look near-identical in CIG's own concept art; the differences are internal. No published dimensions exist for either, but under the rule the shared hull is fine and the two ship pages carry the real differences."
+  },
+  {
+   "files": [
+    "C8_Pisces.glb",
+    "C8R_Pisces.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "CIG publishes 16 x 12 x 8, mass 45,243 for both. The C8R's differences are internal fit-out.",
+   "cig_published": {
+    "length": 16,
+    "width": 12,
+    "height": 8,
+    "mass": 45243
+   }
+  },
+  {
+   "files": [
+    "F7C_Hornet_Mk_I.glb",
+    "F7A_Hornet_Mk_I.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "CIG publishes 28.25 x 25.5 x 7.5, mass 72,032 for both.",
+   "cig_published": {
+    "length": 28.25,
+    "width": 25.5,
+    "height": 7.5,
+    "mass": 72032
+   }
+  },
+  {
+   "files": [
+    "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+    "Cutlass_Steel.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "CIG publishes 37.5 x 26.5 x 11.5, mass 242,177 for both.",
+   "cig_published": {
+    "length": 37.5,
+    "width": 26.5,
+    "height": 11.5,
+    "mass": 242177
+   }
+  },
+  {
+   "files": [
+    "Mustang_Gamma.glb",
+    "Mustang_Omega.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "CIG publishes 21.5 x 18 x 9, mass 28,565 for both.",
+   "cig_published": {
+    "length": 21.5,
+    "width": 18,
+    "height": 9,
+    "mass": 28565
+   }
+  },
+  {
+   "files": [
+    "Ironclad.glb",
+    "Ironclad_Assault.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "CIG publishes 117 x 50 x 25, mass 720,000 for both.",
+   "cig_published": {
+    "length": 117,
+    "width": 50,
+    "height": 25,
+    "mass": 720000
+   }
+  },
+  {
+   "files": [
+    "Carrack.glb",
+    "Carrack_Expedition.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "CIG publishes 126 x 74 x 30, mass 3,275,858 for both.",
+   "cig_published": {
+    "length": 126,
+    "width": 74,
+    "height": 30,
+    "mass": 3275858
+   }
+  },
+  {
+   "files": [
+    "Aurora_CL.glb",
+    "Aurora_ES.glb",
+    "Aurora_LN.glb",
+    "Aurora_MR.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "CIG publishes 19 x 8.75 x 4.5 for every Aurora Mk I variant; only mass differs.",
+   "cig_published": {
+    "length": 19,
+    "width": 8.75,
+    "height": 4.5
+   }
+  },
+  {
+   "files": [
+    "Anvil_Ballista_Dunestalker.glb",
+    "Anvil_Ballista_Snowblind.glb",
+    "Ballista.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Caterpillar.glb",
+    "Caterpillar_Best_In_Show_Edition_2949.glb",
+    "Caterpillar_Pirate_Edition.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Argo_Mole_Carbon_Edition.glb",
+    "Argo_Mole_Talus_Edition.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Avenger_Titan.glb",
+    "Avenger_Titan_Renegade.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "F7C-M_Super_Hornet_Mk_I.glb",
+    "F7C-M_Super_Hornet_Heartseeker_Mk_I.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "F8C_Lightning.glb",
+    "F8C_Lightning_Executive_Edition.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Mustang_Alpha.glb",
+    "Mustang_Alpha_Vindicator.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Nox.glb",
+    "Nox_Kue.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Pulse.glb",
+    "Pulse_LX.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Ursa.glb",
+    "Ursa_Fortuna.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Reclaimer.glb",
+    "Reclaimer_Best_In_Show_Edition_2949.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  },
+  {
+   "files": [
+    "Valkyrie.glb",
+    "Valkyrie_Liberator_Edition.glb"
+   ],
+   "verdict": "shared_hull_ok",
+   "why": "Paint or special edition of the same ship. The viewer has no textures, so there is nothing to differ."
+  }
+ ],
+ "counts": {
+  "shape_defect": 1,
+  "shape_inconsistent": 1,
+  "shared_hull_ok": 20,
+  "files_covered": 47
+ },
+ "shown_to_reader": 2
+}

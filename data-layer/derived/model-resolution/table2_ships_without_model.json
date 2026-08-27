@@ -1,0 +1,952 @@
+{
+ "table": "ships-without-a-model",
+ "rows": [
+  {
+   "ship": "AEGS_Hammerhead_Showdown",
+   "ship_name": "Aegis Hammerhead 2949 Best In Show Edition",
+   "verdict": "OWN_FILE",
+   "base_hull": null,
+   "file": "Hammerhead_Best_In_Show_Edition_2949.glb",
+   "why": "an orphan file is this ship"
+  },
+  {
+   "ship": "AEGS_Reclaimer_Showdown",
+   "ship_name": "Aegis Reclaimer 2949 Best In Show Edition",
+   "verdict": "OWN_FILE",
+   "base_hull": null,
+   "file": "Reclaimer_Best_In_Show_Edition_2949.glb",
+   "why": "an orphan file is this ship"
+  },
+  {
+   "ship": "ANVL_Hornet_F7CM_Heartseeker",
+   "ship_name": "Anvil F7C-M Hornet Heartseeker Mk I",
+   "verdict": "OWN_FILE",
+   "base_hull": null,
+   "file": "F7C-M_Super_Hornet_Heartseeker_Mk_I.glb",
+   "why": "an orphan file is this ship"
+  },
+  {
+   "ship": "DRAK_Caterpillar_Pirate",
+   "ship_name": "Drake Caterpillar Pirate",
+   "verdict": "OWN_FILE",
+   "base_hull": null,
+   "file": "Caterpillar_Pirate_Edition.glb",
+   "why": "an orphan file is this ship"
+  },
+  {
+   "ship": "DRAK_Dragonfly_Yellow",
+   "ship_name": "Drake Dragonfly Yellowjacket",
+   "verdict": "OWN_FILE",
+   "base_hull": null,
+   "file": "Dragonfly_Yellowjacket.glb",
+   "why": "an orphan file is this ship"
+  },
+  {
+   "ship": "XIAN_Nox_Kue",
+   "ship_name": "Aopoa Nox Kue",
+   "verdict": "OWN_FILE",
+   "base_hull": null,
+   "file": "Nox_Kue.glb",
+   "why": "an orphan file is this ship"
+  },
+  {
+   "ship": "AEGS_Eclipse_BIS2950",
+   "ship_name": "Aegis Eclipse",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Eclipse",
+   "file": "Eclipse.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Gladius_Dunlevy",
+   "ship_name": "Aegis Gladius Dunlevy",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Gladius",
+   "file": "Gladius_Valiant.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Hammerhead_GS",
+   "ship_name": "Aegis Hammerhead",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Hammerhead",
+   "file": "Hammerhead.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Idris_P_Collector_Military",
+   "ship_name": "Aegis Idris-P Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Idris_P",
+   "file": "Idris-P.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Idris_P_FW_25",
+   "ship_name": "Aegis Idris-P",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Idris_P",
+   "file": "Idris-P.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Idris_P_TSG",
+   "ship_name": "Aegis Idris-P",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Idris_P",
+   "file": "Idris-P.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Reclaimer_Teach",
+   "ship_name": "Aegis Reclaimer Teach's Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Reclaimer",
+   "file": "Reclaimer.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Sabre_Firebird_Collector_Milt",
+   "ship_name": "Aegis Sabre Firebird Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Sabre_Firebird",
+   "file": "Sabre_Firebird.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Sabre_Peregrine_Collector_Competition",
+   "ship_name": "Aegis Sabre Peregrine Wikelo Speedy Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "AEGS_Sabre_Peregrine",
+   "file": "Sabre_Peregrine.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Asgard_Collector_Military",
+   "ship_name": "Anvil Asgard Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Asgard",
+   "file": "Asgard.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Carrack_BIS2950",
+   "ship_name": "Anvil Carrack",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Carrack",
+   "file": "Carrack.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Hornet_F7A_Mk2_Exec_Military",
+   "ship_name": "Hornet F7A Mk II PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Hornet_F7A_Mk2",
+   "file": "F7A_Hornet_Mk_II.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Hornet_F7A_Mk2_Exec_Stealth",
+   "ship_name": "Hornet F7A Mk II PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Hornet_F7A_Mk2",
+   "file": "F7A_Hornet_Mk_II.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Lightning_F8C_Collector_Military",
+   "ship_name": "Anvil F8C Lightning Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Lightning_F8C",
+   "file": "F8C_Lightning.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Lightning_F8C_Collector_Stealth",
+   "ship_name": "Anvil F8C Lightning Wikelo Sneak Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Lightning_F8C",
+   "file": "F8C_Lightning.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Lightning_F8C_Exec_Military",
+   "ship_name": "F8C Lightning PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Lightning_F8C",
+   "file": "F8C_Lightning.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Lightning_F8C_Exec_Stealth",
+   "ship_name": "F8C Lightning PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Lightning_F8C",
+   "file": "F8C_Lightning.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Lightning_F8C_Plat",
+   "ship_name": "Anvil F8C Lightning",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Lightning_F8C",
+   "file": "F8C_Lightning.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Terrapin_Medic_Collector_Medic",
+   "ship_name": "Anvil Terrapin Medic Wikelo Savior Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Terrapin_Medic",
+   "file": "Terrapin_Medic.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ANVL_Valkyrie_BIS2950",
+   "ship_name": "Anvil Valkyrie",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ANVL_Valkyrie",
+   "file": "Valkyrie.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ARGO_ATLS_GEO_Collector_Grad01",
+   "ship_name": "ATLS Snowland Color",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ARGO_ATLS_GEO",
+   "file": "ATLS_GEO.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ARGO_ATLS_GEO_Collector_Grad02",
+   "ship_name": "ATLS Orange Line",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ARGO_ATLS_GEO",
+   "file": "ATLS_GEO.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ARGO_ATLS_GEO_Collector_Grad03",
+   "ship_name": "ATLS Cool Metal Color",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ARGO_ATLS_GEO",
+   "file": "ATLS_GEO.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ARGO_MOLE_BTALA",
+   "ship_name": "ARGO MOLE Alliance",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ARGO_MOLE",
+   "file": "MOLE.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ARGO_MOLE_Teach",
+   "ship_name": "Argo MOLE Teach's Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ARGO_MOLE",
+   "file": "MOLE.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ARGO_RAFT_Collector_Indust",
+   "ship_name": "Argo RAFT Wikelo Work Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ARGO_RAFT",
+   "file": "RAFT.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "CNOU_Mustang_Alpha_CitizenCon2018",
+   "ship_name": "C.O. Mustang CitizenCon 2948 Edition",
+   "verdict": "SHARED_HULL",
+   "base_hull": "CNOU_Mustang_Alpha",
+   "file": "Mustang_Alpha.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "CNOU_Nomad_Teach",
+   "ship_name": "C.O. Nomad Teach's Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "CNOU_Nomad",
+   "file": "Nomad.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "CRUS_Intrepid_Collector_Indust",
+   "ship_name": "Crusader Intrepid Wikelo Work Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "CRUS_Intrepid",
+   "file": "Intrepid.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "CRUS_Starfighter_Inferno_Collector_Military",
+   "ship_name": "Crusader Ares Star Fighter Inferno Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "CRUS_Starfighter_Inferno",
+   "file": "Ares_Inferno.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "CRUS_Starfighter_Ion_Collector_Stealth",
+   "ship_name": "Crusader Ares Star Fighter Ion Wikelo Sneak Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "CRUS_Starfighter_Ion",
+   "file": "Ares_Ion.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "CRUS_Starlifter_A2_Collector_Military",
+   "ship_name": "Crusader A2 Hercules Starlifter Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "CRUS_Starlifter_A2",
+   "file": "A2_Hercules.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Caterpillar_Boarded",
+   "ship_name": "Drake Caterpillar",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Caterpillar",
+   "file": "Caterpillar.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Clipper_Collector_Military",
+   "ship_name": "Drake Clipper Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Clipper",
+   "file": "Clipper.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Corsair_Exec_Military",
+   "ship_name": "Corsair PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Corsair",
+   "file": "Corsair.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Corsair_Exec_StealthIndustrial",
+   "ship_name": "Corsair PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Corsair",
+   "file": "Corsair.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Cutlass_Black_BIS2950",
+   "ship_name": "Drake Cutlass Black",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Cutlass_Black",
+   "file": "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Cutlass_Black_Exec_Military",
+   "ship_name": "Cutlass Black PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Cutlass_Black",
+   "file": "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Cutlass_Black_Exec_Stealth",
+   "ship_name": "Cutlass Black PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Cutlass_Black",
+   "file": "Cutlass_Black_Best_In_Show_Edition_2949.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Cutlass_Blue_BIS2950",
+   "ship_name": "Drake Cutlass Blue",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Cutlass_Blue",
+   "file": "Cutlass_Blue.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Cutlass_Red_BIS2950",
+   "ship_name": "Drake Cutlass Red",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Cutlass_Red",
+   "file": "Cutlass_Red.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Golem_BTALA",
+   "ship_name": "Drake Golem Alliance",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Golem",
+   "file": "Golem.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Golem_Collector_Indust",
+   "ship_name": "Drake Golem Wikelo Work Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Golem",
+   "file": "Golem.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Golem_Teach",
+   "ship_name": "Drake Golem Teach's Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Golem",
+   "file": "Golem.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "DRAK_Vulture_Teach",
+   "ship_name": "Drake Vulture Teach's Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "DRAK_Vulture",
+   "file": "Vulture.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ESPR_Prowler_Utility_Collector_Indust",
+   "ship_name": "Esperia Prowler Utility Wikelo Work Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ESPR_Prowler_Utility",
+   "file": "Prowler_Utility.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "GAMA_Syulen_Exec_Military",
+   "ship_name": "Syulen PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "GAMA_Syulen",
+   "file": "Syulen.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "GAMA_Syulen_Exec_Stealth",
+   "ship_name": "Syulen PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "GAMA_Syulen",
+   "file": "Syulen.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "GLSN_Shiv_TEMP_CosA",
+   "ship_name": "Grey's Shiv",
+   "verdict": "SHARED_HULL",
+   "base_hull": "GLSN_Shiv",
+   "file": "Shiv.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "GLSN_Shiv_TEMP_CosB",
+   "ship_name": "Grey's Shiv",
+   "verdict": "SHARED_HULL",
+   "base_hull": "GLSN_Shiv",
+   "file": "Shiv.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "GLSN_Shiv_TEMP_CosC",
+   "ship_name": "Grey's Shiv",
+   "verdict": "SHARED_HULL",
+   "base_hull": "GLSN_Shiv",
+   "file": "Shiv.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "KRIG_L21_Wolf_Collector_Military",
+   "ship_name": "Kruger L-21 Wolf Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "KRIG_L21_Wolf",
+   "file": "L-21_Wolf.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "KRIG_L21_Wolf_Collector_Stealth",
+   "ship_name": "Kruger L-21 Wolf Wikelo Sneak Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "KRIG_L21_Wolf",
+   "file": "L-21_Wolf.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "KRIG_L22_AlphaWolf_Collector_Military",
+   "ship_name": "Kruger L-22 Alpha Wolf Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "KRIG_L22_AlphaWolf",
+   "file": "L-22_Alpha_Wolf.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MISC_Fortune_Collector_Industrial",
+   "ship_name": "MISC Fortune Wikelo Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MISC_Fortune",
+   "file": "Fortune.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MISC_Fortune_Teach",
+   "ship_name": "MISC Fortune Teach's Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MISC_Fortune",
+   "file": "Fortune.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MISC_Prospector_BTALA",
+   "ship_name": "MISC Prospector Alliance",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MISC_Prospector",
+   "file": "Prospector.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MISC_Prospector_Collector_Indust",
+   "ship_name": "MISC Prospector Wikelo Work Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MISC_Prospector",
+   "file": "Prospector.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MISC_Starfarer_Teach",
+   "ship_name": "MISC Starfarer Teach's Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MISC_Starfarer",
+   "file": "Starfarer.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MISC_Starlancer_Max_Collector_Indust",
+   "ship_name": "MISC Starlancer MAX Wikelo Work Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MISC_Starlancer_Max",
+   "file": "Starlancer_MAX.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MISC_Starlancer_TAC_Collector_Military",
+   "ship_name": "MISC Starlancer TAC Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MISC_Starlancer_TAC",
+   "file": "Starlancer_TAC.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MRAI_Guardian_MX_Collector_Military",
+   "ship_name": "Mirai Guardian MX Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MRAI_Guardian_MX",
+   "file": "Guardian_MX.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MRAI_Guardian_Military",
+   "ship_name": "Mirai Guardian Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MRAI_Guardian",
+   "file": "Guardian.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "MRAI_Guardian_QI_Collector_Indust",
+   "ship_name": "Mirai Guardian QI Wikelo Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "MRAI_Guardian_QI",
+   "file": "Guardian_QI.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "ORIG_600i_BIS2951",
+   "ship_name": "Origin 600i 2951 BIS",
+   "verdict": "SHARED_HULL",
+   "base_hull": "ORIG_600i",
+   "file": "600i_Explorer.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Apollo_Medivac_Tier_1",
+   "ship_name": "RSI Apollo Medivac",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Apollo_Medivac",
+   "file": "Apollo_Medivac.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Apollo_Medivac_Tier_2",
+   "ship_name": "RSI Apollo Medivac",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Apollo_Medivac",
+   "file": "Apollo_Medivac.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Apollo_Medivac_Tier_3",
+   "ship_name": "RSI Apollo Medivac",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Apollo_Medivac",
+   "file": "Apollo_Medivac.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Apollo_Triage_Collector_Stealth",
+   "ship_name": "RSI Apollo Triage Wikelo Sneak Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Apollo_Triage",
+   "file": "Apollo_Triage.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Apollo_Triage_Tier_1",
+   "ship_name": "RSI Apollo Triage",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Apollo_Triage",
+   "file": "Apollo_Triage.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Apollo_Triage_Tier_2",
+   "ship_name": "RSI Apollo Triage",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Apollo_Triage",
+   "file": "Apollo_Triage.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Apollo_Triage_Tier_3",
+   "ship_name": "RSI Apollo Triage",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Apollo_Triage",
+   "file": "Apollo_Triage.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Constellation_Taurus_Military",
+   "ship_name": "RSI Constellation Taurus Wikelo War Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Constellation_Taurus",
+   "file": "Constellation_Taurus.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Meteor_Collector_Military",
+   "ship_name": "RSI Meteor PYAM Exec",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Meteor",
+   "file": "Meteor.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Meteor_Collector_Stealth",
+   "ship_name": "RSI Meteor Wikelo Sneak Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Meteor",
+   "file": "Meteor.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Meteor_TEMP_LaserRepeater",
+   "ship_name": "RSI Meteor",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Meteor",
+   "file": "Meteor.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Polaris_Collector_Military",
+   "ship_name": "RSI Polaris",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Polaris",
+   "file": "Polaris.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Scorpius_Stealth",
+   "ship_name": "RSI Scorpius Wikelo Sneak Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Scorpius",
+   "file": "Scorpius.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Ursa_Medivac_Stealth",
+   "ship_name": "RSI Ursa Medivac Wikelo Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Ursa_Medivac",
+   "file": "Ursa_Medivac.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Zeus_CL_Collector_Indust",
+   "ship_name": "RSI Zeus Mk II CL",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Zeus_CL",
+   "file": "Zeus_Mk_II_CL.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "RSI_Zeus_ES_Collector_Indust",
+   "ship_name": "RSI Zeus Mk II ES Wikelo Work Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "RSI_Zeus_ES",
+   "file": "Zeus_Mk_II_ES.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "XIAN_Nox_Collector_Mod",
+   "ship_name": "Aopoa Nox Wikelo Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": "XIAN_Nox",
+   "file": "Nox.glb",
+   "why": "edition/special of a hull we hold; shared hull is correct per the 2026-08-14 ruling"
+  },
+  {
+   "ship": "AEGS_Tiburon",
+   "ship_name": "Aegis Tiburon",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Aegis Dynamics"
+  },
+  {
+   "ship": "ANVL_Arrow",
+   "ship_name": "Anvil Arrow",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Anvil Aerospace"
+  },
+  {
+   "ship": "ANVL_Hornet_F7CM_Mk2_Heartseeker",
+   "ship_name": "Anvil F7C-M Hornet Heartseeker Mk II",
+   "verdict": "SHARED_HULL",
+   "base_hull": null,
+   "file": "F7C-M_Super_Hornet_Mk_II.glb",
+   "why": "Heartseeker is a livery on the Mk II airframe",
+   "by": "hand"
+  },
+  {
+   "ship": "ANVL_Hornet_F7_Mk2_Collector_Mod",
+   "ship_name": "Anvil F7 Hornet Mk Wikelo",
+   "verdict": "SHARED_HULL",
+   "base_hull": null,
+   "file": "F7C_Hornet_Mk_II.glb",
+   "why": "Wikelo special on the F7C Mk II",
+   "by": "hand"
+  },
+  {
+   "ship": "ANVL_Lightning_F8",
+   "ship_name": "Anvil F8A Lightning",
+   "verdict": "UNSURE",
+   "base_hull": null,
+   "file": "F8C_Lightning.glb",
+   "why": "F8A is the military variant of the F8C. I believe the external shape is the same but I have not verified it and Sleven can settle it in seconds.",
+   "by": "hand"
+  },
+  {
+   "ship": "ARGO_MOTH",
+   "ship_name": "Argo MOTH",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Argo Astronautics"
+  },
+  {
+   "ship": "CRUS_Spirit_C1_Civilian",
+   "ship_name": "Crusader C1 Spirit Wikelo Special",
+   "verdict": "SHARED_HULL",
+   "base_hull": null,
+   "file": "C1_Spirit.glb",
+   "why": "Wikelo special on the C1",
+   "by": "hand"
+  },
+  {
+   "ship": "DRAK_Command_Module",
+   "ship_name": "Drake Command Module",
+   "verdict": "NOT_A_SHIP",
+   "base_hull": null,
+   "file": null,
+   "why": "a module, not a flyable hull",
+   "by": "hand"
+  },
+  {
+   "ship": "DRAK_Dragonfly_Pink",
+   "ship_name": "Drake Dragonfly Star Kitten",
+   "verdict": "SHARED_HULL",
+   "base_hull": null,
+   "file": "Dragonfly_Black.glb",
+   "why": "Star Kitten is a paint",
+   "by": "hand"
+  },
+  {
+   "ship": "DRAK_Golem_Low_Fuel_TEMPORARY",
+   "ship_name": "Drake Golem",
+   "verdict": "SHARED_HULL",
+   "base_hull": null,
+   "file": "Golem.glb",
+   "why": "a temporary fuel-state record, not a distinct hull",
+   "by": "hand"
+  },
+  {
+   "ship": "DRAK_Pitbull",
+   "ship_name": "Drake Pitbull",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Drake Interplanetary"
+  },
+  {
+   "ship": "GAMA_Tyilui",
+   "ship_name": "Gatac Tyilui",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Gatac Manufacture"
+  },
+  {
+   "ship": "GLSN_Basher",
+   "ship_name": "Grey's Basher",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Grey's Market"
+  },
+  {
+   "ship": "GRIN_PTV",
+   "ship_name": "Greycat PTV",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Greycat Industrial"
+  },
+  {
+   "ship": "GRIN_UTV",
+   "ship_name": "Greycat UTV",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Greycat Industrial"
+  },
+  {
+   "ship": "MISC_Fury",
+   "ship_name": "Mirai Fury",
+   "verdict": "SHARED_HULL",
+   "base_hull": null,
+   "file": "Fury_LX.glb",
+   "why": "base Fury shares the LX/MX airframe",
+   "by": "hand"
+  },
+  {
+   "ship": "MISC_Starlite",
+   "ship_name": "MISC Starlite",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Musashi Industrial and Starflight Concern"
+  },
+  {
+   "ship": "ORIG_600i_Executive_Edition",
+   "ship_name": "Origin 600i Executive Edition",
+   "verdict": "SHARED_HULL",
+   "base_hull": null,
+   "file": "600i_Touring.glb",
+   "why": "Executive Edition is a livery",
+   "by": "hand"
+  },
+  {
+   "ship": "ORIG_85X",
+   "ship_name": "Origin 85X Limited",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Origin Jumpworks"
+  },
+  {
+   "ship": "ORIG_m80",
+   "ship_name": "Origin M80",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Origin Jumpworks"
+  },
+  {
+   "ship": "PowerSuit",
+   "ship_name": "Power Suit",
+   "verdict": "NOT_A_SHIP",
+   "base_hull": null,
+   "file": null,
+   "why": "not a ship",
+   "by": "hand"
+  },
+  {
+   "ship": "RSI_Aurora_GS_SE",
+   "ship_name": "RSI Aurora Mk I SE",
+   "verdict": "SHARED_HULL",
+   "base_hull": null,
+   "file": "Aurora_MR.glb",
+   "why": "Mk I SE shares the Mk I airframe",
+   "by": "hand"
+  },
+  {
+   "ship": "RSI_Aurora_Mk2",
+   "ship_name": "RSI Aurora Mk II",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Roberts Space Industries"
+  },
+  {
+   "ship": "RSI_Constellation_Aquila",
+   "ship_name": "RSI Constellation Aquila",
+   "verdict": "OWN_FILE",
+   "base_hull": null,
+   "file": "RSI Constellation Aquila.ctm",
+   "why": "no .glb exists, but the Fan Kit holds this ship as .ctm",
+   "by": "hand"
+  },
+  {
+   "ship": "RSI_Hermes",
+   "ship_name": "RSI Hermes",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Roberts Space Industries"
+  },
+  {
+   "ship": "RSI_Mantis",
+   "ship_name": "RSI Mantis",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Roberts Space Industries"
+  },
+  {
+   "ship": "VNCL_Mauler",
+   "ship_name": "Vanduul Mauler Destroyer",
+   "verdict": "NO_GEOMETRY",
+   "base_hull": null,
+   "file": null,
+   "why": "no model in any of the three libraries",
+   "manufacturer": "Vanduul Clans"
+  }
+ ]
+}

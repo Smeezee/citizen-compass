@@ -1,0 +1,10 @@
+{
+ "dataset": "weapon-taxonomy",
+ "produced_by": "C3 (Cowork), 2026-08-27",
+ "ask": "Sleven: a dive on all the different weapon types, all the different weapon sizes, and everything to do with the components and the weapons.",
+ "files": { "weapon_taxonomy.json": "948 weapon-family items with a real name, CIG's own type label, class tags, damage channels and firing numbers" },
+ "source": "scunpacked snapshot 20260801T204744Z, ship-items.json. Every value is CIG's own shipped figure - nothing from a wiki, nothing typed by hand.",
+ "counts": { "weapon_family_real_named": 948, "with_a_CIG_item_type": 483, "without_one": 465, "with_damage_numbers": 177, "with_rate_of_fire": 355 },
+ "what_this_is_NOT": "Not gameplay meaning. It says a weapon deals 65 Physical; it does not say what Physical does to a shield versus a hull, or why a pilot picks a repeater over a cannon. That is not in the game files and is the only part of this question that needs an outside source.",
+ "consumers": ["none yet"]
+}

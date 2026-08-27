@@ -1,0 +1,170 @@
+{
+  "note": "Location names seen in RequestLocationInventory, with the number of sessions each appeared in.",
+  "count": 41,
+  "rows": [
+    {
+      "location": "RR_ARC_LEO",
+      "sessions": 45
+    },
+    {
+      "location": "Nyx_Levski",
+      "sessions": 38
+    },
+    {
+      "location": "Stanton3_Area18",
+      "sessions": 38
+    },
+    {
+      "location": "RR_JP_StantonMagnus",
+      "sessions": 35
+    },
+    {
+      "location": "Stanton4_NewBabbage",
+      "sessions": 25
+    },
+    {
+      "location": "RR_JP_NyxCastra",
+      "sessions": 17
+    },
+    {
+      "location": "RR_MIC_LEO",
+      "sessions": 11
+    },
+    {
+      "location": "Stanton2_Orison",
+      "sessions": 10
+    },
+    {
+      "location": "INVALID_LOCATION_ID",
+      "sessions": 8
+    },
+    {
+      "location": "RR_ARC_L1",
+      "sessions": 7
+    },
+    {
+      "location": "RR_MIC_L4",
+      "sessions": 4
+    },
+    {
+      "location": "RR_MIC_L3",
+      "sessions": 4
+    },
+    {
+      "location": "RR_ARC_L3",
+      "sessions": 4
+    },
+    {
+      "location": "RR_CRU_L5",
+      "sessions": 4
+    },
+    {
+      "location": "RR_HUR_LEO",
+      "sessions": 3
+    },
+    {
+      "location": "Stanton1_Lorville",
+      "sessions": 3
+    },
+    {
+      "location": "RR_ARC_L2",
+      "sessions": 3
+    },
+    {
+      "location": "AsteroidClusterBase_Nyx_Social_Keeger_002",
+      "sessions": 3
+    },
+    {
+      "location": "RR_CRU_LEO",
+      "sessions": 2
+    },
+    {
+      "location": "GrimHEX",
+      "sessions": 2
+    },
+    {
+      "location": "RR_CRU_L1",
+      "sessions": 2
+    },
+    {
+      "location": "RR_MIC_L2",
+      "sessions": 2
+    },
+    {
+      "location": "TheCollectorAsteroid_Stanton4",
+      "sessions": 2
+    },
+    {
+      "location": "RR_ARC_L4",
+      "sessions": 2
+    },
+    {
+      "location": "RR_HUR_L3",
+      "sessions": 1
+    },
+    {
+      "location": "Stanton2c_RayariHydro_DeakinsResearch",
+      "sessions": 1
+    },
+    {
+      "location": "Stanton3b_ArcCorp_Area045",
+      "sessions": 1
+    },
+    {
+      "location": "Stanton3b_ArcCorp_Area048",
+      "sessions": 1
+    },
+    {
+      "location": "Stanton3b_ArcCorp_Area056",
+      "sessions": 1
+    },
+    {
+      "location": "Stanton3b_ArcCorp_Area061",
+      "sessions": 1
+    },
+    {
+      "location": "RR_MIC_L1",
+      "sessions": 1
+    },
+    {
+      "location": "RR_HUR_L5",
+      "sessions": 1
+    },
+    {
+      "location": "RR_JP_StantonTerra",
+      "sessions": 1
+    },
+    {
+      "location": "RR_MIC_L5",
+      "sessions": 1
+    },
+    {
+      "location": "Stanton1_JunkSite_ReclamationAndDisposalOrinth",
+      "sessions": 1
+    },
+    {
+      "location": "RR_ARC_L5",
+      "sessions": 1
+    },
+    {
+      "location": "RR_CRU_L4",
+      "sessions": 1
+    },
+    {
+      "location": "Stanton1a_HurdynMining_HDMSLathan",
+      "sessions": 1
+    },
+    {
+      "location": "RR_P3_LEO",
+      "sessions": 1
+    },
+    {
+      "location": "RR_HUR_L1",
+      "sessions": 1
+    },
+    {
+      "location": "Nyx_TSG_QVExtractionStation_033",
+      "sessions": 1
+    }
+  ]
+}

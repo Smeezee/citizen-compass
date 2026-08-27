@@ -1182,6 +1182,61 @@ if _NO_INHERIT:
     print('CC_NO_INHERIT=1 - the C1 inheritance pass is OFF (the BEFORE state)')
 if os.path.exists(_holo):
     _fleet = json.loads(rd(_holo))
+    # ---------------------------------------------------------------
+    # CIG'S OWN HARDPOINT POSITIONS, APPLIED HERE BECAUSE THIS IS WHERE THE
+    # SHIP PAGE'S MARKERS ARE ACTUALLY BORN.
+    #
+    # `build_holo_data.py` has read an alignment overlay for weeks - and it
+    # feeds `holo_data.gen.js`, the HOLO page. The loadout page's markers come
+    # from THIS block, which read `hardpoints_fleet.json` raw and applied no
+    # overlay at all. So a correction landing in the overlay moved one page and
+    # not the other, and the page Sleven actually looks at was the one it
+    # missed.
+    #
+    # What goes on here is `alignment_overlay_client.json`: per-hardpoint
+    # transforms decoded out of the ship geometry in Data.p4k and joined to the
+    # port by CIG's own `HardpointName`, exact string equality.
+    # See docs/FINDING_the-coordinates-are-in-the-client-2026-08-27.md.
+    #
+    # MEASURED AGAINST WHAT IT REPLACES: the median existing marker sits 0.488
+    # of the hull's longest half-extent from the real mount - about half a
+    # hull-length - and on the Reclaimer the median is 1.090, further than the
+    # hull's own half-length.
+    #
+    # SAME MATCH-OR-DIE RULE the other overlay uses. An entry naming a ship or
+    # a port that is not here is a hard failure, because an overlay that
+    # quietly matches nothing reports a fix it did not make.
+    _align_c = os.path.join(REPO, 'data-layer', 'derived',
+                            'holo-hardpoints-align',
+                            'alignment_overlay_client.json')
+    _cl_moved, _cl_miss = 0, []
+    if os.path.exists(_align_c):
+        for _k, _ports in json.loads(rd(_align_c)).items():
+            _rec_o = _fleet.get(_k)
+            if _rec_o is None:
+                _cl_miss.append(_k)
+                continue
+            _bp = {_h['port']: _h for _h in (_rec_o.get('hardpoints') or [])}
+            for _pt, _pos in _ports.items():
+                _h = _bp.get(_pt)
+                if _h is None:
+                    _cl_miss.append('%s / %s' % (_k, _pt))
+                    continue
+                _h['unit'] = _pos['unit']
+                if 'pos_model' in _pos:
+                    _h['pos_model'] = _pos['pos_model']
+                _h['placed_from'] = 'client'
+                _cl_moved += 1
+        if _cl_miss:
+            for _u in _cl_miss[:20]:
+                print('  CLIENT OVERLAY names something that is not here: %s' % _u)
+            sys.exit('%d client-overlay entr(ies) matched nothing. Refusing to '
+                     'build.' % len(_cl_miss))
+        print('client hardpoint overlay: %d port(s) moved onto CIG positions'
+              % _cl_moved)
+    else:
+        print('client hardpoint overlay: not present, markers stay derived')
+    # ---------------------------------------------------------------
     _by_file = {}
     for _k, _v in _fleet.items():
         _mf = (_v or {}).get('model')

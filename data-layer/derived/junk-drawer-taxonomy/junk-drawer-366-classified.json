@@ -1,0 +1,3662 @@
+[
+  {
+    "name": "Centennial Bloom Plant",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "2944 Bond Plaque",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "One Empire 200th Anniversary Coin",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Banded Fessle",
+    "uuid": "60047bc9-a814-4966-b074-58e46bd0dc0a",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Fish Tank (Gold)",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Carrack Miniature '2952 Best In Show'",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Ship Showdown '52 Coin",
+    "uuid": "48577e19-954f-4095-b4aa-f6a105ef6666",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Francis the Party Animal Plushie",
+    "uuid": "dd2b2955-a2b5-47d9-80e5-c91545aadca4",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Year of the Monkey Envelope",
+    "uuid": "7c0c019e-29f1-46c7-9adf-3733495d0e14",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Year of the Ram Envelope",
+    "uuid": "7292474d-5af7-4e86-8e47-cc6018c56696",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Year of the Horse Envelope",
+    "uuid": "c5a6b5c4-5773-4020-bd6a-479b7f69cc34",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Chance Cube",
+    "uuid": "28e737c2-0b12-41d9-a411-e1c76939ce65",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Six-Sided Rotating Die White",
+    "uuid": "f1ec1339-c95f-4423-bc02-eda5005fc272",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Zeus Plushie",
+    "uuid": "55988155-c2b0-4306-a7bb-71be09a0f5f2",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Ship Showdown '52 Mercury Coin",
+    "uuid": "77e07416-cad8-4de8-8447-9e4b6c6cb49b",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Pyro Resupply Commemorative Display",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "OLP Storage Keycard",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "DCHS-01 Executive Access Protocols Comp-Board",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "DCHS-02 Security Encryption Comp-Board",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "DCHS-06 Communication Comp-Board",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "DCHS-03 Vehicle Management Comp-Board",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "DCHS-04 Power Processing Comp-Board",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "DCHS-05 Orbital Positioning Comp-Board",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "DCHS-07 Engineering Maintenance Comp-Board",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Last Resort Keycard",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Crypt Keycard",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Polaris Bit",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "ASD Secure Drive",
+    "uuid": "60a09784-0e4c-40f3-945e-daba453f81c8",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "GRX Prototype",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-XTL-1",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-XTL-2",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-XTL-3",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-PWL-1",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-PWL-2",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-RGL-1",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-RGL-2",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-PWL-3",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT-RGL-3",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Miner's Horn",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Expired Quantanium Fuel Canister",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RCMBNT Full Set",
+    "uuid": "",
+    "current_section": "Other",
+    "current_category": "Other",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Small Artifact Fragment (Damaged)",
+    "uuid": "b0517e28-d542-41a1-9cb8-81937107fbc5",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UNE Gold Ingot (Damaged)",
+    "uuid": "75108e51-f04e-4f9a-a5e2-0dfbdf513728",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UNE Unification War Medal (Damaged)",
+    "uuid": "d6f8b191-d343-4b66-b611-8aa7802c7b42",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Blue Bilba",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Golden Medmon",
+    "uuid": "6c242730-a4be-4e99-b73e-6003d9e38c2f",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Pitambu",
+    "uuid": "7388e39d-b6e9-4dba-a4f2-68b924737c4f",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "UNE Unification War Medal (Worn)",
+    "uuid": "d783b246-49e2-4101-a189-22677a3a933b",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Finley the Stormwal Plushie",
+    "uuid": "fdbe381a-957c-4e7f-b255-439f61821ae1",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Finley the Stormwal Large Plushie",
+    "uuid": "4376fce2-c6fd-40fa-b42c-9b9ad80428e9",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Francis the Stormwal Plushie",
+    "uuid": "25bfc3b1-0a9f-432d-bf20-5509b476739b",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Francis the Stormwal Large Plushie",
+    "uuid": "d39fbbd5-1f33-4047-a75b-161889229bd2",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Blue Bilva",
+    "uuid": "dc4631cd-3899-4024-8ef2-740679b2c373",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Jumping Limes",
+    "uuid": "8fc4e51f-59d2-4618-ae29-1f3a0a7f176c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Oza",
+    "uuid": "047b4989-d570-43fa-ad08-fc8296834e95",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Amioshi Plague",
+    "uuid": "56b8e65f-b858-48d2-9915-c7d1a6e5d8b3",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Compboard",
+    "uuid": "3a6e04ed-9f93-48ca-aaa4-5d6ef5949a40",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Decari Pod",
+    "uuid": "2fc44c1e-cab0-4a28-80cb-49c49f2f03bd",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Degnous Root",
+    "uuid": "739bd503-6280-45d1-ba93-460389902460",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Heart of the Woods",
+    "uuid": "cb1c1afb-1b0a-4c08-9329-e462731ce6e6",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Prota",
+    "uuid": "6c8b6ac2-4475-45b9-b6c6-ca5b92c86b1d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Ranta Dung",
+    "uuid": "0eb081ac-5891-45e9-a61d-55ceeac8cb14",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Revenant Pod",
+    "uuid": "e4df22f0-79c2-46ff-84e5-4e9f36c262e5",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Sunset Berries",
+    "uuid": "05c4fbfc-df66-4f1a-9139-b449bc08df52",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Lunes",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Large Artifact Fragment (Damaged)",
+    "uuid": "37f8dba1-2ead-4587-bbd6-1204619d6998",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mustang Alpha Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Caterpillar Model '2949 Best In Show'",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Pico the Penguin Party Animal Green Plushie",
+    "uuid": "62a52a44-d40f-4c77-ac98-fb62e9612e79",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Six-Sided Rotating Die Red",
+    "uuid": "ebb4909c-c7a2-46c1-9c51-abe5ffa00f74",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Six-Sided Rotating Die Orange",
+    "uuid": "d2f0e07a-5c64-4e63-a256-59c894b90e31",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Small Artifact Fragment (Pristine)",
+    "uuid": "d81691b2-10ef-4f51-b611-d6060b58b451",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Large Artifact Fragment (Pristine)",
+    "uuid": "b3cc386a-6dc4-46fa-bc73-238a27d080f2",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Tevarin War Service Marker (Damaged)",
+    "uuid": "6ceed597-ed94-4abb-828a-f493e0d0b374",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Tevarin War Service Marker (Pristine)",
+    "uuid": "523efc7f-9038-4531-95ea-9719308ae63b",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UNE Unification War Medal (Pristine)",
+    "uuid": "747b7b5f-3fd2-42e3-acb3-7806149ce1d3",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UEE 6th Platoon Medal (Worn)",
+    "uuid": "adc5a48b-ff05-4a1e-8f13-cec792ed8a87",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Large Artifact Fragment (Flawed)",
+    "uuid": "197d85d6-f6e8-4e40-a7e3-e9668220af5f",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Small Artifact Fragment (Flawed)",
+    "uuid": "b1f53744-0c95-4922-812b-ed795bd14b54",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Medium Artifact Fragment (Flawed)",
+    "uuid": "11970df0-5796-43b0-aff0-ad026cb61ca3",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Medium Artifact Fragment (Damaged)",
+    "uuid": "90d6be79-89e5-4794-a0d1-f88ccb6c97a7",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Medium Artifact Fragment (Pristine)",
+    "uuid": "2b97bad0-3e80-4a77-9633-3ee764dbf466",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Tevarin War Service Marker (Worn)",
+    "uuid": "2bd06ca1-5b8b-4480-a349-f871a3c5688c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Pico the Penguin Plushie",
+    "uuid": "846fe080-035b-437f-b5a9-b11aa134d3ff",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UEE 6th Platoon Medal (Damaged)",
+    "uuid": "69ec5112-0ce4-4fc2-9b41-c6884cf9b15d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Luminalia Mug",
+    "uuid": "c6b9bf98-f832-4903-867a-7ec195222d7c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Luminalia Cookie Jar",
+    "uuid": "d14abc21-4ce8-49b2-aecc-a5d0efa0d4cb",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "First Contact Day '54 Coin",
+    "uuid": "ac05017b-7a70-414f-b40c-3c36e1ab45a4",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Foundation Festival '54 Coin",
+    "uuid": "2feafc37-9768-4ac3-9631-d35ec6f3cd2f",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "\"Quantanium\" Water Bottle",
+    "uuid": "771bca1a-c986-4111-af71-ef2b27376fce",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "CDF F8C Certification Pass (Gold)",
+    "uuid": "119c6f43-c538-427a-869e-3713d900d7c3",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mug",
+    "uuid": "13f8566b-57c5-438e-882b-f5c24cf63ed8",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Datapad",
+    "uuid": "c68abc93-7c00-4053-8b6f-c451edd0061e",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Pyrotechnic Amalgamated Toolbox",
+    "uuid": "387ad3ab-5d5f-49d4-bb44-c4357d2b0b8c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Pyrotechnic Amalgamated",
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "CitizenCon 2953 Trophy",
+    "uuid": "33a52ab8-c96f-4eac-9609-5cfa3b8d6f81",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Headhunter Head Lamp",
+    "uuid": "f6b4c6f1-5e64-4775-8c07-469fc9c95cbe",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Zeus Coin",
+    "uuid": "da18492c-a6bf-4f76-a23a-c76ab92a339f",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Corsair 2953 Ship Showdown Poster",
+    "uuid": "53cf3e26-8699-4d4d-b989-84d5590c5b30",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Redeemer 2953 Ship Showdown Poster",
+    "uuid": "f2ddab21-a878-4faf-8314-e8bfcf361dcf",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Heartseeker Poster",
+    "uuid": "2e155e0b-5dbc-44b8-aa2c-cd61db721c64",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "2954 Red Festival Poster",
+    "uuid": "ec202f06-5dc2-4369-a591-99740c8db287",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Coramor '54 Coin",
+    "uuid": "8f5f5980-f254-4904-b2d6-be203a91e870",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Year of the Dog Coin",
+    "uuid": "f343cd34-ccd8-48cd-9843-4b1891a24e84",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Year of the Dog Envelope",
+    "uuid": "ce32be63-b951-443d-aaed-fda8af3ca899",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Hello Sunshine Happy Planter",
+    "uuid": "017de65e-d996-44c1-92b7-738c3d05169b",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Hello Sunshine Cheeky Planter",
+    "uuid": "f9800f4f-922a-45be-85cf-fbf12e6a2d96",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "2954 Luck's Favor Tankard",
+    "uuid": "2d01142c-0199-4ac2-9589-21096a16b98d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Hello Sunshine Surprised Planter",
+    "uuid": "f2774a6d-14b6-4dd9-8d4f-e8446fa8a456",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "'Tears of Fire' Painting",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Finley The Stormwal Mug",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Big Benny's Mug",
+    "uuid": "6259d9a0-b449-4427-924a-e7713c5e15ee",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Cutlass Black Plushie",
+    "uuid": "d6028d77-ccdf-44c2-b2e8-1bbe640b4e6a",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Cutlass Red Plushie",
+    "uuid": "9305a03f-8abc-421e-9d15-14af222b02e5",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Cutlass Blue Plushie",
+    "uuid": "b81bad02-501e-4f2a-a0b4-1a173f6cb3f8",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Cutlass Steel Plushie",
+    "uuid": "0f574aeb-9fd3-4436-8ce0-4afa868a21ce",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "United Empire of Earth Mini-Flag",
+    "uuid": "0da6ef02-1468-4adf-bc88-79a62a931165",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "United Planets of Earth Mini-Flag",
+    "uuid": "9edbb4cd-ae1f-42e2-9884-072997d51378",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "United Nations of Earth Mini-Flag",
+    "uuid": "3de40834-b47a-4740-801b-b7344ef433e0",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Sakura Fun Green Orc-mkX Armor Bobblehead",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Sakura Fun Blue Orc-mkX Armor Bobblehead",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Sakura Fun White Orc-mkX Armor Bobblehead",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mainframe Access Card",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Tholo Token - Banu",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "scrip_tokens",
+    "proposed_destination": "proposed: exclude from the catalog entirely - these read as in-game event currency/vouchers, not purchasable physical items. NEEDS SLEVEN CONFIRM",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Tholo Token - English",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "scrip_tokens",
+    "proposed_destination": "proposed: exclude from the catalog entirely - these read as in-game event currency/vouchers, not purchasable physical items. NEEDS SLEVEN CONFIRM",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Banu Lockbox Replica",
+    "uuid": "38cf68a5-9152-4ab7-8382-1c807d2c66b4",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Year of the Rooster Envelope",
+    "uuid": "9ebd94f1-9523-4e50-b2de-0fa5397b1899",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Luminalia Sextant",
+    "uuid": "8472968b-024e-4ce9-a258-fd78ebf9e9ae",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "A2 Hercules Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "M2 Hercules Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "C2 Hercules Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "AV8 Battle Armor Replica",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "CitizenCon 2948 Trophy",
+    "uuid": "f4e436a5-2418-4cff-b172-1dbdfe4537ed",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Book",
+    "uuid": "aa0b2693-e9b0-487a-843b-9862fb745e44",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Bottle",
+    "uuid": "f99015af-289a-4999-b255-ce7216a767c6",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Kopion Horn",
+    "uuid": "2c1e3183-28ee-4ab9-af4c-938ccec94754",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Stone Bug Shell",
+    "uuid": "63cd8bfe-1b58-45aa-9e92-93271ecdbdee",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Twenty-Sided Plushie Blue",
+    "uuid": "f9b203fe-3436-4ed5-a4db-4a7870e811cc",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Twenty-Sided Plushie Green",
+    "uuid": "1273b98d-6183-438f-8f2a-3e5caf258f49",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Twenty-Sided Plushie Red",
+    "uuid": "2dbbe5b5-e905-4535-a5bf-09aa0c6f8aa3",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Space Cactus - Kavische",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Space Plant- Ophelia Vine",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Space Flower - Emperor Blossom",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Revenant Tree",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Opera Mushroom",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Conner\u2019s Beard Moss",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Radegast Whiskey 2947 Homeward Limited-Edition",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Luminalia Gift",
+    "uuid": "ede927d8-e590-4e61-a4d5-0c0cbee1a03d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Space Globe - Glorious Moments",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Xi\u2019An Space Plant",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "BB-12 Manned Maneuvering Unit",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Drake Caterpillar Statue",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "2951 Trophy",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Carrack '2952 Best In Show' Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Medivac Rescue Light",
+    "uuid": "4fcb60a4-f56d-4c2d-88c3-3a43b16a3d55",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Alien Week 2954 Coin",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Stella Fortuna '54 Coin",
+    "uuid": "44c0e27b-70fc-486d-a8a6-858a0f118b2c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Lunes (Spiral Fruit)",
+    "uuid": "e55f1ab8-de81-4c07-aa03-047a9066f82d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Takuetsu \u201cRecon Marine\u201d Replica Figure - Centurion",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Takuetsu \u201cRecon Marine\u201d Replica Figure - Imperator",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Takuetsu 'Armin Trask' Replica Figure - Centurion",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Takuetsu 'Armin Trask' Replica Figure - Imperator",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Takuetsu \u201cVanduul Shipkiller\u201d Replica Figure - Imperator",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Takuetsu \u201cVanduul Shipkiller\u201d Replica Figure - Centurion",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Aegs Vanguard Hoplite",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Esperia",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Argo MPUV",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Argo Astronautics",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Misc Razor",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Musashi Industrial and Starflight Concern",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic RSI Polaris",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Roberts Space Industries",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Drake Dragonfly",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Drake Interplanetary",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Drake Caterpillar",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Drake Interplanetary",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Drake Herald",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Drake Interplanetary",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Misc Prospector",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Musashi Industrial and Starflight Concern",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Anvil Terrapin",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Anvil Aerospace",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Schematic Anvil Hurricane",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Anvil Aerospace",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "ICC Port Olisar Holographic Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "IMS Bolliver Holographic Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Icarus One Holographic Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "ICC Probe Holographic Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Hitbox Magazine",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Golden Herald Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mustang Gamma Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Reliant Kore Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Aegis Sabre Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Hornet F7C-R Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mustang Beta Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Aurora ES Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "350R Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Starfarer Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Avenger Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Khartu-Al Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Gladius Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Space Globe - Good Health",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mustang Delta Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Origin M50 Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RSI Constellation Phoenix 2944 Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "MISC Freelancer MIS 2944 Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mr. Refinement's Cabinet of Rare & Exquisite Spirits",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Locker From Another Universe",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Stellarsonic Jukebox",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UEE Calendar",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Golden Avenger Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Golden Constellation Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Takuetsu Starships",
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Kamposi Magnus Skull",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Vasli Fragment Stone",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Vanduul Scythe Armor",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Planet Artifact",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Fuse",
+    "uuid": "8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Corsair Plushie",
+    "uuid": "e326628e-c328-4d4f-aa18-e345a0733d5e",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Ornate Drinking Gourd",
+    "uuid": "2258b64b-471e-480c-92d4-5420d532392c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "CitizenCon 2954 Trophy",
+    "uuid": "f4adefef-7616-453e-a7a3-74eda64f80b1",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "CitizenCon '54  Coin",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UEE Black Box",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Death Mask '54 Coin",
+    "uuid": "755e9c47-374a-4bcb-9746-b5f9a97459cc",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Blood Bank Poster",
+    "uuid": "a1d054e2-7900-4baf-a413-94f894c093d2",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Parasite Special Edition Poster",
+    "uuid": "82327138-d315-4ef1-aebd-579acd1c3663",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "The Hill Horror Reborn Movie Poster",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "PYAM Supervisor Keycard",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Twenty-Sided Die Ship Manufacturers",
+    "uuid": "d15b41ac-67b2-4325-845f-bf312153d7fe",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Valakkar Plushie",
+    "uuid": "67ee408f-9246-40eb-860f-7f6ddc141246",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Battle of Vega II Vanduul Skull",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Cockpit Recorder Prop",
+    "uuid": "19fe6c47-06ab-4e40-bd74-02fdeb876855",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Fotia Seedpod",
+    "uuid": "8a196a34-d46f-49cc-8d2b-3a690a18a31a",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Pingala Seeds",
+    "uuid": "3114f50a-9bbb-4fd3-baea-f5cb03a0b2e8",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Picoball",
+    "uuid": "0df8a4e8-b328-44ae-a0c4-a54522210aa2",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Pico the Penguin Party Animal Orange Plushie",
+    "uuid": "4702f97f-6c1d-4ed3-97b2-d546878b2f9d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "C1 Spirit 2954 Ship Showdown Poster",
+    "uuid": "00d16520-df84-4d78-9549-9f2056a2d5b2",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Desert Quasi Grazer Egg",
+    "uuid": "b3f97a24-b941-4551-ba4b-161b5af139e8",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Boreal Quasi Grazer Egg",
+    "uuid": "752524b3-2e18-4046-87f5-bff3f6877b87",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Grassland Quasi Grazer Egg",
+    "uuid": "c685ec4c-a44b-4283-a713-4c8c1485a60f",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Jungle Quasi Grazer Egg",
+    "uuid": "3a74229d-4654-43f7-8148-8c135f62b82b",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Quasi Grazer Tongue",
+    "uuid": "06b503b8-01c8-4447-80d5-843d61a5d2b6",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Red Heart Plushie Cushion Set",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UNE Silver Ingot (Damaged)",
+    "uuid": "fb9672f8-8f25-47ea-b90e-9f0702958375",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UNE Gold Ingot (Flawed)",
+    "uuid": "901efa69-b9c9-4136-90eb-f90f2f807687",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Scrap Valve",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Scrap Cable Bundle",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Scrap Bearing",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "PAF Maintenance Keycard",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Alignment Blade",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Wikelo Favor",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "scrip_tokens",
+    "proposed_destination": "proposed: exclude from the catalog entirely - these read as in-game event currency/vouchers, not purchasable physical items. NEEDS SLEVEN CONFIRM",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Tundra Kopion Horn",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Cave Kopion Horn",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "UEE 6th Platoon Medal (Pristine)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "GP-XP Industrial Battery",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RSI Constellation Painting",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Roberts Space Industries",
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "MG Scrip",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "scrip_tokens",
+    "proposed_destination": "proposed: exclude from the catalog entirely - these read as in-game event currency/vouchers, not purchasable physical items. NEEDS SLEVEN CONFIRM",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Government Cartography Agency Medal (Damaged)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "United Planets Of Earth",
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Invictus Patch Collection",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Valakkar Fang (Juvenile)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Finley the Stormwal Large Luminalia Plushie",
+    "uuid": "4376fce2-c6fd-40fa-b42c-9b9ad80428e9",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Invictus Launch Week Coin",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Irradiated Kopion Horn",
+    "uuid": "2c1e3183-28ee-4ab9-af4c-938ccec94754",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Irradiated Valakkar Fang (Adult)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Irradiated Valakkar Statue",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Data Processing Access: Farro Data Center",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Irradiated Valakkar Pearl (AA)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Irradiated Valakkar Fang (Juvenile)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Irradiated Valakkar Fang (Apex)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Irradiated Valakkar Diorama",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Valakkar Fang (Adult)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "E'Tam",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "UDM Cargo Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Ling Cargo Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Red Wind Cargo Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "TABA Cargo Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "ITG Container Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "TABA Container Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Ling Container Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UDM Container Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Red Wind Container Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Covalex Container Model",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_models_takuetsu",
+    "proposed_destination": "proposed: Decorations. NOTE some of these are cargo-container minis (logistics-company branded), not ship replicas - needs eyeball split",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "ITG Cargo Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Covalex Cargo Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Valakkar Specimen Tank",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Advocacy Badge (Replica)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "ASD Memory Drive",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "Associated Sciences & Development",
+    "proposed_bucket": "data_schematics",
+    "proposed_destination": "proposed: new Data & Schematics category, or fold into Utility/Technology",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Government Cartography Agency Medal (Worn)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "United Planets Of Earth",
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Government Cartography Agency Medal (Pristine)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "United Planets Of Earth",
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Yormandi Eye",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Yormandi Tongue",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Yormandi Statue",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Levski Coin",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "CitizenCon 2955 Trophy",
+    "uuid": "33a52ab8-c96f-4eac-9609-5cfa3b8d6f81",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Vanduul Plushie",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Stronger Together Poster",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Retired Drill Head",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Irradiated Valakkar Pearl (AAA)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Vanduul Plating",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Vanduul Metal",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Miner's Horn",
+    "uuid": "22a9f3ce-f741-49d1-9894-efab2c698819",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Polaris 2955 Best In Show Pennant",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Polaris 2955 Best In Show Poster",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Asgard 2955 Best In Show Poster",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Gladiator 2955 Best In Show Poster",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Zeus MKII ES 2955 Best In Show Poster",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Shattered Blade Holographic Banner",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Hello Sunshine Luminalia Planter",
+    "uuid": "f9800f4f-922a-45be-85cf-fbf12e6a2d96",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Personal Care Product",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Luminalia 2955 Coin",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Ration Pack",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Cafe Musain Sign",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Codi the Coramor Bear",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Pink Heart Hologram",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Pink Heart Lamp",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Carmilla Nightstand",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Year of the Rat Coin",
+    "uuid": "f343cd34-ccd8-48cd-9843-4b1891a24e84",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Field Medic Kit",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": "CureLife",
+    "proposed_bucket": "UNCLASSIFIED",
+    "proposed_destination": "needs manual read - matched none of the 8 candidate buckets",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Year of the Rat Envelope",
+    "uuid": "ce32be63-b951-443d-aaed-fda8af3ca899",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": true
+  },
+  {
+    "name": "Xi\"An Space Plant",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "200 Million Commemorative Coin",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "trophies_tat",
+    "proposed_destination": "proposed: Decorations/Flair",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UNE Silver Ingot (Pristine)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Council Scrip",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "scrip_tokens",
+    "proposed_destination": "proposed: exclude from the catalog entirely - these read as in-game event currency/vouchers, not purchasable physical items. NEEDS SLEVEN CONFIRM",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UNE Silver Ingot (Flawed)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "UNE Gold Ingot (Pristine)",
+    "uuid": "901efa69-b9c9-4136-90eb-f90f2f807687",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "artifact_fragments",
+    "proposed_destination": "proposed: Decorations/collectibles, or a Salvage/Relics bucket if the site ever models the salvage loop",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Valakkar Fang (Apex)",
+    "uuid": "",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "organic_food",
+    "proposed_destination": "proposed: SPLIT - items matching the 204-endpoint commodity name list should move to Commodities; the rest are decorative fauna/flora collectibles",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Sabre Ship Armor",
+    "uuid": "2e7bf45e-522d-49bd-a4f6-0e95558db200",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Scout Ship Armor",
+    "uuid": "59d32a20-d36e-40f5-99ec-641954677c04",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Scythe Ship Armor",
+    "uuid": "90a27196-aa22-4151-bba1-e96865579726",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Sabre Raven Ship Armor",
+    "uuid": "5b04894f-b09e-4bc2-ab24-6e7a04062817",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RSI Polaris Ship Armor",
+    "uuid": "ebe4fcc2-e0ff-4662-9c85-ac85f7dd78f1",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RSI Noise Launcher",
+    "uuid": "c77cbf67-ddc6-4818-a977-5d7609037db8",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RSI Lorica Ship Armor",
+    "uuid": "18692e61-4ad2-42e2-b79c-37c21dc5c8f7",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "REP-VS EMP Generator",
+    "uuid": "19210f79-9618-42e0-9b88-6f59cad9fe2c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RSI Decoy Ammo Box",
+    "uuid": "ab68559a-4ef5-446b-9e13-efd92924911d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Retaliator Ship Armor",
+    "uuid": "53fa65f0-1288-4ba7-81da-086230e37a28",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "REP-8 EMP Generator",
+    "uuid": "5b592245-58a7-4ce9-9c96-3145d0424da8",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "RSI Decoy Launcher",
+    "uuid": "9281a5b2-6211-4dcb-909f-57ec70ce4117",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Origin Jumpworks 125a Ship Armor",
+    "uuid": "3b4c1c53-5416-46b3-aba3-5cbe5a7d8517",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Origin Jumpworks Noise Launcher",
+    "uuid": "d6e0229a-f18e-4dc6-a590-942089da7a2d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Origin Jumpworks 135c Ship Armor",
+    "uuid": "ac93e4d1-a060-4d16-b6d3-570bb79a78f9",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Origin Jumpworks 100i Ship Armor",
+    "uuid": "a38043b8-4a63-462e-9f37-4b37c7d3ab21",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mustang Omega Ship Armor",
+    "uuid": "5f1151c2-d9fc-4d20-84bc-9c57ecf61f18",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mustang Gamma Ship Armor",
+    "uuid": "f8229594-89a6-4ae8-8d7d-6683cf7d50cf",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mustang Alpha Ship Armor",
+    "uuid": "02b8dd1c-3b4d-4d2a-b931-df3a79818a7c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Mustang Beta Ship Armor",
+    "uuid": "92bfd039-7c72-45eb-9d09-b1a2d500f481",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "MISC Reliant Ship Armor",
+    "uuid": "a9669d19-4a9b-4098-b9d5-7dab86ebe3c5",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "MISC Reliant - Noise Launcher",
+    "uuid": "bc3d4482-49d1-4767-af8e-948a8b50f881",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "MISC Prospector - Decoy Launcher",
+    "uuid": "9435f4fd-d09f-44f3-a72b-27b20b28c1f8",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Aegis Avenger - Decoy Launcher",
+    "uuid": "222edff1-53c1-454d-852c-cecd52381b23",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "300i Ship Armor",
+    "uuid": "8fa4aa51-ff08-4728-ae08-64861ab3daf9",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "350r Ship Armor",
+    "uuid": "b699ab2c-f5ad-4f14-a46f-5620d12d525d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "315p Ship Armor",
+    "uuid": "3a0a0de4-43ef-408c-8f7a-d837c0817962",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "MISC Reliant - Decoy Launcher",
+    "uuid": "6dfc8798-6296-4d37-976a-9ef9edb67b05",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Merlin Ship Armor",
+    "uuid": "b932c185-f4f5-417b-9673-3c0d841f99a9",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Magstrand EMP Generator",
+    "uuid": "3d521e8c-4249-4987-b544-d32634ab0d2a",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "M50 Ship Armor",
+    "uuid": "4206486c-eb66-4462-b259-9d23a4483129",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Aegis Redeemer Ship Armor",
+    "uuid": "fa5be128-c861-4d4e-a44f-34832937a1aa",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Anvil Bastion Ship Armor",
+    "uuid": "eb6c0f07-8bf4-4edd-8386-1f31d00a0cb3",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Blade Ship Armor",
+    "uuid": "3e079c98-45c0-4d08-b647-313fe1d1c584",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Aurora Mk I LX Ship Armor",
+    "uuid": "c523f087-c641-4470-970d-89346a987b80",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Avenger Stalker Ship Armor",
+    "uuid": "b3b23908-e9ab-4c46-93ed-ecd20aaf65c3",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Avenger Titan Ship Armor",
+    "uuid": "7090c713-5e36-4150-a19b-8c4fe439be9d",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Aurora Mk I ES Ship Armor",
+    "uuid": "de5e41a9-7dcb-4aae-afed-3be538e7e04e",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Avenger Warlock Ship Armor",
+    "uuid": "ccd27ec0-a00e-40bb-b1aa-c9a48eba2ccb",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Aurora Mk I MR Ship Armor",
+    "uuid": "26c1d2ac-8830-4171-a46b-44991748ddef",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Anvil Noise Launcher",
+    "uuid": "d6390806-48aa-459e-ba57-4db097b60d34",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Drake Noise Launcher",
+    "uuid": "f7ec7a67-6119-4420-9e2d-e6f262879e19",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Cutlass Black Ship Armor",
+    "uuid": "d046ef0c-1a7f-4231-8abf-eae882a73c2b",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Constellation Andromeda Ship Armor",
+    "uuid": "19f2a8ef-9817-4a52-888c-efbf77e155d9",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Consolidated Outland Cavalry Ship Armor",
+    "uuid": "43c34912-a619-4bf8-a8d0-9f1c7e5b3910",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Drake Decoy Launcher",
+    "uuid": "9e26315d-3616-4835-9041-7e5f41336031",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "countermeasures",
+    "proposed_destination": "proposed: real ship-component category (equippable, shop-sold) - not decorations",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Aurora Mk I CL Ship Armor",
+    "uuid": "5fc0aeba-7397-4487-a2cb-07670aaa994e",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Gladius Ship Armor",
+    "uuid": "a1bde463-b3ce-4959-9bc2-6ef0f6fb1494",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Hammerhead Ship Armor",
+    "uuid": "33190167-101c-4693-b21a-b9b4b6bcaa18",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Glaive Ship Armor",
+    "uuid": "4ebbcffb-604f-41c2-9384-e017badf72e6",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Gladiator Ship Armor",
+    "uuid": "95435a5e-9744-4955-9e3c-a2bac27f6a15",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  },
+  {
+    "name": "Freelancer Ship Armor",
+    "uuid": "e787835d-a4af-4d82-82c5-f5ce751afb2c",
+    "current_section": "Miscellaneous",
+    "current_category": "Miscellaneous",
+    "company": null,
+    "proposed_bucket": "ship_armour",
+    "proposed_destination": "proposed: ship-page-only, per WO-PLACE-01 ruling on Ship Armor (5 more of this same class already sit misfiled under Armor>Arms)",
+    "commodity_name_match_204endpoint": false
+  }
+]

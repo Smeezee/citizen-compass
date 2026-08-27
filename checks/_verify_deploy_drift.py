@@ -18,14 +18,26 @@ HOW EACH FILE IS PROVEN, AND THEY ARE NOT ALL PROVEN THE SAME WAY
 The build produces three kinds of file, and lumping them together would mean
 proving the easy ones and quietly assuming the hard one:
 
-  COPIED VERBATIM   most of PAGES - the pages and the .gen.js files. Proven by
-                    comparing bytes against their _src source. Non-destructive:
-                    a hand edit is REPORTED rather than overwritten, so the
-                    evidence survives being found.
-  TRANSFORMED       holo.html, which has three.js inlined at a marker. Proven
-                    by requiring the deployed file to begin and end with the
-                    _src text either side of that marker, so a hand edit
-                    anywhere outside the injected block is caught.
+  COPIED VERBATIM   the .gen.js files. Proven by comparing bytes against
+                    their _src source. Non-destructive: a hand edit is
+                    REPORTED rather than overwritten, so the evidence survives
+                    being found.
+  TRANSFORMED       every .html page. Two injections, and BOTH ARE DECLARED
+                    HERE INDIVIDUALLY rather than the file being exempted:
+                      - the attribution block (A1/A3, 2026-08-22) - the
+                        trademark strip and, on ship pages, the source and
+                        contact notice - appended by _with_attribution at the
+                        end of every page;
+                      - three.js, inlined at CC_VENDOR_THREE on the pages that
+                        ask for it.
+                    Everything either side of every declared injection is still
+                    compared byte for byte, so a hand edit anywhere outside
+                    them is caught. Before 2026-08-22 the pages really were
+                    copied verbatim and were checked as such; the attribution
+                    injection made that premise false, and the check reported
+                    six pages as drifted until it was taught the new transform.
+                    That is the check working - it noticed the build had
+                    changed underneath it.
   ASSEMBLED         index.html, which is built from releases/latest.html plus
                     the layer plus a dozen substitutions. There is no way to
                     compare it to a source, so it is proven the only honest
@@ -84,6 +96,32 @@ SEAM_FILES = {
         '"models/{file}"',
     ),
 }
+
+# THE TRADEMARK LINE IS READ FROM THE BUILD'S OWN CONSTANT, NEVER RESTATED.
+#
+# Hard rule 8 - legal text is Sleven's alone, and a checker carrying its own
+# copy of it would be a second writer for that fact (rule 14). It would also be
+# the worst kind of useless: it would keep passing while the page said
+# something different, because both sides would be reading the checker's copy
+# of the wording rather than the page's. attribution.py is where the build gets
+# this string, so it is where this gets it.
+#
+# _with_attribution itself is NOT imported - it lives in build_deploy.py, which
+# is a script that runs a full build on import. Its placement rule is mirrored
+# in attribution_point() below, and section 4's rebuild is what proves the two
+# still agree.
+sys.path.insert(0, SRC)
+try:
+    import attribution as _attr
+    TRADEMARK_HTML = _attr.TRADEMARK_HTML
+    ATTR_IMPORT_ERROR = None
+except Exception as _exc:                      # pragma: no cover - reported
+    TRADEMARK_HTML = None
+    ATTR_IMPORT_ERROR = (
+        "NOT PERFORMED - testing/_src/attribution.py could not be imported "
+        "(%s), so what the build injects is unknown and the injected block "
+        "cannot be checked. Reported, never passed." % _exc)
+
 
 _passed = []
 _failed = []
@@ -153,6 +191,208 @@ def build_pages():
     return None
 
 
+BUILD_SRC = os.path.join(SRC, "build_deploy.py")
+
+
+def ship_content_pages():
+    """WHICH pages carry A3's source-and-contact notice, read out of the build.
+
+    Parsed, not restated, for the same reason PAGES is: a copy of this set
+    living in a checker is a second writer for the same fact (rule 14), and the
+    day a page starts showing ship content the checker would still be checking
+    yesterday's answer - and PASSING, which is worse than failing.
+
+    ast.parse does not execute build_deploy.py. Importing it would: it is a
+    script that runs a full build at module level.
+    """
+    if not os.path.exists(BUILD_SRC):
+        return None
+    tree = ast.parse(text_of(BUILD_SRC), filename=BUILD_SRC)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and \
+                        target.id == "_SHIP_CONTENT_PAGES":
+                    return set(ast.literal_eval(node.value))
+    return None
+
+
+def attribution_point(s_text):
+    """WHERE the build appends the attribution block, by the build's own rule.
+
+    build_deploy._with_attribution inserts before the first </body>, else
+    before the first </html>, else appends after rstrip(). That three-way rule
+    exists because only ONE of the seven pages writes a </body> and two close
+    with neither tag - a rule that assumed </body> would have put the legal
+    notice on one page and silently skipped the rest.
+
+    Returns the source text split either side of the insertion point.
+    """
+    for tag in ("</body>", "</html>"):
+        i = s_text.find(tag)
+        if i != -1:
+            return s_text[:i], s_text[i:]
+    return s_text.rstrip() + "\n", ""
+
+
+def declared_transforms(s_text):
+    """The source text cut into the literal segments the deploy file MUST
+    still contain, in order, with one declared injection between each pair.
+
+    Returns (segments, gap_names) where len(segments) == len(gap_names) + 1.
+    """
+    before, after = attribution_point(s_text)
+    if VENDOR_MARKER in before:
+        head, mid = before.split(VENDOR_MARKER, 1)
+        return [head, mid, after], ["vendor", "attribution"]
+    if VENDOR_MARKER in after:
+        mid, tail = after.split(VENDOR_MARKER, 1)
+        return [before, mid, tail], ["attribution", "vendor"]
+    return [before, after], ["attribution"]
+
+
+def split_by_declared(d_text, segments):
+    """Match d_text as segments[0] + gap + segments[1] + gap + ... in order,
+    anchored at BOTH ends. Returns the gap contents, or None if the deployed
+    file no longer contains its source text where it should.
+
+    Anchoring both ends is the point: content appended past the last segment,
+    or prepended before the first, is a hand edit and must not be absorbed
+    into a gap.
+    """
+    if not d_text.startswith(segments[0]):
+        return None
+    if segments[-1] and not d_text.endswith(segments[-1]):
+        return None
+    pos = len(segments[0])
+    end = len(d_text) - len(segments[-1])
+    if end < pos:
+        return None
+    gaps = []
+    for seg in segments[1:-1]:
+        i = d_text.find(seg, pos, end)
+        if i == -1:
+            return None
+        gaps.append(d_text[pos:i])
+        pos = i + len(seg)
+    gaps.append(d_text[pos:end])
+    return gaps
+
+
+def gap_problem(name, gap, out_name, ship_pages):
+    """What is wrong with what the build put in a declared gap, or None.
+
+    A gap is DECLARED, not unexamined. "The build may inject here" is not the
+    same as "anything may appear here", and the difference is the whole value
+    of declaring it narrowly. Two things would walk straight through a gap that
+    merely had to CONTAIN the trademark line: text appended after the strip on
+    the two pages that close with no tag at all, and a hand edit to the wording
+    of the strip itself - which is precisely the text hard rule 8 says nobody
+    but Sleven may touch.
+
+    So the attribution gap is pinned at both ends:
+
+      not a ship page   the gap must be EXACTLY attribution.trademark_block(),
+                        byte for byte, and nothing else.
+      a ship page       the gap must END with that same block and START with
+                        SOURCE_NOTICE_CSS. Only the notice body between them is
+                        unpinned, because the contact address inside it is
+                        configuration rather than source - and that body is
+                        _verify_attribution's subject, not this one's.
+    """
+    if name == "vendor":
+        if not gap.strip():
+            return "the vendor marker was replaced with nothing"
+        if VENDOR_MARKER in gap:
+            return "the vendor marker is still there - three.js was not inlined"
+        return None
+    if name == "attribution":
+        if ATTR_IMPORT_ERROR:
+            return ATTR_IMPORT_ERROR
+        if ship_pages is None:
+            return ("NOT PERFORMED - _SHIP_CONTENT_PAGES could not be read out "
+                    "of build_deploy.py, so which pages carry the source "
+                    "notice is unknown. Reported, never passed.")
+        if not gap.strip():
+            return "nothing was appended - the page carries NO trademark strip"
+        expected = _attr.trademark_block() + "\n"
+        if gap == expected:
+            return None
+        if out_name in ship_pages:
+            if not gap.endswith("\n" + expected):
+                return ("the appended block does not END with "
+                        "attribution.trademark_block() - either the strip was "
+                        "edited in _deploy, or something was added after it")
+            if not gap.startswith(_attr.SOURCE_NOTICE_CSS):
+                return ("the appended block does not START with the source "
+                        "notice - something was inserted before it")
+            return None
+        if TRADEMARK_HTML not in gap:
+            return "what was appended carries no trademark line at all"
+        return ("what was appended is not exactly "
+                "attribution.trademark_block() - it was edited in _deploy, or "
+                "something was added around it")
+    return "unknown transform %r" % name       # pragma: no cover - unreachable
+
+
+def page_problems(src_name, out_name, ship_pages):
+    """THE ONE COMPARISON, in one place.
+
+    Section 3 runs this over _deploy. Section 5 runs THE SAME FUNCTION over
+    deliberately corrupted copies. That matters more than it looks: the plant
+    test used to re-implement the byte compare inline, so what it proved was
+    that a comparison written on the spot could fail - not that the one
+    actually guarding the directory could. The two agreed right up until the
+    build changed, and then the plant would have gone on passing while
+    section 3 was checking something else entirely.
+    """
+    s_path = os.path.join(SRC, src_name)
+    d_path = os.path.join(DEPLOY, out_name)
+    if not os.path.exists(d_path):
+        return ["%s is MISSING from _deploy" % out_name]
+    if out_name in SEAM_FILES:
+        prefix, dev, dep = SEAM_FILES[out_name]
+        s_lines = text_of(s_path).split("\n")
+        d_lines = text_of(d_path).split("\n")
+        if len(s_lines) != len(d_lines):
+            return ["%s has a different number of lines from _src/%s"
+                    % (out_name, src_name)]
+        bad = [i for i, (a, b) in enumerate(zip(s_lines, d_lines)) if a != b]
+        if len(bad) != 1:
+            return ["%s differs from _src/%s on %d lines - only the model-path "
+                    "seam may differ" % (out_name, src_name, len(bad))]
+        i = bad[0]
+        if not (s_lines[i].startswith(prefix) and dev in s_lines[i]
+                and d_lines[i].startswith(prefix) and dep in d_lines[i]):
+            return ["%s's one difference is NOT the model-path seam: "
+                    "_src %r vs _deploy %r"
+                    % (out_name, s_lines[i][:60], d_lines[i][:60])]
+        return []
+    if not src_name.endswith(".html"):
+        # COPIED VERBATIM. No transform is declared for these, so any
+        # difference at all is a hand edit.
+        if read_bytes(s_path) != read_bytes(d_path):
+            return ["%s differs from _src/%s" % (out_name, src_name)]
+        return []
+    # TRANSFORMED. Every injection the build makes is declared, and the source
+    # text either side of every one of them must still be there, byte for byte,
+    # anchored at BOTH ends of the file.
+    s_text = text_of(s_path)
+    d_text = text_of(d_path)
+    segments, gap_names = declared_transforms(s_text)
+    gaps = split_by_declared(d_text, segments)
+    if gaps is None:
+        return ["%s no longer contains its _src/%s text outside the declared "
+                "injections (%s)"
+                % (out_name, src_name, " and ".join(gap_names))]
+    found = []
+    for name, gap in zip(gap_names, gaps):
+        problem = gap_problem(name, gap, out_name, ship_pages)
+        if problem:
+            found.append("%s - %s" % (out_name, problem))
+    return found
+
+
 def main():
     print("\n1. THE BUILD'S OWN LIST OF WHAT IT COPIES")
     pages = build_pages()
@@ -193,48 +433,17 @@ def main():
           "here can prove where they\n     came from, and calling them checked "
           "would be a check that never looked.")
 
-    print("\n3. THE COPIED FILES, BYTE FOR BYTE AGAINST _src  (non-destructive)")
+    print("\n3. THE COPIED FILES AGAINST _src, EVERY INJECTION DECLARED  "
+          "(non-destructive)")
+    ships = ship_content_pages()
+    if ships is None:
+        print("     _SHIP_CONTENT_PAGES could not be read out of "
+              "build_deploy.py. Reported per file below rather than assumed.")
     drifted = []
     for src_name, out_name in pages:
-        s_path = os.path.join(SRC, src_name)
-        d_path = os.path.join(DEPLOY, out_name)
-        if not os.path.exists(d_path):
-            drifted.append("%s is MISSING from _deploy" % out_name)
-            continue
-        if out_name in SEAM_FILES:
-            prefix, dev, dep = SEAM_FILES[out_name]
-            s_lines = text_of(s_path).split("\n")
-            d_lines = text_of(d_path).split("\n")
-            if len(s_lines) != len(d_lines):
-                drifted.append("%s has a different number of lines from _src/%s"
-                               % (out_name, src_name))
-                continue
-            bad = [i for i, (a, b) in enumerate(zip(s_lines, d_lines)) if a != b]
-            if len(bad) != 1:
-                drifted.append("%s differs from _src/%s on %d lines - only the "
-                               "model-path seam may differ"
-                               % (out_name, src_name, len(bad)))
-                continue
-            i = bad[0]
-            if not (s_lines[i].startswith(prefix) and dev in s_lines[i]
-                    and d_lines[i].startswith(prefix) and dep in d_lines[i]):
-                drifted.append("%s's one difference is NOT the model-path seam: "
-                               "_src %r vs _deploy %r"
-                               % (out_name, s_lines[i][:60], d_lines[i][:60]))
-            continue
-        s_text = text_of(s_path) if src_name.endswith(".html") else None
-        if s_text is not None and VENDOR_MARKER in s_text:
-            # TRANSFORMED: three.js is inlined at the marker. Everything either
-            # side of it must still be the source, verbatim.
-            head, tail = s_text.split(VENDOR_MARKER, 1)
-            d_text = text_of(d_path)
-            if not (d_text.startswith(head) and d_text.endswith(tail)):
-                drifted.append("%s does not match %s either side of the vendor "
-                               "marker" % (out_name, src_name))
-            continue
-        if read_bytes(s_path) != read_bytes(d_path):
-            drifted.append("%s differs from _src/%s" % (out_name, src_name))
-    check("every copied file in _deploy is byte-identical to its _src source"
+        drifted.extend(page_problems(src_name, out_name, ships))
+    check("every copied file in _deploy is its _src source byte for byte, "
+          "outside the injections declared above"
           + ("\n         " + "\n         ".join(drifted) if drifted else ""),
           not drifted)
 
@@ -263,32 +472,73 @@ def main():
     # Exactly the defect this item names: something typed into _deploy that
     # exists nowhere in _src. A drift check that has only ever passed has not
     # been shown to work.
-    victim_src, victim_out = next((s, o) for s, o in pages if o.endswith(".html"))
+    victim_src, victim_out = next(
+        (s, o) for s, o in pages
+        if o.endswith(".html") and o not in SEAM_FILES)
     victim = os.path.join(DEPLOY, victim_out)
     original = read_bytes(victim)
+    original_text = text_of(victim)
     keep = os.path.join(ROOT, "_to_delete",
                         "deploy_drift_plant_%s" % time.strftime("%Y%m%d%H%M%S"))
-    try:
-        with open(victim, "w", encoding="utf-8", newline="") as fh:
-            fh.write(text_of(os.path.join(SRC, victim_src))
-                     + "\n<!-- typed straight into _deploy, by hand -->\n")
-        found = read_bytes(victim) != read_bytes(os.path.join(SRC, victim_src))
-        check("the plant really did change the file - otherwise the assertion "
-              "below is checking nothing", found)
-        # Re-run the same comparison the real check uses, on the planted file.
-        caught = read_bytes(os.path.join(SRC, victim_src)) != read_bytes(victim)
-        check("a hand edit in _deploy/%s is REPORTED, not passed over"
-              % victim_out, caught)
-    finally:
-        # Preserve the plant rather than deleting it (hard rule 1), then put
-        # the real file back exactly as it was.
-        os.makedirs(keep, exist_ok=True)
-        shutil.copyfile(victim, os.path.join(keep, victim_out))
-        with open(victim, "wb") as fh:
-            fh.write(original)
-    check("and the file was restored byte for byte afterwards",
+    os.makedirs(keep, exist_ok=True)
+
+    def plant(tag, text):
+        """Corrupt the deployed file, run THE REAL comparison over it, preserve
+        the evidence (hard rule 1 - nothing here deletes), restore the original.
+
+        The restore is in a finally, because a plant that raised on its way
+        through the comparator would otherwise leave a corrupted page sitting
+        in _deploy for the next thing to publish.
+        """
+        try:
+            with open(victim, "w", encoding="utf-8", newline="") as fh:
+                fh.write(text)
+            changed = read_bytes(victim) != original
+            found = page_problems(victim_src, victim_out, ships)
+            shutil.copyfile(victim, os.path.join(keep, "%s__%s" % (tag, victim_out)))
+            return changed, found
+        finally:
+            with open(victim, "wb") as fh:
+                fh.write(original)
+
+    changed, found = plant(
+        "hand_edit",
+        text_of(os.path.join(SRC, victim_src))
+        + "\n<!-- typed straight into _deploy, by hand -->\n")
+    check("the plant really did change the file - otherwise every assertion "
+          "below it is checking nothing", changed)
+    check("a hand edit in _deploy/%s is REPORTED, not passed over"
+          % victim_out, found)
+
+    # THE TWO PLANTS THE DECLARED GAP MADE NECESSARY.
+    #
+    # Section 3 no longer compares the appended attribution block byte for byte
+    # against _src, because it does not exist in _src. That is a region the
+    # check tolerates - so it is a region that has to be proven not to be a
+    # hole, in both directions: something added after it, and something changed
+    # inside it.
+    changed, found = plant(
+        "after_the_strip",
+        original_text + "<!-- appended past the trademark strip -->\n")
+    check("text appended AFTER the trademark strip is REPORTED - the tolerated "
+          "region is not an open end", changed and found)
+
+    if ATTR_IMPORT_ERROR:
+        check("the trademark line's own wording, edited in _deploy only, is "
+              "REPORTED - " + ATTR_IMPORT_ERROR, False)
+    else:
+        reworded = _attr.TRADEMARK_BAR.replace("registered trademarks",
+                                               "trademarks", 1)
+        changed, found = plant("reworded_strip",
+                               original_text.replace(_attr.TRADEMARK_BAR,
+                                                     reworded, 1))
+        check("and so is the trademark line itself, reworded in _deploy only - "
+              "hard rule 8's own text, changed where no source diff would ever "
+              "show it", changed and found)
+
+    check("and the file was restored byte for byte after every plant",
           read_bytes(victim) == original)
-    print("     the planted copy was moved aside to %s, never deleted"
+    print("     the planted copies were moved aside to %s, never deleted"
           % os.path.relpath(keep, ROOT))
 
     print("\n%d passed, %d failed" % (len(_passed), len(_failed)))

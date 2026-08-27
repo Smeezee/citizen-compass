@@ -1,0 +1,467 @@
+[
+  {
+    "ship": "600i Executive Edition",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\600i Executive Edition",
+    "status": "ALREADY 0.01 - copied to model_scaled.glb",
+    "before_scale": [
+      0.010049999691545963,
+      0.010049999691545963,
+      0.010049999691545963
+    ],
+    "before_dimensions": [
+      52.278533935546875,
+      17.59783172607422,
+      90.71910858154297
+    ]
+  },
+  {
+    "ship": "85X",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\85X",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      18.32343864440918,
+      21.904438018798828,
+      9.981219291687012
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      2.934136544840982e-10,
+      3.5075622961677766e-10,
+      1.5982951073745255e-10
+    ]
+  },
+  {
+    "ship": "Arrastra",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Arrastra",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      47.1754264831543,
+      86.90446472167969,
+      14.024454116821289
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.00645705359056592,
+      0.011894895695149899,
+      0.0019195727072656155
+    ]
+  },
+  {
+    "ship": "Aurora Mk II",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Aurora Mk II",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      60.18442153930664,
+      21.892181396484375,
+      83.31233215332031
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.0060184421017766,
+      0.002189217833802104,
+      0.008331232704222202
+    ]
+  },
+  {
+    "ship": "Aurora SE",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Aurora SE",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      87.58320617675781,
+      18.502443313598633,
+      38.929439544677734
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.008758319541811943,
+      0.0018502441234886646,
+      0.0038929434958845377
+    ]
+  },
+  {
+    "ship": "Basher",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Basher",
+    "status": "RESCALED (0.057666048407554626, 0.057666048407554626, 0.057666048407554626) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      0.057666048407554626,
+      0.057666048407554626,
+      0.057666048407554626
+    ],
+    "before_dimensions": [
+      64.92216491699219,
+      25.35714340209961,
+      78.6642837524414
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.1125829815864563,
+      0.04397238790988922,
+      0.13641349971294403
+    ]
+  },
+  {
+    "ship": "Fury",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Fury",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      10.023208618164062,
+      2.9562437534332275,
+      9.12015151977539
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      9.748379670782015e-05,
+      2.875186146411579e-05,
+      8.870083547662944e-05
+    ]
+  },
+  {
+    "ship": "Hermes",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Hermes",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      80.68478393554688,
+      17.14361000061035,
+      66.09229278564453
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.008068478666245937,
+      0.0017143607838079333,
+      0.006609227973967791
+    ]
+  },
+  {
+    "ship": "M80",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\M80",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      86.97828674316406,
+      13.808859825134277,
+      47.92486572265625
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.008697828277945518,
+      0.0013808858348056674,
+      0.004792485851794481
+    ]
+  },
+  {
+    "ship": "MOTH",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\MOTH",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      90.31881713867188,
+      27.12376594543457,
+      51.65092849731445
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.00903188157826662,
+      0.002712376182898879,
+      0.0051650917157530785
+    ]
+  },
+  {
+    "ship": "Mantis",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Mantis",
+    "status": "RESCALED (0.031606525182724, 0.031606525182724, 0.031606525182724) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      0.031606525182724,
+      0.031606525182724,
+      0.031606525182724
+    ],
+    "before_dimensions": [
+      53.11202621459961,
+      19.905681610107422,
+      87.33657836914062
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      16.804134368896484,
+      6.2979655265808105,
+      27.632450103759766
+    ]
+  },
+  {
+    "ship": "Merchantman",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Merchantman",
+    "status": "RESCALED (1.2128498554229736, 1.2128499746322632, 1.2128498554229736) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.2128498554229736,
+      1.2128499746322632,
+      1.2128498554229736
+    ],
+    "before_dimensions": [
+      9.099739074707031,
+      89.09115600585938,
+      24.39948081970215
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.001844670157879591,
+      0.01806027442216873,
+      0.004946185275912285
+    ]
+  },
+  {
+    "ship": "Odin",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Odin",
+    "status": "RESCALED (0.16497552394866943, 0.16497552394866943, 0.16497552394866943) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      0.16497552394866943,
+      0.16497552394866943,
+      0.16497552394866943
+    ],
+    "before_dimensions": [
+      36.56740188598633,
+      123.70096588134766,
+      34.657108306884766
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.022165348753333092,
+      0.07498139888048172,
+      0.021007422357797623
+    ]
+  },
+  {
+    "ship": "PTV",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\PTV",
+    "status": "RESCALED (24.81639289855957, 24.81639289855957, 24.81639289855957) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      24.81639289855957,
+      24.81639289855957,
+      24.81639289855957
+    ],
+    "before_dimensions": [
+      53.7166862487793,
+      45.26946258544922,
+      80.41305541992188
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.021645646542310715,
+      0.01824175752699375,
+      0.03240320086479187
+    ]
+  },
+  {
+    "ship": "Pitbull",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Pitbull",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      76.6259536743164,
+      33.21253204345703,
+      75.4520034790039
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.0006137429736554623,
+      0.00026601896388456225,
+      0.0006043399916961789
+    ]
+  },
+  {
+    "ship": "Starlite",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Starlite",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      80.20633697509766,
+      21.81036949157715,
+      50.20546340942383
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.008020633831620216,
+      0.0021810366306453943,
+      0.005020545329898596
+    ]
+  },
+  {
+    "ship": "Tiburon",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Tiburon",
+    "status": "RESCALED (0.9309181571006775, 0.9309181571006775, 0.9309181571006775) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      0.9309181571006775,
+      0.9309181571006775,
+      0.9309181571006775
+    ],
+    "before_dimensions": [
+      84.52796173095703,
+      13.992544174194336,
+      47.53440475463867
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.008452795445919037,
+      0.0013992540771141648,
+      0.004753440152853727
+    ]
+  },
+  {
+    "ship": "Tyilui",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\Tyilui",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      58.45195770263672,
+      67.18244934082031,
+      51.38228988647461
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.005845195613801479,
+      0.0067182439379394054,
+      0.005138228181749582
+    ]
+  },
+  {
+    "ship": "UTV",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T171012Z\\UTV",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      56.13885498046875,
+      31.367584228515625,
+      36.87764358520508
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      0.0056138853542506695,
+      0.003136757994070649,
+      0.0036877638194710016
+    ]
+  }
+]

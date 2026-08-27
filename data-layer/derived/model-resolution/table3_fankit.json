@@ -1,0 +1,89 @@
+{
+ "table": "fan-kit-fourteen",
+ "rows": [
+  {
+   "ctm_file": "ARGO MPUV Cargo.ctm",
+   "ship": "ARGO MPUV Cargo",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "Aegis Sabre.ctm",
+   "ship": "Aegis Sabre",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "Anvil F7C-M Super Hornet.ctm",
+   "ship": "Anvil F7C-M Super Hornet",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "Aopoa Khartu-al.ctm",
+   "ship": "Aopoa Khartu-al",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "Banu Defender.ctm",
+   "ship": "Banu Defender",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "CNOU Mustang Alpha.ctm",
+   "ship": "CNOU Mustang Alpha",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "Crusader Mercury Starrunner.ctm",
+   "ship": "Crusader Mercury Star Runner",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "Drake Cutlass Black.ctm",
+   "ship": "Drake Cutlass Black",
+   "live_page_has_a_glb_already": false,
+   "fills_a_gap": true
+  },
+  {
+   "ctm_file": "Esperia Blade.ctm",
+   "ship": "Esperia Blade",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "Kruger P-52 Merlin.ctm",
+   "ship": "Kruger P-52 Merlin",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "MISC Freelancer MAX.ctm",
+   "ship": "MISC Freelancer MAX",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "Origin 600i Explorer.ctm",
+   "ship": "Origin 600i Explorer",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  },
+  {
+   "ctm_file": "RSI Constellation Aquila.ctm",
+   "ship": "RSI Constellation Aquila",
+   "live_page_has_a_glb_already": false,
+   "fills_a_gap": true
+  },
+  {
+   "ctm_file": "Tumbril Cyclone.ctm",
+   "ship": "Tumbril Cyclone",
+   "live_page_has_a_glb_already": true,
+   "fills_a_gap": false
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "dataset": "holo-hardpoints",
+ "produced_by": "C3 (Cowork), 2026-08-10",
+ "files": {
+  "hardpoints_fleet.json": {
+   "ships": 167,
+   "hardpoints": 1798,
+   "key": "ship name as it appears in ship_specs.json"
+  }
+ },
+ "what_this_is": "Derived hardpoint positions for every ship that has both mount data and a model in testing/_deploy/models. Positions come from the mount NAME plus the hull's own geometry.",
+ "what_this_is_NOT": "Not CIG's coordinates. All 25,150 ports in ship_specs.json carry position: null — re-verified on this dataset. Nobody has the real numbers. These are close, not exact, and the viewer must say so.",
+ "units": "pos_model is in the MODEL's own units, which are NOT the same across the library: 158 ships are in metres, 8 are normalised to roughly unit size, 1 is in centimetres. frame.model_units_per_metre records the measured scale per ship. `unit` is normalised to the hull's longest axis and is safe regardless.",
+ "verified": {
+  "markers off the hull": 0,
+  "left/right pairs mirrored": 469,
+  "pairs still same-side": 1,
+  "pairs still lopsided": 11,
+  "ships with markers closer than 2% of hull size": 11,
+  "ships skipped with a stated reason": 7
+ },
+ "consumers": [
+  "build_holo_data.py"
+ ]
+}

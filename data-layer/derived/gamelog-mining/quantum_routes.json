@@ -1,0 +1,444 @@
+{
+  "note": "Destination -> observed fuel estimates. Multiple values mean the cost varied by origin; that is real, not an error.",
+  "count": 55,
+  "rows": [
+    {
+      "destination": "Area18_City_objectContainer",
+      "fuel_estimates": [
+        7.01687,
+        7.138066,
+        7.283118,
+        7.290302,
+        11.639048,
+        11.655017,
+        11.668115,
+        11.763905,
+        17.52948,
+        49.466599,
+        4152.724121
+      ]
+    },
+    {
+      "destination": "GrimHEX_OC",
+      "fuel_estimates": [
+        1713.838623
+      ]
+    },
+    {
+      "destination": "LOC_RR_S1_L1",
+      "fuel_estimates": [
+        511688.1875
+      ]
+    },
+    {
+      "destination": "LOC_RR_S1_L2",
+      "fuel_estimates": [
+        0.043547
+      ]
+    },
+    {
+      "destination": "LOC_RR_S1_L3",
+      "fuel_estimates": [
+        439405.59375
+      ]
+    },
+    {
+      "destination": "LOC_RR_S1_L5",
+      "fuel_estimates": [
+        49113.574219
+      ]
+    },
+    {
+      "destination": "LOC_RR_S2_L1",
+      "fuel_estimates": [
+        31450.619141
+      ]
+    },
+    {
+      "destination": "LOC_RR_S2_L4",
+      "fuel_estimates": [
+        717225.0625,
+        1147561.0
+      ]
+    },
+    {
+      "destination": "LOC_RR_S2_L5",
+      "fuel_estimates": [
+        407567.03125
+      ]
+    },
+    {
+      "destination": "LOC_RR_S3_L1",
+      "fuel_estimates": [
+        0.462396,
+        28885.755859,
+        46188.460938,
+        46226.347656,
+        267806.34375,
+        601760.5,
+        1478195.875
+      ]
+    },
+    {
+      "destination": "LOC_RR_S3_L3",
+      "fuel_estimates": [
+        0.078868
+      ]
+    },
+    {
+      "destination": "LOC_RR_S3_L4",
+      "fuel_estimates": [
+        0.082034
+      ]
+    },
+    {
+      "destination": "LOC_RR_S3_L5",
+      "fuel_estimates": [
+        441439.1875
+      ]
+    },
+    {
+      "destination": "LOC_RR_S4_L1",
+      "fuel_estimates": [
+        852724.75
+      ]
+    },
+    {
+      "destination": "LOC_RR_S4_L2",
+      "fuel_estimates": [
+        0.557528,
+        43555.128906
+      ]
+    },
+    {
+      "destination": "LOC_RR_S4_L3",
+      "fuel_estimates": [
+        0.149779,
+        517082.25,
+        1136328.375
+      ]
+    },
+    {
+      "destination": "LOC_RR_S4_L4",
+      "fuel_estimates": [
+        247330.234375,
+        447454.15625,
+        695029.8125,
+        1873010.75
+      ]
+    },
+    {
+      "destination": "LOC_RR_S4_L5",
+      "fuel_estimates": [
+        293213.90625
+      ]
+    },
+    {
+      "destination": "LOC_rs_ext_stan-magnus_jp1",
+      "fuel_estimates": [
+        0.000282,
+        0.000919,
+        1.528788,
+        95089.0,
+        544751.4375,
+        550310.75,
+        753200.5625,
+        929822.3125,
+        1254549.0,
+        1411087.5,
+        1411106.625,
+        1520383.625,
+        1958321.0,
+        2470585.5,
+        2470635.0,
+        2471586.75
+      ]
+    },
+    {
+      "destination": "LOC_rs_ext_stan-terra_jp1",
+      "fuel_estimates": [
+        98516.28125
+      ]
+    },
+    {
+      "destination": "MISSION_QT_Quantum_Beacon_LongRange_<id>",
+      "fuel_estimates": [
+        317696.5625
+      ]
+    },
+    {
+      "destination": "MISSION_QT_Quantum_Beacon_ShortRange_Salvage_<id>",
+      "fuel_estimates": [
+        0.004143,
+        0.121209,
+        0.154233,
+        0.173751,
+        75325.273438,
+        441390.5,
+        477978.84375,
+        497964.875,
+        541188.4375,
+        569612.6875,
+        598147.5625
+      ]
+    },
+    {
+      "destination": "NavPoint_Dynamic_<id>",
+      "fuel_estimates": [
+        7.521437,
+        10.756403
+      ]
+    },
+    {
+      "destination": "NewBabbage_LOC",
+      "fuel_estimates": [
+        2.582686,
+        3.963701,
+        881946.0,
+        881955.9375
+      ]
+    },
+    {
+      "destination": "OOC_Stanton2c_CommArray",
+      "fuel_estimates": [
+        3.46685
+      ]
+    },
+    {
+      "destination": "OOC_Stanton_1_Hurston",
+      "fuel_estimates": [
+        616.960205,
+        366126.5625,
+        511668.59375
+      ]
+    },
+    {
+      "destination": "OOC_Stanton_2_Crusader",
+      "fuel_estimates": [
+        1143.457031,
+        544685.0625
+      ]
+    },
+    {
+      "destination": "OOC_Stanton_2a_Cellin",
+      "fuel_estimates": [
+        31384.625
+      ]
+    },
+    {
+      "destination": "OOC_Stanton_2b_Daymar",
+      "fuel_estimates": [
+        1500.475342
+      ]
+    },
+    {
+      "destination": "OOC_Stanton_3_ArcCorp",
+      "fuel_estimates": [
+        0.144004,
+        0.360236,
+        6.986943,
+        4097.225586,
+        890270.9375,
+        1494089.75,
+        1520355.875,
+        1520356.0
+      ]
+    },
+    {
+      "destination": "OOC_Stanton_4_Microtech",
+      "fuel_estimates": [
+        951396.5
+      ]
+    },
+    {
+      "destination": "ObjectContainer_Lorville_City",
+      "fuel_estimates": [
+        2.340736,
+        8.040421
+      ]
+    },
+    {
+      "destination": "ObjectContainer_RestStop",
+      "fuel_estimates": [
+        1.309799,
+        1.851049,
+        2.114665,
+        3.277769,
+        3.422509,
+        3.441659,
+        4.983444,
+        5.763463,
+        6.261655,
+        26.611689,
+        28.503113,
+        39.87468,
+        45.712399,
+        46196.753906,
+        243721.25,
+        366165.78125,
+        388714.125,
+        594664.5625,
+        951451.125,
+        951459.25,
+        1546066.625,
+        2470615.5,
+        2470619.0,
+        2470624.5
+      ]
+    },
+    {
+      "destination": "Orison_LOC",
+      "fuel_estimates": [
+        24.414284,
+        544921.8125,
+        1416816.25
+      ]
+    },
+    {
+      "destination": "PartyMemberMarker_<id>",
+      "fuel_estimates": [
+        1546089.375
+      ]
+    },
+    {
+      "destination": "ab_collector_gas_Stanton4",
+      "fuel_estimates": [
+        615945.875
+      ]
+    },
+    {
+      "destination": "ab_mine_stanton1_med_005",
+      "fuel_estimates": [
+        803.638855
+      ]
+    },
+    {
+      "destination": "ab_mine_stanton2_med_005",
+      "fuel_estimates": [
+        990.806213
+      ]
+    },
+    {
+      "destination": "ab_mine_stanton2_sml_002",
+      "fuel_estimates": [
+        676925.5
+      ]
+    },
+    {
+      "destination": "ab_mine_stanton3_med_011",
+      "fuel_estimates": [
+        2473812.5
+      ]
+    },
+    {
+      "destination": "ab_mine_stanton3_med_013",
+      "fuel_estimates": [
+        911915.625
+      ]
+    },
+    {
+      "destination": "ab_mine_stanton3_sml_003",
+      "fuel_estimates": [
+        1132.449219,
+        1200.954102
+      ]
+    },
+    {
+      "destination": "arccorp_cluster_001_dust_{4748C9A2-52DF-4E97-BE98-4C31439FC790}.socpak",
+      "fuel_estimates": [
+        19.490723
+      ]
+    },
+    {
+      "destination": "arccorp_cluster_002_dust_{B2A0A7D2-8002-47B3-9C94-1FED03846B2F}.socpak",
+      "fuel_estimates": [
+        13.851413
+      ]
+    },
+    {
+      "destination": "arccorp_cluster_003_dust_{<id>D5-E0AF-4497-AC11-2F2FBC<id>}.socpak",
+      "fuel_estimates": [
+        4121.376465
+      ]
+    },
+    {
+      "destination": "arccorp_cluster_004_dust_{E43B2A37-F470-4E93-8E49-E317E21DA116}.socpak",
+      "fuel_estimates": [
+        21.663519
+      ]
+    },
+    {
+      "destination": "em_shelter_001_frost_{0485DD7C-0371-470C-B625-99B103EA3FB5}.socpak",
+      "fuel_estimates": [
+        17.92164
+      ]
+    },
+    {
+      "destination": "em_shelter_002_sand_{462F8FB2-9859-4C70-86E3-A2B0A0B46571}.socpak",
+      "fuel_estimates": [
+        31.513344
+      ]
+    },
+    {
+      "destination": "hurdyn_cluster_002_sand_red_{99BE4B34-8237-4598-92ED-<id>F5}.socpak",
+      "fuel_estimates": [
+        179973.796875
+      ]
+    },
+    {
+      "destination": "levski_all-001",
+      "fuel_estimates": [
+        125021.320312,
+        200033.984375,
+        325054.71875,
+        325054.875,
+        371329.125
+      ]
+    },
+    {
+      "destination": "racing_static_st3_xgrclubtrack",
+      "fuel_estimates": [
+        6.376109
+      ]
+    },
+    {
+      "destination": "rayari_cluster_001_frost_{ABAB3D3F-FD7B-4CC7-88E4-10C9D39827E8}.socpak",
+      "fuel_estimates": [
+        8.742101
+      ]
+    },
+    {
+      "destination": "rs_ext_arc-l001",
+      "fuel_estimates": [
+        0.040945,
+        28963.001953,
+        749156.875
+      ]
+    },
+    {
+      "destination": "rs_ext_cru-leo1",
+      "fuel_estimates": [
+        419.193848,
+        1458.247437
+      ]
+    },
+    {
+      "destination": "rs_ext_nyx-castra_jp1",
+      "fuel_estimates": [
+        2.289331,
+        3.645185,
+        62510.890625,
+        125021.742188,
+        125021.75,
+        125021.765625,
+        200034.765625,
+        200034.796875,
+        200034.8125,
+        200034.828125,
+        200034.84375,
+        251958.09375,
+        325056.34375
+      ]
+    }
+  ]
+}

@@ -37,13 +37,38 @@ a shrug. This one costs them a trip.
 **Not "verify all 7,932".** Verify enough to state a rate, and put the rate on
 the page.
 
+**PLAN EXISTS, 2026-08-22.** 67 ship-component prices across five shops reachable
+in one trip — Dumper's Depot (32) and CenterMass IO North Tower (10) at Area 18,
+then Ship Weapons (8), Platinum Bay (11) and Cargo Center Supplies (6) at Baijini
+Point. Chosen deliberately over the clothing and armour rows that dominate the
+dataset by count: these are what the loadout bench reads and what somebody flies
+somewhere to buy. Checklist delivered to Sleven as a self-contained page that
+tallies a live match rate and exports a paste-back block.
+
+**Our prices are UEX reports dated 12 June to 20 July 2026** — two months old at
+the time of writing, and 4.10 lands around 26 August. **A low match rate is a fact
+about the patch, not a failure of the check**, and it must be published as the
+rate it is rather than withheld for being unflattering.
+
 ### 2. The live worker still 404s
 
 The testing site is deployed and gated. The live URL serves nothing.
 
 **Why it blocks:** it is the definition of not being live.
 
-### 3. Sleven has not opened the ship page in a browser
+### 3. ~~Sleven has not opened the ship page in a browser~~ CLEARED 2026-08-22
+
+**He has opened it, more than once.** What he found is not a rendering failure —
+it is a design list, and it is already an order: fixed components crowding the
+loadout column, the picker being in the wrong place, and the ship spinning with
+no reason to. All of it is B1–B8 of
+`ORDER_the-picker-redesign-2026-08-22.md`, in front of Code.
+
+**The original wording of this entry is kept below because the REASON it was
+written still stands:** no control on this machine proves a browser draws
+anything, and that remains true for every future change to this page.
+
+### 3-original. Sleven had not opened the ship page in a browser
 
 Every control on it proves LOGIC and RENDERED HTML. **No control on this
 machine proves that a browser draws anything**, because there is no browser

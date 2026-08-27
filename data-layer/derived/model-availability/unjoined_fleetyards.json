@@ -1,0 +1,79 @@
+[
+ {
+  "name": "Bengal",
+  "slug": "rsi-bengal",
+  "scIdentifier": "rsi_bengal_pu_ai_uee_fleetweek_2021",
+  "productionStatus": "flight-ready",
+  "holo": null
+ },
+ {
+  "name": "Dragonfly Starkitten Edition",
+  "slug": "drak-dragonfly-starkitten-edition",
+  "scIdentifier": "drak_dragonfly_pink",
+  "productionStatus": "flight-ready",
+  "holo": {
+   "file_name": "holo-76c86bc9-cf3d-44b8-8d45-e2e89a2fc8cf.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6Ijc1MzE0ZTJiLTM0ZjItNDIyNS1hOTY2LTI1OThkYmE0MDUzYiIsInB1ciI6ImJsb2JfaWQifX0=--ef4f465e60e92e72ca4ea4cb1d9b1ac1c323a5d8/holo-76c86bc9-cf3d-44b8-8d45-e2e89a2fc8cf.gltf/",
+   "size_bytes": 2124404,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:40:51.646+02:00"
+  }
+ },
+ {
+  "name": "Dragonfly Yellowjacket",
+  "slug": "drak-dragonfly-yellowjacket",
+  "scIdentifier": "drak_dragonfly_yellow",
+  "productionStatus": "flight-ready",
+  "holo": {
+   "file_name": "holo-fb142235-4342-4e67-bf84-611fa3ff1319.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImU0OWY3ZDYwLTIzZWYtNGQwZS1iMjE5LTVlNWJhNTY4ZGU0YiIsInB1ciI6ImJsb2JfaWQifX0=--cf822e4fdf8f194bea6df81b28955828a8ddb3c7/holo-fb142235-4342-4e67-bf84-611fa3ff1319.gltf/",
+   "size_bytes": 2124404,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:47:01.733+02:00"
+  }
+ },
+ {
+  "name": "Genesis",
+  "slug": "crus-genesis",
+  "scIdentifier": "crus_genesis",
+  "productionStatus": "in-concept",
+  "holo": {
+   "file_name": "holo-7a8e9bf4-8db1-43a1-886d-cab55a0e67a8.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6IjQ5M2JmOGM2LWZjMGQtNDM5Yi04NWE2LWVlYjYwMWI5ZDJkNCIsInB1ciI6ImJsb2JfaWQifX0=--d142fb4d17b752b2063bd9b4c358f0ad6c74dc86/holo-7a8e9bf4-8db1-43a1-886d-cab55a0e67a8.gltf/",
+   "size_bytes": 407551,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:43:23.212+02:00"
+  }
+ },
+ {
+  "name": "Nox Kue",
+  "slug": "xnaa-nox-kue",
+  "scIdentifier": "xian_nox_kue",
+  "productionStatus": "flight-ready",
+  "holo": {
+   "file_name": "holo-fdcb1ab6-e216-468c-9d0e-0371a9784382.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImJjMzkyZTc5LTQ2NWYtNDExYy1hNDI0LTkzYjk0MzRiMTg5MiIsInB1ciI6ImJsb2JfaWQifX0=--8225eb776ced587d7fa90f3080ffa994991a539d/holo-fdcb1ab6-e216-468c-9d0e-0371a9784382.gltf/",
+   "size_bytes": 2186510,
+   "content_type": "application/octet-stream",
+   "uploaded_at": "2026-04-03T03:37:02.632+02:00"
+  }
+ },
+ {
+  "name": "S-65 Stingray",
+  "slug": "krig-s-65-stingray",
+  "scIdentifier": "krig_s_65_stingray",
+  "productionStatus": "flight-ready",
+  "holo": {
+   "file_name": "holo.gltf",
+   "extension": "gltf",
+   "url": "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6Ijg2ZmRlODQ4LWZlZjgtNGE0Ni1hOGQzLTA5ODE1NzM0ZDQwNSIsInB1ciI6ImJsb2JfaWQifX0=--a3e7365aebe7e7cf69d7b25a87b13c4442bbb3ec/holo.gltf/",
+   "size_bytes": 15522808,
+   "content_type": "model/gltf+json",
+   "uploaded_at": "2026-08-27T16:11:53.379+02:00"
+  }
+ }
+]

@@ -1,0 +1,74 @@
+==========================================================================
+M4 - FLEETYARDS MODEL AVAILABILITY SWEEP
+run 20260827T163116Z   fetched 2026-08-27T16:31:16+00:00
+==========================================================================
+
+SOURCE      244 records, 243 carry a holo model
+OUR FLEET   254 rows -> 238 joined, 16 unjoined, 0 held back as collisions
+
+--------------------------------------------------------------------------
+SHIPS WE CANNOT SHOW A MODEL FOR, THAT FLEETYARDS HAS ONE FOR  (19)
+--------------------------------------------------------------------------
+  600i Executive Edition             orig-600i-executive-edition  gltf     8.88 MB  via scIdentifier
+  85X                                orig-85x                     gltf     6.34 MB  via scIdentifier+name
+  Arrastra                           rsi-arrastra                 gltf    45.59 MB  via name
+  Aurora Mk II                       rsi-aurora-mk-ii             gltf     9.62 MB  via scIdentifier+name
+  Aurora SE                          rsi-aurora-mk-i-se           gltf     6.04 MB  via scIdentifier
+  Basher                             grey-basher                  gltf     0.86 MB  via name
+  Fury                               mrai-fury                    gltf    18.64 MB  via scIdentifier+name
+  Hermes                             rsi-hermes                   gltf    17.65 MB  via scIdentifier+name
+  M80                                orig-m80                     gltf    13.45 MB  via scIdentifier+name
+  MOTH                               argo-moth                    gltf    22.62 MB  via scIdentifier+name
+  Mantis                             rsi-mantis                   gltf     1.28 MB  via scIdentifier+name
+  Merchantman                        banu-merchantman             gltf     8.20 MB  via name
+  Odin                               anvl-odin                    gltf     6.71 MB  via name
+  PTV                                grin-ptv                     gltf     0.60 MB  via scIdentifier+name
+  Pitbull                            drak-pitbull                 gltf    12.08 MB  via scIdentifier+name
+  Starlite                           misc-starlite                gltf    20.10 MB  via scIdentifier+name
+  Tiburon                            aegs-tiburon                 glb     16.75 MB  via scIdentifier+name
+  Tyilui                             gama-tyilui                  gltf    36.16 MB  via scIdentifier+name
+  UTV                                grin-utv                     gltf     5.97 MB  via scIdentifier+name
+
+--------------------------------------------------------------------------
+OUR ROWS THAT DO NOT JOIN EXACTLY - REVIEW LIST  (16)
+--------------------------------------------------------------------------
+  ATLS GEO IKTI                      argo_atls_geo_ikti                 model=True
+  ATLS IKTI                          argo_atls_ikti                     model=True
+  ATLS IKTI RAD                      argo_atls_ikti_argos               model=True
+  Ballista Dunestalker               anvl_ballista_dunestalker          model=True
+  Ballista Snowblind                 anvl_ballista_snowblind            model=True
+  CSV-FM                             (no class)                         model=False
+  Carrack Expedition                 anvl_carrack_expedition            model=True
+  Constellation Phoenix Emerald      rsi_constellation_phoenix_emerald  model=True
+  F7C-M Hornet Heartseeker Mk II     anvl_hornet_f7cm_mk2_heartseeker   model=False
+  Genesis Starliner                  (no class)                         model=True
+  Gladius Dunlevy                    aegs_gladius_dunlevy               model=False
+  Mustang Alpha Vindicator           (no class)                         model=True
+  P-72 Archimedes Emerald            krig_p72_archimedes_emerald        model=True
+  RAPTOR                             (no class)                         model=False
+  Starlancer BLD                     (no class)                         model=False
+  Valkyrie Liberator                 (no class)                         model=True
+
+--------------------------------------------------------------------------
+NAME COLLISIONS HELD BACK  (0)
+--------------------------------------------------------------------------
+  none
+
+--------------------------------------------------------------------------
+FLEETYARDS RECORDS WITH NO ROW OF OURS  (6)
+--------------------------------------------------------------------------
+  Bengal                             rsi-bengal                     NO HOLO
+  Dragonfly Starkitten Edition       drak-dragonfly-starkitten-edition holo
+  Dragonfly Yellowjacket             drak-dragonfly-yellowjacket    holo
+  Genesis                            crus-genesis                   holo
+  Nox Kue                            xnaa-nox-kue                   holo
+  S-65 Stingray                      krig-s-65-stingray             holo
+
+--------------------------------------------------------------------------
+M4d - VARIANTS WHERE OUR MODEL IS AN INHERITED BASE HULL  (0 of 76 examined)
+     CONTROL: 49 of 49 distinct base hulls join.
+     A zero above with a full control means the join works and the
+     variants are genuinely absent from the source.
+--------------------------------------------------------------------------
+  none - Fleetyards holds no separate model for any variant we stand in for
+

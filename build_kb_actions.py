@@ -58,6 +58,11 @@ UNCATEGORISED = "Uncategorised"
 # UNATTESTED IS NOT REJECTED. "Never seen in any file we have read" and "the
 # game will not accept it" are different claims, and only the first one is
 # supported. Saying the stronger thing would be a fabrication.
+#
+# That distinction paid off on 2026-08-12: rotx and roty were UNATTESTED, and
+# rather than being wrong they were simply unobserved. The game accepted both
+# and wrote them back out. Had they been recorded as invalid, the page would
+# have talked somebody out of a binding that works.
 DOF = [
     {"axis": "x", "status": "PROVEN",
      "note": "appears in real player profiles"},
@@ -69,12 +74,21 @@ DOF = [
      "note": "appears in real player profiles"},
     {"axis": "slider1", "status": "PROVEN",
      "note": "in the game's own shipped defaults only"},
-    {"axis": "rotx", "status": "UNATTESTED",
-     "note": "absent from every file read so far - not rejected, just never seen"},
-    {"axis": "roty", "status": "UNATTESTED",
-     "note": "absent from every file read so far - not rejected, just never seen"},
+    # PROMOTED 2026-08-12 BY THE GAME ITSELF. Both were UNATTESTED - absent from
+    # CIG's defaultProfile.xml and from both real player profiles - and the page
+    # warned anyone binding them. Then Sleven loaded a from-defaults profile
+    # containing js1_rotx and js1_roty into Star Citizen, and the game wrote both
+    # back out in its own export. That is the strongest evidence available: not
+    # "we found it in a file somewhere", but the game asserting the name is
+    # valid. Absence was weak evidence and this is what replaced it.
+    {"axis": "rotx", "status": "PROVEN",
+     "note": "round-tripped through Star Citizen itself, 2026-08-12"},
+    {"axis": "roty", "status": "PROVEN",
+     "note": "round-tripped through Star Citizen itself, 2026-08-12"},
+    # The last unproven name. Still absence, still weak evidence, still NOT a
+    # claim that the game refuses it.
     {"axis": "slider2", "status": "UNATTESTED",
-     "note": "absent from every file read so far - not rejected, just never seen"},
+     "note": "the only axis name still unproven - never seen, which is not the same as rejected"},
 ]
 
 

@@ -1,0 +1,17 @@
+{
+ "dataset": "keybind-sections",
+ "produced_by": "C3 (Cowork), 2026-08-09",
+ "files": {
+  "kb_section_desc.json": {
+   "rows": 35,
+   "key": "section name — matches the `group` field in data-layer/processed/keybinds_site.json",
+   "content": "authored explanatory prose, one per section"
+  }
+ },
+ "what_this_is": "The 35 section descriptions the keybind builder shows above each action list. Written by C3 for the builder prototype. Code searched for these during 2A pass 2, correctly could not find them in the repo, and correctly declined to invent them.",
+ "what_this_is_NOT": "Not extracted from the game and not from CIG. This is our own writing explaining what a section controls. It carries no last_verified_patch because there is nothing in a patch to verify it against.",
+ "consumers": [
+  "build_kb_actions.py — emit as KB_SECTION_DESC"
+ ],
+ "verified": "all 35 keys compared against the distinct `group` values in keybinds_site.json: 35/35 exact, no extras, no gaps"
+}

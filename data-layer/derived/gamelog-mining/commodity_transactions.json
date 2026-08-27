@@ -1,0 +1,139 @@
+{
+  "note": "Commodity-market transactions. 'amount' is the QUANTITY the client offered or requested, NOT a price - there is no unit price in this line and it must not be inferred from one.",
+  "count": 10,
+  "by_side": {
+    "sell": 9,
+    "buy": 1
+  },
+  "rows": [
+    {
+      "shopName": "SCShop_Outpost_Junksite",
+      "kioskId": "433183157751",
+      "amount": "56385.000000",
+      "resourceGUID": "a0e6c4cf-face-4f52-a020-dfa869607901",
+      "quantity": "9",
+      "ts": "2026-06-13T22:26:18.562Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "11952564",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Outpost_Junksite",
+      "kioskId": "433183157751",
+      "amount": "43855.000000",
+      "resourceGUID": "a0e6c4cf-face-4f52-a020-dfa869607901",
+      "quantity": "7",
+      "ts": "2026-06-13T22:26:37.737Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "11952564",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Outpost_Junksite",
+      "kioskId": "433183157751",
+      "amount": "43855.000000",
+      "resourceGUID": "a0e6c4cf-face-4f52-a020-dfa869607901",
+      "quantity": "7",
+      "ts": "2026-06-13T22:26:55.562Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "11952564",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Outpost_Junksite",
+      "kioskId": "433183157751",
+      "amount": "56385.000000",
+      "resourceGUID": "a0e6c4cf-face-4f52-a020-dfa869607901",
+      "quantity": "9",
+      "ts": "2026-06-13T22:30:47.770Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "11952564",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Outpost_Junksite",
+      "kioskId": "433183157751",
+      "amount": "6265.000000",
+      "resourceGUID": "a0e6c4cf-face-4f52-a020-dfa869607901",
+      "quantity": "1",
+      "ts": "2026-06-13T22:31:01.261Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "11952564",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Outpost_Junksite",
+      "kioskId": "433183157751",
+      "amount": "6265.000000",
+      "resourceGUID": "a0e6c4cf-face-4f52-a020-dfa869607901",
+      "quantity": "1",
+      "ts": "2026-06-13T22:32:22.825Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "11952564",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Admin_lt_base_g",
+      "kioskId": "432664160452",
+      "resourceGUID": "a0e6c4cf-face-4f52-a020-dfa869607901",
+      "quantity": "400.000000 cSCU",
+      "ts": "2026-06-14T05:16:06.203Z",
+      "side": "buy",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "11952564",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Admin_lt_base_g",
+      "kioskId": "435490054853",
+      "amount": "3563.000000",
+      "resourceGUID": "f386a33c-ac9a-400a-a7b8-fe1fc7c8d270",
+      "quantity": "1",
+      "ts": "2026-06-15T01:15:44.094Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "11952564",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Outpost_Junksite",
+      "kioskId": "3839565692133",
+      "amount": "11830.000000",
+      "resourceGUID": "a0e6c4cf-face-4f52-a020-dfa869607901",
+      "quantity": "1",
+      "ts": "2024-05-13T00:00:33.188Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "9171682",
+      "channel": "LIVE"
+    },
+    {
+      "shopName": "SCShop_Outpost_Junksite",
+      "kioskId": "3839565692133",
+      "amount": "17910.000000",
+      "resourceGUID": "98aa6a70-80e7-41d7-9128-9692053d57a2",
+      "quantity": "12",
+      "ts": "2024-05-13T00:01:20.662Z",
+      "side": "sell",
+      "market": "commodity",
+      "emitted_by": "CEntityComponentCommodityUIProvider",
+      "build": "9171682",
+      "channel": "LIVE"
+    }
+  ]
+}

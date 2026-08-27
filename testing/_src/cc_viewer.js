@@ -91,6 +91,32 @@ var CC_HOLO = {
           ['xray', 'See inside'],
           ['wire', 'Wireframe'], ['points', 'Points']],
   DEFAULT: 'solid',
+  /* P3: THE APPEARANCE REVISION, AND WHY IT HAD TO EXIST.
+
+     H1f-2 made this panel's settings permanent, on Sleven's own instruction -
+     "as long as possible, really... I'd hate to have to come in after a couple
+     of days and have to redo it." That decision stands and is not what changed.
+
+     WHAT WAS NEVER BUILT is the other half: a way for a CHANGE TO A DEFAULT to
+     reach somebody who already has a save. Every key below overrode the default
+     unconditionally and forever, so G3 (the line pass removed, `solid` made the
+     default, see-through measured from 20.6-67.1% down to 0.00% on all ten
+     hulls), E7b (lineInt 0.33), G1 (glow retired) and the amber DEFAULT_COLOUR
+     all landed in the defaults and were overwritten at boot on every machine
+     that had ever opened the panel.
+
+     THE PROOF THIS WAS REAL, not theoretical: Sleven's screenshots are CYAN.
+     Amber is the default and has been since it was pinned. Cyan can only come
+     from a saved value - which means his saved style, lineInt and glow were
+     winning too, and he spent weeks accurately reporting a defect that was
+     fixed on the build he was looking at.
+
+     BUMP THIS ONLY WHEN A DEFAULT PEOPLE CAN ALREADY HAVE SAVED ACTUALLY
+     CHANGES, and name the moved default in the commit. A bump that matches no
+     real change is not harmless - it throws away somebody's settings for
+     nothing. REV 1 is the first stamped revision; an unstamped blob predates
+     every retune above and is discarded once. */
+  REV: 1,
   /* The prototype's five, in its order. AMBER IS INDEX 2 AND IS THE DEFAULT
      here - the deployed first pass rendered cyan-going-white and that was
      wrong twice over. */
@@ -511,6 +537,28 @@ var CCViewer = (function () {
        amber wireframe with scanlines does not re-set it on every ship - the
        same rule B4 applied to the spin control. */
     var saved = ccHoloSaved();
+    /* P3b: A SAVE FROM BEFORE THE CURRENT REVISION LOSES ITS APPEARANCE KEYS.
+       Missing rev counts as before - every blob written prior to P3 is
+       unstamped, and that is exactly the population this exists for. The
+       discard happens ONCE per revision: the re-save below stamps the current
+       REV, so the next load restores normally and permanence is intact.
+       Keys this revision does not govern are left alone rather than swept. */
+    if (saved && typeof saved === 'object'
+        && Object.keys(saved).length
+        && saved.rev !== CC_HOLO.REV) {
+      CC_HOLO.wasReset = true;
+      var keep = {};
+      for (var k in saved) {
+        if (!Object.prototype.hasOwnProperty.call(saved, k)) continue;
+        if (k === 'style' || k === 'colour' || k === 'lineInt' ||
+            k === 'detail' || k === 'glow' || k === 'scan' || k === 'grid' ||
+            k === 'rev') continue;
+        keep[k] = saved[k];
+      }
+      keep.rev = CC_HOLO.REV;
+      ccHoloSave(keep);
+      saved = keep;
+    }
     this.style = this.style || saved.style || CC_HOLO.DEFAULT;
     this._colour = saved.colour || CC_HOLO.DEFAULT_COLOUR;
     if (saved.lineInt != null) CC_HOLO.lineInt = saved.lineInt;
@@ -1028,9 +1076,18 @@ var CCViewer = (function () {
   };
   Viewer.prototype.slider = function (which) { return CC_HOLO[which]; };
 
+  /* P3d: SAY IT, RATHER THAN LETTING IT LOOK LIKE THE SITE BROKE.
+     Somebody who deliberately set wireframe-and-scanlines and finds it gone is
+     owed a reason. True only on the one page-load where the discard happened -
+     the re-save stamps the current REV, so the next load is silent. */
+  Viewer.prototype.settingsWereReset = function () {
+    return !!CC_HOLO.wasReset;
+  };
+
   /* One place writes the memory, called by every control above. */
   Viewer.prototype.remember = function () {
-    ccHoloSave({ style: this.style, colour: this._colour,
+    ccHoloSave({ rev: CC_HOLO.REV,
+                 style: this.style, colour: this._colour,
                  lineInt: CC_HOLO.lineInt, detail: CC_HOLO.detail,
                  glow: CC_HOLO.glow, scan: CC_HOLO.scan, grid: CC_HOLO.grid });
     return true;

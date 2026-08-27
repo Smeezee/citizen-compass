@@ -45,6 +45,10 @@
  * requires the run to fail anyway, proving the canary alone can fail the sweep.
  */
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
 const BASE = (process.argv.find((a) => a.startsWith("http")) ||
   "https://citizencompasstesting.citizencompass-contact.workers.dev")
   .replace(/\/$/, "");
@@ -110,6 +114,82 @@ function resolve(ref, from) {
  * ORIGIN, not a document, and asking https://fonts.gstatic.com/ for a page
  * correctly returns 404 while the preconnect works perfectly.
  */
+// WHAT THE BUILD ACTUALLY PUBLISHES, read out of its own list.
+//
+// Parsed rather than imported: deploy_pages.py is Python, and parsed rather
+// than restated because a copy of this list here is exactly the drift that
+// made the floor stale. Commented-out entries are skipped - that is how a page
+// is unpublished in that file, so treating one as published would defeat the
+// point.
+const PAGES_SRC = join(dirname(fileURLToPath(import.meta.url)), "..",
+                       "testing", "_src", "deploy_pages.py");
+
+function publishedOutputs() {
+  let text;
+  try {
+    text = readFileSync(PAGES_SRC, "utf-8");
+  } catch {
+    return null;
+  }
+  const out = new Set();
+  for (const line of text.split("\n")) {
+    if (/^\s*#/.test(line)) continue;
+    const m = line.match(/\(\s*'([^']+)'\s*,\s*'([^']+)'\s*\)/);
+    if (m) out.add(m[2]);
+  }
+  return out.size ? out : null;
+}
+
+
+// THE FLOOR'S DECISION, as a pure function so it can be driven with input that
+// must fail it. A branch that has only ever been reached by real, healthy data
+// is a branch nobody has seen work.
+//
+//   published === null  ->  [{kind: "unreadable"}]
+//   a floor entry the build no longer publishes  ->  {kind: "stale"}
+//   a published floor entry missing from the swept set  ->  {kind: "blind"}
+function floorProblems(must, published, swept) {
+  if (published === null) return [{ kind: "unreadable", files: [...must] }];
+  const stale = must.filter((f) => !published.has(f));
+  const out = [];
+  if (stale.length) out.push({ kind: "stale", files: stale });
+  const expected = must.filter((f) => published.has(f));
+  const missed = expected.filter((f) => !swept.some((u) => u.endsWith("/" + f)));
+  if (missed.length) out.push({ kind: "blind", files: missed });
+  return out;
+}
+
+
+// PROVEN AGAINST KNOWN-BAD INPUT, on every run, before the real one is trusted.
+//
+// This costs no network and takes no time, and without it the stale branch
+// added on 2026-08-22 would be code that had never once executed - which is
+// how the thing it replaced came to be wrong in the first place.
+function proveFloorCanFail() {
+  const cases = [
+    ["a floor entry the build no longer publishes is called STALE",
+     floorProblems(["gone.gen.js"], new Set(["kept.gen.js"]), []),
+     "stale"],
+    ["a published entry missing from the swept set is called BLIND",
+     floorProblems(["kept.gen.js"], new Set(["kept.gen.js"]), []),
+     "blind"],
+    ["an unreadable PAGES list is called UNREADABLE, never clean",
+     floorProblems(["kept.gen.js"], null, []),
+     "unreadable"],
+    ["and a healthy floor reports nothing",
+     floorProblems(["kept.gen.js"], new Set(["kept.gen.js"]),
+                   ["https://x/kept.gen.js"]),
+     null],
+  ];
+  console.log("\n--- the floor can fail, and tells the two faults apart ---");
+  for (const [label, got, want] of cases) {
+    const kind = got.length ? got[0].kind : null;
+    if (kind === want) console.log("  ok   " + label);
+    else fail(`${label} - got ${kind === null ? "nothing" : kind}`);
+  }
+}
+
+
 function refsIn(html, pageUrl) {
   const out = new Set();
   const add = (r) => { const u = resolve(r, pageUrl); if (u) out.add(u); };
@@ -268,19 +348,53 @@ async function main() {
   // are loaded by <script src> and nothing else points at them; if the
   // extractor ever stops seeing script tags again, the swept set loses them
   // silently and the sweep goes on reporting clean.
-  const MUST_BE_SWEPT = ["find_data.gen.js", "hardpoint_data.gen.js",
-                         "kb_actions.gen.js", "loadout_data.gen.js"],
+  //
+  // THE FLOOR IS CROSS-CHECKED AGAINST WHAT THE BUILD PUBLISHES, because a
+  // hand-written list of filenames is a second writer for a fact that lives in
+  // deploy_pages.py (rule 14) - and on 2026-08-22 the two drifted. N3
+  // unpublished hardpoint_data.gen.js: index.html stopped loading it, the file
+  // is still generated and still checked, it is simply no longer served. The
+  // floor went on demanding it and this control reported "the reference
+  // extractor has stopped seeing script tags" - a real failure with entirely
+  // the wrong diagnosis, pointing at working code.
+  //
+  // So the two failure modes are now told apart and named separately:
+  //
+  //   floor is STALE      it demands a file the build no longer publishes.
+  //                       Fix the list, not the extractor.
+  //   extractor is BLIND  it demands a published file that the swept set does
+  //                       not contain. Fix the extractor.
+  //
+  // The floor is NOT derived from the swept set - that would be circular, and
+  // an extractor that went blind would empty both sides and pass. It is named
+  // here and validated against an independent source: the build's own PAGES.
+  const MUST_BE_SWEPT = ["find_data.gen.js", "kb_actions.gen.js",
+                         "loadout_data.gen.js"],
         swept = [...internal];
-  const missedFromSet = MUST_BE_SWEPT.filter(
-    (f) => !swept.some((u) => u.endsWith("/" + f)));
-  if (missedFromSet.length) {
-    fail(`these files are loaded by <script src> and were NOT in the swept `
-      + `set: ${missedFromSet.join(", ")}. The reference extractor has `
-      + `stopped seeing script tags, so a missing data file would not be `
-      + `reported.`);
-  } else {
-    console.log(`\nfloor: every <script src> data file is in the swept set `
-      + `(${MUST_BE_SWEPT.join(", ")})`);
+
+  proveFloorCanFail();
+
+  const published = publishedOutputs();
+  const problems = floorProblems(MUST_BE_SWEPT, published, swept);
+  for (const pr of problems) {
+    if (pr.kind === "unreadable") {
+      fail(`NOT PERFORMED - ${PAGES_SRC} could not be read, so whether the `
+        + `floor still matches what the build publishes is unknown. `
+        + `Reported, never assumed.`);
+    } else if (pr.kind === "stale") {
+      fail(`the floor is STALE: ${pr.files.join(", ")} is named in this `
+        + `control but the build no longer publishes it (see `
+        + `deploy_pages.py). This is NOT an extractor fault - update the `
+        + `floor.`);
+    } else {
+      fail(`these files are loaded by <script src> and were NOT in the swept `
+        + `set: ${pr.files.join(", ")}. The reference extractor has stopped `
+        + `seeing script tags, so a missing data file would not be reported.`);
+    }
+  }
+  if (!problems.length) {
+    console.log(`\nfloor: every <script src> data file the build publishes is `
+      + `in the swept set (${MUST_BE_SWEPT.join(", ")})`);
   }
 
   const list = [...internal].sort();

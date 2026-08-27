@@ -1,0 +1,57 @@
+{
+ "version": 2304,
+ "count": 2,
+ "nodes": [
+  {
+   "name": "AR_Omnisky_VIIII_laser_cannon",
+   "index": 0,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "matrix": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0
+   ],
+   "rows_unit": true
+  },
+  {
+   "name": "AR_Omnisky_VIIII_laser_cannon_mesh",
+   "index": 1,
+   "pos": [
+    -0.005566434934735298,
+    0.672665536403656,
+    -0.29933205246925354
+   ],
+   "matrix": [
+    1.0,
+    0.0,
+    0.0,
+    -0.005566434934735298,
+    0.0,
+    1.0,
+    0.0,
+    0.672665536403656,
+    0.0,
+    0.0,
+    1.0,
+    -0.29933205246925354
+   ],
+   "rows_unit": true
+  }
+ ],
+ "acceptance": false,
+ "acceptance_note": "no hardpoint nodes",
+ "source_entry": "Data\\Objects\\Spaceships\\Weapons\\A_and_R\\AR_omnisky_VIIII_laser_cannon\\AR_Omnisky_VIIII_laser_cannon.cga"
+}

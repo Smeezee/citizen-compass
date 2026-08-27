@@ -1,0 +1,148 @@
+{
+  "generated_by": "mine_gamelogs.py",
+  "source": "Star Citizen Game.log archives, LIVE and PTU logbackups",
+  "sessions_read": 233,
+  "parse_errors": 0,
+  "builds": [
+    {
+      "build": "10487514",
+      "sessions": 8
+    },
+    {
+      "build": "10591185",
+      "sessions": 3
+    },
+    {
+      "build": "10733565",
+      "sessions": 5
+    },
+    {
+      "build": "10744215",
+      "sessions": 8
+    },
+    {
+      "build": "10753606",
+      "sessions": 2
+    },
+    {
+      "build": "10766222",
+      "sessions": 2
+    },
+    {
+      "build": "10967244",
+      "sessions": 3
+    },
+    {
+      "build": "10989003",
+      "sessions": 8
+    },
+    {
+      "build": "11010425",
+      "sessions": 19
+    },
+    {
+      "build": "11135423",
+      "sessions": 22
+    },
+    {
+      "build": "11377160",
+      "sessions": 3
+    },
+    {
+      "build": "11518367",
+      "sessions": 16
+    },
+    {
+      "build": "11545720",
+      "sessions": 1
+    },
+    {
+      "build": "11576750",
+      "sessions": 4
+    },
+    {
+      "build": "11592622",
+      "sessions": 5
+    },
+    {
+      "build": "11715810",
+      "sessions": 10
+    },
+    {
+      "build": "11825000",
+      "sessions": 13
+    },
+    {
+      "build": "11875683",
+      "sessions": 10
+    },
+    {
+      "build": "11952564",
+      "sessions": 11
+    },
+    {
+      "build": "12030094",
+      "sessions": 3
+    },
+    {
+      "build": "12122953",
+      "sessions": 2
+    },
+    {
+      "build": "12248363",
+      "sessions": 7
+    },
+    {
+      "build": "12269732",
+      "sessions": 16
+    },
+    {
+      "build": "12302499",
+      "sessions": 1
+    },
+    {
+      "build": "12344265",
+      "sessions": 3
+    },
+    {
+      "build": "12399239",
+      "sessions": 6
+    },
+    {
+      "build": "9003408",
+      "sessions": 4
+    },
+    {
+      "build": "9072370",
+      "sessions": 2
+    },
+    {
+      "build": "9097523",
+      "sessions": 3
+    },
+    {
+      "build": "9171682",
+      "sessions": 17
+    },
+    {
+      "build": "9179031",
+      "sessions": 5
+    },
+    {
+      "build": "9204897",
+      "sessions": 1
+    },
+    {
+      "build": "9324446",
+      "sessions": 10
+    }
+  ],
+  "privacy": "No playerId, shopId, session id, shard id, account id or player handle is present in any output file. Only explicitly allow-listed fields are emitted; anything CIG adds is dropped unless it is added to the allow-list on purpose.",
+  "totals": {
+    "item_txn_rows": 286,
+    "commodity_txn_rows": 10,
+    "distinct_locations": 41,
+    "distinct_ship_classes": 988,
+    "distinct_qt_destinations": 55
+  }
+}

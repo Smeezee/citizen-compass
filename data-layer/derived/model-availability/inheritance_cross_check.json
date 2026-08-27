@@ -1,0 +1,8 @@
+{
+ "control": {
+  "distinct_base_hulls": 49,
+  "base_hulls_that_join": 49,
+  "variants_examined": 76
+ },
+ "variants_fleetyards_has_its_own_model_for": []
+}

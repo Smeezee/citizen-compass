@@ -1,0 +1,57 @@
+{
+ "version": 2304,
+ "count": 2,
+ "nodes": [
+  {
+   "name": "ANVL_Hornet_F7C_S",
+   "index": 0,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "matrix": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0
+   ],
+   "rows_unit": true
+  },
+  {
+   "name": "MidSection_Cover",
+   "index": 1,
+   "pos": [
+    0.0,
+    1.3378491401672363,
+    0.05026794224977493
+   ],
+   "matrix": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.3378491401672363,
+    0.0,
+    0.0,
+    1.0,
+    0.05026794224977493
+   ],
+   "rows_unit": true
+  }
+ ],
+ "acceptance": false,
+ "acceptance_note": "no hardpoint nodes",
+ "source_entry": "Data\\Objects\\Spaceships\\Ships\\ANVL\\Hornet\\F7C_S\\ANVL_Hornet_F7C_S.cga"
+}

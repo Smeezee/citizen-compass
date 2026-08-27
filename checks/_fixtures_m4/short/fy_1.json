@@ -1,0 +1,1 @@
+{"items": [{"id": "1", "scIdentifier": "a", "name": "A", "slug": "s", "productionStatus": "flight-ready", "lastUpdatedAt": null, "rsiSlug": null, "media": {"holo": {"name": "holo-1.gltf", "size": 1234, "contentType": "application/octet-stream", "url": "https://example.invalid/1", "uploadedAt": "2026-01-01T00:00:00+00:00"}}}], "meta": {"pagination": {"totalCount": 244}}}

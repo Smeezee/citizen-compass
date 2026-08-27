@@ -1,0 +1,3958 @@
+{
+  "note": "Ship class identifiers observed. Instance ids stripped.",
+  "count": 988,
+  "rows": [
+    {
+      "ship_class": "DRAK_Vulture",
+      "sessions": 38
+    },
+    {
+      "ship_class": "RSI_Perseus",
+      "sessions": 38
+    },
+    {
+      "ship_class": "RSI_Hermes",
+      "sessions": 35
+    },
+    {
+      "ship_class": "DRAK_Corsair",
+      "sessions": 34
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Black",
+      "sessions": 32
+    },
+    {
+      "ship_class": "AEGS_Avenger_Titan",
+      "sessions": 30
+    },
+    {
+      "ship_class": "ANVL_Lightning_F8C",
+      "sessions": 29
+    },
+    {
+      "ship_class": "ARGO_RAFT",
+      "sessions": 28
+    },
+    {
+      "ship_class": "AEGS_Reclaimer",
+      "sessions": 27
+    },
+    {
+      "ship_class": "RSI_Constellation_Andromeda",
+      "sessions": 25
+    },
+    {
+      "ship_class": "RSI_Constellation_Taurus",
+      "sessions": 25
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2",
+      "sessions": 25
+    },
+    {
+      "ship_class": "CRUS_Spirit_C1",
+      "sessions": 24
+    },
+    {
+      "ship_class": "ARGO_ATLS",
+      "sessions": 24
+    },
+    {
+      "ship_class": "KRIG_P52_Merlin",
+      "sessions": 23
+    },
+    {
+      "ship_class": "CRUS_Starlifter_C2",
+      "sessions": 23
+    },
+    {
+      "ship_class": "GLSN_Shiv",
+      "sessions": 23
+    },
+    {
+      "ship_class": "DRAK_Cutter",
+      "sessions": 22
+    },
+    {
+      "ship_class": "CNOU_Mustang_Alpha",
+      "sessions": 21
+    },
+    {
+      "ship_class": "DRAK_Ironclad",
+      "sessions": 21
+    },
+    {
+      "ship_class": "ORIG_m80",
+      "sessions": 21
+    },
+    {
+      "ship_class": "ANVL_C8R_Pisces",
+      "sessions": 20
+    },
+    {
+      "ship_class": "RSI_Constellation_Rear_DockingTube",
+      "sessions": 19
+    },
+    {
+      "ship_class": "DRAK_Command_Module",
+      "sessions": 19
+    },
+    {
+      "ship_class": "CRUS_Starlifter_M2",
+      "sessions": 18
+    },
+    {
+      "ship_class": "RSI_Polaris",
+      "sessions": 17
+    },
+    {
+      "ship_class": "ANVL_Arrow",
+      "sessions": 17
+    },
+    {
+      "ship_class": "ANVL_Asgard",
+      "sessions": 17
+    },
+    {
+      "ship_class": "MISC_Hull_B",
+      "sessions": 17
+    },
+    {
+      "ship_class": "DRAK_Buccaneer",
+      "sessions": 16
+    },
+    {
+      "ship_class": "DRAK_Golem_OX",
+      "sessions": 16
+    },
+    {
+      "ship_class": "DRAK_Clipper",
+      "sessions": 16
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2",
+      "sessions": 16
+    },
+    {
+      "ship_class": "MRAI_Pulse",
+      "sessions": 16
+    },
+    {
+      "ship_class": "DRAK_Dragonfly",
+      "sessions": 16
+    },
+    {
+      "ship_class": "ANVL_C8_Pisces_Tutorial",
+      "sessions": 15
+    },
+    {
+      "ship_class": "CRUS_Star_Runner",
+      "sessions": 15
+    },
+    {
+      "ship_class": "MISC_Hull_C",
+      "sessions": 15
+    },
+    {
+      "ship_class": "RSI_Zeus_CL",
+      "sessions": 15
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Assault",
+      "sessions": 15
+    },
+    {
+      "ship_class": "MISC_Hull_A",
+      "sessions": 14
+    },
+    {
+      "ship_class": "MISC_Prospector",
+      "sessions": 14
+    },
+    {
+      "ship_class": "MRAI_Guardian_MX",
+      "sessions": 14
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7A_Mk2",
+      "sessions": 14
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Command_Module_DockingTube",
+      "sessions": 14
+    },
+    {
+      "ship_class": "CNOU_Nomad",
+      "sessions": 13
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Red",
+      "sessions": 13
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_MR",
+      "sessions": 13
+    },
+    {
+      "ship_class": "KRIG_P72_Archimedes",
+      "sessions": 12
+    },
+    {
+      "ship_class": "CRUS_Intrepid",
+      "sessions": 12
+    },
+    {
+      "ship_class": "AEGS_Eclipse",
+      "sessions": 12
+    },
+    {
+      "ship_class": "MISC_Starlancer_Max",
+      "sessions": 12
+    },
+    {
+      "ship_class": "MISC_Starlancer_TAC",
+      "sessions": 12
+    },
+    {
+      "ship_class": "KRIG_L22_AlphaWolf",
+      "sessions": 12
+    },
+    {
+      "ship_class": "ARGO_MOTH",
+      "sessions": 12
+    },
+    {
+      "ship_class": "DRAK_Pitbull",
+      "sessions": 12
+    },
+    {
+      "ship_class": "RSI_Constellation_Andromeda_ShipATCDataManager",
+      "sessions": 11
+    },
+    {
+      "ship_class": "AEGS_Gladius",
+      "sessions": 11
+    },
+    {
+      "ship_class": "DRAK_Golem",
+      "sessions": 11
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7C_Mk2",
+      "sessions": 11
+    },
+    {
+      "ship_class": "ANVL_Paladin",
+      "sessions": 11
+    },
+    {
+      "ship_class": "RSI_Meteor",
+      "sessions": 11
+    },
+    {
+      "ship_class": "RSI_Salvation",
+      "sessions": 10
+    },
+    {
+      "ship_class": "RSI_Zeus_ES",
+      "sessions": 10
+    },
+    {
+      "ship_class": "ANVL_C8X_Pisces_Expedition",
+      "sessions": 10
+    },
+    {
+      "ship_class": "ANVL_Carrack",
+      "sessions": 10
+    },
+    {
+      "ship_class": "CRUS_Starfighter_Inferno",
+      "sessions": 10
+    },
+    {
+      "ship_class": "ARGO_MOLE",
+      "sessions": 10
+    },
+    {
+      "ship_class": "AEGS_Tiburon",
+      "sessions": 10
+    },
+    {
+      "ship_class": "ANVL_Hawk",
+      "sessions": 10
+    },
+    {
+      "ship_class": "MISC_Starlite",
+      "sessions": 10
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac",
+      "sessions": 9
+    },
+    {
+      "ship_class": "AEGS_Idris_P",
+      "sessions": 9
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM",
+      "sessions": 9
+    },
+    {
+      "ship_class": "ANVL_Gladiator",
+      "sessions": 9
+    },
+    {
+      "ship_class": "ORIG_315p",
+      "sessions": 9
+    },
+    {
+      "ship_class": "GRIN_MDC",
+      "sessions": 9
+    },
+    {
+      "ship_class": "VNCL_Scythe",
+      "sessions": 9
+    },
+    {
+      "ship_class": "DRAK_Caterpillar",
+      "sessions": 8
+    },
+    {
+      "ship_class": "KRIG_L21_Wolf",
+      "sessions": 8
+    },
+    {
+      "ship_class": "MISC_Freelancer_MAX",
+      "sessions": 8
+    },
+    {
+      "ship_class": "GRIN_UTV",
+      "sessions": 8
+    },
+    {
+      "ship_class": "CRUS_Starlifter_A2",
+      "sessions": 8
+    },
+    {
+      "ship_class": "MRAI_Guardian",
+      "sessions": 7
+    },
+    {
+      "ship_class": "DRAK_Cutter_Rambler",
+      "sessions": 7
+    },
+    {
+      "ship_class": "ARGO_MOLE_Teach",
+      "sessions": 7
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CS_Mk2",
+      "sessions": 7
+    },
+    {
+      "ship_class": "ORIG_600i",
+      "sessions": 7
+    },
+    {
+      "ship_class": "RSI_Ursa_Medivac",
+      "sessions": 7
+    },
+    {
+      "ship_class": "AEGS_Sabre",
+      "sessions": 7
+    },
+    {
+      "ship_class": "GRIN_MTC",
+      "sessions": 7
+    },
+    {
+      "ship_class": "ORIG_325a",
+      "sessions": 7
+    },
+    {
+      "ship_class": "ORIG_400i",
+      "sessions": 7
+    },
+    {
+      "ship_class": "AEGS_Vanguard",
+      "sessions": 7
+    },
+    {
+      "ship_class": "ANVL_C8_Pisces",
+      "sessions": 7
+    },
+    {
+      "ship_class": "MISC_Freelancer",
+      "sessions": 6
+    },
+    {
+      "ship_class": "GRIN_PTV",
+      "sessions": 6
+    },
+    {
+      "ship_class": "ORIG_125a",
+      "sessions": 6
+    },
+    {
+      "ship_class": "RSI_Mantis",
+      "sessions": 6
+    },
+    {
+      "ship_class": "AEGS_Gladius_Valiant",
+      "sessions": 6
+    },
+    {
+      "ship_class": "CRUS_Starfighter_Ion",
+      "sessions": 6
+    },
+    {
+      "ship_class": "MISC_Fury_Miru",
+      "sessions": 6
+    },
+    {
+      "ship_class": "TMBL_Storm_AA",
+      "sessions": 6
+    },
+    {
+      "ship_class": "ARGO_MPUV_1T",
+      "sessions": 6
+    },
+    {
+      "ship_class": "ANVL_Terrapin_Medic",
+      "sessions": 5
+    },
+    {
+      "ship_class": "AEGS_Redeemer",
+      "sessions": 5
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7A_Mk2_Exec_Military",
+      "sessions": 5
+    },
+    {
+      "ship_class": "ORIG_890Jump",
+      "sessions": 5
+    },
+    {
+      "ship_class": "ESPR_Talon",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Scorpius",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Apollo_CML_Decoy_Small",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Apollo_CML_Noise_Small",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Apollo_Elevator",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Apollo_Ground_Refueling_Port",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Apollo_Scanner",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Apollo_SeatAccess_Co_Pilot",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Apollo_SeatAccess_Pilot",
+      "sessions": 5
+    },
+    {
+      "ship_class": "ORIG_890J_Seat_Bridge_Left",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Constellation_Phoenix",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_Nacelles",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_Nacelles_Mount",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_Main_Nacelle",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_Mav",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_Mav_Bottom",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_Mav_Top",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_Retro_Nacelle",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_SeatDashboard_Pilot",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Hermes_Tractor_Station",
+      "sessions": 5
+    },
+    {
+      "ship_class": "ORIG_300i",
+      "sessions": 5
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Steel",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_MissileModule_TEMP",
+      "sessions": 5
+    },
+    {
+      "ship_class": "RSI_Meteor_TEMP_LaserRepeater",
+      "sessions": 5
+    },
+    {
+      "ship_class": "MISC_Starfarer_Gemini",
+      "sessions": 5
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Harbinger",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ORIG_85X",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Lynx_SCItem_SeatDashboard_Pilot",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ORIG_315p_Unmanned_Salvage",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ANVL_F7A_CML_Chaff",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ANVL_F7A_CML_Flare",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ANVL_Hornet_ShipATCDataManager",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ARGO_SRV",
+      "sessions": 4
+    },
+    {
+      "ship_class": "AEGS_Gladius_Thruster_Mav_Joint_02",
+      "sessions": 4
+    },
+    {
+      "ship_class": "MISC_Reliant_Tana",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ARGO_RAFT_Thruster_VTOL",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ORIG_890J_Seat_Bridge_Right",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_CargoGrid_Main",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_LightCap",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_LightCap_Center",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_LightCap_Left",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_LightCap_Right",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_Remote_Turret",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_SeatAccess_Tractor_Station",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_ShipATCDataManager",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_Skylight_Armor",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_Main",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_Retro",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_Retro_Left",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_Thruster_VTOL",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Hermes_Utility_Tractor_Beam_Arm",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ANVL_Valkyrie",
+      "sessions": 4
+    },
+    {
+      "ship_class": "DRAK_Cutter_SCItem_Dashboard_Pilot",
+      "sessions": 4
+    },
+    {
+      "ship_class": "MRAI_Guardian_QI",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ANVL_Hurricane",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ORIG_X1_Force",
+      "sessions": 4
+    },
+    {
+      "ship_class": "XNAA_SanTokYai",
+      "sessions": 4
+    },
+    {
+      "ship_class": "CRUS_Spirit_A1",
+      "sessions": 4
+    },
+    {
+      "ship_class": "MISC_Fortune",
+      "sessions": 4
+    },
+    {
+      "ship_class": "RSI_Constellation_Aquila",
+      "sessions": 4
+    },
+    {
+      "ship_class": "AEGS_Gladius_Unmanned_Salvage",
+      "sessions": 4
+    },
+    {
+      "ship_class": "AEGS_Sabre_Unmanned_Salvage",
+      "sessions": 4
+    },
+    {
+      "ship_class": "CNOU_HoverQuad",
+      "sessions": 4
+    },
+    {
+      "ship_class": "CNOU_Nomad_Unmanned_Salvage",
+      "sessions": 4
+    },
+    {
+      "ship_class": "DRAK_Cutter_Unmanned_Salvage",
+      "sessions": 4
+    },
+    {
+      "ship_class": "DRAK_Vulture_Unmanned_Salvage",
+      "sessions": 4
+    },
+    {
+      "ship_class": "GAMA_Syulen",
+      "sessions": 4
+    },
+    {
+      "ship_class": "CRUS_Spirit_C1_Unmanned_Salvage",
+      "sessions": 4
+    },
+    {
+      "ship_class": "ANVL_Terrapin",
+      "sessions": 4
+    },
+    {
+      "ship_class": "GAMA_Railen",
+      "sessions": 4
+    },
+    {
+      "ship_class": "DRAK_Caterpillar_Mattress_A",
+      "sessions": 4
+    },
+    {
+      "ship_class": "AEGS_Sabre_Firebird",
+      "sessions": 3
+    },
+    {
+      "ship_class": "RSI_Apollo_Triage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ANVL_Asgard_Thruster_Main_Rear",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Mule",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Dragonfly_Pink",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Mav_MX",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Retro_MX",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_CML_Chaff",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_CML_Flare",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_SCItem_Dashboard_Pilot",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_SCItem_SeatAccess",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_SCItem_Seat_Pilot",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_ShipATCDataManager",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_Thruster_Main",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_Thruster_Mav_Joint_01",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Gladius_Thruster_Retro",
+      "sessions": 3
+    },
+    {
+      "ship_class": "BANU_Defender",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_Dashboard_CoPilot",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_Dashboard_Pilot",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_Seat_Cargo",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ESPR_Prowler",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Hull_C_DockingTube",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_1D",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_1D_Outer",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_2D",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_2D_Outer",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Hull_C_ShipATCDataManager",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Mav_Fixed_Small",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Mav_Fixed_Small_Top",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ANVL_F7_Mk2_NoseCap",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7C_Mk2_Dashboard_Pilot",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7C_Mk2_Seat_Pilot",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7_Mk2_SeatAccess",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Corsair_CML_Chaff",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Corsair_CML_Decoy",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_CML_Decoy_Small",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_CML_Noise_Small",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_CML_Chaff",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_CML_Flare",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_CargoGrid_4Stack",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_SCItem_Seat_Pilot",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_SeatAccess_Exterior",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_SeatAccess_Pilot",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_ShipATCDataManager",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Thruster_Aux",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Thruster_AuxRetro",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Thruster_Main",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Thruster_MainRetro",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Thruster_Mav_Fixed",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Thruster_Mav_Fixed_Bottom",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Thruster_Mav_Fixed_Top",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Winglets_Base_Right",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ANVL_Lightning_F8C_Exec",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Idris_M",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Retaliator_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ANVL_Terrapin_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ARGO_MOLE_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "CNOU_Mustang_Beta",
+      "sessions": 3
+    },
+    {
+      "ship_class": "CRUS_Starfighter_Ion_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "CRUS_Starlifter_C2_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MISC_Fury",
+      "sessions": 3
+    },
+    {
+      "ship_class": "MRAI_Pulse_LX",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ORIG_325a_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ORIG_890Jump_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "RSI_Scorpius_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "RSI_Zeus_ES_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Avenger_Warlock",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ORIG_400i_Unmanned_Salvage",
+      "sessions": 3
+    },
+    {
+      "ship_class": "DRAK_Cutter_Scout",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Retaliator",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Reclaimer_Salvage_Turret_Lighting",
+      "sessions": 3
+    },
+    {
+      "ship_class": "AEGS_Hammerhead",
+      "sessions": 3
+    },
+    {
+      "ship_class": "RSI_Aurora_MR",
+      "sessions": 3
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7A_Mk2_Exec_Stealth",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Razor_EX",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_SCItem_Turret_Black",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Seat_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Starfarer_ShipATCDataManager",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Fortune_Teach",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_CML_Chaff",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_CML_Flare",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_CargoGrid",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_Nose_Turret_S4",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_SCItem_Dashboard_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_SCItem_SeatAccess",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_SCItem_Seat_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_SeatAccess_Exterior",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_Thruster_Main_Aux",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_Thruster_Mav_Joint",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_Thruster_Mav_Joint_Bottom",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_Thruster_Mav_Joint_Side",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_Thruster_Retro",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Asgard_Turret_Bubble",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7A_Mk1",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Valkyrie_SeatAccess_Turret_Bubble",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Valkyrie_ShipATCDataManager",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7A_Nose_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Mav_Top_MX",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Freelancer_DUR",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Zeus_SCItem_SeatDashboard_Gunner",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_CML_Chaff",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_CML_Flare",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Component_Cover",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_LandingGearSystem",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_SCItem_Dashboard_Gunner",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_SCItem_Dashboard_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_SCItem_SeatAccess",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_SCItem_Seat_Gunner",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_SCItem_Seat_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_ShipATCDataManager",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Spine",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Thruster_Main_Bottom_Left",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Thruster_Main_Bottom_Right",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Thruster_Main_Top_Left",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Thruster_Main_Top_Right",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Thruster_Mav_Joint",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Thruster_Retro_Left",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Thruster_Retro_Right",
+      "sessions": 2
+    },
+    {
+      "ship_class": "AEGS_Sabre_SCItem_Seat_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Arrow_Dashboard_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_CML_Chaff_Small",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_CML_Decoy_Small",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_CargoGrid_192",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_Remote_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_Remote_Turret_Tractor",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_SeatAccess",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_SeatAccess_Cargo",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_SeatAccess_CoPilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_Seat_CoPilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_SCItem_Seat_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_ShipATCDataManager",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_Thruster_Main",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_Thruster_Mav",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_Thruster_Mav_Bottom",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_Thruster_Mav_Top",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_Thruster_Retro",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_RAFT_Thruster_Retro_Right",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_CentralWalkway",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_CentralWalkway_PHYSICS",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Dashboard_Tractor",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_1B",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_1B_Outer",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_1C",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_1C_Outer",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_2B",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_2B_Outer",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_2C",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_2C_Outer",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Remote_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_SeatAccess_Crane",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Tractor_Beam_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Tractor_Beam_Turret_Bottom",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Tractor_Seat",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Retro",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_LN",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Main_Top_Right",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7C_Mk2_Nose_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7_Mk2_Thruster_Main",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7_Mk2_Thruster_Mav_1",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7_Mk2_Thruster_Retro_Left",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7_Mk2_Thruster_Retro_Right",
+      "sessions": 2
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Dashboard_CoPilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Dashboard_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Dashboard_Captain",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Dashboard_CoPilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Dashboard_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Nose_Turret_S5",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Copilot_Seat",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Pilot_Seat",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_SeatAccess",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Seat_Captain",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Main",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Mav_Fixed",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Mav_Fixed_Bottom",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Mav_Fixed_Quad",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Mav_Fixed_Top",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_Retro_Small",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_VTOL_Front",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Hull_C_Thruster_VTOL_Rear",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_CargoGrid_Main",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Remote_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_SeatAccess_CoPilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_SeatAccess_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Seat_CoPilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Seat_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_ShipATCDataManager",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Main",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Maneuver",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Maneuver_Bottom",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Maneuver_Rear_Bot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Maneuver_Rear_Vent_Left",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Maneuver_Rear_Vent_Right",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Maneuver_Top",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Valkyrie_CML_Chaff",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Valkyrie_CML_Flare",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Mav_Bottom_MX",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Lightning_F8C_Exec_Military",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7A_Ball_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ARGO_CSV_Cargo",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_CargoGrid_Main",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_CargoGrid_Rear",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Remote_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Steel_Switch_Ramp_Ext",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Switch_SideDoor_Ext",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Switch_SideDoor_Ext_Right",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Thruster_Main",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Thruster_Maneuver",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Thruster_Maneuver_Lateral",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Thruster_Maneuver_Vertical_Negative",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Thruster_Maneuver_Vertical_Positive",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Thruster_Retro",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Tractor_Carriage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Tractor_Mount",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_Cargo_Rack_3SCU",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_Pilot_Dashboard",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_SeatAccess_Ext",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_Thruster_VTOL",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Aurora_SCItem_SeatAccess",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Aurora_SCItem_Seat_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Aurora_ShipATCDataManager",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_CML_Decoy_Small_GS",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_CML_Noise_Small_GS",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Reliant",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7C",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Blue",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Freelancer_MIS",
+      "sessions": 2
+    },
+    {
+      "ship_class": "MISC_Starfarer",
+      "sessions": 2
+    },
+    {
+      "ship_class": "AEGS_Hammerhead_GS_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Sentinel_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Terrapin_SCItem_Dashboard_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "CRUS_Starfighter_Inferno_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "CRUS_Starlifter_A2_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ORIG_m50",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Constellation_Taurus_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Hoplite_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Sentinel",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Carrack_Expedition",
+      "sessions": 2
+    },
+    {
+      "ship_class": "CRUS_Star_Runner_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Cutter_Winglets_Base_Left",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ORIG_350r_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "RSI_Scorpius_Antares_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "XNAA_SanTokYai_Unmanned_Salvage",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Command_Module_SCItem_Seat_Console_Turret",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Ironclad_MannedTurret_Nose",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SCItem_SeatDashboard_Operations",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SCItem_SeatDashboard_Pilot",
+      "sessions": 2
+    },
+    {
+      "ship_class": "DRAK_Golem_Teach",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7_Mk2_Collector_Mod",
+      "sessions": 2
+    },
+    {
+      "ship_class": "GRIN_UTV_Driver_SeatAccess",
+      "sessions": 2
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CS",
+      "sessions": 2
+    },
+    {
+      "ship_class": "AEGS_Hammerhead_Side_Turret_Lighting",
+      "sessions": 2
+    },
+    {
+      "ship_class": "TMBL_Cyclone",
+      "sessions": 2
+    },
+    {
+      "ship_class": "CRUS_Spirit_Door_Decal_Battery",
+      "sessions": 2
+    },
+    {
+      "ship_class": "XIAN_Nox",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_LX",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Ball_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Dashboard_Copilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Seat_Copilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Thruster_Mav_1",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Thruster_Mav_1_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Thruster_Retro_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Mk2_Thruster_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_CML_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_OX_CargoGrid_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_OX_Remote_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_OX_SCItem_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_OX_SCItem_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_OX_SeatAccess_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_OX_Thruster_Main_VTOL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_OX_Thruster_Main_VTOL_R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_Front_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_Front_VTOL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_Main_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_Mav_Fixed",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_Mav_Fixed_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_Mav_Fixed_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_VTOL_Retro_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_Thruster_VTOL_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_CargoGrid_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_DockingTube",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Docking_Arm",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Docking_Floor",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_EmergencyLights",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_EmergencyLights_Center",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_EmergencyLights_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_EmergencyLights_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac_Thruster_Main_Nacelle",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac_Thruster_Mav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac_Thruster_Mav_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac_Thruster_Retro_Nacelle",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Medivac_Thruster_VTOL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Module_Left_Tier_1",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Module_Right_Tier_2",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Remote_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_SCItem_SeatDashboard_Co_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_SCItem_SeatDashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Apollo_Skylight",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Lynx",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Starfarer_Teach",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Black_Exec_Stealth",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Black_PU_AI_CRIM",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_CL_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_CL_Thruster_Mav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_CL_Thruster_Mav_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_Collar_Cargo_L",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_Collar_Cargo_R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SCItem_SeatDashboard_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SCItem_SeatDashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SCItem_Seat_Bed_Lower_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SCItem_Seat_Bed_Lower_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SCItem_Seat_Bed_Upper_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SeatAccess_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SeatAccess_Gunner",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SeatAccess_Ladder_Entrance",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_SeatAccess_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_Thruster_VTOL_CL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "VNCL_Stinger_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "VNCL_Stinger_Thruster_Aux_Fixed_01_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "VNCL_Stinger_Thruster_Aux_Fixed_01_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "VNCL_Stinger_Thruster_Retro_Fixed_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Mav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Scorpius_SCItem_Remote_Missile_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Sabre_SCItem_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Sabre_SCItem_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Sabre_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Arrow_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Arrow_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Arrow_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Arrow_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Arrow_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Arrow_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Arrow_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_CML_Decoy_Small",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_CML_Noise_Small",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Caterpillar_PU_AI_CIV",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Main_Wing",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Mav_Capsule",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Mav_Capsule_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Mav_Capsule_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Mav_Pipe_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Mav_Pipe_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Mav_Round",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_l22_AlphaWolf_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Constellation_Taurus_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Constellation_Taurus_Thruster_Mav_Joint",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Constellation_Taurus_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Constellation_Taurus_Thruster_Turbine_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Terrapin_SCItem_Dashboard_Pilot_Medic",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7C_Mk2_Cargo_Door",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7_Mk2_Thruster_Mav_Front_1",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Ballista",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Bomb_Bay_Covers",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CML_Chaff_Top_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CML_Chaff_Under_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CML_Flare_Top_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CML_Flare_Under_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CargoGrid_Large",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CargoGrid_Large_M2",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CargoGrid_Personal_Armory_Large",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CargoGrid_Personal_Armory_Small",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CargoGrid_Small",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_CargoGrid_Small_M2",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Remote_Turret_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Remote_Turret_Nose",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Remote_Turret_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_SeatAccess_Copilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_SeatAccess_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_SeatAccess_Turret_Bridge",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Seat_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Turret_Seat_Bridge",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Main_Aux",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Main_Aux_1",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Main_M2",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Mav_Front",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Mav_Front_M2",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Mav_M2",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_VTOL_Side",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_VTOL_Side_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_VTOL_Wing_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Thruster_VTOL_Wing_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_chin_turret_cap",
+      "sessions": 1
+    },
+    {
+      "ship_class": "KRIG_L21_Wolf_Collector_Military",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_CML_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_1A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_1A_Outer",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_2A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_FoldingStrut_2A_Outer",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Remote_Turret_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Tractor_Beam_Turret_Bottom_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Hull_C_SCItem_Tractor_Beam_Turret_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_CML_Decoy",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_CML_Noise",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_CoPilot_SeatDashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_DockingTube",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Gunner_SeatDashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_MannedTurret_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_MannedTurret_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Pilot_SeatDashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Remote_Turret_Bottom_S3",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Remote_Turret_Top_S3",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Remote_Turret_Torpedo",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_SeatAccess_Torpedo_Console",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_SeatAccess_Turret_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_SeatAccess_Turret_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Seat_Access_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Seat_Access_Gunner",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Seat_Access_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Main_Bottom_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Main_Bottom_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Main_Top_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Mav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Mav_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Retro_Front_Bottom_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Retro_Front_Bottom_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Retro_Front_Top_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_Retro_Front_Top_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Thruster_VTOL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Perseus_Torpedo_Console",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Scorpius_SCItem_Remote_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_Cargo_Cover_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_SCItem_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_SeatAccess_Ladder",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_Seat_Bed",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_Thruster_Mav_Fixed_01_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_Thruster_Mav_Fixed_01_Front_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_300i_Thruster_Mav_Fixed_Front_02",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_30i_Weapon_Mount",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_CargoGrid",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Expedition_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_SCItem_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_SCItem_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_SCItem_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Main_Left_C8X",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Main_Right_C8X",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Mav_Fixed_C8X",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Mav_Joint_C8X",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Mav_Joint_Top_C8X",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Retro_Left_C8X",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Retro_Right_C8X",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_CML_Decoy",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_CML_Noise",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_MX_Ground_Refueling_Port",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_MX_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_MX_SeatDashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_MX_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Main_MX",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_Thruster_Main_Right_MX",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Sabre_Peregrine",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Pulse_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Avenger_Stalker",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_MOLE_Thruster_VTOL_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CS_Mk2_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CS_Mk2_Thruster_Mav_1",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CS_Mk2_Thruster_Retro_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CS_Mk2_Thruster_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_C8R_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_C8R_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_C8R_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_C8R_Siren",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_C8R_Siren_Small",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Rescue_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Main_Left_C8R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Main_Right_C8R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Mav_Fixed_C8R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Mav_Joint_C8R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Mav_Joint_Top_C8R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Retro_Left_C8R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Pisces_Thruster_Retro_Right_C8R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Cutlass_SeatAccess_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Cutlass_SeatAccess_MannedTurret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Cutlass_SeatAccess_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Cutlass_Seat_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Cutlass_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_LN_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_LN_Thruster_Mav_Joint",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_LN_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_Thruster_LN_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Intake_Top_LN",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Components_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Ground_Refueling_Port",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_SeatAccess_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_SeatDashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Thruster_Fan_VTOL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Thruster_Main_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Thruster_Main_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Thruster_Mav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Thruster_Mav_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Thruster_Retro_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Mk2_Thruster_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_CML_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_CargoArm",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_Headlight",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_Pilot_Seat",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_Thruster_Mains_Large",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_Thruster_Mav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_Thruster_Mav_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Syulen_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Ursa_CargoGrid_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Ursa_Rover_SCItem_BallTurret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Ursa_Rover_SCItem_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Ursa_Rover_SCItem_Seat_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Ursa_Rover_SCItem_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_CML_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_SeatAccess_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_SeatAccess_SideDoor",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_Thruster_Main_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_Thruster_Main_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_Thruster_Mav_Joint",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_Thruster_Retro_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_Thruster_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CM_Heartseeker",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Herald",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Prowler_Utility",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_600i_Touring",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_SE",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Gladius_PIR",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Gladius_PU_AI_CRIM",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Arrow_PU_AI_CRIM",
+      "sessions": 1
+    },
+    {
+      "ship_class": "VNCL_Glaive",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Hammerhead_GS",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Sabre_Comet",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Lightning_F8C_Exec_Stealth",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_M2_Unmanned_Salvage",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_135c",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_ES",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_LX",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Zeus_ES_Collector_Indust",
+      "sessions": 1
+    },
+    {
+      "ship_class": "TMBL_Storm",
+      "sessions": 1
+    },
+    {
+      "ship_class": "XIAN_Nox_Kue",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Redeemer_Unmanned_Salvage",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Unmanned_Salvage",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_RAFT_Unmanned_Salvage",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Prowler_Unmanned_Salvage",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Dragonfly_Yellow",
+      "sessions": 1
+    },
+    {
+      "ship_class": "VNCL_Stinger",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Sabre_Raven",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hawk_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hawk_CML_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hawk_EMP_Device_S2",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hawk_PU_AI_FF",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hawk_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hawk_Thruster_Mav_Fixed",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hawk_Thruster_Mav_Joint",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Buccaneer_SCItem_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Buccaneer_SCItem_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Buccaneer_SCItem_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Buccaneer_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Buccaneer_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Buccaneer_Thruster_Mav_Fixed",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Buccaneer_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_CML_Decoy_Talon",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_CML_Noise_Talon",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Canopy_Frame",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_PU_AI_CIV",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Pilot_Seat",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Main_BL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Main_BR",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Main_TL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Main_TR",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Mav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Mav_Lateral",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Mav_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Mav_VTOL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Retro_L",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Thruster_Retro_R",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_Talon_Wing_Glass",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Mantis_PU_AI_BH",
+      "sessions": 1
+    },
+    {
+      "ship_class": "VNCL_Blade",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Vulture_Teach",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Nomad_Teach",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MRAI_Guardian_MX_Collector_Military",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_CargoGrid_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Dashboard_Copilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Door_Ramp_Portal2_Trigger",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Elevator_Door_Ext_Lower",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Elevator_Door_Ext_Upper",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Ground_Refueling_Port",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Remote_Turret_S4",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_SeatAccess_Copilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_SeatAccess_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_SeatAccess_Turret_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_SeatAccess_Turret_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Seat_Copilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Aux_B",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Aux_C",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Main_A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Mav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Mav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Mav_Up",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Retro_A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Retro_B",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Thruster_Retro_C",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Corsair_Turret_Manned",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Hoplite_Thruster_Main_01",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Hoplite_Thruster_Main_02",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Hoplite_Thruster_Mav_Joint",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Vanguard_Hoplite_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_SCItem_Turret_Seat_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_890J_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Hermes_SeatDashboard_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Avenger_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Avenger_CML_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Avenger_CargoGrid_Titan",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Avenger_Titan_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Avenger_Titan_Thruster_Mav_Joint",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Avenger_Titan_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GAMA_Railen_Seat_TractorLeft",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GLSN_Basher",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Constellation_SCItem_Seat_CoPilot_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Constellation_SCItem_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Constellation_SCItem_Turret_Upper",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Constellation_Taurus_Turret_Lower",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Avenger_Titan_Renegade",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_MPUV_1T_SCItem_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_MannedTurret_Bottom_Assault",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SCItem_SeatDashboard_Operations_Assault_Rear",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Pitbull_SeatDashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_ROC_DS",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_ROC_DS_Dashboard_Driver",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Salvation_SCItem_SeatDashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Star_Runner_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Star_Runner_Dashboard_Pilot_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Star_Runner_Seat_Scanning",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Star_Runner_Turret_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Star_Runner_Turret_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Dragonfly_SCItem_Dashboard_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Dragonfly_SCItem_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Mustang_Dashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Mustang_Gamma_Scoop_Front",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Mustang_Gamma_Thruster_Mav_Fixed_01",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Mustang_Gamma_Thruster_Mav_Fixed_01_Up",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Mustang_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Mustang_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CNOU_Mustang_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_CML_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_Canopy_Base",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_LX_SCItem_SeatDashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_LX_Thruster_FixedMav",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_LX_Thruster_FixedMav_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_LX_Thruster_FixedMav_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_LX_Thruster_FixedMav_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_LX_Thruster_FixedMav_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_Thruster_Main_Bottom_LX",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Fury_Thruster_Main_LX",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Starlancer_Copilot_Dashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Starlancer_Pilot_Dashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "MISC_Starlancer_Support_Dashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ORIG_100i",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Carrack_SCItem_Seat_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Carrack_SCItem_Seat_Drone_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_MOTH_SCItem_Dashboard_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_MOTH_Turret_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_MOTH_Turret_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Bed_Lower_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Bed_Upper_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_CML_Chaff",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_CML_Flare",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Remote_Turret_Tractor_Beam",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_SCItem_SeatDashboard_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_SCItem_SeatDashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_SCItem_Seat_Console",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_SeatAccess_CoPilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_SeatAccess_Exterior",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_SeatAccess_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_SeatAccess_Tractor_Beam",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Thruster_Main_Lower",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Thruster_Mav_Fixed",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Thruster_Mav_Fixed_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Thruster_Mav_Fixed_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Command_Module_Thruster_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_CML_Decoy",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_CML_Noise",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_CargoGrid_Hold",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_CargoGrid_Hold_Center",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_CargoGrid_SecureHold",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_CargoGrid_SecureHold_Center",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Ladder_Entry_Platform_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Ladder_Entry_Platform_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_MannedTurret_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Nose_Cover_Blank",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Nose_Cover_Canopy",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Remote_Interior_Turret_Tractor_Beam",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Remote_Nose_Turret_Tractor_Beam",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Remote_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Remote_Turret_Interior",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Remote_Turret_Tractor_Beam",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SCItem_SeatAccess_Ladder_Left",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SCItem_SeatAccess_Ladder_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SCItem_SeatAccess_Top_Hatch",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SeatAccess_Manned_Turret_Lower",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SeatAccess_Manned_Turret_Nose_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SeatAccess_Remote_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SeatAccess_Remote_Turret_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SeatAccess_Security_Console",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_SeatAccess_Tractor_Beam_Nose_Console",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Thruster_Main_Secondary",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Thruster_Mav_Fixed",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Thruster_Mav_Fixed_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Thruster_Mav_Fixed_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Thruster_Mav_Fixed_VTOL",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Thruster_Mav_Fixed_VTOL_Bottom",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Ironclad_Turret_Caps",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_UTV_CargoGrid",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_UTV_Dashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_UTV_Dashboard_Passenger",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_UTV_Passenger_SeatAccess",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_UTV_Seat_Driver",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_UTV_Seat_Passenger",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_MOTH_SCItem_Seat",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Caterpillar_Command_Module_DockingTube",
+      "sessions": 1
+    },
+    {
+      "ship_class": "DRAK_Golem_SCItem_Seat_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_MOLE_SCItem_Dashboard",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Lightning_F8_SCItem_Dashboard_Pilot",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_MR_Thruster_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_MR_Thruster_Mav_Joint",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_MR_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_GS_MR_Thruster_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_Intake_Top",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Main_Side",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Main_Side_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Retro",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GLSN_Shiv_Thruster_Retro_Right",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Terrapin_Medic_Collector_Medic",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Aurora_LX_PU_AI_CRIM",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Idris_MPUV_DockingTube",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Idris_M_PU_DockingTube_Template",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Idris_ShipATCDataManager",
+      "sessions": 1
+    },
+    {
+      "ship_class": "GRIN_STV",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Ursa_Rover",
+      "sessions": 1
+    },
+    {
+      "ship_class": "AEGS_Reclaimer_Showdown",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Hornet_F7CR",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ANVL_Spartan",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ARGO_MPUV",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_Armory",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_Cooler_A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_Cooler_B",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_Habitation",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_JumpDrive_A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_Kitchen",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_LifeSupport_A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_MainDeck",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_PowerPlant_A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_Radar_A",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_Recreation",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Starlifter_Door_Decal_Turret",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Phoenix_Door_Switch",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Phoenix_Door_Switch_Elevator_Lower",
+      "sessions": 1
+    },
+    {
+      "ship_class": "RSI_Phoenix_Door_Switch_Elevator_Upper",
+      "sessions": 1
+    },
+    {
+      "ship_class": "TMBL_Nova",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Spirit_Door_Decal_Cooler",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Spirit_Door_Decal_JumpDrive",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Spirit_Door_Decal_PowerPlant",
+      "sessions": 1
+    },
+    {
+      "ship_class": "CRUS_Spirit_Thruster_VTOL_Main",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_BallisticCannon_Barrel_S4",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_BallisticCannon_FiringMechanism_S4",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_BallisticCannon_PowerArray_S4",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_BallisticCannon_S4",
+      "sessions": 1
+    },
+    {
+      "ship_class": "ESPR_BallisticCannon_Ventilation_S4",
+      "sessions": 1
+    }
+  ]
+}

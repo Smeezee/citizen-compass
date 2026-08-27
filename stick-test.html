@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stick Test — can the browser see it at all?</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--ink:#e6edf3;--dim:#9aa7b4;
+        --accent:#ff9d3c;--good:#3fb950;--bad:#f85149}
+  *{box-sizing:border-box}
+  body{margin:0;padding:28px 20px 60px;background:var(--bg);color:var(--ink);
+       font:17px/1.6 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:780px;margin:0 auto}
+  h1{font-size:26px;margin:0 0 4px}
+  .sub{color:var(--dim);margin:0 0 22px}
+  .big{border:2px solid var(--line);border-radius:10px;padding:22px;
+       background:var(--panel);margin-bottom:20px}
+  .big.no{border-color:var(--bad)} .big.yes{border-color:var(--good)}
+  .verdict{font-size:23px;font-weight:700;margin:0 0 8px}
+  .no .verdict{color:var(--bad)} .yes .verdict{color:var(--good)}
+  .why{color:var(--dim);font-size:16px;margin:0}
+  ol{padding-left:22px} li{margin-bottom:10px}
+  .dev{border:1px solid var(--line);border-radius:8px;padding:14px 16px;
+       background:var(--panel);margin-bottom:12px}
+  .dev h3{margin:0 0 6px;font-size:17px;color:#fff}
+  .meta{color:var(--dim);font-size:14px;margin-bottom:10px}
+  .bar{height:14px;background:#0b0f14;border:1px solid var(--line);
+       border-radius:7px;position:relative;overflow:hidden;margin:3px 0 8px}
+  .bar i{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--accent);
+         transition:left .05s linear}
+  .btns{display:flex;flex-wrap:wrap;gap:5px}
+  .b{width:30px;height:26px;border:1px solid var(--line);border-radius:4px;
+     background:#0b0f14;font:12px ui-monospace,monospace;color:var(--dim);
+     display:flex;align-items:center;justify-content:center}
+  .b.on{background:var(--accent);color:#1a1206;border-color:var(--accent);font-weight:700}
+  .axname{font:13px ui-monospace,monospace;color:var(--dim)}
+  .log{background:#0b0f14;border:1px solid var(--line);border-radius:8px;
+       padding:12px 14px;font:13px ui-monospace,monospace;color:#ffd9a8;
+       max-height:150px;overflow-y:auto;margin-top:18px;white-space:pre-wrap}
+  footer{margin-top:30px;color:var(--dim);font-size:14px}
+  b{color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Stick test</h1>
+  <p class="sub">This page uses nothing from Citizen Compass. If your stick doesn't
+  show here, the browser can't see it — and that's not our code.</p>
+
+  <div class="dev" id="browserinfo" style="margin-bottom:18px">
+    <h3>This browser</h3>
+    <div class="meta" id="uainfo">reading…</div>
+  </div>
+
+  <div id="verdict" class="big no">
+    <p class="verdict">Nothing detected yet</p>
+    <p class="why">Click anywhere on this page once, then <b>press a button on your stick.</b>
+    Chrome hides game controllers until you do.</p>
+  </div>
+
+  <ol>
+    <li>Click once anywhere on this page (gives it focus).</li>
+    <li><b>Press a button on the stick</b> — not a trigger pull or a twist, an actual button.</li>
+    <li>If nothing appears within a few seconds, move every axis fully, then press more buttons.</li>
+  </ol>
+
+  <div id="devs"></div>
+  <div class="log" id="log">waiting…</div>
+
+  <footer>
+    Nothing here is sent anywhere. It runs entirely in your browser.
+  </footer>
+</div>
+
+<script>
+(function(){
+  var devsEl=document.getElementById('devs'),
+      vEl=document.getElementById('verdict'),
+      logEl=document.getElementById('log'),
+      lines=[], seen={}, everSaw=false;
+
+  function log(m){
+    var t=new Date().toLocaleTimeString();
+    lines.push(t+'  '+m);
+    if(lines.length>60) lines.shift();
+    logEl.textContent=lines.join('\n');
+    logEl.scrollTop=logEl.scrollHeight;
+  }
+
+  function pads(){
+    var g=navigator.getGamepads?navigator.getGamepads():[],o=[],i;
+    for(i=0;i<g.length;i++) if(g[i]) o.push(g[i]);
+    return o;
+  }
+
+  /* Which browser is this, and does it even have the API? The Gamepad API is a
+     web standard - Chrome, Edge, Firefox, Opera and Safari all have it - but
+     WHICH sticks each one exposes differs, because they use different backends
+     on Windows. So the browser name is part of the answer, not trivia. */
+  (function(){
+    var ua=navigator.userAgent, name='unknown', m;
+    if(/Edg\//.test(ua))            name='Edge';
+    else if(/OPR\//.test(ua))       name='Opera';
+    else if(/Firefox\//.test(ua))   name='Firefox';
+    else if(/Chrome\//.test(ua))    name='Chrome (or a Chrome-based browser)';
+    else if(/Safari\//.test(ua))    name='Safari';
+    m = ua.match(/(Edg|OPR|Firefox|Chrome|Version)\/([0-9]+)/);
+    var ver = m ? (' ' + m[2]) : '';
+    var api = navigator.getGamepads ? 'gamepad support: YES' : 'gamepad support: NO';
+    document.getElementById('uainfo').textContent =
+      name + ver + ' · ' + api + ' · ' + navigator.platform;
+    log('browser: ' + name + ver + ' · ' + api);
+  })();
+
+  if(!navigator.getGamepads){
+    vEl.className='big no';
+    vEl.innerHTML='<p class="verdict">This browser has no gamepad support at all</p>'+
+      '<p class="why">That is unusual. Try Chrome or Edge.</p>';
+    log('navigator.getGamepads is missing entirely');
+    return;
+  }
+  log('gamepad support present — waiting for a device');
+
+  window.addEventListener('gamepadconnected',function(e){
+    log('CONNECTED  index '+e.gamepad.index+'  "'+e.gamepad.id+'"');
+  });
+  window.addEventListener('gamepaddisconnected',function(e){
+    log('DISCONNECTED  index '+e.gamepad.index);
+  });
+
+  function draw(){
+    var list=pads();
+
+    if(list.length && !everSaw){ everSaw=true; }
+
+    if(list.length){
+      vEl.className='big yes';
+      vEl.innerHTML='<p class="verdict">'+list.length+' device'+(list.length>1?'s':'')+
+        ' detected</p><p class="why">The browser can see your hardware. '+
+        'Move the sticks and press buttons below to confirm they report.</p>';
+    } else {
+      vEl.className='big no';
+      vEl.innerHTML='<p class="verdict">'+(everSaw?'Device went away':'Nothing detected yet')+
+        '</p><p class="why">Click this page once, then <b>press a button on your stick.</b> '+
+        'Chrome hides controllers until it sees input while the page has focus.</p>';
+    }
+
+    var h='';
+    list.forEach(function(p){
+      var i;
+      h+='<div class="dev"><h3>'+esc(p.id)+'</h3>';
+      h+='<div class="meta">slot '+p.index+' &middot; mapping: '+(p.mapping||'(none — raw HID)')+
+         ' &middot; '+p.buttons.length+' buttons &middot; '+p.axes.length+' axes</div>';
+      for(i=0;i<p.axes.length;i++){
+        var v=p.axes[i], pct=((v+1)/2*100).toFixed(1);
+        h+='<div class="axname">axis '+i+' &nbsp; '+v.toFixed(3)+'</div>';
+        h+='<div class="bar"><i style="left:'+pct+'%"></i></div>';
+      }
+      h+='<div class="btns">';
+      for(i=0;i<p.buttons.length;i++){
+        var on=p.buttons[i].pressed||p.buttons[i].value>0.5;
+        h+='<div class="b'+(on?' on':'')+'">'+(i+1)+'</div>';
+        if(on && !seen[p.index+':'+i]){
+          seen[p.index+':'+i]=1;
+          log('button '+(i+1)+' pressed on "'+p.id.slice(0,28)+'"');
+        }
+      }
+      h+='</div></div>';
+    });
+    devsEl.innerHTML=h;
+    requestAnimationFrame(draw);
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  requestAnimationFrame(draw);
+  setTimeout(function(){ if(!pads().length) log('still nothing after 5s — press a stick button now'); },5000);
+})();
+</script>
+</body>
+</html>

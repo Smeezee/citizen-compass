@@ -1,0 +1,446 @@
+{
+ "generated_by": "scripts/fix_model_scale.py",
+ "run_id": "20260827T172853Z",
+ "rule": "largest model dimension set equal to the largest published dimension, from the same Fleetyards record the model came from. Axis-independent on both sides.",
+ "validation": "published_max / measured_max on five ships known to be correct: Caterpillar 1.001, Hammerhead 1.011, Arrow 1.031, Gladius 0.941, 100i 0.920 - so the target is good to about 8%",
+ "previous_files_moved_to": "_to_delete\\pre_scale_fix_20260827T172853Z",
+ "ships": [
+  {
+   "ship": "600i Executive Edition",
+   "folder": "600i Executive Edition",
+   "deploy_name": "600i_Executive_Edition.glb",
+   "slug": "orig-600i-executive-edition",
+   "length": 91.5,
+   "beam": 52.0,
+   "height": 17.0,
+   "target_max": 91.5,
+   "factor": 0.9976418790567116,
+   "before_max": 91.71627807617188,
+   "after_max": 91.49999237060547,
+   "before_size": [
+    91.71627807617188,
+    52.27854537963867,
+    17.597843170166016
+   ],
+   "after_size": [
+    91.49999237060547,
+    52.15525817871094,
+    17.556346893310547
+   ]
+  },
+  {
+   "ship": "85X",
+   "folder": "85X",
+   "deploy_name": "85X.glb",
+   "slug": "orig-85x",
+   "length": 13.5,
+   "beam": 14.0,
+   "height": 4.0,
+   "target_max": 14.0,
+   "factor": 0.17121310910080947,
+   "before_max": 81.76943969726562,
+   "after_max": 13.999999046325684,
+   "before_size": [
+    81.76943969726562,
+    63.09572219848633,
+    15.369698524475098
+   ],
+   "after_size": [
+    13.999999046325684,
+    13.509578704833984,
+    2.736941337585449
+   ]
+  },
+  {
+   "ship": "Arrastra",
+   "folder": "Arrastra",
+   "deploy_name": "Arrastra.glb",
+   "slug": "rsi-arrastra",
+   "length": 124.0,
+   "beam": 64.0,
+   "height": 21.0,
+   "target_max": 124.0,
+   "factor": 1.4268541943975204,
+   "before_max": 86.90446472167969,
+   "after_max": 124.0,
+   "before_size": [
+    86.90446472167969,
+    47.175437927246094,
+    14.024454116821289
+   ],
+   "after_size": [
+    124.0,
+    67.31246185302734,
+    20.01085090637207
+   ]
+  },
+  {
+   "ship": "Aurora Mk II",
+   "folder": "Aurora Mk II",
+   "deploy_name": "Aurora_Mk_II.glb",
+   "slug": "rsi-aurora-mk-ii",
+   "length": 27.5,
+   "beam": 10.5,
+   "height": 5.5,
+   "target_max": 27.5,
+   "factor": 0.33008318563680994,
+   "before_max": 83.31233215332031,
+   "after_max": 27.5,
+   "before_size": [
+    60.18442153930664,
+    83.31233215332031,
+    21.892192840576172
+   ],
+   "after_size": [
+    19.86586570739746,
+    27.5,
+    7.226244926452637
+   ]
+  },
+  {
+   "ship": "Aurora SE",
+   "folder": "Aurora SE",
+   "deploy_name": "Aurora_SE.glb",
+   "slug": "rsi-aurora-mk-i-se",
+   "length": 18.5,
+   "beam": 8.2,
+   "height": 4.0,
+   "target_max": 18.5,
+   "factor": 0.2112277091416801,
+   "before_max": 87.58320617675781,
+   "after_max": 18.5,
+   "before_size": [
+    87.58320617675781,
+    38.929443359375,
+    18.50244903564453
+   ],
+   "after_size": [
+    18.5,
+    8.222977638244629,
+    3.9082298278808594
+   ]
+  },
+  {
+   "ship": "Basher",
+   "folder": "Basher",
+   "deploy_name": "Basher.glb",
+   "slug": "grey-basher",
+   "length": 15.25,
+   "beam": 16.75,
+   "height": 5.5,
+   "target_max": 16.75,
+   "factor": 0.21293015809035404,
+   "before_max": 78.66429138183594,
+   "after_max": 16.75,
+   "before_size": [
+    78.66429138183594,
+    64.92217254638672,
+    25.357147216796875
+   ],
+   "after_size": [
+    16.75,
+    13.823888778686523,
+    5.399301528930664
+   ]
+  },
+  {
+   "ship": "Fury",
+   "folder": "Fury",
+   "deploy_name": "Fury.glb",
+   "slug": "mrai-fury",
+   "length": 7.0,
+   "beam": 5.4,
+   "height": 3.0,
+   "target_max": 7.0,
+   "factor": 0.10738322900137426,
+   "before_max": 65.18708801269531,
+   "after_max": 7.0,
+   "before_size": [
+    65.18708801269531,
+    52.83510971069336,
+    60.625267028808594
+   ],
+   "after_size": [
+    7.0,
+    6.110257148742676,
+    6.510137557983398
+   ]
+  },
+  {
+   "ship": "Hermes",
+   "folder": "Hermes",
+   "deploy_name": "Hermes.glb",
+   "slug": "rsi-hermes",
+   "length": 65.0,
+   "beam": 58.0,
+   "height": 14.0,
+   "target_max": 65.0,
+   "factor": 0.8038672372828758,
+   "before_max": 80.85912322998047,
+   "after_max": 65.0,
+   "before_size": [
+    80.85912322998047,
+    66.09229278564453,
+    17.143619537353516
+   ],
+   "after_size": [
+    65.0,
+    53.129432678222656,
+    13.781192779541016
+   ]
+  },
+  {
+   "ship": "M80",
+   "folder": "M80",
+   "deploy_name": "M80.glb",
+   "slug": "orig-m80",
+   "length": 32.0,
+   "beam": 17.3,
+   "height": 6.4,
+   "target_max": 32.0,
+   "factor": 0.3679079135519417,
+   "before_max": 86.97828674316406,
+   "after_max": 32.0,
+   "before_size": [
+    86.97828674316406,
+    47.92486572265625,
+    13.808866500854492
+   ],
+   "after_size": [
+    32.0,
+    17.63193702697754,
+    5.080390930175781
+   ]
+  },
+  {
+   "ship": "MOTH",
+   "folder": "MOTH",
+   "deploy_name": "MOTH.glb",
+   "slug": "argo-moth",
+   "length": 45.0,
+   "beam": 25.0,
+   "height": 15.0,
+   "target_max": 45.0,
+   "factor": 0.4982350458698857,
+   "before_max": 90.31881713867188,
+   "after_max": 45.0,
+   "before_size": [
+    90.31881713867188,
+    51.65093231201172,
+    27.12377166748047
+   ],
+   "after_size": [
+    45.0,
+    25.734302520751953,
+    13.51401424407959
+   ]
+  },
+  {
+   "ship": "Mantis",
+   "folder": "Mantis",
+   "deploy_name": "Mantis.glb",
+   "slug": "rsi-mantis",
+   "length": 30.0,
+   "beam": 17.0,
+   "height": 7.5,
+   "target_max": 30.0,
+   "factor": 0.3201358388886691,
+   "before_max": 93.71022033691406,
+   "after_max": 30.0,
+   "before_size": [
+    93.71022033691406,
+    53.112030029296875,
+    19.905681610107422
+   ],
+   "after_size": [
+    30.0,
+    17.003063201904297,
+    6.372521877288818
+   ]
+  },
+  {
+   "ship": "Merchantman",
+   "folder": "Merchantman",
+   "deploy_name": "Merchantman.glb",
+   "slug": "banu-merchantman",
+   "length": 193.5,
+   "beam": 174.0,
+   "height": 72.0,
+   "target_max": 193.5,
+   "factor": 2.052204168261369,
+   "before_max": 94.28886413574219,
+   "after_max": 193.5,
+   "before_size": [
+    94.28886413574219,
+    82.61347961425781,
+    45.48554992675781
+   ],
+   "after_size": [
+    193.5,
+    169.53973388671875,
+    93.34562683105469
+   ]
+  },
+  {
+   "ship": "Odin",
+   "folder": "Odin",
+   "deploy_name": "Odin.glb",
+   "slug": "anvl-odin",
+   "length": 752.0,
+   "beam": 222.0,
+   "height": 213.0,
+   "target_max": 752.0,
+   "factor": 6.079176086150174,
+   "before_max": 123.70097351074219,
+   "after_max": 752.0,
+   "before_size": [
+    123.70097351074219,
+    36.567420959472656,
+    34.657108306884766
+   ],
+   "after_size": [
+    752.0,
+    222.29978942871094,
+    210.68666076660156
+   ]
+  },
+  {
+   "ship": "PTV",
+   "folder": "PTV",
+   "deploy_name": "PTV.glb",
+   "slug": "grin-ptv",
+   "length": 3.0,
+   "beam": 2.0,
+   "height": 2.2,
+   "target_max": 3.0,
+   "factor": 0.0373073748327783,
+   "before_max": 80.41305541992188,
+   "after_max": 3.000000476837158,
+   "before_size": [
+    80.41305541992188,
+    53.71669006347656,
+    45.26946258544922
+   ],
+   "after_size": [
+    3.000000476837158,
+    2.0040290355682373,
+    1.6888855695724487
+   ]
+  },
+  {
+   "ship": "Pitbull",
+   "folder": "Pitbull",
+   "deploy_name": "Pitbull.glb",
+   "slug": "drak-pitbull",
+   "length": 3.9,
+   "beam": 5.9,
+   "height": 3.0,
+   "target_max": 5.9,
+   "factor": 0.07699740270291745,
+   "before_max": 76.62596130371094,
+   "after_max": 5.899999618530273,
+   "before_size": [
+    75.49725341796875,
+    76.62596130371094,
+    33.21254348754883
+   ],
+   "after_size": [
+    5.813091278076172,
+    5.899999618530273,
+    2.557279348373413
+   ]
+  },
+  {
+   "ship": "Starlite",
+   "folder": "Starlite",
+   "deploy_name": "Starlite.glb",
+   "slug": "misc-starlite",
+   "length": 32.0,
+   "beam": 19.0,
+   "height": 9.0,
+   "target_max": 32.0,
+   "factor": 0.3989709692132595,
+   "before_max": 80.20633697509766,
+   "after_max": 32.0,
+   "before_size": [
+    80.20633697509766,
+    50.205467224121094,
+    21.81037712097168
+   ],
+   "after_size": [
+    32.0,
+    20.0305233001709,
+    8.70170783996582
+   ]
+  },
+  {
+   "ship": "Tiburon",
+   "folder": "Tiburon",
+   "deploy_name": "Tiburon.glb",
+   "slug": "aegs-tiburon",
+   "length": 121.0,
+   "beam": 68.0,
+   "height": 20.0,
+   "target_max": 121.0,
+   "factor": 1.4314789747933276,
+   "before_max": 84.52796173095703,
+   "after_max": 120.99999237060547,
+   "before_size": [
+    84.52796173095703,
+    47.53440856933594,
+    13.992549896240234
+   ],
+   "after_size": [
+    120.99999237060547,
+    68.04450225830078,
+    20.030040740966797
+   ]
+  },
+  {
+   "ship": "Tyilui",
+   "folder": "Tyilui",
+   "deploy_name": "Tyilui.glb",
+   "slug": "gama-tyilui",
+   "length": 69.0,
+   "beam": 52.0,
+   "height": 37.5,
+   "target_max": 69.0,
+   "factor": 1.0270538338690256,
+   "before_max": 67.18245697021484,
+   "after_max": 69.0,
+   "before_size": [
+    58.45195770263672,
+    51.382301330566406,
+    67.18245697021484
+   ],
+   "after_size": [
+    60.03330993652344,
+    52.77238464355469,
+    69.0
+   ]
+  },
+  {
+   "ship": "UTV",
+   "folder": "UTV",
+   "deploy_name": "UTV.glb",
+   "slug": "grin-utv",
+   "length": 4.0,
+   "beam": 2.6,
+   "height": 2.2,
+   "target_max": 4.0,
+   "factor": 0.07125189855389175,
+   "before_max": 56.13885498046875,
+   "after_max": 4.0,
+   "before_size": [
+    56.13885498046875,
+    36.877647399902344,
+    31.36758804321289
+   ],
+   "after_size": [
+    4.0,
+    2.6276025772094727,
+    2.2350001335144043
+   ]
+  }
+ ]
+}

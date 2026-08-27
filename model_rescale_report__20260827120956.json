@@ -1,0 +1,52 @@
+[
+  {
+    "ship": "85X",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T170938Z\\85X",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      18.32343864440918,
+      21.904438018798828,
+      9.981219291687012
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      2.934136544840982e-10,
+      3.5075622961677766e-10,
+      1.5982951073745255e-10
+    ]
+  },
+  {
+    "ship": "Fury",
+    "path": "C:\\Users\\david\\citizen-compass\\sc-ships\\_stage_fleetyards_20260827T170938Z\\Fury",
+    "status": "RESCALED (1.0, 1.0, 1.0) -> 0.01, written to model_scaled.glb",
+    "before_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "before_dimensions": [
+      10.023208618164062,
+      2.9562437534332275,
+      9.12015151977539
+    ],
+    "after_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after_dimensions": [
+      9.748379670782015e-05,
+      2.875186146411579e-05,
+      8.870083547662944e-05
+    ]
+  }
+]
