@@ -1,0 +1,59 @@
+{
+ "generated_by": "build_model_inheritance.py",
+ "ruling": "docs/DECISION_shared-hulls-are-fine-unless-the-shape-differs-2026-08-14.md",
+ "order": "docs/RULING_the-asgard-is-in-centimetres-2026-08-26.md (appendix, M1-M3)",
+ "ships_with_a_loadout": 316,
+ "ships_with_a_model": 203,
+ "ships_saying_no_model": 113,
+ "inheritable_exact": 76,
+ "distinct_base_hulls_used": 49,
+ "residue_needing_human_review": 37,
+ "join": "exact ClassName suffix strip. No fuzzy matching, no name similarity.",
+ "suffixes": [
+  {
+   "pattern": "_BIS\\d{4}",
+   "means": "Best In Show edition"
+  },
+  {
+   "pattern": "_Showdown",
+   "means": "Ship Showdown edition"
+  },
+  {
+   "pattern": "_Teach",
+   "means": "Teach's Special"
+  },
+  {
+   "pattern": "_BTALA",
+   "means": "Alliance edition"
+  },
+  {
+   "pattern": "_Collector_[A-Za-z0-9]+",
+   "means": "Wikelo collector variant"
+  },
+  {
+   "pattern": "_Exec_[A-Za-z]+",
+   "means": "PYAM Exec edition"
+  },
+  {
+   "pattern": "_CitizenCon\\d+",
+   "means": "CitizenCon edition"
+  },
+  {
+   "pattern": "_Tier_\\d",
+   "means": "service tier"
+  },
+  {
+   "pattern": "_TEMP[A-Za-z_]*",
+   "means": "temporary CIG placeholder suffix"
+  },
+  {
+   "pattern": "_Pirate",
+   "means": "pirate paint variant"
+  },
+  {
+   "pattern": "_Boarded",
+   "means": "boarded-state variant"
+  }
+ ],
+ "not_claimed": "This says the edition shares its base hull's external shape. It does NOT claim the models are good, correctly scaled, or that the residue has no model anywhere."
+}

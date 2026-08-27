@@ -987,6 +987,82 @@ if not _model_by_class:
     sys.exit("no ship resolved to a 3D model for the ship page, so the viewer "
              "would never load anything. Refusing to ship a dead viewer.")
 
+# ---------------------------------------------------------------------------
+# M1. AN EDITION INHERITS ITS BASE HULL'S MODEL.
+#
+# 113 ships said "no 3D model available" and 76 of them are editions of a ship
+# whose model we already hold - the Cutlass Black BIS2950 while DRAK_Cutlass_
+# Black has one, the Carrack BIS2950 while ANVL_Carrack has one. Sleven ruled
+# on this on 2026-08-14: a shared hull is correct unless the ships differ in
+# external SHAPE, and an edition is paint and fitted parts. The ruling existed;
+# the join was never built.
+#
+# THE JOIN IS EXACT AND IT IS NOT MADE HERE. build_model_inheritance.py does it
+# by stripping an enumerated suffix from the ClassName and requiring the base to
+# exist and to have a model - no fuzzy matching, no name similarity. This reads
+# its output and applies it.
+#
+# THE 37 IN needs_human_review.json ARE NOT TOUCHED, and several would be wrong
+# to touch: Idris-P and Idris-M differ at the nose, Sabre and Sabre Firebird are
+# different airframes, Hornet Mk I and Mk II are different shapes. They are
+# asserted against here so a future edit to the generator cannot quietly widen
+# the rule into them.
+#
+# APPLIED BEFORE THE TAKEDOWN FILTER BELOW, DELIBERATELY. An inherited model is
+# the same FILE as its base's, so if that file is withdrawn the edition must
+# lose it too. Doing this afterwards would republish a withdrawn asset under a
+# different ship's name.
+# ---------------------------------------------------------------------------
+_inh_dir = os.path.join(REPO, 'data-layer', 'derived', 'model-inheritance')
+_inh_map = os.path.join(_inh_dir, 'model_inheritance.json')
+_inh_hold = os.path.join(_inh_dir, 'needs_human_review.json')
+_inherited = 0
+if os.path.exists(_inh_map):
+    with open(_inh_map, encoding='utf-8') as _f:
+        _inh = json.load(_f)
+    _held = set()
+    if os.path.exists(_inh_hold):
+        with open(_inh_hold, encoding='utf-8') as _f:
+            for _r in json.load(_f):
+                _held.add(_r.get('class_name') if isinstance(_r, dict) else _r)
+    _absent = set(_model_absent)
+    for _r in _inh:
+        _cls, _base, _file = (_r.get('class_name'), _r.get('inherits_from'),
+                              _r.get('model_file'))
+        if not _cls or not _file:
+            continue
+        if _cls in _held:
+            sys.exit("MODEL INHERITANCE TRIED TO MAP A SHIP HELD FOR HUMAN "
+                     "REVIEW: %s. These are held because auto-mapping several "
+                     "of them would be WRONG - different airframes, not "
+                     "different paint. Nothing was written." % _cls)
+        # The base must genuinely have resolved to this model in THIS build.
+        if _model_by_class.get(_base) != _file:
+            continue
+        # ALREADY HAS ONE - LEAVE IT. An edition that resolved to its own model
+        # is not a gap and must not be overwritten by its base's.
+        if _cls in _model_by_class:
+            continue
+        _model_by_class[_cls] = _file
+        _absent.discard(_cls)
+        _inherited += 1
+    _model_absent[:] = sorted(_absent)
+    # THE ACCOUNTING INVARIANT IS ABOUT THE SHIP-PAGE LINK SET, and inheritance
+    # deliberately reaches wider than it: most of the 76 editions carry a
+    # loadout without carrying a ship-page link, which is why gating on
+    # _model_absent alone inherited nothing on the first attempt. So the
+    # invariant is restated over the linked ships only, and still has to hold.
+    _linked_with_model = sum(1 for _c in _link.values() if _c in _model_by_class)
+    if _linked_with_model + len(_model_absent) != len(_link):
+        sys.exit("model inheritance broke the ship-page accounting: "
+                 "%d + %d != %d. Nothing was written."
+                 % (_linked_with_model, len(_model_absent), len(_link)))
+    print('model inheritance: %d editions took their base hull\'s model '
+          '(%d still have none)' % (_inherited, len(_model_absent)))
+else:
+    print('model inheritance: no map at %s - nothing inherited'
+          % os.path.relpath(_inh_dir, REPO))
+
 # THE PATH SEAM, and it is the same shape as ccModelSource.
 #
 # In _src the page is opened from disk beside ../sc-ships/. In _deploy the
@@ -1062,8 +1138,16 @@ _model_js = (
                   separators=(',', ':')).replace('<', r'<')))
 open(os.path.join(SRC, 'loadout_model.gen.js'), 'w',
      encoding='utf-8', newline='\n').write(_model_js)
+# THE TWO NUMBERS ARE DIFFERENT SETS AND THE LINE SAYS SO. This printed
+# "279 of 221 linked ships" the moment M1 landed, because it was measuring the
+# whole model map against the ship-page link set - and inheritance reaches
+# ships that carry a loadout without carrying a link. A count that exceeds its
+# own denominator is the line reporting something it is not counting.
 print('ship-page models: %d of %d linked ships carry one, %d correctly do not'
-      % (len(_model_by_class), len(_link), len(_model_absent)))
+      % (sum(1 for _c in _link.values() if _c in _model_by_class),
+         len(_link), len(_model_absent)))
+print('models resolved in total: %d ships (%d of them by inheritance)'
+      % (len(_model_by_class), _inherited))
 
 # ---------------------------------------------------------------------------
 # L10. A HULL MARKER IS A SECOND ROUTE TO THE SAME PICKER.

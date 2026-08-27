@@ -1,0 +1,150 @@
+[
+ {
+  "class_name": "AEGS_Gladius_Dunlevy",
+  "display_name": "Aegis Gladius Dunlevy"
+ },
+ {
+  "class_name": "AEGS_Hammerhead_GS",
+  "display_name": "Aegis Hammerhead"
+ },
+ {
+  "class_name": "AEGS_Idris_P_FW_25",
+  "display_name": "Aegis Idris-P"
+ },
+ {
+  "class_name": "AEGS_Idris_P_TSG",
+  "display_name": "Aegis Idris-P"
+ },
+ {
+  "class_name": "AEGS_Tiburon",
+  "display_name": "Aegis Tiburon"
+ },
+ {
+  "class_name": "ANVL_Hornet_F7CM_Heartseeker",
+  "display_name": "Anvil F7C-M Hornet Heartseeker Mk I"
+ },
+ {
+  "class_name": "ANVL_Hornet_F7CM_Mk2_Heartseeker",
+  "display_name": "Anvil F7C-M Hornet Heartseeker Mk II"
+ },
+ {
+  "class_name": "ANVL_Hornet_F7_Mk2_Collector_Mod",
+  "display_name": "Anvil F7 Hornet Mk Wikelo"
+ },
+ {
+  "class_name": "ANVL_Lightning_F8",
+  "display_name": "Anvil F8A Lightning"
+ },
+ {
+  "class_name": "ANVL_Lightning_F8C_Plat",
+  "display_name": "Anvil F8C Lightning"
+ },
+ {
+  "class_name": "ARGO_MOTH",
+  "display_name": "Argo MOTH"
+ },
+ {
+  "class_name": "CRUS_Spirit_C1_Civilian",
+  "display_name": "Crusader C1 Spirit Wikelo Special"
+ },
+ {
+  "class_name": "DRAK_Command_Module",
+  "display_name": "Drake Command Module"
+ },
+ {
+  "class_name": "DRAK_Dragonfly_Pink",
+  "display_name": "Drake Dragonfly Star Kitten"
+ },
+ {
+  "class_name": "DRAK_Dragonfly_Yellow",
+  "display_name": "Drake Dragonfly Yellowjacket"
+ },
+ {
+  "class_name": "DRAK_Golem_Low_Fuel_TEMPORARY",
+  "display_name": "Drake Golem"
+ },
+ {
+  "class_name": "DRAK_Pitbull",
+  "display_name": "Drake Pitbull"
+ },
+ {
+  "class_name": "GAMA_Tyilui",
+  "display_name": "Gatac Tyilui"
+ },
+ {
+  "class_name": "GLSN_Basher",
+  "display_name": "Grey's Basher"
+ },
+ {
+  "class_name": "GRIN_PTV",
+  "display_name": "Greycat PTV"
+ },
+ {
+  "class_name": "GRIN_UTV",
+  "display_name": "Greycat UTV"
+ },
+ {
+  "class_name": "MISC_Fury",
+  "display_name": "Mirai Fury"
+ },
+ {
+  "class_name": "MISC_Starlite",
+  "display_name": "MISC Starlite"
+ },
+ {
+  "class_name": "MRAI_Guardian_Military",
+  "display_name": "Mirai Guardian Wikelo War Special"
+ },
+ {
+  "class_name": "ORIG_600i_Executive_Edition",
+  "display_name": "Origin 600i Executive Edition"
+ },
+ {
+  "class_name": "ORIG_85X",
+  "display_name": "Origin 85X Limited"
+ },
+ {
+  "class_name": "ORIG_m80",
+  "display_name": "Origin M80"
+ },
+ {
+  "class_name": "PowerSuit",
+  "display_name": "Power Suit"
+ },
+ {
+  "class_name": "RSI_Aurora_GS_SE",
+  "display_name": "RSI Aurora Mk I SE"
+ },
+ {
+  "class_name": "RSI_Aurora_Mk2",
+  "display_name": "RSI Aurora Mk II"
+ },
+ {
+  "class_name": "RSI_Constellation_Taurus_Military",
+  "display_name": "RSI Constellation Taurus Wikelo War Special"
+ },
+ {
+  "class_name": "RSI_Hermes",
+  "display_name": "RSI Hermes"
+ },
+ {
+  "class_name": "RSI_Mantis",
+  "display_name": "RSI Mantis"
+ },
+ {
+  "class_name": "RSI_Scorpius_Stealth",
+  "display_name": "RSI Scorpius Wikelo Sneak Special"
+ },
+ {
+  "class_name": "RSI_Ursa_Medivac_Stealth",
+  "display_name": "RSI Ursa Medivac Wikelo Special"
+ },
+ {
+  "class_name": "VNCL_Mauler",
+  "display_name": "Vanduul Mauler Destroyer"
+ },
+ {
+  "class_name": "XIAN_Nox_Kue",
+  "display_name": "Aopoa Nox Kue"
+ }
+]
