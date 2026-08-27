@@ -1,0 +1,32 @@
+[
+ {
+  "class_name": "qrt_mantis_undersuit_01_05_01",
+  "id": "14a639e6-71c8-4007-8d91-9b8e0f5d20c0",
+  "name": "qrt_mantis_undersuit_01_05_01"
+ },
+ {
+  "class_name": "qrt_combat_heavy_helmet_03_01_01",
+  "id": "3505dba2-4189-49f2-ba41-43b95d405291",
+  "name": "qrt_combat_heavy_helmet_03_01_01"
+ },
+ {
+  "class_name": "qrt_combat_heavy_helmet_04_01_01",
+  "id": "9d0b2ced-fef4-4a38-b7ab-5b4686e2b59d",
+  "name": "qrt_combat_heavy_helmet_04_01_01"
+ },
+ {
+  "class_name": "slaver_combat_medium_helmet_01_02_01",
+  "id": "a94d2d29-4e47-4be1-ba3f-86771b532558",
+  "name": "slaver_combat_medium_helmet_01_02_01"
+ },
+ {
+  "class_name": "slaver_combat_heavy_helmet_01_02_01",
+  "id": "ad476d90-3130-4d50-9d46-e64fadcd6f6e",
+  "name": "slaver_combat_heavy_helmet_01_02_01"
+ },
+ {
+  "class_name": "slaver_combat_light_helmet_01_02_01",
+  "id": "cb6ed322-d893-4a32-8cd2-2ec73953bb5a",
+  "name": "slaver_combat_light_helmet_01_02_01"
+ }
+]

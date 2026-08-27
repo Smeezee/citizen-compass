@@ -111,13 +111,27 @@ def read_items(snapshot_dir):
         return {}
     data = load_json(p)
     rows = data if isinstance(data, list) else list(data.values())
-    out = {}
+    out, noid = {}, []
     for r in rows:
         if not isinstance(r, dict):
             continue
-        key = r.get("UUID") or r.get("uuid") or r.get("ClassName")
+        # ITEMS ARE KEYED ON `reference`, NOT UUID - MEASURED, NOT ASSUMED.
+        # Ship records carry UUID; item records carry `reference` and
+        # `className` in lowercase. Keying on UUID here found ZERO ids across
+        # 21,849 records, which would have joined every item against nothing
+        # and reported the entire catalogue as removed and re-added.
+        # ClassName is the LAST resort and is a name - it is only reached when
+        # a record carries no id at all, and such a record is counted below so
+        # the fallback can never be silent.
+        key = (r.get("reference") or r.get("Reference")
+               or r.get("UUID") or r.get("uuid"))
         if key:
             out[key] = r
+        else:
+            noid.append(r.get("className") or r.get("ClassName") or "?")
+    if noid:
+        print("  NOTE: %d item records carry no id and were skipped - they "
+              "cannot be joined on anything but a name." % len(noid))
     return out
 
 
@@ -151,7 +165,23 @@ def diff_side(old, new, label):
     old_fields = field_universe(old)
     new_fields = field_universe(new)
 
-    changed, schema_only = [], []
+    changed, schema_only, reordered = [], [], []
+
+    def ident_of(rec, key):
+        return {"id": key,
+                "name": (rec.get("Name") or rec.get("itemName")
+                         or rec.get("name") or rec.get("ClassName")
+                         or rec.get("className")),
+                "class_name": rec.get("ClassName") or rec.get("className")}
+
+    def as_list(v):
+        if not (isinstance(v, str) and v.startswith("[")):
+            return None
+        try:
+            out = json.loads(v)
+        except Exception:
+            return None
+        return out if isinstance(out, list) else None
     for k in sorted(set(old) & set(new)):
         fo, fn = flatten(old[k]), flatten(new[k])
         diffs, schema = [], []
@@ -174,7 +204,20 @@ def diff_side(old, new, label):
                 entry["why"] += "upstream stopped emitting it"
                 schema.append(entry)
             else:
-                diffs.append(entry)
+                # A LIST WHOSE MEMBERS ARE THE SAME AND WHOSE ORDER IS NOT is
+                # almost certainly not the game changing. Measured on the first
+                # real pair: of 5,759 list-field differences, 627 were pure
+                # reorderings. Reporting those beside genuine membership
+                # changes would put a tenth of the diff's volume into the
+                # column a reader trusts least - so they are separated and
+                # labelled, the same way a schema change is.
+                a_l, b_l = as_list(a), as_list(b)
+                if a_l is not None and b_l is not None                         and sorted(map(str, a_l)) == sorted(map(str, b_l)):
+                    entry["why"] = ("same members, different order - "
+                                    "not a content change")
+                    reordered.append(dict(ident_of(new[k], k), change=entry))
+                else:
+                    diffs.append(entry)
         ident = {"id": k,
                  "name": (new[k].get("Name") or new[k].get("ClassName")),
                  "class_name": new[k].get("ClassName")}
@@ -184,15 +227,18 @@ def diff_side(old, new, label):
             schema_only.append(dict(ident, schema_changes=schema))
 
     def ident_list(keys, src):
-        return [{"id": k,
-                 "name": (src[k].get("Name") or src[k].get("ClassName")),
-                 "class_name": src[k].get("ClassName")} for k in keys]
+        # THROUGH ident_of, WHICH KNOWS BOTH CASINGS. Ship records use Name and
+        # ClassName; item records use itemName and className. Reading only the
+        # capitalised pair made every added item print as "None (None)" - a
+        # diff that cannot say what it added is not a diff anybody can act on.
+        return [ident_of(src[k], k) for k in keys]
 
-    print("  %-6s %5d in / %5d out | +%d -%d ~%d (schema-only %d)"
+    print("  %-6s %5d in / %5d out | +%d -%d ~%d (schema-only %d, "
+          "order-only %d)"
           % (label, len(old), len(new), len(added), len(removed),
-             len(changed), len(schema_only)))
+             len(changed), len(schema_only), len(reordered)))
     return {"added": ident_list(added, new), "removed": ident_list(removed, old),
-            "changed": changed, "schema": schema_only}
+            "changed": changed, "schema": schema_only, "reordered": reordered}
 
 
 def write(path, obj):
@@ -223,7 +269,8 @@ def main():
 
     ships = diff_side(read_ships(args.a), read_ships(args.b), "ships")
     if args.no_items:
-        items = {"added": [], "removed": [], "changed": [], "schema": []}
+        items = {"added": [], "removed": [], "changed": [],
+                 "schema": [], "reordered": []}
         items_note = "NOT COMPARED - --no-items was passed"
     else:
         items = diff_side(read_items(args.a), read_items(args.b), "items")
@@ -237,6 +284,7 @@ def main():
         for part in ("added", "removed", "changed"):
             write(os.path.join(out, "%s_%s.json" % (kind, part)), d[part])
         write(os.path.join(out, "%s_schema_changes.json" % kind), d["schema"])
+        write(os.path.join(out, "%s_order_only.json" % kind), d["reordered"])
 
     man = {
         "generated_utc": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -244,7 +292,8 @@ def main():
         "from": A, "to": B,
         "join": "on UUID, never on name",
         "items": items_note,
-        "counts": {k: {p: len(v[p]) for p in ("added", "removed", "changed", "schema")}
+        "counts": {k: {p: len(v[p]) for p in ("added", "removed", "changed",
+                                                "schema", "reordered")}
                    for k, v in (("ships", ships), ("items", items))},
         "reports_only": "This tool never writes to the catalogue.",
     }
@@ -260,18 +309,23 @@ def main():
         "",
         "Joined on UUID, never on name. Items: %s." % items_note,
         "",
-        "| | added | removed | changed | schema-only |",
-        "|---|---|---|---|---|",
+        "| | added | removed | changed | schema-only | order-only |",
+        "|---|---|---|---|---|---|",
     ]
     for kind, d in (("ships", ships), ("items", items)):
-        lines.append("| %s | %d | %d | %d | %d |"
+        lines.append("| %s | %d | %d | %d | %d | %d |"
                      % (kind, len(d["added"]), len(d["removed"]),
-                        len(d["changed"]), len(d["schema"])))
+                        len(d["changed"]), len(d["schema"]),
+                        len(d["reordered"])))
     lines += ["",
               "**Schema-only** means a field appeared or disappeared across the",
               "WHOLE snapshot - upstream changed what it emits. That is not the",
               "game changing, and it is counted separately so it cannot be read",
-              "as one.", ""]
+              "as one.",
+              "",
+              "**Order-only** means a list field whose MEMBERS are identical and",
+              "whose order is not. Almost certainly not the game changing, so it",
+              "is kept out of the changed column.", ""]
     for kind, d in (("ships", ships), ("items", items)):
         if d["added"]:
             lines.append("## %s added" % kind)

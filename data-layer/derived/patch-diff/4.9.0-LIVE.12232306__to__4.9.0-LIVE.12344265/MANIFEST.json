@@ -1,0 +1,35 @@
+{
+ "counts": {
+  "items": {
+   "added": 6,
+   "changed": 5123,
+   "removed": 0,
+   "reordered": 627,
+   "schema": 0
+  },
+  "ships": {
+   "added": 0,
+   "changed": 0,
+   "removed": 0,
+   "reordered": 0,
+   "schema": 0
+  }
+ },
+ "from": {
+  "build": "4.9.0-LIVE.12232306",
+  "commit": "4764726896973204a798325ed0f9ed7253e995e5",
+  "commit_date": "2026-07-16T14:46:09+02:00",
+  "run_id": "20260801T204744Z"
+ },
+ "generated_by": "build_patch_diff.py",
+ "generated_utc": "2026-08-27T03:28:38Z",
+ "items": "compared",
+ "join": "on UUID, never on name",
+ "reports_only": "This tool never writes to the catalogue.",
+ "to": {
+  "build": "4.9.0-LIVE.12344265",
+  "commit": "db00b749833ebe4c4687f766c15fb88ba093fd6e",
+  "commit_date": "2026-08-20T12:08:49+02:00",
+  "run_id": "20260827T030607Z"
+ }
+}
