@@ -1,0 +1,251 @@
+{
+ "generated_by": "scripts/fix_model_scale.py",
+ "run_id": "20260827T214809Z",
+ "rule": "largest model dimension set equal to the largest published dimension, from the same Fleetyards record the model came from. Axis-independent on both sides.",
+ "validation": "published_max / measured_max on five ships known to be correct: Caterpillar 1.001, Hammerhead 1.011, Arrow 1.031, Gladius 0.941, 100i 0.920 - so the target is good to about 8%",
+ "previous_files_moved_to": "_to_delete\\pre_scale_fix_20260827T214809Z",
+ "source_list": "data-layer/derived/model-availability/scale_fix_targets_pre_existing.json",
+ "scaled_from": "model_scaled.glb",
+ "ships": [
+  {
+   "ship": "Orion",
+   "folder": "Orion",
+   "deploy_name": "Orion.glb",
+   "target_max": 340,
+   "ratio_before": 0.005011306615436778,
+   "factor": 199.54874881077168,
+   "before_max": 1.7038443088531494,
+   "after_max": 340.0,
+   "before_size": [
+    0.51822829246521,
+    1.7038443088531494,
+    0.51822829246521
+   ],
+   "after_size": [
+    103.41180419921875,
+    340.0,
+    103.41180419921875
+   ]
+  },
+  {
+   "ship": "San'tok.yai",
+   "folder": "San'tok.y\u0101i",
+   "deploy_name": "San_tok.y_i.glb",
+   "target_max": 24,
+   "ratio_before": 0.009581642846266428,
+   "factor": 104.36623615016696,
+   "before_max": 0.2299594283103943,
+   "after_max": 24.0,
+   "before_size": [
+    0.2299594283103943,
+    0.21168234944343567,
+    0.22304561734199524
+   ],
+   "after_size": [
+    24.0,
+    22.09248924255371,
+    23.278430938720703
+   ]
+  },
+  {
+   "ship": "Crucible",
+   "folder": "Crucible",
+   "deploy_name": "Crucible.glb",
+   "target_max": 90,
+   "ratio_before": 0.00988947484228346,
+   "factor": 101.11760391202957,
+   "before_max": 0.8900527358055115,
+   "after_max": 90.0,
+   "before_size": [
+    0.7199437618255615,
+    0.8900527358055115,
+    0.2724442183971405
+   ],
+   "after_size": [
+    72.79899597167969,
+    90.0,
+    27.548908233642578
+   ]
+  },
+  {
+   "ship": "Pioneer",
+   "folder": "Pioneer",
+   "deploy_name": "Pioneer.glb",
+   "target_max": 247,
+   "ratio_before": 0.009984154450265985,
+   "factor": 100.1587069772703,
+   "before_max": 2.4660861492156982,
+   "after_max": 247.0,
+   "before_size": [
+    1.3768903017044067,
+    2.4660861492156982,
+    0.5371752977371216
+   ],
+   "after_size": [
+    137.9075469970703,
+    247.0,
+    53.80278015136719
+   ]
+  },
+  {
+   "ship": "Starlancer TAC",
+   "folder": "Starlancer TAC",
+   "deploy_name": "Starlancer_TAC.glb",
+   "target_max": 83,
+   "ratio_before": 0.010063936911433577,
+   "factor": 99.36469284340467,
+   "before_max": 0.8353067636489868,
+   "after_max": 83.0,
+   "before_size": [
+    0.5244677662849426,
+    0.8353067636489868,
+    0.16191153228282928
+   ],
+   "after_size": [
+    52.11357879638672,
+    83.0,
+    16.088289260864258
+   ]
+  },
+  {
+   "ship": "Starlancer MAX",
+   "folder": "Starlancer MAX",
+   "deploy_name": "Starlancer_MAX.glb",
+   "target_max": 83,
+   "ratio_before": 0.012208176664559239,
+   "factor": 81.91230915583745,
+   "before_max": 1.0132787227630615,
+   "after_max": 82.99999237060547,
+   "before_size": [
+    0.5244655609130859,
+    1.0132787227630615,
+    0.15003927052021027
+   ],
+   "after_size": [
+    42.960182189941406,
+    82.99999237060547,
+    12.29006290435791
+   ]
+  },
+  {
+   "ship": "Endeavor",
+   "folder": "Endeavor",
+   "deploy_name": "Endeavor.glb",
+   "target_max": 200,
+   "ratio_before": 0.08556416511535644,
+   "factor": 11.687135597616287,
+   "before_max": 17.11283302307129,
+   "after_max": 200.0,
+   "before_size": [
+    4.026950359344482,
+    17.11283302307129,
+    1.7498459815979004
+   ],
+   "after_size": [
+    47.063514709472656,
+    200.0,
+    20.450687408447266
+   ]
+  },
+  {
+   "ship": "Avenger Stalker",
+   "folder": "Avenger Stalker",
+   "deploy_name": "Avenger_Stalker.glb",
+   "target_max": 20,
+   "ratio_before": 0.09525355696678162,
+   "factor": 10.498295621115087,
+   "before_max": 1.9050711393356323,
+   "after_max": 20.0,
+   "before_size": [
+    1.399446725845337,
+    1.9050711393356323,
+    0.4936800003051758
+   ],
+   "after_size": [
+    14.691805839538574,
+    20.0,
+    5.182798862457275
+   ]
+  },
+  {
+   "ship": "Polaris",
+   "folder": "Polaris",
+   "deploy_name": "Polaris.glb",
+   "target_max": 166,
+   "ratio_before": 0.3772587029330702,
+   "factor": 2.650700863276626,
+   "before_max": 62.62494659423828,
+   "after_max": 166.0,
+   "before_size": [
+    32.4371452331543,
+    62.62494659423828,
+    15.819894790649414
+   ],
+   "after_size": [
+    85.98117065429688,
+    166.0,
+    41.933807373046875
+   ]
+  },
+  {
+   "ship": "Vulture",
+   "folder": "Vulture",
+   "deploy_name": "Vulture.glb",
+   "target_max": 33,
+   "ratio_before": 0.39012211019342596,
+   "factor": 2.5633000819740257,
+   "before_max": 12.874029159545898,
+   "after_max": 33.0,
+   "before_size": [
+    6.168417930603027,
+    12.874029159545898,
+    3.398669958114624
+   ],
+   "after_size": [
+    15.811507225036621,
+    33.0,
+    8.711811065673828
+   ]
+  },
+  {
+   "ship": "Nautilus",
+   "folder": "Nautilus",
+   "deploy_name": "Nautilus.glb",
+   "target_max": 125,
+   "ratio_before": 0.42368507385253906,
+   "factor": 2.360243722823488,
+   "before_max": 52.96063232421875,
+   "after_max": 125.00000762939453,
+   "before_size": [
+    29.5079345703125,
+    52.96063232421875,
+    13.251616477966309
+   ],
+   "after_size": [
+    69.64591979980469,
+    125.00000762939453,
+    31.27704620361328
+   ]
+  },
+  {
+   "ship": "Mule",
+   "folder": "Mule",
+   "deploy_name": "Mule.glb",
+   "target_max": 8.75,
+   "ratio_before": 0.4800821031842913,
+   "factor": 2.082977043649814,
+   "before_max": 4.200718402862549,
+   "after_max": 8.75,
+   "before_size": [
+    3.0143537521362305,
+    4.200718402862549,
+    2.694591760635376
+   ],
+   "after_size": [
+    6.278829574584961,
+    8.75,
+    5.6127729415893555
+   ]
+  }
+ ]
+}

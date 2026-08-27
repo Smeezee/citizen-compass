@@ -60,6 +60,13 @@
     because the accent is themeable and a hard-coded #22D3EE would outlive the
     theme that justified it. */
  --bracket:rgba(34,211,238,0.30);
+ /* SEE-THROUGH STAGE PANEL. Sleven, on the deployed page: "is there a way to
+    make them see through a little". The panel sat on solid --panel and hid the
+    part of the hull it was describing.
+    NOT a straight opacity on the element - that would fade the TEXT as well,
+    and a half-legible stat is worse than a covered wing. A translucent GROUND
+    plus a blur: the hull reads through it, the words stay at full strength. */
+ --panelglass:rgba(14,27,46,0.80);
  --leaderline:rgba(255,170,60,0.62)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
@@ -255,6 +262,15 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
  font-size:11px;font-weight:600;color:var(--text);background:var(--panel3);
  border:1px solid var(--line);border-radius:5px;padding:2px 6px}
 .disc .figs b i{font-style:normal;color:var(--muted);font-weight:400}
+/* THE COMPARISON STAT, marked so it reads as the axis rather than as the first
+   of seven equal numbers. Same weight as the rest - a brighter colour and a
+   rule under it, not a bigger font. The row must still scan as one line. */
+.axisnote{padding:7px 13px;font-size:11.5px;color:var(--muted);
+ border-bottom:1px solid var(--line);background:var(--panel2)}
+.axisnote b{color:var(--text);font-weight:600}
+.pi .st .lead{color:var(--text);border-bottom:1px solid var(--accent2);
+ padding-bottom:1px}
+.pi .st .lead b{color:var(--accent2)}
 /* THE INLINE VARIANT, for the split case over the 3D stage. It sits inside a
    running sentence rather than owning a row, so it drops the panel chrome and
    keeps only the opener. The count stays in the sentence outside it. */
@@ -266,6 +282,25 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 .disc.inline>summary:hover{background:none;text-decoration:underline}
 .disc.inline .body{display:inline;padding:0}
 .disc.inline .body p{display:inline;margin:0;font-size:inherit;color:inherit}
+/* THE LEDGER. Not a log - a list of PORTS that differ from stock, each with
+   its own way back. Reading it answers "what have I actually done to this
+   ship", which the running totals cannot: a total says the ship got heavier,
+   not which of six swaps did it. */
+.ledger{margin-top:9px;background:var(--panel2);border:1px solid var(--line);
+ border-radius:9px;padding:7px 9px}
+.ledger h6{margin:0 0 6px;font:600 10.5px inherit;letter-spacing:.06em;
+ color:var(--muted);text-transform:uppercase}
+.ledger .lrow{display:flex;align-items:center;gap:7px;padding:3px 0;
+ font-size:11.5px;min-width:0}
+.ledger .lrow+.lrow{border-top:1px solid var(--line2)}
+.ledger .lname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;
+ white-space:nowrap;color:var(--text);cursor:pointer}
+.ledger .lname:hover{text-decoration:underline}
+.ledger .lwas{color:var(--faint);font-size:10.5px;overflow:hidden;
+ text-overflow:ellipsis;white-space:nowrap;max-width:38%}
+.ledger button{background:none;border:0;color:var(--accent2);cursor:pointer;
+ font:inherit;font-size:10.5px;padding:1px 3px}
+.ledger button:hover{text-decoration:underline}
 .trip{margin-top:11px;padding:11px 13px;background:var(--panel2);border-left:3px solid var(--accent2);
  border-radius:0 8px 8px 0;font-size:14.5px}
 .note{margin-top:13px;padding:11px 13px;background:var(--notebg);border:1px solid var(--noteline);
@@ -504,9 +539,16 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
    leader, which is left at full strength on purpose. What replaces the outline
    is the Fusion corner bracket Sleven approved: a mark at two opposing corners,
    pulled inside the radius, in the accent at low alpha. */
-#cc-panel{position:absolute;z-index:6;background:var(--panel);
+#cc-panel{position:absolute;z-index:6;background:var(--panelglass);
+ -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
  border:1px solid var(--line);border-radius:10px;overflow:hidden;
  box-shadow:0 14px 34px var(--scrim-drop);display:flex;flex-direction:column}
+/* THE FALLBACK IS THE OLD OPAQUE PANEL, NOT A TRANSPARENT ONE. A browser with
+   no backdrop-filter would otherwise render text over a moving 3D hull with
+   nothing between them, which is unreadable rather than merely plain. */
+@supports not (backdrop-filter:blur(2px)){
+  #cc-panel{background:var(--panel)}
+}
 #cc-panel::before,#cc-panel::after{content:"";position:absolute;
  width:13px;height:13px;pointer-events:none;z-index:1;
  border-color:var(--bracket);border-style:solid;border-width:0}
@@ -1153,7 +1195,12 @@ CC_THEME.apply();
   <!-- N11: BACK TO STOCK IS ALWAYS ONE VISIBLE CLICK. Not in a menu.
        Failure has to be free or nobody experiments, and experimenting is how
        this page teaches. Shown only when there is something to undo. -->
+  <button class="btn" id="undo" hidden>Undo</button>
   <button class="btn" id="reset" hidden>Back to stock</button>
+  <!-- WHAT YOU HAVE CHANGED, and every row is its own undo. Hidden until
+       there is something in it - an empty ledger is a control that teaches
+       nothing and costs a row of the page. -->
+  <div class="ledger" id="ledger" hidden></div>
   <!-- N5: THE SECOND BUILD DOES NOT EXIST UNTIL ASKED FOR.
        The wording is Sleven's and is not to be reworded: `try` is an
        experiment rather than a decision, and `alongside` promises the current
@@ -1581,6 +1628,29 @@ function fillProvenance(){
    honest figure is the SNAPSHOT's patch, which this page has always had and
    which is a real answer. The site field is shown only if it ever becomes
    non-null, and says which of the two it is. */
+/* THE LEDGER. One row per port that differs from stock, each carrying its own
+   way back, and clicking the name selects that port so the reader can see what
+   they changed rather than only read that they changed it. */
+function renderLedger(){
+  const el=$('ledger'); if(!el) return;
+  const b=editing==="A"?A:B;
+  const rows=changesFromStock(b);
+  if(!rows.length){ el.hidden=true; el.innerHTML=""; return; }
+  /* P, not PARTS. The page's part table is `P` - the first draft of this
+     named a global that does not exist, which would have rendered every row
+     as a raw class name and looked like missing data rather than a typo. */
+  const nm=id=>!id?"nothing":((P[id]&&P[id].n)||id);
+  el.hidden=false;
+  el.innerHTML=`<h6>${rows.length} change${rows.length===1?"":"s"} from stock</h6>`
+    + rows.map(r=>`<div class="lrow">
+        <span class="lname" data-goto="${attr(r.slot)}"
+          title="${attr(nm(r.to))}">${nm(r.to)}</span>
+        <span class="lwas" title="was ${attr(nm(r.from))}">was ${nm(r.from)}</span>
+        <button type="button" data-revert="${attr(r.slot)}"
+          title="Put the stock part back on this port">revert</button>
+      </div>`).join("");
+}
+
 function renderRecord(){
   const el=$('recrow'); if(!el) return;
   const i=info();
@@ -1594,7 +1664,55 @@ function renderRecord(){
 }
 
 function stockBuild(){const o={};ship().slots.forEach(s=>{if(swappable(s))o[s.id]=s.stock;});return o;}
-function reset(){A=stockBuild();B=stockBuild();sel=null;}
+function reset(){A=stockBuild();B=stockBuild();sel=null;swapLog=[];}
+
+/* ---------------------------------------------------------------------------
+   THE SWAP LOG. "Pick a part, understand what it does, see what it changes,
+   KEEP OR UNDO." The brief's own four steps - and the page shipped the first
+   three.
+
+   WHY UNDO IS NOT THE SAME AS "BACK TO STOCK", which this page already had.
+   Back to stock throws away every change at once. A person who has made six
+   swaps and regrets the sixth had exactly one option: lose all six. So the
+   cost of trying the sixth was the five before it, and a page whose whole
+   argument is EXPERIMENT was quietly charging for experiments.
+
+   Failure has to be free or nobody experiments, and experimenting is how this
+   page teaches. That was already written above the reset button; the button
+   just did not deliver it.
+
+   ONE ENTRY PER SWAP, and it records which build it happened in - a swap made
+   in B must never be undone out of A. */
+let swapLog=[];
+function logSwap(which, slotId, from, to){
+  if(from===to) return;
+  swapLog.push({which:which, slot:slotId, from:from, to:to});
+  if(swapLog.length>200) swapLog.shift();
+}
+function undoSwap(){
+  const e=swapLog.pop();
+  if(!e) return false;
+  const b = e.which==="A" ? A : B;
+  const before=calc(b);
+  b[e.slot]=e.from;
+  markChanges(before, calc(b));
+  /* THE PORT THAT MOVED IS SELECTED, not cleared. Undo without showing what
+     it undid is indistinguishable from the page losing your work. */
+  const sl=(ship().slots||[]).find(x=>x.id===e.slot);
+  if(sl && swappable(sl)) sel={slot:e.slot};
+  ghost=null;
+  return true;
+}
+/* WHAT IS DIFFERENT FROM STOCK, right now, per port. Derived from the BUILD
+   rather than from the log, deliberately: the log is a history and can be
+   emptied by undo, but "what have I changed" must stay true no matter how the
+   build got here - including a build restored from a shared link, which has no
+   log at all. */
+function changesFromStock(b){
+  return (ship().slots||[]).filter(s=>swappable(s) && b[s.id]!==s.stock)
+    .map(s=>({slot:s.id, name:s.n||s.id,
+              from:s.stock, to:b[s.id]}));
+}
 
 /* ---------- maths ---------- */
 /* EVERYTHING THAT MOVES, AT ONCE - not a chosen category (L6).
@@ -2061,10 +2179,19 @@ function renderMatchup(){
       <td class="p">${fmt(eff)}</td>
       <td><span class="d ${cls}">${pct}%</span></td></tr>`;
   });
-  h+=`</table><div class="trip"><strong>Read this as a matchup, not a rating.</strong>
-    Nothing here says one gun is better. A ballistic loadout that looks weak
+  /* COLLAPSES: it EXPLAINS how to read the table above it. The stamp carries
+     the warning itself, so a reader who never opens it still leaves knowing
+     the table is not a ranking. */
+  h+=`</table><details class="disc"><summary>
+      <span class="stamp">MATCHUP</span>
+      <span class="srcline">not a rating &mdash; no gun here is "better"</span>
+      <span class="opener">How to read this</span>
+    </summary><div class="body"><div class="cols"><section>
+    <h5>Read this as a matchup, not a rating</h5>
+    <p>Nothing here says one gun is better. A ballistic loadout that looks weak
     against an energy-resistant hull is the stronger choice against a
-    physical-resistant one, and both facts are on this table at once.</div>`;
+    physical-resistant one, and both facts are on this table at once.</p>
+    </section></div></div></details>`;
   el.innerHTML=h;
 }
 
@@ -2204,18 +2331,66 @@ function renderPicker(){
 
    A ZERO IS A CLAIM. AN ABSENCE IS NOT. Same rule B7 applied to the turret DPS
    row, unchanged. */
-function partRow(k, fit, pinned){
+/* WHAT THE NUMBER MEANS, IN A SENTENCE. The brief: "every number carries a
+   plain sentence saying what it means, the way the right rail already does."
+   Sleven has said repeatedly that the right-hand column is the one he prefers,
+   and the reason he gives is that it explains itself. The picker never has.
+
+   These are the RAIL'S OWN WORDS where the rail has a line for the same
+   measurement - "what the pilot can fire", "heat - lower is stealthier" - so
+   the two halves of the page say the same thing about the same number rather
+   than inventing a second vocabulary for it. */
+const CC_MEANS={
+  dps:"sustained damage per second while the trigger is held",
+  ehp:"how much damage it absorbs before it is gone",
+  qt:"how far one jump can reach",
+  cap:"power this part can supply",
+  cool:"heat it removes per second - more is cooler running",
+  scu:"cargo it can hold",
+  gn:"how many it carries, and at what size",
+  hp:"how much damage the part itself takes before breaking",
+  pw:"power it draws from the plant - a cost, not a benefit",
+  ms:"what it adds to the ship's mass - heavier turns slower",
+  s:"the port size it fills"
+};
+
+/* THE HEADLINE STAT COMES FIRST, AND IT IS THE PORT'S HEADLINE, NOT A FIXED
+   ORDER. Sleven's brief: "compare on what the part is FOR. A missile rack on
+   missiles carried and size. A shield on HP and regen. A cooler on cooling
+   rate. Mass is a footnote on all of them, not the headline on all of them."
+
+   This function used to emit a fixed sequence - DPS, HP, Range, Power,
+   Cooling, SCU, Mass, then the facts of a different kind. So on a missile rack
+   the first thing the eye met was MASS, and how many missiles it carries came
+   after it, if at all.
+
+   `headKey` is the axis the sort row already derives from THE PARTS ON OFFER
+   at this port. Leading with it costs nothing new and makes the row agree with
+   the control above it: the thing you are sorting by is the thing you read
+   first. Marked, so it is legible as the comparison rather than as the first
+   of seven equal numbers. */
+function partRow(k, fit, pinned, headKey){
   const p=P[k]||{};
   const bits=[];
-  if(p.dps)bits.push(`<span>DPS <b>${p.dps}</b></span>`);
-  if(p.ehp)bits.push(`<span>HP <b>${fmt(p.ehp)}</b></span>`);
-  if(p.qt)bits.push(`<span>Range <b>${p.qt}Gm</b></span>`);
-  if(p.cap)bits.push(`<span>Power <b>${fmt(p.cap)}</b></span>`);
-  if(p.cool)bits.push(`<span>Cooling <b>${p.cool}</b></span>`);
-  if(p.scu)bits.push(`<span>SCU <b>${p.scu}</b></span>`);
-  if(p.ms)bits.push(`<span>Mass <b>${fmt(p.ms)}</b></span>`);
+  const LEAD={dps:["DPS",v=>v], ehp:["HP",fmt], qt:["Range",v=>v+"Gm"],
+    cap:["Power",fmt], cool:["Cooling",v=>v], scu:["SCU",v=>v],
+    gn:["Carries",()=>p.gn+" \u00d7 S"+p.gs], hp:["HP",fmt],
+    pw:["Draw",fmt], ms:["Mass",fmt], s:["Size",v=>"S"+v]};
+  const lead = headKey && LEAD[headKey] && p[headKey] ? headKey : null;
+  if(lead){
+    bits.push(`<span class="lead" title="${attr(CC_MEANS[lead]||"")}">${LEAD[lead][0]}
+      <b>${LEAD[lead][1](p[lead])}</b></span>`);
+  }
+  const seen = k2 => k2===lead;
+  if(p.dps&&!seen('dps'))bits.push(`<span>DPS <b>${p.dps}</b></span>`);
+  if(p.ehp&&!seen('ehp'))bits.push(`<span>HP <b>${fmt(p.ehp)}</b></span>`);
+  if(p.qt&&!seen('qt'))bits.push(`<span>Range <b>${p.qt}Gm</b></span>`);
+  if(p.cap&&!seen('cap'))bits.push(`<span>Power <b>${fmt(p.cap)}</b></span>`);
+  if(p.cool&&!seen('cool'))bits.push(`<span>Cooling <b>${p.cool}</b></span>`);
+  if(p.scu&&!seen('scu'))bits.push(`<span>SCU <b>${p.scu}</b></span>`);
+  if(p.ms&&!seen('ms'))bits.push(`<span>Mass <b>${fmt(p.ms)}</b></span>`);
   /* The facts of a different kind. */
-  if(p.gn)bits.push(`<span>Takes <b>${p.gn} &times; S${p.gs}</b></span>`);
+  if(p.gn&&!seen('gn'))bits.push(`<span>Takes <b>${p.gn} &times; S${p.gs}</b></span>`);
   if(p.fuel)bits.push(`<span>Capacity <b>${fmt(p.fuel)}</b></span>`);
   if(p.mod&&p.mod.length)bits.push(`<span>Modifies <b>${p.mod.join(", ")}</b></span>`);
   /* Power DRAW, not power capacity - `cap` is a plant's output and `pw` is
@@ -2223,7 +2398,7 @@ function partRow(k, fit, pinned){
      they get different words. Added while chasing E2: fourteen parts were
      being called "nothing" by the control when they carried a draw of 8 and a
      detection range, simply because this function had never rendered them. */
-  if(p.pw)bits.push(`<span>Draw <b>${fmt(p.pw)}</b></span>`);
+  if(p.pw&&!seen('pw'))bits.push(`<span>Draw <b>${fmt(p.pw)}</b></span>`);
   if(p.sens)bits.push(`<span>Detect <b>${p.sens}</b></span>`);
   const measured = bits.length;
   if(measured||p.ir||p.em){
@@ -2259,9 +2434,17 @@ function partRow(k, fit, pinned){
    port is a measurement of that port's own parts. A key has to be present on
    at least half the list to be its headline, so one outlier cannot name the
    axis for everything else. */
+/* `gn` - HOW MANY THINGS THE PART CARRIES - was missing, and it is the
+   headline on the ports the brief complained about by name. A missile rack was
+   comparing on SIZE, because nothing else in this list applied to it, so the
+   page offered "Mass 20" against "Mass 3,000" with no word about the 150x and
+   nothing at all about how many missiles either one holds.
+   The word is "carried" rather than "missiles" because the same field is a
+   turret's gun count. One field, one honest word for both. */
 const CC_AXIS_ORDER=[["dps","damage"],["dmgt","damage"],["ehp","shielding"],
   ["cool","cooling"],["cap","power capacity"],["qt","quantum range"],
-  ["scu","capacity"],["hp","health"],["pw","power draw"],["s","size"]];
+  ["gn","carried"],["scu","capacity"],["hp","health"],["pw","power draw"],
+  ["s","size"]];
 /* Takes the axis by name rather than reading the global, so the row can ask
    about all four while only one of them is active. The first version read
    `sort` inside the loop and had to shuffle the global back and forth to get
@@ -2292,6 +2475,18 @@ function headAxis(ids){
    pointing the way the list is actually ordered. The button says what happens
    next; the arrow says what is happening now. Both, or the control is a
    riddle. */
+/* THE SENTENCE, ON THE PAGE, NOT ONLY IN A TOOLTIP. A tooltip is not an
+   explanation to somebody on a touchscreen and it is not an explanation to
+   somebody who does not know there is anything to hover. This says what these
+   parts are being compared on and what that measurement means, once, above the
+   list - which is where a person who has never seen this page needs it. */
+function axisNote(opts){
+  const h=headAxis(opts||[]);
+  const means=CC_MEANS[h[0]];
+  if(!means) return "";
+  return `<div class="axisnote">Compared on <b>${h[1]}</b> &mdash; ${means}.</div>`;
+}
+
 function sortRow(slot){
   const AX=[["head",null],["ir",null],["em",null],["mass",null]];
   let h='<div class="sortrow" role="group" aria-label="Sort the parts">';
@@ -2397,14 +2592,16 @@ function pickerHTML(slot){
     <small>${portLabel(slot.h)}${twoUp?" · editing build "+editing:""} · ${opts.length}
     part${opts.length===1?"":"s"} fit this port on this ship</small>
     ${portNote(slot, opts)}</div>
+    ${axisNote(opts)}
     ${sortRow(slot)}<div class="plist">`;
   if(!opts.length){
     h+=`<div class="empty">The game files list no part that fits this port at
       this size. Nothing is offered here rather than something that would not
       mount.</div>`;
   }
-  if(pinned) h+=partRow(pinned, true, true);
-  rest.forEach(k=>{ h+=partRow(k, k===cur, false); });
+  const headKey=headAxis(opts)[0];
+  if(pinned) h+=partRow(pinned, true, true, headKey);
+  rest.forEach(k=>{ h+=partRow(k, k===cur, false, headKey); });
   return h+"</div>";
 }
 
@@ -2501,18 +2698,24 @@ function renderEngineering(){
       <span class="n">${r[1]}</span></div>`;
   });
   h+=`</div>
-    <div class="trip"><strong>What this data does not say.</strong>
-    Fuse <b>ratings</b> and failure behaviour are not in the game files &mdash;
-    only counts and positions. Whether a blown relay disables the components
-    near it <b>is not stated anywhere</b>. The ship's own penetration figures
-    <em>suggest</em> damage reaches fuses before components`
+    <details class="disc"><summary>
+      <span class="stamp">COUNTS ONLY</span>
+      <span class="srcline">fuse ratings and failure behaviour are not in the game files</span>
+      <span class="opener">What this data does not say</span>
+    </summary><div class="body"><div class="cols"><section>
+    <h5>What this data does not say</h5>
+    <p>Fuse <b>ratings</b> and failure behaviour are not in the game files
+    &mdash; only counts and positions. Whether a blown relay disables the
+    components near it <b>is not stated anywhere</b>. The ship's own
+    penetration figures <em>suggest</em> damage reaches fuses before
+    components`
     +(pen.fuse!=null
       ? ` &mdash; ${Math.round(pen.fuse*100)}% to fuses against `
         +`${pen.comp!=null?Math.round(pen.comp*100)+"%":"an unstated share"}`
         +` to components on this hull`
       : "")
     +`. Suggests. That is as far as the data goes and this page will not go
-    further.</div>`;
+    further.</p></section></div></div></details>`;
   el.innerHTML=h;
 }
 
@@ -2562,7 +2765,15 @@ function renderBuy(){
       hull. That is an absence in our records, not a statement that nobody
       sells it.</p>`;
   }
-  h+=`<div class="trip"><strong>Where the shop data actually is.</strong>
+  /* COLLAPSES: it EXPLAINS why there is no price beside a part. The stamp
+     states the load-bearing fact - the join is unproven - so the caution
+     survives for a reader who never opens it. */
+  h+=`<details class="disc"><summary>
+      <span class="stamp">NO PRICE JOIN</span>
+      <span class="srcline">shop data is real, the link to these parts is not proven</span>
+      <span class="opener">Where the shop data actually is</span>
+    </summary><div class="body"><div class="cols"><section>
+    <h5>Where the shop data actually is</h5><p>
       This site does hold real shop and price data &mdash;
       <a href="find.html">FIND</a> carries terminals, categories and prices
       pulled from UEX.
@@ -2575,7 +2786,8 @@ function renderBuy(){
       no proven join is a different thing from having no prices, and saying the
       second would be the easier lie.
       <br><br>
-      When that join is proven, this is where it lands.</div>`;
+      When that join is proven, this is where it lands.</p>
+    </section></div></div></details>`;
   $('buy').innerHTML=h;
 }
 
@@ -4293,6 +4505,12 @@ function renderChrome(){
   const anyChanged=(ship().slots||[]).some(x=>swappable(x)&&
     (A[x.id]!==x.stock || (twoUp&&B[x.id]!==x.stock)));
   const rb=$('reset'); if(rb) rb.hidden=!anyChanged;
+  /* UNDO IS OFFERED ONLY WHEN THERE IS A SWAP TO UNDO, which is not the same
+     question as "is this build different from stock". A build arriving from a
+     shared link differs from stock and has no history - offering Undo there
+     would be a button that does nothing, which is worse than no button. */
+  const ub=$('undo'); if(ub) ub.hidden = !swapLog.length;
+  renderLedger();
   const cols=$('cols'); if(cols) cols.classList.toggle('two', twoUp);
 }
 
@@ -4579,6 +4797,14 @@ function offerPanelOnce(){
    dismissable without hunting for a control, and Escape is what everybody
    already tries. */
 document.addEventListener('keydown',e=>{
+  /* CTRL+Z, because it is what everybody tries first and costs one line.
+     Guarded off form fields so it never steals an undo from a text box. */
+  if((e.ctrlKey||e.metaKey) && !e.shiftKey && (e.key==='z'||e.key==='Z')){
+    const t=e.target, tag=t&&t.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA'||(t&&t.isContentEditable)) return;
+    if(undoSwap()){ e.preventDefault(); renderAll(); }
+    return;
+  }
   if(e.key!=='Escape') return;
   /* The look panel first: if both are open, Escape closes the thing on top. */
   if(tuneIsOpen()){ tuneOpen(false); return; }
@@ -4722,12 +4948,37 @@ document.addEventListener('click',e=>{
     if(sort===so.dataset.s) sortDesc=!sortDesc;
     else { sort=so.dataset.s; sortDesc=!(sort==="ir"||sort==="em"||sort==="mass"); }
     renderAll();return;}
+  if(e.target.closest('#undo')){
+    if(undoSwap()) renderAll();
+    return; }
+  /* THE LEDGER'S OWN TWO ACTIONS. `revert` puts the stock part back on ONE
+     port and is LOGGED like any other swap - so undoing a revert works, which
+     it would not if revert wrote the build behind the log's back. */
+  const lv=e.target.closest('[data-revert]');
+  if(lv){
+    const b=editing==="A"?A:B;
+    const sl=(ship().slots||[]).find(x=>x.id===lv.dataset.revert);
+    if(sl){
+      const before=calc(b);
+      logSwap(editing, sl.id, b[sl.id], sl.stock);
+      b[sl.id]=sl.stock;
+      markChanges(before, calc(b));
+      sel={slot:sl.id};
+      renderAll();
+    }
+    return; }
+  const lg=e.target.closest('[data-goto]');
+  if(lg){
+    const sl=(ship().slots||[]).find(x=>x.id===lg.dataset.goto);
+    if(sl) selectPort(sl, editing);
+    return; }
   const pi=e.target.closest('.pi[data-part]');
   if(pi&&sel){
     const b=editing==="A"?A:B;
     /* N10: measured BEFORE and AFTER the swap, so what announces itself is
        what actually moved rather than what we expected to. */
     const before=calc(b);
+    logSwap(editing, sel.slot, b[sel.slot], pi.dataset.part);
     b[sel.slot]=pi.dataset.part; ghost=null;
     markChanges(before, calc(b));
     renderAll();return;}
@@ -4849,6 +5100,9 @@ $('reset').onclick=()=>{
   Object.keys(b).forEach(k=>delete b[k]);
   Object.assign(b, st);
   markChanges(before, calc(b));
+  /* The log goes with it. Leaving entries behind would let Undo walk a build
+     backwards past a reset into a state that no longer exists. */
+  swapLog=[];
   sel=null; renderAll();
 };
 $('share').onclick=()=>{writeHash();

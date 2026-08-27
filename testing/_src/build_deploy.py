@@ -1,4 +1,4 @@
-import base64, json, math, os, re, glob, sys
+import atexit, base64, json, math, os, re, glob, sys
 import datetime as _dt
 import re as _re
 
@@ -54,11 +54,109 @@ OUT  = os.path.join(REPO, 'testing', '_deploy')
 SITE  = os.path.join(REPO, 'releases', 'latest.html')
 LAYER = os.path.join(SRC, '_layer.src.html')
 
+# ---------------------------------------------------------------------------
+# THE BUILD RECEIPT - so a FAILED BUILD CANNOT BE FOLLOWED BY AN UPLOAD.
+#
+# 2026-08-27: build and deploy were chained in one command, the build exited 1,
+# and the deploy read only its own output and put twelve wrong models live. The
+# browser-check gate could not have stopped it - that gate runs the BROWSER
+# checks, and what failed here was a BUILD gate.
+#
+# The gate cannot be "a build must have run", because a deploy legitimately does
+# not require one. So the build leaves evidence of how it ENDED, and the deploy
+# refuses on evidence of failure.
+#
+# It is written OUTSIDE _deploy on purpose. Anything inside would have to be
+# taught to the deploy guard, and a guard that has learned to expect one more
+# unexpected file is worth slightly less.
+#
+# WHY IT PERSISTS ACROSS INVOCATIONS RATHER THAN BEING SCOPED TO ONE.
+# The order says "if a build ran in this invocation and failed, stop". A receipt
+# on disk is strictly stronger: it also catches a build that failed an hour ago
+# and a deploy attempted afterwards without rebuilding, which is the same
+# payload in the same suspect state. A receipt is cleared only by a build that
+# reaches the end.
+RECEIPT = os.path.join(SRC, '.last_build.json')
+_BUILD_DONE = {'ok': False}
+
+
+def _write_receipt(status, code, detail=''):
+    import json as _rj
+    import datetime as _rd
+    try:
+        with open(RECEIPT, 'w', encoding='utf-8') as _fh:
+            _rj.dump({'status': status, 'exit_code': code,
+                      'detail': str(detail)[:400],
+                      'live': LIVE, 'pid': os.getpid(),
+                      'at': _rd.datetime.now().isoformat(timespec='seconds')},
+                     _fh, indent=1)
+    except OSError:
+        # A build that cannot write its own receipt must not therefore look
+        # successful, but neither should it die here. The deploy treats a
+        # MISSING receipt as "no build to judge" and an unreadable one as
+        # failure, so silence is the safe direction.
+        pass
+
+
+_write_receipt('running', None, 'build started')
+
+# sys.exit is how every gate in this file refuses, so that is where the exit
+# code is. Wrapping it is what makes the receipt carry the real number rather
+# than a guess.
+_real_exit = sys.exit
+
+
+def _exit_recording(arg=0):
+    if not _BUILD_DONE['ok']:
+        code = arg if isinstance(arg, int) else (0 if arg is None else 1)
+        _write_receipt('failed', code, '' if isinstance(arg, int) else arg)
+    _real_exit(arg)
+
+
+sys.exit = _exit_recording
+
+
+@atexit.register
+def _receipt_final():
+    # Covers the path sys.exit does not: an uncaught exception. On 2026-08-27
+    # this build died on a TypeError, which is exactly that path.
+    if _BUILD_DONE['ok']:
+        return
+    import json as _rj
+    try:
+        with open(RECEIPT, encoding='utf-8') as _fh:
+            if _rj.load(_fh).get('status') == 'running':
+                _write_receipt('failed', 1,
+                               'build ended without reaching the end and '
+                               'without calling sys.exit - most likely an '
+                               'uncaught exception')
+    except (OSError, ValueError):
+        pass
+
 def rd(p, b=False):
     if not os.path.exists(p):
         sys.exit("BUILD INPUT MISSING: %s\n"
                  "This build cannot invent it. Nothing was written." % p)
     return open(p,'rb').read() if b else open(p,encoding='utf-8').read()
+
+
+# THE DISCLOSURE-BAR CSS, SUBSTITUTED FROM ONE FILE.
+#
+# ORDER_the-disclosure-bar: "One pattern, one implementation, used on every
+# explanatory block on the site. Not five variations that drift apart." Three
+# pages needed the same rules, so they read them from _disc.css rather than
+# each carrying a copy.
+#
+# FAILS CLOSED IN BOTH DIRECTIONS. A page asking for the CSS that does not get
+# it renders its bars unstyled - a summary with no chrome, which still works but
+# is not what was designed - and that would ship silently. A marker present with
+# the file missing stops the build. The file present and used by nobody is
+# reported rather than passed over, because that is how a shared implementation
+# quietly becomes an unused one while every page grows its own copy again.
+CC_DISC_MARKER = '/* CC_DISC_CSS */'
+_disc_css_path = os.path.join(SRC, '_disc.css')
+_disc_css = rd(_disc_css_path) if os.path.exists(_disc_css_path) else None
+_disc_used = []
 
 # ---------------------------------------------------------------------------
 # A1 + A3. THE ATTRIBUTION FURNITURE, ON EVERY PAGE, FROM ONE DEFINITION.
@@ -345,10 +443,20 @@ if not os.path.exists(_holo):
     sys.exit("MISSING GATE: _verify_holo_placement.py is gone. A gate that "
              "has been deleted is not a gate that passed.")
 for _args, _what in (([], "checks"), (["--prove"], "self-proof")):
-    _r = _sp.run([sys.executable, _holo] + _args, capture_output=True, text=True)
+    # encoding + errors, and `or ""` on the write. BOTH are rule 15.
+    #
+    # This gate prints SHIP NAMES, and San'tok.yai is spelled with a macron.
+    # Decoding its output with the platform default is the same cp1252 trap the
+    # rule is about, one process removed. And on 2026-08-27 the gate genuinely
+    # failed, and this block crashed on `write() argument must be str, not None`
+    # BEFORE printing why - so the build died with a TypeError and the real
+    # finding was invisible. A gate failing is information; a gate failure that
+    # takes out its own reporter is a gate failure nobody can act on.
+    _r = _sp.run([sys.executable, _holo] + _args, capture_output=True, text=True,
+                 encoding="utf-8", errors="replace")
     if _r.returncode != 0:
-        sys.stdout.write(_r.stdout)
-        sys.stderr.write(_r.stderr)
+        sys.stdout.write(_r.stdout or "(the gate produced no stdout)\n")
+        sys.stderr.write(_r.stderr or "")
         sys.exit("GATE FAILED: _verify_holo_placement.py %s. Refusing to build."
                  % _what)
     print("gate passed: _verify_holo_placement.py (%s)" % _what)
@@ -880,6 +988,19 @@ if _CELL_OLD not in out:
              "Every ship name would keep pointing at RSI, which is the defect "
              "this replacement exists to fix. Nothing was written.")
 out = out.replace(_CELL_OLD, _CELL_NEW, 1)
+
+# index.html is written HERE, not in the PAGES copy loop, so the shared
+# disclosure CSS has to be substituted here too. It was missed the first time
+# and the marker shipped as a literal CSS comment - the bar rendered unstyled
+# and the build said nothing, because the "used by nobody" guard was satisfied
+# by the OTHER two pages. A guard that passes because somebody else used the
+# thing is not covering this page.
+if CC_DISC_MARKER in out:
+    if _disc_css is None:
+        sys.exit("index.html asks for the shared disclosure CSS and "
+                 "testing/_src/_disc.css is missing. Refusing.")
+    out = out.replace(CC_DISC_MARKER, _disc_css)
+    _disc_used.append('index.html')
 
 out = _with_attribution(out, 'index.html', True)
 open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
@@ -1665,6 +1786,14 @@ for _src_name, _out_name in PAGES:
             _copied.append(_out_name)
             continue
         _txt = rd(_s) if _src_name.endswith('.html') else None
+        if _txt is not None and CC_DISC_MARKER in _txt:
+            if _disc_css is None:
+                sys.exit("%s asks for the shared disclosure CSS and "
+                         "testing/_src/_disc.css is missing. The page would "
+                         "ship its bars unstyled and the build would have said "
+                         "nothing. Refusing." % _src_name)
+            _txt = _txt.replace(CC_DISC_MARKER, _disc_css)
+            _disc_used.append(_out_name)
         if _txt is not None and CC_VENDOR_MARKER in _txt:
             _txt = _txt.replace(CC_VENDOR_MARKER, _vendor_block)
             if 'cdn.jsdelivr.net' in _txt or 'https://unpkg' in _txt:
@@ -1692,6 +1821,14 @@ if _absent:
              "to them would 404. Fix the source or remove the entry from PAGES.\n"
              "Failing loudly rather than shipping a page with dead links."
              % ', '.join(_absent))
+if _disc_css is not None and not _disc_used:
+    sys.exit("testing/_src/_disc.css exists and NO page asked for it. Either a "
+             "page lost its %s marker, or the shared implementation has been "
+             "abandoned while pages grow their own copies again - which is the "
+             "drift the order exists to prevent. Refusing rather than shipping "
+             "it quietly." % CC_DISC_MARKER)
+print('disclosure CSS: shared from _disc.css into', ', '.join(_disc_used)
+      if _disc_used else 'nothing')
 print('pages copied:', ', '.join(_copied) if _copied else 'none')
 print('written:', len(out)/1048576, 'MB')
 
@@ -1818,3 +1955,11 @@ _allowed = {'index.html'} | {_o for _s, _o in PAGES}
 if _deploy_guard(OUT, allowed_files=_allowed):
     sys.exit("BUILD FAILED: refusing to leave _deploy in a state that would "
              "publish unexpected files. Nothing has been uploaded.")
+
+# THE LAST STATEMENT IN THE FILE, DELIBERATELY. Everything above it - every
+# gate, every generator, the deploy guard - has to have passed for the build to
+# be recorded as ok. Anything that stops the script earlier leaves a receipt
+# saying so, and the deploy refuses on it.
+_BUILD_DONE['ok'] = True
+_write_receipt('ok', 0, 'build completed')
+print('build receipt: ok  (%s)' % os.path.relpath(RECEIPT, REPO))

@@ -1,6 +1,8 @@
 {
  "class": "crus_intrepid",
  "model": "Intrepid.glb",
+ "hardpoints_from": "crus_intrepid",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.00148,
  "scale_estimates": {
   "length": 1.00148,

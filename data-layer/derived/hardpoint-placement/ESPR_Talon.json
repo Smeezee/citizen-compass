@@ -1,6 +1,8 @@
 {
  "class": "ESPR_Talon",
  "model": "Talon.glb",
+ "hardpoints_from": "ESPR_Talon",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.02266,
  "scale_estimates": {
   "length": 1.02266,

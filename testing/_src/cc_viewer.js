@@ -1260,15 +1260,42 @@ var CCViewer = (function () {
     var c = box.getCenter(new THREE.Vector3());
     var s = box.getSize(new THREE.Vector3());
     var f = this._obstruct || 0;
-    /* Shift the look-at point sideways by half the covered width, in world
-       units, so the visible half of the stage centres on the hull. */
+    /* SLEVEN, 2026-08-27, on the deployed page: "why does the ship zoom out
+       when I click the hardpoints?"
+
+       Because this function used to RECOMPUTE the camera distance from the
+       hull's bounding box every time a panel opened - `(fit/2)/tan(fov/2) *
+       (1 + f*0.9) * 1.35`. Two things fell out of that and both were wrong:
+
+       1. THE SHIP SHRANK ON EVERY CLICK. The `(1 + f*0.9)` term pulled the
+          camera back to fit the hull into the narrower viewport. E4 was
+          protecting against the hull becoming a sliver at the far edge, and
+          it paid for that by making the hull smaller every time somebody
+          asked a question about it.
+       2. IT THREW AWAY THE VIEWER'S OWN ZOOM. The distance was recomputed
+          from scratch, so anybody who had scrolled in to look at a wing lost
+          that the moment they clicked a dot on it. That is the worse of the
+          two and nobody reported it, because it reads as the page being
+          twitchy rather than as a feature undoing your work.
+
+       THE DISTANCE IS NOW PRESERVED. Only the look-at point moves, which is a
+       PAN - the ship stays exactly the size the person put it at, and slides
+       so the panel is not sitting on top of it. If the hull overflows the
+       narrower space, that is a better failure than resizing the thing they
+       are trying to look at. The brief is explicit: you can see the ship while
+       you change it. */
     var shift = (s.x || 1) * f * 0.5;
+    var prev = this.camera.position.clone().sub(this.controls.target);
+    var dist = prev.length();
     this.controls.target.set(c.x + shift, c.y, c.z);
-    /* And pull back enough that the hull still fits the NARROWER viewport. */
-    var fit = Math.max(s.x, s.y, s.z) || 1;
-    var fov = (this.camera.fov || 42) * Math.PI / 180;
-    var dist = (fit / 2) / Math.tan(fov / 2) * (1 + f * 0.9) * 1.35;
-    var dir = this.camera.position.clone().sub(this.controls.target);
+    /* Only on the very first frame, before the person has a viewpoint of their
+       own to protect, is a distance computed at all. */
+    if (!(dist > 1e-6)) {
+      var fit = Math.max(s.x, s.y, s.z) || 1;
+      var fov = (this.camera.fov || 42) * Math.PI / 180;
+      dist = (fit / 2) / Math.tan(fov / 2) * 1.35;
+    }
+    var dir = prev;
     if (dir.lengthSq() < 1e-9) dir.set(1, 0.5, 1);
     dir.normalize().multiplyScalar(dist);
     this.camera.position.copy(this.controls.target).add(dir);

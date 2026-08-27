@@ -282,12 +282,28 @@ if (!bars.length) {
   notPerformed.push("D2 had no subjects - the collapse pattern is not built");
 } else {
   for (const b of bars) {
-    const hasDigit = /\d/.test(b.fact);
+    /* A STAMP, NOT NECESSARILY A NUMBER.
+       This asked for a digit, on the reasoning that the order's example bar
+       carries "PATCH 4.9" and a snapshot id. That is one of the shapes, not
+       all of them: C1's matchup bar reads "MATCHUP  not a rating - no gun here
+       is better" and the shop bar "NO PRICE JOIN  shop data is real, the link
+       to these parts is not proven". Both carry the load-bearing fact for their
+       block and neither has a digit in it, and D2 failed them - a correct bar
+       rejected by an over-specified check.
+
+       What the order actually specifies is A STAMP: "the single load-bearing
+       fact - the patch, the source, the count. Monospace, high contrast,
+       unmissable." So the test is for the stamp's SHAPE - a run of capitals or
+       a number - plus substance beyond the opener label.
+
+       "More info >" has neither and still fails, which is checked on every run
+       by --mutate-hollow-bar rather than argued here. */
+    const hasStamp = /\d/.test(b.fact) || /[A-Z]{3,}/.test(b.fact);
     const longEnough = b.fact.length >= 20;
-    if (!check(hasDigit && longEnough,
+    if (!check(hasStamp && longEnough,
           `${b.page}: collapsed bar carries a fact, not just an opener`,
           `visible-while-collapsed text was ${JSON.stringify(b.fact)} `
-          + `(${b.fact.length} chars, digit:${hasDigit})`)) d2Failures++;
+          + `(${b.fact.length} chars, stamp:${hasStamp})`)) d2Failures++;
   }
 }
 

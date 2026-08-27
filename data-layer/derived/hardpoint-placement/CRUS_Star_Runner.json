@@ -1,6 +1,8 @@
 {
  "class": "CRUS_Star_Runner",
  "model": "Mercury.glb",
+ "hardpoints_from": "CRUS_Star_Runner",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.3568,
  "scale_estimates": {
   "length": 1.3568,

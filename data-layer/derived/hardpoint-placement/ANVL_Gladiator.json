@@ -1,6 +1,8 @@
 {
  "class": "ANVL_Gladiator",
  "model": "Gladiator.glb",
+ "hardpoints_from": "ANVL_Gladiator",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.0175,
  "scale_estimates": {
   "length": 1.0175,

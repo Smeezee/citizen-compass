@@ -1,6 +1,8 @@
 {
  "class": "ORIG_100i",
  "model": "100i.glb",
+ "hardpoints_from": "ORIG_100i",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.08664,
  "scale_estimates": {
   "length": 1.08664,

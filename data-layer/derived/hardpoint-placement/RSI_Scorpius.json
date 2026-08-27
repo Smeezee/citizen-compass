@@ -1,6 +1,8 @@
 {
  "class": "RSI_Scorpius",
  "model": "Scorpius.glb",
+ "hardpoints_from": "RSI_Scorpius",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.30985,
  "scale_estimates": {
   "length": 1.30985,

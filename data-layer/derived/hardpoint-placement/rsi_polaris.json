@@ -1,6 +1,8 @@
 {
  "class": "rsi_polaris",
  "model": "Polaris.glb",
+ "hardpoints_from": "rsi_polaris",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 2.89022,
  "scale_estimates": {
   "length": 2.89022,

@@ -1,6 +1,8 @@
 {
  "class": "ANVL_Carrack",
  "model": "Carrack.glb",
+ "hardpoints_from": "ANVL_Carrack",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.00339,
  "scale_estimates": {
   "length": 1.00339,

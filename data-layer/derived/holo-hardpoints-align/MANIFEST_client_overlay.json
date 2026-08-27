@@ -5,8 +5,8 @@
  "units": "unit = normalised to the hull's longest HALF-extent, the same definition build_holo_data.py uses. pos_model is scaled back out using THIS hull's own existing unit/pos_model pair.",
  "not_applied": "This file is written BESIDE alignment_overlay.json and nothing reads it yet. Wiring it in is a separate, reversible step.",
  "counts": {
-  "hulls": 64,
-  "ports": 754
+  "hulls": 93,
+  "ports": 952
  },
  "hulls": [
   {
@@ -113,17 +113,17 @@
   {
    "class": "ANVL_Hornet_F7A_MK1",
    "fleet_key": "F7A Hornet Mk I",
-   "emitted": 10,
-   "median_move": 0.4846,
-   "max_move": 0.6555,
+   "emitted": 2,
+   "median_move": 0.4739,
+   "max_move": 0.5066,
    "pos_model": true
   },
   {
    "class": "ANVL_Hornet_F7CM",
    "fleet_key": "F7C-M Super Hornet Mk I",
-   "emitted": 10,
-   "median_move": 0.6265,
-   "max_move": 1.3537,
+   "emitted": 2,
+   "median_move": 0.7723,
+   "max_move": 0.8871,
    "pos_model": true
   },
   {
@@ -296,6 +296,14 @@
    "pos_model": true
   },
   {
+   "class": "MISC_Hull_A",
+   "fleet_key": "MISC Hull A",
+   "emitted": 6,
+   "median_move": 0.4802,
+   "max_move": 0.9736,
+   "pos_model": true
+  },
+  {
    "class": "MISC_Prospector",
    "fleet_key": "MISC Prospector",
    "emitted": 6,
@@ -378,6 +386,11 @@
    "pos_model": true
   },
   {
+   "class": "VNCL_Glaive",
+   "emitted": 0,
+   "why": "placement did not pass: 1 of 10 exterior mounts land outside the hull"
+  },
+  {
    "class": "VNCL_Scythe",
    "emitted": 0,
    "why": "placement did not pass: 1 of 10 exterior mounts land outside the hull"
@@ -407,6 +420,38 @@
    "pos_model": true
   },
   {
+   "class": "aegs_avenger_stalker",
+   "fleet_key": "Avenger Stalker",
+   "emitted": 8,
+   "median_move": 0.6179,
+   "max_move": 0.8076,
+   "pos_model": true
+  },
+  {
+   "class": "aegs_avenger_titan",
+   "fleet_key": "Avenger Titan",
+   "emitted": 8,
+   "median_move": 0.6482,
+   "max_move": 0.7739,
+   "pos_model": true
+  },
+  {
+   "class": "aegs_avenger_titan_renegade",
+   "fleet_key": "Avenger Titan Renegade",
+   "emitted": 8,
+   "median_move": 0.6482,
+   "max_move": 0.7739,
+   "pos_model": true
+  },
+  {
+   "class": "aegs_avenger_warlock",
+   "fleet_key": "Avenger Warlock",
+   "emitted": 8,
+   "median_move": 0.6492,
+   "max_move": 0.8005,
+   "pos_model": true
+  },
+  {
    "class": "aegs_retaliator",
    "fleet_key": "Retaliator",
    "emitted": 20,
@@ -423,11 +468,91 @@
    "pos_model": true
   },
   {
+   "class": "anvl_hornet_f7a_mk2",
+   "fleet_key": "F7A Hornet Mk II",
+   "emitted": 12,
+   "median_move": 0.508,
+   "max_move": 0.6769,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7a_mk2_exec_military",
+   "fleet_key": "F7A Hornet Mk II",
+   "emitted": 12,
+   "median_move": 0.508,
+   "max_move": 0.6769,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7a_mk2_exec_stealth",
+   "fleet_key": "F7A Hornet Mk II",
+   "emitted": 12,
+   "median_move": 0.508,
+   "max_move": 0.6769,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7c",
+   "fleet_key": "F7C Hornet Mk I",
+   "emitted": 4,
+   "median_move": 0.3227,
+   "max_move": 0.6555,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7c_mk2",
+   "fleet_key": "F7C Hornet Mk II",
+   "emitted": 2,
+   "median_move": 0.6122,
+   "max_move": 0.7937,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7c_wildfire",
+   "fleet_key": "F7C Hornet Wildfire Mk I",
+   "emitted": 5,
+   "median_move": 0.3241,
+   "max_move": 0.6533,
+   "pos_model": true
+  },
+  {
    "class": "anvl_hornet_f7cm_mk2",
    "fleet_key": "F7C-M Super Hornet Mk II",
    "emitted": 12,
    "median_move": 0.4626,
    "max_move": 0.6727,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7cr",
+   "fleet_key": "F7C-R Hornet Tracker Mk I",
+   "emitted": 4,
+   "median_move": 0.2745,
+   "max_move": 0.6857,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7cr_mk2",
+   "fleet_key": "F7C-R Hornet Tracker Mk II",
+   "emitted": 2,
+   "median_move": 0.6352,
+   "max_move": 0.8684,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7cs",
+   "fleet_key": "F7C-S Hornet Ghost Mk I",
+   "emitted": 4,
+   "median_move": 0.3213,
+   "max_move": 0.6256,
+   "pos_model": true
+  },
+  {
+   "class": "anvl_hornet_f7cs_mk2",
+   "fleet_key": "F7C-S Hornet Ghost Mk II",
+   "emitted": 2,
+   "median_move": 0.6128,
+   "max_move": 0.848,
    "pos_model": true
   },
   {
@@ -439,6 +564,54 @@
    "pos_model": true
   },
   {
+   "class": "cnou_mustang_alpha",
+   "fleet_key": "Mustang Alpha",
+   "emitted": 7,
+   "median_move": 0.3319,
+   "max_move": 0.5634,
+   "pos_model": true
+  },
+  {
+   "class": "cnou_mustang_alpha_citizencon2018",
+   "fleet_key": "Mustang Alpha",
+   "emitted": 7,
+   "median_move": 0.3319,
+   "max_move": 0.5634,
+   "pos_model": true
+  },
+  {
+   "class": "cnou_mustang_beta",
+   "fleet_key": "Mustang Beta",
+   "emitted": 7,
+   "median_move": 0.343,
+   "max_move": 0.4437,
+   "pos_model": true
+  },
+  {
+   "class": "cnou_mustang_delta",
+   "fleet_key": "Mustang Delta",
+   "emitted": 9,
+   "median_move": 0.3437,
+   "max_move": 0.4702,
+   "pos_model": true
+  },
+  {
+   "class": "cnou_mustang_gamma",
+   "fleet_key": "Mustang Gamma",
+   "emitted": 7,
+   "median_move": 0.3687,
+   "max_move": 0.5907,
+   "pos_model": true
+  },
+  {
+   "class": "cnou_mustang_omega",
+   "fleet_key": "Mustang Omega",
+   "emitted": 7,
+   "median_move": 0.3687,
+   "max_move": 0.5907,
+   "pos_model": true
+  },
+  {
    "class": "crus_intrepid",
    "fleet_key": "Intrepid",
    "emitted": 7,
@@ -447,9 +620,73 @@
    "pos_model": true
   },
   {
+   "class": "crus_spirit_a1",
+   "fleet_key": "A1 Spirit",
+   "emitted": 10,
+   "median_move": 0.6256,
+   "max_move": 0.7311,
+   "pos_model": true
+  },
+  {
+   "class": "crus_spirit_c1",
+   "fleet_key": "C1 Spirit",
+   "emitted": 10,
+   "median_move": 0.5742,
+   "max_move": 0.7233,
+   "pos_model": true
+  },
+  {
+   "class": "crus_starfighter_inferno",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "crus_starfighter_inferno_collector_military",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "crus_starfighter_ion",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "crus_starfighter_ion_collector_stealth",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "crus_starlifter_a2",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "crus_starlifter_a2_collector_military",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "crus_starlifter_c2",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "crus_starlifter_m2",
+   "emitted": 0,
+   "why": "placement did not pass: 14 of 15 exterior mounts land outside the hull"
+  },
+  {
    "class": "drak_clipper",
    "emitted": 0,
    "why": "no fleet record for this hull"
+  },
+  {
+   "class": "drak_golem",
+   "fleet_key": "Golem",
+   "emitted": 8,
+   "median_move": 0.7422,
+   "max_move": 0.9865,
+   "pos_model": true
   },
   {
    "class": "drak_golem_ox",
@@ -473,6 +710,14 @@
    "emitted": 16,
    "median_move": 0.747,
    "max_move": 1.2199,
+   "pos_model": true
+  },
+  {
+   "class": "krig_l21_wolf",
+   "fleet_key": "L-21 Wolf",
+   "emitted": 7,
+   "median_move": 0.5132,
+   "max_move": 0.8573,
    "pos_model": true
   },
   {
@@ -500,11 +745,35 @@
    "pos_model": true
   },
   {
+   "class": "misc_starlancer_max",
+   "fleet_key": "MISC Starlancer MAX",
+   "emitted": 10,
+   "median_move": 0.2966,
+   "max_move": 0.9097,
+   "pos_model": true
+  },
+  {
+   "class": "misc_starlancer_max_collector_indust",
+   "fleet_key": "MISC Starlancer MAX",
+   "emitted": 10,
+   "median_move": 0.2966,
+   "max_move": 0.9097,
+   "pos_model": true
+  },
+  {
    "class": "misc_starlancer_tac",
    "fleet_key": "MISC Starlancer TAC",
    "emitted": 17,
    "median_move": 0.4292,
    "max_move": 1.1845,
+   "pos_model": true
+  },
+  {
+   "class": "misc_starlancer_tac_collector_military",
+   "fleet_key": "MISC Starlancer TAC",
+   "emitted": 10,
+   "median_move": 0.3993,
+   "max_move": 1.1441,
    "pos_model": true
   },
   {
@@ -527,6 +796,134 @@
    "class": "mrai_pulse",
    "emitted": 0,
    "why": "no fleet record for this hull"
+  },
+  {
+   "class": "rsi_apollo_medivac",
+   "fleet_key": "Apollo Medivac",
+   "emitted": 7,
+   "median_move": 0.4663,
+   "max_move": 0.5415,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_apollo_medivac_tier_1",
+   "fleet_key": "Apollo Medivac",
+   "emitted": 7,
+   "median_move": 0.4663,
+   "max_move": 0.5415,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_apollo_medivac_tier_2",
+   "fleet_key": "Apollo Medivac",
+   "emitted": 7,
+   "median_move": 0.4663,
+   "max_move": 0.5415,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_apollo_medivac_tier_3",
+   "fleet_key": "Apollo Medivac",
+   "emitted": 7,
+   "median_move": 0.4663,
+   "max_move": 0.5415,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_apollo_triage",
+   "fleet_key": "Apollo Triage",
+   "emitted": 7,
+   "median_move": 0.4658,
+   "max_move": 0.5407,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_apollo_triage_collector_stealth",
+   "fleet_key": "Apollo Triage",
+   "emitted": 7,
+   "median_move": 0.4658,
+   "max_move": 0.5407,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_apollo_triage_tier_1",
+   "fleet_key": "Apollo Triage",
+   "emitted": 7,
+   "median_move": 0.4658,
+   "max_move": 0.5407,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_apollo_triage_tier_2",
+   "fleet_key": "Apollo Triage",
+   "emitted": 7,
+   "median_move": 0.4658,
+   "max_move": 0.5407,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_apollo_triage_tier_3",
+   "fleet_key": "Apollo Triage",
+   "emitted": 7,
+   "median_move": 0.4658,
+   "max_move": 0.5407,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_aurora_gs_cl",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "rsi_aurora_gs_es",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "rsi_aurora_gs_ln",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "rsi_aurora_gs_lx",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "rsi_aurora_gs_mr",
+   "emitted": 0,
+   "why": "no fleet record for this hull"
+  },
+  {
+   "class": "rsi_constellation_andromeda",
+   "emitted": 0,
+   "why": "placement did not pass: 3 of 22 exterior mounts land outside the hull"
+  },
+  {
+   "class": "rsi_constellation_aquila",
+   "fleet_key": "Constellation Aquila",
+   "emitted": 21,
+   "median_move": 0.4167,
+   "max_move": 0.8334,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_constellation_phoenix",
+   "emitted": 0,
+   "why": "placement did not pass: 3 of 22 exterior mounts land outside the hull"
+  },
+  {
+   "class": "rsi_constellation_phoenix_emerald",
+   "emitted": 0,
+   "why": "placement did not pass: 3 of 22 exterior mounts land outside the hull"
+  },
+  {
+   "class": "rsi_constellation_taurus",
+   "fleet_key": "Constellation Taurus",
+   "emitted": 17,
+   "median_move": 0.4304,
+   "max_move": 0.7745,
+   "pos_model": true
   },
   {
    "class": "rsi_meteor",
@@ -558,6 +955,38 @@
    "emitted": 6,
    "median_move": 0.6239,
    "max_move": 0.7226,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_zeus_cl",
+   "fleet_key": "Zeus Mk II CL",
+   "emitted": 7,
+   "median_move": 0.7785,
+   "max_move": 0.9019,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_zeus_cl_collector_indust",
+   "fleet_key": "Zeus Mk II CL",
+   "emitted": 7,
+   "median_move": 0.7785,
+   "max_move": 0.9019,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_zeus_es",
+   "fleet_key": "Zeus Mk II ES",
+   "emitted": 7,
+   "median_move": 0.7791,
+   "max_move": 0.9033,
+   "pos_model": true
+  },
+  {
+   "class": "rsi_zeus_es_collector_indust",
+   "fleet_key": "Zeus Mk II ES",
+   "emitted": 7,
+   "median_move": 0.7791,
+   "max_move": 0.9033,
    "pos_model": true
   },
   {

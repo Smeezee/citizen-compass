@@ -1,6 +1,8 @@
 {
  "class": "MISC_Reliant",
  "model": "Reliant_Kore.glb",
+ "hardpoints_from": "MISC_Reliant",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.84726,
  "scale_estimates": {
   "length": 1.84726,

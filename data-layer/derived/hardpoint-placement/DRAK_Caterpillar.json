@@ -1,6 +1,8 @@
 {
  "class": "DRAK_Caterpillar",
  "model": "Caterpillar.glb",
+ "hardpoints_from": "DRAK_Caterpillar",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 0.99945,
  "scale_estimates": {
   "length": 0.99945,

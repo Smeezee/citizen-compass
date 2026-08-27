@@ -1,6 +1,8 @@
 {
  "class": "DRAK_Dragonfly",
  "model": "Dragonfly_Black.glb",
+ "hardpoints_from": "DRAK_Dragonfly",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.07942,
  "scale_estimates": {
   "length": 1.07942,

@@ -1,6 +1,8 @@
 {
  "class": "drak_ironclad",
  "model": "Ironclad.glb",
+ "hardpoints_from": "drak_ironclad",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 0.97714,
  "scale_estimates": {
   "length": 0.97714,

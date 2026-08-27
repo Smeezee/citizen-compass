@@ -1,6 +1,8 @@
 {
  "class": "rsi_salvation",
  "model": "Salvation.glb",
+ "hardpoints_from": "rsi_salvation",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.12071,
  "scale_estimates": {
   "length": 1.12071,

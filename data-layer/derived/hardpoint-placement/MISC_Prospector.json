@@ -1,6 +1,8 @@
 {
  "class": "MISC_Prospector",
  "model": "Prospector.glb",
+ "hardpoints_from": "MISC_Prospector",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.11842,
  "scale_estimates": {
   "length": 1.11842,

@@ -1,6 +1,8 @@
 {
  "class": "AEGS_Eclipse",
  "model": "Eclipse.glb",
+ "hardpoints_from": "AEGS_Eclipse",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.19526,
  "scale_estimates": {
   "length": 1.19526,

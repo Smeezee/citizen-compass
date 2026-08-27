@@ -122,14 +122,59 @@ def decode(buf):
         raise DecodeError("node records would run past the chunk (%d needed, "
                           "%d available)" % (count * REC, de - base))
 
+    raw = [struct.unpack_from("<H", buf, base + k * REC + IDX)[0]
+           for k in range(count)]
+    mats = [struct.unpack_from("<12f", buf, base + k * REC + MAT)
+            for k in range(count)]
+
+    # THE REPAIR, AND WHY IT IS A HYPOTHESIS RATHER THAN A FIX.
+    #
+    # On most hulls `raw` is a clean permutation of 0..count-1 and the join is
+    # exact. On seven it is not, and the shape of the damage is always the
+    # same: some records carry 0xFFFF - no index assigned - and EXACTLY THAT
+    # MANY indices are unused. The M80: 245 nodes, 240 good, 5 sentinels, 5
+    # holes.
+    #
+    # So the holes are assigned to the sentinel records in positional order.
+    # THAT IS A GUESS. Positional order is not stated anywhere in the format
+    # and `raw` is demonstrably NOT positional on the hulls where it is intact
+    # (index == position on 0 of 286 Vulture nodes).
+    #
+    # WHAT MAKES IT ACCEPTABLE IS THAT SOMETHING ELSE JUDGES IT. A wrong
+    # assignment scrambles names across transforms, and a scrambled hull is not
+    # mirror-symmetric. The acceptance test reads the GEOMETRY, which knows
+    # nothing about this repair - so the repair cannot mark its own homework.
+    # A repaired hull that fails the mirror test is reported as failed, not
+    # nursed into passing.
+    #
+    # Marked `index_repaired` so no downstream consumer can mistake a
+    # reconstruction for a reading.
+    repaired = False
+    seen, dup = set(), False
+    for v in raw:
+        if v in seen and v != 0xFFFF:
+            dup = True
+        seen.add(v)
+    holes = [i for i in range(count) if i not in seen]
+    sent = [k for k, v in enumerate(raw) if v == 0xFFFF]
+    if dup:
+        raise DecodeError("a real node index appears twice - the index field "
+                          "is not the join key it looked like")
+    if sent:
+        if len(sent) != len(holes):
+            raise DecodeError("%d records carry no index but %d indices are "
+                              "unused - the gap does not close and nothing is "
+                              "guessed" % (len(sent), len(holes)))
+        for k, h in zip(sent, holes):
+            raw[k] = h
+        repaired = True
+
     by_index = {}
     for k in range(count):
-        o = base + k * REC
-        idx = struct.unpack_from("<H", buf, o + IDX)[0]
-        if idx in by_index:
-            raise DecodeError("node index %d appears twice - the index field "
-                              "is not the join key it looked like" % idx)
-        by_index[idx] = struct.unpack_from("<12f", buf, o + MAT)
+        if raw[k] in by_index:
+            raise DecodeError("node index %d appears twice after repair"
+                              % raw[k])
+        by_index[raw[k]] = mats[k]
     if sorted(by_index) != list(range(count)):
         raise DecodeError("the node indices are not a permutation of 0..%d, "
                           "so the join to the name table is not sound"
@@ -146,7 +191,8 @@ def decode(buf):
             "matrix": list(m),
             "rows_unit": rows_unit,
         })
-    return {"version": ver, "count": count, "nodes": nodes}
+    return {"version": ver, "count": count, "nodes": nodes,
+            "index_repaired": repaired}
 
 
 def acceptance(nodes, label):

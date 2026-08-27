@@ -1,0 +1,57 @@
+/* THE DISCLOSURE BAR - ONE IMPLEMENTATION, SHARED BY EVERY PAGE.
+
+   ORDER_the-disclosure-bar-2026-08-27: "One pattern, one implementation, used
+   on every explanatory block on the site. Not five variations that drift
+   apart."
+
+   C1 built the reference implementation in loadout.src.html. This file is that
+   CSS, extracted verbatim so find, keybinds and index use the SAME rules rather
+   than three copies of them. The build substitutes it wherever a page carries
+   the marker, so there is one place to change.
+
+   loadout.src.html still carries its own copy - it is C1's file and not mine to
+   edit. That is two copies, not four, and it is the direction of travel:
+   loadout can point at this file whenever C1 wants.
+
+   ONLY `.disc` COLLAPSES. The amber `.note`, `.dvwarn`, `.slotnote` and
+   `.slotswap` treatments are deliberately untouched, so a block has to be MOVED
+   into this class by hand. A blanket restyle would sweep the error states, the
+   live state notes and the buttons in with the explanations - which is the
+   exact defect D1 exists to catch, introduced by the fix for it. */
+.disc{margin-top:11px;background:var(--panel2);border:1px solid var(--line);
+ border-radius:9px;overflow:hidden}
+.disc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+ gap:9px;padding:9px 12px;min-height:38px;box-sizing:border-box;
+ font-size:12px;color:var(--muted)}
+.disc>summary::-webkit-details-marker{display:none}
+.disc>summary:hover{background:var(--panel3)}
+.disc>summary:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
+.disc .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:11px;letter-spacing:.06em;color:var(--text);background:var(--panel3);
+ border:1px solid var(--line);border-radius:5px;padding:2px 7px;white-space:nowrap}
+.disc .srcline{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;
+ white-space:nowrap}
+.disc .opener{color:var(--accent2);white-space:nowrap}
+.disc[open]>summary{border-bottom:1px solid var(--line)}
+.disc[open] .opener::after{content:" \2039"}
+.disc:not([open]) .opener::after{content:" \203A"}
+.disc .body{padding:12px 13px 13px}
+.disc .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+ gap:13px}
+.disc .cols section{min-width:0}
+.disc .cols h5{margin:0 0 5px;font:600 11.5px inherit;letter-spacing:.04em;
+ color:var(--text)}
+.disc .cols p{margin:0;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.disc .figs{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 7px}
+.disc .figs b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:11px;font-weight:600;color:var(--text);background:var(--panel3);
+ border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+.disc .figs b i{font-style:normal;color:var(--muted);font-weight:400}
+.disc.inline{display:inline;background:none;border:0;border-radius:0;
+ margin:0;overflow:visible}
+.disc.inline>summary{display:inline;padding:0;min-height:0;font-size:inherit;
+ color:var(--accent2)}
+.disc.inline[open]>summary{border-bottom:0}
+.disc.inline>summary:hover{background:none;text-decoration:underline}
+.disc.inline .body{display:inline;padding:0}
+.disc.inline .body p{display:inline;margin:0;font-size:inherit;color:inherit}

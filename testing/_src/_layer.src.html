@@ -212,6 +212,8 @@ body{padding-top:30px}
   justify-content:center}
 .cc-slot .sn{font-size:13px;color:var(--cc-muted);font-weight:700}
 .cc-slot .sv{font-size:14px;color:var(--cc-muted);font-style:italic;margin-top:3px;opacity:.8}
+
+/* CC_DISC_CSS */
 </style>
 
 <script>
@@ -719,6 +721,11 @@ body.cc-drawer-open #cc-kb-tab{transform:translateX(-380px)}
 #cc-kb .dvcap{color:#93A7B6;font-size:12px;margin-left:4px;align-self:center}
 .dvwarn{margin-top:14px;padding:10px 12px;background:#1A1206;
   border:1px solid #4A3410;border-radius:7px;font-size:13.5px;color:#E8C9A0}
+/* The prose that was the amber block, now inside a .disc body. The
+   `.dvwarn` rule itself stays - the treatment is still right for a
+   real warning on these pages, and those must never collapse. */
+.dvwarnbody{font-size:12.5px;line-height:1.55;color:var(--muted)}
+.dvwarnbody b{color:var(--text)}
 #cc-kb .dvwarn code{font-family:ui-monospace,Consolas,monospace;color:#FFD9A8}
 #cc-kb .ro{background:#0E1B2E;border:2px solid #22364F;border-radius:10px;
   padding:12px 16px;margin-bottom:12px;min-height:96px;transition:.12s}

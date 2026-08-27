@@ -1,6 +1,8 @@
 {
  "class": "DRAK_Corsair",
  "model": "Corsair.glb",
+ "hardpoints_from": "DRAK_Corsair",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.12716,
  "scale_estimates": {
   "length": 1.12716,

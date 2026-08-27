@@ -1,6 +1,8 @@
 {
  "class": "anvl_hornet_f7cm_mk2",
  "model": "F7C-M_Super_Hornet_Mk_II.glb",
+ "hardpoints_from": "anvl_hornet_f7cm_mk2",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.0051,
  "scale_estimates": {
   "length": 1.0051,

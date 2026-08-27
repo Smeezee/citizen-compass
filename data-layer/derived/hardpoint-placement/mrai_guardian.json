@@ -1,6 +1,8 @@
 {
  "class": "mrai_guardian",
  "model": "Guardian.glb",
+ "hardpoints_from": "mrai_guardian",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 0.97,
  "scale_estimates": {
   "length": 0.97,

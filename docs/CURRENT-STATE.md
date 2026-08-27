@@ -1,12 +1,49 @@
 # Citizen Compass — Current State
 
-**Authoritative as of 2026-08-22.** The sections immediately below are the newest and win over anything later in this file.
+**Authoritative as of 2026-08-27.** The sections immediately below are the newest and win over anything later in this file.
 
 > **This document was five days stale and that is why nobody could say what was
 > left.** It last spoke on 2026-08-16, before the shop layer, before FIND became
 > real, before the guard inversion, before the collector build, and before the
 > whole ship page. Everything between those two dates is now narrated below,
 > newest first. Anything further down this file that contradicts it is history.
+
+---
+
+## THE ARMOUR LABEL IS WRONG ON 31 SHIPS, AND SHIELDS ARE NOT A CHOICE — 2026-08-27
+
+Measured on disk against `scunpacked-data/snapshots/20260827T030607Z` (**4.9 data —
+the commit subject is `4.9.0-LIVE.12344265`, so every value below is pre-4.10 and must
+be re-measured after the 4.10 pull**).
+
+- **LIVE DEFECT, visible on the ship page.** `build_loadout_data.py` line 740 takes the
+  armour name from `stdItem.Name`, and **31 of the 91 named armour records carry a
+  different ship's name.** The 890 Jump's page says "350r Ship Armor"; the Perseus says
+  "Constellation Andromeda Ship Armor"; the Bengal's record is named "Aurora Mk I MR
+  Ship Armor". **The numbers are right — armour resolves through each ship's own
+  `Loadout` — only the displayed name is wrong.** 118 further records are
+  `<= PLACEHOLDER =>`.
+- **THE FIX IS A JOIN, NOT 31 CORRECTIONS.** The wiki gives every vehicle an
+  `armor.uuid`, and **285 of 285 join to a scunpacked armour item by exact UUID
+  lookup** — no normalisation, no token containment, no fuzzy matching. Derive the
+  label from the ship and the class of bug is gone.
+- **EVERY SHIELD IN THE GAME IS IDENTICAL by damage type.** 73 shield items, **one**
+  Absorption pattern and **one** Resistance pattern between them: shields take all of
+  an energy shot and at most 45% of a ballistic one, and no shield you can buy changes
+  that. **Do not build a "compare shields by damage type" feature — there is no choice
+  in the game to show.** It also means the unresolved absorption-versus-resistance
+  stacking question blocks only absolute damage numbers, never comparisons.
+- **Distortion is the one asymmetric channel.** Shields resist it 75–95%; armour
+  ignores it entirely (multiplier 1.0, deflection 0, penetration resistance 0 on all
+  209 items). Shields are the only thing that stops it.
+- **Open:** what Min/Max mean on the shield blocks (probably charge level, not
+  established); what the wiki's `resistance_multiplier` is — it exists there, our
+  canonical source has no such field, and its values are not the damage multipliers.
+
+Full working: `docs/FINDING_the-damage-multiplier-fields-exist-and-armour-is-mislabelled-2026-08-27.md`
+**and its erratum** `docs/ERRATUM_deflection-was-already-built-2026-08-27.md` — the
+finding wrongly claimed Deflection was unbuilt. It has been on the ship page since
+08-22. Read both or read neither.
 
 ---
 

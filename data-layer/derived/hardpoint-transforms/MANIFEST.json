@@ -8,10 +8,10 @@
  "acceptance": "every hardpoint finite; at least 80% of NAMED left/right pairs mirrored to 5 cm. A hull with no named pair FAILS - a check that could not have failed is not a check.",
  "counts": {
   "hulls_indexed": 116,
-  "decoded": 109,
-  "passed": 77,
-  "failed_acceptance": 32,
-  "errored": 7
+  "decoded": 116,
+  "passed": 80,
+  "failed_acceptance": 36,
+  "errored": 0
  },
  "ships": [
   {
@@ -437,6 +437,23 @@
    ]
   },
   {
+   "class": "ANVL_Lightning_F8",
+   "nodes": 159,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 73,
+   "finite": 73,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 4,
+   "all_pairs": 10,
+   "all_mirrored": 8,
+   "span": [
+    16.939,
+    19.571,
+    3.565
+   ]
+  },
+  {
    "class": "ANVL_Paladin",
    "nodes": 434,
    "acceptance": false,
@@ -828,6 +845,23 @@
    ]
   },
   {
+   "class": "drak_golem",
+   "nodes": 207,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 66,
+   "finite": 66,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 16,
+   "all_mirrored": 16,
+   "span": [
+    6.328,
+    14.869,
+    3.99
+   ]
+  },
+  {
    "class": "drak_golem_ox",
    "nodes": 448,
    "acceptance": true,
@@ -1083,6 +1117,40 @@
    ]
   },
   {
+   "class": "krig_l21_wolf",
+   "nodes": 278,
+   "acceptance": false,
+   "note": "only 2 of 3 exterior mount pairs mirror",
+   "hardpoints": 74,
+   "finite": 74,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 2,
+   "all_pairs": 10,
+   "all_mirrored": 9,
+   "span": [
+    9.671,
+    18.922,
+    2.363
+   ]
+  },
+  {
+   "class": "krig_l22_alpha_wolf",
+   "nodes": 984,
+   "acceptance": false,
+   "note": "only 2 of 3 exterior mount pairs mirror",
+   "hardpoints": 74,
+   "finite": 74,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 2,
+   "all_pairs": 10,
+   "all_mirrored": 9,
+   "span": [
+    9.671,
+    18.922,
+    2.832
+   ]
+  },
+  {
    "class": "krig_s65_stingray",
    "nodes": 365,
    "acceptance": true,
@@ -1114,6 +1182,23 @@
     3.0,
     4.998,
     2.859
+   ]
+  },
+  {
+   "class": "MISC_Hull_A",
+   "nodes": 161,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 67,
+   "finite": 67,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 14,
+   "all_mirrored": 13,
+   "span": [
+    5.466,
+    22.027,
+    4.3
    ]
   },
   {
@@ -1495,6 +1580,23 @@
    ]
   },
   {
+   "class": "orig_m80",
+   "nodes": 245,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 75,
+   "finite": 75,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 8,
+   "all_mirrored": 8,
+   "span": [
+    12.504,
+    22.49,
+    4.5
+   ]
+  },
+  {
    "class": "rsi_apollo",
    "nodes": 464,
    "acceptance": true,
@@ -1730,6 +1832,23 @@
     17.966,
     14.056,
     3.409
+   ]
+  },
+  {
+   "class": "VNCL_Glaive",
+   "nodes": 177,
+   "acceptance": false,
+   "note": "only 2 of 4 exterior mount pairs mirror",
+   "hardpoints": 75,
+   "finite": 75,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 2,
+   "all_pairs": 19,
+   "all_mirrored": 13,
+   "span": [
+    23.455,
+    21.933,
+    6.227
    ]
   },
   {

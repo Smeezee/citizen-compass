@@ -114,3 +114,8 @@ data-layer/derived/hull-geometry/
 # AppData. 703 MB of browser is not a source artifact - test-only, never
 # shipped, and _deploy/ contains no part of it.
 checks/.playwright-browsers/
+
+# Build receipt: how the last build_deploy.py run ENDED, read by
+# deploy_testing.ps1 so a failed build cannot be followed by an upload.
+# Per-machine state about one run, not project content.
+testing/_src/.last_build.json

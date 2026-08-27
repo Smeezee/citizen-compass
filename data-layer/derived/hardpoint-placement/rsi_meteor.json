@@ -1,6 +1,8 @@
 {
  "class": "rsi_meteor",
  "model": "Meteor.glb",
+ "hardpoints_from": "rsi_meteor",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.01163,
  "scale_estimates": {
   "length": 1.01163,

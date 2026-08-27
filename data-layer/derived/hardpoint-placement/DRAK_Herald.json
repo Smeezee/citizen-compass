@@ -1,6 +1,8 @@
 {
  "class": "DRAK_Herald",
  "model": "Herald.glb",
+ "hardpoints_from": "DRAK_Herald",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.0527,
  "scale_estimates": {
   "length": 1.0527,

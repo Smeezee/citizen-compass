@@ -1,6 +1,8 @@
 {
  "class": "AEGS_Vanguard",
  "model": "Vanguard_Warden.glb",
+ "hardpoints_from": "AEGS_Vanguard",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.24992,
  "scale_estimates": {
   "length": 1.24992,

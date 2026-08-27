@@ -1,6 +1,8 @@
 {
  "class": "ORIG_600i",
  "model": "600i_Explorer.glb",
+ "hardpoints_from": "ORIG_600i",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 0.99901,
  "scale_estimates": {
   "length": 0.99901,

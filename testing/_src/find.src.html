@@ -94,9 +94,19 @@ td.sell{color:var(--warn);font-weight:700;white-space:nowrap}
 .why{display:inline-block;font-size:12px;color:var(--muted);background:var(--panel2);
  border-radius:4px;padding:1px 7px;margin-left:8px}
 
+/* `.warn` no longer wraps the "where these numbers come from" block - that
+   EXPLAINS, so it collapsed into a .disc bar (AUDIT_the-eleven-amber-blocks).
+   The rule stays because the amber treatment is still the right one for an
+   error or an empty state on this page, and those must NEVER collapse. */
 .warn{background:#1A1206;border:1px solid #4A3410;border-radius:9px;padding:12px 15px;
  font-size:15px;color:#E8C9A0;margin-bottom:14px}
 .warn strong{color:#FFD9A0}
+/* The prose that used to be the amber block, now inside a .disc body. Keeps
+   its reading size; drops the ground and the border, which the bar supplies. */
+.warnbody{font-size:14px;line-height:1.55;color:var(--muted)}
+.warnbody b{color:var(--text)}
+
+/* CC_DISC_CSS */
 .none{text-align:center;padding:34px 16px;color:var(--muted)}
 .none b{display:block;color:var(--text);font-size:19px;margin-bottom:6px}
 .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
@@ -305,8 +315,18 @@ function whatThisIs() {
        still holds in the build you are playing.`
     : `${fmt(COUNTS.shop_items_verified)} of ${fmt(COUNTS.shop_items)} items
        have been checked against a game patch. The rest have not.`;
-  return `<div class="warn"><strong>Where these numbers come from.</strong>
-    <br><br>
+  /* COLLAPSED, per ORDER_the-disclosure-bar. It EXPLAINS - it is not a warning,
+     not an error and not a statement of what you are looking at - and it was
+     spending a screenful of the page saying so.
+
+     The stamp carries the one load-bearing fact: these are player reports, not
+     published prices. Somebody who never opens this still leaves knowing that,
+     which is the whole reason it is a bar and not a triangle. */
+  return `<details class="disc"><summary>
+      <span class="stamp">PLAYER-REPORTED</span>
+      <span class="srcline">prices from ${esc(D.snaps.length)} UEX snapshot${D.snaps.length === 1 ? "" : "s"}, not from the game</span>
+      <span class="opener">Where these numbers come from</span>
+    </summary><div class="body"><div class="warnbody">
     Star Citizen does not publish its prices. Players do.
     <br><br>
     Somebody stood at that terminal, saw that number, and typed it into UEX.
@@ -323,7 +343,7 @@ function whatThisIs() {
     you tell, which is why every single row carries one rather than one date
     sitting at the top of the page.
     <br><br>
-    Everything here comes from ${snapList}. ${unverified}</div>`;
+    Everything here comes from ${snapList}. ${unverified}</div></div></details>`;
 }
 
 /* R7/H5. The file this page actually read, downloadable, with its checksum
@@ -432,14 +452,21 @@ function search(q, f) {
 
 function home() {
   return searchBox("", true) + filterBarWrapper({ cat: -1, min: null, max: null })
+    /* THE SPLIT CASE, following the loadout page's own precedent.
+       The counts answer "is this page showing me everything", which is a
+       statement of what the visitor is looking at and must stay visible. The
+       rest EXPLAINS - what was removed, where it is generated from - and
+       collapses behind an inline opener.
+       A reader who never clicks still gets every number. */
     + `<div class="homenote" style="max-width:760px;margin:22px auto 0">
     <strong>${fmt(COUNTS.item_prices)} price rows, read from a file.</strong>
-    The invented items and shops that used to be here are gone. This page holds
     ${fmt(COUNTS.shop_items)} items across ${fmt(COUNTS.terminals)} terminals
-    and ${fmt(COUNTS.item_categories)} categories, generated from our database
-    and shipped with the page — so it works whether or not our server is up.
-    <br><br>Every figure is a <b>UEX report</b>, dated. See what that means
-    below.</div>`
+    and ${fmt(COUNTS.item_categories)} categories. Every figure is a
+    <b>UEX report</b>, dated.
+    <details class="disc inline"><summary><span class="opener">what that means</span></summary>
+    <div class="body"><p>The invented items and shops that used to be here are
+    gone. This page is generated from our database and shipped with the page —
+    so it works whether or not our server is up.</p></div></details></div>`
     + `<div style="max-width:760px;margin:14px auto 0">${whatThisIs()}</div>`
     + sourceBox();
 }

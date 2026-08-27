@@ -1,6 +1,8 @@
 {
  "class": "anvl_terrapin",
  "model": "Terrapin.glb",
+ "hardpoints_from": "anvl_terrapin",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.01545,
  "scale_estimates": {
   "length": 1.01545,

@@ -1,6 +1,8 @@
 {
  "class": "DRAK_Cutter",
  "model": "Cutter.glb",
+ "hardpoints_from": "DRAK_Cutter",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.00539,
  "scale_estimates": {
   "length": 1.00539,

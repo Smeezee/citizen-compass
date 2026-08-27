@@ -63,7 +63,11 @@ param(
     # Name the browser check(s) to deploy past, by FILENAME, e.g.
     #   -IgnoreRedCheck '_verify_panel_dismiss.mjs'
     # Deliberately not a bare -Force: see the gate below for why.
-    [string[]] $IgnoreRedCheck = @()
+    [string[]] $IgnoreRedCheck = @(),
+
+    # Upload anyway when the last build did NOT succeed. Same reasoning as
+    # -IgnoreRedCheck: overriding stays possible, and it stays loud.
+    [switch] $IgnoreFailedBuild
 )
 
 $ErrorActionPreference = 'Stop'
@@ -101,6 +105,69 @@ if (-not (Test-Path $config))    { Fail "missing $config" }
 if (-not (Test-Path $assetsDir)) { Fail "missing $assetsDir - nothing to deploy" }
 if (-not (Test-Path (Join-Path $assetsDir 'index.html'))) {
     Fail "$assetsDir has no index.html - refusing to publish a site with no entry point"
+}
+
+# --- A FAILED BUILD MUST NOT REACH AN UPLOAD --------------------------------
+#
+# 2026-08-27, found the hard way: build and deploy were chained in one command,
+# the build exited 1, and this script read only its own inputs and published
+# twelve wrong models. The browser-check gate below could not have caught it -
+# that runs the BROWSER checks, and what failed was a BUILD gate.
+#
+# The gate cannot be "a build must have run" - deploying without building is
+# legitimate and common. So build_deploy.py leaves a receipt saying how it
+# ENDED, and this refuses on evidence of failure:
+#
+#   missing    no build to judge. Allowed, and SAID so rather than assumed.
+#   ok         the build reached its last statement.
+#   anything   refused, naming the exit code and what the build said.
+#   unreadable refused. An unreadable receipt is not a passing one.
+#
+# Checked FIRST, before the payload identity checks and long before the browser
+# checks, so the refusal is immediate rather than four minutes in.
+$receiptPath = Join-Path $ProjectPath 'testing\_src\.last_build.json'
+if (-not (Test-Path $receiptPath)) {
+    Write-Host "build   : no build receipt - deploying a payload this run did not build" -ForegroundColor Yellow
+} else {
+    try {
+        $receipt = Get-Content $receiptPath -Raw -Encoding utf8 | ConvertFrom-Json
+    } catch {
+        Fail "the build receipt at $receiptPath could not be read ($($_.Exception.Message)). An unreadable receipt is not a passing one."
+    }
+    if ($null -eq $receipt.status) {
+        Fail "the build receipt at $receiptPath has no status. Reported as NOT CHECKED, never as clean."
+    }
+    if ($receipt.status -ne 'ok') {
+        if ($IgnoreFailedBuild) {
+            Write-Host ""
+            Write-Host "  ***********************************************************" -ForegroundColor Yellow
+            Write-Host "  OVERRIDE: deploying a payload from a build that did NOT" -ForegroundColor Yellow
+            Write-Host "  succeed, because you asked." -ForegroundColor Yellow
+            Write-Host "  build status : $($receipt.status)   exit code: $($receipt.exit_code)" -ForegroundColor Yellow
+            Write-Host "  build said   : $($receipt.detail)" -ForegroundColor Yellow
+            Write-Host "  ***********************************************************" -ForegroundColor Yellow
+            Write-Host ""
+        } else {
+            Fail @"
+THE LAST BUILD DID NOT SUCCEED, so this payload is not trustworthy.
+
+    status     $($receipt.status)
+    exit code  $($receipt.exit_code)
+    at         $($receipt.at)
+    it said    $($receipt.detail)
+
+Fix the build and run it again:
+
+    python testing\_src\build_deploy.py
+
+A build that reaches its end clears this by itself. To upload anyway:
+
+    .\scripts\deploy_testing.ps1 -IgnoreFailedBuild
+"@
+        }
+    } else {
+        Write-Host "build   : last build ok ($($receipt.at))" -ForegroundColor Green
+    }
 }
 
 # --- TESTING-ONLY: this payload must be the TESTING payload ------------------
@@ -220,7 +287,11 @@ $browserChecks = @(
     # OUT of this list while the feature was unbuilt: D2 correctly exits
     # non-zero when there are no collapsed bars to inspect, and adding it then
     # would have blocked every deploy on a control doing its job.
-    'checks\_verify_disclosure.mjs'
+    'checks\_verify_disclosure.mjs',
+    # Added 2026-08-27 with the armour-naming fix. It is a live-page
+    # correctness check - it went red on 40 ships before the fix and green
+    # after - so it belongs in front of the upload rather than in a drawer.
+    'checks\_verify_armour_naming.mjs'
 )
 $ignoredChecks = @()
 foreach ($rel in $browserChecks) {

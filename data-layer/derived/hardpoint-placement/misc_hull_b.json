@@ -1,6 +1,8 @@
 {
  "class": "misc_hull_b",
  "model": "Hull_B.glb",
+ "hardpoints_from": "misc_hull_b",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.44166,
  "scale_estimates": {
   "length": 1.44166,

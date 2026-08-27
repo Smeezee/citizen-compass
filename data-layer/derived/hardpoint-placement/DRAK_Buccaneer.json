@@ -1,6 +1,8 @@
 {
  "class": "DRAK_Buccaneer",
  "model": "Buccaneer.glb",
+ "hardpoints_from": "DRAK_Buccaneer",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.14858,
  "scale_estimates": {
   "length": 1.14858,

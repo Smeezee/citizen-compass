@@ -55,13 +55,32 @@ process.env.PLAYWRIGHT_BROWSERS_PATH =
 const TOLERANCE = 0.02;
 const controlOld = process.argv.includes("--control-old");
 
-if (!existsSync(REPORT)) {
-  console.error(`NOT PERFORMED: ${REPORT} does not exist. Run `
+/* EVERY REPORT, NOT THE FIRST ONE.
+   The scale rule has been applied to two populations on two runs - the 19
+   Fleetyards imports, then the 12 pre-existing models the fleet audit caught -
+   and each run writes its own report. Reading only `scale_fix_report.json`
+   would have checked the 19 and left the 12 unverified while still printing
+   GREEN, which is the shape of pass this file exists to refuse. */
+const reports = readdirSync(AVAIL)
+  .filter(f => f.startsWith("scale_fix_report") && f.endsWith(".json"))
+  .sort();
+if (!reports.length) {
+  console.error(`NOT PERFORMED: no scale_fix_report*.json in ${AVAIL}. Run `
     + `scripts/fix_model_scale.py first. Reporting this as not performed `
     + `rather than as a pass.`);
   process.exit(1);
 }
-const report = JSON.parse(readFileSync(REPORT, "utf8"));
+const seen = new Set();
+const report = { ships: [] };
+for (const f of reports) {
+  const r = JSON.parse(readFileSync(join(AVAIL, f), "utf8"));
+  for (const s of r.ships || []) {
+    if (seen.has(s.deploy_name)) continue;   // a later run supersedes an earlier
+    seen.add(s.deploy_name);
+    report.ships.push(s);
+  }
+}
+console.log(`reading ${reports.length} report(s): ${reports.join(", ")}`);
 
 /* Where the pre-fix models were moved aside to. Newest attic wins. */
 let attic = null;

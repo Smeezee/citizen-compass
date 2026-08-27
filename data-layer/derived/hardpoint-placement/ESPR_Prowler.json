@@ -1,6 +1,8 @@
 {
  "class": "ESPR_Prowler",
  "model": "Prowler.glb",
+ "hardpoints_from": "ESPR_Prowler",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.02382,
  "scale_estimates": {
   "length": 1.02382,

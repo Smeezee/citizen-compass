@@ -1,6 +1,8 @@
 {
  "class": "XIAN_Scout",
  "model": "Khartu-Al.glb",
+ "hardpoints_from": "XIAN_Scout",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 2.97553,
  "scale_estimates": {
   "length": 2.97553,

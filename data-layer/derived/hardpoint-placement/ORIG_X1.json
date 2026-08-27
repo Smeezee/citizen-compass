@@ -1,6 +1,8 @@
 {
  "class": "ORIG_X1",
  "model": "X1.glb",
+ "hardpoints_from": "ORIG_X1",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 0.98161,
  "scale_estimates": {
   "length": 0.98161,

@@ -1290,6 +1290,7 @@ def main():
     # Armour is only carried for hulls that actually fit it - 31 of 210 are
     # never fitted by anything and would be dead weight.
     used_armor = set()
+    armor_ships = {}
     for s in ships:
         ports = []
         walk_ports(s.get("Loadout"), ports)
@@ -1297,8 +1298,63 @@ def main():
             if (entry.get("Type") or "").split(".")[0] == "Armor":
                 k = (entry.get("ClassName") or "").lower()
                 if k in armors:
-                    used_armor.add(armors[k])
-    armor_out = {k: v for k, v in armor_defs.items() if k in used_armor}
+                    key = armors[k]
+                    used_armor.add(key)
+                    nm = s.get("Name")
+                    if nm:
+                        armor_ships.setdefault(key, set()).add(nm)
+
+    # THE ARMOUR'S NAME COMES FROM THE SHIP, NOT FROM THE ITEM'S OWN `Name`.
+    #
+    # That field carries the wrong ship's name on 31 of 91 named armour records
+    # - 34%. ARMR_RSI_Perseus read "Constellation Andromeda Ship Armor",
+    # ARMR_AEGS_Idris_M read "Hammerhead Ship Armor", ARMR_ORIG_890J read
+    # "350r Ship Armor". The NUMBERS were never wrong; armour resolves through
+    # each ship's own Loadout. It was the label, on a page whose whole claim is
+    # that the numbers can be trusted.
+    #
+    # Deriving it removes the class of bug rather than correcting 31 strings,
+    # and it covers the placeholder records too, which no amount of
+    # string-fixing would.
+    #
+    # ONE ARMOUR RECORD OFTEN SERVES SEVERAL SHIPS - 71 of 179 do. The Gladius
+    # record covers the Valiant, the Dunlevy and the Pirate, so the honest label
+    # is the BASE HULL they share: the shortest name that every sharing ship
+    # extends. Structural, not a list of exceptions.
+    #
+    # 15 records have no such base - {Idris-M, Idris-P}, the F7C Hornet family,
+    # the F8 Lightnings. Those are siblings, not variants of one another, and no
+    # single ship's name is the truth for them. They are labelled without a ship
+    # name at all rather than being given one of their siblings'. The sharing
+    # ships are carried in `of` so the page can say more later if wanted.
+    def _bare(n):
+        parts = str(n or "").split(" ")
+        return " ".join(parts[1:]) if len(parts) > 1 else str(n or "")
+
+    def _base_of(names):
+        for cand in sorted(names, key=len):
+            if all(n == cand or n.startswith(cand + " ") for n in names):
+                return cand
+        return None
+
+    armor_out, named, unnamed = {}, 0, 0
+    for k, v in armor_defs.items():
+        if k not in used_armor:
+            continue
+        rec = dict(v)
+        bares = {_bare(n) for n in armor_ships.get(k, ()) if _bare(n)}
+        base = _base_of(bares) if bares else None
+        if base:
+            rec["n"] = "%s ship armour" % base
+            named += 1
+        else:
+            rec["n"] = "Ship armour"
+            unnamed += 1
+        if len(bares) > 1:
+            rec["of"] = sorted(bares)
+        armor_out[k] = rec
+    print("armour names: %d derived from the ship, %d shared by siblings with no "
+          "common hull and named without a ship" % (named, unnamed))
 
     # --- ships ------------------------------------------------------------
     # The shared hardpoint-name table and the code->type reverse map.

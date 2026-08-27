@@ -1,6 +1,8 @@
 {
  "class": "ANVL_Valkyrie",
  "model": "Valkyrie.glb",
+ "hardpoints_from": "ANVL_Valkyrie",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.05294,
  "scale_estimates": {
   "length": 1.05294,

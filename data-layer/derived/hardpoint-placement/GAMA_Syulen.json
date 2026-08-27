@@ -1,6 +1,8 @@
 {
  "class": "GAMA_Syulen",
  "model": "Syulen.glb",
+ "hardpoints_from": "GAMA_Syulen",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.40557,
  "scale_estimates": {
   "length": 1.40557,

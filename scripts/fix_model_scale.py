@@ -69,6 +69,22 @@ BLENDER_SIDE = os.path.join(REPO, "scripts", "_blender_scale_to_spec.py")
 BLENDER = r"C:\Program Files\Blender Foundation\Blender 4.5\blender.exe"
 
 
+# HARD RULE 15'S OTHER HALF: THE WAY OUT NEEDS AN ENCODING TOO.
+#
+# Rule 15 makes every open() state encoding="utf-8". stdout is the same problem
+# wearing different clothes - on Windows it defaults to cp1252, and this script
+# PRINTS SHIP NAMES. It died partway through its own dry run on San'tok.yai,
+# whose folder is spelled with a macron:
+#
+#     UnicodeEncodeError: 'charmap' codec can't encode character 'ā'
+#
+# That is the tok.yai case CLAUDE.md names as "a shipping product, not an edge
+# case", and the answer is not to avoid printing the name.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
 class ScaleError(RuntimeError):
     pass
 
@@ -110,10 +126,32 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true")
     ap.add_argument("--only", default=None)
+    ap.add_argument("--source", choices=("raw", "scaled"), default="raw",
+                    help="which file to measure and scale. 'raw' = model.glb, "
+                         "for ships with no prior model_scaled.glb. 'scaled' = "
+                         "model_scaled.glb, for ships whose MARKERS were derived "
+                         "against that geometry - see the comment at build_jobs.")
+    ap.add_argument("--from-list", dest="from_list", default=None,
+                    help="JSON array of {ship, folder, deploy_name, target_max}. "
+                         "Used to rescale ships that were NOT part of the "
+                         "Fleetyards import - the pre-existing fleet.")
     args = ap.parse_args()
 
     run_id = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    ships = published()
+    if args.from_list:
+        # THE SAME RULE, A DIFFERENT POPULATION.
+        # The import manifest only knows the 19 ships that came from Fleetyards.
+        # The fleet audit found the same defect in models that were already here,
+        # so the list comes in from outside rather than the rule being copied
+        # into a second script.
+        with open(args.from_list, encoding="utf-8") as fh:
+            ships = json.load(fh)
+        for s in ships:
+            for k in ("ship", "folder", "deploy_name", "target_max"):
+                if not s.get(k):
+                    raise ScaleError("list entry missing %r: %r" % (k, s))
+    else:
+        ships = published()
     if args.only:
         want = set(s.strip() for s in args.only.split(","))
         ships = [s for s in ships if s["ship"] in want]
@@ -129,12 +167,36 @@ def main():
     log("=" * 74)
     log("\n  %-28s %10s   %s" % ("ship", "target m", "from published L/B/H"))
     for s in ships:
-        log("  %-28s %10.2f   %s / %s / %s"
-            % (s["ship"], s["target_max"], s["length"], s["beam"], s["height"]))
+        # A supplied list carries the target and need not carry the three
+        # dimensions it was derived from, so they are printed when present and
+        # the line still tells the truth when they are not.
+        lbh = ("%s / %s / %s" % (s["length"], s["beam"], s["height"])
+               if s.get("length") else
+               "target supplied in %s" % os.path.basename(args.from_list or ""))
+        log("  %-28s %10.2f   %s" % (s["ship"], s["target_max"], lbh))
 
+    # WHICH FILE IS SCALED IS NOT A DETAIL - IT DECIDES WHETHER THE MARKERS
+    # SURVIVE.
+    #
+    # Marker `unit` values are stored normalised against the hull's longest
+    # half-extent and relative to its bbox centre. A uniform rescale cancels in
+    # both - but only if the geometry being scaled is the geometry the markers
+    # were derived against.
+    #
+    # On 2026-08-27 the 12 pre-existing ships were scaled from model.glb and
+    # `_verify_holo_placement.py` failed: San'tok.yai's fitted offset moved
+    # 29.6%, Vulture's 8.5%, Polaris's 3.3%. model_scaled.glb is NOT always
+    # model.glb resized - it has its own history - so scaling the original moved
+    # the hull out from under its own markers. All 12 were reverted.
+    #
+    # The 19 Fleetyards imports are the other case: the import created both
+    # files from one source and no markers predate them, so 'raw' is right there
+    # and 'scaled' would be circular.
+    src_name = "model.glb" if args.source == "raw" else "model_scaled.glb"
+    log("\nsource: %s per ship" % src_name)
     jobs = []
     for s in ships:
-        src = os.path.join(SC_SHIPS, s["folder"], "model.glb")
+        src = os.path.join(SC_SHIPS, s["folder"], src_name)
         if not os.path.exists(src):
             raise ScaleError("no %s - nothing to rescale from" % os.path.relpath(src, REPO))
         jobs.append({"folder": s["folder"], "in": src,
@@ -217,14 +279,22 @@ def main():
                        "Gladius 0.941, 100i 0.920 - so the target is good to "
                        "about 8%"),
         "previous_files_moved_to": os.path.relpath(attic, REPO),
+        "source_list": args.from_list or "import_manifest.json",
+        "scaled_from": src_name,
         "ships": [dict(s, **{k: res[s["folder"]].get(k)
                              for k in ("factor", "before_max", "after_max",
                                        "before_size", "after_size")})
                   for s in ships],
     }
-    with open(os.path.join(AVAIL, "scale_fix_report.json"), "w", encoding="utf-8") as fh:
+    report_name = ("scale_fix_report.json" if not args.from_list
+                   else "scale_fix_report_%s.json" % run_id)
+    with open(os.path.join(AVAIL, report_name), "w", encoding="utf-8") as fh:
         json.dump(report, fh, indent=1)
-    log("\nwrote %s" % os.path.relpath(os.path.join(AVAIL, "scale_fix_report.json"), REPO))
+    # Was hardcoded to "scale_fix_report.json" while the write above used
+    # report_name, so a --from-list run reported writing a file it had not
+    # touched. Harmless to the data and a lie in the output, which is worse
+    # than it sounds in a project that reads its own logs as evidence.
+    log("\nwrote %s" % os.path.relpath(os.path.join(AVAIL, report_name), REPO))
     log("\nNOT DONE YET: re-measure the deployed files in a real browser before "
         "believing any of this. checks/_verify_model_scale.mjs")
     return 0

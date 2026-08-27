@@ -247,6 +247,11 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
 .dvcap{color:#93A7B6;font-size:12px;margin-left:4px;align-self:center}
 .dvwarn{margin-top:14px;padding:10px 12px;background:#1A1206;border:1px solid #4A3410;
   border-radius:7px;font-size:13.5px;color:#E8C9A0}
+/* The prose that was the amber block, now inside a .disc body. The
+   `.dvwarn` rule itself stays - the treatment is still right for a
+   real warning on these pages, and those must never collapse. */
+.dvwarnbody{font-size:12.5px;line-height:1.55;color:var(--muted)}
+.dvwarnbody b{color:var(--text)}
 .dvwarn code{font-family:ui-monospace,Consolas,monospace;color:#FFD9A8}
 
 /* ---- STAR CITIZEN TYPEFACES ---------------------------------------
@@ -369,6 +374,8 @@ input{background:var(--panel2);color:var(--text);border:1px solid var(--line);
 .afterexport ul.bad li{color:#FF8A6B}
 .dofrow .n{color:#93A7B6}
 .dofnote{color:#93A7B6;font-size:12px;padding:6px 14px 12px}
+
+/* CC_DISC_CSS */
 </style>
 
 <div class="top">
@@ -2006,11 +2013,19 @@ render();
 
   <div class="doftitle">Joystick axes &mdash; what the evidence actually supports</div>
   <div id="kbbdof"></div>
-  <div class="dofnote">
+  <!-- COLLAPSED per ORDER_the-disclosure-bar's own table. It EXPLAINS what a
+       label means; it is not a warning and not a statement of live state.
+       The stamp keeps the load-bearing half visible to somebody who never
+       opens it: UNATTESTED and REJECTED are different claims. -->
+  <details class="disc"><summary>
+    <span class="stamp">UNATTESTED &ne; REJECTED</span>
+    <span class="srcline">never seen in a mapping file read so far, which is not the same as refused</span>
+    <span class="opener">What UNATTESTED means</span>
+  </summary><div class="body"><div class="dofnote">
     <strong>UNATTESTED is not rejected.</strong> It means the axis has never appeared in
     any mapping file read so far &mdash; not that the game refuses it. Those are
     different claims and only the first one is supported by evidence.
-  </div>
+  </div></div></details>
 </div>
 
 <script>

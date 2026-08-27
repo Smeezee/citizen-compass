@@ -1,0 +1,86 @@
+[
+ {
+  "ship": "Orion",
+  "folder": "Orion",
+  "deploy_name": "Orion.glb",
+  "target_max": 340,
+  "ratio_before": 0.005011306615436778
+ },
+ {
+  "ship": "San'tok.yai",
+  "folder": "San'tok.yāi",
+  "deploy_name": "San_tok.y_i.glb",
+  "target_max": 24,
+  "ratio_before": 0.009581642846266428
+ },
+ {
+  "ship": "Crucible",
+  "folder": "Crucible",
+  "deploy_name": "Crucible.glb",
+  "target_max": 90,
+  "ratio_before": 0.00988947484228346
+ },
+ {
+  "ship": "Pioneer",
+  "folder": "Pioneer",
+  "deploy_name": "Pioneer.glb",
+  "target_max": 247,
+  "ratio_before": 0.009984154450265985
+ },
+ {
+  "ship": "Starlancer TAC",
+  "folder": "Starlancer TAC",
+  "deploy_name": "Starlancer_TAC.glb",
+  "target_max": 83,
+  "ratio_before": 0.010063936911433577
+ },
+ {
+  "ship": "Starlancer MAX",
+  "folder": "Starlancer MAX",
+  "deploy_name": "Starlancer_MAX.glb",
+  "target_max": 83,
+  "ratio_before": 0.012208176664559239
+ },
+ {
+  "ship": "Endeavor",
+  "folder": "Endeavor",
+  "deploy_name": "Endeavor.glb",
+  "target_max": 200,
+  "ratio_before": 0.08556416511535644
+ },
+ {
+  "ship": "Avenger Stalker",
+  "folder": "Avenger Stalker",
+  "deploy_name": "Avenger_Stalker.glb",
+  "target_max": 20,
+  "ratio_before": 0.09525355696678162
+ },
+ {
+  "ship": "Polaris",
+  "folder": "Polaris",
+  "deploy_name": "Polaris.glb",
+  "target_max": 166,
+  "ratio_before": 0.3772587029330702
+ },
+ {
+  "ship": "Vulture",
+  "folder": "Vulture",
+  "deploy_name": "Vulture.glb",
+  "target_max": 33,
+  "ratio_before": 0.39012211019342596
+ },
+ {
+  "ship": "Nautilus",
+  "folder": "Nautilus",
+  "deploy_name": "Nautilus.glb",
+  "target_max": 125,
+  "ratio_before": 0.42368507385253906
+ },
+ {
+  "ship": "Mule",
+  "folder": "Mule",
+  "deploy_name": "Mule.glb",
+  "target_max": 8.75,
+  "ratio_before": 0.4800821031842913
+ }
+]

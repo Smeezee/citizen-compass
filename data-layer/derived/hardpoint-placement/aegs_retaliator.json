@@ -1,6 +1,8 @@
 {
  "class": "aegs_retaliator",
  "model": "Retaliator.glb",
+ "hardpoints_from": "aegs_retaliator",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.0119,
  "scale_estimates": {
   "length": 1.0119,

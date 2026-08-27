@@ -30,112 +30,183 @@ suggestion, not work.**
 
 ---
 
-# PART A — SLEVEN DECIDES. Three, batched, with what each blocks.
+# SLEVEN'S RULING, 2026-08-27 14:10 local
 
-`CRITIQUE_senior-analyst-review-2026-08-27` recommendation 6 asked for a
-separate `DECISIONS.md`. **Deliberately not doing that** — a second queue file
-is a second thing to keep current and a second place to look. Decisions live at
-the top of the queue they block, which is the same fix with one less artifact.
-If the section grows past about five, split it.
+> *"I want whatever's next. It all has to be done."*
 
-### D1 — WHICH SINGLE FRONT GETS FINISHED TO THE PUBLIC SITE
-**Blocks:** everything visitor-facing. **C1 recommends: one complete ship page.**
+**There are no decision gates on this queue any more.** The three items that
+were waiting on him are decided:
 
-Ten fronts are open and, per `LIVE.md`, the public site has not moved in
-**twenty-eight days**. The 08-26 brief's thesis is that every competitor serves
-someone who already knows the game and nobody serves the newcomer — and the
-three assets that back it are now real rather than planned: a 3D hull with
-hardpoints on **CIG's own coordinates**, provenance on every number, and
-plain-English captions. **That thesis is a claim about strangers, and it cannot
-be tested from behind a password.** One ship page, public, end to end, converts
-the largest pile of finished-but-invisible work into the only evidence that
-matters — and it is the cheapest of the ten to finish, because the hard parts
-already exist and are checked.
+- **Which front gets finished** — all of them, in the order below. C1 does not
+  ask again.
+- **The Windows runner** — settled by doing. Run the collector selftest and
+  find out what actually fails. It is Q3 on Code's list, not a question.
+- **Hard rule 16** — adopted. A check draws its truth from a different source
+  than the thing it checks, or it is labelled UNPROVEN and says what it could
+  not reach.
 
-Against it: it ships one page while nine fronts decay, and six of those need
-re-verification against 4.10 regardless. That cost is already sunk either way.
-
-### D2 — THE WINDOWS RUNNER
-**Blocks:** the collector, and every check written for it since 2026-08-07.
-**C1 recommends: neither of the critique's two options, because its premise is
-eighteen days stale.** See PART C.
-
-### D3 — HARD RULE 16, THE SOURCE OF A CHECK'S TRUTH
-**Blocks:** nothing. Adopting it is cheap; the cost is that it makes some
-existing checks knowingly inadequate. Proposed text in PART C.
+**Going live is NOT on this queue and will not be raised again until Sleven
+raises it.** He has said the site is not ready. He is the one who knows. C1
+turned an outside session's recommendation into pressure and that was wrong.
 
 ---
 
-# PART B — CODE'S QUEUE
+# CODE'S QUEUE
 
-### Q1 — ANSWERED BY C1, 2026-08-27 13:32. Netlify was never the blocker.
-**See `docs/FINDING_the-live-site-is-three-commands-away-2026-08-27.md`.**
+### Q1 — 31 SHIPS PRINT ANOTHER SHIP'S NAME ON THEIR ARMOUR. LIVE AND VISIBLE.
+**DONE-WHEN** the armour heading is derived from the SHIP, not from the item's
+own `Name`, and no ship page prints an armour name naming a different ship.
+**BLOCKED-BY** nothing. **This jumps the queue: it is on a page people look at.**
 
-`scripts/deploy_live.ps1` targets **Cloudflare, not Netlify** - "NOTHING HERE
-TOUCHES NETLIFY", its own header, committed 08-21. The credit block was
-engineered around six days ago. The blocker is that the worker does not exist
-(404, verified) and **nobody has ever run the script for real.**
+Source: `HANDOFF_weapon-armour-shield-package-for-c1-2026-08-27.md` (C3),
+measured on disk, every claim naming its file.
 
-C1 was wrong in `LIVE.md` an hour ago and has corrected it.
+`build_loadout_data.py:740` takes the armour's display name from the item's own
+record, and **that field carries the wrong ship's name on 31 of 91 named armour
+records - 34%.**
 
-### Q1b — RUN THE LIVE DEPLOY DRY, AND REPORT WHAT IT SAYS
-**DONE-WHEN** `deploy_live.ps1 -WhatIf` has been run against a `--live` build
-and its output is reported: what it would publish, whether every guard passes,
-and **whether it says wrangler would CREATE the worker or fail because it does
-not exist.**
-**BLOCKED-BY** nothing. **This is the top of the queue.**
+    ARMR_RSI_Perseus       prints  "Constellation Andromeda Ship Armor"
+    ARMR_AEGS_Idris_P      prints  "Hammerhead Ship Armor"
+    ARMR_ORIG_890J         prints  "350r Ship Armor"
 
-    python testing\_src\build_deploy.py --live
-    powershell -ExecutionPolicy Bypass -File .\scripts\deploy_live.ps1 -WhatIf
-    python testing\_src\build_deploy.py
+**Scope it honestly: the NUMBERS ARE RIGHT.** The page resolves armour through
+each ship's own `Loadout`, so no ship is showing another ship's multipliers.
+It is a labelling bug. **But it is on a page whose entire claim is that the
+numbers can be trusted, and it says the wrong ship's name out loud.**
 
-**DO NOT run it without -WhatIf.** That publishes to the public internet and is
-Sleven's alone. `-WhatIf` is information; the real run is a decision.
+**DO NOT FIX THIS BY CORRECTING 31 STRINGS.** Derive the name from the ship.
+C3's join is a literal dictionary lookup on a UUID string - wiki
+`vehicle.armor.uuid` against `stdItem.UUID` - **285 of 285, 100%, no
+normalisation, no lowercasing, no token containment, no fuzzy anything.** It
+also covers the 118 placeholder records, which correcting strings never would.
 
-**Rebuild without `--live` afterwards** or the next testing deploy refuses -
-`deploy_testing.ps1` checks for the gate the same way the live script checks for
-its absence.
+Spot check to reproduce before trusting it: Avenger Stalker →
+`b3b23908-e9ab-4c46-93ed-ecd20aaf65c3` → `ARMR_AEGS_Avenger_Stalker` →
+Deflection Physical 11 / Energy 9. Both sources agree on every value.
 
-**Report the guard results even if they all pass.** The point is to find out
-what stands between the built payload and a public site, and "nothing" is a
-result worth having in writing.
+**The control: assert that no rendered armour heading names a ship other than
+the one whose page it is on.** That check must go red on the current build -
+if it does not, it is not testing the defect.
 
-### Q2 — BROWSER CHECKS GATE THE DEPLOY
-**DONE-WHEN** `deploy_testing.ps1` refuses to upload on a red browser check, and
-its override must be typed and prints which check it is ignoring.
+**Read §7 and §8 of the handoff before starting.** C3 records one thing it got
+wrong (Deflection was already built) and that every number in it is **patch
+4.9**. And §3 says to CANCEL any "compare shields by damage type" feature -
+there is nothing to show. Do not build it.
+
+### Q2 — A FAILED BUILD MUST NOT REACH A DEPLOY
+**DONE-WHEN** a build that exits non-zero cannot be followed by an upload in
+the same invocation, and the refusal names the build's exit code.
 **BLOCKED-BY** nothing.
 
-Ruling of 11:57. Sleven overrode a red check on 2026-08-27 and was right to.
-That stays possible; it stops being silent.
+Found by Code on itself, 2026-08-27: build and deploy chained in one command,
+`BUILD EXIT=1` printed, deploy read only its own output and put twelve wrong
+models live. **The check Code had written was green, so the thing being watched
+agreed with him, and the gate that disagreed was in the output he skipped.**
 
-### Q3 — `deploy_testing.ps1:304`
-**DONE-WHEN** the checklist names a marker that is actually in the payload.
+Q4 put the BROWSER checks in front of the upload. Nothing puts a FAILED BUILD
+in front of it, **and a deploy legitimately does not require a build** - so the
+gate cannot simply be "a build must have run". It has to be: *if a build ran in
+this invocation and failed, stop.*
+
+**The control: chain a deliberately-failing build to a deploy and assert the
+upload does not happen.**
+
+### Q3 — SCALE THE 12 FROM `model_scaled.glb`, NOT FROM `model.glb`
+**DONE-WHEN** the 12 pre-existing wrong-scale models are at their published
+dimensions AND `_verify_holo_placement.py` still passes all 8 checks.
+**BLOCKED-BY** nothing. **C1 has ruled - see the reasoning below.**
+
+Code's finding: he rescales from `sc-ships/<ship>/model.glb`, but the deployed
+model came from `model_scaled.glb`, and **for some ships those two are not the
+same geometry.** Scaling the original therefore produced a hull with a
+different bbox centre and half-extent ratio than the markers were derived
+against - San'tok.yai off by 29.6%, Vulture 8.5%.
+
+**Scale from `model_scaled.glb`.** It preserves the exact geometry every
+downstream artifact was derived against: the hull-geometry boxes, the marker
+`unit` values, C1's hardpoint placement scale, and the camera-fit band. The
+alternative - rescale then regenerate - is a four-step chain, and for hulls
+with no real CGA coordinates it would re-derive GUESSES against a moved hull,
+which is churn without gain.
+
+**And the cost of the safe option is zero.** Code's own words: the 12 being
+wrong-scale *"is visible to nobody - the viewer frames the camera to whatever
+it loads."* There is no reason to take the risky path for an invisible defect.
+
+### Q4 — THE DISCLOSURE BAR ON THE OTHER THREE PAGES
+**DONE-WHEN** `_verify_disclosure.mjs` is green with every explanation block on
+`find`, `keybinds` and `index` collapsed, and D1 still green.
 **BLOCKED-BY** nothing.
 
-Replace `cc-ship::after` with `id="cc-panel"`. Leave `kb_overlay.inc.html`.
+The loadout page is the reference implementation and it is built and deployed.
+**Eleven amber blocks remain** — keybinds x5, index x4, find x2.
 
-### Q4 — `build_holo_data.py` HAS NOT RUN SINCE 17 AUGUST
-**DONE-WHEN** either the seven collisions are resolved and it emits, or a
-written finding says which record is wrong and why that is Sleven's call.
+**Audit each one against the rule before touching it, and record the verdict
+per block.** Collapse a block that EXPLAINS. Never collapse one that WARNS,
+reports an ERROR, or states WHAT THE VISITOR IS LOOKING AT. The download
+page's antivirus notice, find's error and empty states, and the keybinds
+capture warnings are all NEVER. **A block collapsed that should not have been
+is a warning nobody reads.**
+
+### Q5 — THE ROADMAP WATCHER, PAST R0
+**DONE-WHEN** R1-R3 of `AMENDS_roadmap-watcher-board-1-is-wrong-2026-08-27.md`
+are built and the watcher reports a real board state.
+**BLOCKED-BY** nothing. R0 is done — the board is identified.
+
+Key on card presence plus a payload hash. **Never on `updateDate`** — the API
+returns Aug 2024 for a card the UI renders as Aug 2021.
+
+### Q6 — RUN THE COLLECTOR SELFTEST. FIND OUT WHAT FAILS.
+**DONE-WHEN** `go build` and `.\collector.exe --selftest` have been run and the
+result is written down — pass, fail, or could-not-run with the reason.
 **BLOCKED-BY** nothing.
 
-    ATLS, C8R_Pisces, Khartu-Al, M50, MDC, ROC, ROC-DS
+**~190 checks have never been executed once.** That is why `capture_keys`
+shipped dead in every build. The old reason was that no Claude session could
+run a Windows binary — **that is stale for Code**, which ran
+`venv\Scripts\python.exe` and `powershell` today.
 
-Report the collision before fixing it.
+**Do not write another collector check until these run.** If they cannot run,
+the reason is the deliverable.
 
-### Q5 — THE DISCLOSURE BAR
-**DONE-WHEN** D1 and D2 of `ORDER_the-disclosure-bar-2026-08-27.md` are built
-and deployed to testing.
-**BLOCKED-BY** nothing.
+### Q7 — LABEL EVERY CHECK THAT CANNOT MEET RULE 16
+**DONE-WHEN** every check in `checks/` either draws its truth from a real
+source or carries an UNPROVEN label naming what it could not reach.
+**BLOCKED-BY** Q6 for the collector's set.
 
-Bigger than when written. 19 third-party models need visible provenance, and
-**a position guessed from a mount name and a position that is CIG's own
-transform are not the same claim.** `placed_from` is on every record —
-`client` where it is CIG's. The page must not present the two as one thing.
+Rule 16 is adopted. This is the cost of adopting it, and it makes the board
+look worse before better — that is the point. A silent gap becomes a labelled
+one.
 
-### Q6 — THE ROADMAP WATCHER, R0 ONLY
-**DONE-WHEN** the real board is identified and written down.
-**BLOCKED-BY** nothing.
+---
+
+# C1'S QUEUE
+
+### M1 — THE THREE REMAINING EXPLANATION BLOCKS ON THE LOADOUT PAGE
+`Read this as a matchup, not a rating`, `What this data does not say`,
+`Where the shop data actually is`. Named in the order's table as collapse.
+Started 2026-08-27 14:12.
+
+### M2 — THE LOADOUT BENCH
+`BRIEF_the-loadout-bench-is-an-experience-2026-08-26.md`. Approved after seven
+prototypes and never built. **The swap loop, not a list of components** —
+Sleven's own words: *"the interaction of actually going through the steps of
+swapping the parts and understanding what they do needs to be a smooth, fluid
+process... I want them to actually enjoy the experience."*
+
+### M3 — HARDPOINT COVERAGE, THE REMAINING ~30 HULLS
+7 the decoder refused (node index is not a clean key), 19 with no `ships.json`
+row, 11 with no model in the page's map. 64 hulls have real coordinates today.
+
+### M4 — THE 16 HULLS BELOW THE EXTERIOR MIRROR THRESHOLD
+Carrack, Constellation, Corsair, Hammerhead, Tiburon and others. Their
+internal-bay scores are fine; the exterior mounts miss. Decide whether that is
+the decode or CIG mounting things asymmetrically.
+
+### M5 — `CURRENT-STATE.md`
+Eleven days stale, ~20,000 words, and it opens by telling the reader that later
+sections win. **A state document that must be overridden by the document
+following it is not a state document.** Every new session pays for this.
 
 ---
 

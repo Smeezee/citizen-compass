@@ -1,6 +1,8 @@
 {
  "class": "VNCL_Scythe",
  "model": "Scythe.glb",
+ "hardpoints_from": "VNCL_Scythe",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.07312,
  "scale_estimates": {
   "length": 1.07312,

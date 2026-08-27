@@ -99,6 +99,22 @@ PATCH_AT_IMPORT = "4.9.0-LIVE.12344265"
 SAFE = lambda n: re.sub(r"[^A-Za-z0-9._-]+", "_", n)
 
 
+# HARD RULE 15'S OTHER HALF: THE WAY OUT NEEDS AN ENCODING TOO.
+#
+# Rule 15 makes every open() state encoding="utf-8". stdout is the same problem
+# wearing different clothes - on Windows it defaults to cp1252, and this script
+# PRINTS SHIP NAMES. It died partway through its own dry run on San'tok.yai,
+# whose folder is spelled with a macron:
+#
+#     UnicodeEncodeError: 'charmap' codec can't encode character 'ā'
+#
+# That is the tok.yai case CLAUDE.md names as "a shipping product, not an edge
+# case", and the answer is not to avoid printing the name.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
 class ImportError_(RuntimeError):
     pass
 

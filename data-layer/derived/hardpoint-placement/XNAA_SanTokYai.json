@@ -1,6 +1,8 @@
 {
  "class": "XNAA_SanTokYai",
  "model": "San_tok.y_i.glb",
+ "hardpoints_from": "XNAA_SanTokYai",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 113.37657,
  "scale_estimates": {
   "length": 113.37657,

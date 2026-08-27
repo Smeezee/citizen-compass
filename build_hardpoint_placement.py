@@ -116,33 +116,17 @@ def main():
     print("model map from  %s  (%d entries)\n" % (models_src, len(models)))
 
     lower_models = {k.lower(): v for k, v in models.items()}
-    rows, skipped = [], []
-    for f in sorted(os.listdir(SRC)):
-        if not f.endswith(".json") or f in ("MANIFEST.json", "failures.json"):
-            continue
-        cls = f[:-5]
-        j = json.load(open(os.path.join(SRC, f), encoding="utf-8"))
-        hp = [n for n in j["nodes"] if n["name"].lower().startswith("hardpoint")]
-        if not hp:
-            skipped.append({"class": cls, "why": "no hardpoint nodes"})
-            continue
-        dim = dims.get(cls.lower())
-        if not dim:
-            skipped.append({"class": cls, "why": "no ships.json row for this class"})
-            continue
-        mdl = lower_models.get(cls.lower())
-        if not mdl:
-            skipped.append({"class": cls, "why": "no model in the page's map"})
-            continue
+    def place(out_cls, src_cls, dim, mdl, hp, inherited):
+        """Place ONE source hull's hardpoints into ONE ship's model space."""
         gp = os.path.join(GEO, os.path.splitext(mdl)[0] + ".json")
         if not os.path.exists(gp):
-            skipped.append({"class": cls, "why": "no hull geometry for " + mdl})
-            continue
+            skipped.append({"class": out_cls, "why": "no hull geometry for " + mdl})
+            return
         mn, mx = box(gp)
         ext = [mx[i] - mn[i] for i in range(3)]     # glb: x, y up, z fore/aft
         if min(ext) <= 0:
-            skipped.append({"class": cls, "why": "degenerate hull box"})
-            continue
+            skipped.append({"class": out_cls, "why": "degenerate hull box"})
+            return
         est = {"length": dim["Length"] / ext[2],
                "width": dim["Width"] / ext[0],
                "height": dim["Height"] / ext[1]}
@@ -191,7 +175,9 @@ def main():
             why = ("%d of %d exterior mounts land outside the hull"
                    % (len(ext_out), ext_n))
 
-        rec = {"class": cls, "model": mdl, "scale_m_per_unit": round(s, 5),
+        rec = {"class": out_cls, "model": mdl,
+         "hardpoints_from": src_cls,
+         "inherited_from_base_hull": inherited, "scale_m_per_unit": round(s, 5),
                "scale_estimates": {k: round(v, 5) for k, v in est.items()},
                "scale_spread": round(spread, 4),
                "hull_box": {"min": mn, "max": mx},
@@ -201,17 +187,87 @@ def main():
                "outside_any": outside[:20],
                "frame": "GLB units. X lateral, Y up, forward is -Z.",
                "hardpoints": conv}
-        json.dump(rec, open(os.path.join(OUT, cls + ".json"), "w",
+        json.dump(rec, open(os.path.join(OUT, out_cls + ".json"), "w",
                             encoding="utf-8"), indent=1)
-        rows.append({"class": cls, "hardpoints": len(conv),
+        rows.append({"class": out_cls, "hardpoints": len(conv),
                      "exterior_mounts": ext_n,
                      "exterior_outside": len(ext_out),
                      "outside_any": len(outside),
                      "scale": round(s, 4), "spread": round(spread, 4),
                      "acceptance": ok, "note": why})
         print("  %-32s %s  %3d hp  s=%.3f  spread %5.1f%%%s"
-              % (cls, "PASS" if ok else "FAIL", len(conv), s, spread * 100,
+              % (out_cls, "PASS" if ok else "FAIL", len(conv), s, spread * 100,
                  "" if ok else "  (" + why + ")"))
+
+    rows, skipped = [], []
+    # ONE SHIP CAN BE CLAIMED BY TWO BASE HULLS, and the first version let the
+    # second silently overwrite the first: `anvl_hornet_f7a_mk1` matched both
+    # `ANVL_Hornet` and `ANVL_Hornet_F7A`, and appeared twice in the manifest
+    # with one file on disk. That is the same silent-overwrite failure this
+    # project has hit five times, reintroduced by me while fixing something
+    # else - so claims are collected first and resolved deliberately.
+    claims = {}
+    for f in sorted(os.listdir(SRC)):
+        if not f.endswith(".json") or f in ("MANIFEST.json", "failures.json"):
+            continue
+        cls = f[:-5]
+        j = json.load(open(os.path.join(SRC, f), encoding="utf-8"))
+        hp = [n for n in j["nodes"] if n["name"].lower().startswith("hardpoint")]
+        if not hp:
+            skipped.append({"class": cls, "why": "no hardpoint nodes"})
+            continue
+
+        # A BASE HULL HAS NO SHIP ROW OF ITS OWN, AND THAT IS NOT A DEAD END.
+        #
+        # `AEGS_Avenger.cga` is the geometry; ships.json has no AEGS_Avenger,
+        # only _Stalker, _Titan, _Titan_Renegade, _Warlock. Twenty hulls were
+        # dropped for this and they are not obscure - the Avenger, the Hornet,
+        # the Constellation, the Aurora, the Mustang, the Zeus, the Spirit.
+        #
+        # So a base expands to its variants. BUT VARIANTS ARE NOT
+        # INTERCHANGEABLE: sixteen rows sit under ANVL_Hornet with THREE
+        # different published lengths - 22.5, 24 and 28.25 - and their own
+        # model files. An F7A Mk I and an F7C-M Super Hornet do not share a
+        # hull, and spraying one CGA's hardpoints across all sixteen would be
+        # exactly the fuzzy-match failure this project has been bitten by twice.
+        #
+        # THE NAME PROPOSES, THE GEOMETRY DISPOSES. Each candidate is placed
+        # against ITS OWN hull box and ITS OWN published length, and kept only
+        # if the acceptance test - which reads geometry and knows nothing about
+        # names - says the mounts land inside that hull. A variant of a
+        # different shape FAILS and is reported as failed, not quietly dropped.
+        targets = []
+        if dims.get(cls.lower()) and lower_models.get(cls.lower()):
+            targets.append((cls, dims[cls.lower()], lower_models[cls.lower()], False))
+        else:
+            pref = cls.lower() + "_"
+            for cn in sorted(dims):
+                if cn.startswith(pref) and lower_models.get(cn):
+                    targets.append((cn, dims[cn], lower_models[cn], True))
+            if not targets:
+                skipped.append({"class": cls,
+                                "why": "no ships.json row for this class, and no "
+                                       "variant of it carries one with a model"})
+                continue
+        for out_cls, dim, mdl, inherited in targets:
+            claims.setdefault(out_cls, []).append(
+                (out_cls, cls, dim, mdl, hp, inherited))
+
+    # THE MOST SPECIFIC BASE WINS, and a tie is refused rather than picked.
+    # `ANVL_Hornet_F7A` is a longer prefix of `anvl_hornet_f7a_mk1` than
+    # `ANVL_Hornet` is, so it is the nearer geometry and it takes the ship.
+    # Two claims of EQUAL specificity are genuinely ambiguous - both are
+    # dropped and both are named, the same way the hull-name collisions are.
+    for out_cls, cands in sorted(claims.items()):
+        best = max(len(c[1]) for c in cands)
+        top = [c for c in cands if len(c[1]) == best]
+        if len(top) > 1:
+            skipped.append({"class": out_cls,
+                            "why": "claimed by %d base hulls of equal "
+                                   "specificity (%s) - refused, not picked"
+                                   % (len(top), ", ".join(c[1] for c in top))})
+            continue
+        place(*top[0])
 
     man = {"generated_by": "build_hardpoint_placement.py",
            "source_transforms": SRC, "dimensions": dims_src,

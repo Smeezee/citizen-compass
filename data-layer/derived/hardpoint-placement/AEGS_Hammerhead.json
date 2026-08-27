@@ -1,6 +1,8 @@
 {
  "class": "AEGS_Hammerhead",
  "model": "Hammerhead.glb",
+ "hardpoints_from": "AEGS_Hammerhead",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.03185,
  "scale_estimates": {
   "length": 1.03185,

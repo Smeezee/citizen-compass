@@ -1,6 +1,8 @@
 {
  "class": "misc_fortune",
  "model": "Fortune.glb",
+ "hardpoints_from": "misc_fortune",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 0.90689,
  "scale_estimates": {
   "length": 0.90689,

@@ -1,6 +1,8 @@
 {
  "class": "vncl_blade",
  "model": "Blade.glb",
+ "hardpoints_from": "vncl_blade",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.02605,
  "scale_estimates": {
   "length": 1.02605,

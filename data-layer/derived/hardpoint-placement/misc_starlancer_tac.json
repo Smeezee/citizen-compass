@@ -1,6 +1,8 @@
 {
  "class": "misc_starlancer_tac",
  "model": "Starlancer_TAC.glb",
+ "hardpoints_from": "misc_starlancer_tac",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 107.74485,
  "scale_estimates": {
   "length": 107.74485,

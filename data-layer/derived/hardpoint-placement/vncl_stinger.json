@@ -1,6 +1,8 @@
 {
  "class": "vncl_stinger",
  "model": "Stinger.glb",
+ "hardpoints_from": "vncl_stinger",
+ "inherited_from_base_hull": false,
  "scale_m_per_unit": 1.03976,
  "scale_estimates": {
   "length": 1.03976,
