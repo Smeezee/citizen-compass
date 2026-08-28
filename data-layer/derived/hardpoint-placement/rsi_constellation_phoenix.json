@@ -24,10 +24,10 @@
   ]
  },
  "acceptance": true,
- "acceptance_note": "3 of 18 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (6 of 6 exterior pairs), so the rest is placed",
+ "acceptance_note": "3 of 18 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (37 of 43 exterior pairs), so the rest is placed",
  "frame_proven": true,
- "mirror_matched": 6,
- "mirror_pairs": 6,
+ "mirror_matched": 37,
+ "mirror_pairs": 43,
  "exterior_mounts": 18,
  "exterior_outside": [
   "hardpoint_gun_laser_top_right",

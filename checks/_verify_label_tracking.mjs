@@ -1,6 +1,13 @@
 /**
  * E11 - THE LABELS FOLLOW THE SHIP, INCLUDING MID-DRAG.
  *
+ * RULE16: UNPROVEN - the leader-line geometry is re-computed here rather than
+ * asked of the page, and the solve count is an observation of behaviour
+ * rather than a figure the page reports. But both endpoints - the marker
+ * and the label - are the page's own projections, so this proves the label
+ * FOLLOWS the marker and cannot prove the marker is where it should be.
+ * That second question belongs to _verify_marker_positions.mjs.
+ *
  * Sleven, 2026-08-23: "I can move the ship around and they just float there...
  * They're supposed to be attached to the hardpoints."
  *

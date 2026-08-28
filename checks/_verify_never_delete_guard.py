@@ -1,6 +1,13 @@
 """
 Rule 12 proof for the never-delete guard.
 
+RULE16: INDEPENDENT - the question is 'is the row still there', and that is
+answered by SELECTing it back out of the database rather than by the
+guard reporting that it refused. The file says why that distinction
+matters in its own second paragraph: a delete that failed for some other
+reason would look identical from the guard's side. Postgres is the
+witness, and it did not write the guard.
+
 The guard's whole claim is "a preserved row cannot be removed". A test that only
 shows the delete failing proves nothing on its own - the delete might have
 failed for some unrelated reason. So every case is run TWICE: once with the

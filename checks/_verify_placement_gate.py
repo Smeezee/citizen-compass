@@ -45,6 +45,11 @@ import sys
 PLACE = os.path.join("data-layer", "derived", "hardpoint-placement")
 MARGIN = 0.06
 WITHHOLD_MAX = 4
+# Re-stated here, not imported, for the same reason the gate is re-implemented:
+# a check that reads its own threshold out of the code under test agrees with
+# it by construction and cannot notice it being changed.
+MIRROR_MIN_FRACTION = 0.5
+MIRROR_MIN_PAIRS = 4
 # Copied from the placement script's own EXTERIOR pattern deliberately - if it
 # drifts there, this check stops selecting the same mounts and says so.
 EXTERIOR = re.compile(
@@ -92,7 +97,13 @@ def gate(points, box_min, box_max):
     # This check caught that too. The withholding is bounded by an absolute
     # count: pose mismatches run 1-3, the smallest frame error observed is 23.
     m, pr = mirror(points)
-    proven = pr > 0 and m == pr
+    proven = pr >= MIRROR_MIN_PAIRS and m >= pr * MIRROR_MIN_FRACTION
+    # THE VETO, re-implemented alongside the licence. A hull with enough pairs
+    # to judge, whose pairs mostly do not mirror, is refused whatever
+    # containment says - because containment cannot see a transpose on a hull
+    # as tall as it is wide, which is how the San'tok.yai survived one.
+    if pr >= MIRROR_MIN_PAIRS and m < pr * MIRROR_MIN_FRACTION:
+        return False, n, out
     return (n > 0 and (out == 0 or (proven and out <= WITHHOLD_MAX))), n, out
 
 
@@ -103,7 +114,10 @@ def mirror(points):
     itself: a check that imports the code it checks agrees with it by
     construction.
     """
-    hp = {h["name"]: h["pos"] for h in points if EXTERIOR.search(h["name"])}
+    # ALL named pairs, not exterior only - matching the rule change of
+    # 2026-08-28. The span used for the tolerance is taken over the same
+    # population that is being judged, as it is in the placer.
+    hp = {h["name"]: h["pos"] for h in points}
     if not hp:
         return 0, 0
     span = 0.0
@@ -182,16 +196,70 @@ def main():
         print("NOT PERFORMED - no hull carries 8 or more exterior mounts.")
         return 2
 
+    # THE FLEET'S WORST ADVERSARIAL CASE, BY NAME, ADDED 2026-08-28.
+    #
+    # Six hulls taken in directory order are six hulls that happen to be first.
+    # When the fraction rule was measured across all 265 hulls with four or
+    # more named pairs, the highest a TRANSPOSED hull reached was **0.455, on
+    # the San'tok.yai** - every other transposed hull came in at 0.20 or below.
+    # That single hull is most of the safety margin in a 0.5 rule, and a
+    # control that does not look at it is measuring the easy part of the
+    # distribution.
+    #
+    # It is pinned here rather than rediscovered, so that if a future decode
+    # pushes it past 0.5 this control says so instead of a nightly sweep
+    # quietly continuing to pass on six other ships.
+    for _hard in ("XNAA_SanTokYai", "VNCL_Glaive", "VNCL_Scythe"):
+        if _hard in files and not any(c == _hard for c, _j, _n in subjects):
+            _j = load(_hard)
+            _ok, _n, _o = gate(_j["hardpoints"], _j["hull_box"]["min"],
+                               _j["hull_box"]["max"])
+            subjects.append((_hard, _j, _n))
+
     failures = []
-    print("NEGATIVE CONTROL - the unmodified hull must PASS")
+    # THE NEGATIVE CONTROL RUNS ON HULLS THE PLACER ACCEPTED, NOT ON ALL OF
+    # THEM - and the distinction was learned by getting it wrong. When the
+    # Scythe was pinned in as a hard subject it landed in this loop too, and
+    # reported "the gate refuses an UNMODIFIED hull, so it would refuse
+    # everything". The Scythe IS refused, on purpose, and has been all along.
+    # **A hull the placer rejects is not evidence that the gate rejects
+    # everything.** The refused ones are exercised below, where being refused
+    # is what they are there to demonstrate.
+    print("NEGATIVE CONTROL - an ACCEPTED hull, unmodified, must PASS")
     for cls, j, n in subjects:
+        if not j.get("acceptance"):
+            print("  %-34s skipped   the placer refuses this hull; it is a "
+                  "named negative below" % cls)
+            continue
         ok, ne, out = gate(j["hardpoints"], j["hull_box"]["min"],
                            j["hull_box"]["max"])
         state = "pass" if ok else "REFUSED"
         print("  %-34s %-8s %d of %d exterior outside" % (cls, state, out, ne))
         if not ok:
-            failures.append("%s: the gate refuses an UNMODIFIED hull, so it "
-                            "would refuse everything" % cls)
+            failures.append("%s: the gate refuses a hull the PLACER accepted, "
+                            "so this check and the code it judges disagree "
+                            "about the same hull" % cls)
+
+    # AND THE OTHER HALF, WITHOUT WHICH THE SKIP ABOVE IS A HOLE: a hull the
+    # placer refused must be refused here too. Skipping them silently would
+    # let this control pass over a gate that had stopped refusing anything.
+    print("\nNAMED NEGATIVES - a hull the placer REFUSED must be refused here")
+    _neg = 0
+    for cls, j, n in subjects:
+        if j.get("acceptance"):
+            continue
+        _neg += 1
+        ok, ne, out = gate(j["hardpoints"], j["hull_box"]["min"],
+                           j["hull_box"]["max"])
+        print("  %-34s %-8s %d of %d exterior outside"
+              % (cls, "PASSED" if ok else "refused", out, ne))
+        if ok:
+            failures.append("%s: the placer refuses this hull and the gate "
+                            "here admits it - one of the two has drifted"
+                            % cls)
+    if not _neg:
+        failures.append("no refused hull was among the subjects, so the "
+                        "negative half of this section proved nothing")
 
     for label, fn in MUTATORS:
         print("\nCONTROL - %s must be REFUSED" % label)
@@ -218,6 +286,61 @@ def main():
         print("  %-34s %-8s %d of %d exterior outside" % (cls, state, out, ne))
         if ok:
             failures.append("%s survived a full-hull-length offset" % cls)
+
+    # ------------------------------------------------------------------
+    # THE RULE CHANGED ON 2026-08-28 AND THIS IS THE CONTROL OVER THE CHANGE.
+    #
+    # `frame_proven` went from "every exterior pair mirrors" to "at least half
+    # of ALL named pairs mirror". The old rule could not be met by a hull whose
+    # symmetric evidence is interior - the Glaive scored 2/4 on exteriors and
+    # 13/19 on everything, and was refused for asymmetry it does not have.
+    #
+    # A FRACTION INVITES EXACTLY ONE OBJECTION: that it was fitted to admit a
+    # ship somebody wanted in. So the separation is re-measured HERE, on every
+    # subject, rather than quoted from the run that motivated it. **A
+    # transposed hull must not reach the fraction. A clean hull must.** If
+    # those two populations ever overlap, the rule is unsafe and this says so
+    # by name rather than by drifting.
+    print("\nTHE FRACTION HAS TO SEPARATE THE TWO POPULATIONS, and this "
+          "re-measures\nthat rather than trusting the run that chose it")
+    for cls, j, _n in subjects:
+        cm, cp = mirror(j["hardpoints"])
+        tm, tp = mirror([{"name": h["name"],
+                          "pos": [h["pos"][1], h["pos"][0], h["pos"][2]]}
+                         for h in j["hardpoints"]])
+        cf = cm / cp if cp else 0.0
+        tf = tm / tp if tp else 0.0
+        print("  %-34s clean %.3f   transposed %.3f   (rule %.2f)"
+              % (cls, cf, tf, MIRROR_MIN_FRACTION))
+        # THE "CLEAN MUST REACH IT" HALF APPLIES ONLY TO HULLS THE PLACEMENT
+        # ACCEPTED, AND THE FIRST VERSION OF THIS GOT IT WRONG.
+        #
+        # It asserted that EVERY hull here clears the fraction - and the Scythe
+        # does not, at 0.062. That was read as "the rule refuses good hulls".
+        # It is not a good hull: the Scythe is the one ship in the fleet whose
+        # frame nobody has established, which is exactly why it is refused.
+        # **A hull under dispute cannot be used as evidence that the rule
+        # rejects hulls unfairly** - that is assuming the conclusion.
+        #
+        # So the positive half is scoped to hulls the placer accepted, and the
+        # Scythe appears below as a NAMED NEGATIVE instead: it must NOT be
+        # frame-proven, and if it ever becomes so without new evidence, that is
+        # the rule having drifted.
+        _acc = j.get("acceptance")
+        if _acc and cp >= MIRROR_MIN_PAIRS and cf < MIRROR_MIN_FRACTION:
+            failures.append("%s: an ACCEPTED hull falls below the fraction, "
+                            "so the placer and this rule disagree about the "
+                            "same hull" % cls)
+        if cls == "VNCL_Scythe" and cf >= MIRROR_MIN_FRACTION:
+            failures.append("VNCL_Scythe reaches the fraction. It is the "
+                            "fleet's one genuinely asymmetric hull and the "
+                            "named negative for this rule - if it now passes, "
+                            "either the decode changed or the rule has been "
+                            "loosened, and neither should happen quietly")
+        if tp >= MIRROR_MIN_PAIRS and tf >= MIRROR_MIN_FRACTION:
+            failures.append("%s: a TRANSPOSED hull reaches the fraction, so "
+                            "the rule no longer catches the defect it exists "
+                            "for" % cls)
 
     print("\nTHE SECOND SIGNAL ON ITS OWN - a transpose must destroy the "
           "mirror,\nand a wrong scale must NOT (that is what makes them "

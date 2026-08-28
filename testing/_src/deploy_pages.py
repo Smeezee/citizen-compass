@@ -99,6 +99,10 @@ PAGES = [
     # the whole point of the addendum's per-layer loading - see the ledger for
     # what that actually saves today.
     ('loadout_eng.gen.js', 'loadout_eng.gen.js'),
+    # CIG's 1,607 crafting recipes, joined to the 452 fittable parts that
+    # have one. Written by build_crafting_demand.py into data-layer/ and
+    # copied into _src by the build, because PAGES copies from _src.
+    ('craft_data.gen.js', 'craft_data.gen.js'),
     # A gamepad diagnostic that shares NO code with the site. That
     # independence is the point: it answers "can this browser see the
     # stick at all" without our own detection logic in the way. Copied

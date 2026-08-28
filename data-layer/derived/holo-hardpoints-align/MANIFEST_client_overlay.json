@@ -5,8 +5,8 @@
  "units": "unit = normalised to the hull's longest HALF-extent, the same definition build_holo_data.py uses. pos_model is scaled back out using THIS hull's own existing unit/pos_model pair.",
  "not_applied": "This file is written BESIDE alignment_overlay.json and nothing reads it yet. Wiring it in is a separate, reversible step.",
  "counts": {
-  "hulls": 166,
-  "ports": 1693
+  "hulls": 167,
+  "ports": 1703
  },
  "hulls": [
   {
@@ -690,13 +690,16 @@
   },
   {
    "class": "VNCL_Glaive",
-   "emitted": 0,
-   "why": "placement did not pass: 1 of 10 exterior mounts land outside the hull and this hull's frame is NOT proven (2 of 4 exterior pairs mirror) - refused whole"
+   "fleet_key": "Glaive",
+   "emitted": 10,
+   "median_move": 0.9547,
+   "max_move": 1.6235,
+   "pos_model": true
   },
   {
    "class": "VNCL_Scythe",
    "emitted": 0,
-   "why": "placement did not pass: 1 of 10 exterior mounts land outside the hull and this hull's frame is NOT proven (1 of 4 exterior pairs mirror) - refused whole"
+   "why": "placement did not pass: only 1 of 16 named left/right pairs mirror, which is below the fraction a transposed axis cannot reach. The frame is not established, so nothing here is placed - regardless of the hull box, which cannot see a transpose on a hull as tall as it is wide"
   },
   {
    "class": "XIAN_Nox",
@@ -1336,20 +1339,12 @@
   {
    "class": "drak_clipper",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 72,
-   "ports_withheld": 16,
-   "ports_at_origin": 16,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: only 2 of 8 named left/right pairs mirror, which is below the fraction a transposed axis cannot reach. The frame is not established, so nothing here is placed - regardless of the hull box, which cannot see a transpose on a hull as tall as it is wide"
   },
   {
    "class": "drak_clipper_collector_military",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 72,
-   "ports_withheld": 16,
-   "ports_at_origin": 16,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: only 2 of 8 named left/right pairs mirror, which is below the fraction a transposed axis cannot reach. The frame is not established, so nothing here is placed - regardless of the hull box, which cannot see a transpose on a hull as tall as it is wide"
   },
   {
    "class": "drak_corsair_exec_military",

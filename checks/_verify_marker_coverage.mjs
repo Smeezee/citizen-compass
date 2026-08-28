@@ -1,6 +1,12 @@
 /**
  * W3: a hull showing 4 of 24 says it is showing 4 of 24.
  *
+ * RULE16: INDEPENDENT - both numbers in the page's coverage line are recomputed
+ * here from the generated data: the marker count from MARKS, the mount
+ * total from each ship's own slots filtered by the eligibility rule. The
+ * page is required to agree with an arithmetic it did not perform. Same
+ * residual as _verify_marker_absence: the data and the page share a build.
+ *
  * Sleven walked the ship list on 2026-08-23 and filed the Retaliator, the Sabre
  * Peregrine and all three Ballistas as "hardpoints not set up". Every one of
  * them HAS markers - 4, 2, 2, 2 and 2. The page printed a confident provenance

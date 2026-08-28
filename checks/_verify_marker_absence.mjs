@@ -1,6 +1,14 @@
 /**
  * E1: a hull with nothing on it says WHICH KIND of nothing.
  *
+ * RULE16: INDEPENDENT - the subject is the page's ABSENCE MESSAGE and the truth is
+ * the generated marker table and slot data, which the message logic did
+ * not produce: whether a hull has zero eligible mounts or has mounts with
+ * no positions is decided here from the data and the page is then required
+ * to say the matching one. What it does NOT cover, stated rather than
+ * implied: data and page come out of one build, so a build that emitted no
+ * markers AND said 'no positions' would be consistent and wrong.
+ *
  * Sleven: "some ships don't even have hard points at all." Measured on the
  * deployed data: 201 ships render a model, 159 carry hull markers, and the
  * rest DRAW A HULL AND PUT NOTHING ON IT. The page said nothing about that, so

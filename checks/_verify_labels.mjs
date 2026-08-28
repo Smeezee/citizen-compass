@@ -1,6 +1,13 @@
 /**
  * H1b: leader-line labels, deconflicted, with the count always stated.
  *
+ * RULE16: UNPROVEN - the zero-overlap claim IS independent: the label rectangles
+ * are read back and every pair is intersected here, so a solver that
+ * reported success while overlapping would still fail. The counting claim
+ * is not. `labels === n` compares the page's rendered label set against the
+ * page's own mountsFor(), evaluated inside the page, so both sides come
+ * from the thing under test.
+ *
  * THE LABELS ARE THE FEATURE, not decoration on the markers. A derived
  * position will never be exact - the exports are one welded mesh with no mount
  * data, and RSI's are no better. A dot two metres off that says

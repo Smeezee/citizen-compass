@@ -3,6 +3,13 @@
 """
 Rule 12 proof for G5 / R1 - the commodity cross-reference.
 
+RULE16: UNPROVEN - it imports build_commodity_xref and applies the very join rule
+it is judging, so a wrong rule matches wrongly on both sides. The rows it
+joins against ARE independent - they come from the database rather than
+from the builder - and the planted cases are constructed here, so what is
+proven is that the rule refuses what it must refuse. Whether the rule is
+the right rule is not reachable from inside it.
+
 THREE THINGS ARE PROVEN HERE, AND THEY FAIL IN DIFFERENT WAYS
 ==============================================================
 

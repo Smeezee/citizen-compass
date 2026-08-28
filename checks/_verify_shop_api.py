@@ -1,6 +1,13 @@
 """
 Phase D acceptance: the shop API, verified against a RUNNING SERVER.
 
+RULE16: INDEPENDENT - it starts the real application and makes real HTTP requests
+to it, then judges the responses against expectations written here. The
+file says in its own second paragraph why it refuses the easier route: a
+TestClient exercises the same handlers but proves neither that the app
+starts nor that the router is mounted. Nothing is imported from the code
+under test - the only channel is the wire.
+
 §D says "verified against the running API, not against the code", and that
 distinction is the whole point of this file. A FastAPI TestClient would be
 easier and would exercise the same handlers, but it would not prove that the

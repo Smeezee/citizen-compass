@@ -129,9 +129,22 @@ BROWSER_CHECKS = (
 )
 
 
+def _load_sweep_gate():
+    """The REAL module, imported once. Its fingerprint() is the same code the
+    deploy runs, which is the point: a fixture that computed its own would be
+    asserting that two implementations agree rather than that one works."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_sg_for_fixture", os.path.join(ROOT, "checks", "sweep_gate.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
                  extra_file=None, models=True, index=True,
-                 browser_checks=True, red_check=None, receipt=None):
+                 browser_checks=True, red_check=None, receipt=None,
+                 sweep="clean"):
     """A throwaway project tree shaped exactly like the real one.
 
     Tiny on purpose - the scripts walk every file in the payload, and 350 MB of
@@ -204,6 +217,45 @@ def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
     if receipt is not None:
         write(os.path.join(proj, "testing", "_src", ".last_build.json"),
               json.dumps(receipt))
+
+    # THE SWEEP GATE (Q10), copied real rather than stubbed - it is what the
+    # deploy runs, and a stub would be testing the stub. Its receipt path is
+    # relative to its OWN location, so a copy inside the fixture reads a
+    # fixture receipt and the repo's real one is never touched.
+    os.makedirs(os.path.join(proj, "checks"), exist_ok=True)
+    shutil.copyfile(os.path.join(ROOT, "checks", "sweep_gate.py"),
+                    os.path.join(proj, "checks", "sweep_gate.py"))
+    if sweep is not None:
+        _sg = _load_sweep_gate()
+        try:
+            _fp = _sg.fingerprint(os.path.join(proj, "testing", "_deploy"))
+        except Exception:
+            # THE DELIBERATELY-EMPTY PAYLOADS. Section 6 builds a project with
+            # no index.html, and fingerprint() refuses an empty payload - which
+            # is correct, and means there is no receipt to write. Those scripts
+            # refuse at the entry-point check long before the sweep gate, so
+            # the section still tests what it says it does.
+            return proj
+        _rec = {"fingerprint": _fp, "at": "2026-08-27T23:00:00", "seconds": 1.0,
+                "payload_dir": "testing/_deploy", "passed": 98, "failed": [],
+                "skipped": [], "not_run": [], "partial": False,
+                "self_test": False}
+        if sweep == "red":
+            _rec["failed"] = ["_verify_planted_red.py"]
+        elif sweep == "notrun":
+            _rec["not_run"] = ["_verify_planted_unrunnable.py"]
+        elif sweep == "stale":
+            _rec["fingerprint"] = "0" * 64
+        elif sweep == "partial":
+            _rec["partial"] = True
+        elif sweep == "selftest":
+            _rec["self_test"] = True
+        elif sweep == "unreadable":
+            write(os.path.join(proj, "checks", ".last_sweep.json"),
+                  "{ this is not json")
+            return proj
+        write(os.path.join(proj, "checks", ".last_sweep.json"),
+              json.dumps(_rec))
     return proj
 
 
@@ -518,6 +570,89 @@ def main():
             check("  and says an unreadable receipt is not a passing one",
                   "unreadable receipt is not a passing one" in out)
             shutil.rmtree(proj)
+
+        # ---------------------------------------------------------------
+        print("\n11. THE OTHER 94 CONTROLS - THE SWEEP GATE (Q10)")
+        # Until 2026-08-27 the deploy gated on 4 controls out of 98. The sweep
+        # found 14 failures at 22:15 that day and the site was deployed
+        # repeatedly that evening, because nothing connected the two.
+        #
+        # THE DONE-WHEN IS "A DELIBERATELY-REDDENED CONTROL STOPS A DEPLOY",
+        # so that is asserted directly: a receipt naming a failed control, and
+        # the deploy has to refuse. Not a paraphrase of it.
+        for script, dry, live in (("deploy_testing.ps1", "-WhatIf: would run", False),
+                                  ("deploy_live.ps1", LIVE_DRY, True)):
+            g = not live
+            proj = make_project(tmp, gate=g, stamp=g, sweep="red")
+            code, out = run_script(script, proj)
+            check("%s REFUSES a payload whose sweep had a RED control" % script,
+                  code != 0)
+            check("  and names the control that was red",
+                  "_verify_planted_red.py" in out)
+            check("  and never reached its dry run", dry not in out)
+            shutil.rmtree(proj)
+
+            # NOT RUN IS NOT A PASS. A control that could not execute is the
+            # silent-success shape this project keeps finding, so it must stop a
+            # deploy exactly as a failure does.
+            proj = make_project(tmp, gate=g, stamp=g, sweep="notrun")
+            code, out = run_script(script, proj)
+            check("  REFUSES when a control could not be RUN, not just failed",
+                  code != 0)
+            check("  and names it", "_verify_planted_unrunnable.py" in out)
+            shutil.rmtree(proj)
+
+            # THE PAYLOAD CHANGED AFTER THE SWEEP. This is the case the receipt
+            # exists for - a sweep that passed something else is not a sweep of
+            # this.
+            proj = make_project(tmp, gate=g, stamp=g, sweep="stale")
+            code, out = run_script(script, proj)
+            check("  REFUSES when the payload changed since the sweep", code != 0)
+            check("  and says so rather than blaming a control",
+                  "CHANGED SINCE THE LAST SWEEP" in out)
+            shutil.rmtree(proj)
+
+            proj = make_project(tmp, gate=g, stamp=g, sweep=None)
+            code, out = run_script(script, proj)
+            check("  REFUSES when NO sweep has been run at all", code != 0)
+            check("  and tells the reader the command that fixes it",
+                  "run_all_controls.py" in out)
+            shutil.rmtree(proj)
+
+            proj = make_project(tmp, gate=g, stamp=g, sweep="partial")
+            code, out = run_script(script, proj)
+            check("  REFUSES a PARTIAL sweep - a subset is not a sweep", code != 0)
+            shutil.rmtree(proj)
+
+            proj = make_project(tmp, gate=g, stamp=g, sweep="selftest")
+            code, out = run_script(script, proj)
+            check("  REFUSES a --self-test sweep - inverted is not clean",
+                  code != 0)
+            shutil.rmtree(proj)
+
+            proj = make_project(tmp, gate=g, stamp=g, sweep="unreadable")
+            code, out = run_script(script, proj)
+            check("  REFUSES an UNREADABLE receipt", code != 0)
+            shutil.rmtree(proj)
+
+            # AND IT LETS A SWEPT, CLEAN PAYLOAD THROUGH. A gate that refuses
+            # everything is not a gate either, and every section above this one
+            # depends on this being true.
+            proj = make_project(tmp, gate=g, stamp=g, sweep="clean")
+            code, out = run_script(script, proj)
+            check("  and a clean sweep of THIS payload gets through", code == 0)
+            check("  saying how many controls vouched for it",
+                  "control(s) green against this exact payload" in out)
+
+            # The override, loud.
+            proj2 = make_project(tmp, gate=g, stamp=g, sweep="red")
+            code, out = run_script(script, proj2, extra=["-IgnoreSweep"])
+            check("  -IgnoreSweep gets past a red sweep", code == 0)
+            check("  and says OVERRIDE rather than passing quietly",
+                  "OVERRIDE" in out)
+            # make_project always builds at tmp/proj, so proj2 IS proj - the
+            # second call overwrote the first. One removal, not two.
+            shutil.rmtree(proj2, ignore_errors=True)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

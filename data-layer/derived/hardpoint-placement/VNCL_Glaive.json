@@ -23,11 +23,11 @@
    15.378022193908691
   ]
  },
- "acceptance": false,
- "acceptance_note": "1 of 10 exterior mounts land outside the hull and this hull's frame is NOT proven (2 of 4 exterior pairs mirror) - refused whole",
- "frame_proven": false,
- "mirror_matched": 2,
- "mirror_pairs": 4,
+ "acceptance": true,
+ "acceptance_note": "1 of 10 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (13 of 19 exterior pairs), so the rest is placed",
+ "frame_proven": true,
+ "mirror_matched": 13,
+ "mirror_pairs": 19,
  "exterior_mounts": 10,
  "exterior_outside": [
   "hardpoint_missile_rack_left"

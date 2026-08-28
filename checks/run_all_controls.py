@@ -98,6 +98,11 @@ NEEDS = {
 }
 
 
+import sweep_gate  # noqa: E402  (same directory)
+
+REPO = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+
+
 def discover():
     out = []
     for name in sorted(os.listdir(HERE)):
@@ -248,6 +253,37 @@ def main():
               % len(controls))
         print("This is reported as a FAILED sweep, never as a clean one.")
         return 1
+
+    # Q10: THE RECEIPT. Written here because this is the sweep, and the sweep is
+    # the only thing that knows what it saw.
+    #
+    # It records the failures AND the reasons a sweep would not count as clean -
+    # partial, self-test - rather than deciding. Deciding is sweep_gate.py's job,
+    # so the rule can change without every sweep needing to be re-run.
+    #
+    # A receipt that cannot be written is REPORTED and does not silently make the
+    # sweep look unreceipted-but-fine. It also does not fail an otherwise good
+    # sweep: the deploy gate refuses on a missing receipt anyway, which is the
+    # safe direction.
+    try:
+        rec = sweep_gate.write_receipt(
+            os.path.join(REPO, "testing", "_deploy"),
+            passed=passed,
+            failed=[n for n, _c, _o in failed],
+            skipped=[n for n, _w in skipped],
+            not_run=[n for n, _w in not_run],
+            partial=bool(wanted),
+            self_test=bool(args.self_test),
+            seconds=time.time() - started)
+        print("")
+        print("sweep receipt: %s  (%d passed, %d failed, payload %s)"
+              % (os.path.relpath(sweep_gate.RECEIPT, REPO), rec["passed"],
+                 len(rec["failed"]), rec["fingerprint"][:16]))
+    except Exception as exc:                     # pragma: no cover - reported
+        print("")
+        print("SWEEP RECEIPT NOT WRITTEN: %s: %s" % (type(exc).__name__, exc))
+        print("The deploy gate refuses on a missing receipt, so this fails "
+              "closed rather than quietly.")
 
     # A control that could not be run counts against the sweep. Reporting a
     # green sweep with something unrun is the exact failure this project calls

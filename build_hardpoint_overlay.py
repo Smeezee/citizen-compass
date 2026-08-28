@@ -145,8 +145,32 @@ def main():
                 "record_source": "hardpoint-placement (CIG transforms)",
                 "note": "added by build_hardpoint_overlay.py because "
                         "hardpoints_fleet.json has no record for this hull",
+                # `placed_from` IS THE WHOLE POINT OF THIS LINE AND IT WAS
+                # MISSING UNTIL 2026-08-28.
+                #
+                # These records carry CIG's own decoded transforms - the same
+                # source, the same acceptance test and the same conversion as
+                # the ports in the alignment overlay. `build_deploy.py` stamps
+                # `placed_from = 'client'` on every port THE OVERLAY moves, and
+                # it never had reason to stamp these, because these hulls never
+                # go through that loop: they have no fleet record to move a
+                # port ON. So the emitter's
+                #
+                #     'cig' if _hp.get('placed_from') == 'client' else 'est'
+                #
+                # labelled every one of them `est`, and the ship page told the
+                # visitor that a CIG-published mount was a name-derived guess.
+                # Measured 2026-08-28 on the deployed file: 41 hulls, every
+                # top-level marker mislabelled, coordinates exactly equal to
+                # this file's.
+                #
+                # This is stamped HERE, in the file that knows the provenance,
+                # rather than in `build_deploy.py`, which is Code's. The field
+                # the emitter already reads is the field this now writes - no
+                # change to Code's file, and rule 14 stays intact.
                 "hardpoints": [{"port": n["name"], "unit": [round(c / H0, 5)
-                                for c in n["pos"]]}
+                                for c in n["pos"]],
+                                "placed_from": "client"}
                                for n in _pts],
                 "ports_withheld": _held,
             }

@@ -3,6 +3,14 @@
 """
 _verify_find_data.py - prove build_find_data.py's own gates can fail.
 
+RULE16: UNPROVEN - it imports build_find_data and drives that module's OWN gates,
+so a gate whose definition of 'equal' or 'under the ceiling' is wrong is
+wrong on both sides of every assertion here. What it does prove, and what
+it is for, is that each gate REFUSES input it must refuse: the row counts
+and the payload are mutated here, by this file, and the generator has to
+reject them. A gate that has been seen refusing is worth more than one
+nobody has driven - it is just not an independent source of truth.
+
 H1's acceptance has two gates inside the generator: the row counts in the file
 must equal the row counts in the database, and the gzipped file must be under
 250 KB. H6 adds a third: two renders of unchanged data must be byte-identical,

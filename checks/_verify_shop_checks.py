@@ -1,6 +1,13 @@
 """
 C6: the negative control for every Phase C auditor.
 
+RULE16: UNPROVEN - it imports the auditors from checks.shop_checks and runs them,
+so an auditor whose rule is wrong is wrong on both sides of every
+assertion. What it does prove is the half C6 asks for and the half that
+usually goes missing: each auditor is fed a row that MUST trip it and is
+observed firing, then fed clean data and observed staying silent. The
+rows are constructed here; the verdict is the auditor's own.
+
 §C6: "Feed each auditor a row that must trip it and OBSERVE IT FIRE. Then feed
 clean data and observe it stay silent. Both halves, or the auditor is not
 proven."

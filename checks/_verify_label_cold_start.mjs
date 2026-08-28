@@ -2,6 +2,13 @@
  * Q2 / E11b - LABELS ARE THERE ON A COLD LOAD, AND THE ANSWER TO "WHICH PATH"
  * IS THAT E8'S CONTROL WAS NARROW RATHER THAN WRONG.
  *
+ * RULE16: UNPROVEN - most of this is independent: it runs the REAL project()
+ * against an unsized canvas and reads the (0,0) it returns, which is
+ * behaviour rather than a self-report. One assertion is not. Section 1
+ * greps cc_viewer.js's own SOURCE TEXT for `this.canvas.clientWidth`,
+ * which is the code under test being its own evidence - it proves the
+ * property is mentioned, never that it is used.
+ *
  * Sleven, on the Anvil C8R Pisces Rescue: "as soon as I loaded in, nothing was
  * there. I clicked one of the hardpoints and they popped up." Four hardpoints,
  * far below the 14 threshold, so they should be on at load.

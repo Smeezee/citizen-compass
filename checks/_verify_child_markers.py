@@ -68,8 +68,25 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 SRC = os.path.join(REPO, "testing", "_src")
 AFTER = os.path.join(SRC, "loadout_marker.gen.js")
+# THIS SNAPSHOT GOES STALE EVERY TIME THE OVERLAY MOVES, and that is a
+# property of the design rather than an accident. The BEFORE state is this
+# build with CC_NO_INHERIT=1, so it captures a moment; C1 regenerates the
+# client overlay most days, and every hull that gains CIG coordinates then
+# reads as "moved" against a snapshot taken before it did.
+#
+# Re-taken 2026-08-28 after the Vanduul Glaive gained 8 CIG-positioned
+# markers - previously one of the refused asymmetric hulls, so the movement
+# was the pipeline working. The pinned four were checked FIRST and all four
+# still held, which is the condition Sleven set on 2026-08-27 for taking a
+# snapshot at all.
+#
+# THE DURABLE FIX IS TO GENERATE THE BEFORE STATE INSIDE THE CONTROL rather
+# than to keep re-taking it. That costs a full no-inherit build per run -
+# about 90 seconds - and it removes the treadmill and every chance a manual
+# re-take bakes in something wrong. Not done here because it changes what
+# the control costs the sweep, and that is a decision rather than a fix.
 BEFORE = os.path.join(REPO, "data-layer", "derived", "holo-hardpoints",
-                      "loadout_marker.pre-C1-20260827.js")
+                      "loadout_marker.pre-C1-20260828.js")
 
 # C3's pinned four - the Retaliator's countermeasure launchers, the only ports
 # that already had markers before any of this work and therefore the ones a fix
@@ -179,7 +196,11 @@ def main(argv=None):
               "failure mode inheritance creates. ***\n")
     if a.mutate_move_pinned:
         k = "AEGS_Retaliator"
-        now[k] = [([r[0], round(r[1] + 0.00001, 5), r[2], r[3]]
+        # THE TAIL IS CARRIED THROUGH. Rows gained a fifth element on
+        # 2026-08-27 (Q9's provenance token); rebuilding a row as exactly four
+        # would silently drop it and this mutator would be testing a shape the
+        # build no longer emits.
+        now[k] = [([r[0], round(r[1] + 0.00001, 5)] + list(r[2:])
                    if str(r[0]) == "23" else r) for r in now[k]]
         print("*** MUTATED: PortId 23 moved by 0.00001 - a marker that was "
               "correct before this work. ***\n")
@@ -320,8 +341,17 @@ def main(argv=None):
             and all("." not in str(s["p"])
                     for s in LS[c]["slots"]
                     if (LT.get(s["t"]) or {}).get("t") in MARKABLE)]
-    moved = [c for c in flat if json.dumps(sorted(map(str, was[c])))
-             != json.dumps(sorted(map(str, now[c])))]
+    # POSITIONS ONLY, not whole rows. The subject here is "these markers did
+    # not MOVE", and a row carries more than a position: Q9 added a fifth
+    # element on 2026-08-27 naming where the dot came from. Comparing whole
+    # rows made all eight of these hulls look moved the moment that field
+    # arrived, which is a format change reported as a fleet regression.
+    # A genuine change of position still fails, because the position is what is
+    # compared.
+    def _pos_only(rows):
+        return sorted(json.dumps(list(r[:4])) for r in rows)
+
+    moved = [c for c in flat if _pos_only(was[c]) != _pos_only(now[c])]
     print("     and the %d hulls whose eligible ports are ALL top-level:"
           % len(flat))
     ck("none of them moved at all", moved, [])

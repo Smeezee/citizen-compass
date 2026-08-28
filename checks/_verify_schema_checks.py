@@ -1,5 +1,16 @@
 """Rule 12 proof for checks/schema_checks.py.
 
+RULE16: UNPROVEN - it imports schema_ownership_check and asserts on that
+function's verdict. Worth saying what IS independent, because it is more
+than usual: the offending state is a REAL table created in a REAL
+database, so the condition being detected exists in Postgres rather than
+in a fixture pretending to be it. Only the verdict is the checker's own.
+This is a RULE 12 control, and rule 16 is a different axis. Proving a
+checker fires on input that must trip it and stays silent on clean input
+is exactly what rule 12 asks for, and this file does both halves. Being
+UNPROVEN under rule 16 is not a criticism of it - it is the observation
+that a checker cannot be an independent source of truth about itself.
+
 A guard that has never fired is not a guard. This creates a table that is in
 neither app/models.py nor env.py's EXCLUDED_TABLES and confirms the checker
 reports it - against a throwaway database this process creates and drops

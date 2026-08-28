@@ -1,6 +1,12 @@
 """
 The shop/price layer's database constraints, each one OBSERVED REFUSING a bad
 row. This file is item A7 of
+
+RULE16: INDEPENDENT - the constraints live in the DATABASE and the evidence is
+what the database DOES with a row planted here: the refusal comes from
+Postgres, not from any Python this project wrote. No importer, model or
+validator is asked whether it would have allowed the row. That is why
+each case is stated as 'observed refusing' rather than 'checked'.
 docs/ORDER_shop-and-price-layer-RUN-CONTINUOUSLY-2026-08-19.md, and items
 A2-A6 each add their cases to it as they land.
 

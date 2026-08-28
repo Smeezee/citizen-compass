@@ -1,6 +1,17 @@
 """
 Rule 12 proof for the missing_encoding checker, in BOTH directions.
 
+RULE16: UNPROVEN - it imports missing_encoding_check and asks that function about
+call sites this file planted, so a checker whose idea of 'specifies an
+encoding' is wrong is wrong on both sides. The INPUT is independent and
+is the point: bad call sites are written into a temp repo and every one
+must be caught, clean ones must not be flagged.
+This is a RULE 12 control, and rule 16 is a different axis. Proving a
+checker fires on input that must trip it and stays silent on clean input
+is exactly what rule 12 asks for, and this file does both halves. Being
+UNPROVEN under rule 16 is not a criticism of it - it is the observation
+that a checker cannot be an independent source of truth about itself.
+
 A linter is trusted more than almost anything else in a codebase, because
 people stop looking once it is green. So it gets tested the hard way:
 

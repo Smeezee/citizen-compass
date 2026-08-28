@@ -2,6 +2,16 @@
 """Prove `control_bytes_check` catches an escape-mangled regex and does not
 flag clean source.
 
+RULE16: UNPROVEN - it imports control_bytes_check and judges its verdicts. The
+planted input is independent - source with a genuine escape-mangled
+regex in it, written here - and the checker has to find it and has to
+leave clean source alone.
+This is a RULE 12 control, and rule 16 is a different axis. Proving a
+checker fires on input that must trip it and stays silent on clean input
+is exactly what rule 12 asks for, and this file does both halves. Being
+UNPROVEN under rule 16 is not a criticism of it - it is the observation
+that a checker cannot be an independent source of truth about itself.
+
 WHY THIS CHECKER EXISTS, which is also why this file has to exist.
 
 A regex written as /\\bpinned\\b/ and passed through a tool that reads \\b as

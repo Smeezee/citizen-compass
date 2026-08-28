@@ -1,0 +1,9464 @@
+{
+ "AMRS_LaserCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "AMRS_LaserCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "AMRS_LaserCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 23
+   }
+  ]
+ },
+ "AMRS_LaserCannon_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 41
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 41
+   }
+  ]
+ },
+ "AMRS_LaserCannon_S5": {
+  "mins": 86,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 3.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 75
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 75
+   }
+  ]
+ },
+ "AMRS_LaserCannon_S6": {
+  "mins": 151,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 6.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 135
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 135
+   }
+  ]
+ },
+ "AMRS_ScatterGun_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.41,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.47,
+    "q": null
+   }
+  ]
+ },
+ "APAR_BallisticGatling_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.21,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1.25,
+    "q": null
+   }
+  ]
+ },
+ "APAR_BallisticGatling_S6": {
+  "mins": 151,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 6.74,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.67,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 4,
+    "q": null
+   }
+  ]
+ },
+ "APAR_BallisticScatterGun_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.18,
+    "q": null
+   }
+  ]
+ },
+ "APAR_BallisticScatterGun_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.32,
+    "q": null
+   }
+  ]
+ },
+ "APAR_BallisticScatterGun_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.17,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.58,
+    "q": null
+   }
+  ]
+ },
+ "APAR_MassDriver_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.26,
+    "q": null
+   },
+   {
+    "n": "Saldynium (Ore)",
+    "scu": null,
+    "q": 22
+   }
+  ]
+ },
+ "ASAD_DistortionRepeater_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Torite",
+    "scu": 0.18,
+    "q": null
+   },
+   {
+    "n": "Aphorite",
+    "scu": null,
+    "q": 9
+   }
+  ]
+ },
+ "ASAD_DistortionRepeater_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Torite",
+    "scu": 0.32,
+    "q": null
+   },
+   {
+    "n": "Aphorite",
+    "scu": null,
+    "q": 16
+   }
+  ]
+ },
+ "ASAD_DistortionRepeater_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Torite",
+    "scu": 0.58,
+    "q": null
+   },
+   {
+    "n": "Aphorite",
+    "scu": null,
+    "q": 29
+   }
+  ]
+ },
+ "BANU_TachyonCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Quantainium",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "BANU_TachyonCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.26,
+    "q": null
+   },
+   {
+    "n": "Quantainium",
+    "scu": 0.13,
+    "q": null
+   }
+  ]
+ },
+ "BANU_TachyonCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.46,
+    "q": null
+   },
+   {
+    "n": "Quantainium",
+    "scu": 0.23,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticCannon_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.31,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 1.04,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticCannon_VNG_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.09,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.32,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticGatling_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.21,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1.25,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticGatling_S5": {
+  "mins": 86,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 3.74,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.37,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 2.24,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticGatling_S6": {
+  "mins": 151,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 6.74,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.67,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 4,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticRepeater_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.18,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticRepeater_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.32,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticRepeater_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.17,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.58,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_BallisticRepeater_VNG_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.32,
+    "q": null
+   }
+  ]
+ },
+ "BEHR_DistortionCannon_VNG_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.22,
+    "q": null
+   },
+   {
+    "n": "Aphorite",
+    "scu": null,
+    "q": 16
+   }
+  ]
+ },
+ "BEHR_DistortionRepeater_VNG_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Torite",
+    "scu": 0.32,
+    "q": null
+   },
+   {
+    "n": "Aphorite",
+    "scu": null,
+    "q": 16
+   }
+  ]
+ },
+ "BEHR_LaserCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "BEHR_LaserCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "BEHR_LaserCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 23
+   }
+  ]
+ },
+ "BEHR_LaserCannon_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 41
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 41
+   }
+  ]
+ },
+ "BEHR_LaserCannon_S5": {
+  "mins": 86,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 3.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 75
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 75
+   }
+  ]
+ },
+ "BEHR_LaserCannon_S6": {
+  "mins": 151,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 6.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 135
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 135
+   }
+  ]
+ },
+ "BEHR_LaserCannon_VNG_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "BEHR_LaserRepeater_VNG_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.26,
+    "q": null
+   }
+  ]
+ },
+ "COOL_ACOM_S01_IcePlunge_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_ACOM_S01_QuickCool_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_ACOM_S01_ZeroRush_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_ACOM_S02_AbsoluteZero_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_ACOM_S02_IceDive_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_ACOM_S02_RapidCool_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S01_Bracer_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S01_Glacier_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S01_Polar_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S01_Tundra_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S02_Arctic_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S02_Avalanche_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S02_Boreal_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S02_Permafrost_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S03_Blizzard_SCItem": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S03_Galinstan_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S03_Mercury_SCItem": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S03_Tempest_SCItem": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S04_Idris_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 3.15,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S04_Javelin_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 3.15,
+    "q": null
+   }
+  ]
+ },
+ "COOL_AEGS_S04_Reclaimer": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 3.15,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S00_CryoStarSL_SCItem": {
+  "mins": 6,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.03,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S00_FrostStarSL_SCItem": {
+  "mins": 6,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.03,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S00_WinterStarSL_SCItem": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.03,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S01_CryoStar_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S01_FrostStar_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S01_WinterStar_SCItem": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S02_CryoStarEX_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S02_FrostStarEX_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S02_WinterStarEX_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S03_CryoStarXL_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S03_FrostStarXL_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JSPN_S03_WinterStarXL_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S01_EcoFlow_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S01_Hydrocel_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S01_Thermax_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S01_UltraFlow_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S02_CoolCore_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S02_Hydrojet_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S02_Snowfall_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S02_Snowpack_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S03_ChillMax_SCItem": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S03_Hydropulse_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S03_IceFlush_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_JUST_S03_ThermalCore_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S01_ArcticStorm_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S01_BlastChill_SCItem": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S01_FlashFreeze_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S02_ColdSnap_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S02_FullFrost_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S02_WhiteOut_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S03_ColdSurge_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S03_FrostBite_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_LPLT_S03_FrostBurn_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_ORIG_S04_890J_SCItem": {
+  "mins": 17,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 3.15,
+    "q": null
+   }
+  ]
+ },
+ "COOL_RSI_S04_Polaris_SCItem": {
+  "mins": 17,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 5.25,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 3.15,
+    "q": null
+   }
+  ]
+ },
+ "COOL_TYDT_S01_HeatSafe_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_TYDT_S01_SnowBlind_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Savrilium",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_TYDT_S01_VaporBlock_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_TYDT_S02_HeatSink_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_TYDT_S02_IceBox_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_TYDT_S02_NightFall_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Savrilium",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Borase",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S00_Fridan_SCItem": {
+  "mins": 6,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.03,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S00_Kelvid_SCItem": {
+  "mins": 6,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.03,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S00_Tepilo_SCItem": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.03,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S01_Berian_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S01_Endo_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S01_Gelid_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.16,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S02_Aufeis_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S02_Graupel_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Tin",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S02_Taiga_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S03_Draug_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S03_Elsen_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "COOL_WCPR_S03_Kragen_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.64,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1,
+    "q": null
+   }
+  ]
+ },
+ "Cargo_ShipMining_Pod_Golem": {
+  "mins": 2,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "Cargo_ShipMining_Pod_Mole": {
+  "mins": 2,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.7,
+    "q": null
+   }
+  ]
+ },
+ "Cargo_ShipMining_Pod_Prospector": {
+  "mins": 2,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "ESPR_BallisticCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.18,
+    "q": null
+   }
+  ]
+ },
+ "ESPR_BallisticCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.09,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.32,
+    "q": null
+   }
+  ]
+ },
+ "ESPR_BallisticCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.17,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.58,
+    "q": null
+   }
+  ]
+ },
+ "ESPR_BallisticCannon_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.31,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 1.04,
+    "q": null
+   }
+  ]
+ },
+ "ESPR_BallisticCannon_S5": {
+  "mins": 86,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 3.74,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.56,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 1.87,
+    "q": null
+   }
+  ]
+ },
+ "ESPR_BallisticCannon_S6": {
+  "mins": 151,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 6.74,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 1,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 3.37,
+    "q": null
+   }
+  ]
+ },
+ "ESPR_LaserCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "ESPR_LaserCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "ESPR_LaserCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 23
+   }
+  ]
+ },
+ "ESPR_LaserCannon_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 41
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 41
+   }
+  ]
+ },
+ "ESPR_LaserCannon_S5": {
+  "mins": 86,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 3.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 75
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 75
+   }
+  ]
+ },
+ "ESPR_LaserCannon_S6": {
+  "mins": 151,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 6.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 135
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 135
+   }
+  ]
+ },
+ "GATS_BallisticCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.18,
+    "q": null
+   }
+  ]
+ },
+ "GATS_BallisticCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.09,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.32,
+    "q": null
+   }
+  ]
+ },
+ "GATS_BallisticCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.17,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.58,
+    "q": null
+   }
+  ]
+ },
+ "GATS_BallisticGatling_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.03,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.22,
+    "q": null
+   }
+  ]
+ },
+ "GATS_BallisticGatling_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.06,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.38,
+    "q": null
+   }
+  ]
+ },
+ "GATS_BallisticGatling_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.12,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.7,
+    "q": null
+   }
+  ]
+ },
+ "GRIN_TractorBeam_S1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "GRIN_TractorBeam_S2": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.26,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "HRST_LaserRepeater_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "HRST_LaserRepeater_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.26,
+    "q": null
+   }
+  ]
+ },
+ "HRST_LaserRepeater_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.46,
+    "q": null
+   }
+  ]
+ },
+ "HRST_LaserRepeater_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 42
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "HRST_LaserRepeater_S5": {
+  "mins": 86,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 3.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 75
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.5,
+    "q": null
+   }
+  ]
+ },
+ "HRST_LaserRepeater_S6": {
+  "mins": 151,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 6.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 135
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 2.7,
+    "q": null
+   }
+  ]
+ },
+ "HRST_LaserScatterGun_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.13,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "HRST_LaserScatterGun_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.22,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.26,
+    "q": null
+   }
+  ]
+ },
+ "HRST_LaserScatterGun_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.41,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.47,
+    "q": null
+   }
+  ]
+ },
+ "HRST_Storm_LaserRepeater_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.46,
+    "q": null
+   }
+  ]
+ },
+ "JOKR_DistortionCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.13,
+    "q": null
+   },
+   {
+    "n": "Aphorite",
+    "scu": null,
+    "q": 9
+   }
+  ]
+ },
+ "JOKR_DistortionCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.22,
+    "q": null
+   },
+   {
+    "n": "Aphorite",
+    "scu": null,
+    "q": 16
+   }
+  ]
+ },
+ "JOKR_DistortionCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.4,
+    "q": null
+   },
+   {
+    "n": "Aphorite",
+    "scu": null,
+    "q": 29
+   }
+  ]
+ },
+ "KBAR_BallisticCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.18,
+    "q": null
+   }
+  ]
+ },
+ "KBAR_BallisticCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.09,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.32,
+    "q": null
+   }
+  ]
+ },
+ "KBAR_BallisticCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.17,
+    "q": null
+   },
+   {
+    "n": "Titanium",
+    "scu": 0.58,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S1_mr01": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.26,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S2_mr01": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.26,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.46,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S3_mr01": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.46,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S4": {
+  "mins": 49,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 2.08,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 42
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S5": {
+  "mins": 86,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 3.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 75
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 1.5,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_LaserRepeater_S6": {
+  "mins": 151,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 6.74,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 135
+   },
+   {
+    "n": "Pressurized Ice",
+    "scu": 2.7,
+    "q": null
+   }
+  ]
+ },
+ "KLWE_MassDriver_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Saldynium (Ore)",
+    "scu": null,
+    "q": 12
+   }
+  ]
+ },
+ "KLWE_MassDriver_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.26,
+    "q": null
+   },
+   {
+    "n": "Saldynium (Ore)",
+    "scu": null,
+    "q": 22
+   }
+  ]
+ },
+ "KLWE_MassDriver_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.46,
+    "q": null
+   },
+   {
+    "n": "Saldynium (Ore)",
+    "scu": null,
+    "q": 40
+   }
+  ]
+ },
+ "KRIG_BallisticGatling_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.06,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.38,
+    "q": null
+   }
+  ]
+ },
+ "KRIG_LaserCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 23
+   }
+  ]
+ },
+ "KRON_LaserCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "KRON_LaserCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "KRON_LaserCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Hadanite",
+    "scu": null,
+    "q": 23
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 23
+   }
+  ]
+ },
+ "MXOX_NeutronCannon_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "MXOX_NeutronCannon_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.26,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.13,
+    "q": null
+   }
+  ]
+ },
+ "MXOX_NeutronCannon_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.46,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.23,
+    "q": null
+   }
+  ]
+ },
+ "MXOX_NeutronRepeater_S1": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.13,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "MXOX_NeutronRepeater_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.22,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.13,
+    "q": null
+   }
+  ]
+ },
+ "MXOX_NeutronRepeater_S3": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.16,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.4,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.23,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_DRAK_Golem_S1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Copper",
+    "scu": 0.11,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_GRIN_Arbor_S0": {
+  "mins": 4,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.2,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 4
+   },
+   {
+    "n": "Copper",
+    "scu": 0.06,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_GRIN_Arbor_S1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Copper",
+    "scu": 0.11,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_GRIN_Arbor_S2": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Copper",
+    "scu": 0.19,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_GRIN_Lancet_S1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Copper",
+    "scu": 0.11,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_GRIN_Lancet_S2": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Copper",
+    "scu": 0.19,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_SHIN_Hofstede_S0": {
+  "mins": 4,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.2,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 4
+   },
+   {
+    "n": "Copper",
+    "scu": 0.06,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_SHIN_Hofstede_S1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Copper",
+    "scu": 0.11,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_SHIN_Hofstede_S2": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Copper",
+    "scu": 0.19,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_SHIN_Klein_S0": {
+  "mins": 4,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.2,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 4
+   },
+   {
+    "n": "Copper",
+    "scu": 0.06,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_SHIN_Klein_S1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Copper",
+    "scu": 0.11,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_SHIN_Klein_S2": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Copper",
+    "scu": 0.19,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_THCN_Helix_S1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Copper",
+    "scu": 0.11,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_THCN_Helix_S2": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Copper",
+    "scu": 0.19,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_THCN_Impact_S1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 7
+   },
+   {
+    "n": "Copper",
+    "scu": 0.11,
+    "q": null
+   }
+  ]
+ },
+ "Mining_Laser_THCN_Impact_S2": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 13
+   },
+   {
+    "n": "Copper",
+    "scu": 0.19,
+    "q": null
+   }
+  ]
+ },
+ "POWR_ACOM_S01_LumaCore_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_ACOM_S01_StarHeart_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_ACOM_S01_SunFlare_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_ACOM_S02_LuxCore_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_ACOM_S02_SolarFlare_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_ACOM_S02_StarBurn_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S01_Charger_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S01_FierellCascade_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S01_Quadracell_SCItem": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S01_Regulus_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S02_Bolide_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S02_Maelstrom_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S02_QuadracellMT_SCItem": {
+  "mins": 21,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S02_Vortex_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S03_Centurion_SCItem": {
+  "mins": 29,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S03_Drassik_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S03_Fulgur_SCItem": {
+  "mins": 30,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S03_QuadracellMX_SCItem": {
+  "mins": 30,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S04_Idris_SCItem": {
+  "mins": 43,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 15,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 6,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 10.5,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AEGS_S04_Reclaimer_SCItem": {
+  "mins": 42,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 6,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 10.5,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S01_DynaFlux_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S01_HyperGen_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S01_JS300_SCItem": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S01_OverDrive_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S02_ExoGen_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S02_JS400_SCItem": {
+  "mins": 21,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S02_TurboDrive_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S02_UltraFlux_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S03_JS500_SCItem": {
+  "mins": 30,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S03_MegaFlux_SCItem": {
+  "mins": 30,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S03_SmartGen_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_AMRS_S03_SuperDrive_SCItem": {
+  "mins": 29,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S00_Defiant_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S00_Jennet_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S00_SteadFast_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S01_Breton_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S01_Endurance_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S01_Fortitude_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S01_Roughneck_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S02_Diligence_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S02_Genoa_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S02_Sedulity_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S02_Trommel_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S03_Durango_SCItem": {
+  "mins": 29,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S03_Ginzel_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_JUST_S03_Reliance_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Taranite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S00_DuraJet_SCItem": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S00_IonWave_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S00_Radix_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.07,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S01_IonBurst_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S01_PowerBolt_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S01_ZapJet_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S02_FullForce_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S02_IonSurge_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S02_SparkJet_SCItem": {
+  "mins": 17,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S03_FullForcePro_SCItem": {
+  "mins": 27,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S03_IonSurgePro_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_LPLT_S03_SparkJetPro_SCItem": {
+  "mins": 26,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_ORIG_S04_890J_SCItem": {
+  "mins": 41,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 6,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 10.5,
+    "q": null
+   }
+  ]
+ },
+ "POWR_RSI_S04_Polaris_SCItem": {
+  "mins": 41,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 6,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 10.5,
+    "q": null
+   }
+  ]
+ },
+ "POWR_SASU_S01_LightBlossom_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_SASU_S01_MagnaBloom_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_SASU_S01_WhiteRose_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_SASU_S02_Lotus_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_SASU_S02_Radiance_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_SASU_S03_Celestial_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_SASU_S03_NewDawn_SCItem": {
+  "mins": 27,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_SASU_S03_TigerLilly_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 4.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.7,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 3,
+    "q": null
+   }
+  ]
+ },
+ "POWR_TYDT_S01_DeltaMax_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_TYDT_S01_Slipstream_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_TYDT_S01_SonicLite_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.24,
+    "q": null
+   }
+  ]
+ },
+ "POWR_TYDT_S02_Cirrus_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_TYDT_S02_Eclipse_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Savrilium",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "POWR_TYDT_S02_GammaMax_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 1.22,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.85,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ACAS_S01_FoxFire_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ACAS_S01_LightFire_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ACAS_S02_SparkFire_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ACAS_S02_SunFire_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S01_Burst_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S01_Flood_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S01_Rush_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S02_Cascade_SCItem": {
+  "mins": 17,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S02_Flash_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S02_Torrent_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S03_Echo_SCItem": {
+  "mins": 26,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S03_Fissure_SCItem": {
+  "mins": 27,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ARCC_S03_Impulse_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_JUST_S01_Colossus_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_JUST_S01_Vulcan_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_JUST_S02_Bolon_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_JUST_S02_Huracan_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_JUST_S02_Yaluk_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_JUST_S03_Agni_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_JUST_S03_Kama_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_JUST_S03_Vesta_SCItem": {
+  "mins": 27,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_ORIG_S04_890J_SCItem": {
+  "mins": 41,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 15,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 6,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 6,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RACO_S01_Drift_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RACO_S01_Spectre_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RACO_S01_Zephyr_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RACO_S02_Bolt_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RACO_S02_Nova_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RACO_S02_Spicule_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S01_Atlas_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S01_Eos_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S01_Hyperion_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S02_Aither_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S02_Hemera_SCItem": {
+  "mins": 19,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S02_Khaos_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S03_Erebos_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S03_Metis_SCItem": {
+  "mins": 27,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_RSI_S03_Tyche_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S01_Expedition_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S01_Voyage_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S01_Wayfare_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S02_Odyssey_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S02_Quest_SCItem": {
+  "mins": 17,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S02_Sojourn_SCItem": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S03_Drifter_SCItem": {
+  "mins": 26,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S03_Ranger_SCItem": {
+  "mins": 28,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_TARS_S03_Wanderer_SCItem": {
+  "mins": 27,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Iron",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Hephaestanite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S01_Beacon_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S01_Siren_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S01_VK00_SCItem": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.35,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.14,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S02_Crossfield_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S02_XL1_SCItem": {
+  "mins": 21,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S02_Yeager_SCItem": {
+  "mins": 20,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.24,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 0.5,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.5,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S03_Balandin_SCItem": {
+  "mins": 30,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S03_Pontes_SCItem": {
+  "mins": 29,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Beryl",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S03_TS2_SCItem": {
+  "mins": 30,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 4.28,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 1.72,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 1.72,
+    "q": null
+   }
+  ]
+ },
+ "QDRV_WETK_S04_Idris_TEMP": {
+  "mins": 43,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 15,
+    "q": null
+   },
+   {
+    "n": "Tungsten",
+    "scu": 6,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 6,
+    "q": null
+   }
+  ]
+ },
+ "RADR_BLTR_S01_Hunter": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_BLTR_S01_Pelerous": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_BLTR_S01_Prophet": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_BLTR_S02_Cassandra": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_BLTR_S02_Predator": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_BLTR_S02_Spyglass": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S00_BroadSpecGo": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S00_FullSpecGo": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S00_ObserverGo": {
+  "mins": 6,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S00_SurveyorGo": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S01_ObserverLite": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S01_SurveyorLite": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S02_BroadSpec_Lite": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S02_FullSpec": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S02_Observer": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S02_Surveyor": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S03_BroudSpec": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S03_FullSpecMax": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S03_ObserverMax": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S03_SurveyorMax": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_CHCO_S04_BroadSpecMax": {
+  "mins": 18,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 5.3,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 2.1,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 2.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GNRP_S03_Idris_TEMP": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNO_S00_Agure": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S00_Prevenir": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S00_Sens": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S00_V6026": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S01_Ecouter": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S01_Tige": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S01_V80111": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S01_Voir": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S02_Epier": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S02_Savoir": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S02_VB80112": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S02_Vigilance": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S03_Devoue": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S03_Fidele": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S03_Resolu": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_GRNP_S03_V880": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_NAVE_S01_SNSR5": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_NAVE_S01_SNSR6": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_NAVE_S01_SNSR7": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_NAVE_S02_SNSR5x": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_NAVE_S02_SNSR7x": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_NAVE_S02_SNS_R6x": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_RSI_S04_Polaris": {
+  "mins": 2,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 5.3,
+    "q": null
+   },
+   {
+    "n": "Bexalite",
+    "scu": 2.1,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 2.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S00_Denning": {
+  "mins": 6,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S00_Fabian": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S00_Vogel": {
+  "mins": 6,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.04,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S01_Abetti": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S01_Backlund": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S01_Capstan": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S01_Fleming": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.28,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.1,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.1,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S02_Agrippa": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S02_Battani": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S02_Chernykh": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S02_Fawad": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.3,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.3,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S03_Anysta": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S03_Capsulo": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S03_Lephari": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "RADR_WLOP_S03_Socoria": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 2,
+    "q": null
+   },
+   {
+    "n": "Quartz",
+    "scu": 0.8,
+    "q": null
+   },
+   {
+    "n": "Silicon",
+    "scu": 0.8,
+    "q": null
+   }
+  ]
+ },
+ "SHLD_AEGS_S04_Reclaimer_SCItem": {
+  "mins": 2,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 3.5,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 5.7,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 495
+   }
+  ]
+ },
+ "SHLD_ASAS_S01_Cloak_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_ASAS_S01_Mirage_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Savrilium",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_ASAS_S01_Shimmer_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_ASAS_S01_Veil_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_ASAS_S02_Obscura_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_ASAS_S02_Sheut_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_ASAS_S02_Shroud_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Agricium",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_ASAS_S02_Umbra_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Savrilium",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Savrilium",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_BASL_S00_Castra_SCItem": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.08,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "SHLD_BASL_S01_Bulwark_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_BASL_S01_Guardian_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_BASL_S01_Palisade_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_BASL_S01_Steward_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_BASL_S02_Armada_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_BASL_S02_Aspis_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_BASL_S02_Citadel_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_BASL_S02_Rampart_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_BASL_S03_Barbican_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_BASL_S03_Parapet_SCItem": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_BASL_S03_Stronghold_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_BASL_S03_Ward_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_BEHR_S01_5SA_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_BEHR_S01_6SA_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_BEHR_S01_7SA_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_BEHR_S02_5MA_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_BEHR_S02_6MA_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_BEHR_S02_7MA_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_BEHR_S03_5CA_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_BEHR_S03_6CA_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_BEHR_S03_7CA_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_GODI_S01_AllStop_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_GODI_S01_FR66_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_GODI_S01_ForceWall_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_GODI_S01_SecureHyde_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_GODI_S02_CoverAll_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_GODI_S02_FR76_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_GODI_S02_FullStop_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_GODI_S02_SecureShield_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_GODI_S03_FR86_SCItem": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_GODI_S03_FullBlock_SCItem": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Lindinium",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Lindinium",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_GODI_S03_SecureScreen_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Titanium",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_GODI_S03_SureStop_SCItem": {
+  "mins": 15,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Borase",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Gold",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_GODI_S04_Idris_SCItem": {
+  "mins": 2,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Stileron",
+    "scu": 3.5,
+    "q": null
+   },
+   {
+    "n": "Stileron",
+    "scu": 5.7,
+    "q": null
+   },
+   {
+    "n": "Feynmaline",
+    "scu": null,
+    "q": 495
+   }
+  ]
+ },
+ "SHLD_ORIG_S04_890J_SCItem": {
+  "mins": 2,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Riccite",
+    "scu": 3.5,
+    "q": null
+   },
+   {
+    "n": "Riccite",
+    "scu": 5.7,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 495
+   }
+  ]
+ },
+ "SHLD_SECO_S00_PIN_SCItem": {
+  "mins": 6,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.05,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.08,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "SHLD_SECO_S01_HEX_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_SECO_S01_INK_SCItem": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_SECO_S01_WEB_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_SECO_S02_BLOC_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_SECO_S02_RPEL_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_SECO_S02_STOP_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_SECO_S03_ARMOR_SCItem": {
+  "mins": 14,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_SECO_S03_GUARD_SCItem": {
+  "mins": 13,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_SECO_S03_HAVEN_SCItem": {
+  "mins": 12,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tin",
+    "scu": 1.2,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 1.9,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 170
+   }
+  ]
+ },
+ "SHLD_YORM_S01_Falco_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_YORM_S01_Jaghte_SCItem": {
+  "mins": 9,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_YORM_S01_Targa_SCItem": {
+  "mins": 8,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.15,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.24,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 20
+   }
+  ]
+ },
+ "SHLD_YORM_S02_Bamoty_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Corundum",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_YORM_S02_Haltur_SCItem": {
+  "mins": 11,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Torite",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Beradom",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "SHLD_YORM_S02_Trenta_SCItem": {
+  "mins": 10,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Tungsten",
+    "scu": 0.42,
+    "q": null
+   },
+   {
+    "n": "Laranite",
+    "scu": 0.68,
+    "q": null
+   },
+   {
+    "n": "Glacosite",
+    "scu": null,
+    "q": 58
+   }
+  ]
+ },
+ "Salvage_Modifier_Scraper_Large": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.06,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.06,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 6
+   }
+  ]
+ },
+ "Salvage_Modifier_Scraper_Medium": {
+  "mins": 4,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.04,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 4
+   }
+  ]
+ },
+ "Salvage_Modifier_Scraper_Salvation_Small": {
+  "mins": 3,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.03,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.03,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 3
+   }
+  ]
+ },
+ "Salvage_Modifier_Scraper_Small": {
+  "mins": 3,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.03,
+    "q": null
+   },
+   {
+    "n": "Copper",
+    "scu": 0.03,
+    "q": null
+   },
+   {
+    "n": "Sadaryx",
+    "scu": null,
+    "q": 3
+   }
+  ]
+ },
+ "TOAG_LaserGatling_S2": {
+  "mins": 16,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Ouratite",
+    "scu": 0.06,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "WEP_TractorBeam_S1_Military_1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "WEP_TractorBeam_S1_Utility_1": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "WEP_TractorBeam_S1_Utility_2": {
+  "mins": 5,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.36,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.14,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 7
+   }
+  ]
+ },
+ "WEP_TractorBeam_S2_Military_1": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.26,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "WEP_TractorBeam_S2_Utility_1": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.26,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ },
+ "WEP_TractorBeam_S2_Utility_2": {
+  "mins": 7,
+  "earned": true,
+  "needs": [
+   {
+    "n": "Iron",
+    "scu": 0.64,
+    "q": null
+   },
+   {
+    "n": "Agricium",
+    "scu": 0.26,
+    "q": null
+   },
+   {
+    "n": "Dolivine",
+    "scu": null,
+    "q": 13
+   }
+  ]
+ }
+}

@@ -4,6 +4,13 @@
 _verify_find_build_step.py - H6: the generator is a build step, and a stale
 generated file is detectable.
 
+RULE16: INDEPENDENT - the shipped file is compared against THE DATABASE, which is
+where the rows come from and which the generator does not write. Two
+sources, and the generator cannot make them agree by being wrong in the
+same direction twice. The staleness half is behavioural as well: the real
+generator is run as a subprocess and the file it produces is compared to
+the one on disk, so 'stale' is measured rather than asserted.
+
 THE TWO CONTROLS H6 NAMES, BOTH OF THEM, BY BEHAVIOUR:
 
   1. "change one row in the database, re-run the build, confirm the file

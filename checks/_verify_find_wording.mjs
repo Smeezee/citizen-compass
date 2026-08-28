@@ -1,6 +1,13 @@
 /**
  * H4 / R8: the page says what it can prove, and not more.
  *
+ * RULE16: INDEPENDENT - the wording the page must and must not carry is written
+ * here from the order, not read back from the page, so the page cannot
+ * satisfy this by saying something consistent with itself. The risk this
+ * carries is staleness rather than circularity: if the order's wording
+ * moves and this does not, it fails - which is the right direction, and is
+ * how the marker-note sentence was found to have moved on 2026-08-27.
+ *
  * H4 is the one item in the 2026-08-20 order where the WORDING is the
  * deliverable, so it gets a control of its own rather than three assertions
  * bolted onto a functional suite.

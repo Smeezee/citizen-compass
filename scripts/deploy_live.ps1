@@ -113,7 +113,12 @@ param(
 
     # Publish anyway when the last build did NOT succeed. Same reasoning as
     # -IgnoreRedCheck: overriding stays possible, and it stays loud.
-    [switch] $IgnoreFailedBuild
+    [switch] $IgnoreFailedBuild,
+
+    # Upload anyway when the 98-control sweep has not passed this exact
+    # payload. Same reasoning as the other two overrides: overriding stays
+    # possible, and it stays loud.
+    [switch] $IgnoreSweep
 )
 
 $ErrorActionPreference = 'Stop'
@@ -429,6 +434,63 @@ if ($ignoredChecks.Count) {
     Write-Host "checks  : $($ignoredChecks.Count) RED check(s) OVERRIDDEN - $($ignoredChecks -join ', ')" -ForegroundColor Yellow
 } else {
     Write-Host "checks  : all browser checks green" -ForegroundColor Green
+}
+
+# --- Q10: THE OTHER 94 CONTROLS -------------------------------------------
+#
+# The four checks above are the ones that run HERE, on every publish. There are 98
+# controls in checks/ and until 2026-08-27 the other 94 could not stop anything
+# - `run_all_controls.py` appeared in build_deploy.py exactly once, in a
+# comment.
+#
+# THAT ALREADY BIT. The sweep found 14 failures at 22:15 on 2026-08-27 and the
+# site was built and deployed repeatedly that same evening. A suite that cannot
+# stop a publish is documentation.
+#
+# NOT RUN HERE, BECAUSE 613 SECONDS ON EVERY UPLOAD IS HOW A GATE GETS SWITCHED
+# OFF. The sweep leaves a receipt naming the payload it swept; this compares
+# that fingerprint against the payload about to go out. Swept and unchanged, it
+# goes. Changed since, missing, partial, self-test or red - it does not.
+#
+# ONE IMPLEMENTATION, called by both scripts, for the same reason
+# check_deploy_clean.py is: two fingerprints that must agree is rule 14's defect
+# waiting to happen. PowerShell cannot import a Python function, so it runs one.
+$sweepGate = Join-Path $ProjectPath 'checks\sweep_gate.py'
+if (-not (Test-Path $sweepGate)) {
+    Fail "sweep gate missing: $sweepGate - refusing to publish content no sweep can vouch for. A gate that is not there has not passed."
+}
+$prevEAP = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+$sweepOut  = & python $sweepGate --check $assetsDir 2>&1 | ForEach-Object { [string]$_ }
+$sweepCode = $LASTEXITCODE
+$ErrorActionPreference = $prevEAP
+$sweepOut | ForEach-Object { Write-Host "  $_" }
+
+if ($null -eq $sweepCode) { Fail "the sweep gate did not report an exit code - reported as NOT CHECKED, never as clean." }
+if ($sweepCode -ne 0) {
+    if ($IgnoreSweep) {
+        Write-Host ""
+        Write-Host "  ***********************************************************" -ForegroundColor Yellow
+        Write-Host "  OVERRIDE: going out past the control sweep, because you" -ForegroundColor Yellow
+        Write-Host "  asked. Everything printed above is unfixed." -ForegroundColor Yellow
+        Write-Host "  ***********************************************************" -ForegroundColor Yellow
+        Write-Host ""
+    } else {
+        Fail @"
+THE CONTROL SWEEP DOES NOT VOUCH FOR THIS PAYLOAD (see above).
+
+Run it against what is actually about to go out:
+
+    venv\Scripts\python.exe checks\run_all_controls.py
+
+then publish again. To publish anyway:
+
+    .\scripts\deploy_live.ps1 -IgnoreSweep
+
+That switch is deliberately loud rather than silent. 94 of the 98 controls in
+this project have no other way to stop a bad payload.
+"@
+    }
 }
 
 # --- sanity-check the payload BEFORE uploading ------------------------------

@@ -1,6 +1,15 @@
 """
 Rule 12 proof for the two node-based export checkers, in BOTH directions.
 
+RULE16: UNPROVEN - it imports both checkers from checks.node_checks and asks them
+about exports it wrote into a temp directory. Both directions are driven,
+which is the half that usually goes missing.
+This is a RULE 12 control, and rule 16 is a different axis. Proving a
+checker fires on input that must trip it and stays silent on clean input
+is exactly what rule 12 asks for, and this file does both halves. Being
+UNPROVEN under rule 16 is not a criticism of it - it is the observation
+that a checker cannot be an independent source of truth about itself.
+
 These two checkers are the only thing standing between "the exporter still
 reproduces files the game wrote" and nobody noticing that it stopped. So they
 are tested the hard way: every failure mode is fed to them deliberately and

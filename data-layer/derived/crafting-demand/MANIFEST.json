@@ -1,0 +1,16 @@
+{
+ "generated_by": "build_crafting_demand.py",
+ "source": "data-layer/external-sources/scunpacked-data/snapshots/20260827T225641Z",
+ "join": "blueprint Output and every requirement leaf carry a CIG UUID; nothing here is matched by name.",
+ "tier_rule": "tier 0 only - higher tiers are the same build at better quality and would double-count.",
+ "unit_rule": "SCU (a `resource` leaf) and COUNT (an `item` leaf) are reported separately and never summed. The recipe count is the figure that spans both.",
+ "part_join": "the ship page's part key against blueprint Output.Class, case-folded, exact. The display-name route is refused: it adds 34 and one of them is a different class sharing a name.",
+ "counts": {
+  "blueprints": 1607,
+  "recipes_read": 1607,
+  "blueprints_without_tiers": 0,
+  "materials": 37,
+  "craftable_ship_page_parts": 452,
+  "ship_page_parts": 3283
+ }
+}

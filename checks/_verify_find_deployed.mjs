@@ -1,6 +1,13 @@
 /**
  * H3 / E2: does the DEPLOYED page actually hand a visitor real rows?
  *
+ * RULE16: INDEPENDENT - it fetches the DEPLOYED ORIGIN over the network and reads
+ * what a visitor would actually receive. No local artifact can fake that:
+ * a build, a deploy exiting 0, and a payload on disk are all things this
+ * deliberately does not accept as evidence. That is also why it is opt-in
+ * and skipped by the sweep - it is a statement about the live site rather
+ * than about this tree, and a skip is never printed as a pass.
+ *
  * THE RULE HAS NOT CHANGED JUST BECAUSE THE SOURCE DID. The MOCKUP banner
  * comes off only after fetching the deployed URL and reading real rows back
  * from it - not on a build, not on a deploy, not on a local server, not on a

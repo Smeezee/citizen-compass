@@ -1,6 +1,14 @@
 /**
  * R1 - THE SOLVER DECIDES WHETHER LABELS ARE ON, NOT A COUNTER.
  *
+ * RULE16: INDEPENDENT - the threshold is RE-MEASURED across the fleet every run
+ * rather than quoted, and the deciding evidence is a physical
+ * perturbation: section 4 shrinks the stage and requires the answer to
+ * flip with the marker count unchanged. No number in the source can follow
+ * that, so the solver cannot satisfy it by agreeing with itself. The file
+ * also states, unprompted, that a count of 20 would give the same answers
+ * on today's data - it does not claim a disagreement it does not have.
+ *
  * Sleven, on the Aegis Reclaimer: "everything works the way it's supposed to,
  * but it doesn't have the names like the other ones do."
  *

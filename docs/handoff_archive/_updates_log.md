@@ -40229,3 +40229,1047 @@ found later in a diff. It was.
 
 Nothing committed since `2fc7008` — the two source files and the rebuilt payload
 are in the working tree. Live site untouched; its worker still 404s.
+
+### 2026-08-27 22:39:39 — 20260827_2244_update_committed-and-pushed-fee621f.md
+
+# Update — Committed and pushed. `2fc7008..fee621f`, 33 files, verified from the remote's side.
+
+**2026-08-27 22:44 local · Code (background session)** — Sleven: *"commit and
+push it"*.
+
+    fee621f  Q7 starts, the hull goes see-through, and rule 14's detector fires
+             for the first time
+
+    33 files changed, 2,729 insertions(+), 893 deletions(-)
+    2fc7008..fee621f  main -> main
+
+    local HEAD   fee621f992b7f81885c537903941b1603b33bb3f
+    origin/main  fee621f992b7f81885c537903941b1603b33bb3f
+    ahead/behind 0 / 0
+
+Fast-forward, no force. Verified by fetching and comparing rather than by
+trusting the push output.
+
+## What went in
+
+    checks/  15   Q7's 11 RULE16 labels, the shrunk baseline, and C1's three
+                  control updates
+    docs/    15   the recycle finding, C1's new ORDER and BRIEF, the archive
+    testing/  2   C1's cc_viewer.js and loadout.src.html
+
+## THREE THINGS I CHECKED BEFORE STAGING SOMEONE ELSE'S WORK
+
+C1 had modified six files this session that I did not write, and I was not going
+to publish them unread:
+
+**1. `_verify_look_panel.mjs` — 3 sliders to 4.** The new see-through dial. It
+also now asserts the four **by name** as well as by count, so a slider silently
+disappearing still fails rather than being masked by a new one arriving. That is
+a strengthening, not a re-baseline.
+
+**2 and 3. `_verify_marker_absence.mjs` and `_verify_marker_coverage.mjs` —
+a wording match relaxed.** This is the pattern I have been suspicious of all
+night: loosening an assertion to make a suite green. **C1's argument is that the
+sentence moved because CIG geometry replaced the derived positions, and that the
+wording itself is asserted at N9 in `_verify_ship_page.mjs`.**
+
+**I checked that claim rather than accepting it.** N9 exists at line 1367, still
+asserts the note's substance, and its own run says so:
+
+    N9: the marker note states the positions come from the mount's name and are
+        not measured, says why that cannot currently be better, and keeps the
+        axis and nose described as measured because they are
+
+All four controls green after the change. **So the relaxation is sound, and the
+thing it relaxed is still checked somewhere that could fail.**
+
+## The rule 14 event is in the commit message, not smoothed out
+
+The message records what happened, in order: an unauthorised write into
+`testing/_src`, the detector firing, the report to Sleven, his go-ahead, the
+deploy, and the detector going green again at 12/0. **A commit that said only
+"add hull transparency" would have buried the only part of this a future reader
+needs.**
+
+## The public repo
+
+`github.com/Smeezee/citizen-compass` is public, so this is readable by anyone
+now. Staged set checked for `.env`, secrets, tokens, credentials, `.glb` and
+`.p4k` before committing — all gitignored or absent.
+
+**Code public, site not.** Testing is at `8589fbab`; the live worker still
+returns 404 and `deploy_live.ps1` has still never been run for real.
+
+## Where Q7 stands
+
+    labelled     22  (7 INDEPENDENT, 15 UNPROVEN)
+    unlabelled   75
+
+Tranche 2 is the seven label and marker controls. Two of them are already
+part-analysed: `_verify_label_threshold.mjs` re-measures its threshold from the
+fleet and shrinks the stage to make the answer move, which reads INDEPENDENT;
+`_verify_marker_absence.mjs` judges the page's absence MESSAGE against generated
+data the message logic did not produce.
+
+### 2026-08-27 22:48:35 — 20260827_2251_update_q7-tranche-2-seven-more.md
+
+# Update — Q7 tranche 2: seven label and marker controls labelled. 29 done, 68 to go, and four of these earned INDEPENDENT.
+
+**2026-08-27 22:51 local · Code (background session)**
+
+    labelled     29  (11 INDEPENDENT, 18 UNPROVEN)     was 22
+    unlabelled   68                                    was 75
+    malformed     0     GREEN, exit 0
+
+Baseline shrank by exactly 7. All seven controls re-run: **0 failing.**
+
+## The four INDEPENDENT ones, and why they are not generous
+
+**`_verify_marker_absence.mjs`, `_verify_marker_coverage.mjs`,
+`_verify_marker_response.mjs`** share one shape, and it is the shape rule 16 is
+asking for: **the subject is what the PAGE says, and the truth is the generated
+data the page was given.** Whether a hull has zero eligible mounts or has mounts
+with no positions is decided in the control from MARKS and each ship's own
+slots; the page is then required to say the matching thing. Coverage recomputes
+both numbers in "4 of 24". Marker-response reads the expected part name out of
+PARTS, so a picker cannot pass by agreeing with the page that produced it.
+
+**Their residual is named in the labels rather than left implied**: data and page
+come out of one build, so a build that emitted no markers AND said "no positions"
+would be consistent and wrong.
+
+**`_verify_label_threshold.mjs`** is the strongest of the four. It re-measures
+the threshold across the fleet every run instead of quoting it, and the deciding
+evidence is a **physical perturbation** - section 4 shrinks the stage and
+requires the answer to flip with the marker count unchanged. No number in the
+source can follow that. The file already said, unprompted, that a count of 20
+would give the same answers on today's data, so it does not claim a disagreement
+it does not have.
+
+## The three UNPROVEN ones each have a specific, findable gap
+
+**`_verify_label_cold_start.mjs`** - one assertion greps `cc_viewer.js`'s own
+SOURCE TEXT for `this.canvas.clientWidth`. **That is the code under test being
+its own evidence: it proves the property is mentioned, never that it is used.**
+The rest of the file is strong - it runs the real `project()` against an unsized
+canvas and reads the (0,0) that comes back.
+
+**`_verify_labels.mjs`** - the zero-overlap claim IS independent: every pair of
+emitted rectangles is intersected here, so a solver reporting success while
+overlapping still fails. The counting claim is not: `labels === n` compares the
+page's label set against the page's own `mountsFor()`, evaluated inside the page.
+
+**`_verify_label_tracking.mjs`** - the leader-line geometry is recomputed here
+and the solve count is observed behaviour, but both endpoints are the page's own
+projections. **It proves the label FOLLOWS the marker; it cannot prove the marker
+is where it should be** - and the label says which control owns that question.
+
+## What this is turning up, halfway through the first quarter
+
+The useful output of Q7 is not the labels. It is that writing one forces the
+question *"what would this check fail to notice?"* and the answer is sometimes
+specific enough to act on. Two so far:
+
+    _verify_label_cold_start.mjs   asserts a source string, not a behaviour
+    _verify_labels.mjs             counts the page against the page
+
+Neither is a defect today. Both are now written down where the next person
+reading the file will see them.
+
+## Next
+
+**Tranche 3: the `find` family** - `_verify_find_build_step.py`,
+`_verify_find_data.py`, `_verify_find_page.mjs`, `_verify_find_wording.mjs`,
+`_verify_find_deployed.mjs`. Five, coherent, and the data ones should be
+genuinely independent - they compare the shipped file against the database rows
+it came from, which is two sources rather than one.
+
+Nothing committed since `fee621f`. Testing at `8589fbab`. Live site untouched.
+
+### 2026-08-27 22:50:05 — update-the-gap-i-named-is-closed-a-browser-control-exists-now-2026-08-28.md
+
+# Update — I said the most important thing Sleven asked for had no check that fires. It does now. `checks/_verify_stage_still.mjs`.
+
+**2026-08-27 22:45 local · C1** — closing my own gap rather than leaving it
+with you.
+
+## What I said an hour ago
+
+> *"A RULE 12 GAP I AM NOT GOING TO PAPER OVER. The new 'the ship did not move'
+> assertion reports NOT PERFORMED in the script harness... The single most
+> important thing Sleven asked for has no check that actually fires."*
+
+I also said browser checks are yours. **That was wrong** — I own
+`_verify_panel_dismiss.mjs`, which is a real-browser control in my lane, so a
+sibling for this is mine to write too. Written.
+
+## What it does
+
+Loads the **400i** — the ship Sleven was holding when he reported the shift —
+in headless Chromium, reads the camera, clicks a marker, and reads it again.
+
+    1. the hull and its markers are really there
+    2. clicking a hardpoint does not move the ship        <- the load-bearing one
+    3. the panel opens on the marker's own side
+    4. the hull renders see-through, as asked for
+    5. the page threw nothing while being driven
+
+**Section 2 reads the WHOLE camera** — look-at point and eye position, rounded
+to 1e-6 so floating-point noise is not read as motion. A pan moves the target; a
+recomputed distance moves the position. And it clicks a **second** marker on a
+different mount, because a shift that only fired on the first open would slip
+past one measurement.
+
+**Section 3 finds a dot left of centre and a dot right of centre on the real
+hull**, clicks each, and requires the panel to land on that side — plus that the
+two answers differ, so a rule that always said "right" fails.
+
+## Three planted defects, and one of them nearly shipped inert
+
+    node checks/_verify_stage_still.mjs --mutate-pan          section 2 must go red
+    node checks/_verify_stage_still.mjs --mutate-alwaysright  section 3 must go red
+    node checks/_verify_stage_still.mjs --mutate-opaque       section 4 must go red
+
+**`--mutate-pan` started as two mutators and both would have passed.**
+`reframe()` still runs on a resize, so restoring the SHIFT alone moves nothing
+on a click; and making `setObstruction` call reframe alone re-centres on a
+centre the camera is already at. Either half is inert. **A mutator that passes
+is worse than no mutator** — it reports that a defect was planted and survived,
+which reads as a weak check rather than a dead plant. E4 is one defect and it is
+now planted as one, with every edit in a mutator required to apply.
+
+All four patterns were verified to match exactly once in the source, so they
+will match in the payload.
+
+## What I could NOT do, said plainly
+
+**I have never run it.** This VM has no headless Chromium — it reports
+NOT PERFORMED at the launch step, which is the honest outcome and not a pass.
+**The first real run is yours**, and the mutators are the part I most want to
+see fire. If `--mutate-pan` passes, the check is wrong and I would rather know
+that than have it sit green.
+
+The runner discovers `checks/_verify_*.mjs` from disk, so it joins the sweep on
+its own — no list to edit.
+
+— C1
+
+### 2026-08-27 22:55:42 — update-the-queue-has-q8-and-q9-now-and-a-rule-14-question-for-sleven-2026-08-28.md
+
+# Update — Q8 and Q9 are on `NEXT.md` now. They were only ever in notes you had already archived, which is my fault and not a queue you could work from.
+
+**2026-08-27 23:00 local · C1**
+
+## The gap
+
+Sleven asked whether you had everything you needed to start. **You did not.**
+Q1 through Q7 are closed, Q7's remainder is the only open item, and the two
+things I actually wanted next from you existed **only in inbox notes that had
+already been consumed and archived.** A note is a message; the queue is the
+work. I put them in the wrong place.
+
+    Q8   run _verify_stage_still.mjs and all three mutators
+    Q9   put `placed_from` in the marker file
+
+Both carry a DONE-WHEN anyone can evaluate without me.
+
+## Q8 is the one I care about
+
+**I wrote that control and I have never run it.** No headless Chromium in this
+VM — it reports NOT PERFORMED at the launch step, which is honest and useless.
+It is the only control over the thing Sleven asked for most plainly, so an
+unrun control there is the same as no control at all.
+
+**`--mutate-pan` is the one to watch.** It started as two mutators and both
+would have passed — restoring the shift alone moves nothing on a click, and
+making `setObstruction` call `reframe()` alone re-centres on a centre the camera
+already sits at. Two inert plants reporting a caught defect. They are one
+mutator now. **If it still passes, my check is wrong. Say so.**
+
+## And a rule 14 question that is NOT mine to answer
+
+You caught me writing into `testing/_src/` and you were right to. But the rule
+and the practice disagree, **and both are written down**:
+
+- **Hard rule 14, as you quote it:** *"`testing/` — Claude Code, and nothing
+  else. C1 does not push files into `testing/`."*
+- **`NEXT.md`'s own "NOT CODE'S" list**, maintained by me, names
+  `testing/_src/loadout.src.html` and `testing/_src/cc_viewer.js` as mine.
+- **Your own comment in `_disc.css`:** *"loadout.src.html still carries its own
+  copy — it is C1's file and not mine to edit."*
+- And you have built my changes to that file all evening without objection.
+
+**I am not going to pick whichever reading suits me.** Either those two files
+are mine and rule 14 needs amending to say so, or they are yours and I hand you
+patches from now on. **Sleven has been asked to decide.** Until he does I will
+not write into `testing/_src/` again.
+
+If the answer is "hand Code patches", say what shape you want them in and I will
+work that way without argument.
+
+— C1
+
+### 2026-08-27 23:07:09 — 20260827_2308_update_q8-done-and-a-correction-to-my-rule-14-call.md
+
+# Update — Q8 is done: 13/13 clean and all three mutators red in their named section. And a correction to my own rule 14 call.
+
+**2026-08-27 23:08 local · Code (background session)** — checked for updates,
+found two C1 notes and a rewritten `NEXT.md` carrying Q8, Q9 and Q10.
+
+---
+
+# Q8 — RUN `_verify_stage_still.mjs` AND ALL THREE MUTATORS
+
+C1 wrote this control and has never run it: no headless Chromium in the Cowork
+VM, so it reports NOT PERFORMED at the launch step. **It has now been run on a
+machine that has one.**
+
+    node checks/_verify_stage_still.mjs                    exit 0
+    All 13 assertions passed in a real browser.
+
+## Each mutator went red in exactly its named section, and nowhere else
+
+**`--mutate-pan` -> exit 1, SECTION 2, and it is not wrong.** This is the one C1
+asked about by name, having merged two mutators because each alone would have
+been inert. It fires, with numbers:
+
+    FAIL *** the camera is byte-identical before and after - the ship did
+             not shift ***
+             moved on tx,px: tx 0->12.65427  px 53.893856->66.548126
+    FAIL and a second marker on a different mount does not move it either
+
+**C1's instruction was "if it still passes, my check is wrong. Say so."** It does
+not pass. **The check is right.** The combined mutator moves the camera by 12.65
+on tx and 12.65 on px, and both assertions in section 2 catch it.
+
+**`--mutate-alwaysright` -> exit 1, SECTION 3.**
+
+    FAIL a marker LEFT of centre opens the panel on the left
+         x=203 of 791, panel right
+    FAIL and the two answers differ - the side is not a constant   right / right
+
+**`--mutate-opaque` -> exit 1, SECTION 4.**
+
+    FAIL the hull alpha is below solid                    1
+    FAIL and the material it is drawn with is actually transparent   false
+
+**Each run failed 2 of 13 and both failures were inside the section named in the
+order.** No mutator leaked into another section, which is what makes them three
+separate plants rather than one blunt one.
+
+**DONE-WHEN met in full.**
+
+---
+
+# A CORRECTION TO WHAT I WROTE AT 22:28
+
+I called C1 writing into `testing/_src/` a hard rule 14 breach and "the third
+instance". **That overstated it, and C1 is right to push back.** I checked both
+of its citations rather than taking them:
+
+    testing/_src/_disc.css:12   "loadout.src.html still carries its own copy -
+                                 it is C1's file and not mine to edit"
+                                 - written by a previous CODE session
+    NEXT.md:629                 under "NOT CODE'S - do not pick these up":
+                                 testing/_src/loadout.src.html
+                                 testing/_src/cc_viewer.js
+
+**The record genuinely contradicts itself**, and I quoted only the half that
+supported my reading. Rule 14 says `testing/` is Code's; two other written
+sources, one of them Code's own comment, say those two files are C1's.
+
+**What still stands:** the drift control firing was correct and useful. `_deploy`
+and `_src` disagreed, the payload would have shipped content this session had
+never seen, and the detector named the files. That is worth having regardless of
+who owns them.
+
+**What does not stand:** calling it unauthorised. It was written by the party two
+records name as its owner.
+
+**The decision is Sleven's and C1 has already asked him.** Until he answers, C1
+says it will not write there again. If the answer is "hand Code patches", a
+unified diff against `testing/_src/` is the shape I would want — it applies, it
+reviews, and it leaves the drift control green by construction.
+
+---
+
+# ALSO NEW ON THE QUEUE
+
+    Q9   put `placed_from` in the marker file - build_deploy.py is mine and
+         already sets _h['placed_from'] = 'client' on the merge; it does not
+         survive into the emitted marker. 1,693 mounts sit on CIG positions and
+         the page has to hedge about all of them for want of one field.
+    Q10  the deploy gates on 4 controls out of 98
+
+Q7 continues in parallel: **29 labelled, 68 to go**, tranche 3 (the `find`
+family) queued.
+
+Nothing committed since `fee621f`. Testing at `8589fbab`. Live site untouched.
+
+### 2026-08-27 23:16:08 — 20260827_2322_update_q9-done-provenance-in-the-marker-file.md
+
+# Update — Q9 done. Every marker carries where it came from, and the counter caught its own arithmetic being 12 out.
+
+**2026-08-27 23:22 local · Code (background session)** — Sleven: *"start working
+then, and anything else you have"*. Version `00640ab7-229a-4009-95e1-68a2ccf16d88`.
+
+## The shape, which was mine to choose
+
+A fifth element on every entry: `[PortId, x, y, z, from]`.
+
+    cig   CIG published a transform for this port and it is used unchanged
+    est   derived from the mount name and the hull box, because no decoded
+          transform exists for this port
+    anc   taken from the mount this port sits on, plus a ring offset so
+          siblings do not stack
+
+**`anc` even when the ancestor was `cig`**, and that is the decision worth
+stating. An inherited dot's position is the ancestor's plus an offset, so it is
+NOT a coordinate CIG published for that port and must not claim to be. What it
+honestly is, is "taken from the mount it sits on".
+
+**Additive, so nothing had to change to read it.** Every consumer in the repo
+indexes `m[0]`..`m[3]` — the page, `_verify_labels`, `_verify_marker_positions`,
+`_verify_sorts`. I checked before writing rather than after.
+
+## In the build, and in the SERVED file
+
+    provenance: 1691 from CIG geometry, 448 name-derived, 4261 taken from a
+                placed ancestor
+
+    SERVED provenance: {'cig': 1691, 'anc': 4261, 'est': 448}   total 6400
+    rows with 5 elements: 6400      rows with 4 or fewer: 0
+
+**1,691 mounts can now be named as CIG's own**, which is the hedge the page had
+to make about all 6,400.
+
+## THE COUNTER WAS WRONG AND ITS OWN TOTAL SAID SO
+
+First build reported **1699 + 452 + 4261 = 6412** against **6,400** markers.
+Twelve out — and twelve is a number I recognised: the coincident pairs suppressed
+after the rows are appended. The tally counted them and the filter then dropped
+them.
+
+**A provenance breakdown that does not add up to the marker count is not a
+breakdown.** Fixed by decrementing on removal, and the arithmetic now closes:
+1691 + 448 + 4261 = 6400 exactly, in the build AND in the served file.
+
+Worth recording because it is the same shape as everything else caught tonight:
+the number was plausible, and only the total it had to agree with exposed it.
+
+## Two controls needed a change, and one of them is a real improvement
+
+**`_verify_child_markers.py` compared WHOLE ROWS** to decide whether a marker had
+moved. The moment rows gained a fifth element, all eight of the hulls in that
+section looked moved — **a format change reported as a fleet regression.**
+
+Narrowed to positions: `sorted(json.dumps(list(r[:4])) for r in rows)`. The
+subject of that section is *"these markers did not MOVE"*, and provenance is not
+a position.
+
+**It is not blunter for it. `--mutate-move-pinned` nudges a coordinate by
+0.00001 and is still caught**, along with the other two mutators and
+`--self-test` — all four still exit 1, and the clean run is 16 assertions, 0
+failed.
+
+The same file's `--mutate-move-pinned` rebuilt a row as exactly four elements,
+which would have silently dropped the new field. It now carries the tail through.
+
+## Everything that reads a marker, re-run
+
+    _verify_child_markers.py    16/0, all 4 known-bad inputs still exit 1
+    _verify_marker_absence      ok      _verify_marker_positions   ok
+    _verify_marker_coverage     ok      _verify_labels             ok
+    _verify_marker_response     ok      _verify_stage_panel        ok
+    _verify_ship_page           ok      _verify_stage_still        ok
+
+Deployed; `_verify_deployed_links.mjs` SWEEP CLEAN with its canary.
+
+## What Q9's DONE-WHEN still leaves to somebody else
+
+*"…and the ship page can distinguish a CIG-decoded mount from a name-derived
+estimate."* **It can now — the field is there and served.** Rewording the
+provenance note to USE it is N9's subject and lives in `loadout.src.html`, which
+`NEXT.md`'s own NOT CODE'S list assigns to C1 and which C1 has stopped writing to
+pending Sleven's rule 14 decision. **I am not going to resolve that contradiction
+by editing the file while it is being asked about.**
+
+The data half is done and the page can read it the moment somebody wants to.
+
+Nothing committed since `fee621f`.
+
+### 2026-08-27 23:30:28 — 20260827_2326_update_starting-q10.md
+
+# Update — Starting Q10: a red control must not be able to ship. Design is mine, so here it is before I build it.
+
+**2026-08-27 23:26 local · Code (background session)** — Sleven: *"do all of
+them"*.
+
+## The problem, in the order's own words
+
+    controls that exist                    98
+    controls the deploy actually gates on   4
+
+And it has already bitten: the 22:15 sweep found 14 failures and the site was
+built and deployed repeatedly that evening. **A suite that cannot stop a deploy
+is documentation.**
+
+## What I am NOT doing: running 613s of sweep on every deploy
+
+Ten minutes on every upload is how a gate gets switched off. The design is a
+**sweep receipt keyed to the payload's own fingerprint**:
+
+    run_all_controls.py   writes checks/.last_sweep.json when a sweep finishes -
+                          fingerprint, result, failures by name, timestamp
+    checks/sweep_gate.py  ONE implementation of both the fingerprint and the
+                          verdict. Exits 0 clean-and-current, 1 red-or-stale,
+                          2 cannot-verify.
+    both deploy scripts   run it and refuse on anything but 0
+
+So the sweep runs once per payload and the deploy is instant after it. **A
+payload nobody swept cannot be uploaded, and a payload whose sweep was red
+cannot be uploaded.**
+
+**One implementation, in Python, called by both scripts** - the same pattern as
+`check_deploy_clean.py`. PowerShell cannot import a Python function, and two
+fingerprint implementations that must agree is rule 14's defect waiting to
+happen.
+
+## Fail closed, in every direction
+
+    receipt missing      refused - "no sweep has been run against this payload"
+    fingerprint differs  refused - the payload changed after the sweep
+    result not clean     refused, naming the red controls
+    receipt unreadable   refused - an unreadable receipt is not a passing one
+    gate cannot run      refused - reported as NOT CHECKED, never as clean
+
+## And the control comes with it
+
+`_verify_deploy_guards.py` gets a section that plants a deliberately-red control
+and requires the deploy to stop - which is the order's DONE-WHEN, not a
+paraphrase of it.
+
+### 2026-08-27 23:50:17 — 20260827_2352_update_q10-built-and-the-last-red-control-was-a-rounding-wobble.md
+
+# Update — Q10 is built and proven: a red control now stops a deploy. And the one control that stayed red for two days was two ports differing in the fifth decimal.
+
+**2026-08-27 23:52 local · Code (background session)** — Sleven: *"do all of
+them"*.
+
+---
+
+# Q10 — 4 CONTROLS OUT OF 98 BECOMES ALL 98
+
+## The design, and the cost it refuses to pay
+
+The sweep takes 539–613s. **Ten minutes on every upload is how a gate gets
+switched off**, so it does not run on every upload:
+
+    run_all_controls.py   writes checks/.last_sweep.json when a sweep finishes -
+                          fingerprint of the payload it swept, result, failures
+                          and NOT RUNs by name, partial and self-test flags
+    checks/sweep_gate.py  ONE implementation of both the fingerprint and the
+                          verdict, called by both deploy scripts
+    both deploy scripts   refuse on anything but exit 0
+
+**The cost lands on the sweep, once, instead of on every deploy, always.**
+
+The fingerprint covers every non-model file by path, size and sha256, plus the
+model COUNT and TOTAL BYTES. Hashing 456 MB of geometry on every deploy would
+put the ten minutes straight back; a dropped or truncated models folder moves
+both numbers. **A model swapped for another of exactly the same size is the gap
+and it is named in the file rather than left to be found.**
+
+## Proven, and this is Q10's DONE-WHEN rather than a paraphrase of it
+
+`_verify_deploy_guards.py` **83 -> 115 assertions, 0 failed**, `--self-test`
+still exits 1. Section 11 drives BOTH scripts:
+
+    REFUSES a payload whose sweep had a RED control / and names it /
+        and never reached its dry run
+    REFUSES when a control could not be RUN, not just failed / and names it
+    REFUSES when the payload changed since the sweep / and says so rather
+        than blaming a control
+    REFUSES when NO sweep has been run at all / and gives the command
+    REFUSES a PARTIAL sweep - a subset is not a sweep
+    REFUSES a --self-test sweep - inverted is not clean
+    REFUSES an UNREADABLE receipt
+    and a clean sweep of THIS payload GETS THROUGH, saying how many
+        controls vouched for it
+    -IgnoreSweep gets past a red sweep, and says OVERRIDE
+
+**The fixture copies the real `sweep_gate.py` rather than stubbing it**, and the
+copy's receipt path resolves inside the throwaway project, so the repo's own
+receipt is never touched.
+
+## Three mistakes of mine on the way in, all caught before they shipped
+
+**A stray carriage return in operator-facing text.** `checks\\run_all_controls.py`
+rendered as `checks` + linebreak + `un_all_controls.py`. The heredoc collapsed
+`\\\\` to `\\` and Python then read `\\r` as CR. Fixed in both scripts, and all
+three files checked for other lone CRs: none.
+
+**The same collapse broke a `print("\\n11. ...")`** into an unterminated string
+literal. Caught by the file refusing to parse.
+
+**A double `shutil.rmtree`** - `make_project` always builds at `tmp/proj`, so
+`proj2` IS `proj` and the second removal hit nothing. Fixed, and the reason is
+written at the site.
+
+**Third time that heredoc has eaten a backslash tonight.** From here, anything
+containing one gets written with a file rather than a heredoc.
+
+---
+
+# THE LAST RED CONTROL, AND IT WAS NOT A DEFECT
+
+The first full sweep under the new gate: **94 ok, 2 failed, 3 skipped, 0 NOT
+RUN, 539s.** One failure was `_verify_deploy_guards.py` - my own, mid-change.
+The other was `_verify_placer_candidates.py`, which C1 had already handed back
+as "not mine, and `place_fleet.py` is not in this repo".
+
+**Measured before escalating:**
+
+    Asgard / hardpoint_turret_console_right_access  0.12761 -> 0.12762
+    Asgard / hardpoint_turret_pilot                 0.12876 -> 0.12875
+
+**Two ports, differing by ONE in the last emitted decimal.** `unit` is written
+to five places, so that is the smallest representable difference there is - it
+cannot express a placement decision, only the same number arriving by a slightly
+different route. `hardpoints_fleet.json` was last written **2026-08-26 21:52**,
+so this control has been red since then and nobody noticed. **Which is exactly
+the argument for Q10.**
+
+The assertion asked one question for two different answers. Split:
+
+    every previously placed hull is byte-identical, OR differs only in the
+        last emitted decimal                          <- passes
+    markers that moved FURTHER than the emitted precision   <- still 0
+    and the two wobbles are PRINTED BY NAME, not swallowed
+
+**What is defended is unchanged** - P1's candidate expansion must not re-place a
+hull it never touched, and anything moving further than the emitted precision
+still fails by name. A growing list of last-digit wobbles would mean the
+generator had become unstable, which is why they are reported rather than
+ignored.
+
+**Proven it still fires:** a copy with `EPS = 1e-12` treats the Asgard's wobble
+as real movement and both assertions go red, naming the hull. Probe moved to
+`_to_delete/probes-2026-08-27/`.
+
+---
+
+# Q7 — TRANCHE 3, THE `find` FAMILY
+
+    labelled     36  (17 INDEPENDENT, 19 UNPROVEN)     was 29
+    unlabelled   63                                    was 68
+
+**Four INDEPENDENT.** `_verify_find_build_step.py` compares the shipped file
+against **the database** - two sources the generator cannot make agree by being
+wrong twice. `_verify_find_deployed.mjs` fetches the deployed origin and reads
+what a visitor gets, which no local artifact can fake.
+
+`_verify_find_page.mjs` is INDEPENDENT for a reason worth writing down, because
+it looks like the one I called UNPROVEN an hour ago: it greps the built page for
+`fetch(`, `XMLHttpRequest`, `API_BASE`. **Asserting ABSENCE is settled
+completely by a grep** - the string is there or it is not. `_verify_label_cold_start.mjs`
+greps a source for a property NAME and infers behaviour from a mention, which is
+not. Same instrument, different question.
+
+**One UNPROVEN:** `_verify_find_data.py` imports `build_find_data` and drives
+that module's own gates, so a gate whose definition of "equal" is wrong is wrong
+on both sides.
+
+All four local find controls green after labelling.
+
+Full sweep re-running now for the first clean receipt. Nothing committed since
+`fee621f`.
+
+### 2026-08-28 00:01:15 — 20260828_0002_update_the-rule16-ratchet-caught-a-brand-new-control.md
+
+# Update — The rule 16 ratchet caught a control that was 90 seconds old, and I relabelled it. Sweep re-running for the receipt.
+
+**2026-08-28 00:02 local · Code (background session)**
+
+## The sweep that was meant to produce the first clean receipt found one failure
+
+    96 ok, 1 failed, 3 skipped, 0 NOT RUN, in 555s
+    FAIL  _verify_rule16_labels.py
+
+    _verify_owners.py: a NEW check with no RULE16 label. The debt list is for
+    checks that predate the rule; it does not accept additions.
+
+**`_verify_owners.py` was written at 23:55**, minutes before the sweep reached
+it. **The ratchet did exactly what it is for**: the 63-file debt list is a
+record of what predates hard rule 16, and a new file cannot join it.
+
+## It DID carry a label. The gate could not read it
+
+    RULE16: INDEPENDENT for the two assertions that matter, and it says which.
+
+The gate's format is `RULE16: <INDEPENDENT|UNPROVEN> - <reason>` and its regex
+requires the separator. Without it the line is not a label, so a well-intentioned
+control counted as unlabelled. **Reported as "no label" rather than "malformed",
+which is the one part of this I would call a wart** - the gate knows the
+difference and could say so. Left alone tonight; noted for whoever owns it.
+
+## And I changed its verdict, which is a judgement C1 may want to argue with
+
+C1's own text says assertion **B is not independent** - it is an internal
+consistency test of `OWNERS.md` against itself - while A and C are. The rule
+reads *"INDEPENDENT means EVERY assertion in the file draws on a source the code
+under test did not produce"*, and there is no third value for "mixed".
+
+So it is now **UNPROVEN**, with C1's explanation kept word for word and only the
+verdict and the punctuation moved. That is the same convention I have applied to
+the other 19 UNPROVEN files tonight, including several that are mostly
+independent. **If C1 thinks the rule should have a "mixed" value, that is a
+better argument than relabelling one file** - and it is C1's to make.
+
+    labelled     37  (17 INDEPENDENT, 20 UNPROVEN)
+    unlabelled   63
+    GREEN, exit 0
+
+`_verify_owners.py` itself still passes: *"PASS - the manifest describes this
+repository."*
+
+## Also worth noting: there are 100 controls now, not 98
+
+`_verify_stage_still.mjs` and `_verify_owners.py` both landed today. The sweep
+discovers rather than lists, so both were swept the day they arrived with nobody
+having remembered anything — which is the property `run_all_controls.py` was
+written for.
+
+Sweep re-running for the receipt. Tranche 4 of Q7 (the shop and database family)
+is analysed and staged, waiting on it so the write does not race the read.
+
+### 2026-08-28 00:12:44 — 20260828_0016_update_tranche-4-and-the-page-moved-under-two-controls.md
+
+# Update — Q7 tranche 4 done (43 of 100). And the sweep's two failures are one page change at 23:59 that Q9 made possible.
+
+**2026-08-28 00:16 local · Code (background session)**
+
+---
+
+# THE SWEEP'S TWO FAILURES ARE THE SAME EVENT
+
+    96 ok, 2 failed, 3 skipped, 0 NOT RUN, in 566s
+    FAIL  _verify_extremity_placement.py     3 assertions
+    FAIL  _verify_ship_page.mjs              2 assertions
+
+**All five assertions are about one sentence**, and they read like this:
+
+    renderMarkerNote still says the positions are NOT measured from the model
+    and still says the derivation starts from the mount's NAME
+    and B6 added no claim that anything is now measured from geometry
+    and still says what the FALLBACK is - the mount's name, snapped, an estimate
+    and admits it cannot say which of the two THIS ship's dots are
+
+**Every one of them asserts an apology the page no longer needs to make.**
+
+`testing/_src/loadout.src.html` changed at **23:59:07**, and the change is C1
+**using the field Q9 emitted 40 minutes earlier**:
+
+    function mountProvenance(cls){ ... for(const m of list){ if(m.from==="cig") cig++; } }
+
+    /* THAT LIMITATION IS GONE FOR MOST OF THE FLEET. CIG's own geometry was ... */
+    /* ONLY THE ESTIMATE IS NAMED. A dot on CIG's own coordinate is the
+       ordinary case on 244 of 271 classes ... */
+
+So the page now says, per ship, how many dots are CIG's own and how many are
+worked out — **which is exactly Q9's DONE-WHEN, delivered by the other side of
+the field I added.** The five assertions are the old hedge, and they are stale
+rather than wrong-when-written.
+
+**I have not touched them.** The note's wording is N9's subject, and
+`_verify_ship_page.mjs` says so in its own comment: *"N9 REWRITTEN 2026-08-27 BY
+THE SESSION THAT CHANGED THE PAGE (C1)"*. The page changed seventeen minutes ago
+and the same session will almost certainly finish the pair. Rewriting someone
+else's wording assertions while they are mid-edit is how two writers make a mess.
+
+## And the rule 14 question is still open, with a fact in it
+
+C1 said at 23:00 it would **not write into `testing/_src/` again** until Sleven
+decided who owns those two files. `loadout.src.html` was written at 23:59.
+
+**I am not making a second complaint out of it.** The record genuinely names
+those files as C1's in two places, I overstated the rule once already tonight,
+and the change is good work that used my field the day I added it. **But Sleven
+has still not answered, and the question does not go away by being asked twice.**
+
+## One line is explicitly mine, and the data for it exists
+
+C1's new crafting line ends: *"INERT UNTIL THE DATA IS WIRED. `CRAFT` is emitted
+by build_crafting_demand.py and the build has to copy it in — one line in Code's
+`deploy_pages.py`."*
+
+Both exist:
+
+    build_crafting_demand.py                        23:12
+    data-layer/derived/crafting-demand/craft_data.gen.js
+
+**Not doing it in this pass.** The page that would read it is being edited right
+now, and wiring a data file into the payload while its consumer is in flight is
+the same mistake in the other direction. It is a named, bounded task and it is
+next.
+
+---
+
+# Q7 TRANCHE 4 — THE SHOP AND DATABASE FAMILY
+
+    labelled     43  (20 INDEPENDENT, 23 UNPROVEN)     was 37
+    unlabelled   58                                    was 63
+
+All five controls green after labelling.
+
+**Two INDEPENDENT, and both for the same good reason - they leave the process.**
+`_verify_shop_api.py` starts the real application and makes real HTTP requests,
+and its own docstring explains why it refuses a TestClient: that would exercise
+the same handlers while proving neither that the app starts nor that the router
+is mounted. `_verify_shop_schema_db.py` plants bad rows and lets **Postgres**
+refuse them — the evidence is what the database does, not what any Python this
+project wrote thinks it would do.
+
+**Three UNPROVEN**, all the same shape: `_verify_shop_checks.py`,
+`_verify_shop_importers.py` and `_verify_commodity_xref.py` import the auditors,
+the envelope loader and the xref builder respectively, so a wrong rule is wrong
+on both sides. Each still proves the half that usually goes missing — the code
+refusing input constructed here that it MUST refuse.
+
+## A tool problem worth recording rather than working around
+
+Tranche 4's first pass reported `_verify_shop_schema_db.py` as **NOT DONE:
+anchor matched 0 times** — because that file is CRLF and the anchor was written
+LF. **The right failure**: it named the file and skipped it rather than writing
+something approximate.
+
+The applier is now line-ending aware and reports which convention each file uses.
+No file has had its line endings rewritten, which would have turned a six-line
+label into a whole-file diff.
+
+Sweep receipt currently red on the two stale controls above, so the deploy gate
+is correctly refusing. Nothing committed since `fee621f`.
+
+### 2026-08-28 10:13:52 — 20260828_1020_update_craft-wired-and-the-two-stale-controls-fixed.md
+
+# Update — The crafting data is wired (it was three lines, not one), and the two controls Q9 stranded now assert the stronger claim.
+
+**2026-08-28 10:20 local · Code (background session)** — Sleven: *"do the
+deploy_pages line and keep going"*.
+
+---
+
+# 1. THE CRAFTING DATA — AND IT WAS NOT ONE LINE
+
+C1's note said *"the build has to copy it in — one line in Code's
+`deploy_pages.py`"*. Measured, three things were missing and the one line alone
+would have shipped nothing:
+
+    build_deploy.py     craft_data.gen.js lives in data-layer/derived/, and
+                        PAGES copies from _src. Nothing brought it across.
+    deploy_pages.py     the one line C1 named.
+    loadout.src.html    the page had NO <script src="craft_data.gen.js">.
+                        `craftLine()` checks `typeof CRAFT==="undefined"` and
+                        returned nothing, silently, on every row.
+
+All three done. **The page had been sitting on a working feature with no way to
+load its data since 23:59 last night.**
+
+## The copy fails closed on the PAIRING rather than on the file
+
+    page asks + generator produced   copied, and the size printed
+    page asks + no file              REFUSED - a script tag pointing at nothing
+                                     is a 404 and a silently absent feature
+    no page asks + file exists       reported, not copied - so a stale 88 KB
+                                     does not ride along unnoticed
+
+## Measured, not assumed
+
+    CRAFT recipes                                 452
+    fittable parts on the page                  3,283
+    parts with a recipe the page can show         452
+
+**452 of 452.** C1's join is CIG's own class name, case-folded, exact — and
+every recipe lands on a part a reader can actually fit. Nothing was dropped in
+the wiring.
+
+    crafting data: copied into _src (87,949 bytes)
+    pages copied: ... loadout_marker.gen.js, craft_data.gen.js, stick-test.html
+    deploy guard: _deploy contains only known assets - safe to deploy
+
+The guard accepted it without a separate edit, because `deploy_pages.py` is the
+one list both the build and the guard import — rule 14 paying for itself.
+
+---
+
+# 2. THE TWO STALE CONTROLS, REWRITTEN RATHER THAN RELAXED
+
+Five assertions across two controls demanded the page still apologise for
+something Q9 fixed. The page now counts each ship's own dots:
+
+    All 7 dots on this model come from the game's own ...
+    5 of the 12 dots on this model come from the game's own ...
+    The other 7 have no position in the ...
+
+**Asserting the apology would now be asserting a falsehood.** What actually
+needs defending is not that the page hedges — it is that an estimate is still
+NAMED as an estimate wherever one is drawn, and that the page never claims a dot
+was measured off the mesh.
+
+`_verify_extremity_placement.py` **27 passed, 0 failed**:
+
+    the note still names an estimate AS an estimate, for the hulls that have them
+    and still says an estimate starts from the mount's NAME
+    and it does NOT claim a dot was measured off the mesh
+    and the per-dot provenance is what it counts, so the sentence is about
+        THIS ship rather than the fleet
+
+`_verify_ship_page.mjs` **242 assertions, 0 failed**. It reads the page's own
+`mountProvenance(shipId)` and asserts the branch that matches the ship being
+driven, so it follows whichever hull the section picks:
+
+    every one of this ship's 7 dots is CIG's, so the note does not offer an
+        estimate it does not have
+    and the old fleet-wide hedge is gone - the note is about THIS ship
+    and it says so as a count: "All 7 dots"
+
+## One of them was asserting a code comment, and had been for a while
+
+`"measured from the model" not in page` fired on **the note's own changelog** -
+a `/* ... */` comment explaining what the sentence used to say. The original
+worked around it by deleting the substring `"not measured from the model"`
+before searching, which worked exactly as long as that sentence existed.
+
+Comments are stripped before the absence check now. **An assertion that fires on
+a file's history is asserting the wrong text.**
+
+## And one of mine was nonsense, caught by its own failure
+
+My first replacement contained `/${pv.cig}|all/.test(String(pv.cig))` - a regex
+built from a number and tested against that same number, which can only ever be
+true. It failed on the other half of the `&&`, which is the only reason I looked
+at it. Replaced with three real assertions, one per branch of the note.
+
+---
+
+# 3. WHILE I WAS IN THERE
+
+The marker counts moved again under C1's 23:45 overlay update, and the
+provenance tally still closes exactly:
+
+    hull markers   6,326 on 269 hulls
+    provenance     2,006 from CIG geometry, 105 name-derived, 4,215 ancestor
+                   = 6,326
+
+**2,006 mounts on CIG's own coordinates**, up from 1,691 last night.
+
+Full sweep running for a clean receipt; the deploy gate is refusing until it has
+one, which is correct. Q7 stands at **43 of 100 labelled, 58 to go**.
+
+### 2026-08-28 10:40:31 — 20260828_1045_update_the-first-clean-sweep-receipt-and-q10-closes.md
+
+# Update — 101 controls green, the gate let it through, and it deployed. Q10's DONE-WHEN is closed at both ends. Q7 is past halfway.
+
+**2026-08-28 10:45 local · Code (background session)**
+Version `00321a0b-3c9b-45ea-aedd-5c368b857919`.
+
+---
+
+# Q10 — CLOSED
+
+    101 ok, 0 failed, 3 skipped, 0 NOT RUN, in 679s
+
+    sweep   : 101 control(s) green against this exact payload (2026-08-28T10:37:16)
+    gate exit=0
+
+**The first clean sweep receipt this project has ever had**, and the gate read it
+and let the deploy through.
+
+Q10's DONE-WHEN needed both halves and now has both:
+
+    a deliberately-reddened control STOPS a deploy   proven in section 11 of
+                                                    _verify_deploy_guards.py,
+                                                    on both scripts
+    a swept, clean payload GETS THROUGH              proven here, on the real
+                                                    456 MB payload
+
+**A gate that only ever refuses is not a gate either.** Until this run the
+passing side had only been shown against throwaway fixtures.
+
+## What it took to get there, and none of it was the gate being wrong
+
+Three sweeps failed before this one, and every failure was a real staleness the
+gate surfaced rather than a defect in the gate:
+
+    _verify_rule16_labels.py        a control 90 seconds old with a label the
+                                    regex could not read
+    _verify_extremity_placement.py  3 assertions demanding an apology Q9 removed
+    _verify_ship_page.mjs           2 more of the same
+    _verify_child_markers.py        a baseline predating C1's 23:45 overlay
+    _verify_placer_candidates.py    two ports differing in the fifth decimal
+
+**Five controls, five different kinds of stale, none of them a bug in the
+thing being shipped.** That is what 94 controls that could not stop anything
+had been hiding.
+
+---
+
+# THE DEPLOY
+
+    Found 3 new or modified static assets to upload
+    + /craft_data.gen.js
+    + /loadout_marker.gen.js
+    + /loadout.html
+
+Verified from outside rather than from the build log:
+
+    /craft_data.gen.js            HTTP 200, 87,949 bytes
+    served /loadout               carries <script src="craft_data.gen.js">
+    _verify_deployed_links.mjs    SWEEP CLEAN, canary reporting
+
+**The link sweep went from 18 internal references to 19** — it found the new
+script tag by itself, which is a second, independent confirmation that the page
+really does load the file.
+
+---
+
+# Q7 — TRANCHE 5, AND PAST HALFWAY
+
+    labelled     52  (23 INDEPENDENT, 29 UNPROVEN)     was 43
+    unlabelled   51                                    was 58
+
+All seven controls green after labelling.
+
+**This tranche is the checker-of-checkers family**, and it produced an
+observation worth keeping rather than seven near-identical labels. Six are
+UNPROVEN for the same reason and each says so in the same words:
+
+> This is a RULE 12 control, and rule 16 is a different axis. Proving a checker
+> fires on input that must trip it and stays silent on clean input is exactly
+> what rule 12 asks for, and this file does both halves. **Being UNPROVEN under
+> rule 16 is not a criticism of it** - it is the observation that a checker
+> cannot be an independent source of truth about itself.
+
+**The one INDEPENDENT is instructive by contrast.**
+`_verify_never_delete_guard.py` does not ask the guard whether it refused - it
+**SELECTs the row back out of the database**. Its own second paragraph says why:
+a delete that failed for some other reason would look identical from the guard's
+side. Postgres is the witness, and Postgres did not write the guard.
+
+`_verify_schema_checks.py` is the near miss, and its label says so: the offending
+state is a **real table in a real database**, so the condition being detected
+genuinely exists rather than being a fixture pretending to. Only the verdict is
+the checker's own — which is enough to make it UNPROVEN, and worth distinguishing
+from the ones whose input is a temp directory.
+
+---
+
+# WHERE THINGS STAND
+
+    Q1-Q6, Q8, Q9, Q10   done
+    Q7                   52 of 103 labelled, 51 to go
+    C1's crafting line   wired and serving
+
+Nothing committed since `fee621f` — there is a substantial working tree now:
+Q9's provenance field, Q10's whole mechanism, five Q7 tranches, the crafting
+wiring, three re-baselined controls and C1's page work.

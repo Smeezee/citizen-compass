@@ -3,6 +3,16 @@
 """
 Rule 12 proof for C7, the source-duplicate auditor (G4).
 
+RULE16: UNPROVEN - it imports source_duplicate_check and judges what that
+function returns. The duplicate it must find is planted here, in a temp
+snapshot root, so the auditor is answering a question this file knows the
+answer to rather than one it has to be trusted about.
+This is a RULE 12 control, and rule 16 is a different axis. Proving a
+checker fires on input that must trip it and stays silent on clean input
+is exactly what rule 12 asks for, and this file does both halves. Being
+UNPROVEN under rule 16 is not a criticism of it - it is the observation
+that a checker cannot be an independent source of truth about itself.
+
 BOTH HALVES, LIKE C6
 --------------------
 A planted price CONFLICT must fire it. A planted BYTE-IDENTICAL repeat must

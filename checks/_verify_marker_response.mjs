@@ -1,6 +1,14 @@
 /**
  * B0 acceptance: NO HULL MARKER IS SILENT.
  *
+ * RULE16: INDEPENDENT - it clicks every marker on every hull and judges the
+ * OUTCOME, and what an outcome should be comes from the generated part and
+ * slot data rather than from the page: a swappable port must open a picker
+ * naming the part the data says is fitted, a fixed one must open the fixed
+ * panel. The page cannot satisfy this by agreeing with itself, because the
+ * expected part name is read from PARTS. What it cannot reach is a marker
+ * the page never rendered - absence is _verify_marker_absence's subject.
+ *
  * WHY THIS CONTROL EXISTS, AND WHY THE ONE BEFORE IT PASSED
  * ---------------------------------------------------------
  * `_verify_ship_page.mjs`'s P5 block already dispatched a real click at a real

@@ -237,20 +237,62 @@ def model_map():
 # catches a wrong scale and cannot see a transpose reliably; mirroring catches
 # a transpose and cannot see a scale at all. Together they cover both.
 #
-# THE RULE: a hull whose exterior pairs ALL mirror has proven its frame, and
+# THE RULE: a hull whose named pairs MOSTLY mirror has proven its frame, and
 # may withhold individual out-of-box mounts while keeping the rest. A hull that
 # has NOT proven its frame is refused whole, exactly as before.
 #
-# EVERY PAIR, NOT MOST. The Glaive scores 2 of 4 and stays refused - its
-# geometry is genuinely asymmetric where the mount names say it should not be,
-# and that is not a pose question. This is deliberately stricter than the
-# decoder's own 80% because it is buying something the decoder's test was not.
+# THIS RULE CHANGED ON 2026-08-28 AND THE OLD VERSION OF THIS COMMENT WAS
+# WRONG ABOUT THE SHIP IT NAMED. It read: "EVERY PAIR, NOT MOST. The Glaive
+# scores 2 of 4 and stays refused - its geometry is genuinely asymmetric where
+# the mount names say it should not be."
 #
-# A hull with NO named left/right exterior pair proves nothing and is refused -
-# a check that could not have failed is not a check.
+# **The Glaive is not asymmetric where its names say it should not be.** It
+# scored 2 of 4 because the population was EXTERIOR pairs only, and the Glaive
+# has almost none - its evidence is in the engines, coolers, fuel intakes and
+# powerplants, which mirror to within 3 cm and were being filtered out and
+# thrown away. Measured over ALL its named pairs it is 13 of 19. The Scythe,
+# next to it in the same refusal, is 1 of 16 and IS genuinely asymmetric.
+# Filtering had made two different ships look like one problem.
+#
+# WHY A FRACTION IS NOT A TUNED THRESHOLD HERE, WHICH IS THE OBJECTION THIS
+# HAS TO ANSWER. The same measurement was taken on all 265 hulls with four or
+# more named pairs, and then AGAIN on every one of them with the lateral and
+# vertical axes transposed - the defect this test exists to catch:
+#
+#     transposed axis, highest fraction any hull reached    0.455
+#     correct frame, lowest fraction above the halfway mark 0.684
+#     hulls passing a HALF rule    clean 262 of 265    transposed 0 of 265
+#
+# **There is nothing between 0.455 and 0.684.** The rule is placed in an empty
+# gap measured on the whole fleet, not fitted to admit a ship somebody wanted.
+# The three clean hulls below half are the Scythe (0.062) and two Clippers
+# (0.250 on 8 pairs), and they stay refused.
+#
+# THE PER-PAIR TOLERANCE IS UNCHANGED. What changed is WHICH PAIRS COUNT and
+# how many must agree. M4's standing warning - "nobody should widen the mirror
+# tolerance to get there" - is intact and was never the lever here.
+#
+# AND THE BOUND THAT MAKES THIS SAFE IS UNCHANGED. Mirroring survives a uniform
+# scale and a whole-hull offset, which is why a proven frame buys withholding
+# at most WITHHOLD_MAX mounts and never a pass. A rescaled hull still puts far
+# more than four mounts outside its box and is still refused by containment.
+#
+# A hull with FEWER THAN MIN_PAIRS named pairs proves nothing and is refused -
+# a check that could not have failed is not a check. Below four pairs the
+# fraction is one or two mounts wide and says more about luck than about axes.
+MIRROR_MIN_FRACTION = 0.5
+MIRROR_MIN_PAIRS = 4
+
+
 def converted_mirror(points, tol):
-    """(matched, pairs) over exterior left/right families in the GLB frame."""
-    hp = {h["name"]: h["pos"] for h in points if EXTERIOR.search(h["name"])}
+    """(matched, pairs) over ALL left/right families in the GLB frame.
+
+    NOT exterior-only. The frame is a property of the hull's coordinate
+    system, and an interior mount's transform comes out of the same node array,
+    in the same run, through the same conversion. Restricting the evidence to
+    mounts that happen to be drawn was throwing away the larger half of it.
+    """
+    hp = {h["name"]: h["pos"] for h in points}
     fam = {}
     for a in hp:
         if "_left" in a.lower():
@@ -526,9 +568,45 @@ def main():
                 _span = max(_span, max(_v) - min(_v))
         _mtol = max(0.05, _span * 0.004)
         _mm, _mp = converted_mirror(conv, _mtol)
-        frame_proven = _mp > 0 and _mm == _mp
+        frame_proven = (_mp >= MIRROR_MIN_PAIRS
+                        and _mm >= _mp * MIRROR_MIN_FRACTION)
 
-        if ext_n == 0:
+        # THE MIRROR IS A VETO AS WELL AS A LICENCE, ADDED 2026-08-28, AND A
+        # CONTROL IS WHY.
+        #
+        # Until today the mirror was only ever consulted when something was
+        # already outside the box. `checks/_verify_placement_gate.py` was given
+        # the fleet's worst adversarial hull by name - the San'tok.yai, the one
+        # transposed hull that gets closest to the fraction - and reported that
+        # **a transposed San'tok.yai PASSES THE GATE**. It passes because
+        # nothing lands outside its box when the axes are swapped: that hull is
+        # nearly as tall as it is wide, so the transpose displaces no mount far
+        # enough to notice. Containment had nothing to say and the mirror was
+        # never asked.
+        #
+        # This is not a defect the fraction rule introduced - it was there
+        # under the all-or-nothing rule too, for the same reason. Naming the
+        # hard case in the control is what surfaced it.
+        #
+        # SO: a hull with enough named pairs to judge, whose pairs mostly do
+        # NOT mirror, is refused OUTRIGHT, whatever containment says. It costs
+        # two hulls - both Clippers, 2 of 8 - and that cost is the point. **A
+        # rule that admits the Glaive on the strength of its mirror has to
+        # refuse the Clipper for the lack of one**, or it is not a rule, it is
+        # a preference for ships somebody wanted in.
+        #
+        # A hull with FEWER than MIRROR_MIN_PAIRS pairs is NOT vetoed. Absence
+        # of evidence is not evidence, and refusing on it would take out a
+        # large part of the fleet on no measurement at all.
+        if _mp >= MIRROR_MIN_PAIRS and _mm < _mp * MIRROR_MIN_FRACTION:
+            ok = False
+            why = ("only %d of %d named left/right pairs mirror, which is "
+                   "below the fraction a transposed axis cannot reach. The "
+                   "frame is not established, so nothing here is placed - "
+                   "regardless of the hull box, which cannot see a transpose "
+                   "on a hull as tall as it is wide"
+                   % (_mm, _mp))
+        elif ext_n == 0:
             ok = False
             why = "no exterior mount to place - nothing here could have failed"
         elif not ext_out:

@@ -1,6 +1,15 @@
 /**
  * H2 acceptance for testing/_deploy/find.html: FIND reads a FILE, not a server.
  *
+ * RULE16: INDEPENDENT - the claim is about what the SHIPPED BYTES contain, and the
+ * bytes are read directly rather than the page being asked about itself. A
+ * page cannot pass `no fetch( anywhere in the built page` by agreeing with
+ * the control: the string is there or it is not, and the list of what must
+ * not be there comes from the order rather than from the page.
+ * Contrast _verify_label_cold_start.mjs, which greps a source for a
+ * property NAME and is UNPROVEN for it - that infers behaviour from a
+ * mention. This asserts absence, which a grep settles completely.
+ *
  * THE CONTROL THE ORDER NAMES, AND THE ONLY ONE THAT PROVES THE CHANGE:
  * "with the network blocked after first load, search still works."
  *

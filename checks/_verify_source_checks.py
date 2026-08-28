@@ -1,6 +1,16 @@
 """
 Rule 12 proof for the three Stage 1 source auditors.
 
+RULE16: UNPROVEN - it imports the three auditors and reads their findings. The
+snapshots they audit are built here, deliberately broken in the specific
+ways Stage 1 has actually been broken before, and a clean one is required
+to produce silence.
+This is a RULE 12 control, and rule 16 is a different axis. Proving a
+checker fires on input that must trip it and stays silent on clean input
+is exactly what rule 12 asks for, and this file does both halves. Being
+UNPROVEN under rule 16 is not a criticism of it - it is the observation
+that a checker cannot be an independent source of truth about itself.
+
 The order is specific about what each one must be fed:
 
     a tampered hash, a planted disagreement, a broken join key

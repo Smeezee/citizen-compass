@@ -119,3 +119,12 @@ checks/.playwright-browsers/
 # deploy_testing.ps1 so a failed build cannot be followed by an upload.
 # Per-machine state about one run, not project content.
 testing/_src/.last_build.json
+
+# Sweep receipt (Q10): which controls passed against WHICH payload, read by
+# both deploy scripts so a payload no sweep has vouched for cannot be
+# uploaded. Same reasoning as the build receipt above - it is per-machine
+# state about one run, and it names a fingerprint of testing/_deploy, which
+# is itself gitignored. A committed receipt would describe a payload no clone
+# has, which is worse than no receipt: the gate fails closed on a missing one
+# and would be fooled by a stale one.
+checks/.last_sweep.json

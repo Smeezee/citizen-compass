@@ -1388,10 +1388,44 @@ console.log("\n--- N9: the page claims exactly the certainty it has ---");
   record(note.length > 200, "a hull with markers carries the note", `${note.length} chars`);
   record(/game's own geometry|game files/i.test(note) && /decoded/i.test(note),
     "and says the measured positions come from the game's own geometry");
-  record(/name/i.test(note) && /snapped/i.test(note) && /estimate/i.test(note),
-    "and still says what the FALLBACK is - the mount's name, snapped, an estimate");
-  record(/cannot yet tell you which/i.test(note),
-    "and admits it cannot say which of the two THIS ship's dots are");
+  /* THE HEDGE IS GONE AND THESE FOLLOW IT.
+   *
+   * Until 2026-08-27 the note said BOTH things and admitted it could not say
+   * which applied to the ship in front of you - the right answer while the
+   * marker file was [PortId, x, y, z] and carried no provenance. Q9 added the
+   * fifth element and the note now counts THIS ship's own dots.
+   *
+   * So the claim to defend is no longer "it still apologises". It is that the
+   * note says the right thing FOR THE SHIP RENDERED: name the estimate as an
+   * estimate when there is one, and do not hedge when there is not. The
+   * provenance is read from the page's own counter so the assertion follows
+   * whichever ship this section happens to be driving. */
+  const pv = JSON.parse(vm.runInContext(
+    "JSON.stringify(mountProvenance(shipId))", sandbox));
+  if (pv.est > 0) {
+    record(/name/i.test(note) && /snapped/i.test(note) && /estimate/i.test(note),
+      `this ship has ${pv.est} estimated dot(s), so the note names the fallback`);
+  } else {
+    record(!/an estimate/i.test(note),
+      `every one of this ship's ${pv.cig} dots is CIG's, so the note does not `
+      + "offer an estimate it does not have");
+  }
+  record(!/cannot yet tell you which/i.test(note),
+    "and the old fleet-wide hedge is gone - the note is about THIS ship",
+    note.slice(0, 0));
+  /* AND IT PUTS THE COUNT IN FRONT OF THE READER. The note has three shapes and
+   * this asserts the one that matches the ship being driven, by reading the
+   * page's own counter rather than assuming which hull the section picked. */
+  if (pv.est === 0) {
+    record(new RegExp("all " + pv.total + " dots?", "i").test(note),
+      `and it says so as a count: "All ${pv.total} dots"`, note.slice(0, 90));
+  } else if (pv.cig === 0) {
+    record(/no position in the/i.test(note),
+      `and says all ${pv.est} have no published position`, note.slice(0, 90));
+  } else {
+    record(note.includes(String(pv.cig)) && note.includes(String(pv.est)),
+      `and gives both numbers: ${pv.cig} from geometry, ${pv.est} estimated`);
+  }
   record(/not estimated/.test(note) && /size|type|fitted/i.test(note),
     "and that what each port IS remains unestimated");
 

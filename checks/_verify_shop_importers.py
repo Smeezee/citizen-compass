@@ -1,6 +1,13 @@
 """
 Rule 12 proof for the shop-layer importers' source guard.
 
+RULE16: UNPROVEN - it imports load_envelope from the importer and drives that
+function, so a guard that misreads a broken envelope misreads it here
+too. The independent half is the INPUT: the snapshots are built in this
+file, deliberately malformed in ways a real one never would be, and the
+guard has to refuse them. A refusal that has been observed is worth more
+than one that has only been read.
+
 WHAT THIS PROVES
 ----------------
 Every shop-layer importer reads UEX files through one function,

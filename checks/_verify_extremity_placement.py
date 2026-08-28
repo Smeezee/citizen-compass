@@ -204,14 +204,41 @@ if not os.path.exists(PAGE):
 else:
     with io.open(PAGE, "r", encoding="utf-8") as fh:
         page = fh.read()
-    check("renderMarkerNote still says the positions are NOT measured from "
-          "the model",
-          "not measured from the model" in page.lower())
-    check("and still says the derivation starts from the mount's NAME",
-          "worked out from each mount" in page)
-    check("and B6 added no claim that anything is now measured from geometry",
-          "measured from the model" not in page.replace(
-              "not measured from the model", ""))
+    # THE NOTE STOPPED APOLOGISING, AND IT WAS RIGHT TO.
+    #
+    # These three asserted that renderMarkerNote() still said every dot was
+    # "worked out from each mount" and "not measured from the model". That was
+    # true and necessary while the marker file was [PortId, x, y, z] and carried
+    # no provenance. Q9 added the fifth element on 2026-08-27 and the note was
+    # rewritten the same night to count each ship's own dots, so a hull whose
+    # mounts are all on CIG's transforms now says so without hedging.
+    #
+    # ASSERTING THE APOLOGY WOULD NOW BE ASSERTING A FALSEHOOD. What B6 needs
+    # defended is not the apology - it is that the ESTIMATE is still named as an
+    # estimate wherever one is drawn, and that the page never claims a dot was
+    # measured off the mesh, which nothing here does at any point.
+    check("the note still names an estimate AS an estimate, for the hulls that "
+          "have them",
+          "an estimate, not measured from anything" in page)
+    check("and still says an estimate starts from the mount's NAME",
+          "worked out from the mount's name" in page)
+    # COMMENTS STRIPPED FIRST, because the page's own prose about its history
+    # is not a claim the page makes to a reader. `measured from the model`
+    # survives exactly once in this file, inside the comment explaining what the
+    # note USED to say - and an assertion that fires on a file's changelog is
+    # asserting the wrong text. The original worked around this by deleting the
+    # substring "not measured from the model" before searching, which happened
+    # to work while the sentence existed and stopped meaning anything when it
+    # did not.
+    import re as _re
+    rendered = _re.sub(r"/\*.*?\*/", "", page, flags=_re.S)
+    check("and it does NOT claim a dot was measured off the mesh - CIG's own "
+          "transform is a different claim and is the one it makes",
+          "measured from the model" not in rendered
+          and "decoded" in rendered)
+    check("and the per-dot provenance is what it counts, so the sentence is "
+          "about THIS ship rather than the fleet",
+          "mountProvenance(" in page)
 
 print("\n4. THE FLEET, BEFORE AND AFTER, GEOMETRY HELD CONSTANT")
 if QUICK:

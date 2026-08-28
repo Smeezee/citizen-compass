@@ -86,7 +86,18 @@ today.
 
 **A work order that exists in the claude.ai project but not in the repo has not
 been delivered.** Code reads the repo. Anything Code must act on goes in
-`inbox/`.
+`inbox/`. **C3 reads the project**, so an order for C3 goes in both.
+
+**`OWNERS.md` is the machine-readable list of who writes what**, and it replaced
+a prose list that lived in two documents and drifted. `checks/_verify_owners.py`
+holds it to its own rule and fails if `NEXT.md` grows a second copy. Rule 14 is
+one writer per artifact, and the ownership list is an artifact.
+
+**C1 can run 32 of the 33 harness-based page controls** — measured 2026-08-28,
+not inferred. Node is in the Cowork VM; what is absent is Playwright, the served
+site, PostgreSQL and PowerShell. A control C1 files unrun must now name which of
+those four it needs. See
+`docs/FINDING_c1-can-run-the-page-controls-2026-08-28.md`.
 
 ---
 
@@ -132,20 +143,64 @@ joined to the page's ports by CIG's own `HardpointName`, exact string equality.
 
     transforms   153 hulls decoded
     placement    284 converted, 277 passed, 7 refused
-    overlay      167 hulls / 1,720 ports
-    ship page    245 classes with every marker on CIG coordinates
-                 20 with none, each for a written reason
+    overlay      166 hulls / 1,693 ports, plus 41 whole records for hulls the
+                 marker dataset has none for
+    ship page    2,026 mounts on CIG coordinates, 113 name-derived
+                 244 classes with every top-level mount on CIG coordinates
+                 21 mixed (88 derived mounts between them)
+                 6 with none
 
-The 20 are: the ARGO ATLS family (a **power suit**, filed under
-`Characters\PowerSuit`), four GRIN mining vehicles (no exterior mount at all),
-three Cyclone variants, the Javelin (two paths of equal evidence, one under
-`dmg`), the Glaive and Scythe (**asymmetric ships, not a bug**), the MOTH and the
-Starfarer Gemini. See
+**Counted from `testing/_deploy/loadout_marker.gen.js` — the file the browser
+loads — not from a manifest.** The previous numbers here (245 / 20) were carried
+forward from the pipeline's manifests and were wrong at the last step: 335
+CIG-published mounts reached the page labelled as estimates, and the "20" counted
+hulls the hardpoint rule could not reach, several of which have no model on the
+page at all. Fixed and controlled 2026-08-28 —
+`docs/FINDING_the-page-called-335-cig-mounts-estimates-2026-08-28.md`.
+
+**Every dot carries its own provenance** (`cig`, `est` or `anc`, Q9) and
+`checks/_verify_marker_provenance.py` holds it to that in both directions: no
+mount on a CIG coordinate may be called an estimate, and no mount called CIG may
+sit anywhere else.
+
+The 6 at that build were `VNCL_Glaive`, `VNCL_Scythe`, `GRIN_MTC`,
+`MISC_Starfarer_Gemini`, `TMBL_Cyclone_MT` and `TMBL_Cyclone_TR`.
+
+**These counts move on the next build, and here is which way.** The frame proof
+changed on 2026-08-28: **the Glaive is placed** (it was never asymmetric — the
+mirror was discarding the mounts that prove its frame), and **both Drake
+Clippers are refused**, because a hull whose named pairs mostly do not mirror is
+now refused outright rather than only when something falls outside its box.
+Containment cannot see a transposed axis on a hull as tall as it is wide.
+
+Separately, hulls the hardpoint rule cannot reach at all — which is not the same
+list, because several have no model on the ship page and so no markers to miss:
+the ARGO ATLS family (a **power suit**, filed under `Characters\PowerSuit`),
+four GRIN mining vehicles (no exterior mount at all), the Javelin (two paths of
+equal evidence, one under `dmg`), and the MOTH. See
 `docs/FINDING_the-hull-rule-was-blind-to-the-ships-cig-does-not-name-a-folder-for-2026-08-27.md`.
 
 **How a variant finds its hull:** CIG's own record says so —
 `Parts[0].Name` is the hull the ship is built on. `ANVL_C8_Pisces -> ANVL_Pisces`.
 Exact equality. **This replaced a name-prefix rule; do not reintroduce one.**
+
+**The bench works as a loop, and it is now proven as one.** Pick a mount, fit a
+part, see what moved, keep or undo — every step driven by a click through the
+page's own handler in `checks/_verify_swap_loop.mjs`, 27 assertions. **Undo is a
+step, not a reset:** after two swaps one undo returns the first part. The
+existing coverage set the build directly and stepped over the whole interaction.
+
+**A swap moves at least one readout figure on 773 of 813 ports** (25 ships,
+measured 2026-08-28). Guns, missiles, turrets, coolers, shields, power plants,
+radars and quantum drives all respond. **An earlier claim here that no swap
+moves anything was wrong** — twice over: a search capped at the first eight
+ports per ship, which are never guns, and a boolean compared to a string.
+
+**Three part types genuinely show nothing** — flight blades, salvage heads and
+most bomb racks — because CIG publishes no figure on which their options differ.
+All three Avenger flight blades are identical on every field. The page is
+correct to be quiet; whether it should SAY "these are identical" is the one
+open question, and it touches 18 ports of 813.
 
 **The 3D viewer** — `testing/_src/cc_viewer.js`, shared by index and the ship
 page. Break it and both pages fail. It recentres every hull on its own bounding
@@ -185,8 +240,11 @@ are 4.9 and say so.
   Publishing a confident wrong number here is worse than publishing DPS.
   `Shield.Resistance` is NOT `Durability.Resistance`; those are different blocks
   and one was closed in place of the other.
-- **The Glaive and the Scythe** need a frame proof that does not assume the ship
-  is symmetrical. Do not widen the mirror tolerance to get there.
+- ~~The Glaive and the Scythe~~ — **closed 2026-08-28.** The Glaive was never
+  asymmetric; the mirror was filtering out the mounts that prove its frame. It
+  is in, at 13 of 19 named pairs. The Scythe is 1 of 16, genuinely asymmetric,
+  and stays refused for a reason that is now measured rather than assumed. The
+  tolerance was not touched. `docs/FINDING_the-glaive-was-never-asymmetric-2026-08-28.md`.
 
 **Owned by C1, not started**
 

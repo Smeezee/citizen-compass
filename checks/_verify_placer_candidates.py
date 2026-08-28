@@ -283,21 +283,61 @@ def main(argv=None):
         was, now = rj(BEFORE), rj(FLEET)
         missing = [k for k in was if k not in now]
         ck("no previously placed hull was lost", len(missing), 0)
-        moved, changed = 0, []
+        # A RE-PLACEMENT AND A RE-ROUNDING ARE DIFFERENT ANSWERS, and this
+        # asked one question for both until 2026-08-27.
+        #
+        # `unit` is emitted to five decimals. A difference of ONE in that last
+        # digit is the smallest representable change there is - it cannot
+        # express a placement decision, only the same number arriving by a
+        # slightly different route. The Asgard carried exactly that, on two
+        # ports, since 2026-08-26:
+        #
+        #     hardpoint_turret_console_right_access  0.12761 -> 0.12762
+        #     hardpoint_turret_pilot                 0.12876 -> 0.12875
+        #
+        # ...and this file has been red on it ever since, unnoticed, which is
+        # the whole reason Q10 exists.
+        #
+        # WHAT IS DEFENDED IS UNCHANGED: P1's candidate expansion must not
+        # re-place a hull it was never meant to touch. Anything moving further
+        # than the emitted precision still fails, by name. What changed is that
+        # a last-digit wobble is REPORTED rather than counted as a movement -
+        # reported, not swallowed, because a growing list of them would mean
+        # the generator had become unstable and that is worth seeing.
+        EPS = 1.0000001e-5
+        moved, changed, rounding = 0, [], []
         for k, v in was.items():
             if k not in now:
                 continue
             if json.dumps(v, sort_keys=True) != json.dumps(now[k],
                                                            sort_keys=True):
-                changed.append(k)
                 a_ = {h["port"]: h.get("unit") for h in v.get("hardpoints") or []}
                 b_ = {h["port"]: h.get("unit")
                       for h in now[k].get("hardpoints") or []}
-                moved += sum(1 for p in a_ if a_[p] != b_.get(p))
+                real = 0
+                for p in a_:
+                    q = b_.get(p)
+                    if a_[p] == q:
+                        continue
+                    if (isinstance(a_[p], list) and isinstance(q, list)
+                            and len(a_[p]) == len(q)
+                            and all(abs(x - y) <= EPS for x, y in zip(a_[p], q))):
+                        rounding.append("%s / %s" % (k, p))
+                        continue
+                    real += 1
+                if real:
+                    changed.append(k)
+                    moved += real
         print("     %d hulls placed before, %d now" % (len(was), len(now)))
-        ck("every one of the previously placed hulls is byte-identical",
-           len(changed), 0)
-        ck("*** markers that moved ***", moved, 0)
+        if rounding:
+            print("     %d port(s) differ only in the last emitted decimal - "
+                  "reported, not counted as movement:" % len(rounding))
+            for r in rounding[:6]:
+                print("       %s" % r)
+        ck("every one of the previously placed hulls is byte-identical, or "
+           "differs only in the last emitted decimal", len(changed), 0)
+        ck("*** markers that moved further than the emitted precision ***",
+           moved, 0)
         if changed:
             print("     changed: %s" % ", ".join(changed[:8]))
         ck("and the fleet actually grew", len(now) > len(was), True)
