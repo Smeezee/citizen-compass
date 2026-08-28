@@ -24,7 +24,10 @@
   ]
  },
  "acceptance": false,
- "acceptance_note": "1 of 10 exterior mounts land outside the hull",
+ "acceptance_note": "1 of 10 exterior mounts land outside the hull and this hull's frame is NOT proven (1 of 4 exterior pairs mirror) - refused whole",
+ "frame_proven": false,
+ "mirror_matched": 1,
+ "mirror_pairs": 4,
  "exterior_mounts": 10,
  "exterior_outside": [
   "hardpoint_missile_rack_right"

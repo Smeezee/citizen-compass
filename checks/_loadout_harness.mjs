@@ -160,10 +160,23 @@ export function loadPage({ mutate = [], session = null, local = null,
   const clickHandlers = [];
   const keyHandlers = [];
   const inputHandlers = [];
+  const timers = [];
   const sandbox = {
     console, JSON, Math, Date, Number, String, Array, Object, Map, Set, RegExp,
     Error, isNaN, parseInt, parseFloat, encodeURIComponent, decodeURIComponent,
-    setTimeout: () => 0,
+    /* DEFERRED WORK IS QUEUED, NOT THROWN AWAY. Until 2026-08-27 this was
+       `setTimeout: () => 0` - every callback the page deferred vanished, and
+       nothing said so. The page's P1e dismiss clears the selection now and
+       calls `setTimeout(renderAll, 0)` deliberately, so in this harness the
+       panel never closed and `_verify_stage_panel.mjs` reported a page defect
+       that did not exist.
+       QUEUED RATHER THAN RUN IMMEDIATELY, and not auto-flushed: running them
+       inline would change the ordering every existing control was written
+       against, and a control that wants the deferred effect should have to say
+       so. `flushTimers()` runs them, and returns how many - so a control can
+       assert that something was actually deferred instead of assuming it. */
+    setTimeout: (fn, _ms) => { if (typeof fn === "function") timers.push(fn);
+                               return timers.length; },
     addEventListener() {},
     history: {
       replaceState(_a, _b, url) { currentHash = String(url).replace(/^#/, ""); },
@@ -435,9 +448,23 @@ export function loadPage({ mutate = [], session = null, local = null,
              where: panel ? "stage" : inline ? "inline" : pane ? "pane" : "none" };
   };
 
+  /* Run everything the page deferred, in the order it was deferred, and say
+     how many ran. A callback that defers more work is picked up by the loop
+     rather than left for a second call nobody makes. */
+  const flushTimers = () => {
+    let ran = 0;
+    while (timers.length) {
+      const fn = timers.shift();
+      try { fn(); } catch (e) { /* reported by the caller's own assertions */ }
+      ran += 1;
+      if (ran > 1000) break;          // a self-rescheduling timer is not a test
+    }
+    return ran;
+  };
+
   return {
     g, run, el, openShip, dispatch, key, clickHandlers, keyHandlers,
-    inputHandlers, pickerNow,
+    inputHandlers, pickerNow, flushTimers,
     session: sandbox.sessionStorage || null,
     local: sandbox.localStorage || null,
     /* What the page WROTE onto the root element, and what it stamped there.

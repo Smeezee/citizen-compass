@@ -16,8 +16,17 @@
    This is a mirror of scripts/deploy_testing.ps1 and deliberately so: the same
    unknown-file guard on the same bytes, the same fail-closed handling when the
    guard cannot run, the same payload sanity checks, the same credential
-   handling, the same -WhatIf. Where it differs it differs because the LIVE
-   site is public, and every one of those differences is a refusal.
+   handling, the same -WhatIf, the same build-receipt gate and the same
+   browser-check gate. Where it differs it differs because the LIVE site is
+   public, and every one of those differences is a refusal.
+
+   THE LAST TWO IN THAT LIST ARRIVED LATE, on 2026-08-27, and the gap is worth
+   recording rather than tidying away. Both gates went into the testing script
+   that morning and not into this one, so for a day the rehearsal ran four
+   browser checks and read the build receipt while the performance did neither.
+   Nothing was published in that window - this script has still never been run
+   for real - but the sentence above was untrue while it stood, which is exactly
+   how a mirror stops being one.
 
  STATUS AT THE TIME OF WRITING (2026-08-21)
    THE WORKER DOES NOT EXIST YET. citizencompass.citizencompass-contact.workers.dev
@@ -95,10 +104,48 @@
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-    [string] $ProjectPath = 'C:\Users\david\citizen-compass'
+    [string] $ProjectPath = 'C:\Users\david\citizen-compass',
+
+    # Name the browser check(s) to publish past, by FILENAME, e.g.
+    #   -IgnoreRedCheck '_verify_panel_dismiss.mjs'
+    # Deliberately not a bare -Force: see the gate below for why.
+    [string[]] $IgnoreRedCheck = @(),
+
+    # Publish anyway when the last build did NOT succeed. Same reasoning as
+    # -IgnoreRedCheck: overriding stays possible, and it stays loud.
+    [switch] $IgnoreFailedBuild
 )
 
 $ErrorActionPreference = 'Stop'
+
+# BOTH GATES BELOW WERE ADDED 2026-08-27, ON SLEVEN'S GO-AHEAD.
+#
+# They went into deploy_testing.ps1 earlier the same day and not into this file,
+# and this file's own header promises that "where it differs it differs because
+# the LIVE site is public, and every one of those differences is a refusal".
+# Two differences were the opposite: refusals the PUBLIC side did not make.
+#
+# The receipt gate matters more here than it does there. It exists because a
+# build exited 1, a deploy read only its own inputs, and twelve wrong models
+# went LIVE - on the side that until now had no receipt gate.
+#
+# -IgnoreRedCheck HAS TO SURVIVE THE WAY THIS SCRIPT IS ACTUALLY INVOKED.
+#
+# Everything calls these with `powershell -File .\scripts\deploy_live.ps1`.
+# Under -File, PowerShell hands every argument over as a LITERAL STRING: the
+# array syntax `-IgnoreRedCheck 'a.mjs','b.mjs'` arrives as the single element
+# "a.mjs,b.mjs", and a -contains test against it is false for both names.
+#
+# That defect was found in the testing script by RUNNING the three paths rather
+# than by reading them - hard rule 12's second half. It is not repeated here:
+# the names are normalised the same way, split on comma or semicolon, trimmed,
+# empties dropped, so both invocation styles reach the same list.
+$IgnoreRedCheck = @(
+    $IgnoreRedCheck |
+        ForEach-Object { $_ -split '[,;]' } |
+        ForEach-Object { $_.Trim() } |
+        Where-Object   { $_ }
+)
 
 $config        = Join-Path $ProjectPath 'wrangler.live.toml'
 $testingConfig = Join-Path $ProjectPath 'testing\wrangler.toml'
@@ -115,6 +162,72 @@ if (-not (Test-Path $testingConfig)) { Fail "missing $testingConfig - the name c
 if (-not (Test-Path $assetsDir))     { Fail "missing $assetsDir - nothing to deploy" }
 if (-not (Test-Path $indexFile)) {
     Fail "$assetsDir has no index.html - refusing to publish a site with no entry point"
+}
+
+# --- A FAILED BUILD MUST NOT REACH THE PUBLIC SITE --------------------------
+#
+# The pair to the same gate in deploy_testing.ps1, and the incident that
+# motivated it happened on THIS side: build and deploy were chained in one
+# command on 2026-08-27, the build exited 1, the deploy read only its own
+# inputs, and twelve wrong models went live.
+#
+# The gate cannot be "a build must have run" - publishing a payload Sleven has
+# already reviewed on the testing site, without rebuilding, is the normal case
+# and the whole reason both scripts publish the SAME directory. So
+# build_deploy.py leaves a receipt saying how it ENDED, and this refuses on
+# evidence of failure:
+#
+#   missing    no build to judge. Allowed, and SAID so rather than assumed.
+#   ok         the build reached its last statement.
+#   anything   refused, naming the exit code and what the build said.
+#   unreadable refused. An unreadable receipt is not a passing one.
+#
+# Checked FIRST, before the payload identity checks and long before the browser
+# checks, so the refusal is immediate rather than four minutes in.
+$receiptPath = Join-Path $ProjectPath 'testing\_src\.last_build.json'
+if (-not (Test-Path $receiptPath)) {
+    Write-Host "build   : no build receipt - publishing a payload this run did not build" -ForegroundColor Yellow
+} else {
+    try {
+        $receipt = Get-Content $receiptPath -Raw -Encoding utf8 | ConvertFrom-Json
+    } catch {
+        Fail "the build receipt at $receiptPath could not be read ($($_.Exception.Message)). An unreadable receipt is not a passing one."
+    }
+    if ($null -eq $receipt.status) {
+        Fail "the build receipt at $receiptPath has no status. Reported as NOT CHECKED, never as clean."
+    }
+    if ($receipt.status -ne 'ok') {
+        if ($IgnoreFailedBuild) {
+            Write-Host ""
+            Write-Host "  ***********************************************************" -ForegroundColor Yellow
+            Write-Host "  OVERRIDE: publishing to the PUBLIC SITE from a build that" -ForegroundColor Yellow
+            Write-Host "  did NOT succeed, because you asked." -ForegroundColor Yellow
+            Write-Host "  build status : $($receipt.status)   exit code: $($receipt.exit_code)" -ForegroundColor Yellow
+            Write-Host "  build said   : $($receipt.detail)" -ForegroundColor Yellow
+            Write-Host "  ***********************************************************" -ForegroundColor Yellow
+            Write-Host ""
+        } else {
+            Fail @"
+THE LAST BUILD DID NOT SUCCEED, so this payload is not trustworthy - and this
+one goes to the PUBLIC site.
+
+    status     $($receipt.status)
+    exit code  $($receipt.exit_code)
+    at         $($receipt.at)
+    it said    $($receipt.detail)
+
+Fix the build and run it again:
+
+    python testing\_src\build_deploy.py
+
+A build that reaches its end clears this by itself. To publish anyway:
+
+    .\scripts\deploy_live.ps1 -IgnoreFailedBuild
+"@
+        }
+    } else {
+        Write-Host "build   : last build ok ($($receipt.at))" -ForegroundColor Green
+    }
 }
 
 # --- the name check ----------------------------------------------------------
@@ -232,6 +345,90 @@ if ($guardCode -eq 0) {
     Fail "_deploy contains files that are not known assets (see above). Move them out (never delete - hard rule 1), or add them to the allow-list if they genuinely belong."
 } else {
     Fail "deploy guard could not verify $assetsDir (exit $guardCode) - refusing to deploy. This is reported as NOT CHECKED, never as clean."
+}
+
+# --- browser checks: RED MUST NOT REACH THE PUBLIC SITE ---------------------
+#
+# C1's ruling of 2026-08-27 11:57: browser checks gate the DEPLOY, not the
+# build. It was written into deploy_testing.ps1 that morning and not into this
+# file, so until 2026-08-27 the rehearsal ran four checks and the performance
+# ran none.
+#
+# WHY AN OVERRIDE EXISTS AT ALL. Sleven overrode a red check on the testing site
+# and was right to: the failure was in the check's own fixture, the build was
+# sound, and holding the deploy would have left him unable to see a day's work.
+# That has to stay possible here too. What it must never be is quiet.
+#
+# SO THE OVERRIDE NAMES THE CHECK. -IgnoreRedCheck takes the check's FILENAME,
+# not a bare -Force. You cannot wave the whole gate through; you have to type
+# which specific check you are silencing, which means knowing what it was.
+#
+# A MISSING CHECK IS A FAILED CHECK. If the file is gone, that is reported as
+# NOT CHECKED and refused - never treated as passing. Same rule as the deploy
+# guard above, and the same reason.
+#
+# THE SAME LIST AS THE TESTING SCRIPT, ON THE SAME BYTES. Both scripts publish
+# testing\_deploy, so a check that passed before Sleven reviewed the testing
+# site is a check against the very payload about to go public.
+$browserChecks = @(
+    'checks\_verify_panel_dismiss.mjs',
+    'checks\_verify_settings_revision.mjs',
+    'checks\_verify_disclosure.mjs',
+    'checks\_verify_armour_naming.mjs'
+)
+$ignoredChecks = @()
+foreach ($rel in $browserChecks) {
+    $chk  = Join-Path $ProjectPath $rel
+    $name = Split-Path $chk -Leaf
+    if (-not (Test-Path $chk)) {
+        Fail "browser check missing: $rel - refusing to publish unverified content. A check that is not there has not passed."
+    }
+    Write-Host "check   : $name ..." -NoNewline
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $chkOut  = & node $chk 2>&1 | ForEach-Object { [string]$_ }
+    $chkCode = $LASTEXITCODE
+    $ErrorActionPreference = $prevEAP
+
+    if ($null -eq $chkCode) {
+        Write-Host ""
+        Fail "$name did not report an exit code - reported as NOT CHECKED, never as clean."
+    }
+    if ($chkCode -eq 0) {
+        Write-Host " GREEN" -ForegroundColor Green
+        continue
+    }
+
+    Write-Host " RED (exit $chkCode)" -ForegroundColor Red
+    $chkOut | Select-Object -Last 20 | ForEach-Object { Write-Host "  $_" }
+
+    if ($IgnoreRedCheck -contains $name) {
+        Write-Host ""
+        Write-Host "  ***********************************************************" -ForegroundColor Yellow
+        Write-Host "  OVERRIDE: publishing past a RED check to the PUBLIC SITE," -ForegroundColor Yellow
+        Write-Host "  because you asked." -ForegroundColor Yellow
+        Write-Host "  IGNORING: $name (exit $chkCode)" -ForegroundColor Yellow
+        Write-Host "  The failures printed above are going live unfixed." -ForegroundColor Yellow
+        Write-Host "  ***********************************************************" -ForegroundColor Yellow
+        Write-Host ""
+        $ignoredChecks += "$name (exit $chkCode)"
+    } else {
+        Fail @"
+$name is RED (exit $chkCode). Refusing to publish to the PUBLIC site.
+
+To publish anyway you must name the check:
+
+    .\scripts\deploy_live.ps1 -IgnoreRedCheck '$name'
+
+That is deliberately more typing than -Force. Overriding is allowed; doing it
+without knowing which check you silenced is not.
+"@
+    }
+}
+if ($ignoredChecks.Count) {
+    Write-Host "checks  : $($ignoredChecks.Count) RED check(s) OVERRIDDEN - $($ignoredChecks -join ', ')" -ForegroundColor Yellow
+} else {
+    Write-Host "checks  : all browser checks green" -ForegroundColor Green
 }
 
 # --- sanity-check the payload BEFORE uploading ------------------------------

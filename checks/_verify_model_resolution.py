@@ -141,7 +141,28 @@ base = [e for e in eds if not e["own_model"] and e["base_model"]]
 orphaned = [e for e in eds if not e["own_model"] and not e["base_model"]]
 print("     %d editions | %d have their own file | %d take a base | %d neither"
       % (len(eds), len(own), len(base), len(orphaned)))
-check(len(eds) > 50, "the fleet really is mostly editions", str(len(eds)))
+# WHAT `editions` ACTUALLY IS, because the old assertion here read it wrong.
+#
+# This said `len(eds) > 50` under the label "the fleet really is mostly
+# editions" and went red on 2026-08-27 at 16. Both halves were off:
+#
+#   * The list is NOT every edition in the fleet. `resolve_ship_models.py`
+#     skips any class already wired to a model (`if WIRED.get(cls): continue`),
+#     so it is the editions STILL NEEDING RESOLUTION. As the model library
+#     filled in through the day, that number fell - which is the pipeline
+#     working, read as a failure.
+#   * A count of the fleet's composition is not what this section defends
+#     anyway. Section 5's subject is that every edition here reaches a model,
+#     by its own file or by a NAMED base, and that none is left with neither.
+#
+# So the population is PRINTED, and what is ASSERTED is that the population
+# exists to assert against - reported NOT PERFORMED rather than passed if the
+# library ever completes and the list empties, since every check below it is of
+# the form `all(... for e in eds)` and would go green on nothing.
+check(bool(eds),
+      "there are unresolved editions for the checks below to run against",
+      "%d - every assertion below is `all(... for e in eds)`, so an empty list "
+      "would pass them all on nothing" % len(eds))
 check(all(e["base"] for e in eds),
       "every edition names the base hull it was derived from - structurally, "
       "from the ClassName, not from a list somebody typed")

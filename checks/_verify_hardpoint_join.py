@@ -46,6 +46,30 @@ FLEET = os.path.join(HERE, "..", "data-layer", "derived", "holo-hardpoints",
 failures = []
 
 
+# G3'S TRAP, AND THE ONE PLACE IT IS WRITTEN DOWN.
+#
+# THIS IS THE LOAD-BEARING PART OF G3. Loosening a matcher to catch 2 ships is
+# exactly how you silently join the wrong 25 - so the 25 are named, one at a
+# time, rather than counted.
+#
+# Where the list comes from, so it is checkable and not a vibe: the join report
+# before this change skipped 39 ships, of which 12 were "no decoded geometry" (a
+# different cause entirely, untouched by any matcher) and 27 were name refusals.
+# 27 minus the two Ares is 25. If any of these starts matching, the fix is wrong
+# and gets reverted rather than accepted at 27.
+#
+# Imported by `_verify_g3_matcher_delta.py`, which checks the same 25 against
+# the join REPORT while this file checks them against the RULE. One list, two
+# subjects - rule 14.
+STILL_REFUSED = [
+    "Crucible", "E1_Spirit", "Endeavor", "Expanse", "G12", "G12a", "G12r",
+    "Galaxy", "Genesis", "Hull_D", "Hull_E", "Kraken", "Kraken_Privateer",
+    "Legionnaire", "Liberator", "Nautilus", "Nautilus_Solstice_Edition",
+    "Odyssey", "Orion", "Pioneer", "Ranger_CV", "Ranger_RC", "Ranger_TR",
+    "Vulcan", "Zeus_Mk_II_MR",
+]
+
+
 def model_stems():
     """Every model on disk, named the way the build names them.
 
@@ -153,13 +177,11 @@ def main():
     # geometry" (a different cause entirely, untouched by any matcher) and 27
     # were name refusals. 27 minus the two Ares is 25. If any of these starts
     # matching, the fix is wrong and gets reverted rather than accepted at 27.
-    STILL_REFUSED = [
-        "Crucible", "E1_Spirit", "Endeavor", "Expanse", "G12", "G12a", "G12r",
-        "Galaxy", "Genesis", "Hull_D", "Hull_E", "Kraken", "Kraken_Privateer",
-        "Legionnaire", "Liberator", "Nautilus", "Nautilus_Solstice_Edition",
-        "Odyssey", "Orion", "Pioneer", "Ranger_CV", "Ranger_RC", "Ranger_TR",
-        "Vulcan", "Zeus_Mk_II_MR",
-    ]
+    # MODULE-LEVEL SINCE 2026-08-27 so there is ONE copy of this list.
+    # `_verify_g3_matcher_delta.py` asserts the same 25 against the join
+    # REPORT rather than against the rule, and had been carrying the number 25
+    # with no names behind it. Two copies of a must-not-match list is rule 14's
+    # defect in miniature: the day somebody adds a 26th, one file learns it.
     check("G3 trap: the must-not-match list is the expected 25",
           len(STILL_REFUSED) == 25 and len(set(STILL_REFUSED)) == 25,
           "got %d (%d unique) - the list itself is wrong before it tests "
@@ -203,10 +225,43 @@ def main():
     # written E1 mapping does not already name - it checks `stem in E1` first.
     asked = [s for s in in_scope if s not in E1]
     in_scope_changed = sorted(c[0] for c in changed if c[0] in asked)
+
+    # WHAT EACH ONE RESOLVES TO, not just that it changed.
+    #
+    # This was `== ["Ares_Inferno", "Ares_Ion"]` and went red on 2026-08-27 when
+    # three models were imported at 12:31 - `85X.glb`, `Starlite.glb` and
+    # `Aurora_SE.glb`. They were correct when written; new arrivals made them
+    # stale. The Ares pair still dates from 2026-08-01.
+    #
+    # A NAME LIST WAS THE WEAKER HALF OF THE ASSERTION. It could tell you the
+    # SET had grown and never that a member resolved to the WRONG hull, which is
+    # the failure that matters when a matcher is loosened. Each entry now
+    # records its answer, so a wrong match fails here even when the set is
+    # exactly right - and a new import fails by name rather than by count.
+    #
+    # Every one of the five goes from NOTHING to a full name containing the
+    # model stem's own words in order, which is the pass-2 rule doing precisely
+    # what it was loosened to do. The 25-entry STILL_REFUSED trap above is what
+    # proves it did not catch more than that.
+    G3_INSCOPE_EXPECTED = {
+        "Ares_Inferno": "Ares Star Fighter Inferno",
+        "Ares_Ion": "Ares Star Fighter Ion",
+        "85X": "85X Limited",                    # imported 2026-08-27 12:31
+        "Aurora_SE": "Aurora Mk I SE",           # imported 2026-08-27 12:31
+        "Starlite": "MISC Starlite",             # imported 2026-08-27 12:31
+    }
     check("G3: of the ships this build actually asks the matcher about, pass 2 "
-          "changed EXACTLY the two Ares",
-          in_scope_changed == ["Ares_Inferno", "Ares_Ion"],
-          "it changed %d: %s" % (len(in_scope_changed), in_scope_changed))
+          "changed exactly the %d recorded below" % len(G3_INSCOPE_EXPECTED),
+          in_scope_changed == sorted(G3_INSCOPE_EXPECTED),
+          "it changed %d: %s - added %s, missing %s"
+          % (len(in_scope_changed), in_scope_changed,
+             sorted(set(in_scope_changed) - set(G3_INSCOPE_EXPECTED)) or "none",
+             sorted(set(G3_INSCOPE_EXPECTED) - set(in_scope_changed)) or "none"))
+    for _stem, _want in sorted(G3_INSCOPE_EXPECTED.items()):
+        _after = dict((c[0], c[2]) for c in changed).get(_stem)
+        check("G3: and %r resolves to %r" % (_stem, _want), _after == _want,
+              "it resolved to %r - a matched hull that is not this ship's is "
+              "worse than no match at all" % (_after,))
 
     # THE SECOND THING THE FULL DIFF TURNED UP, and it is a finding rather than
     # a failure: pass 2 now derives, BY RULE, eleven of the thirteen names E1

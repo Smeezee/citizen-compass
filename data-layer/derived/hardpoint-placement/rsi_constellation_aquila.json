@@ -1,8 +1,8 @@
 {
- "class": "rsi_constellation_aquila",
+ "class": "RSI_Constellation_Aquila",
  "model": "Constellation_Aquila.glb",
- "hardpoints_from": "RSI_Constellation",
- "inherited_from_base_hull": true,
+ "hardpoints_from": "RSI_Constellation_Aquila",
+ "inherited_from_base_hull": false,
  "hull_box_source": "hull-geometry",
  "scale_m_per_unit": 1.04267,
  "scale_estimates": {
@@ -23,8 +23,11 @@
    32.633079528808594
   ]
  },
- "acceptance": false,
- "acceptance_note": "3 of 22 exterior mounts land outside the hull",
+ "acceptance": true,
+ "acceptance_note": "3 of 22 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (8 of 8 exterior pairs), so the rest is placed",
+ "frame_proven": true,
+ "mirror_matched": 8,
+ "mirror_pairs": 8,
  "exterior_mounts": 22,
  "exterior_outside": [
   "hardpoint_gun_laser_top_right",
@@ -189,17 +192,17 @@
   {
    "name": "hardpoint_cockpit_flair",
    "pos": [
-    -1.1215,
-    3.1892,
-    -27.34818
+    -0.35497,
+    2.58444,
+    -26.89045
    ]
   },
   {
    "name": "hardpoint_cockpit_flair_hang",
    "pos": [
-    1.44917,
-    3.66838,
-    -26.16851
+    0.35891,
+    2.99707,
+    -26.90488
    ]
   },
   {
@@ -214,7 +217,7 @@
    "name": "hardpoint_gun_laser_bottom_right",
    "pos": [
     8.68351,
-    -0.60953,
+    -0.60998,
     2.78133
    ]
   },
@@ -310,7 +313,7 @@
    "name": "hardpoint_gun_laser_bottom_left",
    "pos": [
     -8.68351,
-    -0.60998,
+    -0.60997,
     2.78133
    ]
   },
@@ -1076,25 +1079,25 @@
   {
    "name": "hardpoint_thruster_center_front_left",
    "pos": [
-    -9.15851,
+    -9.15922,
     3.55147,
-    -15.32613
+    -15.32131
    ]
   },
   {
    "name": "hardpoint_thruster_vtol_front_left_01",
    "pos": [
-    -7.35329,
+    -7.35399,
     3.66655,
-    -15.86915
+    -15.86433
    ]
   },
   {
    "name": "hardpoint_thruster_vtol_front_left_02",
    "pos": [
-    -7.35329,
+    -7.35399,
     3.66655,
-    -13.62189
+    -13.61707
    ]
   },
   {

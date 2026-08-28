@@ -176,7 +176,32 @@ def section_real(D):
        e["page"], True)
     ck("Eclipse HAS a model built and shipped", e["model"], True)
     ck("Eclipse is NOT sent to RSI", e["rsi"], False)
-    ck("Eclipse has no markers all the same", e["markers"], 0)
+    # RE-BASELINED 2026-08-27 BY THE SESSION THAT CHANGED THE DATA (C1).
+    #
+    # This said `e["markers"] == 0` and it was right when it was written: the
+    # Eclipse had a page and a model and NO hardpoint markers, which is what
+    # made it the odd one out - the five have no game file at all, a different
+    # cause entirely, and that distinction is the section's whole point.
+    #
+    # THE ECLIPSE'S GAP IS NOW CLOSED. `hardpoints_fleet.json` still has no
+    # record for it - `place_fleet.py`, that file's only writer, is not in this
+    # repository - so it was reached another way: an ADDITIVE client record
+    # built from CIG's own decoded transforms. It has markers now.
+    #
+    # THE ASSERTION WAS NOT SIMPLY FLIPPED TO 10. A control that says "however
+    # many there are" is not a control. What is asserted is the thing the
+    # section exists to distinguish, and it can still fail in both directions:
+    #
+    #   the Eclipse has markers          -> its gap is closed, and a regression
+    #                                       that lost them would fail here
+    #   the five still have NONE         -> their cause is different and
+    #                                       untouched, asserted above
+    #
+    # If a future change gives the five markers without a game file, or takes
+    # the Eclipse's away, this fails. That is what it is for.
+    ck("Eclipse's marker gap is CLOSED - it has markers now, from the additive "
+       "client records rather than from hardpoints_fleet.json",
+       e["markers"] > 0, True)
     ck("Eclipse's weapon ports are known, so it is thin data not no data",
        e["ports"] > 0, True)
 

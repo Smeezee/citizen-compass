@@ -76,11 +76,53 @@ def main():
         # placement itself says the mount is not, which is worse than leaving
         # the port with no CIG position at all - it would look confirmed.
         # They are counted and named in the report rather than dropped quietly.
+        #
+        # AND A MOUNT AT EXACTLY (0,0,0) IS NOT A MOUNT (C1, 2026-08-27).
+        #
+        # A node whose transform is exactly the hull origin, to the last
+        # decimal, is a node whose transform was never set - CIG's own identity
+        # value - not a gun mounted at the dead centre of the ship. There is no
+        # physically mountable exterior port at a hull's origin; the origin is
+        # inside the hull.
+        #
+        # FOUND BY LOOKING, NOT BY THEORY: `Paladin /
+        # hardpoint_remoteturret_middle` is a port the ship page DRAWS, and it
+        # was being given [0.0, 0.0, 0.0] - a turret marker floating in the
+        # middle of the hull, which is exactly the "hardpoints not set up" shape
+        # Sleven has reported before.
+        #
+        #     overlay ports at the origin          27   1 of them drawn today
+        #     added-record ports at the origin    318   0 drawn today
+        #
+        # The 318 are withheld too, even though nothing draws them yet. A record
+        # that says "this gun is at the centre of the ship" is wrong data
+        # whether or not anything reads it this week.
+        #
+        # TESTED ON THE VALUE THE PAGE ACTUALLY GETS, WHICH IS THE ROUNDED ONE.
+        # My first attempt tested the raw `pos` for exact zero and left eleven
+        # ports still sitting at the origin: `unit` is `pos / H0` rounded to 5
+        # decimals, so a position of 1e-7 is not zero in `pos` and IS zero in
+        # `unit`. Testing the input to a rounding step tells you nothing about
+        # its output. It is the emitted number that reaches a reader, so it is
+        # the emitted number that is checked.
+        #
+        # A mount genuinely close to the centreline keeps its position - it
+        # rounds to something non-zero. Only a value that arrives at the reader
+        # as exactly (0,0,0) is refused, and that port falls back to its derived
+        # position rather than getting a confident wrong one.
         _all = j["hardpoints"]
-        _held = [n["name"] for n in _all if n.get("outside")]
-        _pts = [n for n in _all if not n.get("outside")]
+
+        def _emits_origin(n, denom):
+            return not any(round(c / denom, 5) for c in n["pos"])
+
         _mn0, _mx0 = j["hull_box"]["min"], j["hull_box"]["max"]
         H0 = max((_mx0[i] - _mn0[i]) / 2.0 for i in range(3)) or 1.0
+        _held = [n["name"] for n in _all if n.get("outside")]
+        _origin = [n["name"] for n in _all
+                   if not n.get("outside") and _emits_origin(n, H0)]
+        _held = _held + _origin
+        _pts = [n for n in _all
+                if not n.get("outside") and not _emits_origin(n, H0)]
         mdl = lm.get(cls.lower())
         key = by_model.get(os.path.splitext(mdl)[0].lower()) if mdl else None
         if not key:
@@ -111,6 +153,7 @@ def main():
             report.append({"class": cls, "emitted": 0, "added_record": True,
                            "ports_added": len(_pts),
                            "ports_withheld": len(_held),
+                           "ports_at_origin": len(_origin),
                            "why": "no fleet record - a new one was emitted"})
             continue
 
@@ -121,7 +164,11 @@ def main():
         H = max((mx[i] - mn[i]) / 2.0 for i in range(3))
         if H <= 0:
             continue
-        ours = {h["name"]: [c / H for c in h["pos"]] for h in _pts}
+        # Same guard against the SECOND denominator. This branch normalises by
+        # `H` (this hull's own half-extent from the fleet record) rather than
+        # `H0`, so a port can round to the origin here and not there.
+        ours = {h["name"]: [c / H for c in h["pos"]] for h in _pts
+                if not _emits_origin(h, H)}
 
         rec = fleet[key]
         theirs = {h["port"]: h for h in rec.get("hardpoints") or []}

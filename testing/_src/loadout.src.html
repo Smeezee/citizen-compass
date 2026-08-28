@@ -59,14 +59,14 @@
  /* P2: the stage panel's corner brackets. A TOKEN rather than a literal cyan,
     because the accent is themeable and a hard-coded #22D3EE would outlive the
     theme that justified it. */
- --bracket:rgba(34,211,238,0.30);
+ --bracket:rgba(34,211,238,0.3);
  /* SEE-THROUGH STAGE PANEL. Sleven, on the deployed page: "is there a way to
     make them see through a little". The panel sat on solid --panel and hid the
     part of the hull it was describing.
     NOT a straight opacity on the element - that would fade the TEXT as well,
     and a half-legible stat is worse than a covered wing. A translucent GROUND
     plus a blur: the hull reads through it, the words stay at full strength. */
- --panelglass:rgba(14,27,46,0.80);
+ --panelglass:rgba(14,27,46,0.8);
  --leaderline:rgba(255,170,60,0.62)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
@@ -912,7 +912,21 @@ var CC_THEME = {
     'scrim-90': ['scrim', 0.90], 'scrim-78': ['scrim', 0.78],
     'scrim-82': ['scrim', 0.82], 'scrim-drop': ['shadow', 0.55],
     'scrim-code': ['shadow', 0.30], 'scrim-label': ['shadow', 0.85],
-    'leaderline': ['leader', 0.62]
+    'leaderline': ['leader', 0.62],
+    /* ADDED 2026-08-27. Both were declared in :root and never here, so
+       palette() returned 56 tokens against the stylesheet's 58 and the dim
+       control said so - "neither side declares a token the other does not",
+       css 58 vs engine 56.
+       A token the engine does not know about is NEVER RE-EMITTED, so it keeps
+       its Day value at every preset. The stage panel's ground and its corner
+       brackets stayed at full brightness in Blackout - the two things sitting
+       directly over the render, which is the exact place the dim exists for.
+       Their literals are these bases at these alphas, arrived at by reading
+       them rather than by choosing anything new:
+           --bracket    rgba( 34,211,238,0.30)  = accent2 (#22D3EE) at 0.30
+           --panelglass rgba( 14, 27, 46,0.80)  = panel   (#0E1B2E) at 0.80 */
+    'bracket': ['accent2', 0.30],
+    'panelglass': ['panel', 0.80]
   },
 
   BASE: {
@@ -1674,7 +1688,7 @@ function undoSwap(){
   /* THE PORT THAT MOVED IS SELECTED, not cleared. Undo without showing what
      it undid is indistinguishable from the page losing your work. */
   const sl=(ship().slots||[]).find(x=>x.id===e.slot);
-  if(sl && swappable(sl)) sel={slot:e.slot};
+  if(sl && swappable(sl)) setSel(sl);
   ghost=null;
   return true;
 }
@@ -4251,6 +4265,27 @@ function renderLabelCount(total, shown, dropped, showing, weapons){
 /* THE ONE PLACE A PORT GETS SELECTED. Both routes come here.
    If a second selection path is ever added, this is the function that stops
    being the answer - which is what the control asserts. */
+/* THE ONE PLACE A SELECTION IS BUILT. Added 2026-08-27.
+
+   Three separate sites used to construct the selection object - this file's
+   selectPort(), undoSwap() and the ledger's revert handler - and the ship-page
+   control failed on exactly that count. Its reason is the right one: "the
+   marker and the list open the IDENTICAL window" holds BY CONSTRUCTION only
+   while one place decides what a selection IS.
+
+   The two others also built it without the `fixed` key, so a port selected by
+   undo or by revert carried a different shape from the same port selected by a
+   click. Both are guarded to swappable ports today, which is why nothing had
+   gone visibly wrong yet.
+
+   selectPort still owns WHAT OPENS and the `editing` decision. This owns only
+   the shape, so undo and revert gain the flag without gaining a render they
+   did not ask for - both of their callers already render. */
+function setSel(slot){
+  if(!slot){ sel=null; return; }
+  sel={slot:slot.id, fixed:!swappable(slot)};
+}
+
 function selectPort(slot, which){
   if(!slot) return false;
   /* B0. A FIXED PORT IS SELECTED LIKE ANY OTHER. It used to be turned away
@@ -4263,7 +4298,7 @@ function selectPort(slot, which){
      only build there is. The `which` a column passes is honoured only when a
      second build exists to honour it. */
   editing = twoUp ? (which||editing) : "A";
-  sel={slot:slot.id, fixed:!swappable(slot)};
+  setSel(slot);
   renderAll();
   return true;
 }
@@ -5012,7 +5047,7 @@ document.addEventListener('click',e=>{
       logSwap(editing, sl.id, b[sl.id], sl.stock);
       b[sl.id]=sl.stock;
       markChanges(before, calc(b));
-      sel={slot:sl.id};
+      setSel(sl);
       renderAll();
     }
     return; }

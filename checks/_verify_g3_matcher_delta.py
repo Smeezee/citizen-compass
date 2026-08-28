@@ -217,10 +217,34 @@ def main():
           lost == [], "lost %s" % (lost,))
 
     skipped_after = {row[0] for row in after["skipped"]}
+
+    # BY NAME, WHICH IS WHAT THIS ALWAYS CLAIMED TO DO.
+    #
+    # This asserted `len(skipped_after) == 25` under a label that says "by
+    # name", and checked no name at all. It went red on 2026-08-27 at 44 - and
+    # 44 is not a regression: models keep arriving (three imported at 12:31
+    # today), and a model with no ship data to match is skipped, which is the
+    # correct outcome for it. A count conflates that growth with the thing that
+    # actually matters, which is that none of the 25 has started matching.
+    #
+    # The list is imported from `_verify_hardpoint_join.py` rather than copied,
+    # so there is one must-not-match list in the repo and not two that drift
+    # (rule 14). That file checks them against the RULE; this one checks them
+    # against the join REPORT - the same names, two different subjects.
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _verify_hardpoint_join import STILL_REFUSED
+
+    check("G3 trap: the imported must-not-match list is the expected 25",
+          len(STILL_REFUSED) == 25 and len(set(STILL_REFUSED)) == 25,
+          "got %d (%d unique) - the list is wrong before it tests anything"
+          % (len(STILL_REFUSED), len(set(STILL_REFUSED))))
+    started_matching = sorted(s for s in STILL_REFUSED if s not in skipped_after)
     check("G3: the 25 still-refused ships are still refused, by name",
-          len(skipped_after) == 25,
-          "%d ships are still skipped, expected 25: %s"
-          % (len(skipped_after), sorted(skipped_after)))
+          not started_matching,
+          "these are no longer skipped, so the loosening caught more than the "
+          "two it was for: %s" % (started_matching,))
+    print("       %d ships skipped in total; the 25 named above are the ones "
+          "that must stay that way" % len(skipped_after))
 
     # ---- AND THE PAIRS THAT DID CHANGE STILL FACED EVERY GUARD -----------
     #

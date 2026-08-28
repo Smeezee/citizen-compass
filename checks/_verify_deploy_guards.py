@@ -48,6 +48,7 @@ way to the dry run and reports what it would publish.
 Rule 15: every open states its encoding.
 """
 
+import json
 import os
 import shutil
 import subprocess
@@ -94,9 +95,34 @@ STAMP_HEAD = ('<h1>Citizen Compass <span class="version">v0.4.0 '
               '2026-08-21</span></span></h1>')
 PLAIN_HEAD = '<h1>Citizen Compass <span class="version">v0.4.0</span></h1>'
 
+# THE BROWSER CHECKS THE DEPLOY SCRIPT DEMANDS. Added 2026-08-27, after this
+# control started failing three assertions for a reason that was nothing to do
+# with the guards: its throwaway project has no `checks/` directory, so the
+# browser-check gate - added to deploy_testing.ps1 the same day - refused the
+# payload before the dry run was ever reached. The script was right and the
+# fixture was stale.
+#
+# STUBS, AND WHY THAT IS NOT "TESTING THE STUB" HERE. The deploy guard above is
+# copied real, because the guard is what section 5 puts under test. These are
+# not: what is under test here is the DEPLOY SCRIPT'S GATING - that it refuses a
+# missing check, refuses a red one, and lets a green one past. A real browser
+# check would drive Chromium for a minute against a payload that is one fake
+# index.html, and would prove nothing extra about the gate.
+#
+# NAMED HERE RATHER THAN PARSED OUT OF THE SCRIPT. If the script's list grows
+# and this one does not, section 8's first assertion says so BY NAME, instead of
+# leaving somebody to read "browser check missing" and guess which end is wrong.
+BROWSER_CHECKS = (
+    "_verify_panel_dismiss.mjs",
+    "_verify_settings_revision.mjs",
+    "_verify_disclosure.mjs",
+    "_verify_armour_naming.mjs",
+)
+
 
 def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
-                 extra_file=None, models=True, index=True):
+                 extra_file=None, models=True, index=True,
+                 browser_checks=True, red_check=None, receipt=None):
     """A throwaway project tree shaped exactly like the real one.
 
     Tiny on purpose - the scripts walk every file in the payload, and 350 MB of
@@ -152,16 +178,42 @@ def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
     # whatever credential happens to be on this machine.
     write(os.path.join(proj, ".env"),
           "CLOUDFLARE_API_TOKEN=fake-token-for-a-dry-run-only-0000000000\n")
+
+    # The browser-check gate's inputs. `browser_checks=False` leaves the
+    # directory absent entirely - the "a check that is not there has not passed"
+    # case. `red_check` names one that exits non-zero.
+    if browser_checks:
+        for _name in BROWSER_CHECKS:
+            _red = (_name == red_check)
+            write(os.path.join(proj, "checks", _name),
+                  'console.log("stub check %s%s");\nprocess.exit(%d);\n'
+                  % (_name, " - RED ON PURPOSE" if _red else "", 1 if _red else 0))
+
+    # The build receipt. `receipt=None` writes none, which both scripts treat as
+    # "no build to judge" and SAY so rather than assume - that is the normal
+    # case for publishing a payload reviewed on the testing site days earlier.
+    if receipt is not None:
+        write(os.path.join(proj, "testing", "_src", ".last_build.json"),
+              json.dumps(receipt))
     return proj
 
 
-def run_script(script, proj):
-    """Run one of the real deploy scripts with -WhatIf. Returns (code, output)."""
+def run_script(script, proj, extra=()):
+    """Run one of the real deploy scripts with -WhatIf. Returns (code, output).
+
+    `extra` appends further switches - section 8 uses it for -IgnoreRedCheck,
+    because an override that has never been observed working is as unproven as
+    a gate that has never been observed refusing.
+    """
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
          "-File", os.path.join(ROOT, "scripts", script),
-         "-ProjectPath", proj, "-WhatIf"],
-        capture_output=True, text=True, cwd=ROOT,
+         "-ProjectPath", proj, "-WhatIf"] + list(extra),
+        # Rule 15: the child prints ship names. text=True with no encoding
+        # decodes it as cp1252 and the reader thread dies, returning
+        # returncode=0 with stdout=None - a success shape with no output.
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        cwd=ROOT,
     )
     return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
 
@@ -303,6 +355,160 @@ def main():
         check("and says it will not publish a site with no entry point",
               "entry point" in out)
         shutil.rmtree(proj)
+
+        # ---------------------------------------------------------------
+        print("\n8. THE BROWSER-CHECK GATE - missing, red, and overridden")
+        # Added 2026-08-27. The gate went into deploy_testing.ps1 that morning
+        # and this control did not know about it: every fixture lacked a
+        # `checks/` directory, so section 1's clean payload was refused for a
+        # reason section 1 was not testing. Rather than only stop that, the gate
+        # now gets assertions of its own - it is the last thing standing between
+        # a red page and an upload.
+
+        # DRIFT, NAMED. If the script gains a fifth check and BROWSER_CHECKS
+        # does not, every other assertion here would fail with "browser check
+        # missing" and no clue which end was stale.
+        named_in_script = [n for n in BROWSER_CHECKS if n in test_src]
+        check("every check this fixture stubs is one the script actually asks "
+              "for (%d/%d)" % (len(named_in_script), len(BROWSER_CHECKS)),
+              len(named_in_script) == len(BROWSER_CHECKS))
+        # Counted inside the $browserChecks array only. A flat count over the
+        # whole file picks up the three .mjs names in its own comments, which
+        # would make this assertion pass or fail for reasons unrelated to the
+        # list it is about.
+        _open = test_src.find("$browserChecks = @(")
+        _arr = test_src[_open:test_src.find(")", _open)] if _open >= 0 else ""
+        script_asks = _arr.count(".mjs'")
+        check("and the script asks for no MORE than this fixture stubs "
+              "(script names %d, fixture stubs %d)"
+              % (script_asks, len(BROWSER_CHECKS)),
+              _open >= 0 and script_asks == len(BROWSER_CHECKS))
+
+        # A CHECK THAT IS NOT THERE HAS NOT PASSED.
+        proj = make_project(tmp, gate=True, stamp=True, browser_checks=False)
+        code, out = run_script("deploy_testing.ps1", proj)
+        check("deploy_testing.ps1 REFUSES a payload when a browser check FILE "
+              "is missing", code != 0)
+        check("and names the missing check", "_verify_panel_dismiss.mjs" in out)
+        check("and never reached its dry run", "-WhatIf: would run" not in out)
+        shutil.rmtree(proj)
+
+        # A RED CHECK STOPS THE UPLOAD.
+        proj = make_project(tmp, gate=True, stamp=True,
+                            red_check="_verify_disclosure.mjs")
+        code, out = run_script("deploy_testing.ps1", proj)
+        check("deploy_testing.ps1 REFUSES when a browser check is RED", code != 0)
+        check("and names which one", "_verify_disclosure.mjs" in out and "RED" in out)
+        check("and tells the reader the exact override, check name included",
+              "-IgnoreRedCheck '_verify_disclosure.mjs'" in out)
+        check("and never reached its dry run", "-WhatIf: would run" not in out)
+
+        # AND THE OVERRIDE WORKS, LOUDLY. An escape hatch nobody has seen open
+        # is as unproven as a gate nobody has seen shut - and if it did not
+        # work, the next person would reach for a blanket -Force instead.
+        code, out = run_script("deploy_testing.ps1", proj,
+                               extra=["-IgnoreRedCheck", "_verify_disclosure.mjs"])
+        check("naming the RED check in -IgnoreRedCheck gets past it", code == 0)
+        check("and it says OVERRIDE rather than passing quietly",
+              "OVERRIDE" in out and "going live unfixed" in out)
+        check("and still reaches the dry run", "-WhatIf: would run" in out)
+        # The override is per-check, not a master key.
+        code, out = run_script("deploy_testing.ps1", proj,
+                               extra=["-IgnoreRedCheck", "_verify_panel_dismiss.mjs"])
+        check("but naming a DIFFERENT check does not wave the red one through",
+              code != 0)
+        shutil.rmtree(proj)
+
+        # ---------------------------------------------------------------
+        print("\n9. THE SAME TWO GATES ON THE PUBLIC SIDE")
+        # Both gates went into deploy_live.ps1 on 2026-08-27, on Sleven's
+        # go-ahead, after this control's section 8 was written and a NOTE here
+        # recorded that the live script had neither.
+        #
+        # THE CONTROL HAD TO COME WITH THEM IN THE SAME SITTING. A gate nobody
+        # has ever seen refuse is rule 12's untested gate wearing a reassuring
+        # name - and on the public side that is the one place this project
+        # cannot take a mistake back. Every assertion below drives the REAL
+        # script with -WhatIf; nothing is published and the live worker is never
+        # contacted.
+        #
+        # The live payload carries NEITHER the gate nor the stamp, which is what
+        # deploy_live.ps1 accepts - so these fixtures differ from section 8's in
+        # exactly that way and in no other.
+        LIVE_DRY = "-WhatIf: WOULD PUBLISH THE LIVE SITE."
+
+        proj = make_project(tmp, gate=False, stamp=False, browser_checks=False)
+        code, out = run_script("deploy_live.ps1", proj)
+        check("deploy_live.ps1 REFUSES a payload when a browser check FILE is "
+              "missing", code != 0)
+        check("and names the missing check", "_verify_panel_dismiss.mjs" in out)
+        check("and never said it would publish", LIVE_DRY not in out)
+        shutil.rmtree(proj)
+
+        proj = make_project(tmp, gate=False, stamp=False,
+                            red_check="_verify_disclosure.mjs")
+        code, out = run_script("deploy_live.ps1", proj)
+        check("deploy_live.ps1 REFUSES when a browser check is RED", code != 0)
+        check("and names which one",
+              "_verify_disclosure.mjs" in out and "RED" in out)
+        check("and quotes the LIVE override, not the testing one",
+              "deploy_live.ps1 -IgnoreRedCheck '_verify_disclosure.mjs'" in out)
+        check("and never said it would publish", LIVE_DRY not in out)
+
+        code, out = run_script("deploy_live.ps1", proj,
+                               extra=["-IgnoreRedCheck", "_verify_disclosure.mjs"])
+        check("naming the RED check in -IgnoreRedCheck publishes past it",
+              code == 0)
+        check("and it says OVERRIDE, and says PUBLIC SITE while doing it",
+              "OVERRIDE" in out and "PUBLIC SITE" in out)
+        check("and reaches the dry run", LIVE_DRY in out)
+        code, out = run_script("deploy_live.ps1", proj,
+                               extra=["-IgnoreRedCheck", "_verify_panel_dismiss.mjs"])
+        check("but naming a DIFFERENT check does not wave the red one through",
+              code != 0)
+        shutil.rmtree(proj)
+
+        # ---------------------------------------------------------------
+        print("\n10. THE BUILD RECEIPT, ON BOTH SCRIPTS")
+        # Q2's DONE-WHEN: a build that exits non-zero cannot be followed by an
+        # upload in the same invocation, and the refusal names the exit code.
+        # The incident behind it - twelve wrong models - happened on the LIVE
+        # side, which is why both are asserted here rather than only the one
+        # that had the gate first.
+        FAILED = {"status": "failed", "exit_code": 1,
+                  "at": "2026-08-27T21:00:00", "detail": "planted by this control"}
+        for script, dry in (("deploy_testing.ps1", "-WhatIf: would run"),
+                            ("deploy_live.ps1", LIVE_DRY)):
+            live = script.endswith("live.ps1")
+            proj = make_project(tmp, gate=not live, stamp=not live,
+                                receipt=FAILED)
+            code, out = run_script(script, proj)
+            check("%s REFUSES a payload whose last build FAILED" % script,
+                  code != 0)
+            check("  and names the exit code, not just the failure",
+                  "exit code" in out and "1" in out)
+            check("  and never reached its dry run", dry not in out)
+            code, out = run_script(script, proj, extra=["-IgnoreFailedBuild"])
+            check("  and -IgnoreFailedBuild gets past it", code == 0)
+            # WHITESPACE-COLLAPSED, because the two banners wrap the same
+            # sentence at different points - the testing one breaks between
+            # "did NOT" and "succeed". Asserting the raw string would be
+            # asserting the line width.
+            flat = " ".join(out.split())
+            check("  loudly, saying the build did NOT succeed",
+                  "OVERRIDE" in flat and "did NOT succeed" in flat)
+            check("  and then reaches the dry run", dry in out)
+            shutil.rmtree(proj)
+
+            # A receipt that cannot be read is not a passing one.
+            proj = make_project(tmp, gate=not live, stamp=not live)
+            write(os.path.join(proj, "testing", "_src", ".last_build.json"),
+                  "{ this is not json")
+            code, out = run_script(script, proj)
+            check("%s REFUSES an UNREADABLE build receipt" % script, code != 0)
+            check("  and says an unreadable receipt is not a passing one",
+                  "unreadable receipt is not a passing one" in out)
+            shutil.rmtree(proj)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

@@ -63,7 +63,8 @@ if (MUT_INTERNAL) {
 
 const H = loadPage({ mutate });
 const { record, finish, state } = reporter(SELFTEST);
-const { SHIPS, MARKS, el, openShip, g, run, dispatch, key, PARTS } = H;
+const { SHIPS, MARKS, el, openShip, g, run, dispatch, key, PARTS,
+        flushTimers } = H;
 
 const STAGE_W = 960, STAGE_H = 540;   // what the harness's stub reports
 
@@ -275,6 +276,21 @@ openShip(key400i);
   /* A click on the stage that is NOT a marker and NOT inside the panel. */
   const threw = dispatch(["#cc-stage"]);
   record(!threw, "clicking the model background does not throw", threw || "");
+  /* P1e DEFERS THE RENDER ON PURPOSE - it clears the selection during the
+     click and calls setTimeout(renderAll, 0), so that rebuilding the DOM does
+     not happen underneath the branches that have not run yet. Asserting
+     straight after the click asked the page a question it had not answered
+     yet; until 2026-08-27 the harness threw deferred callbacks away entirely,
+     so this read as a page defect for as long as P1e has existed.
+     The selection is checked FIRST because that part IS synchronous - if the
+     click did nothing at all, this fails here rather than after a flush that
+     had nothing to run. */
+  record(g("sel") === null && g("mountSel") === null,
+    "the click clears the selection during the event, before any render",
+    JSON.stringify([g("sel"), g("mountSel")]));
+  const ran = flushTimers();
+  record(ran > 0, "and it DEFERRED a render rather than doing nothing",
+    `${ran} deferred callback(s) ran`);
   record(el("cc-panel").hidden === true, "and it closes the panel");
 }
 {

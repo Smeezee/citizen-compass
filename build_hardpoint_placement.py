@@ -47,6 +47,34 @@ GEO = os.path.join("data-layer", "derived", "hull-geometry")
 OUT = os.path.join("data-layer", "derived", "hardpoint-placement")
 MARGIN = 0.06              # 6% of the box, for mounts proud of the surface
 
+# HOW MANY EXTERIOR MOUNTS A PROVEN HULL MAY WITHHOLD, AND WHY IT IS A COUNT
+# RATHER THAN A FRACTION (C1, 2026-08-27).
+#
+# A proven frame is not a licence to ignore containment. `_verify_placement_gate`
+# caught exactly that: mirroring is preserved by a uniform scale and by a
+# uniform offset, so "the frame is proven" on its own let a 4x scale and a
+# full-hull-length offset through on the Eclipse and the Sabre - hulls whose
+# mounts mirror perfectly. The mirror answers "are the axes right"; it says
+# nothing about how big or where.
+#
+# So the withholding is bounded, and the bound is an ABSOLUTE COUNT because the
+# thing it distinguishes does not scale with the hull:
+#
+#     stowed-pose mismatches observed      1, 1, 2, 2, 3, 3, 3, 3
+#     smallest frame error observed       23   (a 4x scale on the Gladius)
+#     a full-hull offset                  every mount
+#
+# Four sits in a gap of nearly an order of magnitude, BELOW the smallest defect
+# rather than above it - which is the difference between this and the
+# proportional gate I tried earlier and had to revert. A fraction would give a
+# 163-mount Reclaimer a bigger allowance than a 10-mount Glaive for no reason.
+#
+# IT IS CALIBRATED ON OBSERVED DATA AND THE CONTROL IS WHAT KEEPS IT HONEST:
+# the check feeds three broken frames through the real rule and every one must
+# still be refused. If a future hull needs a fifth withheld mount, the honest
+# move is to look at that hull, not to raise this number.
+WITHHOLD_MAX = 4
+
 # THE FAMILY THAT GATES. Same split, and the same reason, as the acceptance in
 # build_hardpoint_transforms.py: these are the mounts the viewer draws on the
 # hull. Internal components go to the menu overlay under a standing decision.
@@ -86,6 +114,72 @@ def ship_dims():
     return out, p
 
 
+def part_roots():
+    """class -> the hull its OWN CIG record says it is built on.
+
+    THE AUTHORITY I SAID DID NOT EXIST (C1, 2026-08-27, correcting myself).
+
+    An hour ago I wrote, in `FINDING_the-hull-rule-was-blind-...`: *"ships.json
+    carries no geometry path - I checked every field on the row."* I checked the
+    row's top-level fields for a PATH. THE ANSWER IS A NAME, nested one level
+    down, and it was there the whole time:
+
+        anvl_c8_pisces  ->  Parts[0].Name == "ANVL_Pisces"
+
+    The root of CIG's own part tree names the hull the ship is built from. Not a
+    prefix, not a similarity, not a guess - CIG's own record, joined by exact
+    string equality to the decoded hull's name.
+
+        classes carrying a root part name        309 of 318
+        root name == the class itself            126
+        root names a DIFFERENT hull              183, of which 164 are hulls
+                                                 already decoded
+
+    IT REACHES THE VARIANTS A NAME RULE NEVER COULD:
+
+        AEGS_Gladius_Valiant    -> AEGS_Gladius
+        AEGS_Vanguard_Harbinger -> AEGS_Vanguard
+        ANVL_C8_Pisces          -> ANVL_Pisces      (no shared prefix at all)
+        RSI_Ursa_Medivac        -> RSI_Ursa_Rover   (nor here)
+        GRIN_MDC                -> GRIN_MXC         (nor here)
+
+    IT REPLACES THE `cls + "_"` PREFIX EXPANSION RATHER THAN JOINING IT. That
+    was a pattern standing in for exactly this fact. A variant whose record
+    names a hull we have not decoded is reported, never approximated.
+
+    AND IT IS SAFE WHERE THE NAME EXPANSION WAS NOT. An earlier experiment
+    sprayed a base's hardpoints across everything sharing its prefix, and the
+    acceptance test could not tell a wrong airframe from a right one. This does
+    not need it to: only ports whose `HardpointName` exists as a NODE in that
+    hull are ever placed, so a module-specific mount on a Harbinger gets NO
+    position rather than a wrong one. The record decides membership; the
+    geometry decides placement.
+    """
+    snaps = sorted(glob.glob(os.path.join(
+        "data-layer", "external-sources", "scunpacked-data", "snapshots",
+        "*", "ships.json")))
+    if not snaps:
+        return {}, None
+    p = snaps[-1]
+    d = json.load(open(p, encoding="utf-8"))
+    if isinstance(d, dict):
+        d = list(d.values())
+    out = {}
+    for r in d:
+        if not isinstance(r, dict):
+            continue
+        cn = r.get("ClassName")
+        parts = r.get("Parts")
+        if not cn or not isinstance(parts, list) or not parts:
+            continue
+        if not isinstance(parts[0], dict):
+            continue
+        root = parts[0].get("Name")
+        if root:
+            out[cn.lower()] = root.lower()
+    return out, p
+
+
 def model_map():
     """class -> model filename, from the page's own generated map."""
     for cand in (os.path.join("testing", "_deploy", "loadout_model.gen.js"),
@@ -96,6 +190,97 @@ def model_map():
             if m:
                 return json.loads(m.group(1)), cand
     return {}, None
+
+
+# ---------------------------------------------------------------------------
+# THE SECOND SIGNAL: DOES THE CONVERTED CLOUD STILL MIRROR?
+#
+# C1, 2026-08-27. The containment test refuses a whole hull when ANY exterior
+# mount lands outside, and that is right when the frame is in doubt - a
+# transposed axis or a wrong scale throws mounts out and the hull's markers
+# would be nonsense.
+#
+# BUT NINE OF THE TEN REFUSALS ARE NOT THAT. They are one to three mounts
+# sitting a fraction proud of a STOWED-POSE mesh:
+#
+#     Constellation   gun_laser_top_left/right and turret_base_upper,
+#                     0.53-0.71 above a 13.2-unit-tall hull   (the top turret)
+#     Spirit A1       turret_rear, 0.12 above 8.6             (1.4%)
+#     Defender        both missile racks, 0.28 below 5.9
+#     Reliant         both wing-tip guns, 1.01 beyond 11.1    (the wings move)
+#
+# Throwing away nineteen good Constellation ports to avoid drawing three
+# arguable ones leaves the reader with the NAME-DERIVED markers instead - a
+# median 0.488 of a half-extent from the real mount. The refusal was worse than
+# what it refused.
+#
+# I ALREADY TRIED TO FIX THIS WITH A PROPORTIONAL GATE AND IT WAS WRONG.
+# `checks/_verify_placement_gate.py` proved a transposed axis survives a half
+# threshold on every hull tested - ships are wider than they are tall, so the
+# swap only displaces about a sixth of the mounts. A count of offenders cannot
+# tell a pose mismatch from a frame error.
+#
+# SO THE GATE DOES NOT LOOSEN. A SECOND, INDEPENDENT SIGNAL DECIDES INSTEAD.
+#
+# Left/right mount pairs must mirror. Measured on the CONVERTED cloud, in the
+# viewer's own frame, so it tests the conversion rather than the decode:
+#
+#     as-is                      transposed lateral/vertical
+#     Gladius       4/4          0/4
+#     Hammerhead    6/6          0/6
+#     Constellation 8/8          0/8
+#     Defender      4/4          0/4
+#     Reliant       2/2          0/2
+#
+# A TRANSPOSE DESTROYS IT COMPLETELY - not partially, not marginally. And it is
+# blind to scale, which is exactly what makes it complementary: containment
+# catches a wrong scale and cannot see a transpose reliably; mirroring catches
+# a transpose and cannot see a scale at all. Together they cover both.
+#
+# THE RULE: a hull whose exterior pairs ALL mirror has proven its frame, and
+# may withhold individual out-of-box mounts while keeping the rest. A hull that
+# has NOT proven its frame is refused whole, exactly as before.
+#
+# EVERY PAIR, NOT MOST. The Glaive scores 2 of 4 and stays refused - its
+# geometry is genuinely asymmetric where the mount names say it should not be,
+# and that is not a pose question. This is deliberately stricter than the
+# decoder's own 80% because it is buying something the decoder's test was not.
+#
+# A hull with NO named left/right exterior pair proves nothing and is refused -
+# a check that could not have failed is not a check.
+def converted_mirror(points, tol):
+    """(matched, pairs) over exterior left/right families in the GLB frame."""
+    hp = {h["name"]: h["pos"] for h in points if EXTERIOR.search(h["name"])}
+    fam = {}
+    for a in hp:
+        if "_left" in a.lower():
+            fam.setdefault(re.sub(r"_\d+$", "",
+                                  a.lower().replace("_left", "|")),
+                           [[], []])[0].append(a)
+    for b in hp:
+        if "_right" in b.lower():
+            k = re.sub(r"_\d+$", "", b.lower().replace("_right", "|"))
+            if k in fam:
+                fam[k][1].append(b)
+    pairs = matched = 0
+    for _k, (ls, rs) in fam.items():
+        free = list(rs)
+        for a in ls:
+            if not free:
+                break
+            pairs += 1
+            best, bd = None, None
+            for b in free:
+                # lateral is axis 0 and must NEGATE; the other two must AGREE.
+                d = max(abs(hp[a][0] + hp[b][0]),
+                        abs(hp[a][1] - hp[b][1]),
+                        abs(hp[a][2] - hp[b][2]))
+                if bd is None or d < bd:
+                    best, bd = b, d
+            free.remove(best)
+            if bd < tol:
+                matched += 1
+    return matched, pairs
 
 
 def box(path):
@@ -165,6 +350,17 @@ def glb_box(model_file):
 
 def main():
     dims, dims_src = ship_dims()
+    roots, roots_src = part_roots()
+    by_root = {}
+    for _c, _r in roots.items():
+        by_root.setdefault(_r, []).append(_c)
+    if roots:
+        print("part-tree roots: %d classes name a hull (%d distinct hulls)"
+              % (len(roots), len(by_root)))
+    else:
+        print("NO PART-TREE ROOTS in the snapshot - variants can only be "
+              "placed as themselves. Said out loud rather than returned "
+              "quietly as a smaller answer.")
     models, models_src = model_map()
     if not dims:
         print("NOT PERFORMED - no ships.json snapshot with dimensions")
@@ -321,13 +517,45 @@ def main():
         # The per-port `outside` flags stay. They cost nothing, they tell the
         # overlay which mounts are the offenders, and they are what made the
         # refuted argument measurable in the first place.
-        ok = ext_n > 0 and not ext_out
-        why = ""
+        # THE SECOND SIGNAL - see converted_mirror() above for the whole
+        # argument and the measurements behind it.
+        _span = 0.0
+        for _i in range(3):
+            _v = [h["pos"][_i] for h in conv]
+            if _v:
+                _span = max(_span, max(_v) - min(_v))
+        _mtol = max(0.05, _span * 0.004)
+        _mm, _mp = converted_mirror(conv, _mtol)
+        frame_proven = _mp > 0 and _mm == _mp
+
         if ext_n == 0:
+            ok = False
             why = "no exterior mount to place - nothing here could have failed"
-        elif ext_out:
-            why = ("%d of %d exterior mounts land outside the hull"
-                   % (len(ext_out), ext_n))
+        elif not ext_out:
+            ok = True
+            why = ""
+        elif frame_proven and len(ext_out) <= WITHHOLD_MAX:
+            # The frame is proven by a test the containment check cannot do
+            # and that a transpose destroys. The offenders are withheld
+            # individually - they already carry `outside: true` and the
+            # overlay skips them - and the rest of the hull is placed.
+            ok = True
+            why = ("%d of %d exterior mounts withheld - outside the hull box, "
+                   "but this hull's frame is proven by its mirror (%d of %d "
+                   "exterior pairs), so the rest is placed"
+                   % (len(ext_out), ext_n, _mm, _mp))
+        elif frame_proven:
+            ok = False
+            why = ("%d of %d exterior mounts land outside the hull - more than "
+                   "%d, which is past anything a stowed pose produces, so the "
+                   "proven frame does not excuse it. Refused whole"
+                   % (len(ext_out), ext_n, WITHHOLD_MAX))
+        else:
+            ok = False
+            why = ("%d of %d exterior mounts land outside the hull and this "
+                   "hull's frame is NOT proven (%d of %d exterior pairs "
+                   "mirror) - refused whole"
+                   % (len(ext_out), ext_n, _mm, _mp))
 
         rec = {"class": out_cls, "model": mdl,
                "hardpoints_from": src_cls,
@@ -338,6 +566,8 @@ def main():
                "scale_spread": round(spread, 4),
                "hull_box": {"min": mn, "max": mx},
                "acceptance": ok, "acceptance_note": why,
+               "frame_proven": frame_proven,
+               "mirror_matched": _mm, "mirror_pairs": _mp,
                "exterior_mounts": ext_n,
                "exterior_outside": ext_out,
                "outside_any": outside[:20],
@@ -346,6 +576,8 @@ def main():
         json.dump(rec, open(os.path.join(OUT, out_cls + ".json"), "w",
                             encoding="utf-8"), indent=1)
         rows.append({"class": out_cls, "hardpoints": len(conv),
+                     "frame_proven": frame_proven,
+                     "mirror": "%d/%d" % (_mm, _mp),
                      "exterior_mounts": ext_n,
                      "exterior_outside": len(ext_out),
                      "outside_any": len(outside),
@@ -395,16 +627,23 @@ def main():
         targets = []
         if dims.get(cls.lower()) and lower_models.get(cls.lower()):
             targets.append((cls, dims[cls.lower()], lower_models[cls.lower()], False))
-        else:
-            pref = cls.lower() + "_"
-            for cn in sorted(dims):
-                if cn.startswith(pref) and lower_models.get(cn):
-                    targets.append((cn, dims[cn], lower_models[cn], True))
-            if not targets:
-                skipped.append({"class": cls,
-                                "why": "no ships.json row for this class, and no "
-                                       "variant of it carries one with a model"})
-                continue
+        # AND EVERY SHIP WHOSE OWN CIG RECORD NAMES THIS HULL AS THE ROOT OF
+        # ITS PART TREE - see part_roots(). This replaced a `cls + "_"` prefix
+        # match, and it runs whether or not the base has a row of its own: the
+        # old code only expanded when the base had none, which is why the
+        # Gladius Valiant sat with name-derived markers while the Avenger
+        # Titan did not.
+        for cn in sorted(by_root.get(cls.lower(), [])):
+            if cn == cls.lower():
+                continue                      # already added as itself, above
+            if lower_models.get(cn) and dims.get(cn):
+                targets.append((cn, dims[cn], lower_models[cn], True))
+        if not targets:
+            skipped.append({"class": cls,
+                            "why": "no ships.json row for this class, and no "
+                                   "ship names it as its part-tree root with "
+                                   "a model"})
+            continue
         for out_cls, dim, mdl, inherited in targets:
             # KEYED CASE-INSENSITIVELY, AND THAT IS NOT A TIDY-UP (C1,
             # 2026-08-27). `ANVL_Hornet_F7A_MK1` arrives from its own transform
@@ -441,6 +680,10 @@ def main():
 
     man = {"generated_by": "build_hardpoint_placement.py",
            "source_transforms": SRC, "dimensions": dims_src,
+           "variant_rule": "a ship inherits a hull's transforms when its own "
+                           "CIG record names that hull as the root of its part "
+                           "tree (Parts[0].Name). Exact equality, no prefix "
+                           "matching, no fuzzy matching. Source: %s" % roots_src,
            "model_map": models_src,
            "frame": "GLB units. X lateral, Y up, forward is -Z.",
            "scale_rule": "CIG's Length against the hull box's fore/aft extent. "
@@ -453,7 +696,12 @@ def main():
                          "and vertically, %.0f%% margin. The fore/aft axis is "
                          "where the scale came from and is deliberately NOT "
                          "tested - that would be marking our own homework. A "
-                         "transposed axis puts mounts outside sideways."
+                         "transposed axis puts mounts outside sideways. A "
+                         "hull whose exterior left/right pairs ALL mirror in "
+                         "the converted frame has proven its frame by a test a "
+                         "transpose destroys, and withholds individual "
+                         "out-of-box mounts instead of being refused whole. A "
+                         "hull that has not proven its frame is refused whole."
                          % (MARGIN * 100),
            "counts": {"converted": len(rows),
                       "passed": sum(1 for r in rows if r["acceptance"]),

@@ -182,10 +182,9 @@ one.
 
 # C1'S QUEUE
 
-### M1 — THE THREE REMAINING EXPLANATION BLOCKS ON THE LOADOUT PAGE
-`Read this as a matchup, not a rating`, `What this data does not say`,
-`Where the shop data actually is`. Named in the order's table as collapse.
-Started 2026-08-27 14:12.
+### M1 — THE THREE REMAINING EXPLANATION BLOCKS — DONE 2026-08-27
+All converted to disclosure bars. Zero `.trip` blocks remain on the page and
+the rule itself is gone (see M7).
 
 ### M2 — THE LOADOUT BENCH
 `BRIEF_the-loadout-bench-is-an-experience-2026-08-26.md`. Approved after seven
@@ -194,9 +193,11 @@ Sleven's own words: *"the interaction of actually going through the steps of
 swapping the parts and understanding what they do needs to be a smooth, fluid
 process... I want them to actually enjoy the experience."*
 
-### M3 — HARDPOINT COVERAGE, THE REMAINING ~30 HULLS
-7 the decoder refused (node index is not a clean key), 19 with no `ships.json`
-row, 11 with no model in the page's map. 64 hulls have real coordinates today.
+### M3 — HARDPOINT COVERAGE — SUPERSEDED, see M8, M10, M11, M12, M13
+This item's numbers are from before any of tonight's work and reading them now
+would send someone after problems that no longer exist. **Current state: 245 of
+the ship page's classes have every marker on CIG coordinates, 20 have none, and
+each of those 20 has a written reason.** M13 carries the list.
 
 ### M8 — THE ACCEPTANCE TEST JUDGED THE WRONG FRAME — DONE 2026-08-27 20:15
 `build_hardpoint_placement.py` measured mounts against the hull box **as the
@@ -238,7 +239,105 @@ emitting zero.**
 its own siblings; `Aurora_SE.glb` is 87.6 wide against 8.2 for every other
 Aurora.
 
-### M9 — THE REMAINING 96 NEED THEIR OWN `.cga`, NOT INHERITANCE — MEASURED
+### M10 — THE HULL RULE WAS BLIND TO 15 SHIPS — DONE 2026-08-27 19:45
+`build_hardpoint_transforms.py` takes the `.cga` whose stem equals a contiguous
+run of its own folders. **120 of 18,891 entries, and right about all 120** — the
+archive is mostly bunk beds and dashboards. But CIG does not always name a
+folder for the ship inside it:
+
+    AEGS\Sabre\AEGS_Sabre_Raven.cga          MISC\Freelancer_v2\MISC_Freelancer.cga
+    ORIG\300_Series\ORIG_300I.cga            AEGS\Idris_Frigate\Exteriors\AEGS_Idris.cga
+
+**Second rule added: exact equality against CIG's own `ClassName` list in
+ships.json.** An authority, not a pattern — it cannot admit a prop because
+there is no ship class called `aegs_hab_bunkbed_sq_player`. Javelin and Basher
+are ambiguous (two paths each, one under `dmg`) and are dropped and named.
+
+    transforms  116 -> 135 hulls      placement 146 -> 160, 137 -> 150 passed
+    overlay     93/955 -> 106/1,082   ship page 165 -> 181 classes on CIG coords
+
+Newly real: the whole Freelancer family, Cutlass Black and Red, Constellation
+Aquila and both Phoenixes, 300i, Sabre Raven, Vanguard Hoplite, Fury LX,
+MPUV 1T.
+
+**The 4.10 snapshot landed mid-run.** `build_hardpoint_placement.py` takes the
+newest by design, so hulls are now scaled against 4.10 lengths and the
+manifest's `dimensions` points there. Nobody chose it; the newest changed.
+Acceptance still 150/160. Flagged to Code rather than left in a diff.
+
+### M12 — CIG'S OWN RECORD NAMES THE HULL — DONE 2026-08-27 20:30
+I wrote in M9 that ships.json carries no geometry path and that I had checked
+every field. **I checked for a PATH. The answer is a NAME, one level down.**
+
+    anvl_c8_pisces  ->  Parts[0].Name == "ANVL_Pisces"
+
+309 of 318 classes carry a part-tree root; 183 name a hull other than
+themselves. It reaches what no name rule could — `ANVL_C8_Pisces ->
+ANVL_Pisces`, `RSI_Ursa_Medivac -> RSI_Ursa_Rover`, `GRIN_MDC -> GRIN_MXC`.
+**Replaced the `cls + "_"` prefix expansion**, and it is safe where the earlier
+name-expansion was not: only ports whose HardpointName is a node in that hull
+are placed, so a module-specific mount gets no position rather than a wrong one.
+
+Root names fed back into the decoder too — a name CIG uses as a root IS a hull
+name, which picked up `AEGS_Idris`. One collision needed a tie-break: a
+folder-rule path (name AND location agree) beats a class-name-only one. Equal
+evidence still drops both.
+
+### M13 — HALF THE FLEET WAS IN A TREE NOBODY SCANNED — DONE 2026-08-27 20:32
+`Data\Objects\Spaceships` 23,083 entries, scanned. **`Data\Objects\Vehicles`
+1,762 entries, never.** Ground vehicles live there. Cyclone, Storm, Nova, Ursa,
+Ballista, Centurion, Spartan, Lynx were all "no .cga anywhere" for that reason.
+
+    transforms 116 -> 153 · placement 146 -> 284 converted, 137 -> 277 passed
+    overlay    93/955 -> 167 hulls / 1,720 ports
+    ship page  165 -> 245 classes fully on CIG coordinates · 91 -> 20 with none
+
+**The 20 remaining, each with a reason:** ATLS family (a power suit, under
+Characters\PowerSuit), GRIN MDC/MTC/ROC (no exterior mount at all), three
+Cyclone variants (records name no decoded root), Javelin (two paths, equal
+evidence), Glaive and Scythe (asymmetric), MOTH, Starfarer Gemini. **None is a
+guess waiting to be taken.**
+
+### M11 — NINE OF TEN REFUSALS WERE A POSE, NOT A FRAME — DONE 2026-08-27 19:58
+Reading *which* mounts were outside settled it: the Constellation's three are
+the top-turret mounts 0.53–0.71 above a 13.2-tall hull; the Reliant's are its
+wing-tip guns and its wings move. Refusing the whole hull threw away 19 good
+Constellation ports to avoid 3 arguable ones — **and the fallback was worse than
+what was refused.**
+
+**The gate did not loosen.** Second signal: exterior left/right pairs must all
+mirror in the converted frame. **A transpose destroys it (0 of N on every hull);
+a uniform scale does not touch it.** Complementary to containment by
+construction, not by argument.
+
+**The check refuted me again mid-build.** `out == 0 or proven` let a full-hull
+offset and a 4x scale through on the Eclipse and Sabre — mirroring survives
+both. Bounded by an absolute count of **4**: pose mismatches run 1–3, the
+smallest frame error observed is 23. Below the defect, not above it — the
+opposite of the proportional gate I had to revert.
+
+    placement 146 -> 160 converted · 137 -> 157 passed · 3 failed
+    overlay   93/955 -> 112 hulls / 1,164 ports
+    ship page 165 -> 182 classes fully on CIG coordinates, 84 with none
+
+**Still refused, each with a checkable reason:** ARGO_MPUV_Transport (no
+exterior mount at all), VNCL_Glaive (2 of 4 pairs mirror), VNCL_Scythe (1 of 4).
+
+**The two Vanduul are NOT a bug — they are asymmetric ships.** Looked at:
+the Glaive's "right" missile rack sits at **negative X**, on the left side of
+the hull, and its wing guns are 12.9 m apart fore-and-aft, while its nose guns
+and countermeasures mirror exactly. **`VNCL_Blade` mirrors perfectly** on all
+four pairs from the same decoder in the same run, so the decode is sound.
+
+The cost is real — the Glaive loses 9 good ports over 1 mount outside — and it
+is left that way deliberately: the mirror cannot prove the frame of a ship that
+is not symmetric, "at least one pair" is unsafe (a transpose left 1 of 39
+matching by accident on the Reclaimer), and anything between one and all is a
+threshold on a four-pair sample. **What would settle it is a frame proof that
+does not assume symmetry.** Written up so nobody hunts a decode bug that is not
+there.
+
+### M9 — THE REMAINING 84 CANNOT BE REACHED BY NAME — MEASURED, AND I STOPPED
 96 ship-page classes still carry name-derived markers. I tried expanding every
 base hull to its name-variants: 75 more hulls placed, **every one passing
 acceptance**, which is the shape of a check that cannot fail. It is:
@@ -247,17 +346,39 @@ rescaling each variant by its own Length erases what little discrimination is
 left. Gating on the two models' bounding boxes instead admitted only variants
 that share the base's model file — already covered. **Reverted whole.**
 
-So the 96 cannot be reached by inheritance at any tolerance. They need their own
-`.cga` decoded out of Data.p4k. `build_hardpoint_transforms.py` decoded 120
-hulls; the question nobody has asked is why it stopped there. **That is the next
-real piece of work on this front.** Not started.
+That question — why the decoder stopped — is now answered and worked: see M10.
+**91 classes remain, and 82 of them have no exactly-named `.cga` anywhere.**
 
-### M4 — THE 16 HULLS BELOW THE EXTERIOR MIRROR THRESHOLD
-Carrack, Constellation, Corsair, Hammerhead, Tiburon and others. Their
-internal-bay scores are fine; the exterior mounts miss. Decide whether that is
-the decode or CIG mounting things asymmetrically.
+Their geometry exists and nothing says which hull is theirs. `ANVL_Pisces.cga`
+is in the archive while the page calls the ship `ANVL_C8_Pisces`;
+`ANVL_Lightning_F8.cga` while the class is `ANVL_Lightning_F8C`. **ships.json
+carries no geometry path — every field on the row was checked.**
 
-### M5 — `CURRENT-STATE.md` — PREMISE CORRECTED 2026-08-27 18:15
+I tried a structural join on CIG's own `HardpointName` strings, which are the
+`.cga` node names. **Four matches, two of them junk** (the ROC matching the
+Prospector on a single shared mining-laser name). Partial coverage looks far
+better — Pisces 6/8, Sabre Comet 8/11, Fury Miru 14/16 — **but that needs a
+threshold I cannot validate, and the acceptance test cannot referee it: a wrong
+hull that is merely larger passes.**
+
+**Stopped there deliberately.** It is the same trap I fell into twice today, and
+the third time would be a choice. What would settle it is a second independent
+signal that must agree with the structural one. Not a five-minute job, and not
+to be guessed at.
+
+### M4 — THE MIRROR THRESHOLD — MOSTLY ANSWERED, see M11
+The question was whether a low mirror score means a bad decode or an asymmetric
+ship. **It is the ship**, at least for the two hulls it now costs anything:
+`VNCL_Blade` mirrors 4 of 4 from the same decoder in the same run while the
+Glaive's "right" missile rack sits at negative X. The mirror is now used as a
+frame proof rather than a pass/fail on the hull, so a low score only costs
+something where a mount is ALSO outside the box — which today is the Glaive and
+the Scythe and nothing else.
+
+**Still open, narrowly:** a frame proof that does not assume symmetry, which
+would let those two in. Nobody should widen the mirror tolerance to get there.
+
+### M5 — `CURRENT-STATE.md` — SPLIT, DONE 2026-08-27 20:45
 **It is no longer eleven days stale.** It was brought forward earlier today and
 now leads with 08-27 material. The staleness half of this item is closed and I
 am not going to keep claiming it.
@@ -272,8 +393,22 @@ said *"ten distinct damage-multiplier profiles"* since 08-22. Three independent
 counts say **eight** (`FINDING_both-open-questions-closed...`). Corrected in
 place with the correction visible, not silently.
 
-**Still to do:** split it. A short state document that is only ever current,
-plus a dated archive that nothing has to read. Not started.
+**DONE.** Split into two files, nothing deleted:
+
+    docs/CURRENT-STATE.md                      1,487 words - only what is true
+    docs/STATE-ARCHIVE-through-2026-08-27.md  13,801 words - the original, verbatim
+
+The new one carries no "later section wins" rule because it has no later
+sections. **It states its own maintenance rule: it does not grow by appending.**
+A fact that stops being true is edited or deleted there, and the reasoning goes
+in a dated `docs/FINDING_*` or `docs/DECISION_*`. A snapshot, not a log.
+
+The archive's header names its own known-stale parts up front — the collector
+section saying "none of it has run on Windows" when it passed 575 checks today,
+and hardpoint numbers from before tonight — so nobody has to discover them.
+
+Both written to the claude.ai project as well, since the project instructions
+point new sessions at `claude/CURRENT-STATE.md`.
 
 ### M6 — THE SHIELD SENTENCE — DONE 2026-08-27 18:20, AND C3'S NUMBER WAS WRONG
 C3 ranked *"a shield stops all of a laser's damage and only 45% of a
@@ -403,4 +538,4 @@ better.
 
 ---
 
-*Maintained by C1. Last set 2026-08-27 20:25 local.*
+*Maintained by C1. Last set 2026-08-27 20:45 local.*

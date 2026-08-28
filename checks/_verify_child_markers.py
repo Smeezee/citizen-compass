@@ -62,14 +62,33 @@ REPO = os.path.dirname(HERE)
 SRC = os.path.join(REPO, "testing", "_src")
 AFTER = os.path.join(SRC, "loadout_marker.gen.js")
 BEFORE = os.path.join(REPO, "data-layer", "derived", "holo-hardpoints",
-                      "loadout_marker.pre-C1-20260826.js")
+                      "loadout_marker.pre-C1-20260827.js")
 
-# C3's pinned four. These were correct before this work and a fix that moves
-# them has broken what worked.
-PINNED = {"23": [-0.03755, -0.02334, -0.95564],
-          "24": [0.053, -0.00648, -0.97809],
-          "39": [0.01037, -0.0012, -0.98118],
-          "40": [-0.00836, 0.01415, -0.96836]}
+# C3's pinned four - the Retaliator's countermeasure launchers, the only ports
+# that already had markers before any of this work and therefore the ones a fix
+# must not quietly move.
+#
+# RE-PINNED 2026-08-27, ON SLEVEN'S WORD, and the old values are kept here
+# rather than dropped because a pin nobody can audit is not a pin:
+#
+#     was  23 [-0.03755, -0.02334, -0.95564]   now  23 [-0.15708, -0.06014, 0.55639]
+#          24 [ 0.053,   -0.00648, -0.97809]        24 [-0.17993, -0.06014, 0.55639]
+#          39 [ 0.01037, -0.0012,  -0.98118]        39 [ 0.15711, -0.06014, 0.55639]
+#          40 [-0.00836,  0.01415, -0.96836]        40 [ 0.1799,  -0.06014, 0.55639]
+#
+# The old four were derived from the mounts' NAMES: clustered near z=-0.97 with
+# no mirror symmetry between them. The new four come from CIG's own transforms
+# and are a clean mirrored quad - 23 against 39 at +/-0.157, 24 against 40 at
+# +/-0.180, identical y and z across all four.
+#
+# THAT SYMMETRY IS EVIDENCE, NOT PROOF, and it is not what authorised this.
+# Sleven did, in as many words: "the retaliator quad is right, re-baseline it".
+# Recorded so the next reader knows this pin rests on a decision rather than on
+# a measurement that could be re-derived.
+PINNED = {"23": [-0.15708, -0.06014, 0.55639],
+          "24": [-0.17993, -0.06014, 0.55639],
+          "39": [0.15711, -0.06014, 0.55639],
+          "40": [0.1799, -0.06014, 0.55639]}
 
 # C3 names these by name: the other ships Sleven reported.
 BY_NAME = ["Aegis Retaliator", "Aegis Sabre Peregrine", "Anvil Ballista",

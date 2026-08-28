@@ -78,6 +78,21 @@ SELFTEST = "--self-test" in sys.argv
 ASSET_DIRS = ("models", "images", "fonts")
 VENDOR_MARKER = "<!-- CC_VENDOR_THREE -->"
 
+# THE DISCLOSURE-BAR CSS, THE THIRD DECLARED INJECTION.
+#
+# Added to the build on 2026-08-27 - one `_disc.css`, substituted into four
+# pages so the bars cannot drift into five variations. This control did not
+# know about it, so from that morning section 3 reported keybinds.html,
+# loadout.html and find.html as no longer containing their source text.
+#
+# THAT IS WORSE THAN A MISSING CHECK. This section is what makes an
+# unauthorised write to _deploy loud (rule 14). A red-by-default section is one
+# nobody can read a real hand edit out of - the noise and the signal look the
+# same. Declared here for exactly that reason, and pinned as narrowly as the
+# vendor marker is: the gap must be the CSS file byte for byte, not "some CSS".
+DISC_MARKER = "/* CC_DISC_CSS */"
+DISC_CSS_PATH = os.path.join(SRC, "_disc.css")
+
 # THE ONE LINE THE BUILD IS ALLOWED TO REWRITE ON THE WAY INTO _deploy.
 #
 # `loadout_model.gen.js` names where a 3D model lives, and that differs between
@@ -235,20 +250,49 @@ def attribution_point(s_text):
     return s_text.rstrip() + "\n", ""
 
 
+# The attribution block is appended at a POSITION rather than at a marker, so
+# it is given one here and spliced into the source text. That lets every
+# injection be found the same way - by where it appears - instead of each new
+# one needing another hand-written ordering case. The sentinel is a byte pair
+# no HTML source contains.
+ATTR_SENTINEL = "\x00CC_ATTRIBUTION_POINT\x00"
+INJECTION_MARKERS = (
+    (ATTR_SENTINEL, "attribution"),
+    (VENDOR_MARKER, "vendor"),
+    (DISC_MARKER, "disclosure"),
+)
+
+
 def declared_transforms(s_text):
     """The source text cut into the literal segments the deploy file MUST
     still contain, in order, with one declared injection between each pair.
 
     Returns (segments, gap_names) where len(segments) == len(gap_names) + 1.
+
+    REWRITTEN 2026-08-27, when the disclosure CSS became a third injection.
+    The old form enumerated the two possible orderings of vendor-vs-attribution
+    by hand; a third marker would have needed six, and the day somebody added a
+    fourth the check would have started reporting drift that was not there.
+    This finds every marker by POSITION, in source order, however many there
+    are - and a marker appearing TWICE now yields two gaps rather than leaving
+    the second copy stranded in a segment that can never match.
     """
     before, after = attribution_point(s_text)
-    if VENDOR_MARKER in before:
-        head, mid = before.split(VENDOR_MARKER, 1)
-        return [head, mid, after], ["vendor", "attribution"]
-    if VENDOR_MARKER in after:
-        mid, tail = after.split(VENDOR_MARKER, 1)
-        return [before, mid, tail], ["attribution", "vendor"]
-    return [before, after], ["attribution"]
+    rest = before + ATTR_SENTINEL + after
+    segments, names = [], []
+    while True:
+        hit = None
+        for lit, nm in INJECTION_MARKERS:
+            i = rest.find(lit)
+            if i != -1 and (hit is None or i < hit[0]):
+                hit = (i, lit, nm)
+        if hit is None:
+            segments.append(rest)
+            return segments, names
+        i, lit, nm = hit
+        segments.append(rest[:i])
+        names.append(nm)
+        rest = rest[i + len(lit):]
 
 
 def split_by_declared(d_text, segments):
@@ -305,6 +349,24 @@ def gap_problem(name, gap, out_name, ship_pages):
             return "the vendor marker was replaced with nothing"
         if VENDOR_MARKER in gap:
             return "the vendor marker is still there - three.js was not inlined"
+        return None
+    if name == "disclosure":
+        # Pinned to the file, byte for byte. "Some CSS is there" would pass a
+        # page whose bars had been restyled by hand in _deploy only - which is
+        # the exact class of change no source diff would ever show.
+        if not os.path.exists(DISC_CSS_PATH):
+            return ("NOT PERFORMED - testing/_src/_disc.css is missing, so what "
+                    "the build substitutes for %s is unknown and the gap cannot "
+                    "be checked. Reported, never passed." % DISC_MARKER)
+        if not gap.strip():
+            return "the disclosure-CSS marker was replaced with nothing"
+        if DISC_MARKER in gap:
+            return ("the disclosure-CSS marker is still there - the shared CSS "
+                    "was not substituted and the bars ship unstyled")
+        if gap != text_of(DISC_CSS_PATH):
+            return ("what was substituted is not _disc.css byte for byte - it "
+                    "was edited in _deploy, or the build substituted something "
+                    "else")
         return None
     if name == "attribution":
         if ATTR_IMPORT_ERROR:
@@ -379,6 +441,21 @@ def page_problems(src_name, out_name, ship_pages):
     # anchored at BOTH ends of the file.
     s_text = text_of(s_path)
     d_text = text_of(d_path)
+    # THE BUILD NORMALISES LINE ENDINGS - it writes every page with
+    # newline='\n' - and `find.src.html` is the one source still saved CRLF.
+    # So this control has to model that transform as well, or it reports the
+    # entire file as changed from its second byte and says "attribution",
+    # which is the least useful true statement available.
+    #
+    # DECLARED, NOT WAVED THROUGH. What is tolerated is the build's own
+    # normalisation, one direction only: CRLF in _src becoming LF in _deploy.
+    # A CRLF in _deploy is not that, and is reported - because the build cannot
+    # produce one, so something else put it there.
+    if "\r\n" in d_text:
+        return ["%s contains CRLF line endings, which the build cannot "
+                "produce - it writes every page with newline='\\n'. Something "
+                "edited it after the build." % out_name]
+    s_text = s_text.replace("\r\n", "\n")
     segments, gap_names = declared_transforms(s_text)
     gaps = split_by_declared(d_text, segments)
     if gaps is None:

@@ -1,0 +1,941 @@
+{
+ "class": "ANVL_Spartan",
+ "model": "Spartan.glb",
+ "hardpoints_from": "ANVL_Spartan",
+ "inherited_from_base_hull": false,
+ "hull_box_source": "hull-geometry",
+ "scale_m_per_unit": 1.02025,
+ "scale_estimates": {
+  "length": 1.02025,
+  "width": 1.08695,
+  "height": 1.17508
+ },
+ "scale_spread": 0.1518,
+ "hull_box": {
+  "min": [
+   -3.2195417881011963,
+   -2.3419384956359863,
+   -8.331024169921875
+  ],
+  "max": [
+   3.220505952835083,
+   2.3385887145996094,
+   8.331531524658203
+  ]
+ },
+ "acceptance": true,
+ "acceptance_note": "",
+ "frame_proven": false,
+ "mirror_matched": 0,
+ "mirror_pairs": 0,
+ "exterior_mounts": 14,
+ "exterior_outside": [],
+ "outside_any": [],
+ "frame": "GLB units. X lateral, Y up, forward is -Z.",
+ "hardpoints": [
+  {
+   "name": "hardpoint_vehicleDestroyed",
+   "pos": [
+    0.0,
+    -0.11659,
+    2.24122
+   ]
+  },
+  {
+   "name": "hardpoint_wheel_left01",
+   "pos": [
+    -1.88178,
+    -1.395,
+    -5.12717
+   ]
+  },
+  {
+   "name": "hardpoint_wheel_left03",
+   "pos": [
+    -1.88178,
+    -1.395,
+    3.55304
+   ]
+  },
+  {
+   "name": "hardpoint_wheel_left04",
+   "pos": [
+    -1.88178,
+    -1.395,
+    5.78688
+   ]
+  },
+  {
+   "name": "hardpoint_wheel_left02",
+   "pos": [
+    -1.88178,
+    -1.395,
+    -2.95123
+   ]
+  },
+  {
+   "name": "hardpoint_wheel_right01",
+   "pos": [
+    1.88178,
+    -1.3939,
+    -5.12717
+   ]
+  },
+  {
+   "name": "hardpoint_wheel_right02",
+   "pos": [
+    1.88178,
+    -1.3939,
+    -2.95123
+   ]
+  },
+  {
+   "name": "hardpoint_wheel_right03",
+   "pos": [
+    1.88178,
+    -1.3939,
+    3.55206
+   ]
+  },
+  {
+   "name": "hardpoint_wheel_right04",
+   "pos": [
+    1.88178,
+    -1.3939,
+    5.78681
+   ]
+  },
+  {
+   "name": "hardpoint_arm_lower_left01",
+   "pos": [
+    -1.01278,
+    -1.54975,
+    -5.12734
+   ]
+  },
+  {
+   "name": "hardpoint_arm_lower_left02",
+   "pos": [
+    -1.01278,
+    -1.54975,
+    -2.95115
+   ]
+  },
+  {
+   "name": "hardpoint_arm_lower_left03",
+   "pos": [
+    -1.01278,
+    -1.55084,
+    3.55313
+   ]
+  },
+  {
+   "name": "hardpoint_arm_lower_left04",
+   "pos": [
+    -1.01278,
+    -1.55084,
+    5.78689
+   ]
+  },
+  {
+   "name": "hardpoint_arm_lower_right01",
+   "pos": [
+    1.01278,
+    -1.54974,
+    -5.1285
+   ]
+  },
+  {
+   "name": "hardpoint_arm_lower_right02",
+   "pos": [
+    1.01278,
+    -1.54974,
+    -2.95132
+   ]
+  },
+  {
+   "name": "hardpoint_arm_lower_right03",
+   "pos": [
+    1.01278,
+    -1.54974,
+    3.55198
+   ]
+  },
+  {
+   "name": "hardpoint_arm_lower_right04",
+   "pos": [
+    1.01278,
+    -1.54974,
+    5.78673
+   ]
+  },
+  {
+   "name": "hardpoint_arm_upper_left01",
+   "pos": [
+    -1.17525,
+    -1.07677,
+    -5.12736
+   ]
+  },
+  {
+   "name": "hardpoint_arm_upper_left02",
+   "pos": [
+    -1.17525,
+    -1.07677,
+    -2.95116
+   ]
+  },
+  {
+   "name": "hardpoint_arm_upper_left03",
+   "pos": [
+    -1.17525,
+    -1.07677,
+    3.55304
+   ]
+  },
+  {
+   "name": "hardpoint_arm_upper_left04",
+   "pos": [
+    -1.17525,
+    -1.07677,
+    5.78688
+   ]
+  },
+  {
+   "name": "hardpoint_arm_upper_right01",
+   "pos": [
+    1.17525,
+    -1.07566,
+    -5.12848
+   ]
+  },
+  {
+   "name": "hardpoint_arm_upper_right02",
+   "pos": [
+    1.17525,
+    -1.07566,
+    -2.9513
+   ]
+  },
+  {
+   "name": "hardpoint_arm_upper_right03",
+   "pos": [
+    1.17525,
+    -1.07566,
+    3.552
+   ]
+  },
+  {
+   "name": "hardpoint_arm_upper_right04",
+   "pos": [
+    1.17525,
+    -1.07566,
+    5.78674
+   ]
+  },
+  {
+   "name": "hardpoint_drive_shaft_left01",
+   "pos": [
+    -0.56344,
+    -1.39551,
+    -5.12808
+   ]
+  },
+  {
+   "name": "hardpoint_drive_shaft_left02",
+   "pos": [
+    -0.56344,
+    -1.39551,
+    -2.95189
+   ]
+  },
+  {
+   "name": "hardpoint_drive_shaft_left03",
+   "pos": [
+    -0.56344,
+    -1.39551,
+    3.55239
+   ]
+  },
+  {
+   "name": "hardpoint_drive_shaft_left04",
+   "pos": [
+    -0.56344,
+    -1.39551,
+    5.78615
+   ]
+  },
+  {
+   "name": "hardpoint_drive_shaft_right01",
+   "pos": [
+    0.56344,
+    -1.39441,
+    -5.12776
+   ]
+  },
+  {
+   "name": "hardpoint_drive_shaft_right02",
+   "pos": [
+    0.56344,
+    -1.39441,
+    -2.95058
+   ]
+  },
+  {
+   "name": "hardpoint_drive_shaft_right03",
+   "pos": [
+    0.56344,
+    -1.39441,
+    3.55272
+   ]
+  },
+  {
+   "name": "hardpoint_drive_shaft_right04",
+   "pos": [
+    0.56344,
+    -1.39441,
+    5.78746
+   ]
+  },
+  {
+   "name": "hardpoint_piston_left01",
+   "pos": [
+    -1.66252,
+    -0.44388,
+    -5.12729
+   ]
+  },
+  {
+   "name": "hardpoint_piston_left01_target",
+   "pos": [
+    -1.81554,
+    -1.64858,
+    -5.12814
+   ]
+  },
+  {
+   "name": "hardpoint_piston_left02",
+   "pos": [
+    -1.66252,
+    -0.44388,
+    -2.95109
+   ]
+  },
+  {
+   "name": "hardpoint_piston_left02_target",
+   "pos": [
+    -1.81554,
+    -1.64858,
+    -2.95123
+   ]
+  },
+  {
+   "name": "hardpoint_piston_left03",
+   "pos": [
+    -1.66252,
+    -0.44388,
+    3.55319
+   ]
+  },
+  {
+   "name": "hardpoint_piston_left03_target",
+   "pos": [
+    -1.81554,
+    -1.64858,
+    3.55206
+   ]
+  },
+  {
+   "name": "hardpoint_piston_left04",
+   "pos": [
+    -1.66252,
+    -0.44388,
+    5.78695
+   ]
+  },
+  {
+   "name": "hardpoint_piston_left04_target",
+   "pos": [
+    -1.81524,
+    -1.64858,
+    5.78681
+   ]
+  },
+  {
+   "name": "hardpoint_piston_right04_target",
+   "pos": [
+    1.81555,
+    -1.64748,
+    5.78778
+   ]
+  },
+  {
+   "name": "hardpoint_piston_lower_left01",
+   "pos": [
+    -1.81554,
+    -1.64858,
+    -5.12814
+   ]
+  },
+  {
+   "name": "hardpoint_piston_lower_left02",
+   "pos": [
+    -1.81554,
+    -1.64858,
+    -2.95115
+   ]
+  },
+  {
+   "name": "hardpoint_piston_lower_left03",
+   "pos": [
+    -1.81554,
+    -1.64858,
+    3.55313
+   ]
+  },
+  {
+   "name": "hardpoint_piston_lower_left04",
+   "pos": [
+    -1.81554,
+    -1.64858,
+    5.78689
+   ]
+  },
+  {
+   "name": "hardpoint_piston_lower_right01",
+   "pos": [
+    1.81555,
+    -1.64748,
+    5.78778
+   ]
+  },
+  {
+   "name": "hardpoint_piston_lower_right02",
+   "pos": [
+    1.81555,
+    -1.64748,
+    5.78778
+   ]
+  },
+  {
+   "name": "hardpoint_piston_lower_right03",
+   "pos": [
+    1.81555,
+    -1.64748,
+    5.78778
+   ]
+  },
+  {
+   "name": "hardpoint_piston_lower_right04",
+   "pos": [
+    1.81555,
+    -1.64748,
+    5.78778
+   ]
+  },
+  {
+   "name": "hardpoint_piston_right01",
+   "pos": [
+    1.66259,
+    -0.44293,
+    -5.12856
+   ]
+  },
+  {
+   "name": "hardpoint_piston_right02",
+   "pos": [
+    1.66259,
+    -0.44293,
+    -2.95138
+   ]
+  },
+  {
+   "name": "hardpoint_piston_right03",
+   "pos": [
+    1.66259,
+    -0.44293,
+    3.55192
+   ]
+  },
+  {
+   "name": "hardpoint_piston_right04",
+   "pos": [
+    1.66259,
+    -0.44293,
+    5.78746
+   ]
+  },
+  {
+   "name": "hardpoint_spindle_left01",
+   "pos": [
+    -1.88178,
+    -1.395,
+    -5.12735
+   ]
+  },
+  {
+   "name": "hardpoint_spindle_left02",
+   "pos": [
+    -1.88178,
+    -1.395,
+    -2.95116
+   ]
+  },
+  {
+   "name": "hardpoint_spindle_left03",
+   "pos": [
+    -1.88178,
+    -1.395,
+    3.55312
+   ]
+  },
+  {
+   "name": "hardpoint_spindle_left04",
+   "pos": [
+    -1.88178,
+    -1.395,
+    5.78688
+   ]
+  },
+  {
+   "name": "hardpoint_spindle_right01",
+   "pos": [
+    1.88178,
+    -1.3939,
+    -5.12849
+   ]
+  },
+  {
+   "name": "hardpoint_spindle_right02",
+   "pos": [
+    1.88178,
+    -1.3939,
+    -2.95131
+   ]
+  },
+  {
+   "name": "hardpoint_spindle_right03",
+   "pos": [
+    1.88178,
+    -1.3939,
+    3.55199
+   ]
+  },
+  {
+   "name": "hardpoint_spindle_right04",
+   "pos": [
+    1.88178,
+    -1.3939,
+    5.78673
+   ]
+  },
+  {
+   "name": "hardpoint_piston_right03_target",
+   "pos": [
+    1.81555,
+    -1.64748,
+    5.78778
+   ]
+  },
+  {
+   "name": "hardpoint_piston_right02_target",
+   "pos": [
+    1.81555,
+    -1.64748,
+    5.78778
+   ]
+  },
+  {
+   "name": "hardpoint_piston_right01_target",
+   "pos": [
+    1.81555,
+    -1.64748,
+    5.78778
+   ]
+  },
+  {
+   "name": "hardpoint_controller_weapon",
+   "pos": [
+    0.0,
+    0.0,
+    6.78253
+   ]
+  },
+  {
+   "name": "hardpoint_fuel_intake",
+   "pos": [
+    -1.50203,
+    0.0,
+    1.57706
+   ]
+  },
+  {
+   "name": "hardpoint_fuel_tank",
+   "pos": [
+    -1.50203,
+    0.0,
+    1.57706
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_seat_rack_001",
+   "pos": [
+    -0.91889,
+    -0.67336,
+    3.12374
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_seat_rack_003",
+   "pos": [
+    -0.91889,
+    -0.67336,
+    5.32908
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_seat_rack_004",
+   "pos": [
+    -0.91889,
+    -0.67336,
+    6.43175
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_seat_rack_002",
+   "pos": [
+    -0.91889,
+    -0.67336,
+    4.22641
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_seat_rack_005",
+   "pos": [
+    0.91889,
+    -0.67336,
+    3.12374
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_seat_rack_006",
+   "pos": [
+    0.91889,
+    -0.67336,
+    4.22641
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_seat_rack_007",
+   "pos": [
+    0.91889,
+    -0.67336,
+    5.32908
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_seat_rack_008",
+   "pos": [
+    0.91889,
+    -0.67385,
+    6.43175
+   ]
+  },
+  {
+   "name": "hardpoint_rear_door",
+   "pos": [
+    0.0,
+    0.0,
+    7.76769
+   ]
+  },
+  {
+   "name": "hardpoint_cockpit",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_turret",
+   "pos": [
+    0.0,
+    1.5393,
+    -2.28207
+   ]
+  },
+  {
+   "name": "hardpoint_seat_driver",
+   "pos": [
+    0.0,
+    -0.98015,
+    -5.97892
+   ]
+  },
+  {
+   "name": "hardpoint_dashboard_driver",
+   "pos": [
+    0.0,
+    -0.98015,
+    -5.8809
+   ]
+  },
+  {
+   "name": "hardpoint_interior",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_door_ramp",
+   "pos": [
+    -2.06812,
+    -0.98015,
+    -0.18378
+   ]
+  },
+  {
+   "name": "hardpoint_door_right_ramp",
+   "pos": [
+    2.06812,
+    -0.98015,
+    -0.18378
+   ]
+  },
+  {
+   "name": "hardpoint_controller_door",
+   "pos": [
+    -1.76547,
+    -1.61799,
+    -0.49257
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_cockpit_01",
+   "pos": [
+    -0.98015,
+    0.27542,
+    -2.23602
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_cockpit_02",
+   "pos": [
+    -0.98015,
+    0.27542,
+    -1.89904
+   ]
+  },
+  {
+   "name": "hardpoint_personal_storage",
+   "pos": [
+    -0.73511,
+    -0.49008,
+    -2.72609
+   ]
+  },
+  {
+   "name": "hardpoint_armor",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_capacitor_assignment",
+   "pos": [
+    0.0,
+    0.06511,
+    0.01379
+   ]
+  },
+  {
+   "name": "hardpoint_controller_comms",
+   "pos": [
+    0.0,
+    0.86258,
+    -3.69426
+   ]
+  },
+  {
+   "name": "hardpoint_controller_cooler",
+   "pos": [
+    1.48426,
+    0.0,
+    -1.52647
+   ]
+  },
+  {
+   "name": "hardpoint_controller_energy",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_light",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_shield",
+   "pos": [
+    1.93854,
+    0.0,
+    -2.88666
+   ]
+  },
+  {
+   "name": "hardpoint_controller_wheel",
+   "pos": [
+    0.0,
+    -1.11728,
+    -5.9636
+   ]
+  },
+  {
+   "name": "hardpoint_cooler",
+   "pos": [
+    1.10247,
+    0.58221,
+    -1.92972
+   ]
+  },
+  {
+   "name": "hardpoint_module_attach",
+   "pos": [
+    1.3794,
+    0.0,
+    -1.38311
+   ]
+  },
+  {
+   "name": "hardpoint_paint",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_ping",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_power_plant",
+   "pos": [
+    1.10267,
+    0.20877,
+    -2.75618
+   ]
+  },
+  {
+   "name": "hardpoint_radar",
+   "pos": [
+    0.0,
+    -0.13939,
+    -5.49525
+   ]
+  },
+  {
+   "name": "hardpoint_scanner",
+   "pos": [
+    0.0,
+    -0.13939,
+    -5.49525
+   ]
+  },
+  {
+   "name": "hardpoint_seat_access",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_selfdestruct",
+   "pos": [
+    -0.5207,
+    0.0,
+    -5.99031
+   ]
+  },
+  {
+   "name": "hardpoint_shield_generator_left",
+   "pos": [
+    1.04141,
+    0.49008,
+    -2.75618
+   ]
+  },
+  {
+   "name": "hardpoint_shield_generator_right",
+   "pos": [
+    1.04141,
+    0.61259,
+    -2.75618
+   ]
+  },
+  {
+   "name": "hardpoint_transponder",
+   "pos": [
+    0.0,
+    0.0,
+    -7.16977
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_rack",
+   "pos": [
+    -1.0424,
+    0.32491,
+    -1.52307
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_regen_pool",
+   "pos": [
+    0.0,
+    0.0,
+    -0.11425
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_regen_pool_turrets",
+   "pos": [
+    0.0,
+    0.0,
+    0.01379
+   ]
+  },
+  {
+   "name": "hardpoint_cockpit_flair",
+   "pos": [
+    -1.18288,
+    0.13568,
+    -6.03624
+   ]
+  },
+  {
+   "name": "hardpoint_cockpit_flair_hang",
+   "pos": [
+    -0.5207,
+    0.99115,
+    -6.06992
+   ]
+  }
+ ]
+}

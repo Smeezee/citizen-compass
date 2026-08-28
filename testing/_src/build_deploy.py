@@ -335,8 +335,15 @@ for a,b in ren.items():
 # Found 2026-08-09 by grepping the built index.html for a symbol the engine
 # patch had just added, and not finding it.
 import subprocess as _sp
+# RULE 15, the subprocess half. text=True with no encoding= decodes the child
+# with the platform default - cp1252 here - and the children of this build print
+# SHIP NAMES. San'tok.yai carries a macron; Yeng'tu and "Shredder" carry curly
+# quotes. The reader thread dies on the first one and the build stops with a
+# UnicodeDecodeError that names no ship. Same defect that stopped
+# run_all_controls.py at control 14 of 98 on 2026-08-27. Every _sp.run below
+# says encoding= for the same reason.
 _r=_sp.run([sys.executable, os.path.join(SRC,'inject_engine.py')],
-           capture_output=True, text=True)
+           capture_output=True, text=True, encoding="utf-8", errors="replace")
 sys.stdout.write(_r.stdout)
 if _r.returncode!=0:
     sys.exit("ENGINE INJECTION FAILED - refusing to build:\n"+_r.stdout+_r.stderr)
@@ -365,7 +372,8 @@ if not os.path.exists(_gen):
     sys.exit("MISSING GENERATOR: build_find_data.py is gone. /find's data "
              "would ship as whatever happens to be on disk. Refusing to build.")
 _r = _sp.run([sys.executable, _gen, '--verify-stable'],
-             capture_output=True, text=True, cwd=REPO)
+             capture_output=True, text=True, encoding="utf-8",
+             errors="replace", cwd=REPO)
 sys.stdout.write(_r.stdout)
 if _r.returncode != 0:
     sys.stderr.write(_r.stderr)
@@ -392,7 +400,8 @@ if not os.path.exists(_hpgen):
              "panel's data would ship as whatever happens to be on disk. "
              "Refusing to build.")
 _r = _sp.run([sys.executable, _hpgen, '--verify-stable'],
-             capture_output=True, text=True, cwd=REPO)
+             capture_output=True, text=True, encoding="utf-8",
+             errors="replace", cwd=REPO)
 sys.stdout.write(_r.stdout)
 if _r.returncode != 0:
     sys.stderr.write(_r.stderr)
@@ -426,7 +435,8 @@ for _h in ("_verify_slots.js", "_verify_conflict.js", "_verify_poll.js",
         sys.exit("MISSING GATE: %s is gone. A gate that has been deleted is not a\n"
                  "gate that passed - restore it or remove it from this list\n"
                  "deliberately." % _h)
-    _r = _sp.run([_node, _p], capture_output=True, text=True)
+    _r = _sp.run([_node, _p], capture_output=True, text=True,
+                 encoding="utf-8", errors="replace")
     if _r.returncode != 0:
         sys.stdout.write(_r.stdout)
         sys.stderr.write(_r.stderr)
@@ -493,7 +503,8 @@ def _check_inline_js(path):
         _fd, _tmp = _tf.mkstemp(suffix=".js")
         os.close(_fd)
         io.open(_tmp, "w", encoding="utf-8", newline="").write("\n" * line0 + code)
-        _r = _sp.run([_node, "--check", _tmp], capture_output=True, text=True)
+        _r = _sp.run([_node, "--check", _tmp], capture_output=True, text=True,
+                     encoding="utf-8", errors="replace")
         os.unlink(_tmp)
         if _r.returncode != 0:
             sys.exit("SYNTAX ERROR in %s, inline script %d - refusing to build:\n%s"
@@ -531,7 +542,8 @@ if not os.path.exists(_ver):
              "against VERSION, and an unverified version is refused rather "
              "than assumed correct.")
 _r = _sp.run([sys.executable, _ver, '--check'],
-             capture_output=True, text=True, cwd=REPO)
+             capture_output=True, text=True, encoding="utf-8",
+             errors="replace", cwd=REPO)
 sys.stdout.write(_r.stdout)
 if _r.returncode != 0:
     sys.stderr.write(_r.stderr)
@@ -1298,6 +1310,19 @@ _holo = os.path.join(REPO, 'data-layer', 'derived', 'holo-hardpoints',
                      'hardpoints_fleet.json')
 _marks, _mark_amb, _mark_nohit = {}, 0, 0
 _mark_inherited, _mark_stacked = 0, 0
+_mark_coincident = 0
+
+
+def _pid_sort(p):
+    """PortIds ordered so the choice between coincident markers is stable.
+
+    Numeric ids sort as numbers, not as text - '9' must come before '10', and
+    the six coincident pairs found on 2026-08-27 include exactly that case
+    (HoverQuad 9 and 10). Anything non-numeric sorts after, by text, so the
+    rule still terminates on ids this file has not seen.
+    """
+    s = str(p)
+    return (0, int(s), "") if s.isdigit() else (1, 0, s)
 _NO_INHERIT = os.environ.get('CC_NO_INHERIT') == '1'
 if _NO_INHERIT:
     print('CC_NO_INHERIT=1 - the C1 inheritance pass is OFF (the BEFORE state)')
@@ -1477,6 +1502,56 @@ if os.path.exists(_holo):
             _out.append([_cands[0]['p'], round(_u[0], 5), round(_u[1], 5),
                          round(_u[2], 5)])
 
+        # C3 APPLIES TO THESE MARKERS TOO, and until 2026-08-27 it did not.
+        #
+        # The inheritance pass below refuses to stack a derived marker on an
+        # existing one. The markers above it had no such rule, and six pairs
+        # landed exactly on top of each other:
+        #
+        #   HoverQuad 9/10   Buccaneer 24/25   Railen 66/67 and 68/69
+        #   Tyilui 30/31 and 32/33
+        #
+        # A marker directly underneath another cannot be clicked, so the second
+        # port of each pair was unreachable by the picker.
+        #
+        # NOT A PIPELINE FAULT. Every pair is a left/right pair CIG ITSELF
+        # places at one point, x exactly 0.0 - one physical rack or launcher
+        # with two logical channels. Two independent sources agree: the client
+        # overlay for the first four, hardpoint-placement for the Tyilui.
+        #
+        # THE LOWER PortId KEEPS CIG'S EXACT COORDINATE, and the upper one gets
+        # NO MARKER AT ALL - the same answer this file already gives for an
+        # ambiguous name, and the list still reaches every port.
+        #
+        # THE FIRST VERSION OF THIS DROPPED IT HERE AND LET THE INHERITANCE PASS
+        # PUT IT BACK, nudged 0.006 into the first free spot. That kept both
+        # ports clickable and looked like the better answer, and it was wrong
+        # twice:
+        #
+        #   * It claims a position CIG does not give. The nudged dot says "this
+        #     port is six centimetres that way" when the source says the two
+        #     mounts are in one place. Every other marker on the page is CIG's
+        #     own coordinate or an honestly-derived child of one.
+        #   * `_verify_child_markers.py` caught it within the hour - "no hull
+        #     changed without having a nested eligible port to inherit from"
+        #     went red on the HoverQuad and the Pulse LX, because a re-placed
+        #     TOP-LEVEL port is not an inherited child and the inheritance pass
+        #     should not be the thing that puts it back.
+        #
+        # So the suppressed PortIds are recorded and the inheritance pass below
+        # skips them.
+        _keep_at, _suppressed = {}, set()
+        for _row in _out:
+            _xyz = (_row[1], _row[2], _row[3])
+            _prev = _keep_at.get(_xyz)
+            if _prev is None or _pid_sort(_row[0]) < _pid_sort(_prev[0]):
+                _keep_at[_xyz] = _row
+        if len(_keep_at) != len(_out):
+            _kept_ids = {id(_r) for _r in _keep_at.values()}
+            _suppressed = {str(_r[0]) for _r in _out if id(_r) not in _kept_ids}
+            _mark_coincident += len(_suppressed)
+            _out = [_r for _r in _out if id(_r) in _kept_ids]
+
         # ---- the inheritance pass -------------------------------------
         # EVERY slot is a possible ancestor, not just the eligible ones: a
         # TurretBase carries no marker of its own and is exactly the thing a
@@ -1579,6 +1654,11 @@ if os.path.exists(_holo):
             _pid = str(_sl['p'])
             if _pid in _have:
                 continue
+            # Suppressed above for sharing CIG's one position with a lower
+            # PortId. Re-placing it here would put a derived offset where the
+            # source gives no distinct location.
+            if _pid in _suppressed:
+                continue
             _p = _resolve(_pid)
             if _p is None:
                 continue
@@ -1617,9 +1697,18 @@ _mark_js = (
     '   than one weapon port, NO MARKER WAS EMITTED: picking one of two would\n'
     '   be a coin toss dressed as data, and the list still reaches both.\n'
     '\n'
-    '   %d hulls, %d markers. %d points were ambiguous and dropped. */\n'
+    '   AND WHERE TWO PORTS SHARE ONE POSITION, only the lower PortId carries\n'
+    '   a marker. CIG places some left/right pairs at exactly one point - one\n'
+    '   physical rack, two logical channels - and the upper one would sit under\n'
+    '   the lower where nobody could click it. It gets NO marker rather than a\n'
+    '   nudged one: an offset dot would claim a position the source does not\n'
+    '   give. Same answer as an ambiguous name, and the list still reaches it.\n'
+    '\n'
+    '   %d hulls, %d markers. %d points were ambiguous and dropped, %d shared a\n'
+    '   position with a lower PortId and gave it up. */\n'
     'const LOADOUT_MARK=%s;\n'
     % (len(_marks), sum(len(v) for v in _marks.values()), _mark_amb,
+       _mark_coincident,
        json.dumps(_marks, ensure_ascii=True, sort_keys=True,
                   separators=(',', ':'))))
 open(os.path.join(SRC, 'loadout_marker.gen.js'), 'w',
@@ -1635,6 +1724,8 @@ print('hull markers: %d on %d hulls (%d ambiguous points dropped, %d matched '
 print('  of those, %d were INHERITED from a placed ancestor (C1); %d could not '
       'be separated from a sibling and were refused'
       % (_mark_inherited, _mark_stacked))
+print('  %d marker(s) gave up a position shared with a lower PortId - CIG places '
+      'some left/right pairs at one point' % _mark_coincident)
 
 # ---------------------------------------------------------------------------
 # M2. THE ENGINEERING LAYER - relays and fuse slots.

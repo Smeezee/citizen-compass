@@ -26,6 +26,7 @@ Usage:
     python3 build_hardpoint_transforms.py [--limit N] [--only SUBSTR]
 """
 import argparse
+import glob
 import json
 import os
 import re
@@ -43,13 +44,104 @@ OUT = os.path.join("data-layer", "derived", "hardpoint-transforms")
 # <MFR>\<Ship>\<file> only and found 50 hulls where the fleet has ~200: the
 # Cutlass lives at DRAK\Cutlass\Black\DRAK_Cutlass_Black.cga and every
 # variant-bearing hull is nested the same way.
+LOD_RX = re.compile(r"_lod\d+$", re.I)
+# TWO TREES, NOT ONE (C1, 2026-08-27).
+#
+# Every hull this decoder had ever seen lives under
+# `Data\Objects\Spaceships\Ships\`. GROUND VEHICLES DO NOT - they sit in a
+# sibling tree, `Data\Objects\Vehicles\`, which nothing here had ever looked
+# at. 1,762 .cga entries, and the hulls are sitting at the top of it:
+#
+#     Data\Objects\Vehicles\TMBL\storm\TMBL_Storm.cga
+#     Data\Objects\Vehicles\TMBL\Nova\TMBL_Nova.cga
+#     Data\Objects\Vehicles\ANVL\Ballista\ANVL_Ballista.cga
+#     Data\Objects\Vehicles\ANVL\Atlas\Centurion\ANVL_Centurion.cga
+#
+# The Cyclones, the Storm, the Nova, the Ursa, the Ballista, the Centurion and
+# the Spartan were all "no .cga anywhere" for one reason: nobody had told the
+# scan the other half of the fleet is parked somewhere else.
+#
+# `Spaceships` IS STILL NARROWED TO ITS `Ships` SUBTREE. The same tree also
+# holds Turrets, Seats, Rocket_Pods and Derelicts, and those are parts. The
+# Vehicles tree has no such level - it is manufacturer-then-vehicle - so the
+# segment walk below takes whatever follows the tree root rather than looking
+# for a fixed "Ships" folder.
+TREE_ROOTS = ("Spaceships\\Ships", "Vehicles")
 SHIP_RX = re.compile(
-    rb"Data\\Objects\\Spaceships\\Ships\\"
+    rb"Data\\Objects\\(?:Spaceships\\Ships|Vehicles)\\"
     rb"(?:[A-Za-z0-9_\-\.]+\\){1,4}"
     rb"[A-Za-z0-9_\-\.]+\.cga(?![A-Za-z0-9_])")
 
 
-def index(fh, cd_off, cd_size):
+def cig_class_names():
+    """Every ClassName CIG publishes in ships.json, case-folded.
+
+    THE SECOND HULL RULE NEEDS AN AUTHORITY, NOT A PATTERN (C1, 2026-08-27).
+
+    The folder rule below finds the .cga whose stem equals a contiguous run of
+    its own folder path. It found 120 of 18,891 entries, and it is exactly
+    right about every one of them - but CIG does not always name a folder for
+    the ship inside it, and a hull it names differently is indistinguishable
+    from a bunk bed as far as that rule is concerned:
+
+        AEGS\\Sabre\\AEGS_Sabre_Raven.cga            folders: AEGS, Sabre
+        MISC\\Freelancer_v2\\MISC_Freelancer.cga      folders: MISC, Freelancer_v2
+        ORIG\\300_Series\\ORIG_300I.cga               folders: ORIG, 300_Series
+        AEGS\\Idris_Frigate\\Exteriors\\AEGS_Idris.cga
+
+    Every one of those is a hull and none of them equals any run of its
+    folders. Fifteen ships the site draws with name-derived markers are sitting
+    in the archive behind that gap.
+
+    SO THE SECOND RULE IS EXACT EQUALITY AGAINST CIG'S OWN LIST OF SHIPS. Not a
+    name pattern, not a heuristic, not a similarity score - a lookup into
+    ships.json's ClassName column. It cannot admit a bunk bed, because there is
+    no ship class called `aegs_hab_bunkbed_sq_player`. STILL NO FUZZY MATCHING:
+    a stem that merely resembles a class name matches nothing.
+
+    A run without ships.json keeps the folder rule alone and says so, rather
+    than silently reverting to the smaller answer.
+    """
+    snaps = sorted(glob.glob(os.path.join(
+        "data-layer", "external-sources", "scunpacked-data", "snapshots",
+        "*", "ships.json")))
+    if not snaps:
+        return set(), None
+    p = snaps[-1]
+    d = json.load(open(p, encoding="utf-8"))
+    if isinstance(d, dict):
+        d = list(d.values())
+    names = set()
+    for r in d:
+        if not isinstance(r, dict):
+            continue
+        if r.get("ClassName"):
+            names.add(r["ClassName"].lower())
+        # AND THE ROOT OF THE SHIP'S OWN PART TREE, WHICH IS ALSO A HULL NAME.
+        #
+        # C1, 2026-08-27. `Parts[0].Name` is CIG's own statement of which hull a
+        # ship is built on - `ANVL_C8_Pisces` names `ANVL_Pisces`. A name CIG
+        # uses that way IS a hull, whether or not any ship is CALLED that:
+        #
+        #     AEGS_Idris        named by Idris_P, Idris_M and four others,
+        #                       and it is no ship's own ClassName
+        #     ANVL_Ballista     named by the Dunestalker and the Snowblind
+        #     GRIN_MXC          named by GRIN_MDC and GRIN_MTC
+        #     RSI_Ursa_Rover    named by the Medivac
+        #
+        # `AEGS\Idris_Frigate\Exteriors\AEGS_Idris.cga` is a real hull that
+        # the folder rule cannot see and the ClassName rule does not cover,
+        # because no ship is called AEGS_Idris. Its own record says otherwise.
+        # Still exact equality; still no fuzzy matching.
+        parts = r.get("Parts")
+        if isinstance(parts, list) and parts and isinstance(parts[0], dict):
+            root = parts[0].get("Name")
+            if root:
+                names.add(root.lower())
+    return names, p
+
+
+def index(fh, cd_off, cd_size, classes=None):
     """Every hull .cga entry, in TWO PHASES over one file handle.
 
     PHASE 1 SCANS AND TOUCHES NOTHING ELSE. The first version resolved each
@@ -106,9 +198,19 @@ def index(fh, cd_off, cd_size):
     for at, raw in offsets_named:
         nm = raw.decode("utf-8", "replace")
         parts = nm.split("\\")
-        if "Ships" not in parts:
-            continue
-        segs = parts[parts.index("Ships") + 1:-1]      # the folders under Ships
+        # The folders under whichever tree root this entry sits in. Written as
+        # a search over TREE_ROOTS rather than `parts.index("Ships")`, because
+        # the Vehicles tree has no "Ships" level at all and the old line simply
+        # skipped every ground vehicle.
+        segs = None
+        for _r in TREE_ROOTS:
+            _rp = _r.split("\\")
+            for _i in range(len(parts) - len(_rp)):
+                if parts[_i:_i + len(_rp)] == _rp:
+                    segs = parts[_i + len(_rp):-1]
+                    break
+            if segs is not None:
+                break
         if not segs:
             continue
         stem = os.path.splitext(parts[-1])[0]
@@ -130,12 +232,30 @@ def index(fh, cd_off, cd_size):
         # (ANVL_Carrack_lod3) equal no contiguous run and are not guessed at.
         cands = {"_".join(segs[i:j]).lower()
                  for i in range(len(segs)) for j in range(i + 1, len(segs) + 1)}
-        if stem.lower() in cands:
-            keep.append((at, nm))
-    print("  %d hull candidates, resolving their headers" % len(keep))
+        low = stem.lower()
+        rule = None
+        if low in cands:
+            rule = "folder"
+        elif classes and low in classes and not LOD_RX.search(stem):
+            # THE SECOND RULE - see cig_class_names(). Exact equality against
+            # CIG's own ClassName list, so it cannot admit a prop.
+            #
+            # LODs ARE EXCLUDED HERE AND NOWHERE ELSE. `..._lod3` never equals
+            # a ClassName so the check is belt and braces - but a LOD is the
+            # same hull at lower detail, and taking one would be taking a worse
+            # copy of a file we would then believe was the hull.
+            rule = "class-name"
+        if rule:
+            keep.append((at, nm, rule))
+    by_rule = {}
+    for _at, _nm, r in keep:
+        by_rule[r] = by_rule.get(r, 0) + 1
+    print("  %d hull candidates (%s), resolving their headers"
+          % (len(keep), ", ".join("%s %d" % (k, v)
+                                  for k, v in sorted(by_rule.items()))))
 
-    found, by_stem = {}, {}
-    for at, nm in keep:
+    found, by_stem, rule_of = {}, {}, {}
+    for at, nm, rule in keep:
         r = P.header_at(fh, at)
         # The resolved name must be the name we matched. Anything else means
         # the backward header search landed on a neighbour, and a neighbour is
@@ -145,15 +265,44 @@ def index(fh, cd_off, cd_size):
         stem = os.path.splitext(nm.split("\\")[-1])[0]
         by_stem.setdefault(stem.lower(), []).append(nm)
         found[nm] = r
+        rule_of[nm] = rule
     # TWO PATHS CLAIMING ONE HULL IS AMBIGUOUS, AND AMBIGUOUS IS NOT RESOLVED
     # BY PICKING. Both are dropped and both are named, the same way the 85X
     # name collision was handled in the model sweep.
+    #
+    # ONE TIE-BREAK, AND IT IS EVIDENCE RATHER THAN PREFERENCE (C1,
+    # 2026-08-27). The two rules are not equally strong. The FOLDER rule
+    # requires the file's name and its LOCATION to agree - two independent
+    # facts about the same entry. The CLASS-NAME rule requires only the name.
+    #
+    # So when a stem is claimed by one path the folder rule accepts and one it
+    # does not, that is not a tie: `anvl_hornet_f7a` sits at
+    # `ANVL\Hornet\f7_mk2\ANVL_Hornet_F7A.cga` and also elsewhere, and the
+    # folder-rule path is corroborated where the other is not. Dropping both
+    # LOST A HULL THAT WAS ALREADY DECODED, which is a correction making things
+    # worse.
+    #
+    # TWO PATHS OF EQUAL EVIDENCE ARE STILL DROPPED AND STILL NAMED. The
+    # Javelin's two paths are both folder-rule, one under `dmg`, and picking
+    # between them would be a guess.
     for stem, paths in sorted(by_stem.items()):
-        if len(paths) > 1:
-            print("  COLLISION on %s - dropped, %d paths claim it:" % (stem, len(paths)))
+        if len(paths) < 2:
+            continue
+        strong = [x for x in paths if rule_of.get(x) == "folder"]
+        if len(strong) == 1:
+            print("  %s claimed by %d paths - taking the folder-rule one, "
+                  "which is corroborated by its location:" % (stem, len(paths)))
+            print("      KEEP %s" % strong[0])
             for x in paths:
-                print("      %s" % x)
-                found.pop(x, None)
+                if x is not strong[0]:
+                    print("      drop %s" % x)
+                    found.pop(x, None)
+            continue
+        print("  COLLISION on %s - dropped, %d paths claim it with equal "
+              "evidence:" % (stem, len(paths)))
+        for x in paths:
+            print("      %s" % x)
+            found.pop(x, None)
     return found
 
 
@@ -352,7 +501,15 @@ def main():
     with open(P.P4K, "rb") as fh:
         entries, cd_size, cd_off = E.find_central_directory(fh, size)
         print("central directory: %d entries, %.1f MB" % (entries, cd_size / 1e6))
-        hulls = index(fh, cd_off, cd_size)
+        classes, classes_src = cig_class_names()
+        if classes:
+            print("CIG class names: %d from %s" % (len(classes), classes_src))
+        else:
+            print("NO ships.json SNAPSHOT - the class-name rule is OFF and "
+                  "this run finds only the hulls the folder rule can see. "
+                  "That is a smaller answer, said out loud rather than "
+                  "returned quietly.")
+        hulls = index(fh, cd_off, cd_size, classes)
         print("\nhull .cga candidates: %d\n" % len(hulls))
 
         names = sorted(hulls)

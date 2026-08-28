@@ -190,7 +190,18 @@ def main():
           "'these differ' is not actionable; 'the scanner sits on the dome' is")
 
     # ---- 4b. THE SAME CASE ON THE REAL SHIPS ---------------------------
-    geo_dir = os.environ.get("CC_GEO_DIR", "")
+    # DEFAULTS TO THE DECODED GEOMETRY THAT IS ACTUALLY IN THE REPO. This was
+    # env-var-only, and nothing sets that env var, so 4b printed "COULD NOT RUN"
+    # on every run it has ever had - two assertions about the REAL Rambler and
+    # Scout that had never once executed. `data-layer/derived/hull-geometry/`
+    # holds both files; pointing at it costs nothing and the two now run.
+    #
+    # STILL FAILS CLOSED. The env var still overrides, and if neither directory
+    # is there this prints NOT PERFORMED exactly as before - a check that cannot
+    # be run is never reported as one that passed.
+    geo_dir = os.environ.get("CC_GEO_DIR", "") or os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "data-layer", "derived", "hull-geometry")
     if geo_dir and os.path.isdir(geo_dir):
         import json as _json
 
@@ -224,8 +235,9 @@ def main():
         else:
             print("  [----] real Cutter fixture COULD NOT RUN - geometry not decoded")
     else:
-        print("  [----] real Cutter fixture COULD NOT RUN - CC_GEO_DIR not set. "
-              "That is a check not performed, not a check that passed.")
+        print("  [----] real Cutter fixture COULD NOT RUN - no decoded geometry "
+              "at %s. That is a check not performed, not a check that passed."
+              % geo_dir)
 
     # ---- 5. THE APPLY GUARD, WHICH ALREADY FIRED FOR REAL --------------
     #
@@ -235,17 +247,49 @@ def main():
     # Starlifter"), and the build refused rather than reporting 133 markers
     # moved when it had moved 104.
     import build_holo_data as bhd
+
+    # BOTH OVERLAYS, NOT ONE. `apply_alignment` applies ALIGN_CLIENT first and
+    # ALIGN second - the client overlay was added on 2026-08-27 and this section
+    # still redirected only ALIGN, so the one-ship fixture below met the REAL
+    # client overlay and its 167 entries matched nothing. The guard refused,
+    # correctly, and this assertion read that as "a missing overlay crashes".
+    #
+    # The saved originals are restored in the finally: leaving a module constant
+    # pointing at a nonexistent file would silently disarm anything that ran
+    # after this section in the same process.
+    _saved = (bhd.ALIGN, bhd.ALIGN_CLIENT)
+    _gone = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "_nonexistent_overlay.json")
     fleet = {"Ship": {"hardpoints": [hp("p1", (0, 0, 0))]}}
     stopped = False
     try:
-        bhd.ALIGN = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                 "_nonexistent_overlay.json")
+        bhd.ALIGN, bhd.ALIGN_CLIENT = _gone, _gone
         _, note = bhd.apply_alignment(dict(fleet), {})
-        stopped = note.get("moved") == 0
+        stopped = note.get("moved") == 0 and note.get("client_moved") == 0
     except SystemExit:
         stopped = False
+    finally:
+        bhd.ALIGN, bhd.ALIGN_CLIENT = _saved
     check("apply: a missing overlay is a no-op, not a crash",
           stopped, "a build with no overlay yet must still work")
+
+    # AND THE OTHER DIRECTION, which is what the fixture hit by accident: an
+    # overlay that IS there and matches nothing must stop the build. That guard
+    # is the whole reason the M2 Hercules incident was caught, and until now
+    # nothing asserted it - it was only ever observed firing by surprise.
+    refused, why = False, ""
+    try:
+        bhd.ALIGN = _gone                      # only the hand-made one is absent
+        bhd.apply_alignment(dict(fleet), {})
+    except SystemExit as exc:
+        refused, why = True, str(exc)
+    finally:
+        bhd.ALIGN, bhd.ALIGN_CLIENT = _saved
+    check("apply: a REAL overlay matching nothing is REFUSED, not reported as "
+          "a fix it did not make", refused,
+          "the client overlay met a fleet of one ship and should have stopped")
+    check("and the refusal says how many entries matched nothing",
+          refused and "matched nothing" in why, why[:90])
 
     print()
     if failures:

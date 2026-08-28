@@ -1,0 +1,645 @@
+{
+ "class": "misc_fury_miru",
+ "model": "Fury_MX.glb",
+ "hardpoints_from": "MISC_Fury",
+ "inherited_from_base_hull": true,
+ "hull_box_source": "hull-geometry",
+ "scale_m_per_unit": 1.10671,
+ "scale_estimates": {
+  "length": 1.10671,
+  "width": 1.01186,
+  "height": 1.16116
+ },
+ "scale_spread": 0.1349,
+ "hull_box": {
+  "min": [
+   -2.6682708263397217,
+   -1.4329980611801147,
+   -3.03395414352417
+  ],
+  "max": [
+   2.6684558391571045,
+   1.150621771812439,
+   3.2911267280578613
+  ]
+ },
+ "acceptance": true,
+ "acceptance_note": "",
+ "frame_proven": true,
+ "mirror_matched": 5,
+ "mirror_pairs": 5,
+ "exterior_mounts": 16,
+ "exterior_outside": [],
+ "outside_any": [],
+ "frame": "GLB units. X lateral, Y up, forward is -Z.",
+ "hardpoints": [
+  {
+   "name": "hardpoint_thruster_front_side_left",
+   "pos": [
+    -0.77166,
+    0.08179,
+    -0.47757
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_front_side_right",
+   "pos": [
+    0.77166,
+    0.08223,
+    -0.478
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_rear_side_left",
+   "pos": [
+    -0.69937,
+    0.02711,
+    1.67253
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_rear_side_right",
+   "pos": [
+    0.69937,
+    0.02711,
+    1.67253
+   ]
+  },
+  {
+   "name": "hardpoint_countermeasures_left",
+   "pos": [
+    -0.19066,
+    0.62347,
+    1.89572
+   ]
+  },
+  {
+   "name": "hardpoint_countermeasures_right",
+   "pos": [
+    0.19066,
+    0.62347,
+    1.89572
+   ]
+  },
+  {
+   "name": "hardpoint_controller_light",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_comms",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_capacitor_assignment",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_paint",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_weapon",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_shield",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_scanner",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_missile",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_flight",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_energy",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_door",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_controller_cooler",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_cockpit_selfDestruct",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_armor",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_seat_pilot",
+   "pos": [
+    0.0,
+    0.07771,
+    -1.34182
+   ]
+  },
+  {
+   "name": "hardpoint_seat_access",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_fuel_tank",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_ping",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_regen_pool",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_regen_pool_turrets",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_fuel_intake",
+   "pos": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "hardpoint_personal_inv",
+   "pos": [
+    -0.0,
+    0.08063,
+    0.03528
+   ]
+  },
+  {
+   "name": "hardpoint_landinggear_RR",
+   "pos": [
+    1.35537,
+    0.0,
+    0.94876
+   ]
+  },
+  {
+   "name": "hardpoint_landinggear_RL",
+   "pos": [
+    -1.35537,
+    0.0,
+    0.94876
+   ]
+  },
+  {
+   "name": "hardpoint_landinggear_FR",
+   "pos": [
+    1.35537,
+    0.0,
+    -2.62039
+   ]
+  },
+  {
+   "name": "hardpoint_landinggear_FL",
+   "pos": [
+    -1.35537,
+    0.0,
+    -2.62039
+   ]
+  },
+  {
+   "name": "hardpoint_geo_canopy_side",
+   "pos": [
+    0.0,
+    0.0,
+    -0.90358
+   ]
+  },
+  {
+   "name": "hardpoint_door_front",
+   "pos": [
+    0.0,
+    0.0,
+    -0.90358
+   ]
+  },
+  {
+   "name": "hardpoint_flair_hanging",
+   "pos": [
+    -0.43462,
+    0.45902,
+    -1.44393
+   ]
+  },
+  {
+   "name": "hardpoint_vehicle_destroyed",
+   "pos": [
+    0.0,
+    0.0,
+    0.91562
+   ]
+  },
+  {
+   "name": "hardpoint_missile_bottom_right",
+   "pos": [
+    0.97425,
+    -0.86655,
+    -0.81749
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_front_bottom_right",
+   "pos": [
+    0.76334,
+    -1.00708,
+    -1.77703
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_rear_bottom_right",
+   "pos": [
+    0.19795,
+    -1.28006,
+    1.46777
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_inner_br",
+   "pos": [
+    0.981,
+    -0.90451,
+    -1.97311
+   ]
+  },
+  {
+   "name": "hardpoint_LG_RR",
+   "pos": [
+    1.07978,
+    -0.79079,
+    1.38533
+   ]
+  },
+  {
+   "name": "hardpoint_LG_FR",
+   "pos": [
+    1.07978,
+    -0.79079,
+    -1.67626
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_bottom_right",
+   "pos": [
+    1.1087,
+    -0.81658,
+    -1.31292
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_main_bottom_right",
+   "pos": [
+    0.81346,
+    -0.93492,
+    1.03852
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_retro_bottom_right",
+   "pos": [
+    0.81346,
+    -0.93492,
+    1.03852
+   ]
+  },
+  {
+   "name": "hardpoint_missile_bottom_left",
+   "pos": [
+    -0.97425,
+    -0.86655,
+    -0.8175
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_front_bottom_left",
+   "pos": [
+    -0.76333,
+    -1.00709,
+    -1.77704
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_rear_bottom_left",
+   "pos": [
+    -0.19795,
+    -1.28006,
+    1.46777
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_inner_bl",
+   "pos": [
+    -0.97992,
+    -0.9041,
+    -1.97311
+   ]
+  },
+  {
+   "name": "hardpoint_LG_FL",
+   "pos": [
+    -1.07978,
+    -0.79079,
+    -1.67626
+   ]
+  },
+  {
+   "name": "hardpoint_LG_RL",
+   "pos": [
+    -1.07978,
+    -0.79079,
+    1.38534
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_bottom_left",
+   "pos": [
+    -1.1087,
+    -0.81684,
+    -1.31293
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_main_bottom_left",
+   "pos": [
+    -0.81346,
+    -0.93492,
+    1.03851
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_retro_bottom_left",
+   "pos": [
+    -0.81346,
+    -0.93492,
+    1.03851
+   ]
+  },
+  {
+   "name": "hardpoint_missile_top_right",
+   "pos": [
+    0.96625,
+    0.92112,
+    -0.81774
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_front_top_right",
+   "pos": [
+    0.76372,
+    1.03035,
+    -1.77728
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_rear_top_right",
+   "pos": [
+    0.19834,
+    1.30333,
+    1.46752
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_inner_tr",
+   "pos": [
+    0.97213,
+    0.95721,
+    -1.97336
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_top_right",
+   "pos": [
+    1.10595,
+    0.8639,
+    -1.31318
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_main_top_right",
+   "pos": [
+    0.7964,
+    0.96286,
+    1.03827
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_retro_top_right",
+   "pos": [
+    0.7964,
+    0.96286,
+    1.03827
+   ]
+  },
+  {
+   "name": "hardpoint_missile_top_left",
+   "pos": [
+    -0.96625,
+    0.92113,
+    -0.81774
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_front_top_left",
+   "pos": [
+    -0.76372,
+    1.03036,
+    -1.77728
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_rear_top_left",
+   "pos": [
+    -0.19834,
+    1.30333,
+    1.46752
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_inner_tl",
+   "pos": [
+    -0.97191,
+    0.95715,
+    -1.97336
+   ]
+  },
+  {
+   "name": "hardpoint_weapon_top_left",
+   "pos": [
+    -1.10555,
+    0.86377,
+    -1.31318
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_main_top_left",
+   "pos": [
+    -0.7964,
+    0.96286,
+    1.03822
+   ]
+  },
+  {
+   "name": "hardpoint_thruster_retro_top_left",
+   "pos": [
+    -0.7964,
+    0.96286,
+    1.03822
+   ]
+  },
+  {
+   "name": "hardpoint_shield_generator",
+   "pos": [
+    0.3049,
+    0.28192,
+    1.02737
+   ]
+  },
+  {
+   "name": "hardpoint_cooler_right",
+   "pos": [
+    0.31987,
+    -0.12921,
+    1.03008
+   ]
+  },
+  {
+   "name": "hardpoint_radar",
+   "pos": [
+    0.47438,
+    -0.27469,
+    0.02982
+   ]
+  },
+  {
+   "name": "hardpoint_scanner",
+   "pos": [
+    0.08132,
+    -0.07414,
+    0.03565
+   ]
+  },
+  {
+   "name": "hardpoint_avionics",
+   "pos": [
+    -0.36053,
+    -0.26927,
+    0.0253
+   ]
+  },
+  {
+   "name": "hardpoint_lifesupport",
+   "pos": [
+    -0.41294,
+    0.28553,
+    1.0297
+   ]
+  },
+  {
+   "name": "hardpoint_cooler_left",
+   "pos": [
+    -0.31987,
+    -0.12921,
+    1.03008
+   ]
+  },
+  {
+   "name": "hardpoint_power_plant",
+   "pos": [
+    0.00852,
+    -0.14999,
+    1.80717
+   ]
+  }
+ ]
+}

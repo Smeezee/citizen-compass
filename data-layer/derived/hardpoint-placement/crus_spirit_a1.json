@@ -23,8 +23,11 @@
    23.314857482910156
   ]
  },
- "acceptance": false,
- "acceptance_note": "1 of 12 exterior mounts land outside the hull",
+ "acceptance": true,
+ "acceptance_note": "1 of 12 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (3 of 3 exterior pairs), so the rest is placed",
+ "frame_proven": true,
+ "mirror_matched": 3,
+ "mirror_pairs": 3,
  "exterior_mounts": 12,
  "exterior_outside": [
   "hardpoint_turret_rear"

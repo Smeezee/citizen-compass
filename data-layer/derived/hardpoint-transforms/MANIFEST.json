@@ -7,10 +7,10 @@
  "not_converted": "Viewer frame is y-up / -Z forward and each GLB carries its own unit scale. Conversion is per-hull against that hull's measured box and is NOT done here.",
  "acceptance": "every hardpoint finite; at least 80% of NAMED left/right pairs mirrored to 5 cm. A hull with no named pair FAILS - a check that could not have failed is not a check.",
  "counts": {
-  "hulls_indexed": 116,
-  "decoded": 116,
-  "passed": 96,
-  "failed_acceptance": 20,
+  "hulls_indexed": 153,
+  "decoded": 153,
+  "passed": 117,
+  "failed_acceptance": 36,
   "errored": 0
  },
  "ships": [
@@ -91,6 +91,25 @@
    "exact_mirrored": 4
   },
   {
+   "class": "AEGS_Idris",
+   "nodes": 303,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 202,
+   "finite": 202,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 50,
+   "all_mirrored": 50,
+   "span": [
+    114.974,
+    213.872,
+    46.5
+   ],
+   "span_max": 213.872,
+   "exact_mirrored": 2
+  },
+  {
    "class": "AEGS_Reclaimer",
    "nodes": 335,
    "acceptance": true,
@@ -167,6 +186,25 @@
    "exact_mirrored": 3
   },
   {
+   "class": "AEGS_Sabre_Raven",
+   "nodes": 201,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 59,
+   "finite": 59,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 7,
+   "all_mirrored": 7,
+   "span": [
+    10.44,
+    18.708,
+    2.191
+   ],
+   "span_max": 18.708,
+   "exact_mirrored": 3
+  },
+  {
    "class": "AEGS_Sabre_Firebird",
    "nodes": 298,
    "acceptance": true,
@@ -222,6 +260,25 @@
    ],
    "span_max": 31.48,
    "exact_mirrored": 3
+  },
+  {
+   "class": "AEGS_Vanguard_Hoplite",
+   "nodes": 142,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 71,
+   "finite": 71,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 8,
+   "all_mirrored": 8,
+   "span": [
+    17.246,
+    33.112,
+    5.348
+   ],
+   "span_max": 33.112,
+   "exact_mirrored": 2
   },
   {
    "class": "aegs_hammerhead_gs",
@@ -597,6 +654,60 @@
    "exact_mirrored": 2
   },
   {
+   "class": "ARGO_MPUV",
+   "nodes": 131,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 73,
+   "finite": 73,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 16,
+   "all_mirrored": 16,
+   "span": [
+    7.366,
+    8.1,
+    3.646
+   ],
+   "span_max": 8.1
+  },
+  {
+   "class": "ARGO_MPUV_1T",
+   "nodes": 302,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 84,
+   "finite": 84,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 14,
+   "all_mirrored": 14,
+   "span": [
+    7.366,
+    8.557,
+    3.255
+   ],
+   "span_max": 8.557
+  },
+  {
+   "class": "ARGO_MPUV_Transport",
+   "nodes": 117,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 68,
+   "finite": 68,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 19,
+   "all_mirrored": 19,
+   "span": [
+    7.366,
+    8.484,
+    3.267
+   ],
+   "span_max": 8.484
+  },
+  {
    "class": "ARGO_RAFT",
    "nodes": 183,
    "acceptance": true,
@@ -897,6 +1008,63 @@
    ],
    "span_max": 50.013,
    "exact_mirrored": 1
+  },
+  {
+   "class": "DRAK_Cutlass_Blue",
+   "nodes": 182,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 138,
+   "finite": 138,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 7,
+   "all_mirrored": 6,
+   "span": [
+    21.158,
+    35.297,
+    7.471
+   ],
+   "span_max": 35.297,
+   "exact_mirrored": 1
+  },
+  {
+   "class": "DRAK_Cutlass_Red",
+   "nodes": 161,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 116,
+   "finite": 116,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 7,
+   "all_mirrored": 5,
+   "span": [
+    21.158,
+    33.359,
+    7.522
+   ],
+   "span_max": 33.359,
+   "exact_mirrored": 1
+  },
+  {
+   "class": "DRAK_Cutlass_Black",
+   "nodes": 209,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 160,
+   "finite": 160,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 17,
+   "all_mirrored": 15,
+   "span": [
+    21.166,
+    33.66,
+    7.299
+   ],
+   "span_max": 33.66,
+   "exact_mirrored": 3
   },
   {
    "class": "DRAK_Cutter",
@@ -1297,6 +1465,82 @@
    "exact_mirrored": 5
   },
   {
+   "class": "MISC_Freelancer",
+   "nodes": 203,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 114,
+   "finite": 114,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 3,
+   "all_pairs": 28,
+   "all_mirrored": 21,
+   "span": [
+    20.768,
+    33.479,
+    6.172
+   ],
+   "span_max": 33.479,
+   "exact_mirrored": 3
+  },
+  {
+   "class": "MISC_Freelancer_DUR",
+   "nodes": 233,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 113,
+   "finite": 113,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 29,
+   "all_mirrored": 22,
+   "span": [
+    20.772,
+    32.415,
+    6.172
+   ],
+   "span_max": 32.415,
+   "exact_mirrored": 4
+  },
+  {
+   "class": "MISC_Freelancer_MAX",
+   "nodes": 196,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 109,
+   "finite": 109,
+   "exterior_pairs": 4,
+   "exterior_mirrored": 4,
+   "all_pairs": 28,
+   "all_mirrored": 21,
+   "span": [
+    29.577,
+    33.273,
+    6.172
+   ],
+   "span_max": 33.273,
+   "exact_mirrored": 4
+  },
+  {
+   "class": "MISC_Freelancer_MIS",
+   "nodes": 241,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 115,
+   "finite": 115,
+   "exterior_pairs": 5,
+   "exterior_mirrored": 5,
+   "all_pairs": 30,
+   "all_mirrored": 23,
+   "span": [
+    20.764,
+    32.415,
+    6.172
+   ],
+   "span_max": 32.415,
+   "exact_mirrored": 5
+  },
+  {
    "class": "MISC_Fury",
    "nodes": 491,
    "acceptance": true,
@@ -1314,6 +1558,25 @@
    ],
    "span_max": 4.998,
    "exact_mirrored": 5
+  },
+  {
+   "class": "MISC_Fury_LX",
+   "nodes": 479,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 68,
+   "finite": 68,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 14,
+   "all_mirrored": 14,
+   "span": [
+    3.0,
+    4.998,
+    2.846
+   ],
+   "span_max": 4.998,
+   "exact_mirrored": 1
   },
   {
    "class": "MISC_Hull_A",
@@ -1631,6 +1894,25 @@
    "exact_mirrored": 2
   },
   {
+   "class": "ORIG_300I",
+   "nodes": 156,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 87,
+   "finite": 87,
+   "exterior_pairs": 3,
+   "exterior_mirrored": 2,
+   "all_pairs": 17,
+   "all_mirrored": 16,
+   "span": [
+    15.222,
+    21.266,
+    3.252
+   ],
+   "span_max": 21.266,
+   "exact_mirrored": 2
+  },
+  {
    "class": "ORIG_400i",
    "nodes": 151,
    "acceptance": true,
@@ -1825,6 +2107,25 @@
    "span_max": 944.543
   },
   {
+   "class": "RSI_Constellation_Aquila",
+   "nodes": 500,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 138,
+   "finite": 138,
+   "exterior_pairs": 8,
+   "exterior_mirrored": 8,
+   "all_pairs": 35,
+   "all_mirrored": 34,
+   "span": [
+    23.168,
+    55.907,
+    11.132
+   ],
+   "span_max": 55.907,
+   "exact_mirrored": 8
+  },
+  {
    "class": "RSI_Constellation",
    "nodes": 591,
    "acceptance": true,
@@ -1842,6 +2143,63 @@
    ],
    "span_max": 56.369,
    "exact_mirrored": 8
+  },
+  {
+   "class": "RSI_Constellation_Phoenix",
+   "nodes": 438,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 168,
+   "finite": 168,
+   "exterior_pairs": 6,
+   "exterior_mirrored": 6,
+   "all_pairs": 39,
+   "all_mirrored": 33,
+   "span": [
+    25.169,
+    61.865,
+    10.883
+   ],
+   "span_max": 61.865,
+   "exact_mirrored": 6
+  },
+  {
+   "class": "RSI_Constellation_Phoenix_Emerald",
+   "nodes": 466,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 148,
+   "finite": 148,
+   "exterior_pairs": 6,
+   "exterior_mirrored": 6,
+   "all_pairs": 35,
+   "all_mirrored": 27,
+   "span": [
+    25.168,
+    58.196,
+    11.48
+   ],
+   "span_max": 58.196,
+   "exact_mirrored": 6
+  },
+  {
+   "class": "RSI_Constellation_Taurus",
+   "nodes": 482,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 130,
+   "finite": 130,
+   "exterior_pairs": 6,
+   "exterior_mirrored": 6,
+   "all_pairs": 33,
+   "all_mirrored": 32,
+   "span": [
+    23.168,
+    63.881,
+    11.132
+   ],
+   "span_max": 63.881,
+   "exact_mirrored": 6
   },
   {
    "class": "RSI_Mantis",
@@ -2052,6 +2410,25 @@
    "exact_mirrored": 2
   },
   {
+   "class": "VNCL_Mauler",
+   "nodes": 331,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 219,
+   "finite": 219,
+   "exterior_pairs": 9,
+   "exterior_mirrored": 9,
+   "all_pairs": 58,
+   "all_mirrored": 38,
+   "span": [
+    118.236,
+    375.793,
+    94.178
+   ],
+   "span_max": 375.793,
+   "exact_mirrored": 9
+  },
+  {
    "class": "VNCL_Scythe",
    "nodes": 184,
    "acceptance": true,
@@ -2145,6 +2522,317 @@
    ],
    "span_max": 20.924,
    "exact_mirrored": 5
+  },
+  {
+   "class": "ANVL_Centurion",
+   "nodes": 199,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 128,
+   "finite": 128,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 37,
+   "all_mirrored": 36,
+   "span": [
+    4.177,
+    14.892,
+    3.288
+   ],
+   "span_max": 14.892
+  },
+  {
+   "class": "ANVL_Spartan",
+   "nodes": 131,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 113,
+   "finite": 113,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 33,
+   "all_mirrored": 26,
+   "span": [
+    4.22,
+    15.24,
+    3.252
+   ],
+   "span_max": 15.24
+  },
+  {
+   "class": "ANVL_Atlas_Turret",
+   "nodes": 7,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 3,
+   "finite": 3,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 1,
+   "all_mirrored": 1,
+   "span": [
+    1.425,
+    0.127,
+    0.382
+   ],
+   "span_max": 1.425,
+   "exact_mirrored": 1
+  },
+  {
+   "class": "ANVL_Ballista",
+   "nodes": 140,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 107,
+   "finite": 107,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 29,
+   "all_mirrored": 20,
+   "span": [
+    4.177,
+    14.235,
+    3.288
+   ],
+   "span_max": 14.235
+  },
+  {
+   "class": "argo_csv",
+   "nodes": 164,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 34,
+   "finite": 34,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 0,
+   "all_mirrored": 0,
+   "span": [
+    2.278,
+    5.36,
+    1.663
+   ],
+   "span_max": 5.36
+  },
+  {
+   "class": "DRAK_Mule",
+   "nodes": 121,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 57,
+   "finite": 57,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 3,
+   "all_mirrored": 3,
+   "span": [
+    2.593,
+    3.876,
+    1.951
+   ],
+   "span_max": 3.876
+  },
+  {
+   "class": "GRIN_MXC",
+   "nodes": 124,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 58,
+   "finite": 58,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 0,
+   "all_mirrored": 0,
+   "span": [
+    4.099,
+    6.861,
+    2.441
+   ],
+   "span_max": 6.861
+  },
+  {
+   "class": "GRIN_ROC",
+   "nodes": 113,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 47,
+   "finite": 47,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 1,
+   "all_mirrored": 1,
+   "span": [
+    3.102,
+    4.011,
+    1.902
+   ],
+   "span_max": 4.011
+  },
+  {
+   "class": "GRIN_ROC_DS",
+   "nodes": 120,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 54,
+   "finite": 54,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 1,
+   "all_mirrored": 1,
+   "span": [
+    3.719,
+    5.048,
+    1.915
+   ],
+   "span_max": 5.048
+  },
+  {
+   "class": "GRIN_STV",
+   "nodes": 119,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 42,
+   "finite": 42,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 2,
+   "all_mirrored": 2,
+   "span": [
+    6.013,
+    3.72,
+    1.251
+   ],
+   "span_max": 6.013,
+   "exact_mirrored": 1
+  },
+  {
+   "class": "grin_utv",
+   "nodes": 203,
+   "acceptance": false,
+   "note": "no exterior mount pair mirrors exactly (0 of 1 within 0.020 m) - nothing here proves the decode",
+   "hardpoints": 33,
+   "finite": 33,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 0,
+   "all_pairs": 1,
+   "all_mirrored": 0,
+   "span": [
+    1.91,
+    3.141,
+    1.165
+   ],
+   "span_max": 3.141,
+   "exact_mirrored": 0
+  },
+  {
+   "class": "GRIN_PTV",
+   "nodes": 75,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 19,
+   "finite": 19,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 0,
+   "all_mirrored": 0,
+   "span": [
+    0.87,
+    0.948,
+    1.699
+   ],
+   "span_max": 1.699
+  },
+  {
+   "class": "RSI_Lynx",
+   "nodes": 112,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 41,
+   "finite": 41,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 1,
+   "all_mirrored": 0,
+   "span": [
+    3.517,
+    6.239,
+    1.832
+   ],
+   "span_max": 6.239
+  },
+  {
+   "class": "RSI_Ursa_Rover",
+   "nodes": 95,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 36,
+   "finite": 36,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 0,
+   "all_mirrored": 0,
+   "span": [
+    3.387,
+    6.071,
+    2.708
+   ],
+   "span_max": 6.071
+  },
+  {
+   "class": "TMBL_Cyclone",
+   "nodes": 113,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 47,
+   "finite": 47,
+   "exterior_pairs": 1,
+   "exterior_mirrored": 1,
+   "all_pairs": 2,
+   "all_mirrored": 2,
+   "span": [
+    2.5,
+    3.791,
+    1.67
+   ],
+   "span_max": 3.791,
+   "exact_mirrored": 1
+  },
+  {
+   "class": "TMBL_Nova",
+   "nodes": 115,
+   "acceptance": false,
+   "note": "no named left/right EXTERIOR mount - nothing here could have failed",
+   "hardpoints": 85,
+   "finite": 85,
+   "exterior_pairs": 0,
+   "exterior_mirrored": 0,
+   "all_pairs": 12,
+   "all_mirrored": 12,
+   "span": [
+    5.705,
+    18.383,
+    4.805
+   ],
+   "span_max": 18.383
+  },
+  {
+   "class": "TMBL_Storm",
+   "nodes": 408,
+   "acceptance": true,
+   "note": "",
+   "hardpoints": 96,
+   "finite": 96,
+   "exterior_pairs": 2,
+   "exterior_mirrored": 2,
+   "all_pairs": 27,
+   "all_mirrored": 27,
+   "span": [
+    6.76,
+    9.751,
+    2.275
+   ],
+   "span_max": 9.751,
+   "exact_mirrored": 2
   }
  ]
 }

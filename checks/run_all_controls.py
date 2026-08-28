@@ -42,6 +42,22 @@ import subprocess
 import sys
 import time
 
+# RULE 15'S OTHER HALF - AND THIS SWEEP NEEDED BOTH.
+#
+# Reading the child's output with the platform default was one fault; WRITING
+# it back out is the other, and fixing only the first moved the crash rather
+# than removing it:
+#
+#   run_all_controls.py line 217, print(out.strip()[-1200:])
+#   UnicodeEncodeError: 'charmap' codec can't encode character 'ā'
+#
+# That is the a-macron in San'tok.yai, which CLAUDE.md names as "a shipping
+# product, not an edge case". A sweep that cannot print a ship's name cannot
+# report on the ship.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
@@ -156,8 +172,23 @@ def main():
 
         t0 = time.time()
         try:
+            # RULE 15, ONE PROCESS REMOVED - AND IT STOPPED THE SWEEP DEAD.
+            #
+            # `text=True` with no encoding decodes the child's output with the
+            # platform default, which on Windows is cp1252. The controls print
+            # SHIP NAMES: San'tok.yai carries a macron, the Yeng'tu and the
+            # "Shredder" carry curly quotes. On 2026-08-27 this killed
+            # subprocess's reader thread with a UnicodeDecodeError and the sweep
+            # stopped after 14 of 96 controls:
+            #
+            #   Exception in thread Thread-11 (_readerthread)
+            #   ... cp1252.py ... charmap_decode
+            #
+            # It failed loudly rather than silently, which is the safe
+            # direction - but it means the full suite could not be run at all.
             proc = subprocess.run(cmd, cwd=ROOT, capture_output=True,
-                                  text=True, timeout=args.timeout)
+                                  text=True, encoding="utf-8",
+                                  errors="replace", timeout=args.timeout)
             code = proc.returncode
             tail = (proc.stdout or "").strip().splitlines()[-1:] or [""]
         except subprocess.TimeoutExpired:
