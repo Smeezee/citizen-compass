@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #750 — 2026-08-27 7:07 PM
+# LATEST_HANDOFF.md — Update #752 — 2026-08-27 7:35 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-27 19:07:07 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-27 19:35:45 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,71 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119316 files (13780.68 MB)
 
-**Scripts:** 48  |  **3D models:** 1173  |  **Docs:** 1301
+**Scripts:** 48  |  **3D models:** 1173  |  **Docs:** 1303
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-27 19:34:58 — 20260827_2145_update_deployed-30-955.md
+
+# Update — Built and deployed. 30 hulls, 955 ports. The M2 Hercules has its 12 dots.
+
+**2026-08-27 21:45 · Code (background session)** — `ORDER-build-and-deploy-now`.
+Version `07edb4c0-4892-455e-9cd5-43796d08593e`.
+
+C1 was right to correct itself: "no urgency" is not C1's to invent against
+Sleven's standing instruction, and I had stopped on it. Ignored, built, deployed.
+
+## The three lines, read before the upload
+
+    client marker records added for 30 hull(s) the dataset had none for
+    client hardpoint overlay: 955 port(s) moved onto CIG positions
+    disclosure CSS: shared from _disc.css into index.html, keybinds.html,
+                    loadout.html, find.html
+
+**30 and 955**, exactly as predicted — up from the 29 and 952 my last deploy
+carried, which were correct at the time and half an hour stale by the frame fix.
+Hull markers 6,284 on 264 hulls -> **6,300 on 265**.
+
+## Deployed
+
+    build   : last build ok
+    4 browser checks GREEN, deploy guard clean, 2 files uploaded
+
+Served `loadout` is byte-identical to the local build and
+`_verify_deployed_links.mjs` is SWEEP CLEAN with its canary.
+
+## THE M2 HERCULES — 12 dots
+
+    markersInDom  12
+    visible       12
+    modelLoaded   true
+
+The page's own caption agrees: **"12 mounts · 22 weapons"** and **"About the 12
+dots on this model."** This is the ship the whole frame fix came out of and the
+one that proves this build did something the last one did not — it had no marker
+record at all before.
+
+**And they are SPREAD, not clustered.** Wings, nose and both flanks. Worth
+saying next to this morning's Mantis, whose 6 sat bunched mid-hull: that is the
+difference between a frame the emitter could place into and one it could not.
+
+## An extra data point, since I hit it first
+
+My first lookup matched the **A2** Hercules rather than the M2 — same family,
+alphabetically ahead. It reports **18 dots**, which is exactly the number C1's
+own per-hull table predicted for `CRUS_Starlifter_A2`. Two independent hulls
+matching the pre-build simulation.
+
+I re-ran targeted at the M2 rather than reporting the A2 as though it were the
+ship asked about.
+
+## Not done
+
+`build_hardpoint_placement.py` was NOT run — C1 says its output is already
+current (146 files against a manifest of 146) and the order says it should not
+be needed. Nothing committed, nothing pushed, live site untouched.
 
 ### 2026-08-27 19:06:22 — 20260827_2120_update_subject-gate-now-tested.md
 
@@ -1347,78 +1407,7 @@ the hardpoint-transforms data - which was sitting in the tree alongside mine.
 Next on the queue: Q5 the roadmap watcher past R0, Q6 the collector selftest,
 Q7 labelling checks that cannot meet hard rule 16.
 
-### 2026-08-27 17:29:47 — update-M3b-93-hulls-952-ports-2026-08-27.md
-
-# Update — M3b. Base hulls now reach their variants. 67 hulls to 93, 775 ports to 952.
-
-**C1, 2026-08-27 18:12 local.** My files. Overlay regenerated. Nothing built.
-
-    placements  79 converted / 73 passing   ->  137 converted / 127 passing
-    overlay     67 hulls / 775 ports        ->  93 hulls / 952 ports
-    T1 overlay entries absent from the fleet record   0
-    T2 mirrored left/right pairs in the overlay       265 / 273
-
-## What was blocking twenty hulls, and none of them obscure
-
-`AEGS_Avenger.cga` is the geometry. **`ships.json` has no AEGS_Avenger** - only
-`_Stalker`, `_Titan`, `_Titan_Renegade`, `_Warlock`. Same for the Hornet, the
-Constellation, the Aurora, the Mustang, the Zeus, the Spirit. The base hull is
-the thing CIG models; the ship rows are its variants.
-
-So a base now expands to its variants.
-
-## The part that could have gone badly, and what stops it
-
-**Variants are not interchangeable.** Sixteen rows sit under `ANVL_Hornet` with
-**three different published lengths - 22.5, 24 and 28.25** - and their own model
-files. An F7A Mk I and an F7C-M Super Hornet do not share a hull. Spraying one
-CGA's hardpoints across all sixteen is precisely the fuzzy-match failure this
-project has been bitten by twice.
-
-**THE NAME PROPOSES, THE GEOMETRY DISPOSES.** Each candidate is placed against
-**its own hull box and its own published length**, and kept only if the
-acceptance test says the exterior mounts land inside *that* hull. That test
-reads geometry and knows nothing about names.
-
-**It is doing its job:** `crus_starlifter_m2` came back with **14 of 15
-exterior mounts outside the hull** and is refused. The three Constellation
-variants fail on 3 of 22 each and are refused. Ten refusals in total, each named.
-
-## And I reintroduced a silent overwrite while fixing this, then caught it
-
-`anvl_hornet_f7a_mk1` matched **both** `ANVL_Hornet` and `ANVL_Hornet_F7A`. Both
-claimed it, both wrote the same output file, **the second silently won**, and
-the manifest listed it twice with one file on disk.
-
-That is the same silent-overwrite failure this repo has hit five times, put back
-by me while fixing something else. Caught by reading the manifest rather than
-the exit code.
-
-**Now claims are collected first and resolved deliberately: the most specific
-base wins** - `ANVL_Hornet_F7A` is a longer prefix than `ANVL_Hornet`, so it is
-the nearer geometry. **A tie is refused and both claimants are named**, never
-picked between.
-
-Every inherited placement carries `hardpoints_from` and
-`inherited_from_base_hull: true`. **64 of the placements are inherited** - a
-downstream consumer can tell a hull that was measured from a hull that was
-reasoned onto.
-
-## Still not fixed, named rather than implied
-
-**Ten hulls have no `hull-geometry` entry** - Basher, Fury, 85X, Mantis,
-Tiburon, Pitbull, Tyilui, Starlite, M80, Aurora Mk II. **Every one is a
-Fleetyards import from today**, and `hull-geometry` was generated before they
-existed. They have models and decoded hardpoints and cannot be placed until
-their boxes exist.
-
-**That generator is in your lane, not mine.** If it is a one-command run over
-`_deploy/models`, it is worth doing - it is ten ships including the Mantis,
-which is one of the two Sleven opened at random and found empty.
-
-*C1*
-
-*(+496 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+497 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
