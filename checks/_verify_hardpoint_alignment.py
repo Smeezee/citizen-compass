@@ -2,6 +2,13 @@
 # -*- coding: utf-8 -*-
 """Prove the alignment overlay can refuse, and picks its reference on purpose.
 
+RULE16: UNPROVEN - it imports hull_matches and the alignment functions from the
+modules it judges, so a wrong rule is applied identically on both sides
+of every gate assertion. What IS independent: the point clouds are
+hand-built here, the real Cutter case reads decoded geometry the
+alignment code never touched, and the apply guard is observed as a real
+SystemExit rather than as a verdict the function returns.
+
 Hard rule 12. This pass MOVES MARKERS ON SHIPS THAT ARE ALREADY LIVE, so the two
 things that decide what moves are driven here with input that must fail them:
 

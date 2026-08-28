@@ -1,6 +1,13 @@
 """
 The demonstration this work order names specifically:
 
+RULE16: UNPROVEN - the lifecycle is observed only through the table the
+lifecycle writes. The sabotage is external and the expected statuses
+(UNKNOWN, never CLOSED) are stated here rather than read back, but a
+defect that corrupted the transition AND its record together would be
+invisible to this. What it cannot reach is a second, independent account
+of what happened to a finding.
+
     deliberately break a checker and prove it produces UNKNOWN rather than a
     wave of CLOSED.
 

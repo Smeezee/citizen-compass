@@ -1,6 +1,13 @@
 /**
  * H1g-1 and H1g-2 - THE WHOLE PAGE DIMS, AND IT STAYS LEGIBLE WHILE IT DOES.
  *
+ * RULE16: UNPROVEN - the contrast arithmetic and the 4.5 floor are re-implemented
+ * here from the WCAG definition, which is a source the page did not
+ * produce. The token comparison is not: it reads the stylesheet's :root and
+ * the page's own CC_THEME engine and checks they agree with EACH OTHER.
+ * That catches drift between the two halves and cannot catch both being
+ * wrong together.
+ *
  * WHAT THIS MEASURES AND WHAT IT CANNOT, stated first because it bounds every
  * number below.
  *

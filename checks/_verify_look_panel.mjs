@@ -81,9 +81,17 @@ record(count(/data-style=/g) === 6,
   String(count(/data-style=/g)));
 record(count(/data-colour=/g) === 5, "five colours",
   String(count(/data-colour=/g)));
-record(count(/data-slider=/g) === 3,
-  "and the three sliders - line intensity, line detail, glow - which C1 said "
-  + "not to take", String(count(/data-slider=/g)));
+/* FOUR SINCE 2026-08-27. The fourth is `hullAlpha`, added on Sleven's own
+   request - *"is there any way we can make it a little bit more see through,
+   a little bit more transparent"*. The count is asserted by NAME as well as by
+   number, so a slider silently disappearing still fails here rather than being
+   masked by a new one arriving. */
+record(count(/data-slider=/g) === 4,
+  "and the four sliders - line intensity, line detail, glow, see-through",
+  String(count(/data-slider=/g)));
+record(/data-slider="lineInt"/.test(h) && /data-slider="detail"/.test(h)
+  && /data-slider="glow"/.test(h) && /data-slider="hullAlpha"/.test(h),
+  "and each of the four is the one it is supposed to be, by name");
 record(/data-view="scan"/.test(h),
   "scanlines are a control, which Sleven asked for by name");
 record(/data-view="grid"/.test(h) && /data-view="spin"/.test(h),
@@ -91,7 +99,7 @@ record(/data-view="grid"/.test(h) && /data-view="spin"/.test(h),
 for (const s of ["panel", "solidlines", "solid", "hull", "wire", "points"]) {
   record(new RegExp(`data-style="${s}"`).test(h), `  style: ${s}`);
 }
-state.notes.push(`the panel carries 6 styles, 5 colours, 3 sliders and 3 view `
+state.notes.push(`the panel carries 6 styles, 5 colours, 4 sliders and 3 view `
   + `toggles`);
 
 /* ------------------------------------- 3. THE DEFAULTS SLEVEN PINNED ---- */
@@ -130,7 +138,7 @@ record(calls.filter((c) => c === "remember").length >= 4,
 /* THE SLIDERS, which are input events rather than clicks. */
 g("_view").calls.length = 0;
 for (const [id, k] of [["tune-int", "lineInt"], ["tune-det", "detail"],
-                       ["tune-glo", "glow"]]) {
+                       ["tune-glo", "glow"], ["tune-alpha", "hullAlpha"]]) {
   H.clickHandlers.length + 0;   /* no-op, keeps the shape obvious */
   const node = { dataset: { slider: k }, value: k === "detail" ? "70" : "150",
                  closest: (s) => (s === "#cc-tune-panel input[data-slider]"
@@ -143,7 +151,7 @@ record((H.inputHandlers || []).length > 0,
   "the page listens for slider input at all",
   `${(H.inputHandlers || []).length} handlers`);
 const sc = g("_view").calls.filter((c) => c.startsWith("slider:"));
-record(sc.length === 3, "and all three sliders reach the viewer",
+record(sc.length === 4, "and all four sliders reach the viewer",
   JSON.stringify(sc));
 
 /* ------------------------------------------- 5. IT CLOSES ---------------- */

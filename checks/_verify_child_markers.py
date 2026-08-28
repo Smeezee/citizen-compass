@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 """Rule 12 control on C1/C2 - a gun inside a turret inherits its turret.
 
+RULE16: UNPROVEN - the BEFORE state is this same builder run with
+CC_NO_INHERIT=1, so both sides of every comparison come from one
+program. A defect in the part they share appears identically in both and
+cancels. The pinned four and the eligibility rule are stated here rather
+than read out of the build, and they are the independent half; the
+population is not.
+
 THE DEFECT
 ==========
 The placer works from `ship_mounts.json`, a flat list of TOP-LEVEL ports. The

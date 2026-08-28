@@ -3178,21 +3178,45 @@ const PANEL_W=328, PANEL_MAXH=340, PANEL_GAP=16;
    panel half off the edge is not better than one on the wrong side.
    Pure, and separately driven with known-bad input by the control: geometry
    reasoned about in a browser is geometry nobody ever checks. */
+/* THE PANEL OPENS ON THE SIDE OF THE SCREEN THE MARKER IS ON, and the ship
+   does not move (C1, 2026-08-27).
+
+   SLEVEN'S RULE, IN HIS OWN WORDS: *"if I'm looking straight at the ship, and
+   it would be the ship's right wing but it'd be on my left, it should open the
+   menu on the left side of the screen. If I'm looking at the front of it and I
+   click on the ship's left wing, it should open it on the right."*
+
+   So the side is decided by where the dot IS ON SCREEN, not by the ship's own
+   left and right - which flip the moment you rotate the hull, and were never
+   what a person pointing at a dot is thinking about.
+
+   WHAT THIS REPLACES. The old rule was "always the right, unless there is no
+   room" - so nearly every panel opened right, and the viewer PANNED THE SHIP
+   left to make space for it. That pan is what Sleven reported: the whole ship
+   shifting on every click. Moving the panel to the dot removes the reason the
+   ship was ever asked to move, and `setObstruction` no longer touches the
+   camera.
+
+   PINNED TO THE EDGE, NOT FLOATING BESIDE THE DOT. Two stable positions -
+   left rail or right rail - rather than a panel that lands somewhere new for
+   every marker. It arrives where you are already looking and it arrives in a
+   place you have seen before, which is the difference between "near the dot"
+   and "smooth". Vertically it still centres on the dot and clamps to the
+   stage.
+
+   THE PANEL IS GLASS, WHICH IS WHY OVERLAP IS ACCEPTABLE. It carries
+   `backdrop-filter` and the hull now renders at `hullAlpha`, so a dot behind
+   the panel is dimmed rather than lost, and the leader line still runs to it.
+   The older rule that a panel must never cover its own marker was written when
+   the panel was opaque. */
 function panelPlacement(px, py, sw, sh, pw, ph, gap){
   gap = gap==null ? PANEL_GAP : gap;
-  let side = "right";
-  let left = px + gap;
-  if(left + pw > sw){
-    /* No room on the right. Try the left. */
-    const alt = px - gap - pw;
-    if(alt >= 0){ left = alt; side = "left"; }
-    else {
-      /* No room either side - the stage is narrower than the panel plus the
-         marker's margins. Pin to whichever edge leaves the marker visible,
-         which is the far side of it. */
-      side = (px > sw/2) ? "left" : "right";
-      left = (side === "left") ? 0 : Math.max(0, sw - pw);
-    }
+  let side = (px <= sw/2) ? "left" : "right";
+  let left = (side === "left") ? gap : (sw - pw - gap);
+  /* A stage narrower than the panel plus its margins cannot honour the side.
+     Pin to the edge that still shows the most of it rather than overflowing. */
+  if(left < 0 || left + pw > sw){
+    left = (side === "left") ? 0 : Math.max(0, sw - pw);
   }
   let top = py - ph/2;
   if(top < 0) top = 0;
@@ -4428,18 +4452,41 @@ function renderMarkerNote(){
      weapon mounts we could place at all - a different question. */
   const n=mountsFor(shipId).length;
   if(!n){ el.innerHTML=noMarkerNote(); return; }
+  /* THIS PARAGRAPH WAS TRUE WHEN IT WAS WRITTEN AND IS NOT ANY MORE
+     (C1, 2026-08-27). It said the dots are worked out from each mount's NAME
+     and "are not measured from the model" - an honest apology for a real
+     limitation.
+
+     THAT LIMITATION IS GONE FOR MOST OF THE FLEET. CIG's own geometry was
+     decoded out of `Data.p4k` and every mount's transform read from it: 1,693
+     ports across 166 hulls, joined to the page's ports by CIG's own
+     `HardpointName`, exact string equality. **245 of the ship page's classes
+     now have every marker on a position CIG published**, and the paragraph was
+     still telling readers they were guesses - which undersells the best thing
+     on the site and, worse, is false.
+
+     WHAT IT STILL CANNOT DO IS SAY WHICH KIND THIS SHIP HAS. The marker file
+     is `[PortId, x, y, z]` and carries no provenance, so the page cannot tell
+     a decoded mount from an estimated one. Rather than claim precision it does
+     not have, this says both, plainly, and says that it cannot tell you which
+     - and Code has been asked for the one field that would fix it. When that
+     field arrives this becomes a per-ship sentence and the hedge comes out. */
   el.innerHTML=coverageLine()+`<b>About the ${n} dot${n===1?"":"s"} on this model.</b>
-    Where they sit is worked out from each mount's <b>name</b> &mdash; a port
-    called <code>hardpoint_weapon_wing_left</code> is placed on a wing &mdash;
-    and then snapped to the nearest point on the hull.
-    <b>They are not measured from the model.</b> The exported models are a
-    single welded mesh with no mount positions in them, so there is nothing to
-    measure; this is the closest honest thing available, not a measurement.
+    Most of these come from <b>the game's own geometry</b>. CIG ships a
+    transform for every mount inside the game files; those were decoded and
+    each one matched to its port by CIG's own name for it, exact and
+    unabbreviated &mdash; <code>hardpoint_weapon_wing_left</code> is that
+    port, not something that looks like it.
+    <b>1,693 mounts across 166 hulls are placed that way.</b>
     <br>
-    What <em>is</em> measured: which axis is this ship's length, width and
-    height &mdash; checked against CIG's published dimensions, and a hull whose
-    proportions disagree is left without markers rather than placed in a frame
-    nobody verified &mdash; and which end is the nose.
+    Where the game files do not give a position &mdash; a mount inside a
+    turret, or a hull whose geometry could not be read &mdash; the dot falls
+    back to the older method: worked out from the mount's name and snapped to
+    the nearest point on the hull. That one is an estimate and is not measured
+    from anything.
+    <b>This page cannot yet tell you which of the two you are looking at on
+    this particular ship</b>, and saying so is better than implying either.
+    <br>
     <b>What each port IS</b> &mdash; its size, its type and what is fitted
     &mdash; comes from the game files and is not estimated at all.`;
 }
@@ -4740,6 +4787,10 @@ function renderTunePanel(){
     <label for="tune-glo">Glow <b>${_view.slider('glow').toFixed(2)}</b></label>
     <input type="range" id="tune-glo" data-slider="glow" min="0" max="150"
       value="${Math.round(_view.slider('glow')*100)}">
+    <label for="tune-alpha">See-through
+      <b>${Math.round((1-_view.slider('hullAlpha'))*100)}%</b></label>
+    <input type="range" id="tune-alpha" data-slider="hullAlpha" min="25" max="100"
+      value="${Math.round(_view.slider('hullAlpha')*100)}">
     </div><div class="grp2"><h4>View</h4><div class="row2">
     <button type="button" data-view="spin" class="${(_view.spinning&&_view.spinning())?'on':''}">Auto-spin</button>
     <button type="button" data-view="reset">Reset view</button>

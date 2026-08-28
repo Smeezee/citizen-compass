@@ -3,6 +3,13 @@
 """
 _verify_deploy_drift.py - _deploy is BUILT from _src, and nothing else.
 
+RULE16: UNPROVEN - the byte comparison IS independent: _src and _deploy are two
+artifacts, and a hand edit to one shows against the other. The trademark
+assertion is not. It imports attribution.TRADEMARK_HTML from the module
+the BUILD uses, deliberately - rule 8 and rule 14 both forbid a second
+copy of that text - so the strip is judged against the build's own
+definition, and a change to that definition passes here unremarked.
+
 I7 of the 2026-08-21 order: "Confirm _deploy is genuinely built from _src and
 nothing was hand-edited into _deploy only. Anything found there would be
 silently destroyed by the next build, and it would look like a regression

@@ -222,8 +222,15 @@ console.log("\n--- 4. the coverage line was added, nothing was displaced ---");
   const note = noteFor(k);
   record(/About the \d+ dots? on this model/.test(note),
     "the existing provenance note is still there");
-  record(/not measured from the model/i.test(note),
-    "including the sentence that says the positions are derived, not measured");
+  /* WAS: /not measured from the model/. This section exists to prove the
+     coverage line was ADDED WITHOUT DISPLACING the provenance note - it is
+     about the note surviving, not about which words are in it. The words
+     changed on 2026-08-27 when CIG's own geometry replaced the derived
+     positions for most of the fleet, and N9 in _verify_ship_page.mjs is where
+     the wording itself is asserted. What is checked here is what this section
+     is actually for: the note still explains where the dots come from. */
+  record(/geometry|estimate/i.test(note),
+    "including the sentence that says where the positions come from");
 }
 
 finish();

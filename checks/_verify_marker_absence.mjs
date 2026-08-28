@@ -147,8 +147,14 @@ console.log("\n--- 2. a hull WITH markers shows neither message ---");
   record(!NONE_MSG.test(note) && !NOPOS_MSG.test(note),
     "and neither absence message - without this, a build that printed one on "
     + "every ship would pass everything above");
-  record(/not measured from the model/i.test(note),
-    "the N9 honesty note is untouched");
+  /* WAS: /not measured from the model/. This section proves a ship WITH
+     markers does not get an absence message - the honesty note is only being
+     used as a marker that the real note is present. Its wording changed on
+     2026-08-27 (CIG geometry replaced the derived positions on most hulls);
+     the wording itself is N9's business, in _verify_ship_page.mjs. Matched on
+     what makes it that note rather than on a sentence that has moved on. */
+  record(/dots? on this model/i.test(note),
+    "and it is the real provenance note, not something shorter");
 }
 
 /* --------------------------------- 3. EVERY HULL, FROM ITS OWN DATA ---- */

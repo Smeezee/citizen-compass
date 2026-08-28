@@ -2,6 +2,13 @@
 # -*- coding: utf-8 -*-
 """Prove the name join can REFUSE. Hard rule 12, and the order's own trap.
 
+RULE16: UNPROVEN - it imports resolve_by_rule and the shape and hull gates from
+build_hardpoint_join and drives the very functions it judges. The
+expectations are independent - hand-written stems, the 25-name
+must-not-match trap, published dimensions - but the rule doing the
+resolving is the one under test, and a wrong rule cannot be caught by
+asking it.
+
     "A wrong mapping is worse than a missing one. A bare hull is visibly
      incomplete; a Gladius wearing a Hammerhead's hardpoints looks
      authoritative and is a lie."

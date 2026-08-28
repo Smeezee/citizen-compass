@@ -39562,3 +39562,670 @@ name 404s today. That remains his to do, and nothing about tonight changes it.
 
 Probe files moved to `_to_delete/probes-2026-08-27/`, never deleted. Nothing
 committed, nothing pushed, live site untouched.
+
+### 2026-08-27 21:52:15 — 20260827_2205_update_committed-tonights-work.md
+
+# Update — Committed. `2fc7008`, 395 files. Not pushed.
+
+**2026-08-27 22:05 local · Code (background session)** — Sleven: *"not yet,
+commit everything from tonight"*.
+
+    2fc7008  Thirteen of the sweep's fourteen close, and the live deploy stops
+             being the unguarded one
+
+    395 files changed, 341,378 insertions(+), 18,624 deletions(-)
+    working tree after: clean
+
+**Committed, NOT pushed.** He said commit. The live site is untouched and its
+worker still 404s.
+
+## What went in
+
+Everything from tonight, both sides of it:
+
+    data-layer/   328   C1's placement, transforms and client overlay - the
+                        ground vehicles, the blind-folder hulls, the origin fix
+    docs/          40   the findings, the orders, the whole handoff archive
+    checks/        16   ten controls closed, plus the shared loadout harness
+    testing/        3   build_deploy.py, loadout.src.html, the marker table
+    scripts/        1   deploy_live.ps1 - both gates
+    root            5   the three hardpoint builders and C1's two probes
+
+## Checked before staging, not after
+
+    .env                      gitignored
+    data-layer/external-sources/  gitignored
+    _to_delete/               gitignored
+    testing/_deploy/          gitignored
+    staged files matching env/secret/token/credential/.glb/.p4k:  none
+
+## Two judgement calls, named rather than buried
+
+**C1's `probe_join_by_hardpoint_names.py` and `probe_vehicle_entity_records.py`
+are in.** They are throwaway probes at the repo root and I would normally leave
+them out - but "everything from tonight" is explicit, and dropping files is the
+riskier deviation. Say if you want them out; they come out cleanly.
+
+**The old marker baseline is committed as a DELETE.** It was moved to
+`_to_delete/child-marker-rebaseline-2026-08-27/` under rule 1, not deleted, and
+`loadout_marker.pre-C1-20260827.js` replaces it in the same commit.
+
+## One order I had not read until now, and it is already done
+
+`ORDER-build-again-a-real-defect-was-in-the-markers-2026-08-27.md` (21:12) - C1
+found markers sitting at the dead hull origin, which is CIG's never-set identity
+value rather than a gun at the centre of the ship, and withheld 27 overlay ports
+plus 318 record ports. That is the **1,720 -> 1,693** I recorded at 21:43 as
+"a number that moved and is not mine".
+
+**The build that carries it is already deployed** - version
+`bbd2a7d7-7979-4980-8984-7f1e9dec042c`, built at 21:32, reporting exactly
+`1693 port(s) moved onto CIG positions`. Nothing further to run for it.
+
+Worth repeating C1's own note on it, because it is the same lesson twice in one
+night: its first attempt tested the raw `pos` for exact zero and eleven ports
+still came out at the origin, because `unit` is `pos / H0` rounded to five
+decimals. **Testing the input to a rounding step tells you nothing about its
+output** - the same shape as a gate that never ran and a flag that never applied.
+
+## Still open
+
+- `_verify_placer_candidates.py` - belongs to `place_fleet.py`, which is not in
+  this repo.
+- Going live. Four commands, and the first one creates the worker. Sleven's.
+
+Nothing pushed.
+
+### 2026-08-27 21:55:10 — 20260827_2210_update_pushed.md
+
+# Update — Pushed. `575d38b..2fc7008` on `origin/main`, verified from the remote's side.
+
+**2026-08-27 22:10 local · Code (background session)** — Sleven: *"push it"*.
+
+    git push origin main
+    To https://github.com/Smeezee/citizen-compass.git
+       575d38b..2fc7008  main -> main
+
+## Verified against the remote, not against the push output
+
+A push that printed a ref update is not the same as a remote that has it, so I
+fetched and compared:
+
+    local  HEAD         2fc7008131fbc7b58ecceeddec87149d3432e5d9
+    origin/main         2fc7008131fbc7b58ecceeddec87149d3432e5d9
+    ahead / behind      0 / 0
+
+Fast-forward, no force, nothing rewritten. `main` was 1 ahead and 0 behind
+before the push, so there was nothing on the remote to rebase onto or clobber.
+
+## What is now public
+
+**The repository is public** - `github.com/Smeezee/citizen-compass` - so those
+395 files are readable by anyone from this moment. Said plainly rather than
+assumed: it is the same repo the download page already links to, and the staged
+set was checked for `.env`, secrets, tokens, credentials, `.glb` and `.p4k`
+before the commit, all of which are gitignored or absent.
+
+**This is the CODE going public, not the SITE.** The live worker still returns
+404 and `deploy_live.ps1` has still never been run for real.
+
+## Working tree after
+
+Four entries, all of them the watcher doing its job on the note above:
+
+    M  LATEST_HANDOFF.md
+    M  docs/handoff_archive/.handoff_update_counter
+    M  docs/handoff_archive/_updates_log.md
+    ?? docs/handoff_archive/20260827_215215_..._committed-tonights-work.md
+
+That is the handoff pipeline recording the commit, which by definition lands
+after it. Nothing from tonight's work is unpushed.
+
+## Still open, unchanged by this
+
+- `_verify_placer_candidates.py` - `place_fleet.py` is not in this repo.
+- Going live. Four commands, the first creates the worker, and they are Sleven's.
+
+### 2026-08-27 21:56:40 — 20260827_2158_update_the-recycle-bin-order-is-rule-1.md
+
+# Update — `ORDER-send-the-old-attic-to-the-recycle-bin` is outstanding, and it is the one kind of order I do not execute. Verifying it instead.
+
+**2026-08-27 21:58 local · Code (background session)** — checked the updates.
+Inbox empty, no new C1 handoff notes since 20:47, but three C1 documents are
+unactioned and one of them is an ORDER.
+
+## The order
+
+`ORDER-send-the-old-attic-to-the-recycle-bin-2026-08-27.md` (21:18) asks me to
+send **157 items / 3.10 GB** of `_to_delete/` to the Recycle Bin, holding back
+32 items / 5.07 GB dated today.
+
+**HARD RULE 1: "Sleven deletes it himself."** The rule names `rm`, `del`,
+`Remove-Item`, `rmdir` and `shutil.rmtree`; the order uses
+`[Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory(...,'SendToRecycleBin')`,
+which is not on that list by name. The rule also says: *"If you are ever unsure
+whether an action falls under one of these, it does. Ask. Do not guess."*
+
+I am not unsure, as it happens - removing 3.1 GB from the repo directory is the
+thing rule 1 exists to stop, whatever the API is called. And the quote in the
+order is **Sleven speaking to C1**, not to me in this session.
+
+## So I am doing the half that IS mine
+
+Sleven's actual words in the order are *"verify that it's just old stuff we
+don't need anymore"*. That verification is exactly my job and does not touch a
+byte:
+
+  1. re-measure C1's split independently - counts and sizes, either side of the
+     cutoff
+  2. re-check the claim that nothing in the repo READS from `_to_delete`
+  3. check one thing the order does not mention, which I think matters
+
+Findings next. Nothing has been moved, recycled or deleted.
+
+### 2026-08-27 21:59:34 — 20260827_2202_update_the-recycle-order-stops-on-its-own-condition.md
+
+# Update — Verified the recycle order. It fails its OWN stop condition, and the command would bin a backup the order says to hold.
+
+**2026-08-27 22:02 local · Code (background session)** — follow-on to 21:58.
+**Nothing has been moved, recycled or deleted.**
+
+`docs/FINDING_the-recycle-order-would-bin-a-backup-it-said-to-hold-2026-08-27.md`
+
+## The measurement
+
+    ORDER says                       MEASURED
+    SEND   157 items   3.10 GB       161 items   4.20 GB
+    HOLD    32 items   5.07 GB        30 items   3.41 GB
+
+The order says: *"If it does not move roughly 157 items and ~3.1 GB, stop and
+say so rather than re-running it with a wider date."* **It does not. Stopping.**
+
+## The gigabyte has a name
+
+    20260827T030607Z_source1_git   1.31 GB   LastWriteTime 2026-08-26
+
+**The order HOLDS that folder** — it is one of the five same-day backups, listed
+at 1.40 GB as "dated TODAY". Its LastWriteTime is yesterday. The order judged it
+by the run id in its NAME; the command filters on `LastWriteTime`. Where those
+disagree the command wins, silently, and it bins a same-day backup — the one
+trade the order itself says this project should never make.
+
+**The split is sound. The filter does not implement it.**
+
+## A correction to the order, conclusion unchanged
+
+*"Nothing in the repo READS from `_to_delete`"* is not so — `_verify_model_scale.mjs`,
+`_verify_marker_positions.mjs` and `_verify_takedown.py` all read it. **All three
+are safe under this sweep** and I checked each rather than assuming: their inputs
+are either dated today and held, or scratch directories the controls recreate.
+
+Worth correcting anyway, because "nothing reads it" is a premise that gets reused
+next month against a different cutoff.
+
+## And one worry I can retire
+
+A too-large item would be permanently deleted rather than binned, with
+`OnlyErrorDialogs` hiding the prompt. Checked: `NukeOnDelete = 0` on every
+volume, bin capacity 13–192 GB, 495 GB free, largest item 1.55 GB. **No
+silent-permanent-delete risk.**
+
+## Rule 1
+
+I am not running it. *"Sleven deletes it himself."* The order uses the VisualBasic
+Recycle Bin API rather than `Remove-Item`, which is not on rule 1's list by
+name — and the rule's answer to that is *"if you are ever unsure, it is."* The
+go-ahead quoted in the order is also Sleven speaking to C1, not here.
+
+The finding carries the corrected command, holding the one mis-sorted folder by
+name: **160 items / 2.89 GB**, every same-day backup untouched. Sleven runs it.
+
+## Also unactioned, and neither needs me tonight
+
+- `PROPOSAL_the-marker-pipeline-is-four-layers-deep...` (21:00) — a proposal,
+  wants a decision rather than work.
+- `FINDING_the-economy-data-we-never-opened...` (21:50) — C1's, informational.
+
+### 2026-08-27 22:01:56 — 20260827_2206_update_running-the-recycle-with-the-corrected-filter.md
+
+# Update — Sleven: *"run it with the corrected filter"*. Running it, and writing down the authority before I do.
+
+**2026-08-27 22:06 local · Code (background session)**
+
+## Why I am running a rule 1 action
+
+Hard rule 1 says **"Sleven deletes it himself"**, and at 22:02 I reported rather
+than ran, on exactly that basis.
+
+**He has now told me to run it, in this session, in this message, for this
+specific action, with the corrected filter I proposed.** That is the same
+standard rule 2 sets for a commit — *"Sleven saying so, in that message, for that
+change"* — and it is met. The rule exists so that Code does not decide what goes;
+Sleven has decided.
+
+## The guard I am adding on top of the order's
+
+The order's own stop condition is a count and a size. Mine is stricter: the
+script **recomputes the selection and refuses to touch anything** unless it
+matches what I measured and reported at 22:02 —
+
+    160 items, 2.89 GB, holding 20260827T030607Z_source1_git by name
+
+If the disk has moved since (a control writing a new attic, C1 moving something
+aside), the numbers change and it stops without recycling a single item. **The
+cutoff is not widened and is not a parameter.**
+
+## Rule 4, and why there is no backup step
+
+*"Take a verified backup before anything destructive or irreversible."* This is
+neither. Every item goes to the Recycle Bin, `NukeOnDelete = 0` on every volume,
+bin capacity 13–192 GB against a largest item of 1.55 GB, 495 GB free — all
+measured at 22:00. **The Recycle Bin IS the backup**, and backing up the attic
+would be backing up a backup.
+
+## Rule 5, and the list
+
+Bulk work gets a report-only pass first, and it had one — the 22:02 note carried
+the count and the size and Sleven has seen it. The run below prints **every item
+by name, size and date before it touches anything**, so the record of what went
+is itemised rather than a total.
+
+### 2026-08-27 22:04:09 — 20260827_2212_update_recycled-160-items-2-89-gb.md
+
+# Update — Recycled. 160 of 160 items, 2.89 GB freed, 0 failures, and confirmed from the Recycle Bin's side.
+
+**2026-08-27 22:12 local · Code (background session)** — Sleven: *"run it with
+the corrected filter"*.
+
+    recycled : 160 of 160 items
+    failures : none
+    _to_delete now: 31 items, 4.72 GB   (was 191 items, 7.61 GB)
+    freed: 2.89 GB
+
+Exactly the 160 / 2.89 GB reported at 22:02, to the item.
+
+## The guard fired the way a guard should — by not firing
+
+The script recomputed the selection immediately before touching anything and
+was set to **throw without recycling a single item** if it did not still come to
+160 / 2.89 GB. It matched, so it proceeded. Had a control written a new attic in
+the four minutes between the report and the run, this would have stopped instead.
+
+**The cutoff was not widened.** The one mis-sorted folder was held by name:
+
+    20260827T030607Z_source1_git   still present   LastWriteTime 2026-08-26
+
+That is the 1.31 GB same-day backup the order listed as HOLD and its own filter
+would have binned.
+
+## Confirmed from the OUTSIDE, because exit 0 is not proof
+
+    recycle bin holds 160 top-level items
+
+and the three largest are there by name — `20260801T204744Z_source1_git`
+(1.55 GB), `collector_deadweight_20260809` (1.00 GB),
+`starmap-routes-pyro-testrun-20260805` (0.27 GB). **Nothing was permanently
+deleted; everything is one restore away and Sleven empties the bin.**
+
+## And the three controls that read `_to_delete` still pass
+
+The order claimed nothing reads it; I found three that do, and said the
+conclusion held anyway. That was a prediction until now:
+
+    _verify_model_scale.mjs      exit 0   GREEN - every imported ship is the
+                                          size its own record says it is
+    _verify_marker_positions.mjs exit 0   GREEN - the markers are on CIG's own
+                                          coordinates
+    _verify_takedown.py          exit 0   PASSED: 19 assertions
+
+**Measured after the sweep, not argued before it.**
+
+## What is left in the attic
+
+31 items, 4.72 GB, every one of them dated today except the held backup — the
+three `pre_scale_fix_*`, `pre_holo_regen`, `pre_overlay_regen`, both
+`*_source1_git` snapshots, tonight's drift plants and probes, and
+`child-marker-rebaseline-2026-08-27`.
+
+Per the order, the 4.3 GB of git folders can go with the next sweep once 4.10
+has settled. **They are the before-state of everything that landed today.**
+
+Nothing committed since `2fc7008`; `_to_delete/` is gitignored, so nothing about
+this touches the repository's contents.
+
+### 2026-08-27 22:11:48 — 20260827_2218_update_whats-next-measured-q7-is-the-only-one-left.md
+
+# Update — Checked every DONE-WHEN on Code's queue by running it. Q1–Q6 are satisfied. Q7 is the only one left, and it is 86 files.
+
+**2026-08-27 22:18 local · Code (background session)** — Sleven: *"whats next"*.
+
+`NEXT.md` says to check the DONE-WHEN myself rather than assume the file is
+current. So I did, one at a time, by running the thing that decides it.
+
+## Q1 — ARMOUR NAMING — **DONE**
+
+`_verify_armour_naming.mjs` is GREEN, and it is in the deploy's own gate list, so
+it has run before every upload tonight.
+
+## Q2 — A FAILED BUILD MUST NOT REACH A DEPLOY — **DONE**
+
+Proven on BOTH scripts and now asserted on every run, `_verify_deploy_guards.py`
+section 10: refuses a failed receipt, names the exit code, never reaches the dry
+run, `-IgnoreFailedBuild` gets past it loudly, and an unreadable receipt is
+refused. 83 passed, 0 failed.
+
+## Q3 — SCALE THE 12 FROM `model_scaled.glb` — **DONE**
+
+Both halves of the DONE-WHEN, measured:
+
+    _verify_model_scale.mjs        GREEN - every imported ship is the size its
+                                   own record says it is
+    _verify_holo_placement.py      ALL 8 CHECKS PASSED
+                                   (178 ships, 5,634 axis placements)
+
+## Q4 — THE DISCLOSURE BAR ON THE OTHER THREE PAGES — **DONE**
+
+`_verify_disclosure.mjs` exit 0, GREEN. The build shares `_disc.css` into
+`index`, `keybinds`, `loadout` and `find` on every run.
+
+## Q5 — THE ROADMAP WATCHER, PAST R0 — **DONE**
+
+    _verify_roadmap_board.py   GREEN - board 1 is the live release view
+    _verify_roadmap_watch.py   9 checks, 0 failed - the watcher refuses a board
+                               that is not the release view
+
+R1 is built, not just specified: `scripts/roadmap_watch.py:141 write_finding()`
+writes `docs/FINDING_roadmap-change-<date>.md`, and `--dry-run` explicitly does
+not. R2 and R3 are stances and are carried in the module's own docstring. The
+state is real rather than empty: **board 1, 828 cards, with a fetch time**.
+
+## Q6 — RUN THE COLLECTOR SELFTEST — **DONE**
+
+`FINDING_the-collector-selftest-runs-and-4-10-is-on-this-machine`:
+**575 checks, 0 failed, 0 void** — and the order's estimate of ~190 was low by a
+factor of three. Written down, which was the deliverable.
+
+## Q7 — LABEL EVERY CHECK THAT CANNOT MEET RULE 16 — **THE ONLY ONE LEFT**
+
+    labelled            11  (6 INDEPENDENT, 5 UNPROVEN)
+    unlabelled          86
+    malformed label     0
+
+    GREEN - every check either declares its rule 16 status or was already on the
+    baseline. 86 gap(s) still on the list.
+
+**The control passing is not the item being done.** It is a ratchet: the 86 sit
+in `checks/rule16_baseline.txt` as recorded DEBT, the baseline can only shrink,
+and Q7's DONE-WHEN is *"every check in `checks/` either draws its truth from a
+real source or carries an UNPROVEN label naming what it could not reach"*.
+
+### What the work actually is, per file
+
+Read the check, decide honestly which of two things is true, and write one line
+in the first few lines of the file:
+
+    RULE16: INDEPENDENT - <where the truth comes from, and why the thing under
+                          test could not have produced it>
+    RULE16: UNPROVEN    - <what it could not reach>
+
+**INDEPENDENT means EVERY assertion in the file draws on a source the code under
+test did not produce.** If one assertion does not, the file is UNPROVEN. So this
+is not a labelling pass — it is 86 honest re-readings, and the expected outcome
+is that **the board looks worse before it looks better**, which `NEXT.md` already
+says is the point.
+
+It is also the one queue item with no dependency and no decision waiting on
+anyone.
+
+## Not on Code's queue, and not mine to start
+
+- **`_verify_placer_candidates.py`** — the last of the sweep's 14. It diffs
+  `place_fleet.py`'s output and **`place_fleet.py` is not in this repo.**
+  Unowned rather than open.
+- **`PROPOSAL_the-marker-pipeline-is-four-layers-deep...`** (21:00) — wants a
+  decision from Sleven, not work from me.
+- **Going live** — four commands, the first creates the worker, and Sleven has
+  said not yet.
+
+**Unless told otherwise I will start Q7**, in tranches, filing as I go rather
+than in one lump at the end.
+
+### 2026-08-27 22:26:23 — 20260827_2228_update_rule-14-fired-c1-wrote-into-testing-src.md
+
+# Update — RULE 14 FIRED. C1 wrote directly into `testing/_src/` at 22:10 and 22:15, and the drift control caught it. Also: Q7 tranche 1 is done.
+
+**2026-08-27 22:28 local · Code (background session)** — the rule 14 event is the
+headline, so it goes first.
+
+---
+
+# 1. A SECOND WRITER IN `testing/_src/`
+
+Two files were modified after my last build (21:43) and after tonight's commit
+`2fc7008`. **I did not make these edits.**
+
+    testing/_src/cc_viewer.js       22:10:29
+    testing/_src/loadout.src.html   22:15:22
+
+Both diffs name their author in their own comments: **"(C1, 2026-08-27 …)"**.
+
+## Hard rule 14
+
+> **`testing/` — Claude Code, and nothing else.** … **C1 does not push files into
+> `testing/`** and C2 does not write to the repo at all.
+
+The rule records two previous instances, both on this exact file family:
+
+> a concurrent session rewrote `_layer.src.html` mid-verification, twice in one
+> evening. Once it deleted a keybinds overlay and a compliance strip that were
+> caught only by a marker check before deploy.
+
+**This is the third.** It was caught the way rule 14 says it must be — *"make an
+unauthorised write loud and immediate, and refuse to ship un-provenanced content.
+Detect on every build, fail the deploy, name the files that moved"*:
+
+    3. THE COPIED FILES AGAINST _src, EVERY INJECTION DECLARED
+      FAIL  loadout.html no longer contains its _src text outside the declared injections
+            cc_viewer.js differs from _src/cc_viewer.js
+    4. THE ASSEMBLED FILE - index.html, PROVEN BY REBUILDING
+      FAIL  and so is every copied file (moved: loadout.html, cc_viewer.js)
+
+**`_verify_deploy_drift.py` is not broken. It is the detector, and this is the
+first time it has fired in anger.** I green-lit it at 21:32 tonight; it went red
+the moment a write it did not expect landed.
+
+## WHAT was written, because the channel is the problem and the content is not
+
+Both changes are substantial, well-commented, and **quote Sleven's own words**:
+
+**`cc_viewer.js` — the hull becomes translucent.** A new `hullAlpha: 0.86` dial
+and a `uAlpha` shader uniform, against *"is there any way we can make it a little
+bit more see through, a little bit more transparent"*. `solid` was
+`transparent: false`, so the only way to see into a ship was `xray`, a different
+look entirely — there was no "a little bit".
+
+**`loadout.src.html` — the panel opens on the side of the screen the marker is
+on, and the ship stops moving.** Against *"if I'm looking straight at the ship,
+and it would be the ship's right wing but it'd be on my left, it should open the
+menu on the left side of the screen."* The old rule opened right and PANNED THE
+SHIP to make room, which is the shifting Sleven reported.
+
+**This is authorised work arriving through the wrong door.** I am not reverting
+it and I am not going to characterise it as damage. What rule 14 exists to stop
+is a write nobody notices, and the point of the detector is that this one did not
+go unnoticed.
+
+## The state of play, exactly
+
+- **The deployed testing site (`bbd2a7d7`) does NOT carry either change.**
+- **`testing/_deploy` now DOES.** The drift control's section 4 rebuilds by
+  design, so at 22:22:32 it rebuilt the payload with C1's `_src` in it. The
+  build directory and the served site no longer agree.
+- Nothing was deployed, and I have not built since.
+
+## C1's work is GREEN under every control I can point at it
+
+Run after the 22:15 edit, against the current source:
+
+    _verify_stage_panel.mjs      ok   (the panel's own control)
+    _verify_ship_page.mjs        ok   242 assertions
+    _verify_panel_dismiss.mjs    ok
+    _verify_settings_revision.mjs ok
+    _verify_disclosure.mjs       ok
+    _verify_armour_naming.mjs    ok
+    _verify_look_panel.mjs       ok
+
+**So the objection is procedural, not substantive.**
+
+## THE DECISION I AM NOT TAKING ON MY OWN
+
+Sleven's standing instruction is that the day's work reaches the test page the
+same day, and this is his own request implemented. Against that, rule 14 says
+**refuse to ship un-provenanced content**, and this session neither wrote nor was
+handed these changes.
+
+**Say build-and-deploy and I will**, in the next message — the payload is already
+rebuilt, the checks are green, and it is one command plus verification. I am not
+going to infer it.
+
+---
+
+# 2. Q7, TRANCHE 1 — 11 files labelled
+
+    labelled     22  (7 INDEPENDENT, 15 UNPROVEN)
+    unlabelled   75     (was 86)
+    malformed     0     GREEN, exit 0
+
+The baseline shrank by exactly 11. The gate fails if a line names a file that no
+longer needs it, so the debt list cannot rot into fiction.
+
+**One INDEPENDENT, and it had to earn it:** `_verify_deploy_guards.py` runs the
+REAL scripts as subprocesses and reads only their exit codes and printed
+refusals. Nothing is imported from them, the payload markers are spelled out
+here rather than copied from them, and every input is one the control built — an
+absent check file, a check that genuinely exits 1, a receipt planted as failed, a
+receipt that is not JSON.
+
+**Ten UNPROVEN, each naming what it could not reach.** The pattern that decided
+most of them: `_verify_hardpoint_join.py` and `_verify_hardpoint_alignment.py`
+**import the very functions they judge**, so a wrong rule is applied identically
+on both sides and cannot be caught by asking it. `_verify_child_markers.py`'s
+BEFORE state is the same builder with a switch flipped. `_verify_g3_matcher_delta.py`
+diffs the subject's own report against itself. `_verify_dim.mjs` proves the
+stylesheet and the theme engine agree with EACH OTHER, which cannot catch both
+being wrong together.
+
+**Verified by running all 11.** Ten pass unchanged; the eleventh is
+`_verify_deploy_drift.py`, red for the reason in part 1 and not because of its
+label.
+
+**Tranche 2** is the seven label and marker controls. Groundwork done:
+`_verify_label_threshold.mjs` re-measures its threshold from the fleet each run
+and shrinks the stage to make the answer move — that reads INDEPENDENT.
+`_verify_marker_absence.mjs` judges the page's ABSENCE MESSAGE against the
+generated marker and slot data, which the message logic did not produce.
+
+Nothing committed since `2fc7008`. Nothing deployed. Live site untouched.
+
+### 2026-08-27 22:32:46 — 20260827_2233_update_building-c1s-transparency-and-panel-side.md
+
+# Update — Sleven: *"build and deploy it"*. Building C1's two changes, with the provenance recorded rather than waved through.
+
+**2026-08-27 22:33 local · Code (background session)**
+
+## What is being shipped, and where it came from
+
+Two changes written directly into `testing/_src/` by C1 at 22:10:29 and
+22:15:22 — a rule 14 breach in the channel, caught by
+`_verify_deploy_drift.py`, reported at 22:28, and **now authorised by Sleven in
+this session**:
+
+    cc_viewer.js       hullAlpha 0.86 and a uAlpha shader uniform - the hull
+                       reads translucent instead of solid
+    loadout.src.html   the panel opens on the side of the SCREEN the marker is
+                       on, and the viewer no longer pans the ship to make room
+
+**Rule 14's requirement was "make an unauthorised write loud and immediate, and
+refuse to ship un-provenanced content."** It was made loud, it was reported, and
+it is no longer un-provenanced: Sleven has now looked at it and said ship it.
+That is the rule working, not the rule being bypassed.
+
+## Checked before building
+
+Nothing has been written since **22:22:32**, which was the drift control's own
+rebuild. C1's source edits are the newest hand-made change and the derived data
+has not moved since 21:10:48, so this is a stable snapshot rather than a moving
+one.
+
+## After the deploy I will re-run `_verify_deploy_drift.py`
+
+It is red right now **because** `_deploy` and `_src` disagree. A deliberate build
+is what makes them agree again, so that control going back to 12/0 is the proof
+that the payload is what the source says it is — not a separate errand.
+
+Nothing committed since `2fc7008`. Live site untouched.
+
+### 2026-08-27 22:35:29 — 20260827_2237_update_deployed-c1s-changes-and-drift-is-green-again.md
+
+# Update — Deployed. C1's transparency and panel-side changes are live on testing, and `_verify_deploy_drift.py` is back to 12/0.
+
+**2026-08-27 22:37 local · Code (background session)** — Sleven: *"build and
+deploy it"*. Version `8589fbab-851a-4c58-ba49-936b1e77902b`.
+
+## Exactly the two files C1 touched, and no others
+
+    + /cc_viewer.js
+    + /loadout.html
+    Uploaded 2 files (522 already uploaded)
+
+**Two uploads for two changed sources** is the correct blast radius. If a third
+file had moved, that is the number that would have said so.
+
+Build clean: seven in-process gates passed, `deploy guard: safe to deploy`,
+4 browser checks GREEN, hull markers unchanged at **6,400 on 271 hulls**.
+
+## THE DETECTOR IS GREEN AGAIN, AND THAT IS THE POINT
+
+    _verify_deploy_drift.py    12 passed, 0 failed    exit 0
+
+It was red at 22:18 **because** `_deploy` and `_src` disagreed after C1's write.
+A deliberate build is what makes them agree, so this going back to 12/0 is the
+proof that the payload is what the source says it is. **The rule 14 detector
+went red on an unauthorised write and green again once the write was
+acknowledged and shipped through the front door.** That is the whole mechanism
+working end to end, for the first time.
+
+## Both features confirmed in the SERVED bytes, not in the build log
+
+    served /cc_viewer.js     hullAlpha: 0.86        13 occurrences
+    served /loadout          let side = (px <= sw/2) ? "left" : "right"   present
+    served /loadout          the old `let side = "right"` rule             GONE
+    served /loadout          C1's rationale comment                        present
+
+And the served page is byte-identical to what was built:
+
+    served  sha256 6d8d2e279a6f18c6...
+    local   sha256 6d8d2e279a6f18c6...
+
+**Fetched from `/loadout`, not `/loadout.html`.** My first attempt used the
+`.html` path and came back **0 bytes**, which I nearly wrote up as a missing
+feature — the worker serves the extensionless route. Worth recording: a
+zero-byte fetch reads exactly like a page that lost the change.
+
+## Still green after the deploy
+
+    _verify_deployed_links.mjs    SWEEP CLEAN, canary reporting
+    Drake Buccaneer               8 dots, 8 visible, model loaded
+
+## The provenance, stated once more so the record is complete
+
+These two changes entered `testing/_src/` from C1 rather than through this
+session — a rule 14 breach in the channel, detected at 22:18, reported at 22:28,
+and authorised by Sleven at 22:33. **The content was never the objection**; every
+control that touches it was green before the deploy and after.
+
+What rule 14 asks for is that such a write be loud and immediate rather than
+found later in a diff. It was.
+
+Nothing committed since `2fc7008` — the two source files and the rebuilt payload
+are in the working tree. Live site untouched; its worker still 404s.

@@ -3,6 +3,12 @@
 """
 H2 / H3 / H5 - the model-to-ship resolution, and the pairs it must REFUSE.
 
+RULE16: UNPROVEN - every count and every list is read out of the report the
+resolver itself writes, so this is largely the resolver's own account of
+its work. The four known-bad pairs are the independent part: a
+human-verified list of matches that MUST be refused, named here and
+checked by name, which is what this control is really for.
+
 THE RULE THIS DEFENDS IS "NO FUZZY MATCHING", and it is not abstract. On this
 exact data, guessing has already produced four confident wrong pairs:
 

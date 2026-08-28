@@ -1,6 +1,13 @@
 /**
  * B3 acceptance: WEAPONS ARE CHOSEN ON THE MODEL. INTERNAL COMPONENTS ARE NOT.
  *
+ * RULE16: UNPROVEN - the load-bearing assertion compares the marker entrance
+ * against the list entrance and requires byte-identical panels. Both are
+ * produced by the page, so it proves the two routes agree with EACH OTHER
+ * and cannot prove either is right. The rule deciding which home a port
+ * opens in is stated here and driven across the whole fleet, and that is
+ * the independent half.
+ *
  * Sleven's own scoping is the rule for the item:
  *
  *   "the guns and missiles and stuff, and the gimbals and stuff, that can go
@@ -76,21 +83,55 @@ console.log("--- 0. panelPlacement, driven with numbers chosen to break it ---")
   record(typeof place === "function", "the placement is a pure function");
   record(W > 100 && GAP > 0, `the panel box is declared once - ${W}px, ${GAP}px gap`);
 
-  /* Room on the right: it goes right, and the marker is left of the panel. */
-  const a = place(100, 270, STAGE_W, STAGE_H, W, 340, GAP);
-  record(a.side === "right" && a.left >= 100 + GAP,
-    "with room on the right it goes right, clear of the marker",
-    JSON.stringify(a));
-  record(100 < a.left, "and the marker is NOT under it", `${a.left}`);
+  /* RE-BASELINED 2026-08-27 BY THE SESSION THAT CHANGED THE RULE (C1).
+     These four asserted the OLD rule - "prefer the right, flip left only when
+     there is no room, and never cover the marker" - and they were correct
+     about it.
 
-  /* No room on the right: it FLIPS, and is still clear of the marker. */
+     SLEVEN CHANGED THE RULE, in his own words: *"if I'm looking straight at
+     the ship and it would be the ship's right wing but it'd be on my left, it
+     should open the menu on the left side of the screen... I really want the
+     ship to stop shifting when we open a thing."* The panel follows the dot's
+     SCREEN side now, which is what removed the reason the hull was being
+     panned aside on every click.
+
+     THE "NEVER COVER THE MARKER" ASSERTION GOES WITH IT, and deliberately:
+     that rule is why the panel always went to the far side, which is why the
+     ship had to move. The panel is glass and the hull now renders at
+     `hullAlpha`, so a dot behind it is dimmed rather than lost.
+
+     WHAT IS ASSERTED INSTEAD IS THE NEW RULE, and it still fails in both
+     directions - a panel that ignored the side, or one that drifted off an
+     edge, is caught here. */
+  const a = place(100, 270, STAGE_W, STAGE_H, W, 340, GAP);
+  record(a.side === "left",
+    "a marker on the LEFT of the stage opens the panel on the LEFT",
+    JSON.stringify(a));
+  record(a.left >= 0 && a.left + W <= STAGE_W,
+    "and the panel is fully on the stage", `${a.left}..${a.left + W}`);
+
   const b = place(STAGE_W - 40, 270, STAGE_W, STAGE_H, W, 340, GAP);
-  record(b.side === "left", "with no room on the right it FLIPS to the left",
+  record(b.side === "right",
+    "a marker on the RIGHT of the stage opens the panel on the RIGHT",
     JSON.stringify(b));
-  record(b.left + W <= STAGE_W - 40,
-    "and the marker is still not under it after the flip",
-    `panel ends ${b.left + W}, marker at ${STAGE_W - 40}`);
-  record(b.left >= 0, "and it did not go off the left edge", `${b.left}`);
+  record(b.left + W <= STAGE_W && b.left >= 0,
+    "and that one is fully on the stage too", `${b.left}..${b.left + W}`);
+
+  /* THE HINGE, asserted so a rule that always answered one side would fail.
+     Either side of the midpoint must give a DIFFERENT answer. */
+  const l = place(Math.floor(STAGE_W/2) - 1, 270, STAGE_W, STAGE_H, W, 340, GAP);
+  const r = place(Math.floor(STAGE_W/2) + 1, 270, STAGE_W, STAGE_H, W, 340, GAP);
+  record(l.side === "left" && r.side === "right",
+    "the side flips across the middle of the stage - it is not a constant",
+    `${l.side} / ${r.side}`);
+  record(l.left !== r.left,
+    "and the two sides are different places", `${l.left} vs ${r.left}`);
+
+  /* A stage narrower than the panel cannot honour the side; it must still
+     stay on the stage rather than overflowing. */
+  const narrow = place(20, 270, Math.round(W * 0.8), STAGE_H, W, 340, GAP);
+  record(narrow.left >= 0, "on a stage narrower than the panel it stays put",
+    `${narrow.left}`);
 
   /* Clamped vertically at both ends. */
   const top = place(100, 5, STAGE_W, STAGE_H, W, 340, GAP);
@@ -303,8 +344,23 @@ openShip(key400i);
     "and does NOT close it - otherwise the picker would shut on first use");
 }
 
-/* ------------------------- 4b. E4: THE STAGE REFRAMES AROUND THE PANEL --- */
-console.log("\n--- E4: the stage gives up width to the panel and re-centres ---");
+/* ------------- 4b. THE SHIP DOES NOT MOVE WHEN A PANEL OPENS -------------
+   WAS: "E4: the stage gives up width to the panel and re-centres."
+
+   That is no longer true and the section is rewritten rather than deleted,
+   because the reason it changed matters. Sleven, on the deployed page:
+   *"when you click a hard point, the whole ship shifts... I really want the
+   ship to stop shifting when we open a thing."*
+
+   E4 was solving a real problem - a hull left as a sliver beside a panel -
+   and it solved it by moving the thing the person is looking at. The panel
+   follows the marker's screen side now, so nothing needs to be moved out of
+   its way.
+
+   WHAT IS ASSERTED HERE NOW IS THE OPPOSITE OF WHAT IT USED TO ASSERT: the
+   viewer is still TOLD how much is covered, because callers pass it and a
+   reader may want it - and the camera must not respond. */
+console.log("\n--- the panel opens and the ship stays exactly where it was ---");
 openShip(key400i);
 {
   run("sel=null;renderAll();");
@@ -321,20 +377,38 @@ openShip(key400i);
     `and by the right amount - the panel's own width over the stage's `
     + `(${W}/${STAGE_W})`, String(obs));
 
-  /* THE POINT OF THE ITEM: the marker the panel is ABOUT must still be on
-     screen. Sleven's capture had the hull as a sliver at the far edge with
-     the panel holding the stage - B3's "a panel must not cover its own
-     marker" is defeated just as thoroughly when the HULL leaves instead. */
+  /* THE LOAD-BEARING ONE. The camera's look-at point before and after a
+     marker is clicked must be IDENTICAL. If anybody reinstates the pan - or
+     makes setObstruction reframe again - this is what says so.
+
+     Reported as NOT PERFORMED rather than passed if the harness's viewer has
+     no controls to read, because "could not look" and "did not move" are
+     different statements. */
+  const tgtBefore = g("_view").controls && g("_view").controls.target
+    ? JSON.stringify(["x","y","z"].map(k => g("_view").controls.target[k])) : null;
+  if (tgtBefore === null) {
+    console.log("     NOT PERFORMED - this harness's viewer exposes no camera "
+      + "controls, so 'the ship did not move' could not be measured here. "
+      + "Reported, never passed.");
+  } else {
+    clickMarker(swapMark[0]);
+    const tgtAfter = JSON.stringify(
+      ["x","y","z"].map(k => g("_view").controls.target[k]));
+    record(tgtAfter === tgtBefore,
+      "*** the camera's target is UNCHANGED - the ship did not shift ***",
+      `before ${tgtBefore} after ${tgtAfter}`);
+  }
+
+  /* And the panel is on the same side as the marker it belongs to, measured
+     on a real selection rather than on the arithmetic alone. */
   const p = panelState();
   const [ax] = String(p.anchor).split(",").map(Number);
-  const freeLeft = (p.side === "left") ? p.left + W : 0;
-  const freeRight = (p.side === "left") ? STAGE_W : p.left;
-  record(ax >= freeLeft && ax <= freeRight,
-    "and the selected marker lies inside the stage's REMAINING visible "
-    + "rectangle, not under the panel",
-    `marker x=${ax}, free ${freeLeft}..${freeRight}`);
-  state.notes.push(`E4: panel covers ${(obs * 100).toFixed(1)}% of the stage; `
-    + `the selected marker stays in the free ${freeRight - freeLeft}px`);
+  const expect = (ax <= STAGE_W / 2) ? "left" : "right";
+  record(p.side === expect,
+    "and the panel opened on the marker's own side of the stage",
+    `marker x=${ax} of ${STAGE_W}, panel ${p.side}, expected ${expect}`);
+  state.notes.push(`panel covers ${(obs * 100).toFixed(1)}% of the stage and `
+    + `the hull does not move; marker at x=${ax} opened the panel ${p.side}`);
 
   run("sel=null;renderAll();");
   record(g("_view").obstruction() === 0,

@@ -1,6 +1,13 @@
 /**
  * L3, L4, L6, L12, L13 acceptance for the ship page (testing/_src/loadout.src.html).
  *
+ * RULE16: UNPROVEN - the page's own rendered DOM is the only observation channel,
+ * so a defect that rendered a wrong value consistently would satisfy every
+ * assertion here. Several expectations are independent of the page - the
+ * port counts, the stock loadouts and the fitment come from the generated
+ * data files rather than from what the page printed - but not all of them
+ * are, so the file is UNPROVEN.
+ *
  * WHAT THIS PROVES, AND WHY IT HAD TO BE A RENDER TEST
  * ---------------------------------------------------
  * `checks/_verify_loadout_fitment.py` proves the DATA is right: the fitment
@@ -1357,23 +1364,34 @@ console.log("\n--- N8: the grouping is Editable, never a list of types ---");
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
 }
 
-console.log("\n--- N9: the page does not claim a marker position is measured ---");
+/* N9 REWRITTEN 2026-08-27 BY THE SESSION THAT CHANGED THE PAGE (C1).
+
+   N9 existed because the page once implied the dots were measured when they
+   were name-derived. It asserted the apology: "not measured from the model",
+   "single welded mesh", "nothing to measure".
+
+   THE APOLOGY IS NOW THE FALSE STATEMENT. CIG's geometry was decoded out of
+   Data.p4k and 1,693 mounts across 166 hulls carry the positions CIG
+   published. Asserting the old wording would pin the page to a disclaimer
+   about a limitation it no longer has.
+
+   N9'S ACTUAL RULE SURVIVES INTACT AND IS WHAT IS ASSERTED HERE: the page may
+   not claim more certainty than it has. It must say the measured part is
+   measured, say the estimated part is estimated, and - because the marker file
+   carries no per-port provenance - say that it cannot tell you which one this
+   ship's dots are. All three still fail if the page starts claiming
+   everything is exact. */
+console.log("\n--- N9: the page claims exactly the certainty it has ---");
 {
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
   const note = el("markernote").innerHTML;
   record(note.length > 200, "a hull with markers carries the note", `${note.length} chars`);
-  record(/not measured from the model/i.test(note),
-    "and says PLAINLY that the positions are not measured");
-  record(/name/i.test(note) && /snapped/i.test(note),
-    "and says what they ARE - the mount's name, snapped to the hull");
-  record(/single welded mesh|nothing to measure/i.test(note),
-    "and why it cannot currently be better");
-
-  /* THE TWO THINGS THAT ARE MEASURED STAY DESCRIBED THAT WAY. Correcting an
-     overclaim into a blanket disclaimer would be a second false statement in
-     the other direction. */
-  record(/is<\/em> measured|is measured/i.test(note) && /nose/i.test(note),
-    "and still says which axis and which end ARE measured");
+  record(/game's own geometry|game files/i.test(note) && /decoded/i.test(note),
+    "and says the measured positions come from the game's own geometry");
+  record(/name/i.test(note) && /snapped/i.test(note) && /estimate/i.test(note),
+    "and still says what the FALLBACK is - the mount's name, snapped, an estimate");
+  record(/cannot yet tell you which/i.test(note),
+    "and admits it cannot say which of the two THIS ship's dots are");
   record(/not estimated/.test(note) && /size|type|fitted/i.test(note),
     "and that what each port IS remains unestimated");
 

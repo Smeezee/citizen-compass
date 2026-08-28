@@ -2,6 +2,13 @@
 # -*- coding: utf-8 -*-
 """G3's acceptance number, isolated: what did the MATCHER change, and only it?
 
+RULE16: UNPROVEN - both sides of the delta are the join's own report, produced by
+the code under test with geometry held constant. It measures what the
+matcher DID, not whether what it did is right. The 25 must-not-match
+names are independent - written down from a measured report before the
+change, and imported from _verify_hardpoint_join so there is one copy -
+and they are the load-bearing half.
+
 WHY THIS EXISTS AND WHY IT IS SEPARATE
 ======================================
 

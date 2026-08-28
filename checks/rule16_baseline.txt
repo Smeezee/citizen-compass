@@ -10,9 +10,7 @@
 # needs it, so the list cannot rot into fiction.
 _verify_absence_pass.py
 _verify_attribution.mjs
-_verify_broken_checker_end_to_end.py
 _verify_camera_framing.mjs
-_verify_child_markers.py
 _verify_colour_headroom.mjs
 _verify_column_split.mjs
 _verify_commodity_xref.py
@@ -20,10 +18,7 @@ _verify_community_mark.py
 _verify_control_bytes.py
 _verify_damage_readout.mjs
 _verify_degraded_database.py
-_verify_deploy_drift.py
-_verify_deploy_guards.py
 _verify_deployed_links.mjs
-_verify_dim.mjs
 _verify_edge_detail.mjs
 _verify_extremity_placement.py
 _verify_find_build_step.py
@@ -34,10 +29,7 @@ _verify_find_wording.mjs
 _verify_findings_store.py
 _verify_fingerprint_history.py
 _verify_flight_blades.mjs
-_verify_g3_matcher_delta.py
-_verify_hardpoint_alignment.py
 _verify_hardpoint_data.py
-_verify_hardpoint_join.py
 _verify_holo_render.mjs
 _verify_hull_solid.mjs
 _verify_inline_picker.mjs
@@ -56,7 +48,6 @@ _verify_marker_absence.mjs
 _verify_marker_coverage.mjs
 _verify_marker_response.mjs
 _verify_missing_encoding.py
-_verify_model_resolution.py
 _verify_model_scale.py
 _verify_model_substitutions.py
 _verify_never_delete_guard.py
@@ -76,7 +67,6 @@ _verify_shared_viewer.mjs
 _verify_ship_configurations.py
 _verify_ship_gaps.py
 _verify_ship_name_route.mjs
-_verify_ship_page.mjs
 _verify_ship_page_fits.mjs
 _verify_shop_api.py
 _verify_shop_checks.py
@@ -88,7 +78,6 @@ _verify_source_checks.py
 _verify_source_duplicate_check.py
 _verify_spin_default.mjs
 _verify_stage_floor.mjs
-_verify_stage_panel.mjs
 _verify_takedown.py
 _verify_testing_stamp.py
 _verify_turret_inheritance.py

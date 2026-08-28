@@ -137,6 +137,20 @@ var CC_HOLO = {
      smaller - so the number does not transfer. 1.0 is where the rim term equals
      the order's own rendered-and-judged constant. */
   glow: 1.0,         /* 0 .. 1.5     rim strength (uGlow, the order's uRim) */
+  /* HOW SOLID THE HULL IS (C1, 2026-08-27, Sleven on the deployed page:
+     "is there any way we can make it a little bit more see through, a little
+     bit more transparent").
+
+     `solid` was `transparent: false` - completely opaque - and the only way to
+     see into a ship was the `xray` mode, which is a different look entirely.
+     There was no "a little bit". This is that dial.
+
+     0.86 is a hull you can still read the panel detail on, with the far wing
+     and the grid faintly behind it. 1.0 is exactly the old behaviour, and the
+     material goes back to opaque at 1.0 rather than staying transparent at
+     full alpha - a transparent material sorts differently even when it hides
+     nothing. */
+  hullAlpha: 0.86,   /* 0.25 .. 1.0  how solid the hull reads */
   scan: 0,           /* scanlines OFF by default - available, not on */
   grid: true,
   field: 0x050a12,
@@ -213,6 +227,7 @@ var CC_HOLO_FRAG = [
      to 1.0, where `fres*0.17*uGlow` is the rendered-and-judged value. */
   'uniform vec3 uColor; uniform float uTime; uniform float uScan;',
   'uniform float uGlow;',
+  'uniform float uAlpha;',
   'varying vec3 vN; varying vec3 vV; varying vec3 vW;',
   'void main(){',
   '  vec3 N = normalize(vN);',
@@ -272,7 +287,7 @@ var CC_HOLO_FRAG = [
   '  sl = mix(1.0, sl, uScan*0.20);',
   '  float sweep = fract(vW.y*0.30 - uTime*0.085);',
   '  float band  = smoothstep(0.975,1.0,sweep)*uScan;',
-  '  gl_FragColor = vec4(c*sl + uColor*band*0.55, 1.0);',
+  '  gl_FragColor = vec4(c*sl + uColor*band*0.55, uAlpha);',
   '}'
 ].join('\n');
 
@@ -552,7 +567,7 @@ var CCViewer = (function () {
         if (!Object.prototype.hasOwnProperty.call(saved, k)) continue;
         if (k === 'style' || k === 'colour' || k === 'lineInt' ||
             k === 'detail' || k === 'glow' || k === 'scan' || k === 'grid' ||
-            k === 'rev') continue;
+            k === 'hullAlpha' || k === 'rev') continue;
         keep[k] = saved[k];
       }
       keep.rev = CC_HOLO.REV;
@@ -561,6 +576,10 @@ var CCViewer = (function () {
     }
     this.style = this.style || saved.style || CC_HOLO.DEFAULT;
     this._colour = saved.colour || CC_HOLO.DEFAULT_COLOUR;
+    /* An older save has no hullAlpha and therefore keeps the new default -
+       which is the point of reading it conditionally rather than spreading
+       the blob over CC_HOLO. */
+    if (saved.hullAlpha != null) CC_HOLO.hullAlpha = saved.hullAlpha;
     if (saved.lineInt != null) CC_HOLO.lineInt = saved.lineInt;
     if (saved.detail != null) CC_HOLO.detail = saved.detail;
     if (saved.glow != null) CC_HOLO.glow = saved.glow;
@@ -570,7 +589,8 @@ var CCViewer = (function () {
       uColor: { value: new THREE.Color(this._colour) },
       uTime: { value: 0 },
       uScan: { value: CC_HOLO.scan },
-      uGlow: { value: CC_HOLO.glow }
+      uGlow: { value: CC_HOLO.glow },
+      uAlpha: { value: CC_HOLO.hullAlpha }
     };
     this.camera = new THREE.PerspectiveCamera(42, 1, 0.01, 10000);
     this.controls = new THREE.OrbitControls(this.camera, this.canvas);
@@ -910,9 +930,14 @@ var CCViewer = (function () {
     var U = this._holoU;
     if (this._density == null) this._density = 1;
     this._mats = {
+      /* AT FULL ALPHA THIS IS THE OLD OPAQUE MATERIAL, exactly. Below it the
+         material turns transparent but KEEPS WRITING DEPTH: front faces only,
+         nearest surface wins, so the hull reads as glass rather than as the
+         additive soup `xray` was built to replace. */
       solid: new THREE.ShaderMaterial({
         uniforms: U, vertexShader: CC_HOLO_VERT, fragmentShader: CC_HOLO_FRAG,
-        side: THREE.FrontSide, transparent: false, depthWrite: true }),
+        side: THREE.FrontSide,
+        transparent: (CC_HOLO.hullAlpha < 1), depthWrite: true }),
       hull: new THREE.ShaderMaterial({
         uniforms: U, vertexShader: CC_HOLO_VERT,
         fragmentShader: CC_HOLO_FRAG_HULL,
@@ -1070,6 +1095,24 @@ var CCViewer = (function () {
       CC_HOLO.glow = Math.max(0, Math.min(1.5, v));
       if (this._holoU) this._holoU.uGlow.value = CC_HOLO.glow;
       return CC_HOLO.glow;
+    }
+    /* HULL ALPHA IS A UNIFORM, EXCEPT WHEN IT CROSSES 1.0.
+       `uAlpha` moves every frame without touching the material - but
+       `transparent` is compile-time state on a ShaderMaterial, so going from
+       opaque to see-through, or back, needs the materials rebuilt. Crossing
+       is the only case that does, and it is detected rather than assumed:
+       rebuilding on every slider step would recompile the shader on every
+       pixel of drag. */
+    else if (which === 'hullAlpha') {
+      var was = CC_HOLO.hullAlpha;
+      CC_HOLO.hullAlpha = Math.max(0.25, Math.min(1, v));
+      if (this._holoU) this._holoU.uAlpha.value = CC_HOLO.hullAlpha;
+      var crossed = (was < 1) !== (CC_HOLO.hullAlpha < 1);
+      if (crossed) {
+        this._mats = null;
+        if (this.current) this._applyHolo(this.current);
+      }
+      return CC_HOLO.hullAlpha;
     } else { return null; }
     if (this.current) this._applyHolo(this.current);
     return CC_HOLO[which];
@@ -1089,7 +1132,8 @@ var CCViewer = (function () {
     ccHoloSave({ rev: CC_HOLO.REV,
                  style: this.style, colour: this._colour,
                  lineInt: CC_HOLO.lineInt, detail: CC_HOLO.detail,
-                 glow: CC_HOLO.glow, scan: CC_HOLO.scan, grid: CC_HOLO.grid });
+                 glow: CC_HOLO.glow, scan: CC_HOLO.scan, grid: CC_HOLO.grid,
+                 hullAlpha: CC_HOLO.hullAlpha });
     return true;
   };
 
@@ -1245,11 +1289,32 @@ var CCViewer = (function () {
      page, which is the only thing that knows the panel's size. The camera
      shifts its target so the hull centres in what is LEFT rather than in the
      whole stage. Passing 0 puts it back. */
+  /* THE SHIP NO LONGER MOVES WHEN A PANEL OPENS (C1, 2026-08-27).
+     Sleven, on the deployed page: *"when you click a hard point, the whole
+     ship shifts... I really want the ship to stop shifting when we open a
+     thing... it needs to get fleshed out and smoothed out."*
+
+     E4's reasoning was sound and its remedy was not. The problem it solved was
+     real - the 125a with a panel open, the hull a sliver at the far edge -
+     but it solved it by MOVING THE THING THE PERSON IS LOOKING AT. Every
+     click nudged the ship sideways, and a viewport that rearranges itself
+     when you point at something reads as unstable no matter how correct the
+     arithmetic is.
+
+     THE PANEL MOVES INSTEAD. `panelPlacement` now opens on whichever side of
+     the stage the marker itself is on, so the panel goes where the eye
+     already is and the hull stays exactly where the person put it. That is
+     Sleven's own rule: click a dot on the left of the screen, the menu opens
+     on the left.
+
+     THE VALUE IS STILL RECORDED because callers ask for it and a checker
+     reads it, but IT NO LONGER DRIVES THE CAMERA. Deleting the setter would
+     have meant editing every call site to no effect; leaving it as a lie -
+     accepting a number and pretending to act on it - is worse than either.
+     It stores, and it says so. */
   Viewer.prototype.setObstruction = function (frac) {
     var f = Math.max(0, Math.min(0.8, Number(frac) || 0));
-    if (f === this._obstruct) return f;
     this._obstruct = f;
-    this.reframe();
     return f;
   };
   Viewer.prototype.obstruction = function () { return this._obstruct || 0; };
@@ -1259,7 +1324,7 @@ var CCViewer = (function () {
     var box = new THREE.Box3().setFromObject(this.current);
     var c = box.getCenter(new THREE.Vector3());
     var s = box.getSize(new THREE.Vector3());
-    var f = this._obstruct || 0;
+
     /* SLEVEN, 2026-08-27, on the deployed page: "why does the ship zoom out
        when I click the hardpoints?"
 
@@ -1284,10 +1349,13 @@ var CCViewer = (function () {
        narrower space, that is a better failure than resizing the thing they
        are trying to look at. The brief is explicit: you can see the ship while
        you change it. */
-    var shift = (s.x || 1) * f * 0.5;
+    /* NO SHIFT. `f` is read above and deliberately not used to move the
+       target - see setObstruction. reframe() still exists and still runs on a
+       resize or a model change; what it no longer does is slide the hull
+       aside because a panel opened. */
     var prev = this.camera.position.clone().sub(this.controls.target);
     var dist = prev.length();
-    this.controls.target.set(c.x + shift, c.y, c.z);
+    this.controls.target.set(c.x, c.y, c.z);
     /* Only on the very first frame, before the person has a viewpoint of their
        own to protect, is a distance computed at all. */
     if (!(dist > 1e-6)) {

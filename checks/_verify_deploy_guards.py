@@ -3,6 +3,15 @@
 """
 _verify_deploy_guards.py - the two deploy scripts refuse each other's payload.
 
+RULE16: INDEPENDENT - it runs the REAL scripts as subprocesses and reads only
+their exit codes and their printed refusals. Nothing is imported from
+them and no verdict of theirs is taken on trust. The payload markers are
+spelled out here rather than copied out of the scripts, the browser-check
+list is named here with a drift assertion against the script's own array,
+and every input is one this control constructed: an absent check file, a
+check that genuinely exits 1, a receipt planted as failed, a receipt that
+is not JSON.
+
 I2 of the 2026-08-21 order. The live site got a deploy script for the first
 time, and it publishes THE SAME DIRECTORY the testing site publishes - because
 Sleven reviews the testing site and then that exact payload goes live. Two
