@@ -521,7 +521,8 @@
     9.64559,
     1.42486,
     -3.50498
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_blade_wing_right",
@@ -529,7 +530,8 @@
     9.86,
     -0.71627,
     -8.26365
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gun_wing_right",

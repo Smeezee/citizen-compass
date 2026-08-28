@@ -28,25 +28,7 @@
  "exterior_mounts": 25,
  "exterior_outside": [],
  "outside_any": [
-  "hardpoint_cargo_rear_right",
-  "hardpoint_cargo_rear_mid",
-  "hardpoint_cargo_rear_left",
-  "hardpoint_cargo_mid_right",
-  "hardpoint_cargo_mid_mid",
-  "hardpoint_cargo_mid_left",
-  "hardpoint_cargo_front_right",
-  "hardpoint_cargo_front_mid",
-  "hardpoint_cargo_front_left",
-  "hardpoint_landing_system",
-  "hardpoint_cargo_pod_01",
-  "hardpoint_cargo_pod_01_L",
-  "hardpoint_cargo_pod_01_R",
-  "hardpoint_cargo_pod_02",
-  "hardpoint_cargo_pod_02_L",
-  "hardpoint_cargo_pod_02_R",
-  "hardpoint_cargo_pod_03",
-  "hardpoint_cargo_pod_03_L",
-  "hardpoint_cargo_pod_03_R"
+  "hardpoint_landing_system"
  ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
@@ -288,7 +270,8 @@
     0.0,
     -26.90882,
     -0.0
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_paint",

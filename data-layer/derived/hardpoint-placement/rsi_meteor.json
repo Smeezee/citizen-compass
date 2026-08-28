@@ -264,7 +264,8 @@
     1.66132,
     4.199,
     -0.0
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gravity_generator",
@@ -512,7 +513,8 @@
     -5.77399,
     4.0222,
     8.03863
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_left",
@@ -576,7 +578,8 @@
     5.77548,
     4.02999,
     8.0382
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_right",

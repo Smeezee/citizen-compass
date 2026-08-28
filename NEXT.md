@@ -198,6 +198,60 @@ process... I want them to actually enjoy the experience."*
 7 the decoder refused (node index is not a clean key), 19 with no `ships.json`
 row, 11 with no model in the page's map. 64 hulls have real coordinates today.
 
+### M8 — THE ACCEPTANCE TEST JUDGED THE WRONG FRAME — DONE 2026-08-27 20:15
+`build_hardpoint_placement.py` measured mounts against the hull box **as the
+file stores it**; `cc_viewer.frame()` recentres every hull on that box before
+drawing it. **71 of 258 models are not centred on their own origin**, so those
+were judged in a frame nobody renders. M2 Hercules 11/149 inside → 140/149, the
+C2's number exactly, on identical decoded data. Four Constellation variants now
+agree where one used to disagree.
+
+Passed 138 → 139 (gained M2, Valkyrie, SRV; **lost Aquila and Spirit A1** —
+their offsets were flattering them). Overlay 952 → 939 ports; new records 29 →
+30 hulls / 2,612 ports.
+
+**I also broke the gate and a check I had just written caught it.** Making it
+proportional — refuse above half, withhold ports below — lets a **transposed
+lateral/vertical axis pass on every hull tested**, because ships are wider than
+they are tall and the swap only displaces about a sixth of the mounts. That is
+the defect the gate exists for. Reverted, and the reasoning is recorded in the
+source so nobody re-derives it.
+
+New: `checks/_verify_placement_gate.py` — three broken frames plus a negative
+control, no database, no browser. Exits 0.
+
+**Two more defects found while looking, both silent:**
+- The same ship placed twice under two spellings (`ANVL_Hornet_F7A_MK1` and
+  `anvl_hornet_f7a_mk1`), the guard comparing exact strings, both writing the
+  same file. Manifest said 182 ships for 180 files. Claims fold to lower case.
+- **The overlay reads the placement DIRECTORY, not its manifest**, so a refused
+  hull kept its file from an earlier run and kept being emitted. The run
+  reconciles its directory now and exits fatally if it cannot — proven by a
+  planted control, not asserted. 93 stale files moved to
+  `_to_delete/hardpoint-placement-stale-2026-08-27/`.
+
+**Final: overlay 93 hulls / 955 ports · client records 30 hulls / 2,612 ports ·
+ship page 163 → 165 classes fully on CIG coordinates · 304 client markers, none
+emitting zero.**
+
+**Two broken models, not ours:** `Avenger_Stalker.glb` is a tenth the size of
+its own siblings; `Aurora_SE.glb` is 87.6 wide against 8.2 for every other
+Aurora.
+
+### M9 — THE REMAINING 96 NEED THEIR OWN `.cga`, NOT INHERITANCE — MEASURED
+96 ship-page classes still carry name-derived markers. I tried expanding every
+base hull to its name-variants: 75 more hulls placed, **every one passing
+acceptance**, which is the shape of a check that cannot fail. It is:
+containment is one-sided, so **a Gladius's mounts fit inside a Hammerhead**, and
+rescaling each variant by its own Length erases what little discrimination is
+left. Gating on the two models' bounding boxes instead admitted only variants
+that share the base's model file — already covered. **Reverted whole.**
+
+So the 96 cannot be reached by inheritance at any tolerance. They need their own
+`.cga` decoded out of Data.p4k. `build_hardpoint_transforms.py` decoded 120
+hulls; the question nobody has asked is why it stopped there. **That is the next
+real piece of work on this front.** Not started.
+
 ### M4 — THE 16 HULLS BELOW THE EXTERIOR MIRROR THRESHOLD
 Carrack, Constellation, Corsair, Hammerhead, Tiburon and others. Their
 internal-bay scores are fine; the exterior mounts miss. Decide whether that is
@@ -349,4 +403,4 @@ better.
 
 ---
 
-*Maintained by C1. Last set 2026-08-27 18:25 local.*
+*Maintained by C1. Last set 2026-08-27 20:25 local.*

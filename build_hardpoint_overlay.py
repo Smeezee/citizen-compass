@@ -69,6 +69,16 @@ def main():
             report.append({"class": cls, "emitted": 0,
                            "why": "placement did not pass: " + j.get("acceptance_note", "")})
             continue
+        # PORTS THE PLACEMENT WITHHELD ARE NOT EMITTED (C1, 2026-08-27).
+        # The acceptance gate is proportional now: a hull passes with one or
+        # two mounts proud of a stowed-pose mesh, and those individual mounts
+        # carry `outside: true`. Emitting them would put a marker where the
+        # placement itself says the mount is not, which is worse than leaving
+        # the port with no CIG position at all - it would look confirmed.
+        # They are counted and named in the report rather than dropped quietly.
+        _all = j["hardpoints"]
+        _held = [n["name"] for n in _all if n.get("outside")]
+        _pts = [n for n in _all if not n.get("outside")]
         _mn0, _mx0 = j["hull_box"]["min"], j["hull_box"]["max"]
         H0 = max((_mx0[i] - _mn0[i]) / 2.0 for i in range(3)) or 1.0
         mdl = lm.get(cls.lower())
@@ -95,10 +105,12 @@ def main():
                         "hardpoints_fleet.json has no record for this hull",
                 "hardpoints": [{"port": n["name"], "unit": [round(c / H0, 5)
                                 for c in n["pos"]]}
-                               for n in j["hardpoints"]],
+                               for n in _pts],
+                "ports_withheld": _held,
             }
             report.append({"class": cls, "emitted": 0, "added_record": True,
-                           "ports_added": len(j["hardpoints"]),
+                           "ports_added": len(_pts),
+                           "ports_withheld": len(_held),
                            "why": "no fleet record - a new one was emitted"})
             continue
 
@@ -109,7 +121,7 @@ def main():
         H = max((mx[i] - mn[i]) / 2.0 for i in range(3))
         if H <= 0:
             continue
-        ours = {h["name"]: [c / H for c in h["pos"]] for h in j["hardpoints"]}
+        ours = {h["name"]: [c / H for c in h["pos"]] for h in _pts}
 
         rec = fleet[key]
         theirs = {h["port"]: h for h in rec.get("hardpoints") or []}

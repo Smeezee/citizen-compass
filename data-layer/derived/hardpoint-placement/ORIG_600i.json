@@ -345,7 +345,8 @@
     0.0,
     -11.14087,
     -7.82499
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_remote_turret_bottom",
@@ -361,7 +362,8 @@
     -5.57249,
     -9.32,
     -26.42085
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_mav_front_bottom_right",
@@ -369,7 +371,8 @@
     5.57249,
     -9.32,
     -26.42085
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_left",
@@ -785,7 +788,8 @@
     -0.0,
     -10.24476,
     11.33261
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_mav_rear_top_right",

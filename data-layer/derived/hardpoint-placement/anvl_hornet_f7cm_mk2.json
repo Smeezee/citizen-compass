@@ -577,7 +577,8 @@
     0.0,
     -3.58565,
     -0.02454
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_landinggear_door_b_right",
@@ -585,7 +586,8 @@
     0.0,
     -3.58565,
     -0.02454
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_landinggear_door_b_left",
@@ -593,7 +595,8 @@
     0.0,
     -3.58565,
     -0.02454
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_landinggear_door_a_left",
@@ -601,7 +604,8 @@
     0.0,
     -3.58565,
     -0.02454
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_engine_s5",

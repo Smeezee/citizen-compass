@@ -23,11 +23,23 @@
    32.633079528808594
   ]
  },
- "acceptance": true,
- "acceptance_note": "",
+ "acceptance": false,
+ "acceptance_note": "3 of 22 exterior mounts land outside the hull",
  "exterior_mounts": 22,
- "exterior_outside": [],
- "outside_any": [],
+ "exterior_outside": [
+  "hardpoint_gun_laser_top_right",
+  "hardpoint_gun_laser_top_left",
+  "hardpoint_turret_base_upper"
+ ],
+ "outside_any": [
+  "hardpoint_cooler_right",
+  "hardpoint_thruster_top_back_right",
+  "hardpoint_gun_laser_top_right",
+  "hardpoint_cooler_left",
+  "hardpoint_gun_laser_top_left",
+  "hardpoint_thruster_top_back_left",
+  "hardpoint_turret_base_upper"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -436,7 +448,8 @@
     5.91081,
     7.93883,
     19.5169
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_top_back_right",
@@ -444,7 +457,8 @@
     7.21228,
     7.64962,
     24.20047
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gun_laser_top_right",
@@ -452,7 +466,8 @@
     5.91753,
     7.93883,
     12.64372
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_fuel_intake_top_right",
@@ -492,7 +507,8 @@
     -5.91081,
     7.93883,
     19.5169
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gun_laser_top_left",
@@ -500,7 +516,8 @@
     -5.91753,
     7.93883,
     12.64356
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_top_back_left",
@@ -508,7 +525,8 @@
     -7.21228,
     7.64962,
     24.20047
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_fuel_intake_top_left",
@@ -684,7 +702,8 @@
     -0.0,
     8.12533,
     -19.02815
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_turret_base_lower",

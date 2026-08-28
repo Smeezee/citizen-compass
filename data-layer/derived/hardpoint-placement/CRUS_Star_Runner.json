@@ -27,9 +27,7 @@
  "acceptance_note": "",
  "exterior_mounts": 12,
  "exterior_outside": [],
- "outside_any": [
-  "hardpoint_room_turret_tunnel_bottom"
- ],
+ "outside_any": [],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {

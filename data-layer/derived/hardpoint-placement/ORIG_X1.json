@@ -467,7 +467,8 @@
     0.74367,
     0.12693,
     -1.37243
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gravlev_front_left",
@@ -475,7 +476,8 @@
     -0.74367,
     0.12693,
     -1.37243
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gravlev_rear_left",
@@ -483,7 +485,8 @@
     -0.74361,
     0.12693,
     0.42044
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gravlev_rear_right",
@@ -491,7 +494,8 @@
     0.74367,
     0.12693,
     0.42044
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gravlev_center_left",
@@ -499,7 +503,8 @@
     -0.74367,
     0.12693,
     -0.20375
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gravlev_center_right",
@@ -507,7 +512,8 @@
     0.74367,
     0.12693,
     -0.20375
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_personal_storage",

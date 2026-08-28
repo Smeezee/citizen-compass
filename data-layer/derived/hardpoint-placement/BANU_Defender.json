@@ -592,7 +592,8 @@
     11.08684,
     -3.19576,
     -1.27763
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_wing_right_side",
@@ -600,7 +601,8 @@
     13.12246,
     -1.81024,
     -1.9972
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_wing_right_top",
@@ -608,7 +610,8 @@
     10.86075,
     -0.65369,
     -1.87372
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_weapon_wing_right",
@@ -632,7 +635,8 @@
     -11.089,
     -3.19769,
     -1.27582
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_wing_left_side",
@@ -640,7 +644,8 @@
     -13.1236,
     -1.80995,
     -1.99945
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_wing_left_top",
@@ -648,7 +653,8 @@
     -10.86045,
     -0.65307,
     -1.87616
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_weapon_wing_left",
@@ -664,7 +670,8 @@
     -0.45814,
     -3.56157,
     14.48252
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_missilerack_right",
@@ -672,7 +679,8 @@
     0.43345,
     -3.56157,
     14.48252
-   ]
+   ],
+   "outside": true
   }
  ]
 }

@@ -590,7 +590,8 @@
     -7e-05,
     10.7983,
     0.19361
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_wings_large_left_missile_rack",

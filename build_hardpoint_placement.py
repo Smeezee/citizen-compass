@@ -205,6 +205,9 @@ def main():
                                                      "readable GLB for " + mdl})
             return
         ext = [mx[i] - mn[i] for i in range(3)]     # glb: x, y up, z fore/aft
+        # The box centre, because the viewer recentres on it before drawing.
+        # See the acceptance test below for why that is the frame that counts.
+        ctr = [(mn[i] + mx[i]) / 2.0 for i in range(3)]
         if min(ext) <= 0:
             skipped.append({"class": out_cls, "why": "degenerate hull box"})
             return
@@ -236,18 +239,88 @@ def main():
             conv.append({"name": n["name"], "pos": [round(v, 5) for v in p]})
             # AXES 0 AND 1 ONLY. Axis 2 is where the scale came from, so
             # testing it would be marking our own homework.
+            #
+            # AND THE BOX IS TESTED WHERE THE VIEWER PUTS IT, NOT WHERE THE
+            # FILE PUTS IT (C1, 2026-08-27). `cc_viewer.frame()` RECENTRES
+            # every hull on its own bounding box before drawing it -
+            # `o.position.x -= c.x`, `-= box.min.y`, `-= c.z` - and places
+            # markers at hull-space (0,0,0) plus half the height. So the frame
+            # a visitor actually sees is the box CENTRED ON THE ORIGIN, and
+            # testing against the raw `mn`/`mx` tests a frame that is never
+            # rendered.
+            #
+            # IT COST THREE HULLS AND IT WAS NOT A NEAR MISS. The M2 Hercules
+            # carries the SAME decoded hardpoints as the C2 and the A2 - same
+            # base hull, same 149 ports, scale 0.9945 against 0.9945 - and its
+            # GLB was exported with 13.11 units of baked translation the other
+            # two do not have. Against the raw box: 11 of 149 inside. Against
+            # the box the viewer draws: 140 of 149, the C2's number exactly.
+            # The refusal was the test's, not the data's.
+            #
+            #     M2 Hercules   11/149 -> 140/149
+            #     Valkyrie      79/88  ->  88/88
+            #     ARGO SRV      63/67  ->  67/67
+            #
+            # AND IT IS NOT A LOOSENING. The Reliant goes the other way, 78/90
+            # to 72/90, because its box centre is genuinely off-origin and the
+            # old test was flattering it. A correction that only ever passes
+            # more hulls is a correction to be suspicious of; this one moves
+            # hulls in both directions, which is what a frame change does and
+            # a threshold change does not.
+            #
+            # 187 of the 258 models in the payload are centred within 1% of
+            # their longest span, so for most of the fleet this changes
+            # nothing at all. SEVENTY-ONE ARE NOT - Ranger RC 33%, Scorpius
+            # 26%, Ursa 21%, Cyclone 20%, Tyilui 14.5%, Arrastra 13.4% - and
+            # those are the ones that were being judged in a frame nobody
+            # renders.
             is_ext = bool(EXTERIOR.search(n["name"]))
             if is_ext:
                 ext_n += 1
             for i in (0, 1):
                 m = ext[i] * MARGIN
-                if p[i] < mn[i] - m or p[i] > mx[i] + m:
+                lo_i, hi_i = mn[i] - ctr[i], mx[i] - ctr[i]
+                if p[i] < lo_i - m or p[i] > hi_i + m:
                     outside.append(n["name"])
+                    conv[-1]["outside"] = True
                     if is_ext:
                         ext_out.append(n["name"])
                     break
         # THE GATE IS THE EXTERIOR MOUNTS. A hull with none cannot pass - there
         # would be nothing here that could have failed.
+        #
+        # IT STAYS ALL-OR-NOTHING, AND A CONTROL IS WHY (C1, 2026-08-27).
+        #
+        # I CHANGED THIS TO A PROPORTIONAL GATE AND IT WAS WRONG. The argument
+        # was that discarding a hull's whole marker set over one or two mounts
+        # proud of a STOWED-POSE mesh threw away 19 good Constellation ports to
+        # avoid drawing 3 arguable ones - and that the fallback, name-derived
+        # markers a median 0.488 of a half-extent from the real mount, is worse
+        # than what was being refused. All of that is still true.
+        #
+        # `checks/_verify_placement_gate.py` refuted it in one run. With the
+        # gate at "more than half outside", A TRANSPOSED LATERAL/VERTICAL AXIS
+        # SURVIVES ON EVERY HULL TESTED - 10 of 59 exterior mounts outside on
+        # the Eclipse, 24 of 97 on the Hammerhead, nowhere near half. Ships are
+        # wider than they are tall, so swapping those two axes leaves most
+        # mounts inside the larger extent. A wrong scale of 4x survived on five
+        # of six.
+        #
+        # THE TRANSPOSED AXIS IS THE EXACT DEFECT THIS TEST WAS WRITTEN FOR.
+        # The proportional version traded the gate's whole reason to exist for
+        # three hulls of coverage, which is tomorrow's silent wrong data bought
+        # with today's dots.
+        #
+        # WHAT WOULD ACTUALLY EARN A PER-PORT GATE is a test that catches a
+        # transpose regardless of how many mounts it displaces - the SHAPE of
+        # the mount cloud against the shape of the hull, not a count. Until
+        # something like that exists, a hull with any exterior mount outside is
+        # refused whole. Not written today, and named here so the next person
+        # does not re-derive the same wrong shortcut.
+        #
+        # The per-port `outside` flags stay. They cost nothing, they tell the
+        # overlay which mounts are the offenders, and they are what made the
+        # refuted argument measurable in the first place.
         ok = ext_n > 0 and not ext_out
         why = ""
         if ext_n == 0:
@@ -333,7 +406,21 @@ def main():
                                        "variant of it carries one with a model"})
                 continue
         for out_cls, dim, mdl, inherited in targets:
-            claims.setdefault(out_cls, []).append(
+            # KEYED CASE-INSENSITIVELY, AND THAT IS NOT A TIDY-UP (C1,
+            # 2026-08-27). `ANVL_Hornet_F7A_MK1` arrives from its own transform
+            # file and `anvl_hornet_f7a_mk1` arrives from the ships.json row -
+            # the SAME SHIP, claimed twice, keyed by two strings that differ
+            # only in case. The guard below compares exact strings, so both
+            # claims survived it, both were placed, and on a case-insensitive
+            # filesystem both wrote the same file with the second silently
+            # winning. The manifest listed 182 ships for 180 files and nothing
+            # errored. Same for ESPR_Prowler_Utility.
+            #
+            # This is the silent-overwrite failure this file's own comment says
+            # has already happened five times, arriving a sixth way. Folding the
+            # key hands both claims to the most-specific-base rule, which is the
+            # thing that exists to decide between them.
+            claims.setdefault(out_cls.lower(), []).append(
                 (out_cls, cls, dim, mdl, hp, inherited))
 
     # THE MOST SPECIFIC BASE WINS, and a tie is refused rather than picked.
@@ -341,11 +428,11 @@ def main():
     # `ANVL_Hornet` is, so it is the nearer geometry and it takes the ship.
     # Two claims of EQUAL specificity are genuinely ambiguous - both are
     # dropped and both are named, the same way the hull-name collisions are.
-    for out_cls, cands in sorted(claims.items()):
+    for out_key, cands in sorted(claims.items()):
         best = max(len(c[1]) for c in cands)
         top = [c for c in cands if len(c[1]) == best]
         if len(top) > 1:
-            skipped.append({"class": out_cls,
+            skipped.append({"class": out_key,
                             "why": "claimed by %d base hulls of equal "
                                    "specificity (%s) - refused, not picked"
                                    % (len(top), ", ".join(c[1] for c in top))})
@@ -360,7 +447,9 @@ def main():
                          "Width and Height are recorded as diagnostics only - "
                          "CIG measures them with gear deployed and the GLB is "
                          "one stowed pose.",
-           "acceptance": "every EXTERIOR mount inside the hull box laterally "
+           "acceptance": "every EXTERIOR mount inside the hull box AS THE "
+                         "VIEWER RECENTRES IT - box centred on the origin, "
+                         "which is what cc_viewer.frame() draws - laterally "
                          "and vertically, %.0f%% margin. The fore/aft axis is "
                          "where the scale came from and is deliberately NOT "
                          "tested - that would be marking our own homework. A "
@@ -373,6 +462,44 @@ def main():
            "ships": rows, "skipped": skipped}
     json.dump(man, open(os.path.join(OUT, "MANIFEST.json"), "w",
                         encoding="utf-8"), indent=1)
+
+    # THE DIRECTORY IS THE ARTIFACT, NOT THE MANIFEST - AND THE NEXT STAGE
+    # READS THE DIRECTORY (C1, 2026-08-27).
+    #
+    # `build_hardpoint_overlay.py` iterates `os.listdir()` here. So a hull this
+    # run REFUSED, but a previous run wrote, keeps its file and keeps being
+    # emitted - the refusal is real, recorded in the manifest, and has no
+    # effect. A correction that reports success and changes nothing is worse
+    # than no correction at all.
+    #
+    # It had already happened: an experimental run left the directory holding
+    # 218 files against a manifest of 182, and nothing anywhere said so.
+    #
+    # DELETION IS ATTEMPTED AND ITS FAILURE IS FATAL, never shrugged off. Some
+    # environments this runs in cannot delete inside the repo mount, and a
+    # silent "could not tidy up" there would leave exactly the stale state this
+    # exists to prevent. If the files cannot go, the run fails and names them.
+    live = {r["class"] for r in rows}
+    stale = [f for f in sorted(os.listdir(OUT))
+             if f.endswith(".json") and f != "MANIFEST.json"
+             and f[:-5] not in live]
+    if stale:
+        gone, stuck = 0, []
+        for f in stale:
+            try:
+                os.remove(os.path.join(OUT, f))
+                gone += 1
+            except OSError as e:
+                stuck.append("%s (%s)" % (f, e.strerror or e))
+        print("removed %d output(s) from an earlier run" % gone)
+        if stuck:
+            sys.exit("STALE OUTPUT COULD NOT BE REMOVED and the overlay reads "
+                     "this directory, so it would emit hulls this run "
+                     "refused:\n  %s\nMove them out of %s by hand and re-run. "
+                     "Nothing downstream should be built until this directory "
+                     "matches its manifest."
+                     % ("\n  ".join(stuck[:20]), OUT))
+
     print("\n%s" % json.dumps(man["counts"], indent=1))
     return 0
 

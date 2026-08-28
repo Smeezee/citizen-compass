@@ -23,19 +23,11 @@
    14.973166465759277
   ]
  },
- "acceptance": false,
- "acceptance_note": "2 of 5 exterior mounts land outside the hull",
+ "acceptance": true,
+ "acceptance_note": "",
  "exterior_mounts": 5,
- "exterior_outside": [
-  "hardpoint_countermeasure_launcher_left",
-  "hardpoint_countermeasure_launcher_right"
- ],
- "outside_any": [
-  "hardpoint_thruster_FTR",
-  "hardpoint_thruster_FTL",
-  "hardpoint_countermeasure_launcher_left",
-  "hardpoint_countermeasure_launcher_right"
- ],
+ "exterior_outside": [],
+ "outside_any": [],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {

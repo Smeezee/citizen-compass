@@ -448,7 +448,8 @@
     5.89663,
     7.91977,
     19.47006
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_top_back_right",
@@ -456,7 +457,8 @@
     7.19497,
     7.63126,
     24.14239
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gun_laser_top_right",
@@ -464,7 +466,8 @@
     5.90332,
     7.91977,
     12.61337
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_fuel_intake_top_right",
@@ -504,7 +507,8 @@
     -5.89662,
     7.91977,
     19.47006
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_gun_laser_top_left",
@@ -512,7 +516,8 @@
     -5.90332,
     7.91977,
     12.61321
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_top_back_left",
@@ -520,7 +525,8 @@
     -7.19497,
     7.63127,
     24.14239
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_fuel_intake_top_left",
@@ -696,7 +702,8 @@
     -0.0,
     8.10583,
     -18.98249
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_turret_base_lower",

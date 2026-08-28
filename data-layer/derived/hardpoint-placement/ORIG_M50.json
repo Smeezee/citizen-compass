@@ -268,7 +268,8 @@
     0.0002,
     -1.46265,
     -0.48587
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_controller_energy",
@@ -316,7 +317,8 @@
     0.0,
     -1.46265,
     -0.48587
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_ping",
@@ -324,7 +326,8 @@
     0.0,
     -1.46265,
     -0.48587
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_transponder",
@@ -332,7 +335,8 @@
     0.0,
     -1.46265,
     -0.48587
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_controller_door",
@@ -340,7 +344,8 @@
     0.0,
     -1.46265,
     -0.48587
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_controller_comms",
@@ -348,7 +353,8 @@
     0.0,
     -1.46265,
     -0.48587
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_avionics_motherboard",
@@ -372,7 +378,8 @@
     0.0,
     -1.46265,
     -0.48587
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_front_left_bottom",

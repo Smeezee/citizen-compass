@@ -272,7 +272,8 @@
     -0.17905,
     -0.28793,
     0.38026
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_back_landing_gear_right",
@@ -280,7 +281,8 @@
     0.17905,
     -0.28793,
     0.38026
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_QIG",
@@ -544,7 +546,8 @@
     -0.0,
     -0.288,
     -0.58076
-   ]
+   ],
+   "outside": true
   }
  ]
 }

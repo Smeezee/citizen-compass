@@ -37,12 +37,18 @@
   "Hardpoint_Thruster_URB",
   "Hardpoint_Thruster_URF",
   "Hardpoint_Thruster_URR",
-  "hardpoint_cooler_right",
   "Hardpoint_Thruster_ULS",
   "Hardpoint_Thruster_URS",
   "Hardpoint_Weapon_Wing_Tip_S3_Right",
-  "hardpoint_right_wing_missile_launcher",
-  "Hardpoint_Weapon_Wing_Tip_S3_Left"
+  "Hardpoint_Weapon_Wing_Tip_S3_Left",
+  "Hardpoint_Thruster_LLS",
+  "Hardpoint_Thruster_LRS",
+  "Hardpoint_Thruster_LRR",
+  "Hardpoint_Thruster_LRF",
+  "Hardpoint_Thruster_LRB",
+  "Hardpoint_Thruster_LLL",
+  "Hardpoint_Thruster_LLF",
+  "Hardpoint_Thruster_LLB"
  ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
@@ -508,7 +514,8 @@
     6.67261,
     0.28648,
     -0.47151
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_ULF",
@@ -516,7 +523,8 @@
     6.36678,
     0.28648,
     -0.39927
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_ULL",
@@ -524,7 +532,8 @@
     6.48357,
     0.28648,
     -0.58831
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_URB",
@@ -532,7 +541,8 @@
     6.67261,
     -0.28648,
     -0.47151
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_URF",
@@ -540,7 +550,8 @@
     6.36678,
     -0.28648,
     -0.39927
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_URR",
@@ -548,7 +559,8 @@
     6.48357,
     -0.28648,
     -0.58831
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Powerplant_02",
@@ -580,7 +592,8 @@
     6.51969,
     0.24689,
     -0.43534
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_URS",
@@ -588,7 +601,8 @@
     6.51969,
     -0.24689,
     -0.43534
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Weapon_Wing_S1_Right",
@@ -604,7 +618,8 @@
     7.22928,
     0.0,
     -0.93672
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Wing_Landing_Gear_Right",
@@ -668,7 +683,8 @@
     -7.22928,
     -0.00023,
     -0.93672
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Wing_Landing_Gear_Left",
@@ -684,7 +700,8 @@
     -6.48357,
     0.28625,
     -0.58831
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_LRS",
@@ -692,7 +709,8 @@
     -6.48357,
     -0.28671,
     -0.58831
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_LRR",
@@ -700,7 +718,8 @@
     -6.51969,
     -0.24713,
     -0.43538
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_LRF",
@@ -708,7 +727,8 @@
     -6.36678,
     -0.28671,
     -0.39927
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_LRB",
@@ -716,7 +736,8 @@
     -6.67261,
     -0.28671,
     -0.47151
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_LLL",
@@ -724,7 +745,8 @@
     -6.51969,
     0.24666,
     -0.43534
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_LLF",
@@ -732,7 +754,8 @@
     -6.36678,
     0.28629,
     -0.39926
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "Hardpoint_Thruster_LLB",
@@ -740,7 +763,8 @@
     -6.67261,
     0.28629,
     -0.47152
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_fuel_tank_left",

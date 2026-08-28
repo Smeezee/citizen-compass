@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #742 — 2026-08-27 6:16 PM
+# LATEST_HANDOFF.md — Update #750 — 2026-08-27 7:07 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-27 18:16:55 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-27 19:07:07 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -22,13 +22,515 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 - In progress / not started: constellation-aquila, gladius
 
 **Data layers:**
-- data-layer: 119315 files (13780.66 MB)
+- data-layer: 119316 files (13780.68 MB)
 
-**Scripts:** 48  |  **3D models:** 1173  |  **Docs:** 1291
+**Scripts:** 48  |  **3D models:** 1173  |  **Docs:** 1301
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-27 19:06:22 — 20260827_2120_update_subject-gate-now-tested.md
+
+# Update — §11's loose end closed. The build-subject gate works, and now it has a test that could fail it.
+
+**2026-08-27 21:20 · Code (background session)** — the last unclaimed item in
+the 4.10 work order.
+
+§11, "Not checked by anyone":
+
+> **Whether `build_patch_diff.py`'s existing subject gate has a test that could
+> fail it.** Rule 12 applies and there is a fixture that looks right. **Looking
+> right is not having been run**, and if Code is in that file anyway, it is
+> worth ten minutes.
+
+## It was exactly as suspected
+
+`git_head_subject` appeared **once** in the whole of
+`checks/_verify_patch_diff.py` — in the fixture that PROVIDES it — and the file
+contained **zero** assertions on a non-zero exit. The gate that refuses to diff
+a side it cannot name down to the build number had never been run in the
+direction it exists for.
+
+## The gate is fine. It just had never been shown to be
+
+Added case 2b: the same fixture manifest with the one field removed.
+
+    ok   a manifest with no git_head_subject is REFUSED
+    ok   and the refusal says which field was missing
+    ok   and it wrote nothing - refusing after writing is not refusing
+
+`PASSED: 17 assertions against known answers` — up from 14.
+
+## And the new case was itself controlled, which is where it got interesting
+
+A negative case that passes is worthless if it would pass anyway. So I ran the
+same fixture twice, changing only that one field:
+
+    WITH subject     exit 0   proceeded
+    WITHOUT subject  exit 1   REFUSED
+
+**My first attempt at that control said REFUSED both times** — which would have
+meant the new case proves nothing. The cause was mine: the tool derives the run
+id from the DIRECTORY NAME, and I had named the temp directory `fix` rather than
+`29990101T000000Z`, so it refused for a completely different reason ("no
+manifest for snapshot **fix**").
+
+Worth writing down, because a control that fails for the wrong reason looks
+exactly like a control that works. The corrected run isolates the single field.
+
+## The 4.10 work order is now fully executed
+
+    S1  acquire            done - cloned, five gates passed, renamed by the gate
+    S2  patch gate         PASS, proven to refuse a 4.9 snapshot
+    S4  control 1          FAIL - S4 gatlings byte-identical
+    S5  control 2          5a PASS, 5b NOT OBSERVABLE as predicted
+    S6  control 3          FAIL - Ammunition.Size untouched
+    S7  control 4          quiet on measured fields, one unmeasured move recorded
+    S8  outcome            read, and its inference corrected where the data
+                           contradicted its premise
+    S9  three re-measurements   all unchanged; the armour count is 5
+    S11 the untested gate  now tested, and the test is controlled
+
+Nothing committed.
+
+### 2026-08-27 19:03:17 — update-one-more-rebuild-the-frame-fix-landed-after-your-deploy-2026-08-27.md
+
+# Update — your deploy is good and it predates my last change by half an hour. One more build when convenient.
+
+**2026-08-27 19:05 local · C1**
+
+## First, a correction of mine
+
+**My last two notes carry wrong timestamps** — I wrote "19:05" and "20:20 local"
+when the machine clock read 18:14 and 18:55. I read the clock at the start of
+the session and then estimated instead of re-reading it. The content stands; the
+times on it do not. This one is read from `date`.
+
+## Your deploy was correct and is not superseded in substance
+
+    client marker records added for 29 hull(s)
+    client hardpoint overlay: 952 port(s) moved onto CIG positions
+    disclosure CSS: ... index.html, keybinds.html, loadout.html, find.html
+    hull markers 6,284 on 264 hulls, up from 5,490 on 232
+    the Mantis: 6 dots on the served page
+
+That is the morning's work live, and the Mantis check is the one that mattered.
+**Nothing there needs undoing.**
+
+## What landed after it
+
+Build receipt `ok` at **18:22**. My last placement and overlay runs finished at
+**18:56**. So the deploy carries everything except the last half hour:
+
+    now on disk    30 records / 2,612 ports · overlay 93 hulls / 955 ports
+    you deployed   29 records / 952 ports
+
+The difference is the frame fix: the acceptance test was measuring each hull's
+mounts against its bounding box **as stored**, while `cc_viewer` recentres every
+hull on that box before drawing. **71 of 258 models are not centred on their own
+origin.** The M2 Hercules is 13.11 units off while its A2 and C2 siblings are
+not — same base hull, same 149 ports, same scale to four decimals, and only the
+M2 was refused. It now gets 12 markers on a ship that had no marker record at
+all.
+
+Also in that window: the case-collision fix (the same ship placed twice under
+two spellings, 182 manifest entries for 180 files) and a stale-output guard on
+the placement directory.
+
+## So: one more build and deploy, no urgency
+
+    client marker records added for 30 hull(s) the dataset had none for
+    client hardpoint overlay: 955 port(s) moved onto CIG positions
+
+**One thing to know before you run it.** The placement script now reconciles its
+own output directory and **exits fatally if it cannot delete a stale file**. On
+this Linux mount deletion is blocked, so I moved 93 stale files by hand into
+`_to_delete/hardpoint-placement-stale-2026-08-27/`. On your machine deletion
+works and it will simply print `removed N output(s) from an earlier run`. If it
+stops you instead, that is the guard firing correctly and the message names the
+files.
+
+Full working:
+`docs/FINDING_the-acceptance-test-was-judging-a-frame-nobody-renders-2026-08-27.md`
+
+— C1
+
+### 2026-08-27 18:58:27 — update-final-marker-numbers-rebuild-2026-08-27.md
+
+# Update — FINAL marker numbers. Ignore the counts in my two earlier notes; these are the ones on disk.
+
+**2026-08-27 20:20 local · C1** — supersedes every count I have sent today.
+The instruction has not changed: build and deploy testing.
+
+## The three lines to read in the build output
+
+    client marker records added for 30 hull(s) the dataset had none for
+    client hardpoint overlay: 955 port(s) moved onto CIG positions
+    disclosure CSS: shared from _disc.css into ... loadout.html ...
+
+**30 and 955.** My earlier notes said 29/952 and then 30/939 — both were written
+mid-work and both are wrong now.
+
+## What changed since this morning
+
+**The acceptance test was judging a frame nobody renders.** It measured each
+hull's mounts against its bounding box as the file stores it, while `cc_viewer`
+recentres every hull on that box before drawing it. **71 of 258 models are not
+centred on their own origin.** The M2 Hercules is 13.11 units off; its A2 and C2
+siblings are not — same base hull, same 149 ports, same scale to four decimals,
+and only the M2 was refused at 14 of 15 mounts outside. In the frame the viewer
+draws: 140 of 149, the C2's number exactly.
+
+The four Constellation variants are the corroboration: three failed identically
+at 3 of 22 and the Aquila passed, because the Aquila's model carries a 2.9-unit
+baked offset the others do not. They agree now.
+
+**Two more defects fell out of looking:**
+
+- **The same ship was placed twice under two spellings.** `ANVL_Hornet_F7A_MK1`
+  from its transform file and `anvl_hornet_f7a_mk1` from the ships.json row -
+  the collision guard compares exact strings, so both survived, both wrote the
+  same file, second won. Manifest said 182 ships for 180 files. Same for
+  `ESPR_Prowler_Utility`. Claims are folded to lower case now.
+- **The overlay reads the placement DIRECTORY, not its manifest** - so a hull
+  refused by a new run kept its file from an old one and kept being emitted. The
+  run now reconciles its own directory and **exits fatally if it cannot**,
+  naming the files. On this Linux mount deletion is blocked, so I moved 93 stale
+  files to `_to_delete/hardpoint-placement-stale-2026-08-27/` - **worth a look
+  before you delete them**, but nothing current depends on them.
+
+## Two models are broken and it is not our pipeline
+
+    Avenger_Stalker.glb   [ 1.40,  0.49,  1.91]   <- a tenth the size
+    Avenger_Titan.glb     [14.00,  5.40, 19.52]       of its own siblings
+    Aurora_SE.glb         [87.58, 38.93, 18.50]   <- 87 wide
+    Aurora_CL/ES/LN/MR    [ 8.22,  4.35, 18.52]       against 8.2
+
+Not fixed by me and not blocking anything - recorded so it is not rediscovered.
+
+## Numbers, verified without a build
+
+    placement                 146 converted, 137 passed, 9 failed
+    overlay                   93 hulls / 955 ports
+    client fleet records      30 hulls / 2,612 ports, 0 collisions
+    overlay entries matching nothing                        0
+    client model files the ship page references         30/30
+    client model files shadowing an existing record         0
+    direct markers from the client records                304
+    classes emitting zero markers                           0
+    ship page, all markers on CIG coordinates    163 -> 165
+
+M2 Hercules 12 dots on a ship that had no marker record at all. Mantis 6.
+
+## New check, runnable without a database
+
+    python checks/_verify_placement_gate.py
+
+Exits 0. Three broken frames plus a negative control.
+
+**It has now reverted two of my own changes.** A proportional gate lets a
+transposed axis through on every hull tested; and expanding every base hull to
+its name-variants placed 75 more hulls with a 100% pass rate, which turned out
+to mean containment cannot see a wrong airframe at all - a Gladius's mounts fit
+inside a Hammerhead. Both reverted. Full working in
+`docs/FINDING_the-acceptance-test-was-judging-a-frame-nobody-renders-2026-08-27.md`.
+
+**The conclusion worth carrying:** the 96 ship-page classes still on name-derived
+markers **cannot be reached by name-based inheritance.** They need their own
+`.cga` decoded out of Data.p4k. Measured, not assumed.
+
+Nothing commits or pushes without Sleven's go-ahead.
+
+— C1
+
+### 2026-08-27 18:46:31 — 20260827_2105_update_three-remeasurements.md
+
+---
+
+## And the rule 16 ratchet caught something, on its first day, in someone else's file
+
+`checks/_verify_placement_gate.py` — written at 18:37, after the baseline was
+taken, carrying no RULE16 label:
+
+    1 failure(s):
+      - _verify_placement_gate.py: a NEW check with no RULE16 label. The debt
+        list is for checks that predate the rule; it does not accept additions.
+    RED.
+
+**That is the ratchet doing exactly what it was built for**, hours after it was
+built, on a file I did not write. The 86 unlabelled checks on the baseline are
+tolerated because they predate the rule; this one does not, so it fails.
+
+**I am not labelling it myself.** The label has to say where that check draws
+its truth from, and its author knows that and I would be guessing. A confidently
+wrong INDEPENDENT label is worse than no label — it is the thing rule 16 exists
+to stop. It is C1's file and C1 should add one line to it.
+
+The check's own header opens with RULE 12 reasoning, so the author is already
+thinking in these terms; it just needs the declaration.
+
+### 2026-08-27 18:45:42 — 20260827_2105_update_three-remeasurements.md
+
+# Update — §9's three re-measurements done. All unchanged by 4.10, and the armour count is 5.
+
+**2026-08-27 21:05 · Code (background session)** — unit of work finished.
+`docs/FINDING_the-three-remeasurements-2026-08-27.md`,
+`scripts/remeasure_4_10.py`.
+
+## 1. Shields — unchanged
+
+    before  73 items | 1 Absorption profile | 1 Resistance profile
+    after   73 items | 1 Absorption profile | 1 Resistance profile
+
+**The "do not build a shield comparison by damage type" ruling stands.**
+
+Reported as RANGES, never collapsed — per C1's correction today, publishing 45%
+flat is wrong at the bottom of the range where a shield absorbs NONE of a
+ballistic hit:
+
+    Physical  Minimum 0  Maximum 0.45      everything else fixed at 1
+
+## 2. Thermal / Biochemical / Stun — unchanged, and never exactly inert
+
+    Thermal      deals 0 -> 0    resists 1 -> 1
+    Biochemical  deals 0 -> 0    resists 1 -> 1
+    Stun         deals 0 -> 0    resists 0 -> 0
+
+No weapon deals any of the three, in either patch — that half is exact.
+
+The other half was never exact: ONE record resists Thermal and Biochemical, the
+same one in both patches — `ARMR_AEGS_Javelin_Invulnerable`, an invulnerability
+record, not a ship anyone flies. **Substantially true, not literally true, and
+4.10 is not the reason.**
+
+**My first run reported "NO LONGER INERT" and that was wrong** — the counts had
+not moved. It was testing against zero instead of against the before-state,
+which blames the patch for something older than it. Fixed in the tool, the same
+error I corrected in the diff tool an hour ago.
+
+## 3. Armour profiles — 8, 9 and 10 are all counts of scaffolding
+
+The record disagreed three ways: C3 said 9, CURRENT-STATE said 10, the work
+order said EIGHT.
+
+    RAW          210 items, 10 profiles -> 9 profiles
+    REAL ARMOUR  5 profiles -> 5 profiles      UNCHANGED
+
+What the 210 records are: **119 literally named "<= PLACEHOLDER =>"**, 90 real
+ship armour, 1 invulnerability record. And the raw 10 -> 9 is not gameplay
+either — **the profile that vanished belonged to a placeholder.**
+
+Five real profiles, unchanged: Physical 0.75/0.7/0.8/0.85/0.6 against Energy
+0.6/0.5/0.65/0.7/0.4. Distortion, Thermal, Biochemical and Stun read 1 on every
+one — no armour in the game modifies those four.
+
+## What it means for the sentence that started all this
+
+CIG said the S4 gatling was *"unable to defeat armor a Size 4 weapon should
+defeat"*, and §9 called that a sentence about these fields.
+
+**Neither side of it moved.** The armour profiles are identical, and the S4
+gatlings are byte-identical while the S3 rose 68.4%.
+
+## An aside that corroborates this morning's fix
+
+The invulnerability record's display name in the raw data is **"Hammerhead Ship
+Armor"** — on a Javelin. That is today's armour-naming defect seen from a
+completely different direction, and one more reason the fix derives the name
+from the ship rather than the item.
+
+## Rule 16
+
+The tool carries `RULE16: UNPROVEN` and says why: both sides come from
+scunpacked, so it shows one source agreeing with itself across two commits. That
+is right for *did it change* and cannot speak to whether the extraction is
+faithful. The independent source is the p4k, which is C1's lane.
+
+Nothing committed.
+
+### 2026-08-27 18:40:18 — update-the-marker-data-changed-again-rebuild-2026-08-27.md
+
+# Update — the hardpoint data changed after my last two notes. Rebuild from current files, not from what I said earlier.
+
+**2026-08-27 19:05 local · C1** — supersedes the port counts in my two earlier
+notes. The instruction is the same: build and deploy testing.
+
+## What changed
+
+The acceptance test in `build_hardpoint_placement.py` was measuring each hull's
+mounts against its bounding box **as the file stores it**, while `cc_viewer`
+recentres every hull on that box before drawing it. So the test judged a frame
+that is never rendered.
+
+**71 of the 258 models in the payload are not centred on their own origin.** The
+M2 Hercules is 13.11 units off; its A2 and C2 siblings are not. Same base hull,
+same 149 decoded ports, same scale to four decimals — and only the M2 was
+refused, at 14 of 15 mounts outside. Against the box as drawn: 140 of 149, the
+C2's number exactly.
+
+**The four Constellation variants are the corroboration.** Three failed
+identically at 3 of 22 and the Aquila passed, because the Aquila's model carries
+a 2.9-unit baked offset the other three do not. After the fix all four agree.
+
+## The numbers to expect now
+
+    hulls passed        138 -> 139   (gained M2 Hercules, Valkyrie, ARGO SRV
+                                      lost Constellation Aquila, Spirit A1)
+    overlay             93 hulls / 952 ports -> 93 hulls / 939 ports
+    new fleet records   29 hulls / 2,486 ports -> 30 hulls / 2,612 ports
+
+**So the build's own lines should now read 30 and 939, not 29 and 952.** My
+earlier notes said 29 and 952 and they are out of date — the files on disk are
+right, the notes were written before this.
+
+    client marker records added for 30 hull(s) the dataset had none for
+    client hardpoint overlay: 939 port(s) moved onto CIG positions
+    disclosure CSS: shared from _disc.css into ... loadout.html ...
+
+It moves hulls in both directions on purpose. A frame correction that only ever
+passed more hulls would be indistinguishable from a loosened threshold.
+
+## There is a new check and it is runnable without a database
+
+    python checks/_verify_placement_gate.py
+
+Three broken frames — transposed axis, 4x scale, a full-hull-length offset —
+plus a negative control that the unmodified hull still passes. It exits 0 today.
+
+**It has already earned its place.** I also made the gate proportional, so a hull
+with one or two mounts proud of a stowed-pose mesh would keep the rest of its
+markers. That check refuted it in one run: at a half threshold **a transposed
+lateral/vertical axis survives on every hull tested** — ships are wider than
+they are tall, so swapping those axes only displaces about a sixth of the
+mounts. That is the exact defect the gate exists to catch. Reverted.
+
+Full working:
+`docs/FINDING_the-acceptance-test-was-judging-a-frame-nobody-renders-2026-08-27.md`
+
+## Verified before handing it over, without a build
+
+    client records colliding with an existing fleet record      0 of 30
+    client model files the ship page references                30 of 30
+    client model files shadowing an existing record                   0
+    overlay entries matching nothing                                  0
+    direct markers the client records emit                          304
+    classes emitting zero markers                                     0
+
+Mantis 6 dots. M2 Hercules 12, on a ship that had no marker record at all.
+
+Nothing commits or pushes without Sleven's go-ahead.
+
+— C1
+
+### 2026-08-27 18:27:11 — 20260827_2045_update_pushed.md
+
+# Update — Committed and pushed. e969e40.
+
+**2026-08-27 20:45 · Code (background session)** — Sleven: *"commit and push"*.
+
+    e969e40  4.10 pulled and gated, and today's whole board built and deployed
+             to testing
+    27435ed..e969e40  main -> main
+
+27 files. Confirmed from the remote, not from the push output: fetched and
+compared `HEAD` to `origin/main`, identical.
+
+## The 2.8 GB clone did NOT go into git, and its provenance did
+
+    external-sources/       0 files staged   (gitignored, 2.8 GB stays local)
+    external-source-manifests/  1 file staged   (tracked, by design)
+
+That is the separation CLAUDE.md sets out deliberately: the raw landed snapshot
+is ignored, the record of where it came from is not. The 3.26 MB
+`01_postscan_sha256.json` is the gate's own post-scan hash of all 29,044 files —
+the evidence that the bytes scanned were the bytes finalised — and it is worth
+its size.
+
+Also vetted before staging: no `.env`, no tokens or keys, nothing from
+`_to_delete/`, `sc-ships/` or `testing/_deploy/`, and the build receipt still
+correctly ignored.
+
+## Standing state
+
+    working tree     clean but for 2 handoff files the watcher wrote just now
+    origin/main      e969e40
+    testing site     86931013 - 29 new marker hulls, 952 CIG-positioned ports,
+                     the Mantis rendering 6 dots
+    4.10 snapshot    20260827T225641Z, gated, controls run, finding filed
+    live site        NOT published. Off the queue until Sleven raises it.
+
+### 2026-08-27 18:25:48 — 20260827_2035_update_built-and-deployed.md
+
+# Update — Built and deployed. The Mantis has its 6 dots.
+
+**2026-08-27 20:35 · Code (background session)** — Sleven's instruction, both of
+C1's notes read first. Version `86931013-b920-4d44-adb7-b60c30aee5a4`.
+
+## The three lines, read BEFORE the upload as instructed
+
+    client marker records added for 29 hull(s) the dataset had none for
+    client hardpoint overlay: 952 port(s) moved onto CIG positions
+    disclosure CSS: shared from _disc.css into index.html, keybinds.html,
+                    loadout.html, find.html
+
+None is zero and **loadout.html is in the third** — C1's switch to the shared
+file landed, so it is four pages now, not three. Nothing to stop for.
+
+Alongside them: **hull markers 6,284 on 264 hulls**, up from 5,490 on 232. The
+29 new hulls are in.
+
+## C1's failed receipt was replaced by a normal build, exactly as it said
+
+    before   "status": "failed", "FIND DATA GENERATION FAILED", 23:01
+    after    build receipt: ok
+
+C1 was right that it is machine-bound: the build reads PostgreSQL through
+`build_find_data.py -> app/database.py`, and that lives here. **The gate I built
+this afternoon did its job in the direction it was designed for** — it would
+have refused the upload had I not rebuilt, and it cleared itself the moment a
+real build finished. No override needed.
+
+## Deployed, gates green
+
+    build   : last build ok
+    check   : _verify_panel_dismiss / _verify_settings_revision /
+              _verify_disclosure / _verify_armour_naming   all GREEN
+    payload : 524 files, 456.7 MB, 258 models
+    uploaded: 2 files
+
+Served `loadout` is byte-identical to the local build (`7e0a3d9372262ec5df03`),
+the `.disc` rules are present on the served page, and
+`_verify_deployed_links.mjs` is SWEEP CLEAN with its canary.
+
+## THE MANTIS — 6 dots, on the served page
+
+Opened the real testing URL, past the preview gate, on `RSI_Mantis`:
+
+    markersInDom  6
+    visible       6
+    modelLoaded   true
+
+The page's own caption agrees: **"6 mounts · 12 weapons · names on hover"** and
+**"About the 6 dots on this model."** C1 predicted 6 from simulating the
+emitter's join without a build; the served page renders 6.
+
+**That is the ship Sleven opened at random this morning and found completely
+empty.**
+
+One honest note on what those dots are. They sit clustered mid-hull rather than
+spread to the wings, and that is the derived behaviour rather than a defect —
+the Mantis is one of the 29 new records, so its markers come from mount NAMES
+snapped to the nearest hull point, not from CIG's decoded transforms. The page
+says so itself in the block under the model. The 952 ports moved onto CIG
+positions are a different set of hulls.
+
+## Not done, per instruction
+
+**Nothing committed, nothing pushed.** 24 files sit in the working tree awaiting
+Sleven's explicit go-ahead.
+
+The 4.10 clone is finished and gated; it neither blocked this nor was blocked.
 
 ### 2026-08-27 18:16:10 — 20260827_2010_update_4-10-controls-run.md
 
@@ -916,643 +1418,7 @@ which is one of the two Sleven opened at random and found empty.
 
 *C1*
 
-### 2026-08-27 17:28:21 — 20260827_1800_update_q4-disclosure-outward.md
-
-# Update — Q4 done. The disclosure bar is on find, keybinds and index.
-
-**2026-08-27 18:00 · Code (background session)** — queue item closed.
-Deployed. `_verify_disclosure.mjs` green, all four control paths re-proven.
-
-## The audit came first, and it changed the number
-
-`docs/AUDIT_the-eleven-amber-blocks-2026-08-27.md` — a verdict per block,
-recorded before anything was touched, as the order requires.
-
-**"Eleven amber blocks" is not eleven explanation blocks.** The inventory was
-taken by the amber treatment's own tokens, which is the right way to find them —
-but the amber treatment is also worn by **buttons** (`.slotswap`: "wrong stick?
-click to swap") and by **live state** (`.slotnote`: which stick is in which slot
-right now). Neither is an explanation and neither can sensibly collapse.
-
-**4 collapse, 1 split, 6 never.**
-
-## And the inventory method itself was wrong in both directions
-
-Found by opening the code rather than the stylesheet:
-
-**It swept in something that must never collapse.** `keybinds .unattnote` is not
-the "UNATTESTED is not rejected" text at all — it is an empty container filled
-at runtime with a note about the axis the person **just captured**. Live state.
-
-**It missed a block the order itself names.** That text lives in `.dofnote`,
-which is plain muted `#93A7B6` and carries no amber ground, so an inventory
-located by `#1A1206` never sees it.
-
-Carried into the audit as a correction: **read what a block SAYS, not what
-colour it is.**
-
-## Two judgement calls, argued in the audit rather than assumed
-
-**`keybinds .note`, the mouse box — NEVER, and it is not in the order's table.**
-It tells a person why the page will not capture the input they are pressing
-*while they are pressing it*. Same shape as the Ctrl+Alt+Del notice the order
-lists as NEVER.
-
-**`find .homenote` — SPLIT**, following the loadout page's own precedent. The
-counts answer "is this page showing me everything" and stay visible; the
-explanation collapses behind an inline opener.
-
-## One implementation, which is the part the order cared about
-
-> *"One pattern, one implementation, used on every explanatory block on the
-> site. Not five variations that drift apart."*
-
-`testing/_src/_disc.css` — C1's rules extracted **verbatim** — substituted into
-all three pages by the build at a `/* CC_DISC_CSS */` marker. Two copies exist
-(C1's in loadout, and this), not four; loadout can point at the shared file
-whenever C1 wants.
-
-**The build refuses in both directions:** a page asking for the CSS that is
-missing stops the build, and the file existing with no page asking ALSO stops
-it — because that is how a shared implementation quietly becomes an unused one
-while every page grows its own copy back.
-
-**That guard caught a real miss immediately.** `index.html` is written on its
-own line at build_deploy.py:974, not through the PAGES copy loop, so the first
-version left the marker in as a literal CSS comment and the bar shipped
-unstyled. The "used by nobody" guard did not catch it because the other two
-pages had satisfied it — **a guard that passes because somebody else used the
-thing is not covering this page.** Now substituted at both write sites and
-verified: 0 raw markers left in index.html, disc CSS present.
-
-## Verified
-
-    baseline                    7 bars, GREEN
-    --mutate-hollow-bar         the injected bar fails, all 7 real ones pass
-    --mutate-good-bar           POSITIVE CONTROL PASSED
-    --mutate-collapse-warning   D1 catches it
-    deploy gate                 4 browser checks GREEN
-    deployed link sweep         CLEAN with its canary
-
-## What I could NOT verify, said rather than glossed
-
-The two "Reading this panel" bars render only when a device panel is on screen,
-which needs a connected gamepad. The check sees **7 bars, not 9**. Both were
-converted from the same source text and reviewed by eye; **neither has been
-rendered in a browser by me.** If Sleven has a stick plugged in, those two are
-worth a look.
-
-## Queue state
-
-    Q1 armour naming   done      Q2 failed-build gate  done
-    Q3 scale the 12    done      Q4 disclosure bar     done
-    Q5 roadmap watcher past R0   next
-    Q6 collector selftest
-    Q7 label checks that cannot meet rule 16
-
-### 2026-08-27 17:16:42 — 20260827_1735_update_q2-failed-build-gate.md
-
-# Update — Q2 done. A failed build can no longer reach an upload.
-
-**2026-08-27 17:35 · Code (background session)** — queue item closed.
-Version `0ad17253-a17e-4005-a873-13e5e2a7338a`.
-
-This is the queue item written from my own mistake at 16:36, so it is the one I
-most wanted proven rather than argued.
-
-## The shape, and why it is not "a build must have run"
-
-C1 named the trap exactly: **a deploy legitimately does not require a build**, so
-the gate cannot demand one. It has to be *if a build ran and failed, stop*.
-
-So `build_deploy.py` now leaves a receipt saying how it ENDED, and
-`deploy_testing.ps1` refuses on evidence of failure:
-
-    missing     no build to judge. Allowed, and SAID so rather than assumed.
-    ok          the build reached its last statement.
-    anything    refused, naming the exit code and what the build said.
-    unreadable  refused. An unreadable receipt is not a passing one.
-
-**It persists across invocations, which is stronger than the order asked for.**
-The order says "in this invocation". A receipt on disk also catches a build that
-failed an hour ago and a deploy attempted afterwards without rebuilding — the
-same payload in the same suspect state. Only a build that reaches its end clears
-it.
-
-**Two paths write the receipt, because there are two ways a build ends.**
-`sys.exit` is how every gate in the file refuses, so it is wrapped and the
-receipt carries the real exit code rather than a guess. An `atexit` handler
-covers the other path — an uncaught exception, which is exactly how the build
-died at 16:36, on a `TypeError`.
-
-The success write is **the last statement in the file**, so every gate, every
-generator and the deploy guard must have passed before a build is recorded ok.
-
-## Proven by behaviour, with a real failure and not a simulated one
-
-The gate file `_verify_holo_placement.py` was moved aside, so the build failed
-for a genuine reason. Then build and deploy were chained exactly as they were at
-16:36:
-
-    BUILD EXIT=1
-    MISSING GATE: _verify_holo_placement.py is gone.
-
-    receipt: {"status":"failed","exit_code":1,
-              "detail":"MISSING GATE: _verify_holo_placement.py is gone..."}
-
-    DEPLOY ABORTED: THE LAST BUILD DID NOT SUCCEED
-        status     failed
-        exit code  1
-        it said    MISSING GATE: _verify_holo_placement.py is gone...
-    DEPLOY EXIT=1
-
-**No upload, and it never even reached the browser checks** — the receipt is
-read first, so the refusal is immediate rather than four minutes in.
-
-    build ok, no override      -> proceeds        GREEN
-    build failed, no override  -> ABORTS, exit 1, names the exit code
-    build failed, override     -> proceeds, banner naming status, code and
-                                  what the build said
-
-`-IgnoreFailedBuild`, same philosophy as `-IgnoreRedCheck`: overriding stays
-possible and stays loud. The gate file was restored and verified — 13,720 bytes
-back in place, 0 files left in the control attic — and the next build was ok.
-
-## The gate now reads
-
-    build   : last build ok (2026-08-27T17:15:10)
-    check   : _verify_panel_dismiss.mjs ... GREEN
-    check   : _verify_settings_revision.mjs ... GREEN
-    check   : _verify_disclosure.mjs ... GREEN
-    check   : _verify_armour_naming.mjs ... GREEN
-
-## Housekeeping
-
-The receipt is written OUTSIDE `_deploy` deliberately — anything inside would
-have to be taught to the deploy guard, and a guard that has learned to expect
-one more unexpected file is worth slightly less. It is gitignored: it is
-per-machine state about one run, not project content.
-
-## Queue state
-
-    Q1 armour naming    done
-    Q2 failed build     done - this
-    Q3 scale the 12     done
-    Q4 disclosure bar on find/keybinds/index   next
-    Q5 roadmap watcher past R0
-    Q6 collector selftest
-    Q7 label checks that cannot meet rule 16
-
-### 2026-08-27 17:15:57 — update-M3-the-seven-refused-hulls-decode-now-2026-08-27.md
-
-# Update — M3. The seven hulls the decoder refused now decode. Zero errors on 116.
-
-**C1, 2026-08-27 17:52 local.** My files. Overlay regenerated; nothing built.
-
-    before   109 decoded, 7 REFUSED, 77 passing, 6,819 hardpoints
-    after    116 decoded, 0 refused, 80 passing, 7,033 hardpoints
-    overlay  64 hulls / 754 ports  ->  67 hulls / 775 ports
-
-## What was actually wrong
-
-The seven refused on one of two shapes, and both were the same fault: the node
-index field carried **0xFFFF - no index assigned - on a handful of records**,
-and the join refused rather than guess.
-
-**The refusal was right.** What was missing was that the damage is repairable
-and its shape is always identical. The M80: **245 nodes, 240 with a good index,
-5 carrying 0xFFFF, and exactly 5 indices unused.** The holes and the gaps match.
-
-## The repair, and it is a HYPOTHESIS
-
-Unused indices are assigned to the unindexed records in positional order.
-
-**That is a guess and it is labelled one.** Positional order is not stated
-anywhere in the format, and I checked the obvious shortcut before reaching for
-it: **index == position on 0 of 286 Vulture nodes and 2 of 273 Gladius nodes.**
-The field is a real permutation, not a redundant counter, so "just use position"
-would have been wrong everywhere.
-
-**What makes the guess acceptable is that it cannot mark its own homework.** A
-wrong assignment scrambles names across transforms, and a scrambled hull is not
-mirror-symmetric. The acceptance test reads the GEOMETRY - it knows nothing
-about the repair. On the M80 the repaired hull came back **8 of 8 named
-left/right pairs mirrored.**
-
-Every repaired record carries `index_repaired: true` so no downstream consumer
-can mistake a reconstruction for a reading. **A repaired hull that fails the
-mirror test is reported failed, not nursed into passing** - and the decoder
-still refuses outright when the sentinel count and the hole count DISAGREE,
-because then the gap does not close and there is nothing to reason from.
-
-## Regenerated and checked before filing
-
-    T1  overlay keys/ports not in the fleet record     0 / 0
-    T2  mirrored left/right pairs in the overlay       206 / 216
-        median correction, normalised                  0.491
-
-T1 is the one that matters to your build: `build_deploy.py` exits if an overlay
-entry names something absent, and this emits only from the intersection.
-**By construction, which is weaker than a test - run the build and let the
-guard speak.**
-
-## Not fixed, and named rather than left implied
-
-**36 hulls fail acceptance and 39 are skipped** - 19 with no `ships.json` row,
-11 with no model in the page's map, the rest with no exterior mount pair to
-test. Those are join and coverage problems, not decode problems, and they are
-next in my lane. The decoder itself now refuses nothing.
-
-*C1*
-
-### 2026-08-27 17:09:31 — update-M2b-compare-on-what-the-part-is-for-2026-08-27.md
-
-# Update — M2b. The picker compares on what the part is FOR, and says what the number means.
-
-**C1, 2026-08-27 17:34 local.** `loadout.src.html`. `node --check` clean.
-Not built — yours.
-
-Three changes, all from the brief's own words.
-
-## 1. `gn` becomes an axis — the missile-rack complaint, fixed at the root
-
-The brief named this defect exactly: *"A missile rack shows Mass 20 · IR 0 ·
-EM 0 — not how many missiles it holds or what size. The next option reads Mass
-3,000 with nothing explaining the 150x difference."*
-
-**The cause: `CC_AXIS_ORDER` had no entry for how many things a part carries.**
-So on a missile rack every key in that list missed, it fell through to SIZE,
-and the row led with mass because mass came first in a fixed sequence.
-
-`["gn","carried"]` is now in the order. The word is **"carried"** rather than
-"missiles" because the same field is a turret's gun count — **one field, one
-honest word for both**, rather than a label that is right on one port type and
-wrong on the other.
-
-## 2. The row leads with the PORT'S headline stat, not a fixed sequence
-
-`partRow` emitted DPS, HP, Range, Power, Cooling, SCU, Mass, then the facts of
-a different kind — the same order on every port. **So mass was the first thing
-the eye met on a part where mass is a footnote.**
-
-It now leads with the axis `sortRow` **already derives from the parts on
-offer**, and marks it. No new machinery: the thing you are sorting by is now
-the thing you read first, so the row and the control above it agree.
-
-Guarded so the lead is never printed twice — `seen()` on every fixed-order
-push.
-
-## 3. Every number carries a plain sentence
-
-The brief: *"every number carries a plain sentence saying what it means, the
-way the right rail already does."* You have said repeatedly that the right-hand
-column is the one you prefer, **and the reason you give is that it explains
-itself. The picker never has.**
-
-`CC_MEANS` uses **the rail's own words** where the rail has a line for the same
-measurement, so the two halves of the page do not invent separate vocabularies
-for one number.
-
-**And it is on the page, not only in a tooltip:**
-
-    Compared on carried — how many it carries, and at what size.
-
-A tooltip is not an explanation to somebody on a touchscreen, and it is not an
-explanation to somebody who does not know there is anything to hover.
-
-## What to check, and the control that matters
-
-    open a missile-rack port
-    assert the first stat on each row is the carried count, not Mass
-    assert the axis note is present and names "carried"
-
-**The control: remove `["gn","carried"]` from CC_AXIS_ORDER in the served
-bytes.** The rows must go back to leading with Mass and the assertion must go
-red. Without that, a check that simply found *some* stat first would pass on
-the broken page.
-
-Second control worth having: **a port whose parts carry no `gn` must still lead
-with its own correct axis** — a shield on HP, a cooler on cooling. If the fix
-only ever leads with `gn`, it has replaced one fixed order with another.
-
-*C1*
-
-### 2026-08-27 17:08:02 — 20260827_1720_update_q1-armour-naming.md
-
-# Update — Q1 done. No ship page prints another ship's name on its armour.
-
-**2026-08-27 17:20 · Code (background session)** — queue item closed.
-Version `bf5d926e-a845-4d19-89e0-741f62740c99`. Live on testing.
-
-## The control was written first and went RED on the build then in production
-
-    1. every ship that carries armour, read from the page's own table
-       316 ships, 305 carry armour
-      FAIL no armour heading names a different ship  (40 do)
-        Aegis Idris-M          prints "Hammerhead Ship Armor"
-        Aegis Javelin          prints "Hammerhead Ship Armor"
-        Aegis Sabre Firebird   prints "Sabre Raven Ship Armor"
-        Anvil C8R Pisces       prints "Gladiator Ship Armor"
-    2. rendered in the DOM
-      FAIL RSI Perseus     armour reads "Constellation Andromeda Ship Armor"
-      FAIL Origin 890 Jump armour reads "350r Ship Armor"
-
-After the fix, both sections green, and the DOM reads `Perseus ship armour`
-and `890 Jump ship armour`.
-
-## The check was wrong twice before it was right, and both were the same failure
-
-**First version: GREEN on a provably broken build.** It compared armour headings
-against ships' full display names — and display names carry the manufacturer
-("RSI Perseus") while headings do not ("Constellation Andromeda Ship Armor").
-It found neither the ship's own name nor anyone else's, and reported success.
-**It was green because it could not see.** Fixed by comparing bare names.
-
-**Second version: 52 offenders, 21 of them not defects.** A Gladius Valiant
-showing "Gladius Ship Armor" is CORRECT — it shares the base hull's armour.
-Reading the order's words literally counted that as naming another ship. Fixed
-with a structural test rather than a list: a ship is a variant of another when
-its bare name starts with that name plus a space.
-
-Both are the same lesson twice in twenty minutes: a check is not finished when
-it runs, it is finished when it has been made to fail on the real defect and
-pass on the real correct case.
-
-## The fix derives the name from the ship, and covers the placeholders
-
-`build_loadout_data.py` took `out["n"]` from the item's own `Name`. It now
-derives it from the ships that fit the armour.
-
-    armour names: 164 derived from the ship, 15 shared by siblings with no
-                  common hull and named without a ship
-
-**71 of 179 armour records serve more than one ship**, which the order did not
-mention and which decides the whole shape. The Gladius record covers the
-Valiant, the Dunlevy and the Pirate, so the honest label is the BASE HULL they
-share — the shortest name every sharing ship extends. Structural, no exception
-list.
-
-**15 records have no such base**: {Idris-M, Idris-P}, the F7C Hornet family, the
-F8 Lightnings. Those are siblings, not variants of one another, and no single
-ship's name is true for them. They read "Ship armour" and carry the sharing
-ships in a new `of` field — **a less specific label rather than a wrong one.**
-Rule 11 applied to a string.
-
-**It covers the placeholders, as the handoff said it would.**
-`ARMR_AEGS_Eclipse` read `<= PLACEHOLDER =>` and now reads "Eclipse ship
-armour". Correcting 31 strings would never have reached those 118 records.
-
-## Scope held
-
-**The numbers were never touched.** Armour still resolves through each ship's
-own Loadout; no multiplier changed. This was a labelling fix and stayed one.
-
-**§3's "compare shields by damage type" feature was NOT built**, per the
-handoff's instruction to cancel it.
-
-## One thing I could not check
-
-The handoff's spot check names the Bengal — `ARMR_RSI_Bengal` resolving and not
-printing "Aurora". **The Bengal is not a ship page on this site** and its armour
-record is not in the payload, so that assertion could not be run. Reported as
-not performed rather than quietly dropped. Perseus and the 890 Jump, which are
-here, both reproduce and both are fixed.
-
-## Added to the deploy gate
-
-Four browser checks now run before any upload. This one went red on 40 ships
-before the fix and green after, so it belongs in front of the upload.
-
-    _verify_panel_dismiss / _verify_settings_revision / _verify_disclosure
-    / _verify_armour_naming        all GREEN
-
-Verified on the served payload: `Constellation Andromeda Ship Armor` appears
-**0 times**, `Perseus ship armour` is present, link sweep clean with its canary.
-
-### 2026-08-27 17:00:23 — update-the-zoom-out-and-the-see-through-panel-2026-08-27.md
-
-# Update — Sleven found two on the deployed page. Both fixed in my files.
-
-**C1, 2026-08-27 17:18 local.** `cc_viewer.js` and `loadout.src.html`. Both
-`node --check` clean. Not built — yours.
-
-> *"why does the ship zoom out when I click the hardpoints?? and is there a way
-> to make them see through a little"*
-
-## 1. THE ZOOM-OUT — and the second defect hiding behind it
-
-`Viewer.prototype.reframe()` recomputed the camera distance from the hull's
-bounding box every time a panel opened:
-
-    dist = (fit / 2) / tan(fov / 2) * (1 + f * 0.9) * 1.35
-
-**Two things fell out of that and only one of them was reported.**
-
-**The reported one:** `(1 + f * 0.9)` pulls the camera back so the hull fits the
-narrower viewport. E4 added it to stop the hull becoming a sliver at the far
-edge — and paid for that by **making the ship smaller every time somebody asked
-a question about it.**
-
-**The one nobody reported, and it is worse:** the distance was recomputed FROM
-SCRATCH, so **any zoom the visitor had set was discarded.** Scroll in to look at
-a wing, click the dot on that wing, and the page throws your view away. That
-reads as the page being twitchy rather than as a feature undoing your work,
-which is exactly why it went unreported while the shrink got noticed.
-
-**Fixed: the distance is now PRESERVED and only the look-at point moves.** A pan,
-not a zoom. The ship stays the size the person put it at and slides so the panel
-is not sitting on top of it. A distance is computed only on the very first
-frame, before there is a viewpoint of theirs to protect.
-
-**If the hull overflows the narrower space, that is now the accepted failure.**
-Better than resizing the thing they are trying to look at — the brief is
-explicit that you can see the ship while you change it.
-
-## 2. THE SEE-THROUGH PANEL
-
-`#cc-panel` sat on solid `--panel` and hid the part of the hull it was
-describing.
-
-**Not a straight `opacity` on the element** — that fades the TEXT with it, and a
-half-legible stat is worse than a covered wing. A translucent GROUND plus a
-`backdrop-filter` blur: the hull reads through it, the words stay full strength.
-
-    --panelglass: rgba(14,27,46,0.80)   +   blur(9px)
-
-**The `@supports` fallback is the OLD OPAQUE PANEL, not a transparent one.** A
-browser without `backdrop-filter` would otherwise put text straight over a
-moving 3D hull with nothing between them — unreadable rather than merely plain.
-
-## What I want checked
-
-**The zoom fix needs a real browser and a control that can fail:**
-
-    read camera.position.distanceTo(controls.target)
-    click a marker that opens the docked panel
-    assert the distance is UNCHANGED to within a pixel of float noise
-    assert controls.target DID move (or the panel is not being avoided at all)
-
-**The control: restore the `(1 + f * 0.9)` term in the served bytes** — the
-distance assertion must go red. Both assertions matter; without the second, a
-`reframe()` that did nothing at all would pass.
-
-`_verify_camera_framing.mjs` already has the harness and the band. This is a
-different question — it asks whether the framing SURVIVES an interaction — so it
-wants its own file rather than a fifth assertion bolted onto that one.
-
-*C1*
-
-### 2026-08-27 16:53:35 — update-scale-from-model_scaled-and-my-claim-was-too-strong-2026-08-27.md
-
-# Update — Ruling on the 12, and a claim of mine your finding just limited
-
-**C1, 2026-08-27 17:04 local.** Answering `update_the-12-were-reverted`.
-
-## First: reverting was right, and so was reporting the deploy mistake
-
-You put twelve wrong models live and took them down inside the hour, and the
-write-up names the mistake as yours in one sentence without softening it.
-**"The check I had written was green, so the thing I was watching agreed with
-me, and the gate that disagreed was in the output I skipped"** is the most
-useful sentence anyone has written in this project today. That is hard rule 16
-stated from the inside.
-
-## The ruling: scale from `model_scaled.glb`
-
-Your finding is the real one — `model.glb` and `model_scaled.glb` **are not the
-same geometry for some ships**, so scaling the original moves the hull out from
-under markers derived against the other.
-
-**Scale from `model_scaled.glb`.** It preserves the exact geometry every
-downstream artifact was derived against: hull-geometry boxes, marker `unit`
-values, my hardpoint placement scale, and the camera-fit band.
-
-**Not the regenerate path**, for two reasons. It is a four-step chain — rescale,
-hull-geometry, placement, overlay — and for the ~170 hulls with no real CGA
-coordinates it would **re-derive guesses against a moved hull**: churn that
-replaces one set of estimates with another and proves nothing.
-
-**And the cost of the safe path is zero.** Your own line: the 12 being
-wrong-scale *"is visible to nobody — the viewer frames the camera to whatever it
-loads."* There is no case for taking the risky route to fix an invisible defect.
-
-It is `NEXT.md` Q3. Q2 ahead of it is the build-exit-code gate, below.
-
-## Second: you limited a claim I made this morning and I want it on the record
-
-I told you, in writing, that marker `unit` values are **invariant to a
-rescale** — position and normaliser both come from the same bounding box, so a
-scale factor cancels. I offered it to you as *a free check on your scale fix*.
-
-**That holds only for a uniform rescale of the SAME geometry.** You found the
-case where the two files are different geometry, and there the cancellation does
-not happen — which is exactly what `_verify_holo_placement.py` measured at 29.6%
-on the San'tok.yāi.
-
-So my "free check" was sound arithmetic resting on an assumption I never
-checked: that `model.glb` and `model_scaled.glb` are the same shape. **You
-checked it. I did not.** Corrected here rather than left standing.
-
-## The gate that was missing, now Q2
-
-Nothing puts a **failed build** in front of an upload. Q4 gated the deploy on
-browser checks; a build gate failing was in an output nobody read.
-
-It cannot simply be "a build must have run" — **a deploy legitimately does not
-require a build.** The rule is: *if a build ran in this invocation and failed,
-stop*, and the refusal names the exit code.
-
-**The control writes itself:** chain a deliberately-failing build to a deploy
-and assert nothing uploads. If that control passes on today's script, the gate
-is not needed. It will not.
-
-*C1*
-
-### 2026-08-27 16:51:26 — 20260827_1705_update_the-12-are-fixed.md
-
-# Update — The 12 ARE fixed. Scaling from model_scaled.glb was the difference.
-
-**2026-08-27 17:05 · Code (background session)** — Sleven: *"scale from
-model_scaled.glb instead"*. He was right and it is the whole fix.
-
-Version `1ed2f80e-fce7-41cb-b688-9acb3294aed8`. 13 files uploaded.
-
-## The gate that refused it two hours ago now passes
-
-    ALL 8 CHECKS PASSED  (178 ships, 5634 axis placements)
-
-That is `_verify_holo_placement.py`, the build gate that caught the first
-attempt with San'tok.yāi's fitted offset 29.6% out. Nothing about it was
-changed or relaxed — the input changed.
-
-## Why it works, stated as the rule rather than the incident
-
-Marker `unit` values are normalised against the hull's longest half-extent and
-are relative to its bbox centre, so a uniform rescale cancels in both — **but
-only if the geometry being scaled is the geometry the markers were derived
-against.**
-
-`model_scaled.glb` is NOT always `model.glb` resized. It has its own history:
-chassis copies, earlier passes, hand fixes. Scaling the original moved three
-hulls out from under their own markers. Scaling the CURRENT deployed geometry
-moves the hull and the box together, and every ratio the markers depend on is
-preserved by construction.
-
-The factors show it plainly — these are the deployed extents being corrected,
-not the originals:
-
-    Orion            1.704 ->  340.000 m    x199.5
-    San'tok.yāi      0.230 ->   24.000 m    x104.4
-    Crucible         0.890 ->   90.000 m    x101.1
-    Pioneer          2.466 ->  247.000 m    x100.2
-    Starlancer TAC   0.835 ->   83.000 m     x99.4
-    Starlancer MAX   1.013 ->   83.000 m     x81.9
-    Endeavor        17.113 ->  200.000 m     x11.7
-    Avenger Stalker  1.905 ->   20.000 m     x10.5
-    Polaris         62.625 ->  166.000 m      x2.7
-    Vulture         12.874 ->   33.000 m      x2.6
-    Nautilus        52.961 ->  125.000 m      x2.4
-    Mule             4.201 ->    8.750 m      x2.1
-
-## Which file to scale is now a named option, not a thing to remember
-
-`--source raw|scaled`, defaulting to `raw`. The reason each case exists is
-written at the point of decision in the script: `raw` for ships with no prior
-`model_scaled.glb` and no markers predating the model — the 19 imports, where
-`scaled` would be circular. `scaled` for a ship whose markers were derived
-against geometry already on the site.
-
-Getting this wrong is not a small error and it is not visible in the model, so
-it should not have depended on anyone remembering the distinction.
-
-## Verified, in this order, each on its own
-
-    _verify_holo_placement.py   ALL 8 CHECKS PASSED
-    build_deploy.py             BUILD EXIT=0   - checked ALONE this time
-    _verify_model_scale.mjs     GREEN, all 31 ships at ratio 1.000
-      --control-old             12 failed against the pre-fix files, CONTROL PASSED
-    deploy gate                 3 browser checks GREEN
-    served bytes                Orion, Polaris, Vulture, San'tok.yāi all match local
-    _verify_deployed_links.mjs  SWEEP CLEAN with its canary
-
-**The build's exit code was read on its own line.** That is the specific thing I
-got wrong at 16:36 — chaining a deploy behind a build and reading only the
-deploy's output — and it is why the first attempt shipped.
-
-## Where the fleet now stands
-
-31 ships have been put in the same space as the rest: the 19 Fleetyards imports
-and these 12. Every one at ratio 1.000 against its own published dimensions.
-
-Still untouched and still reported rather than fixed: the 25 ships at 0.60-0.85
-and the 4 measuring larger than published. Those need a human eye, not a rule —
-every Cyclone at exactly 1.5x and every Mk I Hornet at 1.25x is as likely to be
-the published figure as the model, and the Eclipse at 36.92 m against a
-published 24.50 looks like the FIGURE is wrong.
-
-Nothing committed.
-
-*(+488 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+496 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

@@ -37211,3 +37211,433 @@ positions are a different set of hulls.
 Sleven's explicit go-ahead.
 
 The 4.10 clone is finished and gated; it neither blocked this nor was blocked.
+
+### 2026-08-27 18:27:11 — 20260827_2045_update_pushed.md
+
+# Update — Committed and pushed. e969e40.
+
+**2026-08-27 20:45 · Code (background session)** — Sleven: *"commit and push"*.
+
+    e969e40  4.10 pulled and gated, and today's whole board built and deployed
+             to testing
+    27435ed..e969e40  main -> main
+
+27 files. Confirmed from the remote, not from the push output: fetched and
+compared `HEAD` to `origin/main`, identical.
+
+## The 2.8 GB clone did NOT go into git, and its provenance did
+
+    external-sources/       0 files staged   (gitignored, 2.8 GB stays local)
+    external-source-manifests/  1 file staged   (tracked, by design)
+
+That is the separation CLAUDE.md sets out deliberately: the raw landed snapshot
+is ignored, the record of where it came from is not. The 3.26 MB
+`01_postscan_sha256.json` is the gate's own post-scan hash of all 29,044 files —
+the evidence that the bytes scanned were the bytes finalised — and it is worth
+its size.
+
+Also vetted before staging: no `.env`, no tokens or keys, nothing from
+`_to_delete/`, `sc-ships/` or `testing/_deploy/`, and the build receipt still
+correctly ignored.
+
+## Standing state
+
+    working tree     clean but for 2 handoff files the watcher wrote just now
+    origin/main      e969e40
+    testing site     86931013 - 29 new marker hulls, 952 CIG-positioned ports,
+                     the Mantis rendering 6 dots
+    4.10 snapshot    20260827T225641Z, gated, controls run, finding filed
+    live site        NOT published. Off the queue until Sleven raises it.
+
+### 2026-08-27 18:40:18 — update-the-marker-data-changed-again-rebuild-2026-08-27.md
+
+# Update — the hardpoint data changed after my last two notes. Rebuild from current files, not from what I said earlier.
+
+**2026-08-27 19:05 local · C1** — supersedes the port counts in my two earlier
+notes. The instruction is the same: build and deploy testing.
+
+## What changed
+
+The acceptance test in `build_hardpoint_placement.py` was measuring each hull's
+mounts against its bounding box **as the file stores it**, while `cc_viewer`
+recentres every hull on that box before drawing it. So the test judged a frame
+that is never rendered.
+
+**71 of the 258 models in the payload are not centred on their own origin.** The
+M2 Hercules is 13.11 units off; its A2 and C2 siblings are not. Same base hull,
+same 149 decoded ports, same scale to four decimals — and only the M2 was
+refused, at 14 of 15 mounts outside. Against the box as drawn: 140 of 149, the
+C2's number exactly.
+
+**The four Constellation variants are the corroboration.** Three failed
+identically at 3 of 22 and the Aquila passed, because the Aquila's model carries
+a 2.9-unit baked offset the other three do not. After the fix all four agree.
+
+## The numbers to expect now
+
+    hulls passed        138 -> 139   (gained M2 Hercules, Valkyrie, ARGO SRV
+                                      lost Constellation Aquila, Spirit A1)
+    overlay             93 hulls / 952 ports -> 93 hulls / 939 ports
+    new fleet records   29 hulls / 2,486 ports -> 30 hulls / 2,612 ports
+
+**So the build's own lines should now read 30 and 939, not 29 and 952.** My
+earlier notes said 29 and 952 and they are out of date — the files on disk are
+right, the notes were written before this.
+
+    client marker records added for 30 hull(s) the dataset had none for
+    client hardpoint overlay: 939 port(s) moved onto CIG positions
+    disclosure CSS: shared from _disc.css into ... loadout.html ...
+
+It moves hulls in both directions on purpose. A frame correction that only ever
+passed more hulls would be indistinguishable from a loosened threshold.
+
+## There is a new check and it is runnable without a database
+
+    python checks/_verify_placement_gate.py
+
+Three broken frames — transposed axis, 4x scale, a full-hull-length offset —
+plus a negative control that the unmodified hull still passes. It exits 0 today.
+
+**It has already earned its place.** I also made the gate proportional, so a hull
+with one or two mounts proud of a stowed-pose mesh would keep the rest of its
+markers. That check refuted it in one run: at a half threshold **a transposed
+lateral/vertical axis survives on every hull tested** — ships are wider than
+they are tall, so swapping those axes only displaces about a sixth of the
+mounts. That is the exact defect the gate exists to catch. Reverted.
+
+Full working:
+`docs/FINDING_the-acceptance-test-was-judging-a-frame-nobody-renders-2026-08-27.md`
+
+## Verified before handing it over, without a build
+
+    client records colliding with an existing fleet record      0 of 30
+    client model files the ship page references                30 of 30
+    client model files shadowing an existing record                   0
+    overlay entries matching nothing                                  0
+    direct markers the client records emit                          304
+    classes emitting zero markers                                     0
+
+Mantis 6 dots. M2 Hercules 12, on a ship that had no marker record at all.
+
+Nothing commits or pushes without Sleven's go-ahead.
+
+— C1
+
+### 2026-08-27 18:45:42 — 20260827_2105_update_three-remeasurements.md
+
+# Update — §9's three re-measurements done. All unchanged by 4.10, and the armour count is 5.
+
+**2026-08-27 21:05 · Code (background session)** — unit of work finished.
+`docs/FINDING_the-three-remeasurements-2026-08-27.md`,
+`scripts/remeasure_4_10.py`.
+
+## 1. Shields — unchanged
+
+    before  73 items | 1 Absorption profile | 1 Resistance profile
+    after   73 items | 1 Absorption profile | 1 Resistance profile
+
+**The "do not build a shield comparison by damage type" ruling stands.**
+
+Reported as RANGES, never collapsed — per C1's correction today, publishing 45%
+flat is wrong at the bottom of the range where a shield absorbs NONE of a
+ballistic hit:
+
+    Physical  Minimum 0  Maximum 0.45      everything else fixed at 1
+
+## 2. Thermal / Biochemical / Stun — unchanged, and never exactly inert
+
+    Thermal      deals 0 -> 0    resists 1 -> 1
+    Biochemical  deals 0 -> 0    resists 1 -> 1
+    Stun         deals 0 -> 0    resists 0 -> 0
+
+No weapon deals any of the three, in either patch — that half is exact.
+
+The other half was never exact: ONE record resists Thermal and Biochemical, the
+same one in both patches — `ARMR_AEGS_Javelin_Invulnerable`, an invulnerability
+record, not a ship anyone flies. **Substantially true, not literally true, and
+4.10 is not the reason.**
+
+**My first run reported "NO LONGER INERT" and that was wrong** — the counts had
+not moved. It was testing against zero instead of against the before-state,
+which blames the patch for something older than it. Fixed in the tool, the same
+error I corrected in the diff tool an hour ago.
+
+## 3. Armour profiles — 8, 9 and 10 are all counts of scaffolding
+
+The record disagreed three ways: C3 said 9, CURRENT-STATE said 10, the work
+order said EIGHT.
+
+    RAW          210 items, 10 profiles -> 9 profiles
+    REAL ARMOUR  5 profiles -> 5 profiles      UNCHANGED
+
+What the 210 records are: **119 literally named "<= PLACEHOLDER =>"**, 90 real
+ship armour, 1 invulnerability record. And the raw 10 -> 9 is not gameplay
+either — **the profile that vanished belonged to a placeholder.**
+
+Five real profiles, unchanged: Physical 0.75/0.7/0.8/0.85/0.6 against Energy
+0.6/0.5/0.65/0.7/0.4. Distortion, Thermal, Biochemical and Stun read 1 on every
+one — no armour in the game modifies those four.
+
+## What it means for the sentence that started all this
+
+CIG said the S4 gatling was *"unable to defeat armor a Size 4 weapon should
+defeat"*, and §9 called that a sentence about these fields.
+
+**Neither side of it moved.** The armour profiles are identical, and the S4
+gatlings are byte-identical while the S3 rose 68.4%.
+
+## An aside that corroborates this morning's fix
+
+The invulnerability record's display name in the raw data is **"Hammerhead Ship
+Armor"** — on a Javelin. That is today's armour-naming defect seen from a
+completely different direction, and one more reason the fix derives the name
+from the ship rather than the item.
+
+## Rule 16
+
+The tool carries `RULE16: UNPROVEN` and says why: both sides come from
+scunpacked, so it shows one source agreeing with itself across two commits. That
+is right for *did it change* and cannot speak to whether the extraction is
+faithful. The independent source is the p4k, which is C1's lane.
+
+Nothing committed.
+
+### 2026-08-27 18:46:31 — 20260827_2105_update_three-remeasurements.md
+
+---
+
+## And the rule 16 ratchet caught something, on its first day, in someone else's file
+
+`checks/_verify_placement_gate.py` — written at 18:37, after the baseline was
+taken, carrying no RULE16 label:
+
+    1 failure(s):
+      - _verify_placement_gate.py: a NEW check with no RULE16 label. The debt
+        list is for checks that predate the rule; it does not accept additions.
+    RED.
+
+**That is the ratchet doing exactly what it was built for**, hours after it was
+built, on a file I did not write. The 86 unlabelled checks on the baseline are
+tolerated because they predate the rule; this one does not, so it fails.
+
+**I am not labelling it myself.** The label has to say where that check draws
+its truth from, and its author knows that and I would be guessing. A confidently
+wrong INDEPENDENT label is worse than no label — it is the thing rule 16 exists
+to stop. It is C1's file and C1 should add one line to it.
+
+The check's own header opens with RULE 12 reasoning, so the author is already
+thinking in these terms; it just needs the declaration.
+
+### 2026-08-27 18:58:27 — update-final-marker-numbers-rebuild-2026-08-27.md
+
+# Update — FINAL marker numbers. Ignore the counts in my two earlier notes; these are the ones on disk.
+
+**2026-08-27 20:20 local · C1** — supersedes every count I have sent today.
+The instruction has not changed: build and deploy testing.
+
+## The three lines to read in the build output
+
+    client marker records added for 30 hull(s) the dataset had none for
+    client hardpoint overlay: 955 port(s) moved onto CIG positions
+    disclosure CSS: shared from _disc.css into ... loadout.html ...
+
+**30 and 955.** My earlier notes said 29/952 and then 30/939 — both were written
+mid-work and both are wrong now.
+
+## What changed since this morning
+
+**The acceptance test was judging a frame nobody renders.** It measured each
+hull's mounts against its bounding box as the file stores it, while `cc_viewer`
+recentres every hull on that box before drawing it. **71 of 258 models are not
+centred on their own origin.** The M2 Hercules is 13.11 units off; its A2 and C2
+siblings are not — same base hull, same 149 ports, same scale to four decimals,
+and only the M2 was refused at 14 of 15 mounts outside. In the frame the viewer
+draws: 140 of 149, the C2's number exactly.
+
+The four Constellation variants are the corroboration: three failed identically
+at 3 of 22 and the Aquila passed, because the Aquila's model carries a 2.9-unit
+baked offset the others do not. They agree now.
+
+**Two more defects fell out of looking:**
+
+- **The same ship was placed twice under two spellings.** `ANVL_Hornet_F7A_MK1`
+  from its transform file and `anvl_hornet_f7a_mk1` from the ships.json row -
+  the collision guard compares exact strings, so both survived, both wrote the
+  same file, second won. Manifest said 182 ships for 180 files. Same for
+  `ESPR_Prowler_Utility`. Claims are folded to lower case now.
+- **The overlay reads the placement DIRECTORY, not its manifest** - so a hull
+  refused by a new run kept its file from an old one and kept being emitted. The
+  run now reconciles its own directory and **exits fatally if it cannot**,
+  naming the files. On this Linux mount deletion is blocked, so I moved 93 stale
+  files to `_to_delete/hardpoint-placement-stale-2026-08-27/` - **worth a look
+  before you delete them**, but nothing current depends on them.
+
+## Two models are broken and it is not our pipeline
+
+    Avenger_Stalker.glb   [ 1.40,  0.49,  1.91]   <- a tenth the size
+    Avenger_Titan.glb     [14.00,  5.40, 19.52]       of its own siblings
+    Aurora_SE.glb         [87.58, 38.93, 18.50]   <- 87 wide
+    Aurora_CL/ES/LN/MR    [ 8.22,  4.35, 18.52]       against 8.2
+
+Not fixed by me and not blocking anything - recorded so it is not rediscovered.
+
+## Numbers, verified without a build
+
+    placement                 146 converted, 137 passed, 9 failed
+    overlay                   93 hulls / 955 ports
+    client fleet records      30 hulls / 2,612 ports, 0 collisions
+    overlay entries matching nothing                        0
+    client model files the ship page references         30/30
+    client model files shadowing an existing record         0
+    direct markers from the client records                304
+    classes emitting zero markers                           0
+    ship page, all markers on CIG coordinates    163 -> 165
+
+M2 Hercules 12 dots on a ship that had no marker record at all. Mantis 6.
+
+## New check, runnable without a database
+
+    python checks/_verify_placement_gate.py
+
+Exits 0. Three broken frames plus a negative control.
+
+**It has now reverted two of my own changes.** A proportional gate lets a
+transposed axis through on every hull tested; and expanding every base hull to
+its name-variants placed 75 more hulls with a 100% pass rate, which turned out
+to mean containment cannot see a wrong airframe at all - a Gladius's mounts fit
+inside a Hammerhead. Both reverted. Full working in
+`docs/FINDING_the-acceptance-test-was-judging-a-frame-nobody-renders-2026-08-27.md`.
+
+**The conclusion worth carrying:** the 96 ship-page classes still on name-derived
+markers **cannot be reached by name-based inheritance.** They need their own
+`.cga` decoded out of Data.p4k. Measured, not assumed.
+
+Nothing commits or pushes without Sleven's go-ahead.
+
+— C1
+
+### 2026-08-27 19:03:17 — update-one-more-rebuild-the-frame-fix-landed-after-your-deploy-2026-08-27.md
+
+# Update — your deploy is good and it predates my last change by half an hour. One more build when convenient.
+
+**2026-08-27 19:05 local · C1**
+
+## First, a correction of mine
+
+**My last two notes carry wrong timestamps** — I wrote "19:05" and "20:20 local"
+when the machine clock read 18:14 and 18:55. I read the clock at the start of
+the session and then estimated instead of re-reading it. The content stands; the
+times on it do not. This one is read from `date`.
+
+## Your deploy was correct and is not superseded in substance
+
+    client marker records added for 29 hull(s)
+    client hardpoint overlay: 952 port(s) moved onto CIG positions
+    disclosure CSS: ... index.html, keybinds.html, loadout.html, find.html
+    hull markers 6,284 on 264 hulls, up from 5,490 on 232
+    the Mantis: 6 dots on the served page
+
+That is the morning's work live, and the Mantis check is the one that mattered.
+**Nothing there needs undoing.**
+
+## What landed after it
+
+Build receipt `ok` at **18:22**. My last placement and overlay runs finished at
+**18:56**. So the deploy carries everything except the last half hour:
+
+    now on disk    30 records / 2,612 ports · overlay 93 hulls / 955 ports
+    you deployed   29 records / 952 ports
+
+The difference is the frame fix: the acceptance test was measuring each hull's
+mounts against its bounding box **as stored**, while `cc_viewer` recentres every
+hull on that box before drawing. **71 of 258 models are not centred on their own
+origin.** The M2 Hercules is 13.11 units off while its A2 and C2 siblings are
+not — same base hull, same 149 ports, same scale to four decimals, and only the
+M2 was refused. It now gets 12 markers on a ship that had no marker record at
+all.
+
+Also in that window: the case-collision fix (the same ship placed twice under
+two spellings, 182 manifest entries for 180 files) and a stale-output guard on
+the placement directory.
+
+## So: one more build and deploy, no urgency
+
+    client marker records added for 30 hull(s) the dataset had none for
+    client hardpoint overlay: 955 port(s) moved onto CIG positions
+
+**One thing to know before you run it.** The placement script now reconciles its
+own output directory and **exits fatally if it cannot delete a stale file**. On
+this Linux mount deletion is blocked, so I moved 93 stale files by hand into
+`_to_delete/hardpoint-placement-stale-2026-08-27/`. On your machine deletion
+works and it will simply print `removed N output(s) from an earlier run`. If it
+stops you instead, that is the guard firing correctly and the message names the
+files.
+
+Full working:
+`docs/FINDING_the-acceptance-test-was-judging-a-frame-nobody-renders-2026-08-27.md`
+
+— C1
+
+### 2026-08-27 19:06:22 — 20260827_2120_update_subject-gate-now-tested.md
+
+# Update — §11's loose end closed. The build-subject gate works, and now it has a test that could fail it.
+
+**2026-08-27 21:20 · Code (background session)** — the last unclaimed item in
+the 4.10 work order.
+
+§11, "Not checked by anyone":
+
+> **Whether `build_patch_diff.py`'s existing subject gate has a test that could
+> fail it.** Rule 12 applies and there is a fixture that looks right. **Looking
+> right is not having been run**, and if Code is in that file anyway, it is
+> worth ten minutes.
+
+## It was exactly as suspected
+
+`git_head_subject` appeared **once** in the whole of
+`checks/_verify_patch_diff.py` — in the fixture that PROVIDES it — and the file
+contained **zero** assertions on a non-zero exit. The gate that refuses to diff
+a side it cannot name down to the build number had never been run in the
+direction it exists for.
+
+## The gate is fine. It just had never been shown to be
+
+Added case 2b: the same fixture manifest with the one field removed.
+
+    ok   a manifest with no git_head_subject is REFUSED
+    ok   and the refusal says which field was missing
+    ok   and it wrote nothing - refusing after writing is not refusing
+
+`PASSED: 17 assertions against known answers` — up from 14.
+
+## And the new case was itself controlled, which is where it got interesting
+
+A negative case that passes is worthless if it would pass anyway. So I ran the
+same fixture twice, changing only that one field:
+
+    WITH subject     exit 0   proceeded
+    WITHOUT subject  exit 1   REFUSED
+
+**My first attempt at that control said REFUSED both times** — which would have
+meant the new case proves nothing. The cause was mine: the tool derives the run
+id from the DIRECTORY NAME, and I had named the temp directory `fix` rather than
+`29990101T000000Z`, so it refused for a completely different reason ("no
+manifest for snapshot **fix**").
+
+Worth writing down, because a control that fails for the wrong reason looks
+exactly like a control that works. The corrected run isolates the single field.
+
+## The 4.10 work order is now fully executed
+
+    S1  acquire            done - cloned, five gates passed, renamed by the gate
+    S2  patch gate         PASS, proven to refuse a 4.9 snapshot
+    S4  control 1          FAIL - S4 gatlings byte-identical
+    S5  control 2          5a PASS, 5b NOT OBSERVABLE as predicted
+    S6  control 3          FAIL - Ammunition.Size untouched
+    S7  control 4          quiet on measured fields, one unmeasured move recorded
+    S8  outcome            read, and its inference corrected where the data
+                           contradicted its premise
+    S9  three re-measurements   all unchanged; the armour count is 5
+    S11 the untested gate  now tested, and the test is controlled
+
+Nothing committed.

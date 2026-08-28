@@ -23,25 +23,11 @@
    25.414823532104492
   ]
  },
- "acceptance": false,
- "acceptance_note": "3 of 19 exterior mounts land outside the hull",
+ "acceptance": true,
+ "acceptance_note": "",
  "exterior_mounts": 19,
- "exterior_outside": [
-  "hardpoint_turret_top",
-  "hardpoint_turret_top_radar",
-  "hardpoint_turret_top_seataccess"
- ],
- "outside_any": [
-  "hardpoint_thruster_top_front_left",
-  "hardpoint_thruster_top_front_right",
-  "hardpoint_turret_top",
-  "hardpoint_turret_top_radar",
-  "hardpoint_turret_top_seataccess",
-  "hardpoint_thruster_top_rear_left",
-  "hardpoint_thruster_top_rear_right",
-  "hardpoint_thruster_main_rear_left",
-  "hardpoint_thruster_main_rear_right"
- ],
+ "exterior_outside": [],
+ "outside_any": [],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {

@@ -142,7 +142,8 @@
     0.0,
     0.90784,
     2.35964
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_controller_weapon",

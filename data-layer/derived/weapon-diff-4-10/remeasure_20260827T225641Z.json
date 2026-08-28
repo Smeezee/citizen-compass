@@ -1,0 +1,56 @@
+{
+ "generated_by": "scripts/remeasure_4_10.py",
+ "order": "WORKORDER_the-4-10-pull-2026-08-27.md S9",
+ "before": "20260827T030607Z",
+ "after": "20260827T225641Z",
+ "at_utc": "2026-08-27T23:44:35+00:00",
+ "results": {
+  "shields": {
+   "before": {
+    "count": 73,
+    "absorption_profiles": 1,
+    "resistance_profiles": 1
+   },
+   "after": {
+    "count": 73,
+    "absorption_profiles": 1,
+    "resistance_profiles": 1
+   },
+   "unchanged_by_4_10": true
+  },
+  "channels": {
+   "Thermal": {
+    "offence_before": 0,
+    "offence_after": 0,
+    "defence_before": 1,
+    "defence_after": 1
+   },
+   "Biochemical": {
+    "offence_before": 0,
+    "offence_after": 0,
+    "defence_before": 1,
+    "defence_after": 1
+   },
+   "Stun": {
+    "offence_before": 0,
+    "offence_after": 0,
+    "defence_before": 0,
+    "defence_after": 0
+   }
+  },
+  "channels_changed_by_4_10": false,
+  "channels_fully_inert_after": false,
+  "armour": {
+   "before": {
+    "items": 210,
+    "profiles": 10,
+    "real_profiles": 5
+   },
+   "after": {
+    "items": 210,
+    "profiles": 9,
+    "real_profiles": 5
+   }
+  }
+ }
+}

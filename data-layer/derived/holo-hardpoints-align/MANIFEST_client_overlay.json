@@ -6,7 +6,7 @@
  "not_applied": "This file is written BESIDE alignment_overlay.json and nothing reads it yet. Wiring it in is a separate, reversible step.",
  "counts": {
   "hulls": 93,
-  "ports": 952
+  "ports": 955
  },
  "hulls": [
   {
@@ -14,6 +14,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 59,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -115,17 +116,17 @@
   {
    "class": "ANVL_Hornet_F7A_MK1",
    "fleet_key": "F7A Hornet Mk I",
-   "emitted": 2,
-   "median_move": 0.4739,
-   "max_move": 0.5066,
+   "emitted": 10,
+   "median_move": 0.4846,
+   "max_move": 0.6555,
    "pos_model": true
   },
   {
    "class": "ANVL_Hornet_F7CM",
    "fleet_key": "F7C-M Super Hornet Mk I",
-   "emitted": 2,
-   "median_move": 0.7723,
-   "max_move": 0.8871,
+   "emitted": 10,
+   "median_move": 0.6265,
+   "max_move": 1.3537,
    "pos_model": true
   },
   {
@@ -146,8 +147,11 @@
   },
   {
    "class": "ANVL_Valkyrie",
-   "emitted": 0,
-   "why": "placement did not pass: 3 of 19 exterior mounts land outside the hull"
+   "fleet_key": "Valkyrie",
+   "emitted": 13,
+   "median_move": 0.3337,
+   "max_move": 2.013,
+   "pos_model": true
   },
   {
    "class": "ARGO_MOLE",
@@ -167,8 +171,11 @@
   },
   {
    "class": "ARGO_SRV",
-   "emitted": 0,
-   "why": "placement did not pass: 2 of 5 exterior mounts land outside the hull"
+   "fleet_key": "SRV",
+   "emitted": 5,
+   "median_move": 0.6433,
+   "max_move": 0.8921,
+   "pos_model": true
   },
   {
    "class": "BANU_Defender",
@@ -196,6 +203,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 110,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -234,7 +242,8 @@
    "class": "DRAK_Dragonfly",
    "emitted": 0,
    "added_record": true,
-   "ports_added": 55,
+   "ports_added": 54,
+   "ports_withheld": 1,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -290,6 +299,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 71,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -313,6 +323,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 76,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -372,7 +383,8 @@
    "class": "ORIG_600i",
    "emitted": 0,
    "added_record": true,
-   "ports_added": 98,
+   "ports_added": 94,
+   "ports_withheld": 4,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -380,6 +392,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 65,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -411,6 +424,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 62,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -500,6 +514,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 121,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -664,11 +679,8 @@
   },
   {
    "class": "crus_spirit_a1",
-   "fleet_key": "A1 Spirit",
-   "emitted": 10,
-   "median_move": 0.6256,
-   "max_move": 0.7311,
-   "pos_model": true
+   "emitted": 0,
+   "why": "placement did not pass: 1 of 12 exterior mounts land outside the hull"
   },
   {
    "class": "crus_spirit_c1",
@@ -683,6 +695,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 72,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -690,6 +703,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 72,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -697,6 +711,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 72,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -704,6 +719,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 72,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -711,6 +727,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 149,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -718,25 +735,31 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 149,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starlifter_c2",
    "emitted": 0,
    "added_record": true,
-   "ports_added": 149,
+   "ports_added": 140,
+   "ports_withheld": 9,
    "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "crus_starlifter_m2",
    "emitted": 0,
-   "why": "placement did not pass: 14 of 15 exterior mounts land outside the hull"
+   "added_record": true,
+   "ports_added": 140,
+   "ports_withheld": 9,
+   "why": "no fleet record - a new one was emitted"
   },
   {
    "class": "drak_clipper",
    "emitted": 0,
    "added_record": true,
    "ports_added": 88,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -768,6 +791,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 61,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -783,6 +807,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 103,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -854,6 +879,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 82,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -877,6 +903,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 56,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -884,6 +911,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 75,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -963,6 +991,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 82,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -970,6 +999,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 82,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -977,6 +1007,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 82,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -984,6 +1015,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 82,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -991,6 +1023,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 82,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -998,6 +1031,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 82,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -1005,6 +1039,7 @@
    "emitted": 0,
    "added_record": true,
    "ports_added": 77,
+   "ports_withheld": 0,
    "why": "no fleet record - a new one was emitted"
   },
   {
@@ -1014,11 +1049,8 @@
   },
   {
    "class": "rsi_constellation_aquila",
-   "fleet_key": "Constellation Aquila",
-   "emitted": 21,
-   "median_move": 0.4167,
-   "max_move": 0.8334,
-   "pos_model": true
+   "emitted": 0,
+   "why": "placement did not pass: 3 of 22 exterior mounts land outside the hull"
   },
   {
    "class": "rsi_constellation_phoenix",

@@ -42,7 +42,8 @@
     -2e-05,
     -1.74851,
     -1.66293
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_avionics",
@@ -66,7 +67,8 @@
     -2e-05,
     -1.74851,
     -1.66293
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cargoarea",
@@ -90,7 +92,8 @@
     -2e-05,
     -1.74851,
     -1.66293
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cockpit_audio",
@@ -250,7 +253,8 @@
     0.0,
     1.93256,
     0.09203
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_jumpdrive_door",
@@ -434,7 +438,8 @@
     -2e-05,
     -1.74851,
     -1.66293
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_weapon_missilebay_125a",

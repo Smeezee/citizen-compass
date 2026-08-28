@@ -23,11 +23,15 @@
    23.314857482910156
   ]
  },
- "acceptance": true,
- "acceptance_note": "",
+ "acceptance": false,
+ "acceptance_note": "1 of 12 exterior mounts land outside the hull",
  "exterior_mounts": 12,
- "exterior_outside": [],
- "outside_any": [],
+ "exterior_outside": [
+  "hardpoint_turret_rear"
+ ],
+ "outside_any": [
+  "hardpoint_turret_rear"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -492,7 +496,8 @@
     0.0,
     4.91386,
     9.82773
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_ramp",

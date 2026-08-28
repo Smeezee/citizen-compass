@@ -27,20 +27,7 @@
  "acceptance_note": "",
  "exterior_mounts": 2,
  "exterior_outside": [],
- "outside_any": [
-  "hardpoint_class_1_nose_left",
-  "hardpoint_class_1_nose_right",
-  "hardpoint_class_4_nose",
-  "hardpoint_controller_energy",
-  "hardpoint_controller_flight",
-  "hardpoint_scanner",
-  "hardpoint_ping",
-  "hardpoint_class_3_right_bay_door",
-  "hardpoint_quantum_fuel_tank",
-  "hardpoint_fuel_tank_left",
-  "hardpoint_fuel_tank_right",
-  "hardpoint_class_3_left_bay_door"
- ],
+ "outside_any": [],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {

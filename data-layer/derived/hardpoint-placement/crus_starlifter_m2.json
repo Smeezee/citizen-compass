@@ -23,46 +23,20 @@
    52.84205627441406
   ]
  },
- "acceptance": false,
- "acceptance_note": "14 of 15 exterior mounts land outside the hull",
+ "acceptance": true,
+ "acceptance_note": "",
  "exterior_mounts": 15,
- "exterior_outside": [
-  "hardpoint_countermeasures_6",
-  "hardpoint_countermeasures_5",
-  "hardpoint_countermeasures_4",
-  "hardpoint_countermeasures_3",
-  "hardpoint_turret_cap",
-  "hardpoint_weapon_rack_rifle_1",
-  "hardpoint_weapon_rack_rifle_2",
-  "hardpoint_weapon_rack_special_1",
-  "hardpoint_weapon_rack_special_2",
-  "hardpoint_weapon_regen_pool_turrets",
-  "hardpoint_weapon_top_right",
-  "hardpoint_weapon_top_left",
-  "hardpoint_countermeasures_2",
-  "hardpoint_countermeasures_1"
- ],
+ "exterior_outside": [],
  "outside_any": [
-  "hardpoint_cooler_l",
-  "hardpoint_cooler_r",
-  "hardpoint_power_plant_l",
-  "hardpoint_power_plant_r",
-  "hardpoint_quantum_drive",
-  "hardpoint_quantum_fuel_l",
-  "hardpoint_quantum_fuel_r",
-  "hardpoint_fuel_tank_1",
-  "hardpoint_fuel_tank_2",
-  "hardpoint_shield_generator_l",
-  "hardpoint_shield_generator_r",
-  "hardpoint_cargo_small",
-  "hardpoint_cargo_large",
-  "hardpoint_radar",
-  "hardpoint_bomb_bay",
   "hardpoint_forward_left_remote_turret",
-  "hardpoint_forward_left_remote_turret_controller",
-  "hardpoint_forward_left_remote_turret_radar",
-  "hardpoint_forward_left_remote_turret_seat",
-  "hardpoint_forward_left_remote_turret_seat_access"
+  "hardpoint_forward_right_remote_turret",
+  "hardpoint_rear_left_remote_turret",
+  "hardpoint_rear_right_remote_turret",
+  "hardpoint_bombrack_right_temp",
+  "hardpoint_bombrack_left_temp",
+  "hardpoint_bomb_turret",
+  "hardpoint_bomb_turret_controller",
+  "hardpoint_remote_turret_bottom"
  ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
@@ -192,7 +166,8 @@
     -23.50822,
     -12.56909,
     4.07741
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_forward_left_remote_turret_controller",
@@ -232,7 +207,8 @@
     23.50822,
     -12.56909,
     4.07741
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_forward_right_remote_turret_controller",
@@ -272,7 +248,8 @@
     -15.76164,
     -12.19202,
     17.79783
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_rear_left_remote_turret_controller",
@@ -312,7 +289,8 @@
     15.76164,
     -12.19202,
     17.79783
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_rear_right_remote_turret_controller",
@@ -896,7 +874,8 @@
     6.75445,
     -13.48033,
     20.4311
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_bombrack_left_temp",
@@ -904,7 +883,8 @@
     -6.73013,
     -13.48033,
     20.4311
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_bombrack_left",
@@ -944,7 +924,8 @@
     0.0,
     -13.47534,
     20.11055
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_bomb_turret_controller",
@@ -952,7 +933,8 @@
     0.0,
     -13.47534,
     18.60886
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cargo_small_A2",
@@ -1208,7 +1190,8 @@
     -0.0,
     -12.98311,
     12.7005
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_weapon_top_right",

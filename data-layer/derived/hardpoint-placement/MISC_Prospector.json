@@ -542,7 +542,8 @@
     0.0,
     -3.91574,
     -0.0
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_main_rear_left",

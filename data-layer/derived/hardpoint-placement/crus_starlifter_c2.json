@@ -166,7 +166,8 @@
     -23.50854,
     -12.56926,
     4.07747
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_forward_left_remote_turret_controller",
@@ -206,7 +207,8 @@
     23.50854,
     -12.56926,
     4.07747
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_forward_right_remote_turret_controller",
@@ -246,7 +248,8 @@
     -15.76185,
     -12.19218,
     17.79807
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_rear_left_remote_turret_controller",
@@ -286,7 +289,8 @@
     15.76185,
     -12.19218,
     17.79807
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_rear_right_remote_turret_controller",
@@ -870,7 +874,8 @@
     6.75454,
     -13.48052,
     20.43138
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_bombrack_left_temp",
@@ -878,7 +883,8 @@
     -6.73022,
     -13.48052,
     20.43138
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_bombrack_left",
@@ -918,7 +924,8 @@
     0.0,
     -13.47552,
     20.11082
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_bomb_turret_controller",
@@ -926,7 +933,8 @@
     0.0,
     -13.47552,
     18.60911
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cargo_small_A2",
@@ -1182,7 +1190,8 @@
     -0.0,
     -12.98329,
     12.70067
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_weapon_top_right",

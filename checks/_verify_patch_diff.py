@@ -177,6 +177,43 @@ def main():
               and len(load(out2, "ships_removed.json") or []) == 0,
               "and nothing is reported added or removed")
 
+        # ---------- 2b. THE SUBJECT GATE, IN THE DIRECTION IT EXISTS FOR ----
+        #
+        # build_patch_diff.py refuses to diff a side it cannot name down to the
+        # build number: "a diff whose sides are not named down to the build
+        # number is not evidence of anything". That refusal had NEVER BEEN RUN.
+        # Before this, `git_head_subject` appeared exactly once in this file -
+        # in the fixture that PROVIDES it - and there was not one case anywhere
+        # asserting a non-zero exit. The gate looked right, and looking right is
+        # not having been run.
+        #
+        # Flagged in S11 of WORKORDER_the-4-10-pull as "not checked by anyone".
+        print("\n--- 2b. the build-subject gate refuses a side it cannot name ---")
+        man_bad = os.path.join(tmp, "manifests_nosubject")
+        os.makedirs(os.path.join(man_bad, fix_run))
+        os.makedirs(os.path.join(man_bad, BASE_RUN))
+        for f in os.listdir(real_man):
+            if f.endswith(".json"):
+                shutil.copy(os.path.join(real_man, f),
+                            os.path.join(man_bad, BASE_RUN, f))
+        # Same manifest as the passing fixture, with the ONE field removed.
+        with io.open(os.path.join(man_bad, fix_run, "01_fixture.json"), "w",
+                     encoding="utf-8", newline="\n") as f:
+            json.dump({"git_metadata_captured_before_stripping": {
+                "git_head_commit": "0" * 40,
+                "git_commit_date": "2999-01-01T00:00:00+00:00"}}, f, indent=1)
+        rbad = run_diff(base, fix, os.path.join(tmp, "nosubject"), man_bad)
+        check(rbad.returncode != 0,
+              "a manifest with no git_head_subject is REFUSED",
+              "exit %d - the gate did not fire, and a diff can be published "
+              "with a side it cannot name" % rbad.returncode)
+        check("git_head_subject" in (rbad.stdout + rbad.stderr),
+              "and the refusal says which field was missing",
+              (rbad.stdout + rbad.stderr).strip()[-160:])
+        check(not os.path.exists(os.path.join(tmp, "nosubject",
+                                              "ships_changed.json")),
+              "and it wrote nothing - refusing after writing is not refusing")
+
         # ------------------------------------------- 3. a rename is not a swap
         print("\n--- 3. a rename is the same ship, not a removal plus an "
               "addition ---")
