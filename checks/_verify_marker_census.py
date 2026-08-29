@@ -135,9 +135,28 @@ def report(now, base, allowed):
         print("  REFUSED - %d hull(s) lost markers:" % len(lost))
         for cls, a, b, _w in lost:
             print("     %-42s %d -> %d" % (cls, a, b))
+    # A DECLARATION THAT OUTLIVES ITS REASON IS HOW A REAL LOSS GETS WAVED
+    # THROUGH. This file has said that in those words on every declaration
+    # since 2026-08-28 and did not enforce it: a declared hull that stops
+    # losing markers simply stopped appearing above, and the entry sat here
+    # excusing nothing while looking like diligence. Twelve of the thirteen
+    # declarations are waiting on models being re-exported; the day that
+    # happens they all go stale at once and nothing would have said so.
+    #
+    # ADOPTED FROM `_verify_child_markers.py` (Code, 2026-08-29, Q27), which
+    # got this right first: "a declaration nothing fires is fiction."
+    stale = sorted(c for c in allowed
+                   if not (base.get(c, 0) > now.get(c, 0)))
+    if stale:
+        ok = False
+        print("  REFUSED - %d declaration(s) no longer describe anything. "
+              "Delete them or find out why the loss stopped:" % len(stale))
+        for cls in stale:
+            print("     %-42s declared, but %d -> %d"
+                  % (cls, base.get(cls, 0), now.get(cls, 0)))
     if ok:
-        print("  no undeclared loss")
-    return ok, len(lost) + len(gone)
+        print("  no undeclared loss, and every declaration still fires")
+    return ok, len(lost) + len(gone) + len(stale)
 
 
 def main():
@@ -204,6 +223,21 @@ def selftest(now, base, allowed):
                               "correctly allowed" if g_ok
                               else "WRONGLY REFUSED"))
     ok = ok and g_ok
+
+    # RULE 12 FOR THE STALE CHECK. Restore a declared hull to its recorded
+    # count: its declaration now excuses nothing and must be refused. Without
+    # this the stale rule is a branch nothing has ever entered.
+    if allowed:
+        dead = sorted(allowed)[0]
+        heal = dict(now)
+        heal[dead] = base.get(dead, 0)
+        h_ok, h_n = report(heal, base, allowed)
+        caught = (not h_ok) and h_n >= 1
+        print("stale %-40s %s" % (dead, "caught" if caught else "NOT CAUGHT"))
+        ok = ok and caught
+    else:
+        print("stale (no declarations to test)                    SKIPPED")
+        ok = False
 
     print()
     if ok:

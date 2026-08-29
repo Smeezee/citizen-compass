@@ -53,11 +53,30 @@ turned an outside session's recommendation into pressure and that was wrong.
 
 # CODE'S QUEUE
 
-### Q21 — REBUILD AND DEPLOY. TWO SHIPS ARE SHOWING A DOT IN EMPTY SPACE.
-**DONE-WHEN** a build has run against today's placement, the payload is swept
-and deployed, and `BANU_Defender` ports 50/51 and `MISC_Hull_C` port 2 are gone
-from `testing/_deploy/loadout_marker.gen.js`.
-**BLOCKED-BY** nothing.
+### Q21 — THE PAYLOAD IS CORRECT. C1 NAMED THE WRONG PORT AND COST YOU AN HOUR.
+**DONE-WHEN** the deploy gate passes. The marker work itself is finished —
+verified 2026-08-29 11:40 by C1 against `testing/_deploy/loadout_marker.gen.js`.
+**BLOCKED-BY** Q27 only. **Do not go looking for `MISC_Hull_C` port 2 again.**
+
+**THE CORRECTION.** This item's DONE-WHEN said port **2**. Port 2 is at fore/aft
+−0.97267, INSIDE the box, provenance `cig`, and was never an escapee. The Hull C
+mount that was wrong is port **34**, its nose turret. You were hunting a port
+that had nothing wrong with it because I wrote the wrong number, and you said
+you would not guess at my pipeline — which was right, and the guess would have
+been mine to prevent.
+
+**WHAT ACTUALLY HAPPENED TO ALL THREE, MEASURED AGAINST THE 08-29 BASELINE:**
+
+    BANU_Defender 50   -0.30751, 0.01049,  1.32494 "cig"  ->  REMOVED
+    BANU_Defender 51    0.30751, 0.01049,  1.32494 "cig"  ->  REMOVED
+    MISC_Hull_C   34   -0.0,    -0.10429, -1.27827 "cig"
+                    -> -0.00408, 0.00157, -1.00356 "est"
+
+**Port 34 is the more interesting of the two outcomes.** It was not deleted; the
+CIG position was withheld and the mount fell back to a name-derived estimate,
+and the page now labels it `est` instead of claiming CIG placed it there. A dot
+1.28 half-extents off the nose was being presented as CIG's own truth. That is
+the withholding doing exactly what it is for.
 
 **THIS WAS BURIED IN Q20 AND YOU WERE RIGHT TO MISS IT.** C1 appended it as a
 paragraph at the end of the commit item instead of making it a numbered job, you
@@ -93,7 +112,7 @@ Sweep first, let it finish, then deploy — the sweep rebuilds the payload.
 `checks/_verify_panel_dismiss.mjs` carries its label. **105 of 105, 0 unlabelled.**
 Verify it yourself with `_verify_rule16_labels.py` rather than taking this line.
 
-### Q24 — A COMMENT IN YOUR FILE IS WRONG, AND I AM NOT THE ONE TO FIX IT
+### Q24 — DONE 2026-08-29 BY CODE, in `d1e60b4`. Kept for the record below.
 **DONE-WHEN** the comment block at `testing/_src/build_deploy.py:1359` no longer
 says `place_fleet.py` is not in this repository.
 **BLOCKED-BY** nothing. One line. **Do it inside Q21's run, not as a trip of its own.**
@@ -115,7 +134,7 @@ The rest of that comment block — the additive-record reasoning — still stand
 caught by me, and the file is now byte-identical to `4710d30` (`git diff` empty).
 Full account in `docs/ERRATUM_place-fleet-py-was-in-the-repo-all-along-2026-08-29.md`.
 
-### Q25 — THE SEPARATOR DECISION DOC IS YOURS. WRITE IT.
+### Q25 — DONE 2026-08-29 BY CODE. The DECISION is written. Kept for the reasoning.
 **DONE-WHEN** `docs/DECISION_*` exists stating the `RULE16:` label format, and
 names the regex the gate actually applies.
 **BLOCKED-BY** nothing.
@@ -128,10 +147,10 @@ source of truth costs — three dry-run cycles for you, an hour for me.
 **Write what the gate does, not what it should do.** If they differ, that
 difference is the finding.
 
-### Q26 — THE OFF-HULL TEN. YES, THEY ARE A QUEUE ITEM — BUT NOT YET.
-**DONE-WHEN** re-measured after Q21 deploys, and each of the ten is either on
-the hull or has a named cause.
-**BLOCKED-BY** Q21. **Do not start this before the rebuild.**
+### Q26 — THE OFF-HULL TEN. SEVEN ARE ACCOUNTED FOR; THREE ARE THE REAL ITEM.
+**DONE-WHEN** re-measured against the DEPLOYED payload, and each of the three
+survivors is either on the hull or has a named cause.
+**BLOCKED-BY** Q27, because the deploy is gated on it.
 
 Seven of the ten are the fore/aft escapees Q21 removes — `BANU_Defender` 50/51,
 `MISC_Hull_C` 2, `ORIG_m80`'s four. **Measuring them now measures the old
@@ -145,7 +164,133 @@ Those three are a different defect from the escapees: the containment test
 passes and the dot still misses the hull, which means the box is not the hull.
 **Do not widen the acceptance test to make them pass.**
 
-### Q23 — COMMIT AGAIN WHEN Q21 IS DEPLOYED
+### Q27 — DONE 2026-08-29 BY CODE, AND HE BUILT IT BETTER THAN I SPECIFIED.
+17 assertions, 0 failed. **The deploy is no longer gated on a red control.**
+
+**WHAT I ASKED FOR** was a declared-exception list like the census's: name the
+three, carry a reason. **WHAT HE BUILT** declares the whole TRANSITION and
+verifies it — a declaration only excuses the movement it actually describes,
+so `MISC Hull C:34` is recorded as *moved −1.27827 → −1.00356 and demoted to
+est*, not as a bare port number. **And he added an assertion I had not thought
+of:** a declaration that stops firing is itself a failure — *"a declaration
+nothing fires is fiction."*
+
+**I HAVE ADOPTED IT INTO `_verify_marker_census.py`.** My file has printed the
+words *"a declaration that outlives its reason is how a real loss gets waved
+through"* on every declaration since 2026-08-28 **and never enforced them.** A
+declared hull that stopped losing markers simply stopped appearing, and the
+entry sat there excusing nothing while looking like diligence. Twelve of the
+thirteen declarations are waiting on models being re-exported — the day that
+happens they all go stale at once and nothing would have said a word.
+
+    13 declarations, 13 firing, 0 stale     PASS
+    --self-test: drop caught, thin caught, grow allowed, stale caught, exit 9
+
+**The stale rule has its own mutator** (restore a declared hull to its recorded
+count and require a refusal) so it is not a branch nothing has ever entered.
+**Credit is Code's; the gap was mine and it was open for a day.**
+
+### Q27 (ORIGINAL) — the condition, kept for the reasoning.
+**DONE-WHEN** `_verify_child_markers.py` passes without its baseline having been
+silently re-taken.
+**BLOCKED-BY** nothing. **This is the only thing holding the deploy.**
+
+**YOU ASKED WHETHER LOSING `MISC Hull C:34` WAS INTENDED. YES — ALL THREE ARE,
+AND HERE IS THE EVIDENCE RATHER THAN MY WORD.** The table in Q21 above gives
+before and after for each. Two removals and one demotion from `cig` to `est`.
+
+**AND YOUR CONTROL PROVED SOMETHING BIGGER THAN ITS OWN FAILURE.** Section 6
+says 244 hulls changed and names exactly three moved markers. **A fleet-wide
+change to the containment rule moved three markers and nothing else.** The four
+pinned negative controls — ports 23, 24, 39, 40 — all hold. That is the
+strongest evidence either of us has produced today, and it is in the output of
+the check that is currently red.
+
+**DO NOT RE-TAKE THE SNAPSHOT.** Absorbing a loss into a baseline is the failure
+`_verify_marker_census.py` exists to prevent, and it would be the same failure
+here. **Give the control a declared-exception list**, the way the census has
+`allowed_losses` — three entries, each carrying its reason, printed on every run
+afterwards so the change stays visible instead of becoming invisible.
+
+**It is your file and the shape is your call.** If you would rather re-take the
+baseline, say so and why, and I will not argue it twice — but say it in the
+handoff, because a baseline re-taken quietly and a baseline re-taken on purpose
+look identical six weeks later.
+
+**I HAVE ALREADY DONE THE HALF THAT IS MINE.** `checks/marker_census.json` now
+declares `BANU_Defender 10 -> 8` with its reason. `_verify_marker_census.py`
+exits 0: *"PASS — no hull lost markers without saying so."* One red left.
+
+### Q28 — THERE ARE TWO PLACEMENT WRITERS AND ONLY ONE OBEYS THE CONTAINMENT GATE
+**DONE-WHEN** nothing yet — this is C1's to design, not Code's to fix. Recorded
+here so it is not rediscovered.
+**BLOCKED-BY** C1.
+
+Chasing port 34 turned up the architecture rather than a bug. `hardpoints_fleet.json`
+— written by `place_fleet.py`, the script four documents said did not exist —
+is a **second, independent** placement source, and the fore/aft containment gate
+lives only in `build_hardpoint_placement.py`. It never saw the fleet file.
+
+    1,878 mounts in hardpoints_fleet.json
+       43 outside the unit box
+       33 of those aimed at a MEASURED extremity, all by 2.7-3.4%
+
+**Those 33 are not the same defect as the Defender's 1.32 and must not be
+treated as one.** `place_fleet.py` aims an extremity mount at the hull's own
+outermost vertex and normalises by the longest half-extent, so a nose gun lands
+at 1.0 by construction and the few percent over is a normalisation artifact of a
+real vertex. The Defender's 1.32 was a fixed-fraction guess pointing at nothing.
+**A gate at exactly 1.0 would refuse points that sit on the hull's own skin.**
+`MARGIN = 0.06` already separates them correctly — checked, not assumed. **Do
+not tighten it.**
+
+### Q29 — THE SWEEP CANNOT SAY "I COULD NOT LOOK". TWO CONTROLS ALREADY TRY.
+**DONE-WHEN** a control that exits 2 is counted as NOT RUN rather than FAILED,
+and the DB-backed controls exit 2 with a reason instead of leaking a traceback.
+**BLOCKED-BY** nothing. **Lower priority than Q27 — the gate is not weakened by
+this and no deploy is held up by it.**
+
+**YOUR OWN DOCSTRING IS RIGHT AND THE CLASSIFIER IS ONE STEP BEHIND IT.**
+
+    ok = (code != 0) if args.self_test else (code == 0)     line 219
+
+Zero or FAIL. NOT RUN is reachable only when the runner cannot launch the
+process. **A control that starts, finds its resource absent, and says so has no
+exit code that means what it is saying** — and two of them are already trying:
+
+    _verify_community_mark.py    exit 2, "NOT PERFORMED ... never as a pass"
+    _verify_panel_dismiss.mjs    exit 2 when Chromium is missing
+
+Both print as `FAIL ... exit 2`.
+
+**HOW I FOUND IT.** I ran the suite from the Cowork Linux VM, which has no
+PostgreSQL, no Chromium and no PowerShell. 12+ DB controls, 9 browser controls
+and `deploy_guards` all reported **FAIL**. Nothing was broken. Read that output
+cold and you would go looking for twenty defects that do not exist — **which is
+the same hour you lost to my wrong port number this morning, mechanised.**
+
+`docs/FINDING_the-sweep-cannot-say-i-could-not-look-2026-08-29.md`.
+
+**Do not make either state pass. Both must still count against the sweep.** The
+only thing changing is which true sentence gets printed.
+
+### Q30 — I OVERWROTE YOUR SWEEP RECEIPT. THE GATE CAUGHT IT.
+**DONE-WHEN** your call — this may be correct as it stands.
+**BLOCKED-BY** nothing.
+
+`run_all_controls.py --only` writes the same `checks/.last_sweep.json` a full
+sweep writes. My subset run destroyed the receipt from your 10:30 sweep.
+**`sweep_gate.py` refused, exit 1:** *"the last sweep was PARTIAL (--only), so
+most controls did not run. A subset is not a sweep."*
+
+**The gate did its job and I am reporting this rather than quietly re-running.**
+Your 10:30 receipt is gone; it needed re-taking after Q27 anyway, so nothing is
+lost but the record of it. **One artifact, two writers, outputs not
+interchangeable** — which is rule 14's shape even though it is one script. You
+may decide fail-closed is sufficient. Say which, so the next person does not
+rediscover it.
+
+### Q23 — DONE 2026-08-29 as `d1e60b4`, ahead of Q21, on Sleven's direct instruction. NEXT COMMIT COVERS Q27 AND TODAY'S CENSUS DECLARATION.
 **DONE-WHEN** the fore/aft change and today's docs are committed and pushed.
 **BLOCKED-BY** Q21. Sleven's go-ahead from 2026-08-29 still stands and covers
 this; it does NOT cover the live site.

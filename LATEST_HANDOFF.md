@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #832 — 2026-08-29 10:24 AM
+# LATEST_HANDOFF.md — Update #836 — 2026-08-29 1:39 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-29 10:24:07 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-29 13:39:29 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,288 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119498 files (13787.21 MB)
 
-**Scripts:** 53  |  **3D models:** 1133  |  **Docs:** 1383
+**Scripts:** 53  |  **3D models:** 1135  |  **Docs:** 1390
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-29 13:38:45 — 20260829_1200_update_q27-done-and-the-testing-site-is-deployed-and-verified.md
+
+# Update — Q27 done with declared exceptions, the sweep is 106 of 106, and the testing site is deployed and verified on the served bytes.
+
+**2026-08-29 12:00 local · Code (background session)**
+
+## Q27 — DECLARED, NOT RE-BASELINED
+
+Three exceptions in `_verify_child_markers.py`, each declaring the WHOLE
+transition rather than just a port name, printed on every run:
+
+    BANU_Defender 50   [-0.30751, 0.01049,  1.32494] cig  ->  REMOVED
+    BANU_Defender 51   [ 0.30751, 0.01049,  1.32494] cig  ->  REMOVED
+    MISC_Hull_C   34   [-0.0,    -0.10429, -1.27827] cig
+                    -> [-0.00408, 0.00157, -1.00356] est
+
+**I measured all three against the real data before writing them down** and they
+match C1's table exactly. The third is declared as a DEMOTION, not a removal -
+the mount kept its marker, the CIG position was withheld, and the page now says
+`est`. Calling that "removed" would record the wrong event.
+
+**A port name alone would have excused any future change to those mounts**,
+including a second real regression landing on the same one. Both ends are
+asserted.
+
+## PROVEN THREE WAYS, RULE 12
+
+    undeclared loss     FAIL  got=['Aegis Gladius:9']    the list does not blanket-excuse
+    wrong transition    FAIL  x2 - unmoved AND stale     two independent alarms
+    stale declaration   FAIL  got=['AEGS_Gladius:1']     a declaration nothing fires is fiction
+
+All three probes are in `_to_delete/probes-20260829/`, never deleted.
+
+## THE SWEEP AND THE GATE
+
+    106 ok, 0 failed, 0 skipped, 0 NOT RUN, in 706s
+    sweep_gate --check testing/_deploy
+      106 control(s) green against this exact payload (2026-08-29T13:35:46)
+      GATE EXIT 0
+
+**The gate was refusing C1's `--only` receipt, exactly as Sleven said** - 9
+controls, 3.7s, `partial: true`, naming a child-markers red that no longer
+existed. Not the payload.
+
+## DEPLOYED, AND VERIFIED ON THE SERVED BYTES RATHER THAN ON EXIT 0
+
+    Uploaded 1 of 1 asset   + /loadout_marker.gen.js
+    https://citizencompasstesting.citizencompass-contact.workers.dev
+    Version a0f092a4-89f4-407e-b061-6b951ee3ad3d
+
+**One file changed, and it is the fore/aft withholding.** The other 524 were
+already uploaded.
+
+The deploy script says in as many words that exit 0 is not proof, so:
+
+    /                        HTTP 200    431,674 bytes
+    /models/Hammerhead.glb   HTTP 200  3,608,636 bytes
+    /loadout_marker.gen.js   HTTP 200    282,961 bytes
+    served sha256 == local sha256   (2536dbdbe37aec05)
+    index carries id="cc-kb" and id="cc-panel"
+
+**And the three ports, read off the file the site is actually serving:**
+
+    259 hulls, 6058 markers
+    BANU_Defender port 50   GONE
+    BANU_Defender port 51   GONE
+    MISC_Hull_C   port 34   ['34', -0.00408, 0.00157, -1.00356, 'est']
+
+The three deployed-site controls - `_verify_find_deployed.mjs`,
+`_verify_deployed_links.mjs`, `_verify_picker_deployed.mjs` - are all green
+against the new deploy.
+
+**The site is no longer on 04:47.**
+
+## WHAT THAT CLOSES
+
+    Q21  DONE - the deploy gate passes
+    Q27  DONE - declared exceptions, baseline untouched
+    Q26  UNBLOCKED - the three survivors can now be measured against a
+         payload that is actually deployed
+
+Uncommitted: `checks/_verify_child_markers.py` and today's updates. Nothing has
+been committed since `d1e60b4`.
+
+**Not started: Q26, Q28 (C1's), Q29, Q30.** Q29 is the one I would take next -
+the sweep cannot say "I could not look", and two controls already exit 2 trying.
+
+### 2026-08-29 13:22:11 — 20260829_1145_update_q27-taking-the-declared-exception-list.md
+
+# Update — Q27 taken. Declared exceptions, not a re-taken baseline, and C1's reasoning for that is right.
+
+**2026-08-29 11:45 local · Code (background session)**
+
+Sleven said go, Q27 first. Filing before I start, rule 13.
+
+**C1 asked me to choose and said it would not argue twice. I am not choosing
+differently: the declared-exception list is correct and re-taking the snapshot is
+not.** Absorbing a loss into a baseline is the exact failure
+`_verify_marker_census.py` exists to prevent, and it would be the same failure
+in my file. A baseline re-taken quietly and one re-taken on purpose look
+identical in six weeks; three declared entries that print on every run do not.
+
+**And C1 is right that the red control produced the day's best evidence.**
+Section 6 says 244 hulls changed and names exactly three moved markers. A
+fleet-wide change to the containment rule moved three markers and nothing else,
+with the four pinned negative controls holding. That is worth more than the pass
+would have been.
+
+## THE CORRECTION I AM ACCEPTING
+
+Q21's DONE-WHEN said `MISC_Hull_C` port **2**. It is port **34**, the nose
+turret. Port 2 is at fore/aft -0.97267, inside the box, and was never an
+escapee. **I spent time hunting a port with nothing wrong with it.** C1 has
+owned that. What I will note for myself: I reported "port 2 PRESENT" as a
+finding without asking whether the number in the order was right, which is the
+same trust I would not extend to a check's own output.
+
+## WHAT I AM BUILDING
+
+Three declared exceptions in `_verify_child_markers.py`, each carrying its
+reason and printed on every run:
+
+    BANU_Defender 50   cig -1.32494 fore/aft  -> REMOVED
+    BANU_Defender 51   cig  1.32494 fore/aft  -> REMOVED
+    MISC_Hull_C   34   cig -1.27827           -> demoted to est -1.00356
+
+**The third is not a removal and must not be declared as one.** The mount kept
+its marker; the CIG position was withheld and it fell back to a name-derived
+estimate the page now labels `est`. A control that calls that "removed" would be
+recording the wrong event.
+
+Rule 12 applies: the list has to be proven not to hide a fourth. I will plant a
+loss that is NOT declared and confirm the control still goes red.
+
+### 2026-08-29 10:35:59 — 20260829_1120_update_q23-committed-and-pushed-d1e60b4.md
+
+# Update — committed and pushed as `d1e60b4`. 23 files, the drift fix and today's docs, tree clean. Nothing went to the live site and nothing went to the testing site either.
+
+**2026-08-29 11:20 local · Code (background session)**
+
+Sleven said commit and push, in this session, for this change. Rule 2 satisfied.
+
+    d1e60b4   23 files changed, 2,783 insertions, 796 deletions
+    4710d30..d1e60b4  main -> main
+    local HEAD == origin/main == d1e60b4
+    git status --porcelain    0 entries
+
+## Staged by path, never `git add -A`
+
+    checks/            _verify_deploy_drift.py, rule16_baseline.txt,
+                       _verify_panel_dismiss.mjs
+    testing/_src/      build_deploy.py, loadout_marker.gen.js
+    build_hardpoint_overlay.py
+    docs/              the DECISION, C1's ERRATUM, the proposal, 9 handoff
+                       updates and the running log
+    NEXT.md, OWNERS.md, LATEST_HANDOFF.md
+
+## Verified after, not assumed
+
+- **`_to_delete/` contributed 0 files.** Checked in the index before the commit
+  and in `git log -1 --name-only` after. The probes from this morning - three
+  rule-16 label probes and two restore probes - are all in there and none of
+  them entered history.
+- **No path outside the eight expected roots.** Filtered the commit's file list;
+  came back empty.
+- **The push landed** - `git fetch` and a hash comparison, not the push's own
+  output.
+
+## ONE FILE IN THIS COMMIT IS A PAYLOAD SOURCE, AND IT IS THE FORE/AFT CHANGE
+
+`testing/_src/loadout_marker.gen.js` moved by 4 lines - **that is C1's fore/aft
+withholding, landing in a tracked file for the first time.** It is what Q23 asks
+for. `testing/_deploy` is gitignored and is not in this or any commit.
+
+## Q23'S BLOCKER, STATED RATHER THAN IGNORED
+
+NEXT.md has Q23 **BLOCKED-BY Q21**, and Q21 is 2 of 3 - `MISC_Hull_C` port 2 is
+still in the payload. **Sleven told me to commit anyway, in this message.** The
+block was procedural rather than technical: nothing here depends on Q21 finishing,
+and leaving a day of work uncommitted to honour an ordering constraint would have
+been the worse call. Recording the deviation because it IS one.
+
+## C1's FILES CARRIED, NOT EDITED
+
+`OWNERS.md`, `NEXT.md`, `_verify_panel_dismiss.mjs`, `build_hardpoint_overlay.py`
+and the proposal are in this commit exactly as C1 left them. **The overlay's
+comment fix landed with a duplicated "So. So"** - C1's file, C1's to tidy, and I
+am not touching it to make a diff look neater.
+
+## STANDING
+
+    Q22, Q24, Q25   done
+    Q21             2 of 3
+    Q23             done as of this commit
+    Q26             blocked by Q21
+
+**The deploy is still refused** by `sweep_gate.py` on `_verify_child_markers.py`
+and `_verify_marker_census.py`. Both baselines are C1's. The served site stays on
+04:47 until C1 clears them - and the gate is not going to be weakened to get past
+its own finding.
+
+### 2026-08-29 10:34:19 — 20260829_1110_update_q25-done-the-separator-is-three-characters-and-a-lowercase-label-is-invisible.md
+
+# Update — Q25 done. The separator was never one character, the en dash is a worse trap than the comma, and a lowercase label is invisible to the gate.
+
+**2026-08-29 11:10 local · Code (background session)**
+
+`docs/DECISION_the-rule16-label-format-2026-08-29.md`, 149 lines. C1's
+instruction was *"write what the gate does, not what it should do — if they
+differ, that difference is the finding."* They differ in three places.
+
+## 1. THE SEPARATOR IS THREE CHARACTERS
+
+    LABEL = re.compile(r"RULE16:\s*(INDEPENDENT|UNPROVEN)\s*[-—:]\s*(.+)")
+
+**Hyphen, em dash AND colon all pass.** `RULE16: UNPROVEN: reason` is a valid
+label and always has been. Every error message the gate prints says *"with the
+separator"* and shows only the hyphen, so **the rule as communicated has been
+narrower than the rule as enforced since adoption.** Not a defect — a
+documentation gap, and the document is the fix.
+
+## 2. THE EN DASH IS WORSE THAN THE COMMA EVER WAS
+
+    ACCEPTED   RULE16: UNPROVEN — reason      em dash  U+2014
+    MALFORMED  RULE16: UNPROVEN – reason      en dash  U+2013
+
+**One pixel apart, treated oppositely.** The comma cost two people an hour and a
+comma is at least visible. The gate prints the offending line back in its error —
+where an en dash looks correct. Anyone who hits this should suspect the character
+before the code.
+
+## 3. THE ONE ACTUAL HOLE, AND I FOUND IT BY TESTING RATHER THAN READING
+
+**A lowercase label is not seen as a label at all.**
+
+    checks/_verify_zz_probe_lowercase.py
+      -> "a NEW check with no RULE16 label"
+
+The regex is case-sensitive and **so is the fallback that detects a MALFORMED
+label** — it greps for the literal `RULE16`. So `rule16: unproven - ...` produces
+neither a match nor a malformed report. It is classified **unlabelled**.
+
+**And `rule16_baseline.txt` excuses unlabelled files.** The baseline is matched
+on the reason string `"no RULE16: line"` (`_verify_rule16_labels.py:167`), which
+is precisely what a lowercase label produces. A baselined file carrying a
+lowercase label would be **silently excused while appearing to have declared
+itself.**
+
+It fails today only because the debt list is closed and a NEW unlabelled check is
+refused outright — **a second guard catching it, not the label logic working.**
+
+**Not fixed.** Q25 was to record behaviour, and changing the gate would make the
+document stale the day it was written. The fix is one word — case-insensitive
+loose detection so a lowercase label reports MALFORMED rather than absent — and
+it is mine when it is wanted.
+
+## HOW EACH ROW WAS ESTABLISHED
+
+Every acceptance row was run through the gate rather than reasoned about, and the
+three interesting ones — colon, en dash, lowercase — were run **end to end as
+real files in `checks/`**, so the gate discovered and classified them the way it
+would any control. All three are parked in `_to_delete/probes-20260829/`, and the
+suite is back to 105 of 105, 0 unlabelled, 0 malformed, GREEN.
+
+## STANDING
+
+    Q22  verified myself, 105 of 105
+    Q24  done - the comment, plus a second stale premise (numpy IS installed)
+    Q25  done - this
+    Q21  2 of 3. MISC_Hull_C port 2 still in the payload.
+    Q26  blocked by Q21
+    Q23  blocked by Q21
+
+**The deploy is still gated** on `_verify_child_markers.py` and
+`_verify_marker_census.py`, and both baselines are C1's to clear. Nothing I own
+is in the way of it.
 
 ### 2026-08-29 10:23:25 — 20260829_1055_update_i-was-wrong-about-q21-the-withholding-did-arrive-and-the-deploy-is-gated.md
 
@@ -1286,382 +1563,7 @@ There is a large uncommitted tree: Q7 tranches 6, 7 and 8, the deployed-only
 split in the sweep gate, the crash assertion, `check()`'s detail printing, and
 the `%s` fix. Nothing committed since `1a1b4b7`.
 
-### 2026-08-28 13:06:39 — 20260828_1310_update_the-gate-refused-by-crashing-and-my-control-could-not-tell.md
-
-# Update — The deploy was correctly refused, the gate refused by CRASHING, and the control I wrote to prove that gate could not tell the difference. Three of mine, all found in ten minutes.
-
-**2026-08-28 13:10 local · Code (background session)** — Sleven ran
-`deploy_testing.ps1` while `run_all_controls.py --include-deployed` was in
-flight.
-
----
-
-# 1. THE GATE WAS RIGHT TO REFUSE
-
-    sweep : THE PAYLOAD CHANGED SINCE THE LAST SWEEP.
-            swept   c40e02e7a49809e1544a9bc0f0d1d42b
-            current 366af81b0ab7583b429c5556258ae52b
-    DEPLOY ABORTED
-
-**The running sweep's `_verify_deploy_drift.py` rebuilds `testing/_deploy` as
-part of its own work**, and it did so between Sleven's two commands. The payload
-about to be uploaded was not the payload anything had swept.
-
-**That is Q10 doing exactly what it was built for**, on a real collision nobody
-staged: two things driving the same directory, and the upload stopped.
-
----
-
-# 2. BUT IT REFUSED BY CRASHING
-
-    print("          swept at %s. Re-run the sweep ...")      <- the %s is here
-    print("          about to be uploaded." % rec.get("at"))  <- the % is here
-    TypeError: not all arguments converted during string formatting
-
-**Failed closed, which is the safe direction - but by exception rather than by
-decision.** It printed `swept at %s.` literally and then died.
-
-**This branch had never executed.** The stale-payload path is the one case that
-needs two things happening at once, and nothing had ever produced that until
-Sleven ran a deploy during a sweep.
-
----
-
-# 3. AND MY CONTROL PASSED ON THE CRASH
-
-`_verify_deploy_guards.py` section 11 asserted:
-
-    check("  REFUSES when the payload changed since the sweep", code != 0)
-
-**A traceback also gives a non-zero exit.** Measured, both ways:
-
-    WITH the bug back: exit=1  traceback in output=True
-    WITH the fix     : exit=1  traceback in output=False
-
-**The exit code cannot tell a considered refusal from a Python traceback**, and
-the assertion was reading only the exit code. That is rule 12's silent success
-in the control I wrote *to prove a gate could not silently succeed*.
-
-Every run's output is now kept and one assertion covers all 42 of them:
-
-    no deploy-script run in this control refused by CRASHING - a traceback is
-    not a decision
-
-Proven by putting the bug back into a fixture's copy of the gate: the assertion
-fires. **A gate that crashes on its refusal path would crash on its success path
-the day the same mistake lands there**, and then nothing would deploy at all.
-
----
-
-# 4. THE FIX HAD A BUG OF ITS OWN, AND IT WAS INVERTED
-
-I wrote:
-
-    check("no deploy-script run ... CRASHING", not crashed,
-          "; ".join(...))                       <- third positional
-
-**The third positional is `want`, not `detail`.** With nothing crashed the join
-is `""`, so `want=""`, so the assertion **failed exactly when it should have
-passed** - and would have PASSED on a real crash. Inverted, in the assertion
-whose whole job is to catch an inversion.
-
-Caught within the hour, and only because of the fifth thing:
-
-# 5. `check()` NEVER PRINTED ITS DETAIL
-
-It printed `FAIL <label>` and threw the evidence away. The crash assertion
-reported *"a traceback is not a decision"* and named neither the script nor the
-traceback; finding out which run it meant took a separate probe.
-
-**It prints the detail on failure now** - and the detail printing as EMPTY on a
-failure that named no run is what exposed the inverted argument.
-
-    116 passed, 0 failed
-
----
-
-# ONE CONSEQUENCE TO FLAG
-
-**The sweep still running is unreliable.** I edited `checks/` while it was
-executing those files - `sweep_gate.py`, `_verify_deploy_guards.py` and
-`run_all_controls.py` all changed mid-run. Some controls in it ran against the
-old code and some against the new.
-
-I did it anyway because the alternative was leaving a crashing gate in place for
-another ten minutes while a deploy was being attempted against it. **That is a
-judgement call and it is the reason I have been holding every Q7 tranche until a
-sweep finishes.** Its numbers should be read as indicative and the sweep re-run
-before anything trusts a receipt from it.
-
-Nothing committed since `1a1b4b7`.
-
-### 2026-08-28 12:35:35 — 20260828_1240_update_include-deployed-found-a-deadlock-in-my-own-gate.md
-
-# Update — `--include-deployed` ran for the first time: 104 ok, 1 failed. The failure was real, and it exposed a deadlock in the gate I built last night.
-
-**2026-08-28 12:40 local · Code (background session)** — Sleven ran
-`python checks/run_all_controls.py --include-deployed`.
-
-    104 ok, 1 failed, 0 skipped, 0 NOT RUN, in 640s
-
-**Run with `venv\Scripts\python.exe` rather than bare `python`** — the 32-bit
-interpreter on PATH has no `dotenv`, the runner spawns children with
-`sys.executable`, and every control touching `app.database` would have come back
-NOT RUN.
-
-## The two opt-in network controls that had never run in a sweep both passed
-
-    _verify_deployed_links.mjs   SWEEP CLEAN - and the canary proves the sweep
-                                 can report
-    _verify_find_deployed.mjs    Real rows came back from the deployed origin
-
-## The one failure was true, and useful
-
-    _verify_picker_deployed.mjs
-      FAIL the served ship page is byte-identical to the one just built
-           served 17e9e4705de6856f   local ad81f666d41d3d88
-
-**The deployed site was one C1 feature behind.** `loadout.src.html` was written
-at **10:50:43** — ten minutes after my deploy — with the identical-options note:
-the line that appears when every option on a port is the same part in a different
-wrapper. C1's own control for it, `_verify_identical_options.mjs`, was already in
-the tree and passing; only the served bytes were stale.
-
-## AND IT EXPOSED A DEADLOCK I BUILT LAST NIGHT
-
-That control asserts **the served page matches the one just built**. Under Q10's
-gate, that failure went into the receipt, the receipt went red, and the deploy
-that would have fixed it was refused.
-
-**The deploy was blocked by the absence of the deploy.**
-
-The fix is not a whitelist. The three `--include-deployed` controls answer a
-different question — `NEEDS` in the runner already says so in its own words,
-*"a statement about the live site, not about this working tree"* — so the receipt
-now records which failures are of that kind and `sweep_gate.check()` reports them
-without blocking:
-
-    sweep : 1 control(s) failed ABOUT THE LIVE SITE rather than about this payload:
-            LIVE     _verify_picker_deployed.mjs
-            These do not block: one of them asserts the SERVED page matches the
-            one just built, which no action before a deploy can make true.
-            Deploying is their remedy, and re-running with --include-deployed
-            afterwards is how you find out whether it worked.
-    sweep : 104 control(s) green against this exact payload
-    gate exit=0
-
-**Reported whether or not they block.** A live-site failure is real information -
-the served site is behind, or is broken - and hiding it here would be the silent
-success this file exists against.
-
-**This is the second time a design of mine has been wrong in a way only running
-it could show.** The gate was proven against seven kinds of bad receipt and none
-of them was this one, because nothing had ever run the sweep the way Sleven just
-did.
-
-## Deployed, and the loop closes
-
-    ef57ca6b-3602-420b-9915-00710ddd84f1   1 file uploaded: /loadout.html
-
-Re-ran all three afterwards:
-
-    _verify_picker_deployed.mjs   ok - "the served ship page is byte-identical
-                                  to the one just built"   30/30
-    _verify_deployed_links.mjs    ok
-    _verify_find_deployed.mjs     ok
-
-## AND THE CENSUS IS WORTH READING ON ITS OWN
-
-From the SERVED bytes, not from a build log:
-
-    6,326 markers  /  4,388 clickable  /  1,938 fixed-but-informative  /  0 SILENT
-    hulls entirely silent:  0   (was 61)
-
-**782 silent markers and 61 fully-silent hulls, down to zero.** That was Sleven's
-"the dots don't do anything" on the 400i, and it is measured on the deployed
-site over the wire rather than asserted from a local file.
-
-Also on the served page: the Origin 400i shows 52 markers, 44 picker, 8 fixed, 0
-silent; the Avenger's turret mount lists its fitted part first on all three
-sorts; and the grid is `calc(100vh - 238px)` with internally-scrolling columns,
-so the inline picker and the stage panel cost the page no height at either
-1920x1080 or 1366x768.
-
-Nothing committed since `1a1b4b7`. Q7 stands at 81 of 104.
-
-### 2026-08-28 11:21:46 — 20260828_1136_update_q7-tranche-8-and-owners-md-settles-a-thing-i-got-wrong.md
-
-# Update — Q7 tranche 8: 81 of 104. And `OWNERS.md` settles the rule 14 question — including that I have been editing a file that is C1's.
-
-**2026-08-28 11:36 local · Code (background session)**
-
-    labelled     81  (38 INDEPENDENT, 43 UNPROVEN)     was 71
-    unlabelled   23                                    was 33
-
-Ten loadout-page interaction controls. **All ten green after labelling.**
-
----
-
-# FIRST: I READ `OWNERS.md`, AND IT NAMES SOMETHING I DID
-
-C1 landed `OWNERS.md` — the prose ownership list from `NEXT.md`, in a form a
-program can read, with `_verify_owners.py` holding it to its own rule. Its
-diagnosis of last night is fair and better than mine:
-
-> Both files were already C1's, in `NEXT.md` and in `CURRENT-STATE.md`, and had
-> been for weeks. **Nothing was actually in conflict.** … ownership was written
-> down in a place programs do not read.
-
-**`testing/_src/loadout.src.html` is C1's, and I have edited it three times
-today:**
-
-    ~21:14  setSel() - one place that builds a selection, for _verify_ship_page
-    ~21:14  --bracket and --panelglass registered with the theme engine
-     10:09  <script src="craft_data.gen.js"> - the tag C1's craft line needed
-
-The first two predate the question being raised. **The third does not** — C1
-asked at 23:00 and said it would hold off; I added a line to that file at 10:09
-this morning. I did it because the crafting feature was inert without it and C1
-had explicitly asked for the build side to be wired, but **the honest statement
-is that I wrote to a file `OWNERS.md` assigns to C1**.
-
-**From here, changes to `loadout.src.html` and `cc_viewer.js` go to C1 as an
-inbox request rather than as an edit.** If that blocks something urgent, the
-answer is to ask, not to type.
-
-**And it settles Q7's scope**: `_verify_panel_dismiss.mjs` and the five controls
-C1 has written are C1's to label. This tranche leaves them alone; the rest of
-`checks/` is Code's by `OWNERS.md`'s own default clause.
-
----
-
-# THE TRANCHE
-
-**Seven INDEPENDENT, and they share one shape**: the expectation is computed
-from the DATA and the page is required to agree with it.
-
-    _verify_column_split    inCol.size === swapOf(SH).length - the set the page
-                            must match is derived from slot data, not read back
-                            from the DOM
-    _verify_part_rows       shown.length === withStats.length - a page that
-                            silently dropped a figure it was given cannot pass
-    _verify_ship_name_route escapeHtml is driven with a known input and required
-                            to produce a known output
-    _verify_sorts           the forbidden word comes from the rule; the
-                            orderings are recomputed from the data
-    _verify_panel_findable  every assertion is about the shipped markup against
-                            requirements that came from Sleven's report
-
-**Three UNPROVEN, each naming a different gap**, and one of them draws a line
-worth keeping:
-
-`_verify_ship_page_fits.mjs` computes a layout budget from the stylesheet's own
-numbers rather than measuring a render. **That looks like
-`_verify_colour_headroom.mjs`, which I called INDEPENDENT an hour ago, and the
-label says why it is not the same:**
-
-> There the answer is fully determined by the constants and the formula, so a
-> second implementation is a genuine second opinion. Here the answer is what a
-> BROWSER does, and CSS arithmetic is a MODEL of that rather than the thing.
-
-`_verify_camera_framing.mjs` is the control that actually looks, and the label
-points at it.
-
-`_verify_look_panel.mjs` checks "reaches the viewer" by moving a control and
-reading the viewer's value back — both ends are the page, so a control wired to
-the wrong uniform would still show a value that moved. Its independent half is
-the inventory: the four sliders are named, so one disappearing fails even if a
-new one arrives to keep the count right.
-
----
-
-    81 of 104 labelled       23 to go
-    38 INDEPENDENT           43 UNPROVEN
-
-Nothing committed since `1a1b4b7`.
-
-### 2026-08-28 11:10:13 — 20260828_1122_update_q7-tranche-7-the-viewer-family.md
-
-# Update — Q7 tranche 7: the viewer family. 71 of 104, and five of these nine earned INDEPENDENT.
-
-**2026-08-28 11:22 local · Code (background session)**
-
-    labelled     71  (31 INDEPENDENT, 40 UNPROVEN)     was 62
-    unlabelled   33                                    was 42
-
-Nine rendering controls. **All nine green after labelling.**
-
-## THE FIVE INDEPENDENT ONES, AND WHY THIS FAMILY EARNS MORE OF THEM
-
-Rendering is where independence is easiest to get, because there is somewhere
-else to look:
-
-**`_verify_camera_framing.mjs`** serves the real payload over HTTP and drives a
-real browser. Its own header calls itself *"the first control in this repo that
-sees what a visitor sees"*. **It does not ask the viewer anything; it looks at
-the result.**
-
-**`_verify_colour_headroom.mjs`** RE-IMPLEMENTS the shader's arithmetic. The
-constants are pulled out of the viewer by regex and the multiplier and knee are
-computed in the control, so the two implementations must agree - the same shape
-as `_verify_placement_gate.py`, this repo's exemplar for the pattern.
-
-**`_verify_palette.mjs`** implements the dichromacy transform itself **and proves
-its own instrument before using it**: white must stay white, blue must stay blue
-under protanopia, red must land on a known value. *A control whose measuring
-device is unverified is measuring nothing*, and this one checks the device first.
-
-**`_verify_shared_viewer.mjs`** breaks the shared module and requires both pages
-to fail. A page can load `cc_viewer.js`, ignore it entirely, and satisfy every
-positive assertion about sharing - it cannot survive the module being broken.
-
-**`_verify_edge_detail.mjs`** compares the shipped constants against the
-prototype's own captures - a number the viewer did not produce. Its risk is
-staleness rather than circularity, **and it has already been paid once**: the
-header marks the glow figure SUPERSEDED after G1 rebuilt the rim term and 0.04
-stopped describing anything.
-
-## THE FOUR UNPROVEN, AND ONE OF THEM SAID SO FIRST
-
-**`_verify_hull_solid.mjs` labelled itself before rule 16 existed.** Its opening
-paragraph is titled *"WHAT THIS CONTROL CANNOT DO, FIRST, BECAUSE IT BOUNDS
-EVERYTHING BELOW"* and explains that the order's load-bearing control is a pixel
-measurement of an eroded silhouette, which C1 produced from a headless browser
-and this file cannot. The rule 16 label had almost nothing to add.
-
-`_verify_holo_render.mjs` reads the viewer's own uniforms before and after, so a
-viewer reporting a change it did not make would pass - **but the label names
-where that question IS answered**: whether a moved value reaches a pixel is
-`_verify_camera_framing.mjs`'s subject, and that one is independent.
-
-`_verify_stage_floor.mjs` drives the viewer's own `frame()` and `_fitTable()`;
-its independent half is the population - every hull, not a chosen few.
-`_verify_spin_default.mjs`'s independent half is the SEQUENCE it imposes: open
-cold, stop, reload, open a different ship.
-
-## A THIRD COMMA, AND THE GATE I JUST FIXED IS WHY IT COST NOTHING
-
-I wrote `RULE16: UNPROVEN, and this file already said so...` - the same malformed
-shape as C1's and as my own an hour ago. **Third time.** The verdict wants a
-separator and the natural English sentence wants a comma.
-
-It cost one dry-run cycle instead of an hour, because the applier's report
-column showed the whole run-on where a one-word verdict belongs. The gate would
-also have named it correctly now, which it would not have this morning.
-
-**Three occurrences in two people in twelve hours is a format problem, not three
-careless mistakes.** The gate accepting a comma would be the wrong fix - the
-separator is what makes the reason machine-readable - but it is worth saying
-that the trap is in the format rather than in the typing.
-
-## Where Q7 stands
-
-    71 of 104 labelled       33 to go
-    31 INDEPENDENT           40 UNPROVEN
-
-Nothing committed since `1a1b4b7`.
-
-*(+568 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+572 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

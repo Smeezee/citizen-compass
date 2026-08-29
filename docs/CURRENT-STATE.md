@@ -1,6 +1,6 @@
 # Citizen Compass — Current State
 
-**Authoritative as of 2026-08-27 evening.** Everything in this file is true now.
+**Authoritative as of 2026-08-29 midday.** Everything in this file is true now.
 Nothing in it is history, and there is no "later section wins" rule any more,
 because there are no later sections — **the whole document is the current
 state.**
@@ -180,6 +180,31 @@ four GRIN mining vehicles (no exterior mount at all), the Javelin (two paths of
 equal evidence, one under `dmg`), and the MOTH. See
 `docs/FINDING_the-hull-rule-was-blind-to-the-ships-cig-does-not-name-a-folder-for-2026-08-27.md`.
 
+**THERE ARE TWO PLACEMENT WRITERS AND THE CONTAINMENT GATE ONLY SEES ONE.**
+`hardpoints_fleet.json` is written by `place_fleet.py` — the script four
+documents and two build scripts said was **not in this repository**. It is at
+`data-layer/derived/holo-hardpoints/place_fleet.py`, 32,861 bytes, dated 23
+August, and it runs. Nothing was ever lost; nobody ran `ls`.
+`docs/ERRATUM_place-fleet-py-was-in-the-repo-all-along-2026-08-29.md`.
+
+Its `resolve_frame()` already solves the orientation problem by matching the
+hull's **proportions** against CIG's published dimensions rather than assuming
+an axis, and refuses above a calibrated error. It agrees with the pipeline on
+every hull that works and disagrees on every hull that was heaped.
+
+    1,878 mounts in hardpoints_fleet.json
+       43 outside the unit box
+       33 of those aimed at a MEASURED extremity, all by 2.7-3.4%
+
+**Those 33 are not the Defender's defect and must not be treated as one.**
+`place_fleet.py` aims an extremity mount at the hull's own outermost vertex and
+normalises by the longest half-extent, so a nose gun lands at 1.0 by
+construction and the few percent over is a normalisation artifact of a real
+vertex. The Defender's 1.32 was a fixed-fraction guess aimed at nothing.
+**A gate at exactly 1.0 would refuse points sitting on the hull's own skin.**
+`MARGIN = 0.06` separates them correctly — checked against the data. **Do not
+tighten it.**
+
 **How a variant finds its hull:** CIG's own record says so —
 `Parts[0].Name` is the hull the ship is built on. `ANVL_C8_Pisces -> ANVL_Pisces`.
 Exact equality. **This replaced a name-prefix rule; do not reintroduce one.**
@@ -204,12 +229,29 @@ hull's real size out of the mesh file.
 **Every dot has been tested against a clean silhouette of its own ship.** Each
 hull is shot twice — once with markers, once with them hidden — and every
 marker's screen position measured against the ship's outline. **1,912 of 2,193
-dots land exactly on the hull; p90 is 1px.** Ten do not, on four hulls: the Banu
-Defender, the Drake Corsair, the Tumbril Storm AA and the Glaive. Those are
-individual mounts, not broken ships, and **no population-level check can see a
-single mount in the wrong place** — containment, the mirror, the spread test and
-provenance all pass on them.
-`docs/FINDING_four-hulls-draw-a-dot-in-empty-space-2026-08-29.md`.
+dots land exactly on the hull; p90 is 1px.** Ten did not, on four hulls.
+
+**Seven of the ten are now accounted for.** The acceptance test only ever
+measured two of three axes; its comment argued that testing the fore/aft axis
+would be marking our own homework because that is where the scale came from.
+**That reasoning was wrong** — the scale comes from the model's box against
+CIG's published Length, not from any mount position. 26,273 mounts measured, 93
+outside fore/aft, 7 of them actually drawn:
+
+    BANU_Defender 50/51   1.32494 "cig"  ->  REMOVED
+    MISC_Hull_C   34     -1.27827 "cig"  ->  -1.00356 "est"
+    ORIG_m80      4 mounts, already refused for orientation
+
+**The Hull C outcome is the one to understand.** Its nose turret was not
+deleted — the CIG position was withheld, the mount fell back to a name-derived
+estimate, and the page now labels it `est`. A dot 1.28 half-extents off the nose
+had been presented as CIG's own placement.
+
+**Three remain: the Drake Corsair (3 of 15), the Tumbril Storm AA and the
+Glaive.** Those sit INSIDE the box and still miss the mesh, which means the box
+is not the hull. **Do not widen the acceptance test to make them pass.**
+`docs/FINDING_four-hulls-draw-a-dot-in-empty-space-2026-08-29.md` and
+`docs/FINDING_two-placement-writers-and-the-port-i-named-wrong-2026-08-29.md`.
 
 **Every ship has been photographed with its dots on.** 295 hulls loaded in a
 real browser, 2,309 markers drawn, 0 failures — 26 ships show no dots and 25
@@ -217,9 +259,24 @@ carry at least one estimated dot. That is the last unmeasured thing about the
 hardpoint work: the coordinates were proven, and now the RENDERING is too.
 **Ships with no hardpoints are deferred by Sleven until the rest is finished.**
 
-**The whole suite runs green.** 105 of 105, 0 skipped, 0 not run — including the
-three controls that go to the deployed site over the network, which had never
-run in a sweep before. The testing site is confirmed to match what was built.
+**The suite is 106 controls and one is red on purpose.** Code's 2026-08-29
+sweep — the first in this repo that could not be perturbed by its own drift
+control, because `_verify_deploy_drift.py` no longer rebuilds the artifacts the
+other controls read — returned **104 ok, 2 failed, 0 skipped, 0 NOT RUN**. One
+of the two, `_verify_marker_census.py`, is now green: the Banu Defender's
+`10 -> 8` is declared with its reason. The other, `_verify_child_markers.py`,
+is **correctly refusing three intended changes** and is the only thing gating a
+deploy. See `NEXT.md` Q27.
+
+**THE SWEEP CANNOT SAY "I COULD NOT LOOK".** `run_all_controls.py` classifies
+`code == 0` as pass and everything else as FAIL; NOT RUN is reachable only when
+it cannot launch the process at all. Two controls already exit **2** to mean
+NOT PERFORMED — `_verify_community_mark.py` and `_verify_panel_dismiss.mjs` —
+and both print as FAIL. Run from a machine without PostgreSQL, Chromium or
+PowerShell, 20+ controls report FAIL when nothing is wrong.
+`docs/FINDING_the-sweep-cannot-say-i-could-not-look-2026-08-29.md`, queued as
+Q29. **Fail-closed is not affected — `failed` and `not_run` both refuse the
+deploy.** Only the printed sentence is wrong.
 
 **The bench works as a loop, and it is now proven as one.** Pick a mount, fit a
 part, see what moved, keep or undo — every step driven by a click through the
@@ -312,5 +369,5 @@ are 4.9 and say so.
 
 ---
 
-*C1, 2026-08-27. Split out of a 13,571-word document that had to be read in full
+*C1, updated 2026-08-29 midday. Split out of a 13,571-word document that had to be read in full
 to be trusted. If this one ever needs that again, it has failed.*

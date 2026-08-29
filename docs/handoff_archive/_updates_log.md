@@ -43139,3 +43139,204 @@ suite is back to 105 of 105, 0 unlabelled, 0 malformed, GREEN.
 **The deploy is still gated** on `_verify_child_markers.py` and
 `_verify_marker_census.py`, and both baselines are C1's to clear. Nothing I own
 is in the way of it.
+
+### 2026-08-29 10:35:59 — 20260829_1120_update_q23-committed-and-pushed-d1e60b4.md
+
+# Update — committed and pushed as `d1e60b4`. 23 files, the drift fix and today's docs, tree clean. Nothing went to the live site and nothing went to the testing site either.
+
+**2026-08-29 11:20 local · Code (background session)**
+
+Sleven said commit and push, in this session, for this change. Rule 2 satisfied.
+
+    d1e60b4   23 files changed, 2,783 insertions, 796 deletions
+    4710d30..d1e60b4  main -> main
+    local HEAD == origin/main == d1e60b4
+    git status --porcelain    0 entries
+
+## Staged by path, never `git add -A`
+
+    checks/            _verify_deploy_drift.py, rule16_baseline.txt,
+                       _verify_panel_dismiss.mjs
+    testing/_src/      build_deploy.py, loadout_marker.gen.js
+    build_hardpoint_overlay.py
+    docs/              the DECISION, C1's ERRATUM, the proposal, 9 handoff
+                       updates and the running log
+    NEXT.md, OWNERS.md, LATEST_HANDOFF.md
+
+## Verified after, not assumed
+
+- **`_to_delete/` contributed 0 files.** Checked in the index before the commit
+  and in `git log -1 --name-only` after. The probes from this morning - three
+  rule-16 label probes and two restore probes - are all in there and none of
+  them entered history.
+- **No path outside the eight expected roots.** Filtered the commit's file list;
+  came back empty.
+- **The push landed** - `git fetch` and a hash comparison, not the push's own
+  output.
+
+## ONE FILE IN THIS COMMIT IS A PAYLOAD SOURCE, AND IT IS THE FORE/AFT CHANGE
+
+`testing/_src/loadout_marker.gen.js` moved by 4 lines - **that is C1's fore/aft
+withholding, landing in a tracked file for the first time.** It is what Q23 asks
+for. `testing/_deploy` is gitignored and is not in this or any commit.
+
+## Q23'S BLOCKER, STATED RATHER THAN IGNORED
+
+NEXT.md has Q23 **BLOCKED-BY Q21**, and Q21 is 2 of 3 - `MISC_Hull_C` port 2 is
+still in the payload. **Sleven told me to commit anyway, in this message.** The
+block was procedural rather than technical: nothing here depends on Q21 finishing,
+and leaving a day of work uncommitted to honour an ordering constraint would have
+been the worse call. Recording the deviation because it IS one.
+
+## C1's FILES CARRIED, NOT EDITED
+
+`OWNERS.md`, `NEXT.md`, `_verify_panel_dismiss.mjs`, `build_hardpoint_overlay.py`
+and the proposal are in this commit exactly as C1 left them. **The overlay's
+comment fix landed with a duplicated "So. So"** - C1's file, C1's to tidy, and I
+am not touching it to make a diff look neater.
+
+## STANDING
+
+    Q22, Q24, Q25   done
+    Q21             2 of 3
+    Q23             done as of this commit
+    Q26             blocked by Q21
+
+**The deploy is still refused** by `sweep_gate.py` on `_verify_child_markers.py`
+and `_verify_marker_census.py`. Both baselines are C1's. The served site stays on
+04:47 until C1 clears them - and the gate is not going to be weakened to get past
+its own finding.
+
+### 2026-08-29 13:22:11 — 20260829_1145_update_q27-taking-the-declared-exception-list.md
+
+# Update — Q27 taken. Declared exceptions, not a re-taken baseline, and C1's reasoning for that is right.
+
+**2026-08-29 11:45 local · Code (background session)**
+
+Sleven said go, Q27 first. Filing before I start, rule 13.
+
+**C1 asked me to choose and said it would not argue twice. I am not choosing
+differently: the declared-exception list is correct and re-taking the snapshot is
+not.** Absorbing a loss into a baseline is the exact failure
+`_verify_marker_census.py` exists to prevent, and it would be the same failure
+in my file. A baseline re-taken quietly and one re-taken on purpose look
+identical in six weeks; three declared entries that print on every run do not.
+
+**And C1 is right that the red control produced the day's best evidence.**
+Section 6 says 244 hulls changed and names exactly three moved markers. A
+fleet-wide change to the containment rule moved three markers and nothing else,
+with the four pinned negative controls holding. That is worth more than the pass
+would have been.
+
+## THE CORRECTION I AM ACCEPTING
+
+Q21's DONE-WHEN said `MISC_Hull_C` port **2**. It is port **34**, the nose
+turret. Port 2 is at fore/aft -0.97267, inside the box, and was never an
+escapee. **I spent time hunting a port with nothing wrong with it.** C1 has
+owned that. What I will note for myself: I reported "port 2 PRESENT" as a
+finding without asking whether the number in the order was right, which is the
+same trust I would not extend to a check's own output.
+
+## WHAT I AM BUILDING
+
+Three declared exceptions in `_verify_child_markers.py`, each carrying its
+reason and printed on every run:
+
+    BANU_Defender 50   cig -1.32494 fore/aft  -> REMOVED
+    BANU_Defender 51   cig  1.32494 fore/aft  -> REMOVED
+    MISC_Hull_C   34   cig -1.27827           -> demoted to est -1.00356
+
+**The third is not a removal and must not be declared as one.** The mount kept
+its marker; the CIG position was withheld and it fell back to a name-derived
+estimate the page now labels `est`. A control that calls that "removed" would be
+recording the wrong event.
+
+Rule 12 applies: the list has to be proven not to hide a fourth. I will plant a
+loss that is NOT declared and confirm the control still goes red.
+
+### 2026-08-29 13:38:45 — 20260829_1200_update_q27-done-and-the-testing-site-is-deployed-and-verified.md
+
+# Update — Q27 done with declared exceptions, the sweep is 106 of 106, and the testing site is deployed and verified on the served bytes.
+
+**2026-08-29 12:00 local · Code (background session)**
+
+## Q27 — DECLARED, NOT RE-BASELINED
+
+Three exceptions in `_verify_child_markers.py`, each declaring the WHOLE
+transition rather than just a port name, printed on every run:
+
+    BANU_Defender 50   [-0.30751, 0.01049,  1.32494] cig  ->  REMOVED
+    BANU_Defender 51   [ 0.30751, 0.01049,  1.32494] cig  ->  REMOVED
+    MISC_Hull_C   34   [-0.0,    -0.10429, -1.27827] cig
+                    -> [-0.00408, 0.00157, -1.00356] est
+
+**I measured all three against the real data before writing them down** and they
+match C1's table exactly. The third is declared as a DEMOTION, not a removal -
+the mount kept its marker, the CIG position was withheld, and the page now says
+`est`. Calling that "removed" would record the wrong event.
+
+**A port name alone would have excused any future change to those mounts**,
+including a second real regression landing on the same one. Both ends are
+asserted.
+
+## PROVEN THREE WAYS, RULE 12
+
+    undeclared loss     FAIL  got=['Aegis Gladius:9']    the list does not blanket-excuse
+    wrong transition    FAIL  x2 - unmoved AND stale     two independent alarms
+    stale declaration   FAIL  got=['AEGS_Gladius:1']     a declaration nothing fires is fiction
+
+All three probes are in `_to_delete/probes-20260829/`, never deleted.
+
+## THE SWEEP AND THE GATE
+
+    106 ok, 0 failed, 0 skipped, 0 NOT RUN, in 706s
+    sweep_gate --check testing/_deploy
+      106 control(s) green against this exact payload (2026-08-29T13:35:46)
+      GATE EXIT 0
+
+**The gate was refusing C1's `--only` receipt, exactly as Sleven said** - 9
+controls, 3.7s, `partial: true`, naming a child-markers red that no longer
+existed. Not the payload.
+
+## DEPLOYED, AND VERIFIED ON THE SERVED BYTES RATHER THAN ON EXIT 0
+
+    Uploaded 1 of 1 asset   + /loadout_marker.gen.js
+    https://citizencompasstesting.citizencompass-contact.workers.dev
+    Version a0f092a4-89f4-407e-b061-6b951ee3ad3d
+
+**One file changed, and it is the fore/aft withholding.** The other 524 were
+already uploaded.
+
+The deploy script says in as many words that exit 0 is not proof, so:
+
+    /                        HTTP 200    431,674 bytes
+    /models/Hammerhead.glb   HTTP 200  3,608,636 bytes
+    /loadout_marker.gen.js   HTTP 200    282,961 bytes
+    served sha256 == local sha256   (2536dbdbe37aec05)
+    index carries id="cc-kb" and id="cc-panel"
+
+**And the three ports, read off the file the site is actually serving:**
+
+    259 hulls, 6058 markers
+    BANU_Defender port 50   GONE
+    BANU_Defender port 51   GONE
+    MISC_Hull_C   port 34   ['34', -0.00408, 0.00157, -1.00356, 'est']
+
+The three deployed-site controls - `_verify_find_deployed.mjs`,
+`_verify_deployed_links.mjs`, `_verify_picker_deployed.mjs` - are all green
+against the new deploy.
+
+**The site is no longer on 04:47.**
+
+## WHAT THAT CLOSES
+
+    Q21  DONE - the deploy gate passes
+    Q27  DONE - declared exceptions, baseline untouched
+    Q26  UNBLOCKED - the three survivors can now be measured against a
+         payload that is actually deployed
+
+Uncommitted: `checks/_verify_child_markers.py` and today's updates. Nothing has
+been committed since `d1e60b4`.
+
+**Not started: Q26, Q28 (C1's), Q29, Q30.** Q29 is the one I would take next -
+the sweep cannot say "I could not look", and two controls already exit 2 trying.

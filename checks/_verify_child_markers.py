@@ -168,6 +168,57 @@ def bench():
     return g("LOADOUT_SHIPS"), g("LOADOUT_HP"), g("LOADOUT_TYPES")
 
 
+# ---------------------------------------------------------------------------
+# THE THREE DECLARED EXCEPTIONS - C1's fore/aft containment gate, 2026-08-29
+#
+# WHY A DECLARATION AND NOT A RE-TAKEN BASELINE. Re-taking the snapshot would
+# make this control pass by making it forget, which is precisely the failure
+# `_verify_marker_census.py` exists to prevent. A baseline re-taken quietly and
+# one re-taken on purpose are indistinguishable six weeks later. These three
+# print on every run, so the change stays visible instead of becoming invisible.
+#
+# WHAT HAPPENED. The acceptance test in `build_hardpoint_placement.py` only ever
+# checked two of three axes - a mount could leave the hull fore or aft and
+# nothing watched. Fore/aft is now tested at the same 6% margin as the others.
+# Across 26,273 mounts it moved exactly three that are DRAWN, and this control
+# is what proves that number: section 6 finds 244 hulls changed and names these
+# three, with the four pinned negative controls holding.
+#
+# EACH ENTRY DECLARES THE WHOLE TRANSITION, NOT JUST THE PORT. A bare list of
+# port names would excuse ANY future change to those three mounts - including a
+# second, real regression landing on the same port. The before and after
+# positions are both asserted, so the exception covers this movement and no
+# other.
+#
+# AND A DECLARATION THAT STOPS FIRING IS ITSELF A FAILURE, below. C1's census
+# says it best: a declaration that outlives its reason is how a real loss gets
+# waved through. REMOVE THESE when the snapshot is next re-taken for an
+# unrelated reason - at that point the movement is in the baseline and the
+# entries are fiction.
+DECLARED = {
+    ("BANU_Defender", "50"): {
+        "was": [-0.30751, 0.01049, 1.32494],
+        "now": None,
+        "why": "countermeasure launcher at 1.32 of the half-extent - "
+               "photographed floating in open space off the nose. CIG position "
+               "withheld, and with no fallback the marker is gone.",
+    },
+    ("BANU_Defender", "51"): {
+        "was": [0.30751, 0.01049, 1.32494],
+        "now": None,
+        "why": "the mirror of port 50, same 1.32, same withholding.",
+    },
+    ("MISC_Hull_C", "34"): {
+        "was": [-0.0, -0.10429, -1.27827],
+        "now": [-0.00408, 0.00157, -1.00356],
+        "why": "the nose turret, 1.28 half-extents off the nose and labelled "
+               "'cig' - CIG's own truth, for a dot in empty space. NOT a "
+               "removal: the CIG position was withheld and the mount fell back "
+               "to a name-derived estimate the page now labels 'est'.",
+    },
+}
+
+
 MARKABLE = {"WeaponGun", "Turret", "MissileLauncher", "WeaponDefensive",
             "WeaponMining", "BombLauncher", "SalvageHead", "TractorBeam",
             "EMP", "Missile", "Bomb"}
@@ -324,6 +375,7 @@ def main(argv=None):
     # change and require each one to have had somewhere for a child to come
     # from. That population is the whole fleet.
     changed, groundless, lost = [], [], []
+    seen_declared = set()
     for c in was:
         if c not in now:
             lost.append(c)
@@ -332,6 +384,13 @@ def main(argv=None):
         after = {str(x[0]): [x[1], x[2], x[3]] for x in now[c]}
         for pid, xyz in before.items():
             if after.get(pid) != xyz:
+                d = DECLARED.get((c, pid))
+                # The declaration must match the transition that ACTUALLY
+                # happened, both ends of it. A port name alone would excuse a
+                # second, real regression landing on the same mount.
+                if d and d["was"] == xyz and d["now"] == after.get(pid):
+                    seen_declared.add((c, pid))
+                    continue
                 lost.append("%s:%s" % (nm.get(c, c), pid))
         if before != {k: v for k, v in after.items() if k in before} \
                 or len(after) != len(before):
@@ -343,8 +402,32 @@ def main(argv=None):
                 groundless.append(nm.get(c, c))
     print("     %d hulls changed, %d unchanged"
           % (len(changed), len(was) - len(changed)))
-    ck("*** every marker that existed before is still there, unmoved ***",
+
+    # PRINTED EVERY RUN, NOT ONLY WHEN SOMETHING IS WRONG. The whole argument
+    # for declaring these instead of re-taking the baseline is that they stay
+    # visible; a list that only appears on failure is a baseline with extra
+    # steps.
+    print("     %d DECLARED exception(s) - the fore/aft withholding, "
+          "2026-08-29:" % len(DECLARED))
+    for (c, pid), d in sorted(DECLARED.items()):
+        print("       %-14s port %-3s %s"
+              % (c, pid, "REMOVED" if d["now"] is None
+                 else "moved %s -> %s, and demoted to est"
+                      % (d["was"][2], d["now"][2])))
+        print("         %s" % d["why"])
+    stale = sorted("%s:%s" % k for k in DECLARED if k not in seen_declared)
+
+    ck("*** every marker that existed before is still there, unmoved, except "
+       "the %d declared above ***" % len(DECLARED),
        lost, [])
+    # A DECLARATION THAT OUTLIVES ITS REASON IS HOW A REAL LOSS GETS WAVED
+    # THROUGH - C1's census says it in those words and it is just as true here.
+    # If one of these stops firing, the movement has been absorbed into the
+    # snapshot and the entry is now excusing nothing while looking like
+    # oversight.
+    ck("and every declared exception actually happened - a declaration nothing "
+       "fires is fiction",
+       stale, [])
     ck("no hull changed without having a nested eligible port to inherit from",
        groundless, [])
     ck("and the population that proves it is the fleet, not a handful",
