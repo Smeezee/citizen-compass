@@ -8,4 +8,8 @@
 # Remove a line by adding a RULE16: line to that file. The
 # gate fails if a line here names a file that no longer
 # needs it, so the list cannot rot into fiction.
-_verify_panel_dismiss.mjs
+#
+# EMPTY SINCE 2026-08-29. C1 labelled _verify_panel_dismiss.mjs
+# INDEPENDENT, which was the last entry, and the gate asked for
+# the line to come out. An empty list is the goal state, not a
+# missing file - every check now declares its rule 16 status.

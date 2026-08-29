@@ -56,10 +56,24 @@ proving the easy ones and quietly assuming the hard one:
                     3D view. Nothing here can prove their provenance and this
                     says so rather than counting them as checked.
 
-THE REBUILD IS DESTRUCTIVE, SO IT GOES LAST. Everything that can be checked
-without one is checked first. If a hand edit exists, it is named before
-anything overwrites it, and a copy is preserved under _to_delete/ (hard rule 1 -
-nothing here deletes).
+THE REBUILD NO LONGER KEEPS WHAT IT WRITES, AND IT STILL GOES LAST.
+Everything that can be checked without a rebuild is checked first. Until
+2026-08-29 the rebuild wrote into the live testing/_deploy and into four
+generated files in testing/_src, and the rest of the sweep reads both - so a
+control's result depended on where its name sorted relative to "d", a "before"
+copy taken that night was really an "after", and the deploy gate once refused a
+real upload because this control had moved the payload underneath it.
+
+Section 4 now SNAPSHOTS every file the rebuild can write, rebuilds, compares,
+and PUTS THEM BACK - and then asserts that it put them back, because every
+other assertion in that section is measured before the restore runs and would
+pass whether or not it worked. A payload that has genuinely drifted is reported
+and left exactly as found, with both versions preserved under _to_delete/.
+A checker is not a writer of the artifact it audits (rule 14); testing/_deploy
+has one writer and it is build_deploy.py.
+
+If a hand edit exists, it is named before anything overwrites it, and a copy is
+preserved under _to_delete/ (hard rule 1 - nothing here deletes).
 
 `--self-test` inverts every expectation and must exit 1.
 
@@ -68,6 +82,7 @@ Rule 15: every open states its encoding.
 
 import ast
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -529,6 +544,250 @@ def page_problems(src_name, out_name, ship_pages):
     return found
 
 
+# ---------------------------------------------------------------------------
+# THE REBUILD DOES NOT GET TO KEEP WHAT IT WRITES  (2026-08-29)
+#
+# Section 4 still proves index.html the only honest way an assembled file can
+# be proven: REBUILD, and require the bytes not to move. What changed today is
+# where the rebuild's output is allowed to land.
+#
+# Until now the rebuild wrote into the live testing/_deploy AND into four
+# generated files in testing/_src, and the whole sweep reads both. That cost
+# three separate things, none of them theoretical:
+#
+#   ORDERING      a control's result depended on where its name sorted relative
+#                 to "d". Controls before this one measured one state and
+#                 controls after measured another. On 2026-08-28
+#                 _verify_marker_provenance and _verify_marker_spread FAILED in
+#                 the sweep and passed ten minutes later, while
+#                 _verify_marker_census passed in the sweep and failed after.
+#                 Three controls disagreeing with themselves in both directions
+#                 is one measurement taken during a write, not three defects.
+#   EVIDENCE      at 22:23 that night this rebuilt the payload after C1's 22:19
+#                 data fix, so a "before" copy taken at 23:37 was an "after".
+#                 It reported 0 hulls lost markers while the Tiburon had gone
+#                 from seventeen to none.
+#   A REAL ABORT  the deploy gate refused an upload because the payload hash
+#                 moved between two of Sleven's commands. What moved it was the
+#                 sweep's own drift control.
+#
+# So: SNAPSHOT, REBUILD, COMPARE, RESTORE. The comparison is untouched and
+# nothing is exempted from it. Afterwards every file this wrote to is put back
+# byte for byte, and THAT IS ASSERTED rather than assumed - if the restore ever
+# silently fails, the last check in section 4 goes red. Rule 12: the guard is
+# proven by behaviour, not by reading the code that implements it.
+#
+# It also settles a rule 14 question that should not have been open. A CHECKER
+# IS NOT A WRITER OF THE ARTIFACT IT AUDITS. testing/_deploy has one writer,
+# build_deploy.py, and this is not it. A payload that has genuinely drifted is
+# now REPORTED and left exactly as found - which is what sections 1 to 3
+# already did, and what a findings-only auditor is for.
+#
+# THE RECEIPT IS RESTORED WITH EVERYTHING ELSE, AND THAT MATTERS ON ITS OWN.
+# build_deploy.py writes testing/_src/.last_build.json, and
+# scripts/deploy_testing.ps1 reads it to decide whether a build succeeded. A
+# rebuild run for AUDIT must not leave behind a receipt that authorises an
+# upload. Putting the previous receipt back is the difference between "the
+# payload was built ok" and "a checker rebuilt something once".
+# ---------------------------------------------------------------------------
+RESTORE_DIR = os.path.join(ROOT, "_to_delete", "deploy_drift_restore")
+
+
+def _tag(path):
+    """A flat filename that still says which directory the copy came from."""
+    return "%s__%s" % (os.path.basename(os.path.dirname(path)),
+                       os.path.basename(path))
+
+
+def watched_files():
+    """Every path the rebuild can write, DISCOVERED rather than listed.
+
+    Naming them is the fragile half. build_deploy.py writes four generated
+    files into _src today - loadout_model, loadout_marker, loadout_eng and
+    craft_data - plus its receipt; a fifth added tomorrow would be outside a
+    hand-written list and would slip through the restore in silence, which is
+    the whole failure mode this exists against.
+
+    The asset directories are excluded deliberately. models/ is 445 MB and is
+    an INPUT - the build globs it to decide which ships have a 3D view - so
+    hashing it every run would cost more than the rest of this file put
+    together. The withdrawal path in the build can still MOVE an asset out of
+    _deploy; section 2 counts the payload and would show it, and this says so
+    rather than implying the assets are covered here.
+    """
+    found = []
+    for base in (DEPLOY, SRC):
+        if not os.path.isdir(base):
+            continue
+        for name in sorted(os.listdir(base)):
+            p = os.path.join(base, name)
+            if os.path.isfile(p):
+                found.append(p)
+    return found
+
+
+PENDING = os.path.join(RESTORE_DIR, "restore_pending.json")
+
+
+def _write_pending(keep):
+    """Record that a rebuild is about to happen and has not been undone yet.
+
+    THE RESTORE IS EXCEPTION-SAFE AND WAS NEVER KILL-SAFE, and on 2026-08-29 I
+    described it as though it were both. A `finally` runs for an exception; it
+    does NOT run when the process is killed. A sweep stopped between the rebuild
+    and the restore therefore leaves the rebuilt payload in place, silently -
+    which is the exact damage this control was changed to stop causing.
+
+    It happened the same morning: a sweep was killed mid-run and
+    testing/_deploy/loadout_marker.gen.js went from ef9be07 to 2536dbd with
+    nobody having asked for a build.
+
+    Prevention is not available - no process can guarantee to run code after it
+    is killed. So rule 14's other half applies: MAKE IT LOUD AND IMMEDIATE. This
+    file is written before the rebuild and cleared after the restore, so the
+    next run finds it and says what happened rather than inheriting it quietly.
+    """
+    rec = {"written_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+           "files": {p: [os.path.basename(c), h, m]
+                     for p, (c, h, m) in keep.items()}}
+    with open(PENDING, "w", encoding="utf-8") as fh:
+        fh.write(json.dumps(rec, indent=1))
+
+
+def _clear_pending():
+    """Move the marker aside rather than delete it (rule 1)."""
+    if os.path.exists(PENDING):
+        os.replace(PENDING, PENDING + ".done")
+
+
+def recover_interrupted():
+    """A previous run was killed between its rebuild and its restore.
+
+    Returns a list of what it put back. Empty list means there was nothing to
+    recover, which is the normal case.
+    """
+    if not os.path.exists(PENDING):
+        return None
+    with open(PENDING, encoding="utf-8") as fh:
+        rec = json.load(fh)
+    put_back = []
+    for path, (copy_name, want_hash, want_mtime) in sorted(rec["files"].items()):
+        copy_path = os.path.join(RESTORE_DIR, copy_name)
+        if not os.path.exists(copy_path):
+            put_back.append("%s - NO COPY, cannot recover"
+                            % os.path.relpath(path, ROOT))
+            continue
+        if os.path.exists(path) and sha(path) == want_hash                 and os.stat(path).st_mtime_ns == want_mtime:
+            continue
+        shutil.copy2(copy_path, path)
+        os.utime(path, ns=(want_mtime, want_mtime))
+        put_back.append(os.path.relpath(path, ROOT))
+    _clear_pending()
+    return {"at": rec.get("written_at"), "restored": put_back}
+
+
+def snapshot(paths):
+    """Copy the current bytes aside so the rebuild can be undone.
+
+    The copies go to ONE fixed directory under _to_delete/ rather than a
+    timestamped one. This control runs on every scheduled sweep, and a
+    per-run copy of ~17 MB would be gigabytes a month of something nobody
+    reads. Nothing is deleted - each run writes over its own previous copy,
+    and anything that turns out to be REAL drift is preserved separately,
+    where it costs nothing because it is normally empty.
+    """
+    os.makedirs(RESTORE_DIR, exist_ok=True)
+    keep = {}
+    for p in paths:
+        dst = os.path.join(RESTORE_DIR, _tag(p))
+        shutil.copy2(p, dst)
+        keep[p] = (dst, sha(p), os.stat(p).st_mtime_ns)
+    return keep
+
+
+def restore(keep, evidence_dir):
+    """Put every file the rebuild moved back, and preserve BOTH versions of
+    anything that really moved.
+
+    Returns the paths the rebuild changed - which is the drift finding itself,
+    reported by section 4 rather than swallowed here.
+
+    copy2 RATHER THAN copyfile, AND THAT IS NOT A DETAIL. Restoring the bytes
+    while leaving a fresh mtime behind would put this control straight back in
+    the business of moving things other things watch: the point-drift detection
+    that came out of Q13 reads mtimes to spot a write by a session that does not
+    own the path, and "the bytes are the same" is not what it is looking at. A
+    file this control put back must look untouched to a reader as well as to a
+    hash.
+    """
+    moved = []
+    for p, (copy_path, before_hash, before_mtime) in sorted(keep.items()):
+        if not os.path.exists(p):
+            shutil.copy2(copy_path, p)
+            moved.append(os.path.relpath(p, ROOT) + " (the rebuild removed it)")
+            continue
+        if sha(p) == before_hash:
+            # THE QUIET HALF, AND IT IS THE LARGER ONE. The build rewrites
+            # every page and generated file whether or not the content moved,
+            # so about twenty-five of these come back byte-identical with a
+            # FRESH MTIME. Bytes restored and a new timestamp left behind is
+            # still a write as far as anything reading mtimes is concerned -
+            # and this control is not entitled to be one. Put the clock back.
+            if os.stat(p).st_mtime_ns != before_mtime:
+                os.utime(p, ns=(before_mtime, before_mtime))
+            continue
+        os.makedirs(evidence_dir, exist_ok=True)
+        shutil.copy2(p, os.path.join(evidence_dir, "rebuilt__" + _tag(p)))
+        shutil.copyfile(copy_path, os.path.join(evidence_dir, "before__" + _tag(p)))
+        shutil.copy2(copy_path, p)
+        rel = os.path.relpath(p, ROOT)
+        if os.path.basename(p) == ".last_build.json":
+            # THE RECEIPT MOVES ON EVERY SINGLE RUN, BY CONSTRUCTION. The
+            # rebuild writes one and the restore puts the old one back, so it
+            # would head this list forever and train the reader to skip the
+            # line the real findings appear on.
+            rel += "  (the build receipt - expected, it moves every run)"
+        moved.append(rel)
+    return moved
+
+
+def park_created(before_paths, evidence_dir):
+    """A file the rebuild CREATED is moved aside, never deleted (rule 1).
+
+    Restoring only what existed before would leave a new file behind, and the
+    next control would read a directory this one had added to.
+    """
+    parked = []
+    for p in watched_files():
+        if p in before_paths:
+            continue
+        os.makedirs(evidence_dir, exist_ok=True)
+        shutil.move(p, os.path.join(evidence_dir, "created__" + _tag(p)))
+        parked.append(os.path.relpath(p, ROOT))
+    return parked
+
+
+def still_moved(keep):
+    """The assertion that makes the restore a guard rather than a good
+    intention: every watched file, re-hashed AFTER the restore, against what
+    it was before the rebuild ran.
+
+    MTIME IS PART OF THE ASSERTION, not a nicety. Hashes alone reported this
+    control clean while it was still bumping the timestamp on twenty-five
+    files it had "restored", which is exactly the kind of pass that looks like
+    proof and is not."""
+    bad = []
+    for p, (_, before_hash, before_mtime) in sorted(keep.items()):
+        rel = os.path.relpath(p, ROOT)
+        if not os.path.exists(p):
+            bad.append(rel + " (missing)")
+        elif sha(p) != before_hash:
+            bad.append(rel)
+        elif os.stat(p).st_mtime_ns != before_mtime:
+            bad.append(rel + " (mtime)")
+    return bad
+
+
 def main():
     print("\n1. THE BUILD'S OWN LIST OF WHAT IT COPIES")
     pages = build_pages()
@@ -583,26 +842,105 @@ def main():
           + ("\n         " + "\n         ".join(drifted) if drifted else ""),
           not drifted)
 
-    print("\n4. THE ASSEMBLED FILE - index.html, PROVEN BY REBUILDING")
-    before = sha(os.path.join(DEPLOY, "index.html"))
-    before_all = {out: sha(os.path.join(DEPLOY, out))
-                  for _, out in pages if os.path.exists(os.path.join(DEPLOY, out))}
-    proc = subprocess.run([sys.executable, BUILD], capture_output=True,
-                          text=True, cwd=ROOT)
-    if proc.returncode != 0:
+    print("\n4. THE ASSEMBLED FILE - index.html, PROVEN BY REBUILDING  "
+          "(non-destructive since 2026-08-29)")
+    recovered = recover_interrupted()
+    if recovered is not None:
+        print("     A PREVIOUS RUN WAS INTERRUPTED between its rebuild and its "
+              "restore (%s)." % recovered["at"])
+        if recovered["restored"]:
+            print("     Put back now, before anything else is measured:")
+            for r in recovered["restored"]:
+                print("       " + r)
+        else:
+            print("     Nothing needed putting back - the tree already matched "
+                  "the snapshot.")
+    check("no rebuild from a previous run was left sitting in _deploy"
+          + ("" if not (recovered and recovered["restored"])
+             else " (recovered %d file(s) - see above)"
+                  % len(recovered["restored"])),
+          not (recovered and recovered["restored"]))
+
+    watched = watched_files()
+    keep = snapshot(watched)
+    _write_pending(keep)
+    evidence = os.path.join(ROOT, "_to_delete",
+                            "deploy_drift_%s" % time.strftime("%Y%m%d%H%M%S"))
+    index_path = os.path.join(DEPLOY, "index.html")
+    before = keep[index_path][1] if index_path in keep else None
+    before_all = {out: keep[os.path.join(DEPLOY, out)][1]
+                  for _, out in pages
+                  if os.path.join(DEPLOY, out) in keep}
+    print("     %d file(s) under _deploy and _src copied aside first, so the "
+          "rebuild\n     can be undone. %s"
+          % (len(watched), os.path.relpath(RESTORE_DIR, ROOT)))
+
+    build_failed = None
+    after = None
+    moved_pages = []
+    try:
+        proc = subprocess.run([sys.executable, BUILD], capture_output=True,
+                              text=True, cwd=ROOT)
+        if proc.returncode != 0:
+            build_failed = ((proc.stdout or "") + (proc.stderr or "")).strip()
+        else:
+            after = sha(index_path) if os.path.exists(index_path) else None
+            moved_pages = [out for out, h in before_all.items()
+                           if not os.path.exists(os.path.join(DEPLOY, out))
+                           or sha(os.path.join(DEPLOY, out)) != h]
+    finally:
+        # The restore is in a finally for the same reason section 5's is: a
+        # rebuild that raised on its way through would otherwise leave a
+        # half-built payload sitting in _deploy for the next thing to publish.
+        parked = park_created(set(watched), evidence)
+        rebuilt = restore(keep, evidence)
+        leftover = still_moved(keep)
+        if not leftover:
+            _clear_pending()
+
+    if build_failed is not None:
         print("NOT PERFORMED: the build failed, so the rebuild half could not "
               "run. This needs PostgreSQL and node.")
-        for line in ((proc.stdout or "") + (proc.stderr or "")).strip().splitlines()[-8:]:
+        for line in build_failed.splitlines()[-8:]:
             print("       " + line)
+        print("     _deploy and _src were put back regardless - a failed "
+              "rebuild does not\n     get to leave its output behind "
+              "either.")
+        check("and _deploy and _src are byte for byte as this control found "
+              "them, even though the build failed"
+              + (" (still moved: %s)" % ", ".join(leftover) if leftover else ""),
+              not leftover)
         return 1
-    after = sha(os.path.join(DEPLOY, "index.html"))
+
     check("index.html is byte-identical after a rebuild - it is what the build "
           "produces, not something anybody edited", before == after,
           )
-    moved = [out for out, h in before_all.items()
-             if sha(os.path.join(DEPLOY, out)) != h]
     check("and so is every copied file"
-          + (" (moved: %s)" % ", ".join(moved) if moved else ""), not moved)
+          + (" (moved: %s)" % ", ".join(moved_pages) if moved_pages else ""),
+          not moved_pages)
+
+    # THE GUARD, PROVEN BY BEHAVIOUR RATHER THAN BY READING THE CODE ABOVE.
+    #
+    # Every other assertion in section 4 would still pass if the restore
+    # silently did nothing - they are all measured BEFORE it runs. This is the
+    # one that says the sweep is not being taken during a write, and it is the
+    # whole point of the 2026-08-29 change. Rule 12: a safety mechanism nobody
+    # has watched work is an untested one.
+    check("and _deploy and _src are byte for byte as this control found them - "
+          "the rebuild's output was reverted, so nothing downstream is "
+          "measuring a moving payload"
+          + (" (still moved: %s)" % ", ".join(leftover) if leftover else ""),
+          not leftover)
+    if rebuilt:
+        print("     THE REBUILD CHANGED %d FILE(S), WHICH IS THE FINDING ABOVE "
+              "AND NOT A REPAIR:\n       %s"
+              % (len(rebuilt), "\n       ".join(rebuilt)))
+        print("     both versions preserved under %s - the payload is left "
+              "exactly as found."
+              % os.path.relpath(evidence, ROOT))
+    if parked:
+        print("     the rebuild CREATED %s; moved aside, never deleted "
+              "(rule 1)" % ", ".join(parked))
 
     print("\n5. THE CHECK CAN FAIL - A HAND EDIT IS PLANTED AND FOUND")
     # Exactly the defect this item names: something typed into _deploy that
@@ -613,6 +951,7 @@ def main():
         if o.endswith(".html") and o not in SEAM_FILES)
     victim = os.path.join(DEPLOY, victim_out)
     original = read_bytes(victim)
+    original_mtime = os.stat(victim).st_mtime_ns
     original_text = text_of(victim)
     keep = os.path.join(ROOT, "_to_delete",
                         "deploy_drift_plant_%s" % time.strftime("%Y%m%d%H%M%S"))
@@ -636,6 +975,13 @@ def main():
         finally:
             with open(victim, "wb") as fh:
                 fh.write(original)
+            # The clock goes back with the bytes, for the same reason
+            # section 4's restore does it: a page put back with a fresh
+            # timestamp still reads as a write to anything watching mtimes,
+            # and this control is not a writer of _deploy. Section 4's
+            # manifest caught this one - the bytes matched and the mtime
+            # did not.
+            os.utime(victim, ns=(original_mtime, original_mtime))
 
     changed, found = plant(
         "hand_edit",
@@ -672,8 +1018,10 @@ def main():
               "hard rule 8's own text, changed where no source diff would ever "
               "show it", changed and found)
 
-    check("and the file was restored byte for byte after every plant",
-          read_bytes(victim) == original)
+    check("and the file was restored byte for byte after every plant, with "
+          "its mtime",
+          read_bytes(victim) == original
+          and os.stat(victim).st_mtime_ns == original_mtime)
     print("     the planted copies were moved aside to %s, never deleted"
           % os.path.relpath(keep, ROOT))
 

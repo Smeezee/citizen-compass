@@ -1,6 +1,14 @@
 /**
  * P1/P2 - THE PANEL CLOSES WHEN YOU CLICK AWAY FROM IT, AND IT DOES NOT SHOUT.
  *
+ * RULE16: INDEPENDENT - the truth is what a REAL BROWSER does with a real click
+ * at real coordinates over a real WebGL canvas, and the page cannot influence
+ * that. The defect this exists for is `e.target.closest(...)` walking a live
+ * DOM; the vm harness would decide in advance what the click hit, which is the
+ * entire question. Each mutation is planted in the bytes Chromium parses and
+ * each must make this exit non-zero, so the control is judged by a browser
+ * disagreeing with the page rather than by the page agreeing with itself.
+ *
  * WHY THIS IS A REAL-BROWSER CONTROL AND NOT A vm HARNESS ONE.
  * The defect is `e.target.closest(...)` walking a real DOM from a real click at
  * real coordinates over a real WebGL canvas. The vm harness dispatches a

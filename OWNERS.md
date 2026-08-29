@@ -56,6 +56,7 @@ permission; it is a gap, and finding one is worth reporting.
     build_crafting_demand.py
     data-layer/derived/hardpoint-transforms/
     data-layer/derived/hardpoint-placement/
+    data-layer/derived/holo-hardpoints/
     data-layer/derived/holo-hardpoints-align/
     data-layer/derived/crafting-demand/
 
@@ -73,6 +74,23 @@ permission; it is a gap, and finding one is worth reporting.
 **Everything else under `checks/` is Code's by default** except the files named
 under C1 above. Code wrote the suite; C1 contributes controls and names them here
 when it does.
+
+## A NOTE ON `data-layer/derived/holo-hardpoints/`, CLAIMED 2026-08-29
+
+**It was unowned until Code reported it**, and it is the one directory where
+rule 1 was not followed: `loadout_marker.pre-C1-20260828.js` was DELETED from
+the working tree rather than moved to `_to_delete/`. Neither session can say
+which of them did it. **That is the argument for the claim, not against it** —
+an unowned directory is where that happens.
+
+**C1 claims it, with a caveat that has to travel with it:** its main file,
+`hardpoints_fleet.json`, has a single writer — `place_fleet.py` — **and that
+script is not in this repository.** So C1 owns what happens to the directory
+without being able to regenerate its contents. **Nothing in here is deleted;
+superseded files move to `_to_delete/` like everything else.**
+
+`docs/PROPOSAL_the-marker-pipeline-is-four-layers-deep-2026-08-27.md` proposes
+retiring the file to a named fallback. That decision is Sleven's and is not made.
 
 ## SLEVEN — his alone, and not by convention.
 

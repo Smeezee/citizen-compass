@@ -42453,3 +42453,689 @@ Waiting on Sleven for Q20. Nothing else on Code's queue is open. The three
 outstanding non-queue items are unchanged: the `_verify_deploy_drift.py`
 rebuild-during-sweep decision, the RULE16 separator trap (four occurrences,
 two people), and going live - his.
+
+### 2026-08-29 09:22:26 — 20260829_0940_update_q20-done-committed-and-pushed-4710d30.md
+
+# Update — Q20 done. 383 files committed and pushed as `4710d30`; working tree is clean and nothing went to the live site.
+
+**2026-08-29 09:40 local · Code (background session)**
+
+Sleven gave the go-ahead in this session, so rule 2 is satisfied for this change.
+
+    4710d30   383 files changed, 14,043 insertions, 17,912 deletions
+    1a1b4b7..4710d30  main -> main
+    local HEAD == origin/main == 4710d30
+    git status --porcelain    0 entries
+
+## Staged by path, never `git add -A`
+
+    data-layer/derived/hardpoint-placement     285
+    data-layer/derived/holo-hardpoints-align     3
+    data-layer/derived/holo-hardpoints           2
+    data-layer/derived/crafting-demand           1
+    checks/                                     65
+    docs/                                       20
+    testing/_src/loadout_marker.gen.js           1
+    build_hardpoint_placement.py, build_hardpoint_overlay.py,
+    OWNERS.md, NEXT.md, LATEST_HANDOFF.md        5
+
+## Verified after, not assumed
+
+- **`_to_delete/` contributed 0 files** - checked in the index before the commit
+  and again in `git log -1 --name-only` after it. The 5.2 GB of C1 tarballs did
+  not enter history.
+- **No path outside the expected set.** I filtered the commit's file list against
+  the eight roots above and it came back empty.
+- **No `.git/index.lock` trouble.** It was already absent; C1's stale lock is in
+  `_to_delete/git-locks/`.
+- **Nothing binary or oversized.** Largest entry is `_updates_log.md` at 2.0 MB,
+  text, already tracked.
+- **The push landed** - `git fetch` then a hash comparison, not the push's own
+  output.
+
+Line-ending warnings (LF to CRLF) appeared on the 285 placement JSONs. Cosmetic,
+Windows-normal, no content change.
+
+## What went in, and one thing that did not
+
+NEXT.md left the backup to my judgement, so:
+`loadout_marker.pre-C1-20260829.js` **is in history**. The matching deletion of
+`pre-C1-20260828.js` went in with it, so the tree is coherent rather than
+carrying a dangling delete. **That deletion was not mine** - the file was removed
+instead of moved to `_to_delete/`, against rule 1, and I do not know which
+session did it. Content survives in `1a1b4b7`. It is recorded in the commit
+message rather than quietly absorbed.
+
+**Nothing reached the live site.** GitHub only, as the go-ahead covered. Going
+live remains off the queue until Sleven raises it.
+
+## Standing
+
+**Code's queue is now empty.** Q7's last label is C1's file. The three
+outstanding items are unchanged and none are queue work: the
+`_verify_deploy_drift.py` rebuild-during-sweep decision (mine to make and I have
+deferred it twice), the RULE16 separator trap, and going live.
+
+### 2026-08-29 09:39:19 — 20260829_0950_update_check-in-with-c1-four-things-and-an-empty-queue.md
+
+# Update — check-in with C1: Q20 is pushed, Code's queue is empty, and four things are waiting on C1. One of them is a single line.
+
+**2026-08-29 09:50 local · Code (background session) · addressed to C1**
+
+Sleven asked me to check in with you. I have no channel to you that I own —
+`NEXT.md` is yours and I do not write it — so this is the handoff, which is the
+path `OWNERS.md` leaves open.
+
+**Everything below was measured this morning, not read off the board.**
+
+## 1. HISTORY MOVED. `4710d30` IS PUSHED.
+
+    4710d30   383 files changed, 14,043 insertions, 17,912 deletions
+    1a1b4b7..4710d30  main -> main
+    working tree      clean, 0 entries
+
+Sleven gave the go-ahead in session, so rule 2 is satisfied. Staged by path,
+never `git add -A`; `_to_delete/` contributed 0 files, checked in the index
+before and in `git log -1 --name-only` after. **Nothing went to the live site.**
+
+Your `data-layer/derived/hardpoint-placement/` (285 files),
+`holo-hardpoints-align/` (3) and `crafting-demand/` (1) are all in it, along
+with `build_hardpoint_placement.py` and `build_hardpoint_overlay.py`. **If you
+have uncommitted work on the Cowork mount, it is not in this commit and I did
+not go looking for it.**
+
+## 2. Q7's LAST LABEL IS YOURS, AND IT IS ONE LINE
+
+Run just now rather than quoted:
+
+    RULE 16 LABELS - 105 check(s)
+      labelled            104  (55 INDEPENDENT, 49 UNPROVEN)
+      unlabelled          1
+      malformed label     0
+
+    $ grep -c RULE16 checks/_verify_panel_dismiss.mjs
+    0
+
+`_verify_panel_dismiss.mjs` is yours in `OWNERS.md`. **I am not writing a line
+into your file to close my own queue item** — that is the exact move rule 14
+exists against. One `RULE16: <INDEPENDENT|UNPROVEN> - <reason>` line from you
+and Q7 is 105 of 105.
+
+**Mind the separator.** `malformed label 0` is true today and the gate now tells
+the two apart, but the fourth comma was two hours after the third.
+
+## 3. AN OWNERSHIP GAP, IN THE DIRECTORY WHERE A FILE WENT MISSING
+
+    data-layer/derived/holo-hardpoints-align/    yours
+    data-layer/derived/holo-hardpoints/          NOBODY'S
+
+`_verify_owners.py` passes — A, B and C all green — because it validates the
+paths that are listed. **It cannot see a path nobody claimed.** Your own words:
+*"a path that is not in this file has no declared owner. That is not permission;
+it is a gap, and finding one is worth reporting."*
+
+**And it is the directory where rule 1 was not followed.**
+`loadout_marker.pre-C1-20260828.js` was **deleted** from the working tree rather
+than moved to `_to_delete/`, and `pre-C1-20260829.js` replaced it. Content is
+safe in `1a1b4b7` and both the delete and the replacement are recorded in
+`4710d30`'s message rather than quietly absorbed. **I did not do it and I cannot
+tell which session did** — which is itself the argument for the directory having
+a name against it. `OWNERS.md` is yours; the assignment is your call.
+
+## 4. THE FOURTH COMMA WANTS A `docs/DECISION_*`
+
+Your note says it plainly — *worth a `docs/DECISION_*` rather than a fifth
+occurrence* — and it has now cost you an hour and me three dry-run cycles. I
+have not written it: the format is the shared contract and I did not want to
+rule on it alone. **Yours or mine?** I will write it today if you say mine.
+
+## 5. YOUR OFF-HULL TEN ARE ON NOBODY'S QUEUE
+
+`FINDING_four-hulls-draw-a-dot-in-empty-space-2026-08-29.md` — 2,193 dots, 87.2%
+exactly on the hull, ten that are not:
+
+    BANU_Defender   port 50 @19px, port 51 @38px      DRAK_Corsair  3 of 15
+    TMBL_Storm_AA   port 4 @15px                      VNCL_Glaive   port 43 @16px
+
+It is committed and it is real, and **it is not an item on any queue.** The
+Defender is also a client-record hull, which is the set I drove through a browser
+at 08:40 — that control proves the dots DRAW; it cannot say they draw in the
+right place, and the label says so.
+
+## WHAT I NEED FROM C1
+
+    the one line in _verify_panel_dismiss.mjs     closes Q7 at 105 of 105
+    an owner for data-layer/derived/holo-hardpoints/
+    the DECISION doc on the separator             yours or mine
+    whether the off-hull ten become Q21
+    what is next                                  Code's queue is empty
+
+**One thing is mine and I am not passing it to you:** the sweep's own
+`_verify_deploy_drift.py` rebuilds the artifacts other controls read, which
+perturbs the measurement and destroyed a "before" copy I needed on the 28th. I
+have flagged it twice and not ruled. I will rule on it rather than ask.
+
+Going live is Sleven's and stays off the queue.
+
+### 2026-08-29 09:41:56 — 20260829_1000_update_taking-the-deploy-drift-decision.md
+
+# Update — taking the deploy-drift decision. Sleven said go; I am ruling on it rather than filing another flag.
+
+**2026-08-29 10:00 local · Code (background session)**
+
+I flagged this twice and did not rule. Sleven has now told me to go ahead, so
+this is the third mention and the last one.
+
+## THE DEFECT, STATED ONCE
+
+`_verify_deploy_drift.py` proves `testing/_deploy/index.html` the only honest way
+available — **it REBUILDS and requires the bytes not to move.** The rebuild
+writes into the real `testing/_deploy`, and that is a shared artifact the rest of
+the sweep reads.
+
+**It has cost three separate things, none of them theoretical:**
+
+    ordering       a control's result depends on where its name sorts
+                   relative to "d". Controls before the rebuild measure one
+                   state; controls after measure another.
+    evidence       22:23 on the 28th - it rebuilt the payload after C1's 22:19
+                   data fix, so the "before" copy I took at 23:37 was an
+                   "after". I nearly reported 0 hulls lost markers when the
+                   Tiburon had gone from seventeen to none.
+    a real abort   Q10's gate refused a deploy because the payload hash moved
+                   between Sleven's two commands. The thing that moved it was
+                   the sweep's own drift control.
+
+The one measurement that made it undeniable: `_verify_marker_provenance.py` and
+`_verify_marker_spread.py` FAILED in the sweep and passed ten minutes later,
+while `_verify_marker_census.py` passed in the sweep and failed after. **Three
+controls disagreeing with themselves in both directions is one measurement taken
+during a write, not three defects.**
+
+## WHAT I AM ABOUT TO DO
+
+I named three options on the 28th and said the choice was a design decision.
+Having read the checker again, **I think there is a fourth that gives up
+nothing**, and I am checking it before I commit to it: rebuild into a scratch
+directory and compare there, so the proof survives and the mutation does not
+happen at all.
+
+If `build_deploy.py` cannot be pointed at an output directory, that option dies
+and I will take one of the original three and say which.
+
+**Ownership checked first:** `_verify_deploy_drift.py` is not in C1's list in
+`OWNERS.md`, so it is Code's by the default clause. `testing/_src/build_deploy.py`
+is explicitly Code's. Nothing here touches a C1 path.
+
+Rule 12 applies to the result: whatever I build, the failure path gets exercised
+on purpose before I call it working.
+
+### 2026-08-29 09:53:15 — 20260829_1010_update_the-drift-control-no-longer-writes-to-what-it-audits.md
+
+# Update — the deploy-drift defect is fixed: the control no longer writes to the artifact it audits, and the guard was proven by disabling it. Q7 is 105 of 105.
+
+**2026-08-29 10:10 local · Code (background session)**
+
+## THE RULING
+
+**A checker is not a writer of the artifact it audits.** `testing/_deploy` has
+one writer — `build_deploy.py` — and `_verify_deploy_drift.py` is not it. That is
+rule 14 applied to the one artifact where nobody had applied it.
+
+I named three options on the 28th. **I took none of them.** Not "the sweep
+refuses mutating controls" (fixes ordering only, not the evidence loss), not
+"snapshot the payload first" (moves the problem to whoever remembers to), and
+not "stop rebuilding and report" — **that one would have thrown away the only
+honest proof an assembled file has.** `index.html` is built from
+`releases/latest.html` plus a dozen substitutions; there is no source to compare
+it to. Rebuild-and-compare is the whole proof.
+
+**So: SNAPSHOT, REBUILD, COMPARE, RESTORE.** The comparison is untouched and
+nothing is exempted from it. Afterwards every file the rebuild wrote is put back
+byte for byte.
+
+## WHAT IT COST BEFORE, FOR THE RECORD
+
+    ORDERING      a control's result depended on where its name sorted
+                  relative to "d"
+    EVIDENCE      a "before" copy taken at 23:37 on the 28th was an "after"
+    A REAL ABORT  the deploy gate refused an upload because this control moved
+                  the payload between two of Sleven's commands
+
+## THE FILES IT WAS WRITING, WHICH WERE MORE THAN I THOUGHT
+
+`build_deploy.py` writes **four generated files into `testing/_src`** as well as
+the payload — `loadout_model`, `loadout_marker`, `loadout_eng`, `craft_data` —
+**and its own receipt**, `.last_build.json`, which `deploy_testing.ps1` reads to
+decide whether a build succeeded.
+
+**That last one is a defect on its own.** A rebuild run for AUDIT was leaving
+behind a receipt saying a build had completed ok. The receipt is now restored
+with everything else.
+
+The watched set is **discovered, not listed** — 77 files this run. A hand-written
+list would go stale the day a fifth generated file appears, and it would fail
+silently, which is the exact shape of thing this control exists against.
+
+## THE GUARD IS PROVEN BY BEHAVIOUR, BOTH WAYS
+
+Every other assertion in section 4 is measured BEFORE the restore runs, so all
+of them would still pass if the restore quietly did nothing. **So the restore
+has its own assertion, and I made it fail on purpose.**
+
+    PROBE: a copy with restore() replaced by a no-op
+
+    FAIL  and _deploy and _src are byte for byte as this control found them
+          (still moved: testing\_deploy\loadout_marker.gen.js,
+           testing\_src\.last_build.json, testing\_src\loadout_marker.gen.js)
+
+Named all three. The probe is in `_to_delete/probes-20260829/`, never deleted.
+
+**And verified from OUTSIDE the control**, because a manifest built by the code
+under test proves nothing: an independent script hashed all 612 files under
+`_deploy` and `_src` before and after — assets by size and mtime, 445 MB of
+models not worth hashing.
+
+    612 file(s) recorded ... IDENTICAL - the control left nothing moved
+
+Twice, on two consecutive runs. `--self-test` still inverts and exits 1.
+
+## IT IMMEDIATELY FOUND SOMETHING THE OLD BEHAVIOUR HID
+
+    FAIL  and so is every copied file (moved: loadout_marker.gen.js)
+    -   259 hulls, 6060 markers.
+    +   259 hulls, 6058 markers.
+
+**The deployed testing payload is two markers behind its sources.** Real drift,
+not non-determinism — `index.html` rebuilt byte-identical beside it.
+
+**The old behaviour would have reported this once and then buried it.** Run one
+rebuilt the file, so run two found the payload already matching and went green.
+A finding that disappears when you look again is worse than no finding. It now
+stays red until somebody runs the build deliberately.
+
+**I have not run that build.** It is a payload change and it wants a deploy
+behind it; that is a separate decision and it is Sleven's, not something to
+staple onto a checker fix.
+
+## AND Q7 CLOSED WHILE I WAS IN THERE
+
+C1 labelled `_verify_panel_dismiss.mjs` INDEPENDENT. The gate asked for the
+baseline line to come out, so it came out:
+
+    labelled 105  (56 INDEPENDENT, 49 UNPROVEN)   unlabelled 0   malformed 0
+    0 gap(s) still on the list
+
+`rule16_baseline.txt` is now empty of entries and says why. **Q7 is 105 of 105.**
+
+## STANDING
+
+Files changed: `checks/_verify_deploy_drift.py`, `checks/rule16_baseline.txt`.
+Nothing committed. A full sweep is running to confirm the fix in the place it
+was built for — the first sweep in this repo that cannot be perturbed by its own
+drift control.
+
+### 2026-08-29 09:57:00 — 20260829_1015_update_i-did-the-thing-the-fix-is-about-to-my-own-verification.md
+
+# Update — I perturbed my own verification the way the defect perturbs the sweep. Sweep killed, results discarded, and the mistake is recorded rather than tidied away.
+
+**2026-08-29 10:15 local · Code (background session)**
+
+## WHAT I DID
+
+I started a full sweep in the background to confirm the drift fix in the place
+it was built for — **and then kept editing and running
+`checks/_verify_deploy_drift.py` while that sweep was executing it.**
+
+**That is the exact defect I spent the morning fixing, done to my own
+verification.** It is also the first of the three perturbations the 28th's
+update lists — *"this morning I edited checks/ while a sweep executed those
+files"* — so it is the second time, not the first.
+
+## HOW IT SHOWED
+
+An independent manifest of `testing/_deploy` and `testing/_src` came back with
+content differences I could not account for:
+
+    _deploy/holo.html               hash moved
+    _deploy/loadout.html            hash moved
+    _deploy/loadout_marker.gen.js   ef9be07 -> 2536dbd, in _deploy AND _src
+    _src/.last_build.json           hash moved
+
+**None of those were my probe.** The probe left bytes intact and moved only
+mtimes. The moving hashes are a concurrently-running sweep: its own copy of the
+drift control planting into `_deploy` in section 5, and a rebuild landing from a
+version of the file that no longer existed on disk by the time it ran.
+
+## WHAT I DID ABOUT IT
+
+**Killed the sweep and discarded its results.** A sweep whose controls changed
+underneath it measures nothing, and reporting a number off it would be
+manufacturing exactly the confidence this project calls SILENT SUCCESS.
+
+Nothing was lost — the sweep was confirmation, not the work — and the fix's own
+verification stands on its own evidence, taken before the sweep and repeated
+after it:
+
+    612 files, hash AND mtime, before and after a full run
+    IDENTICAL - EVERY HASH AND EVERY MTIME
+
+**Next: put the tree back to the state the manifest recorded before any of
+this**, then re-run the sweep with nothing else touching `checks/` — which is
+the only way its result means anything.
+
+## THE RULE THAT IS MISSING, AND IT IS NOT A NEW ONE
+
+A sweep has no lock. Nothing stopped me editing a control mid-run, and nothing
+stopped C1 regenerating `data-layer/` mid-run on the 28th. **Rule 14's own
+words apply: a rule that depends on remembering it is a convention, not a
+guard.** The drift control was the one perturbation I could close by
+construction, and it is closed. The other two are still open by design.
+
+Not proposing a fix for that in this update. Recording it so the next session
+does not rediscover it as a surprise.
+
+### 2026-08-29 10:02:43 — 20260829_1030_update_q21-received-build-sweep-deploy.md
+
+# Update — Q21 through Q26 received. Taking Q21 (rebuild and deploy) with Q24 folded into its run, as the order says.
+
+**2026-08-29 10:30 local · Code (background session)**
+
+Sleven relayed C1's answers and put Q21 first. Filing before I start, rule 13.
+
+## THE FOUR ANSWERS, AND WHAT I DO WITH EACH
+
+    Q22  the last rule-16 label      C1 did it. VERIFIED MYSELF, not taken on
+                                     the line: 105 labelled, 0 unlabelled,
+                                     0 malformed. I had already removed the
+                                     closed baseline entry at 09:52.
+    holo-hardpoints/                 claimed by C1 in OWNERS.md. Closed.
+    Q25  the separator DECISION doc  MINE. I own the enforcer, so I am the only
+                                     one who can write what it enforces.
+    Q26  the off-hull ten            BLOCKED-BY Q21. Not measuring the old
+                                     payload.
+
+## WHAT I AM DOING NOW
+
+    1  Q24  the false comment at build_deploy.py:1359 - my file, one line
+    2       python testing/_src/build_deploy.py
+    3       assert BANU_Defender 50/51 and MISC_Hull_C 2 are gone
+    4       run_all_controls.py --include-deployed
+    5       deploy_testing.ps1
+    6       verify the served site
+
+## ONE LINE IN Q21 IS NOW STALE, AND IT MATTERS FOR THE ORDER
+
+Q21 ends: *"Sweep first, let it finish, then deploy — the sweep rebuilds the
+payload."*
+
+**The sweep no longer rebuilds the payload.** I removed that this morning:
+`_verify_deploy_drift.py` snapshots, rebuilds, compares and puts everything back
+byte for byte, mtimes included. **Q21's own command list is already right** -
+build, then sweep, then deploy - so nothing about the plan changes. But the
+reason given for the order is gone, and the order now matters MORE rather than
+less: **a sweep will no longer quietly fix a payload somebody forgot to build.**
+
+## AND I STOPPED A SWEEP TO DO THIS
+
+The clean re-run I started at 09:58 was measuring the payload Q21 replaces.
+Killed rather than left to finish - its drift finding is the one Q21 closes, and
+a green-or-red on a superseded payload tells nobody anything. **The verification
+of the drift fix does not depend on it**: that stands on the 612-file
+before/after manifest, hash and mtime, which is already recorded.
+
+## Q24 IS C1'S RULE 14 VIOLATION AND I AM NOT RE-LITIGATING IT
+
+C1 edited `build_deploy.py:1359`, caught it, reverted it, and wrote the erratum.
+`git diff` on that file is empty and it is byte-identical to `4710d30` — **I
+checked rather than took the sentence.** Self-caught and self-reported is the
+system working. I am making the edit because the file is mine.
+
+### 2026-08-29 10:08:34 — 20260829_1045_update_q21-cannot-be-closed-by-a-build-the-withholding-does-not-reach-the-marker-file.md
+
+# Update — Q21's DONE-WHEN cannot be reached by a build. The fore/aft withholding lands in a directory the marker pipeline never reads. Measured, not inferred.
+
+**2026-08-29 10:45 local · Code (background session)**
+
+I ran the build. **It exited 0 and produced a payload BYTE-IDENTICAL to the one
+already in `testing/_deploy`.** Not one marker moved.
+
+    hulls    259 -> 259        markers  6058 -> 6058
+    every hull that lost a marker:  none
+    BANU_Defender  before 8  after 8   removed: none
+    MISC_Hull_C    before 23 after 23  removed: none
+
+## WHY, AND IT IS NOT THAT THE BUILD FAILED
+
+**The fore/aft change is real and it IS in C1's script.** `build_hardpoint_placement.py:580`
+now loops `for i in (0, 1, 2)`, and `BANU_Defender.json` records the result:
+*"4 of 11 exterior mounts withheld"*. That work is done and I am not disputing it.
+
+**It lands in `data-layer/derived/hardpoint-placement/`. The marker file is not
+built from that directory.**
+
+    build_deploy.py:1309   data-layer/derived/holo-hardpoints/hardpoints_fleet.json
+    build_deploy.py:1398   data-layer/derived/holo-hardpoints-align/fleet_records_client.json
+    build_deploy.py:1413   data-layer/derived/holo-hardpoints-align/alignment_overlay_client.json
+
+    grep hardpoint-placement testing/_src/build_deploy.py
+      -> one hit, line 1560, about model substitutions. Nothing else.
+
+`hardpoints_fleet.json` is dated **2026-08-26** and is the file that decides
+which hulls get markers. **A withholding written into `hardpoint-placement/`
+cannot reach `loadout_marker.gen.js` through any build.**
+
+The port numbering says the same thing out loud: the marker file's
+`BANU_Defender` carries ports **0, 1, 58, 62**. There is no port 50 or 51 in it
+to remove, and there never was.
+
+## SO Q21'S PREMISE IS WRONG, NOT ITS GOAL
+
+*"only the deployed marker file is behind"* — it is not behind. It is built from
+a different source than the one that was fixed. **Re-running the build is not
+the missing step, and I could run it a hundred times.**
+
+I checked the two obvious alternatives before saying this:
+
+    build_hardpoint_overlay.py   edited 09:45, AFTER its 09:19 output - but the
+                                 change is a COMMENT ONLY (the place_fleet
+                                 erratum). Re-running it changes no numbers.
+                                 It also landed with a typo: "So. So".
+    a stale MANIFEST.json        still carries the old "marking our own
+                                 homework" sentence at 09:19, while the script
+                                 that wrote it no longer believes it.
+
+**This is C1's call, not mine.** `hardpoints_fleet.json` and the align
+directory are C1's in `OWNERS.md`, and the question — whether the withholding
+should propagate into the marker pipeline, or whether the marker pipeline should
+read the placement directory at all — is a data-model decision, not a build step.
+
+**Q26 inherits this.** Its line *"seven of the ten are the fore/aft escapees Q21
+removes"* does not hold: Q21 as written removes none of them.
+
+## WHAT I AM STILL DOING
+
+The served site is on 04:47 and the local payload is genuinely newer — today's
+client overlay regeneration is in it. **So I am sweeping and deploying anyway**,
+which fixes the staleness Sleven actually named. **It will not remove the three
+dots**, and I would rather say that before the deploy than have it discovered
+after.
+
+## AND ONE DEFECT IN MY OWN MORNING'S FIX, FOUND BY THIS
+
+The deployed marker file changed from `ef9be07` to `2536dbd` without a
+deliberate build. **I killed a sweep mid-run, and a killed process does not run
+`finally`** — so the drift control's rebuild survived and its restore never
+happened. My restore is exception-safe and **not** kill-safe, and I described it
+this morning as if it were both. Fixing that before the sweep, not after.
+
+### 2026-08-29 10:23:25 — 20260829_1055_update_i-was-wrong-about-q21-the-withholding-did-arrive-and-the-deploy-is-gated.md
+
+# Update — I was wrong an hour ago: the withholding DID reach the marker file. Q21 is 2 of 3, the deploy is gated on two red controls, and both baselines are C1's to clear.
+
+**2026-08-29 10:55 local · Code (background session)**
+
+## THE CORRECTION, FIRST
+
+At 10:45 I filed that the fore/aft withholding *"cannot reach `loadout_marker.gen.js`
+through any build"* and that *"there is no port 50 or 51 in it to remove, and
+there never was."*
+
+**The second half was wrong and the first half was the wrong conclusion from a
+true measurement.**
+
+    BANU_Defender  port 50   GONE
+    BANU_Defender  port 51   GONE
+    MISC_Hull_C    port 2    PRESENT
+
+**Ports 50 and 51 were removed — at C1's 09:19 regeneration, which is before the
+09:47 baseline I measured from.** So my before AND my after both already had them
+gone, my build was correctly a no-op, and I read "my build changed nothing" as
+"the change can never arrive." Those are not the same statement and I should not
+have made the second one.
+
+**What survives from that update:** the marker pipeline genuinely does not read
+`data-layer/derived/hardpoint-placement/` — one grep hit, line 1560, model
+substitutions. The withholding reaches the payload through
+`holo-hardpoints-align/`, regenerated at 09:19. Both facts are true; I joined
+them into a false conclusion.
+
+## SO Q21 IS 2 OF 3, NOT 0 OF 3 AND NOT DONE
+
+`MISC_Hull_C` port 2 is still in the payload. That is the one named port the
+09:19 run did not take out, and I do not know why — it is C1's pipeline and I am
+not guessing at it.
+
+## THE SWEEP, AND IT IS THE FIRST CLEAN MEASUREMENT
+
+    104 ok, 2 failed, 0 skipped, 0 NOT RUN, in 677s
+
+**This is the first sweep in this repo that could not be perturbed by its own
+drift control.** Nothing rebuilt underneath it; every control measured the same
+payload. That is what this morning's work was for.
+
+## THE TWO REDS ARE THE WITHHOLDING ITSELF, ARRIVING AT BASELINES THAT PREDATE IT
+
+    _verify_child_markers.py   every marker that existed before is still there
+                               got ['Banu Defender:50', 'Banu Defender:51',
+                                    'MISC Hull C:34']
+    _verify_marker_census.py   REFUSED - BANU_Defender 10 -> 8
+
+**Neither is a defect. Both are controls correctly refusing a loss nobody has
+declared to them yet.** That is exactly what they are for, and I am not going to
+make them quiet.
+
+## AND I AM NOT CLEARING EITHER, BECAUSE NEITHER IS MINE TO CLEAR
+
+    _verify_marker_census.py    C1's in OWNERS.md
+    checks/marker_census.json   C1's in OWNERS.md
+    _verify_child_markers.py    MINE by the default clause - but its baseline is
+                                data-layer/derived/holo-hardpoints/
+                                loadout_marker.pre-C1-20260829.js, and C1
+                                CLAIMED that directory this morning.
+
+**So the control is mine and the file it compares against is C1's.** Re-taking
+that snapshot is a write into C1's path, and the whole point of this morning's
+rule 14 work was to stop doing exactly that. C1 sets the condition for re-taking
+it anyway — the pinned four checked first — and C1 is the one who can say
+whether losing `MISC Hull C:34` was intended.
+
+## THE DEPLOY IS REFUSED, AND I ASKED THE GATE RATHER THAN ASSUMING
+
+    $ python checks/sweep_gate.py --check testing/_deploy
+    sweep   : the last sweep of THIS payload was not clean.
+              FAILED   _verify_child_markers.py
+              FAILED   _verify_marker_census.py
+    GATE EXIT 1
+
+**Nothing was uploaded and I did not try to.** The served site stays on 04:47
+until the two reds are resolved by their owner. Weakening the gate to ship past
+its own finding is the one thing that is never on the table.
+
+## WHAT I NEED FROM C1, SPECIFICALLY
+
+    1  declare the BANU_Defender 10 -> 8 loss in marker_census.json, or say it
+       is not intended
+    2  say whether MISC Hull C:34 going was intended, and why port 2 stayed
+    3  authorise a re-take of loadout_marker.pre-C1-20260829.js, or take it
+
+Then the sweep goes green and the deploy runs without anything being bypassed.
+
+**Next while that waits: Q25, the separator DECISION doc.** It needs nothing
+from anyone.
+
+### 2026-08-29 10:34:19 — 20260829_1110_update_q25-done-the-separator-is-three-characters-and-a-lowercase-label-is-invisible.md
+
+# Update — Q25 done. The separator was never one character, the en dash is a worse trap than the comma, and a lowercase label is invisible to the gate.
+
+**2026-08-29 11:10 local · Code (background session)**
+
+`docs/DECISION_the-rule16-label-format-2026-08-29.md`, 149 lines. C1's
+instruction was *"write what the gate does, not what it should do — if they
+differ, that difference is the finding."* They differ in three places.
+
+## 1. THE SEPARATOR IS THREE CHARACTERS
+
+    LABEL = re.compile(r"RULE16:\s*(INDEPENDENT|UNPROVEN)\s*[-—:]\s*(.+)")
+
+**Hyphen, em dash AND colon all pass.** `RULE16: UNPROVEN: reason` is a valid
+label and always has been. Every error message the gate prints says *"with the
+separator"* and shows only the hyphen, so **the rule as communicated has been
+narrower than the rule as enforced since adoption.** Not a defect — a
+documentation gap, and the document is the fix.
+
+## 2. THE EN DASH IS WORSE THAN THE COMMA EVER WAS
+
+    ACCEPTED   RULE16: UNPROVEN — reason      em dash  U+2014
+    MALFORMED  RULE16: UNPROVEN – reason      en dash  U+2013
+
+**One pixel apart, treated oppositely.** The comma cost two people an hour and a
+comma is at least visible. The gate prints the offending line back in its error —
+where an en dash looks correct. Anyone who hits this should suspect the character
+before the code.
+
+## 3. THE ONE ACTUAL HOLE, AND I FOUND IT BY TESTING RATHER THAN READING
+
+**A lowercase label is not seen as a label at all.**
+
+    checks/_verify_zz_probe_lowercase.py
+      -> "a NEW check with no RULE16 label"
+
+The regex is case-sensitive and **so is the fallback that detects a MALFORMED
+label** — it greps for the literal `RULE16`. So `rule16: unproven - ...` produces
+neither a match nor a malformed report. It is classified **unlabelled**.
+
+**And `rule16_baseline.txt` excuses unlabelled files.** The baseline is matched
+on the reason string `"no RULE16: line"` (`_verify_rule16_labels.py:167`), which
+is precisely what a lowercase label produces. A baselined file carrying a
+lowercase label would be **silently excused while appearing to have declared
+itself.**
+
+It fails today only because the debt list is closed and a NEW unlabelled check is
+refused outright — **a second guard catching it, not the label logic working.**
+
+**Not fixed.** Q25 was to record behaviour, and changing the gate would make the
+document stale the day it was written. The fix is one word — case-insensitive
+loose detection so a lowercase label reports MALFORMED rather than absent — and
+it is mine when it is wanted.
+
+## HOW EACH ROW WAS ESTABLISHED
+
+Every acceptance row was run through the gate rather than reasoned about, and the
+three interesting ones — colon, en dash, lowercase — were run **end to end as
+real files in `checks/`**, so the gate discovered and classified them the way it
+would any control. All three are parked in `_to_delete/probes-20260829/`, and the
+suite is back to 105 of 105, 0 unlabelled, 0 malformed, GREEN.
+
+## STANDING
+
+    Q22  verified myself, 105 of 105
+    Q24  done - the comment, plus a second stale premise (numpy IS installed)
+    Q25  done - this
+    Q21  2 of 3. MISC_Hull_C port 2 still in the payload.
+    Q26  blocked by Q21
+    Q23  blocked by Q21
+
+**The deploy is still gated** on `_verify_child_markers.py` and
+`_verify_marker_census.py`, and both baselines are C1's to clear. Nothing I own
+is in the way of it.
