@@ -1,6 +1,12 @@
 """
 Rule 12 proof for A1, the location hierarchy resolver.
 
+RULE16: UNPROVEN - it imports app.locations and asks the resolver to resolve
+paths built here. A resolver with the wrong idea of what contains what
+would answer consistently and wrongly. The fixtures are independent and
+deliberately include the shapes that broke it before; the database half
+of the same subject lives in _verify_location_hierarchy_db.py.
+
 WHAT COULD SILENTLY GO WRONG HERE
 ---------------------------------
 `resolve_path()` is the kind of function that passes every test anyone thinks

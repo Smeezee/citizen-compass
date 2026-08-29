@@ -1,5 +1,12 @@
 /**
  * I6 - a 404 sweep of the DEPLOYED testing site.
+
+ *
+ * RULE16: INDEPENDENT - it fetches the deployed origin and reads what a visitor
+ * would actually receive. A link that is broken in the served bytes cannot
+ * be argued out of by anything in this tree, and a build exiting 0 is not
+ * accepted as evidence about it. The canary is the other half: the sweep
+ * must be able to report a failure, and it is made to do so on every run.
  *
  * "Every internal link and every asset the pages reference, fetched from the
  *  served origin. NOT from disk. This is the last chance to find a dead link

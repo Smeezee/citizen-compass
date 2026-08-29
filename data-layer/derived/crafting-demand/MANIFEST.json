@@ -1,16 +1,32 @@
 {
- "generated_by": "build_crafting_demand.py",
- "source": "data-layer/external-sources/scunpacked-data/snapshots/20260827T225641Z",
- "join": "blueprint Output and every requirement leaf carry a CIG UUID; nothing here is matched by name.",
- "tier_rule": "tier 0 only - higher tiers are the same build at better quality and would double-count.",
- "unit_rule": "SCU (a `resource` leaf) and COUNT (an `item` leaf) are reported separately and never summed. The recipe count is the figure that spans both.",
- "part_join": "the ship page's part key against blueprint Output.Class, case-folded, exact. The display-name route is refused: it adds 34 and one of them is a different class sharing a name.",
  "counts": {
   "blueprints": 1607,
-  "recipes_read": 1607,
   "blueprints_without_tiers": 0,
-  "materials": 37,
   "craftable_ship_page_parts": 452,
+  "materials": 37,
+  "recipes_read": 1607,
   "ship_page_parts": 3283
- }
+ },
+ "generated_by": "build_crafting_demand.py",
+ "hand_mined_gems": [
+  "Aphorite",
+  "Beradom",
+  "Carinite",
+  "Dolivine",
+  "Feynmaline",
+  "Glacosite",
+  "Hadanite",
+  "Janalite",
+  "Sadaryx",
+  "Saldynium (Ore)",
+  "Yormandi Eye"
+ ],
+ "items_counted": 11,
+ "join": "blueprint Output and every requirement leaf carry a CIG UUID; nothing here is matched by name.",
+ "part_join": "the ship page's part key against blueprint Output.Class, case-folded, exact. The display-name route is refused: it adds 34 and one of them is a different class sharing a name.",
+ "resources_scu": 26,
+ "rows_are_two_kinds": "demand.json holds 37 rows and they are NOT one population. 26 are RESOURCES, measured in SCU of cargo, and 11 are hand-mined GEMS, counted one at a time as items. The two are never summed and must never be reported as one number: '37 materials' is the mistake C1 made in the C3 mining order on 2026-08-28 and C3 caught it. Read scu_total for the first kind and item_total for the second; a row uses one or the other, never both.",
+ "source": "data-layer/external-sources/scunpacked-data/snapshots/20260827T225641Z",
+ "tier_rule": "tier 0 only - higher tiers are the same build at better quality and would double-count.",
+ "unit_rule": "SCU (a `resource` leaf) and COUNT (an `item` leaf) are reported separately and never summed. The recipe count is the figure that spans both."
 }

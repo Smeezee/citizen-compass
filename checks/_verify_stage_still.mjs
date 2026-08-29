@@ -141,9 +141,21 @@ async function main() {
 
   let browser;
   try {
+    /* CC_CHROMIUM POINTS THIS AT A BROWSER PLAYWRIGHT DID NOT INSTALL, AND IT
+       IS WHAT MADE THIS CONTROL RUNNABLE BY ANYONE BUT CODE.
+       C1 could not run it for two days: the Windows headless shell in
+       checks/.playwright-browsers cannot execute on the Cowork Linux VM, and
+       that VM's network allowlist refuses cdn.playwright.dev. What it DOES
+       have is a Chromium at a fixed path under a different build number than
+       the npm package expects, which `chromium.launch()` will not find on its
+       own. One env var, and the control stops being one machine's privilege.
+       Unset, behaviour is exactly as before. */
+    const _exe = process.env.CC_CHROMIUM || undefined;
+    const _args = ["--use-gl=angle", "--use-angle=swiftshader",
+                   "--enable-unsafe-swiftshader", "--disable-gpu-sandbox"];
+    if (process.env.CC_NO_SANDBOX === "1") _args.push("--no-sandbox");
     browser = await chromium.launch({ headless: true,
-      args: ["--use-gl=angle", "--use-angle=swiftshader",
-             "--enable-unsafe-swiftshader", "--disable-gpu-sandbox"] });
+      executablePath: _exe, args: _args });
   } catch (e) {
     server.close();
     notPerformed("headless Chromium would not launch: " + e.message);

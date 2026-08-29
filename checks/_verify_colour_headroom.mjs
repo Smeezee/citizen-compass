@@ -1,5 +1,13 @@
 /**
  * THE G1 COLOUR ERRATA: the hull must not saturate in ANY of the five colours.
+
+ *
+ * RULE16: INDEPENDENT - the shader's arithmetic is RE-IMPLEMENTED here. The
+ * constants are pulled out of the viewer by regex and the multiplier and
+ * knee are computed in this file, so the check and the code it judges do
+ * not share a definition: if the two implementations ever disagree, that
+ * disagreement is the finding. Same shape as _verify_placement_gate.py,
+ * which is this repo's exemplar for the pattern.
  *
  * G1's constants were tuned and judged in cyan and written down as if colour
  * did not exist. They are a product with uColor, and a product is not a

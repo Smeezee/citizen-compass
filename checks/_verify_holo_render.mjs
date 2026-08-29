@@ -1,6 +1,14 @@
 /**
  * H1 / H1f: six styles, five colours, three sliders - and every one of them
  * must CHANGE THE RENDER rather than set a class.
+
+ *
+ * RULE16: UNPROVEN - the before and after are both the viewer's own uniforms and
+ * materials, read out of a vm, so a viewer that reported a change it did
+ * not make would pass. What it does prove is the thing the order asked
+ * for and the thing a class-only control would fail: the values MOVE when
+ * the control is used. Whether the moved value reaches a pixel is
+ * _verify_camera_framing.mjs's subject, and that one is INDEPENDENT.
  *
  * WHAT IS PROVEN HERE AND WHAT IS NOT, SAID FIRST
  * ===============================================

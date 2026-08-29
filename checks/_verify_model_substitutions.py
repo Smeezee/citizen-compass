@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 """Rule 12 control on P2 - no site row renders another ship's hull in silence.
 
+RULE16: INDEPENDENT - the substitutions are read from the data and the page's rows
+are then required to disclose them. What makes it independent is the
+direction: the list of ships showing a hull that is not their own is
+derived from the model mapping, and the page has to admit to each one. A
+page that silently substituted could not satisfy a list it did not
+produce.
+
 WHAT WENT WRONG, AND WHAT ALMOST WENT WRONG IN THE FIX
 ======================================================
 Four site rows rendered a model that was not their own, because a stand-in was

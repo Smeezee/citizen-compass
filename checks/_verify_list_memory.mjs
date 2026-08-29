@@ -1,5 +1,12 @@
 /**
  * R4 - GOING BACK GOES BACK.
+
+ *
+ * RULE16: UNPROVEN - the position it restores to and the position it recorded are
+ * both the page's own state, so a module that stored the wrong scroll and
+ * restored it faithfully would pass. What is independent is the SEQUENCE:
+ * the control navigates away and back rather than asking whether the module
+ * believes it would.
  *
  * Sleven: "If I'm sitting at the very bottom of the page and I click the
  * Cyclone TR... I wanna look at the other Cyclone - bam, right back to Avenger

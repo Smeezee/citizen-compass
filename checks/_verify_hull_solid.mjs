@@ -1,5 +1,14 @@
 /**
  * G1 to G5 - THE HULL READS AS A SOLID OBJECT.
+
+ *
+ * RULE16: UNPROVEN - this file already said so before rule 16 existed. Its own
+ * first paragraph bounds everything below it: the order's load-bearing
+ * control is a PIXEL measurement of an eroded silhouette against a
+ * surface-only pass, C1 produced those numbers from a headless browser
+ * reading its own framebuffer, and this control cannot do that. What it
+ * checks instead is the material and geometry state that ought to produce
+ * a solid read - the viewer's own values, which is the gap.
  *
  * WHAT THIS CONTROL CANNOT DO, FIRST, BECAUSE IT BOUNDS EVERYTHING BELOW.
  *

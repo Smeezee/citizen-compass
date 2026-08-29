@@ -23,14 +23,38 @@
    57.83463668823242
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
- "acceptance_note": "",
+ "acceptance_note": "1 of 10 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (17 of 17 exterior pairs), so the rest is placed",
  "frame_proven": true,
  "mirror_matched": 17,
  "mirror_pairs": 17,
  "exterior_mounts": 10,
- "exterior_outside": [],
- "outside_any": [],
+ "exterior_outside": [
+  "hardpoint_turret_nose"
+ ],
+ "outside_any": [
+  "hardpoint_thruster_retro_top_left",
+  "hardpoint_thruster_retro_top_right",
+  "hardpoint_controller_weapon",
+  "hardpoint_target_selector_pilot",
+  "hardpoint_avionics01",
+  "hardpoint_cockpit_flair",
+  "hardpoint_cockpit_flair_hang",
+  "hardpoint_cockpit_radar",
+  "hardpoint_cockpit_selfdestruct",
+  "hardpoint_dashboard_captain",
+  "hardpoint_dashboard_copilot",
+  "hardpoint_dashboard_pilot",
+  "hardpoint_extinguisher_bridge",
+  "hardpoint_radar",
+  "hardpoint_seat_access",
+  "hardpoint_seat_captain",
+  "hardpoint_seat_copilot",
+  "hardpoint_seat_pilot",
+  "hardpoint_thruster_vtol_outer_front_right",
+  "hardpoint_thruster_vtol_outer_front_left"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -71,7 +95,8 @@
     -4.22592,
     3.18205,
     -58.51546
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_top_right",
@@ -79,7 +104,8 @@
     4.22592,
     3.18205,
     -58.51546
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_dashboard_crane",
@@ -903,7 +929,8 @@
     0.0,
     -2.26798,
     -65.06095
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_target_selector_pilot",
@@ -911,7 +938,8 @@
     0.0,
     -2.26798,
     -65.06095
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_avionics01",
@@ -919,7 +947,8 @@
     3.12131,
     -1.97889,
     -60.67022
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cockpit_flair",
@@ -927,7 +956,8 @@
     0.0,
     -2.33869,
     -68.15074
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cockpit_flair_hang",
@@ -935,7 +965,8 @@
     0.0,
     -1.07138,
     -69.20916
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cockpit_radar",
@@ -943,7 +974,8 @@
     -0.05615,
     -1.32472,
     -65.75281
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cockpit_selfdestruct",
@@ -951,7 +983,8 @@
     -0.05615,
     -1.32472,
     -65.75281
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_dashboard_captain",
@@ -959,7 +992,8 @@
     0.0,
     -3.25996,
     -63.70962
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_dashboard_copilot",
@@ -967,7 +1001,8 @@
     1.6867,
     -3.39174,
     -67.51157
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_dashboard_pilot",
@@ -975,7 +1010,8 @@
     -1.66722,
     -3.39174,
     -67.51157
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_extinguisher_bridge",
@@ -983,7 +1019,8 @@
     1.9365,
     -1.4644,
     -61.19905
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_radar",
@@ -991,7 +1028,8 @@
     -2.56901,
     -1.97889,
     -60.6181
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_seat_access",
@@ -999,7 +1037,8 @@
     -1.66493,
     -3.53902,
     -66.69118
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_seat_captain",
@@ -1007,7 +1046,8 @@
     0.0,
     -3.25996,
     -63.70962
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_seat_copilot",
@@ -1015,7 +1055,8 @@
     1.67066,
     -3.39174,
     -67.51157
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_seat_pilot",
@@ -1023,7 +1064,8 @@
     -1.67639,
     -3.39174,
     -67.51157
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_vtol_outer_front_right",
@@ -1031,7 +1073,8 @@
     5.51394,
     -6.07811,
     -62.97976
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_vtol_outer_front_left",
@@ -1039,7 +1082,8 @@
     -5.5071,
     -6.06344,
     -62.97221
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_vtol_inner_front_right",
@@ -1047,7 +1091,8 @@
     4.40503,
     -6.69738,
     -62.97023
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_vtol_inner_front_left",
@@ -1055,7 +1100,8 @@
     -4.40363,
     -6.69439,
     -62.96869
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_turret_nose",
@@ -1063,7 +1109,8 @@
     -0.0,
     -5.44733,
     -66.76913
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_bottom_front_right",
@@ -1071,7 +1118,8 @@
     7.52255,
     -4.26582,
     -61.19265
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_bottom_front_left",
@@ -1079,7 +1127,8 @@
     -7.52244,
     -4.18563,
     -61.21494
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_fuel_intake01",
@@ -1087,7 +1136,8 @@
     3.66473,
     -4.20568,
     -69.47011
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_fuel_intake02",
@@ -1095,7 +1145,8 @@
     -3.65041,
     -4.20105,
     -69.47188
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_top_front_left",
@@ -1103,7 +1154,8 @@
     -7.44807,
     -2.70078,
     -61.2216
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_side_front_left",
@@ -1111,7 +1163,8 @@
     -7.79755,
     -3.44902,
     -61.18989
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_top_front_right",
@@ -1119,7 +1172,8 @@
     7.44807,
     -2.70078,
     -61.2216
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_side_front_right",
@@ -1127,7 +1181,8 @@
     7.79755,
     -3.44902,
     -61.18989
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_bottom_left",
@@ -1135,7 +1190,8 @@
     -4.72895,
     -6.02262,
     -67.06469
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_bottom_right",
@@ -1143,7 +1199,8 @@
     4.72895,
     -6.02262,
     -67.06469
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_cockpit_audio",
@@ -1151,7 +1208,8 @@
     -0.05615,
     -1.32472,
     -65.75281
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_controller_light",
@@ -1159,7 +1217,8 @@
     0.0,
     -3.4823,
     -63.79354
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_controller_comms",
@@ -1167,7 +1226,8 @@
     -1.67639,
     -3.39174,
     -67.51157
-   ]
+   ],
+   "outside": true
   }
  ]
 }

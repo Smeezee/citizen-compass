@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """Rule 12 control on scripts/enumerate_ship_gaps.py (E14 / W4).
 
+RULE16: UNPROVEN - it imports enumerate_ship_gaps and asks that module to
+enumerate, so a gap rule that is wrong is wrong on both sides. The
+independent half is the input: the fleets it is given are constructed
+here with the gaps already known, so a module that missed one is caught
+even though the counting is its own.
+
 WHAT THIS HAS TO PROVE, AND WHY THE OBVIOUS CHECK WOULD NOT
 ===========================================================
 The enumerator's whole job is to say WHICH JOIN a ship fell out of. A control

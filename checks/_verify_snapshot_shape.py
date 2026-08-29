@@ -1,5 +1,10 @@
 """Rule 12 proof for snapshot_shape_check. No network, no real snapshots.
 
+RULE16: UNPROVEN - it imports snapshot_shape_check and reads its verdict. The
+snapshots are built here, in a temp directory, malformed in the specific
+ways a landing has actually been malformed before, so the checker is
+answering a question this file already knows the answer to.
+
 A checker that has only ever returned PASS has not been shown to work. This
 proves it in BOTH directions on synthetic trees:
 

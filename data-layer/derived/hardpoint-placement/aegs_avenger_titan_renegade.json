@@ -23,6 +23,7 @@
    9.759204864501953
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
  "acceptance_note": "",
  "frame_proven": true,
@@ -30,7 +31,9 @@
  "mirror_pairs": 13,
  "exterior_mounts": 10,
  "exterior_outside": [],
- "outside_any": [],
+ "outside_any": [
+  "hardpoint_engine_attach"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -119,7 +122,8 @@
     0.0,
     -0.48893,
     11.23955
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_left_lower_front",

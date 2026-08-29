@@ -5,8 +5,8 @@
  "units": "unit = normalised to the hull's longest HALF-extent, the same definition build_holo_data.py uses. pos_model is scaled back out using THIS hull's own existing unit/pos_model pair.",
  "not_applied": "This file is written BESIDE alignment_overlay.json and nothing reads it yet. Wiring it in is a separate, reversible step.",
  "counts": {
-  "hulls": 167,
-  "ports": 1703
+  "hulls": 163,
+  "ports": 1657
  },
  "hulls": [
   {
@@ -240,8 +240,8 @@
    "class": "BANU_Defender",
    "emitted": 0,
    "added_record": true,
-   "ports_added": 71,
-   "ports_withheld": 8,
+   "ports_added": 69,
+   "ports_withheld": 10,
    "ports_at_origin": 0,
    "why": "no fleet record - a new one was emitted"
   },
@@ -394,11 +394,7 @@
   {
    "class": "GLSN_Basher",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 70,
-   "ports_withheld": 1,
-   "ports_at_origin": 1,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (1364.1) than it is long (439.7), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "GLSN_Shiv",
@@ -411,11 +407,7 @@
   {
    "class": "GRIN_PTV",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 19,
-   "ports_withheld": 0,
-   "ports_at_origin": 0,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (3.2) than it is long (1.8), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "GRIN_ROC",
@@ -518,11 +510,8 @@
   },
   {
    "class": "MISC_Reliant",
-   "fleet_key": "MISC Reliant Kore",
-   "emitted": 11,
-   "median_move": 0.6883,
-   "max_move": 0.77,
-   "pos_model": true
+   "emitted": 0,
+   "why": "placement did not pass: the model measures taller (29.4) than it is long (15.4), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "MISC_Starfarer",
@@ -641,11 +630,7 @@
   {
    "class": "RSI_Mantis",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 62,
-   "ports_withheld": 0,
-   "ports_at_origin": 0,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (2964.9) than it is long (629.8), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "RSI_Scorpius",
@@ -675,8 +660,8 @@
    "class": "TMBL_Nova",
    "emitted": 0,
    "added_record": true,
-   "ports_added": 85,
-   "ports_withheld": 0,
+   "ports_added": 84,
+   "ports_withheld": 1,
    "ports_at_origin": 0,
    "why": "no fleet record - a new one was emitted"
   },
@@ -711,19 +696,13 @@
   },
   {
    "class": "XIAN_Scout",
-   "fleet_key": "Khartu-al",
-   "emitted": 5,
-   "median_move": 0.3456,
-   "max_move": 0.384,
-   "pos_model": true
+   "emitted": 0,
+   "why": "placement did not pass: the model measures taller (29.2) than it is long (10.8), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "XNAA_SanTokYai",
-   "fleet_key": "San'tok.y\u0101i",
-   "emitted": 13,
-   "median_move": 0.8009,
-   "max_move": 1.7657,
-   "pos_model": true
+   "emitted": 0,
+   "why": "placement did not pass: the model measures taller (0.2) than it is long (0.2), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "aegs_avenger_stalker",
@@ -866,11 +845,7 @@
   {
    "class": "aegs_tiburon",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 118,
-   "ports_withheld": 3,
-   "ports_at_origin": 3,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (47.5) than it is long (14.0), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "aegs_vanguard_harbinger",
@@ -1485,11 +1460,7 @@
   {
    "class": "drak_pitbull",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 43,
-   "ports_withheld": 18,
-   "ports_at_origin": 18,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (6.0) than it is long (2.7), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "drak_vulture_teach",
@@ -1517,11 +1488,8 @@
   },
   {
    "class": "gama_railen",
-   "fleet_key": "Railen",
-   "emitted": 16,
-   "median_move": 0.747,
-   "max_move": 1.2199,
-   "pos_model": true
+   "emitted": 0,
+   "why": "placement did not pass: the model measures taller (68.4) than it is long (54.1), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "gama_syulen_exec_military",
@@ -1543,8 +1511,8 @@
    "class": "gama_tyilui",
    "emitted": 0,
    "added_record": true,
-   "ports_added": 81,
-   "ports_withheld": 22,
+   "ports_added": 80,
+   "ports_withheld": 23,
    "ports_at_origin": 22,
    "why": "no fleet record - a new one was emitted"
   },
@@ -1585,11 +1553,7 @@
   {
    "class": "grin_utv",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 31,
-   "ports_withheld": 2,
-   "ports_at_origin": 2,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (36.9) than it is long (31.4), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "krig_l21_wolf",
@@ -1690,8 +1654,8 @@
   {
    "class": "misc_hull_c",
    "fleet_key": "MISC Hull C",
-   "emitted": 12,
-   "median_move": 0.3926,
+   "emitted": 11,
+   "median_move": 0.4908,
    "max_move": 0.926,
    "pos_model": true
   },
@@ -1794,11 +1758,7 @@
   {
    "class": "misc_starlite",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 79,
-   "ports_withheld": 3,
-   "ports_at_origin": 3,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (50.2) than it is long (21.8), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "mrai_guardian",
@@ -1910,11 +1870,7 @@
   {
    "class": "orig_600i_executive_edition",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 96,
-   "ports_withheld": 2,
-   "ports_at_origin": 2,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (9026.8) than it is long (1751.0), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "orig_600i_touring",
@@ -1927,11 +1883,7 @@
   {
    "class": "orig_m80",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 52,
-   "ports_withheld": 23,
-   "ports_at_origin": 23,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (47.9) than it is long (13.8), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "orig_x1_force",
@@ -2069,20 +2021,12 @@
   {
    "class": "rsi_aurora_gs_se",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 81,
-   "ports_withheld": 1,
-   "ports_at_origin": 1,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (38.9) than it is long (18.5), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "rsi_aurora_mk2",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 75,
-   "ports_withheld": 2,
-   "ports_at_origin": 2,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (83.3) than it is long (21.9), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "rsi_constellation_andromeda",
@@ -2095,11 +2039,7 @@
   {
    "class": "rsi_hermes",
    "emitted": 0,
-   "added_record": true,
-   "ports_added": 148,
-   "ports_withheld": 3,
-   "ports_at_origin": 3,
-   "why": "no fleet record - a new one was emitted"
+   "why": "placement did not pass: the model measures taller (66.1) than it is long (17.1), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap"
   },
   {
    "class": "rsi_meteor",

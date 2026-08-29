@@ -175,8 +175,31 @@ export function loadPage({ mutate = [], session = null, local = null,
        against, and a control that wants the deferred effect should have to say
        so. `flushTimers()` runs them, and returns how many - so a control can
        assert that something was actually deferred instead of assuming it. */
-    setTimeout: (fn, _ms) => { if (typeof fn === "function") timers.push(fn);
-                               return timers.length; },
+    /* IDS ARE SLOTS, NOT A COUNT, so clearTimeout can find one. The id used to
+       be `timers.length`, which meant two pending timers could share an id the
+       moment one was cancelled and it identified nothing. */
+    setTimeout: (fn, _ms) => {
+      if (typeof fn !== "function") return 0;
+      timers.push(fn);
+      return timers.length - 1;
+    },
+    /* Q15, 2026-08-28. THE STUB HAD setTimeout AND NOT clearTimeout, so
+       `markChanges()` threw the moment a SECOND stat change asked to cancel a
+       pending render. Every control until _verify_swap_loop.mjs made one change
+       and stopped, so nothing had ever reached that line - and that control
+       reported the two assertions after it as NOT PERFORMED rather than as page
+       defects, which is why this was findable at all.
+
+       IT REALLY CANCELS, rather than being a no-op that closes the item.
+       `flushTimers()` must not run a callback the page asked to cancel: a page
+       that forgets to cancel and one that cancels correctly would otherwise
+       look identical here, and the difference is exactly what a browser makes.
+       The slot is emptied rather than removed so every other id stays valid. */
+    clearTimeout: (id) => {
+      if (typeof id === "number" && id >= 0 && id < timers.length) {
+        timers[id] = null;
+      }
+    },
     addEventListener() {},
     history: {
       replaceState(_a, _b, url) { currentHash = String(url).replace(/^#/, ""); },
@@ -453,12 +476,23 @@ export function loadPage({ mutate = [], session = null, local = null,
      rather than left for a second call nobody makes. */
   const flushTimers = () => {
     let ran = 0;
-    while (timers.length) {
-      const fn = timers.shift();
+    /* A CURSOR RATHER THAN shift(). Slots have to keep their index while this
+       runs: a callback may cancel a later one, and `timers.shift()` renumbers
+       everything behind it, so clearTimeout(4) would empty whatever had moved
+       into slot 4. Emptied slots are left in place and skipped.
+
+       Not counted, either - `ran` is what a control asserts on, and counting a
+       callback that never fired would report deferred work that did not
+       happen. */
+    for (let i = 0; i < timers.length; i++) {
+      const fn = timers[i];
+      timers[i] = null;
+      if (typeof fn !== "function") continue;
       try { fn(); } catch (e) { /* reported by the caller's own assertions */ }
       ran += 1;
       if (ran > 1000) break;          // a self-rescheduling timer is not a test
     }
+    timers.length = 0;
     return ran;
   };
 

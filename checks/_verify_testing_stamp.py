@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 """Prove the testing site says it is the testing site, and can fail if it stops.
 
+RULE16: INDEPENDENT - it reads the built payload for a mark the build must have
+put there, and the requirement comes from the release process rather than
+from the page. A page cannot argue with a grep about whether a string is
+present, and the absent case is driven rather than assumed.
+
 The testing deploy carried the live site's version string verbatim, so both said
 v0.3.9. A week of work was invisible, and Sleven read it as the loadout and
 hardpoint work never having shipped - the honest reading of what the page said.

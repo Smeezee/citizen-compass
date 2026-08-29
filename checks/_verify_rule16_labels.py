@@ -102,6 +102,22 @@ def label_of(name):
     hits = [LABEL.search(l) for l in head]
     hits = [h for h in hits if h]
     if not hits:
+        # A LABEL THAT IS PRESENT BUT UNREADABLE IS NOT AN ABSENT ONE.
+        #
+        # This reported both cases as "no RULE16: line", and it cost two people
+        # an hour on 2026-08-27/28. C1 wrote
+        #     RULE16: INDEPENDENT for the two assertions that matter
+        # and Code wrote
+        #     RULE16: UNPROVEN, and closer than most - the ROWS are independent
+        # Both carry a verdict, both are missing the separator the regex needs,
+        # and both were reported as files with no label at all. A reader told
+        # "there is no label" goes looking for the wrong thing, and in both
+        # cases went looking for it in a file that had one.
+        loose = [l for l in head if "RULE16" in (l or "")]
+        if loose:
+            return None, ("a RULE16 line is PRESENT but MALFORMED. It must read "
+                          "RULE16: <INDEPENDENT|UNPROVEN> - <reason>, with the "
+                          "separator. Got: %s" % loose[0].strip()[:90])
         return None, "no RULE16: line in the first %d lines" % HEAD_LINES
     if len(hits) > 1:
         return None, "%d RULE16: lines - a check has one status" % len(hits)

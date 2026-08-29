@@ -184,6 +184,43 @@ equal evidence, one under `dmg`), and the MOTH. See
 `Parts[0].Name` is the hull the ship is built on. `ANVL_C8_Pisces -> ANVL_Pisces`.
 Exact equality. **This replaced a name-prefix rule; do not reintroduce one.**
 
+**TEN SHIPS WERE DRAWING EVERY DOT IN A HEAP, LABELLED AS CIG'S OWN
+COORDINATES — found 2026-08-28 by photographing all 295 ships, and fixed.** The
+scale rule matches CIG's Length to the model's Z extent, and 19 of 258 models
+measure taller than they are long, so the scale came off the wrong axis. The
+Tiburon drew all 17 of its dots in one clump. **Four green controls let it
+through** — containment (a heap is inside the box), the mirror (a heap is
+symmetric), provenance (the labels were honest about the source) and the census
+(nothing was lost). Every control asked whether a marker was CORRECT; none asked
+whether the set was PLAUSIBLE.
+
+**Placement now refuses a model whose orientation it cannot establish**, losing
+those hulls' CIG dots rather than keeping wrong ones — including four whose dots
+looked convincing, because their scale came off the same wrong axis and looking
+right is not proof. `checks/_verify_marker_spread.py` holds it, reading the
+hull's real size out of the mesh file.
+`docs/FINDING_the-dots-were-in-a-heap-2026-08-28.md`.
+
+**Every dot has been tested against a clean silhouette of its own ship.** Each
+hull is shot twice — once with markers, once with them hidden — and every
+marker's screen position measured against the ship's outline. **1,912 of 2,193
+dots land exactly on the hull; p90 is 1px.** Ten do not, on four hulls: the Banu
+Defender, the Drake Corsair, the Tumbril Storm AA and the Glaive. Those are
+individual mounts, not broken ships, and **no population-level check can see a
+single mount in the wrong place** — containment, the mirror, the spread test and
+provenance all pass on them.
+`docs/FINDING_four-hulls-draw-a-dot-in-empty-space-2026-08-29.md`.
+
+**Every ship has been photographed with its dots on.** 295 hulls loaded in a
+real browser, 2,309 markers drawn, 0 failures — 26 ships show no dots and 25
+carry at least one estimated dot. That is the last unmeasured thing about the
+hardpoint work: the coordinates were proven, and now the RENDERING is too.
+**Ships with no hardpoints are deferred by Sleven until the rest is finished.**
+
+**The whole suite runs green.** 105 of 105, 0 skipped, 0 not run — including the
+three controls that go to the deployed site over the network, which had never
+run in a sweep before. The testing site is confirmed to match what was built.
+
 **The bench works as a loop, and it is now proven as one.** Pick a mount, fit a
 part, see what moved, keep or undo — every step driven by a click through the
 page's own handler in `checks/_verify_swap_loop.mjs`, 27 assertions. **Undo is a
@@ -198,9 +235,15 @@ ports per ship, which are never guns, and a boolean compared to a string.
 
 **Three part types genuinely show nothing** — flight blades, salvage heads and
 most bomb racks — because CIG publishes no figure on which their options differ.
-All three Avenger flight blades are identical on every field. The page is
-correct to be quiet; whether it should SAY "these are identical" is the one
-open question, and it touches 18 ports of 813.
+All three Avenger flight blades are identical on every field.
+
+**The page now says so** (Sleven's call, 2026-08-28): where every option on a
+port is identical on every published figure, the picker states it and tells the
+reader to pick on looks or price. **A mount carrying child ports is excluded** —
+a missile rack's real difference is one level down, so claiming its options are
+identical would be true of our data and false on screen.
+`checks/_verify_identical_options.mjs` holds it both ways: the line must appear
+where the options match and must NOT appear where they do not.
 
 **The 3D viewer** — `testing/_src/cc_viewer.js`, shared by index and the ship
 page. Break it and both pages fail. It recentres every hull on its own bounding

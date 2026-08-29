@@ -1,6 +1,12 @@
 """
 Rule 12 proof for B5's stated control, at the IMPORTER level.
 
+RULE16: UNPROVEN - it imports import_uex_items_all and drives it, so the refusal
+being judged is produced by the code being judged. The independent half is
+real: the row counts are read back out of the database with SQL, not from
+anything the importer reports, so an importer that claimed success having
+stored nothing is caught.
+
 §B5: "a malformed category file fails loudly, and does not silently import
 zero rows and report success."
 

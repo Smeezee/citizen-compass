@@ -23,6 +23,7 @@
    12.690320014953613
   ]
  },
+ "odd_shape": false,
  "acceptance": false,
  "acceptance_note": "only 2 of 8 named left/right pairs mirror, which is below the fraction a transposed axis cannot reach. The frame is not established, so nothing here is placed - regardless of the hull box, which cannot see a transpose on a hull as tall as it is wide",
  "frame_proven": false,

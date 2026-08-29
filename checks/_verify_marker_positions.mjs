@@ -73,6 +73,30 @@ if (!existsSync(OVERLAY)) {
   process.exit(1);
 }
 const overlay = JSON.parse(readFileSync(OVERLAY, "utf8"));
+
+/* Q12: THE CLIENT-RECORD HULLS, WHICH HAVE NEVER BEEN THROUGH THIS.
+ *
+ * The overlay MOVES an existing marker; these arrive as whole records and are
+ * already on CIG coordinates. `_verify_marker_provenance.py` proves every dot
+ * the page calls `cig` sits on its own hull's CIG coordinate - it proves
+ * nothing about whether that coordinate RENDERS where the mount is, and until
+ * now no browser control has looked at these hulls at all.
+ *
+ * It is not hypothetical. C1's off-hull audit of 2026-08-29 found ten dots
+ * floating in empty space on four hulls, and the WORST of them - port 51 on
+ * the Banu Defender, 38px clear of its own silhouette - is a client-record
+ * hull. These are exactly the hulls whose provenance was also wrong for a day.
+ *
+ * WHAT THIS ADDS AND WHAT IT DOES NOT. It asserts the markers exist and are
+ * DRAWN. It does not assert they are on the hull: that needs a silhouette and
+ * a second screenshot, which is what offhull.py does in fifty minutes and a
+ * sweep cannot. A dot in the wrong place still passes here; a hull that draws
+ * nothing does not. */
+const CLIENT = join(ROOT, "data-layer", "derived", "holo-hardpoints-align",
+                    "fleet_records_client.json");
+const clientHulls = existsSync(CLIENT)
+  ? Object.keys(JSON.parse(readFileSync(CLIENT, "utf8")))
+  : null;
 const ports = overlay[SHIP_OVERLAY_KEY];
 if (!ports) {
   console.error(`NOT PERFORMED: the overlay has no "${SHIP_OVERLAY_KEY}" entry.`);
@@ -220,6 +244,61 @@ try {
             `and ${dom.visible} of ${dom.total} marker(s) are actually drawn on screen`,
             dom.total ? "" : "no marker buttons in the DOM at all");
     }
+  }
+
+  /* ---- Q12: EVERY CLIENT-RECORD HULL, DRAWN ---- */
+  if (clientHulls === null) {
+    console.log("\n  NOT PERFORMED: fleet_records_client.json is absent, so the"
+      + " client-record hulls could not be checked. Never reported as passed.");
+    check(false, "the client-record file is readable",
+          "without it this section asserts nothing");
+  } else {
+    console.log(`\n  ---- ${clientHulls.length} client-record hull(s), drawn on screen ----`);
+    let checked = 0, noRow = [], noMarks = [], silent = [];
+    for (const hull of clientHulls) {
+      /* THE RECORD KEY IS NOT THE PAGE KEY. fleet_records_client.json is
+         keyed the way the marker pipeline names a hull - `BANU_Defender`,
+         `crus_starlifter_m2` - and the page keys ships separately, with
+         MARKS in between. Matched case-insensitively through MARKS rather
+         than by composing a string here; a first attempt compared against
+         SHIPS[k].cls directly and skipped all 27, which the "drove
+         nothing" guard caught rather than reporting 0 of 0 as a pass. */
+      const key = await page.evaluate((h) => {
+        /* MARKS AND SHIPS SHARE A KEY. There is no `cls` indirection -
+           SHIPS rows carry no cls field at all, and the page itself reads
+           MARKS[shipId]. Two earlier attempts here went through
+           SHIPS[k].cls and matched nothing, which is also why the Gladius
+           block above only finds its ship by a name substring. */
+        const row = Object.keys(SHIPS).find(
+          k => k.toLowerCase() === h.toLowerCase());
+        return row ? { row: row, mk: row } : null;
+      }, hull);
+      if (!key) { noRow.push(hull); continue; }
+      const n = await page.evaluate((k) => (MARKS[k.mk] || []).length, key);
+      if (!n) { noMarks.push(hull); continue; }
+      await page.goto(`${base}/loadout.html#${encodeURIComponent(key.row)}`,
+                      { waitUntil: "networkidle" });
+      await page.waitForTimeout(1800);
+      const dom = await page.evaluate(() => {
+        const btns = [...document.querySelectorAll("#cc-marks button[data-mount]")];
+        const vis = btns.filter(b => { const r = b.getBoundingClientRect();
+          return r.width > 0 && r.height > 0; });
+        return { total: btns.length, visible: vis.length };
+      });
+      checked++;
+      if (!dom.visible) silent.push(`${hull} (${n} in data, 0 drawn)`);
+    }
+    console.log(`  ${checked} hull(s) driven; ${noRow.length} have no ship row, `
+      + `${noMarks.length} carry no marker`);
+    if (noRow.length) console.log(`    no ship row: ${noRow.join(", ")}`);
+    if (noMarks.length) console.log(`    no marker:  ${noMarks.join(", ")}`);
+    /* A SECTION THAT DROVE NOTHING IS NOT A SECTION THAT PASSED. */
+    check(checked > 0,
+          `the client-record hulls were actually driven  (${checked} of ${clientHulls.length})`,
+          "every one was skipped - nothing was asserted");
+    check(silent.length === 0,
+          `and every one of them draws its markers  (${checked - silent.length} of ${checked})`,
+          silent.slice(0, 4).join("; "));
   }
 
   await browser.close();

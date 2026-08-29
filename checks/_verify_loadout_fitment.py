@@ -2,6 +2,16 @@
 """
 Rule 12 proof for L1-L4: the derived type scan and the per-port fitment rule.
 
+RULE16: INDEPENDENT - the port counts in META are recomputed here from the port
+list rather than read back, so a generator that miscounted is caught by
+arithmetic rather than by its own summary. The expected type set is
+written down here as well.
+
+WHAT IT CANNOT REACH, since both halves live in one generated file: a
+port LIST that is wrong. The recount would agree with it, being a count
+of the same wrong list. What is proven is that the file does not
+contradict itself.
+
 WHAT COULD SILENTLY GO WRONG HERE
 ---------------------------------
 Everything the ship page claims rests on one sentence: *what a port accepts

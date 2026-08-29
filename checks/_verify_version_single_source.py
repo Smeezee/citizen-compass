@@ -3,6 +3,11 @@
 """
 _verify_version_single_source.py - the version is written in exactly one place.
 
+RULE16: INDEPENDENT - it searches the repository for the version string and
+requires exactly one definition. The claim is about the whole tree rather
+than about any file's opinion of itself, and a second copy is found by
+looking rather than by being declared.
+
 I4's control, in its own words: "change the version in the one place, rebuild,
 confirm every rendered occurrence changed. A grep that finds the old number
 anywhere fails the check."

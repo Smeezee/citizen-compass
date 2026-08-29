@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
 A4 - THE MODEL SAYS ONE SIZE AND THE GAME SAYS ANOTHER. Report every hull
+
+RULE16: INDEPENDENT - two sources that were produced by different pipelines are
+put against each other: the .glb's own measured bounding box and the
+published dimension for that ship. Neither number can be made right by
+the other being wrong, which is exactly why the disagreement is the
+finding.
 where they disagree.
 
 WHY THIS EXISTS. The Anvil Asgard's model measures 4,856 x 3,388 x 1,333 while

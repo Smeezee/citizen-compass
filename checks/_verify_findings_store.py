@@ -1,6 +1,12 @@
 """
 Rule 12 proof for the finding lifecycle's PERSISTENCE layer.
 
+RULE16: UNPROVEN - findings are written and read back through checks.findings_store
+itself, so a round trip that is wrong in both directions returns what was
+put in. The independent half is the SHAPE: the Finding objects are built
+here and their fields are known before they are stored, so a store that
+loses or mangles one is caught even though the channel is its own.
+
 checks/_verify_lifecycle.py already proves the pure transition function. This
 proves the part that actually writes to Postgres, because a correct rule that
 the storage layer applies wrongly is not a correct system.

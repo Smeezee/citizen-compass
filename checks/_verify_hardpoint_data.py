@@ -3,6 +3,16 @@
 """
 _verify_hardpoint_data.py - prove build_hardpoint_data.py's own gates can fail.
 
+RULE16: INDEPENDENT - the generator is run as a subprocess against inputs mutated
+here, and each of its gates has to refuse the one that must trip it.
+Nothing is imported, so no definition is shared with the thing being
+judged.
+The pattern, said once because several controls in this repo share it:
+driving a real program as a SUBPROCESS with input this file constructed,
+and judging the exit code and the printed refusal, is independent. The
+tool cannot pass by agreeing with itself, because what must be refused was
+decided here and nothing is imported from it.
+
 I1's acceptance is one sentence: "the number of slots in the file equals the
 number in the database. Assert it, do not eyeball it." That assertion lives
 inside the generator, in verify_counts(). A gate that has never been observed

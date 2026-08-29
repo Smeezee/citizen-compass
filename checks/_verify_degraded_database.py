@@ -1,6 +1,14 @@
 """
 Rule 12 proof for G1/G2 - the degraded-database mode in app/database.py.
 
+RULE16: INDEPENDENT - it starts the application THREE TIMES in three real
+subprocesses, each with a different database configuration, and judges
+what each process does. Nothing is imported and no internal flag is
+consulted: 'degraded' is read from how the app behaves when started that
+way, which is the only place a reader would meet it. A module asked
+whether it thinks it is degraded could answer wrongly in exactly the
+situation this exists to catch.
+
 WHAT THIS PROVES
 ----------------
 Before G1, `app/database.py` ended with:

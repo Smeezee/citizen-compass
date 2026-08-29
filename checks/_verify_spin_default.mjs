@@ -1,5 +1,12 @@
 /**
  * B4 acceptance: THE PAGE OPENS CALM, AND REMEMBERS THE CHOICE.
+
+ *
+ * RULE16: UNPROVEN - the page's own state is both the subject and the evidence: it
+ * is asked whether rotation is running and whether the choice was stored.
+ * The independent half is the SEQUENCE the control imposes - open cold,
+ * stop, reload, open a different ship - which is a series of events the
+ * page does not choose and cannot anticipate.
  *
  * Sleven: "the ship just constantly spins." A stop control existed, and that
  * is not the same as opening still - it makes a visitor undo something they

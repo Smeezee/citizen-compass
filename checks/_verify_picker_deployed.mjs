@@ -1,5 +1,12 @@
 /**
  * B8: the picker redesign, VERIFIED FROM THE DEPLOYED BYTES.
+
+ *
+ * RULE16: INDEPENDENT - the census is taken from the SERVED page rather than from
+ * the local build, and one of its assertions is that the two are
+ * byte-identical. That is the strongest form available here: it does not
+ * trust a deploy exiting 0, it goes and looks. Its failure on 2026-08-28
+ * was exactly that assertion doing its job on a site one feature behind.
  *
  * Not from source. Not from a successful deploy. Every assertion below runs
  * against a page fetched over the wire from the testing origin, driven through

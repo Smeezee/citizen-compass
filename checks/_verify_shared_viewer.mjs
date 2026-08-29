@@ -1,6 +1,14 @@
 /**
  * L8 acceptance: ONE ship viewer, shared. And the negative half, which is the
  * half that actually proves it.
+
+ *
+ * RULE16: INDEPENDENT - the deciding evidence is a PERTURBATION the control makes:
+ * it breaks the shared module and requires both pages to fail. A page can
+ * load cc_viewer.js, ignore it completely, and satisfy every positive
+ * assertion about sharing; it cannot survive the module being broken. The
+ * answer comes from what happens, not from what either page reports about
+ * itself.
  *
  * WHY THE NEGATIVE HALF IS THE POINT
  * ----------------------------------

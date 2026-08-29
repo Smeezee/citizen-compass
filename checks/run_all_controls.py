@@ -272,6 +272,15 @@ def main():
             failed=[n for n, _c, _o in failed],
             skipped=[n for n, _w in skipped],
             not_run=[n for n, _w in not_run],
+            # WHICH FAILURES ARE ABOUT THE LIVE SITE RATHER THAN THIS PAYLOAD.
+            # The three NEEDS controls answer a different question, and one of
+            # them - "the served page is byte-identical to the one just built" -
+            # CANNOT be green before the deploy that makes it so. Recorded here
+            # so sweep_gate can report them without deadlocking the deploy that
+            # is their own remedy.
+            deployed_only=[n for n in NEEDS
+                           if n in [x for x, _c, _o in failed]
+                           or n in [x for x, _w in not_run]],
             partial=bool(wanted),
             self_test=bool(args.self_test),
             seconds=time.time() - started)

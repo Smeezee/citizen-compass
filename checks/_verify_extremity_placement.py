@@ -2,6 +2,12 @@
 # -*- coding: utf-8 -*-
 """
 B6: a mount whose name names an extremity is placed against the hull's own
+
+RULE16: INDEPENDENT - the placer is run as a SUBPROCESS, twice, and the two
+outputs are compared by this file. Nothing is imported, so the rule being
+judged is not the rule doing the judging, and the crowding measurements
+are computed here from the placed coordinates rather than read out of the
+placer's own report.
 measured extremity, not against a fixed fraction of every hull in the fleet.
 
 WHAT CHANGED, AND WHAT DELIBERATELY DID NOT

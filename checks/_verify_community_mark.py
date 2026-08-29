@@ -2,6 +2,16 @@
 # -*- coding: utf-8 -*-
 """A2: the "Made By The Community" mark, and the build's refusal without it.
 
+RULE16: INDEPENDENT - it RUNS THE REAL BUILD as a subprocess against a fixture and
+then inspects the resulting image with PIL, which is neither the build's
+code nor its opinion. The refusal half is driven the same way: take the
+mark away and the build has to stop.
+The pattern, said once because several controls in this repo share it:
+driving a real program as a SUBPROCESS with input this file constructed,
+and judging the exit code and the printed refusal, is independent. The
+tool cannot pass by agreeing with itself, because what must be refused was
+decided here and nothing is imported from it.
+
 THE NEGATIVE CONTROL IS THE LOAD-BEARING ONE. The order says so plainly:
 
     "Assert that an image composited WITHOUT the mark is REFUSED by the build.

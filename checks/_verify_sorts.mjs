@@ -1,5 +1,12 @@
 /**
  * E10 - "BEST" IS A JUDGEMENT AND THIS SITE DOES NOT MAKE JUDGEMENTS.
+
+ *
+ * RULE16: INDEPENDENT - the forbidden word is named here, from the rule, and the
+ * shipped markup either contains it or does not. The orderings are
+ * recomputed from the data and compared against what the page listed, so a
+ * sort that quietly ranked by something else is caught by arithmetic rather
+ * than by the page's own label for it.
  *
  * Sleven, 2026-08-23: "We do not determine what is best. Ever. We just provide
  * the information. The user determines what's best."

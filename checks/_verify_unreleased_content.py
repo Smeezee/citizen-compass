@@ -1,5 +1,11 @@
 """Rule 12 proof for the unreleased-content filter and checker.
 
+RULE16: UNPROVEN - it imports both the checker and the publication filter and
+judges what they return. The content they are given is written here and
+is unreleased by construction, so the pair has to catch what this file
+planted; what cannot be reached from inside is whether their idea of
+'unreleased' is the right one.
+
 Two things are proven here, and the second is the one that matters:
 
   1. `scripts/publication_filter` withholds exactly the flagged records and

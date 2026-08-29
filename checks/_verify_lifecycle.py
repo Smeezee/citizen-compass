@@ -1,5 +1,12 @@
 """Rule 12 proof for checks/lifecycle.py.
 
+RULE16: UNPROVEN - it imports checks.lifecycle and asks those functions what a
+finding's next state should be, so a wrong transition table is applied
+identically on both sides. The load-bearing assertion - a checker that
+stopped running must produce UNKNOWN rather than a wave of CLOSED - is
+driven from states constructed here, which is what makes it worth having
+even though the rule doing the deciding is the one under test.
+
 The load-bearing assertion: a checker that stopped running must produce UNKNOWN,
 never CLOSED. That failure mode is why this module exists, so it is tested
 directly rather than assumed.

@@ -123,6 +123,41 @@ def main():
         _held = _held + _origin
         _pts = [n for n in _all
                 if not n.get("outside") and not _emits_origin(n, H0)]
+
+        # THE COLLAPSE TEST, APPLIED WHERE IT BELONGS - on the set that
+        # actually reaches the page, after withheld and origin mounts are gone.
+        #
+        # The placer runs the same test and catches most of them, but it sees
+        # mounts the page never draws: on the M80 and the Starlite a couple of
+        # outliers stretched its measurement above the line while the visitor
+        # got 0.30 and 0.45 - a heap. **The last step before the numbers become
+        # the page's is the only place the measurement matches what is seen.**
+        #
+        # BOTH SIGNALS STILL REQUIRED. `odd_shape` comes from the placer, which
+        # read it off the mesh: a model measuring taller than it is long, so
+        # CIG's Length was matched to an axis that is not the ship's length.
+        # A tight loadout on an ordinary model is left alone.
+        _drawn = {}
+        for _n in _pts:
+            _drawn.setdefault(str(_n["name"]).split(".")[0], []).append(_n)
+        _reps = []
+        for _r, _g in _drawn.items():
+            _g.sort(key=lambda n: (len(str(n["name"]).split(".loadout.")),
+                                   str(n["name"])))
+            _reps.append(_g[0])
+        _sp = 0.0
+        if _reps:
+            for _i in range(3):
+                _v = [n["pos"][_i] / H0 for n in _reps]
+                _sp = max(_sp, max(_v) - min(_v))
+        if j.get("odd_shape") and len(_reps) >= 4 and _sp < 0.47:
+            report.append({"class": cls, "emitted": 0,
+                           "why": "collapsed: the %d dots this hull would draw "
+                                  "span only %.3f of it, on a model measuring "
+                                  "taller than it is long. A heap, not a "
+                                  "loadout - withheld whole"
+                                  % (len(_reps), _sp)})
+            continue
         mdl = lm.get(cls.lower())
         key = by_model.get(os.path.splitext(mdl)[0].lower()) if mdl else None
         if not key:

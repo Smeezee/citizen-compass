@@ -1,5 +1,13 @@
 /**
  * F3 - THE FIRST CONTROL IN THIS REPO THAT SEES WHAT A VISITOR SEES.
+
+ *
+ * RULE16: INDEPENDENT - it serves the real payload over HTTP and drives a real
+ * browser, then measures the framing from what was actually drawn. Every
+ * other viewer control loads cc_viewer.js into a Node vm against a stub;
+ * this one does not ask the viewer anything, it looks at the result. A
+ * framing bug that the viewer reports as correct is exactly what this
+ * catches and the vm-based controls cannot.
  *
  * Every other viewer control loads cc_viewer.js into a Node `vm` against a stub
  * THREE. Those stubs have no real PerspectiveCamera, no matrixWorldInverse, no

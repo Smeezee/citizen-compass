@@ -1,5 +1,11 @@
 /**
  * B2 acceptance: THE PICKER OPENS UNDER ITS ROW, AND THE FITTED PART IS FIRST.
+
+ *
+ * RULE16: INDEPENDENT - both halves come from outside the picker. WHICH part must
+ * be first is read from the build's fitted part for that slot; WHERE the
+ * picker opened is measured from the rendered geometry rather than asked of
+ * the code that positioned it.
  *
  * TWO SEPARATE COMPLAINTS, BOTH SLEVEN'S, BOTH REAL.
  *

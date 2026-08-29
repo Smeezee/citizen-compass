@@ -23,17 +23,22 @@
    18.896345138549805
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
- "acceptance_note": "2 of 11 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (20 of 20 exterior pairs), so the rest is placed",
+ "acceptance_note": "4 of 11 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (20 of 20 exterior pairs), so the rest is placed",
  "frame_proven": true,
  "mirror_matched": 20,
  "mirror_pairs": 20,
  "exterior_mounts": 11,
  "exterior_outside": [
+  "hardpoint_countermeasure_launcher_left",
+  "hardpoint_countermeasure_launcher_right",
   "hardpoint_missilerack_left",
   "hardpoint_missilerack_right"
  ],
  "outside_any": [
+  "hardpoint_countermeasure_launcher_left",
+  "hardpoint_countermeasure_launcher_right",
   "hardpoint_thruster_wing_right_bottom",
   "hardpoint_thruster_wing_right_side",
   "hardpoint_thruster_wing_right_top",
@@ -443,7 +448,8 @@
     -5.81076,
     0.19816,
     25.03634
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_countermeasure_launcher_right",
@@ -451,7 +457,8 @@
     5.81076,
     0.19816,
     25.03634
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_CP_Door_Left",

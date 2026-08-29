@@ -23,6 +23,7 @@
    6.121623992919922
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
  "acceptance_note": "",
  "frame_proven": true,
@@ -30,7 +31,14 @@
  "mirror_pairs": 11,
  "exterior_mounts": 6,
  "exterior_outside": [],
- "outside_any": [],
+ "outside_any": [
+  "hardpoint_thruster_front_bottom",
+  "hardpoint_thruster_front_left",
+  "hardpoint_thruster_front_right",
+  "hardpoint_thruster_front_top",
+  "hardpoint_radar",
+  "hardpoint_scanner"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -39,7 +47,8 @@
     -0.00193,
     -0.17381,
     -7.03102
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_front_left",
@@ -47,7 +56,8 @@
     -0.18103,
     0.00351,
     -7.01423
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_front_right",
@@ -55,7 +65,8 @@
     0.17744,
     2e-05,
     -7.00903
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_front_top",
@@ -63,7 +74,8 @@
     -0.00193,
     0.16896,
     -7.03102
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_landinggear_rear_right",
@@ -223,7 +235,8 @@
     0.0,
     0.0,
     -6.88671
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_countermeasure_launcher_top",
@@ -335,7 +348,8 @@
     0.0,
     0.0,
     -6.8612
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_ping",

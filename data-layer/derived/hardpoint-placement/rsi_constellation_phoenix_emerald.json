@@ -23,6 +23,7 @@
    30.376903533935547
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
  "acceptance_note": "2 of 15 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (31 of 39 exterior pairs), so the rest is placed",
  "frame_proven": true,

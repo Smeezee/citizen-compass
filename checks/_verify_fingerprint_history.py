@@ -2,6 +2,14 @@
 # -*- coding: utf-8 -*-
 """Prove the history KEEPS things, and that both halves share one shape.
 
+RULE16: UNPROVEN - it imports build_model_fingerprint_history and points its
+HISTORY at a temp file, so the writer under test is also the writer of
+the evidence. What IS independent is the input: the models are fabricated
+here with bodies known to differ, so a fingerprint that failed to change
+when the bytes changed is caught. The rows are then read from the file
+rather than from the module's own accessor, which is the better half of
+a weak channel.
+
 Hard rule 12, and the order names the check itself:
 
     "the check that matters is one proving a CHANGED card produces two rows

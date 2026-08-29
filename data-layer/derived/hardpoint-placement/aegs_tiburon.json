@@ -23,8 +23,9 @@
    5.926247596740723
   ]
  },
- "acceptance": true,
- "acceptance_note": "",
+ "odd_shape": true,
+ "acceptance": false,
+ "acceptance_note": "the model measures taller (47.5) than it is long (14.0), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap",
  "frame_proven": true,
  "mirror_matched": 30,
  "mirror_pairs": 31,

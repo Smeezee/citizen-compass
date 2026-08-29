@@ -1,5 +1,17 @@
 /**
  * P3/P7: does the ship page fit on one screen?
+
+ *
+ * RULE16: UNPROVEN - it computes a layout budget from the stylesheet's own numbers
+ * at a stated viewport rather than measuring a render, so a page that lays
+ * out differently from this arithmetic passes.
+ * 
+ * WORTH DISTINGUISHING FROM _verify_colour_headroom.mjs, which
+ * re-implements the shader's maths and IS independent. There the answer is
+ * fully determined by the constants and the formula, so a second
+ * implementation is a genuine second opinion. Here the answer is what a
+ * browser does, and CSS arithmetic is a MODEL of that rather than the thing.
+ * _verify_camera_framing.mjs is the control that actually looks.
  *
  * WHAT THIS MEASURES, AND THE LIMIT SAID FIRST
  * --------------------------------------------

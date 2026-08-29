@@ -46,8 +46,8 @@ if (MUT_ALWAYS) {
   console.log("*** MUTATED: the line appears on every port. B MUST fire. ***");
 }
 if (MUT_NEVER) {
-  mutate.push([/function sameStatLine\(ids\)\{/,
-    "function sameStatLine(ids){ return \"\";"]);
+  mutate.push([/function sameStatLine\(ids, slot\)\{/,
+    "function sameStatLine(ids, slot){ return \"\";"]);
   console.log("*** MUTATED: the line never appears. A MUST fire. ***");
 }
 if (MUT_NAME) {

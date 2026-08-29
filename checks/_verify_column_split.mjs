@@ -1,5 +1,12 @@
 /**
  * B1 acceptance: THE LEFT COLUMN HOLDS ONLY WHAT A PERSON CAN ACT ON.
+
+ *
+ * RULE16: INDEPENDENT - what belongs in the column is computed HERE from each
+ * ship's own slot data, and the page is then required to agree with it:
+ * `inCol.size === swapOf(SH).length`. The page cannot satisfy that by
+ * being internally consistent, because the set it has to match was derived
+ * from the data rather than read back from the DOM.
  *
  * Sleven: "over on the left should be shrink down and only show what's
  * actually listed."

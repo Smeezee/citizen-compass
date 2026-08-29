@@ -3,6 +3,11 @@
 """
 B5: a port with no position vocabulary of its own inherits its TURRET'S.
 
+RULE16: INDEPENDENT - the placer is run as a subprocess and the inheritance is
+measured from what it wrote. The before state is produced by running it
+with the behaviour off, so both sides are observations of the program
+rather than assertions about its source.
+
 WHAT WAS ACTUALLY WRONG, WHICH IS NOT WHAT THE ORDER OR I SAID
 ==============================================================
 The order said turret guns fall to the None target - the middle of the hull. I

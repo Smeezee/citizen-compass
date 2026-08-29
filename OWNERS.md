@@ -45,6 +45,8 @@ permission; it is a gap, and finding one is worth reporting.
     checks/_verify_swap_loop.mjs
     checks/_verify_marker_census.py
     checks/marker_census.json
+    checks/_verify_identical_options.mjs
+    checks/_verify_marker_spread.py
     decode_cga_nodes.py
     probe_ship_geometry.py
     extract_p4k_entry.py

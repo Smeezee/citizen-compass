@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 G7: read the PE subsystem byte off the collector, with a reader proven to
+
+RULE16: INDEPENDENT - the byte is read out of the built binary by a reader this
+file proves first, against executables whose value is known because they
+were made here. The collector is never asked what subsystem it was linked
+for; the file is.
 distinguish 2 from 3.
 
 WHY AN INDEPENDENT READER

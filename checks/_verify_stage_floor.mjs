@@ -1,5 +1,12 @@
 /**
  * E5 - EVERY HULL STANDS ON THE DISC, AND THE DISC IS SIZED TO THE HULL.
+
+ *
+ * RULE16: UNPROVEN - it drives the viewer's OWN frame() and _fitTable(), so the
+ * sizing rule being judged is the sizing rule doing the judging. The
+ * independent half is the population: every hull in the fleet is put
+ * through it rather than a chosen few, so a rule that works on the ships
+ * somebody thought of and fails on the Idris is still caught.
  *
  * WHAT THIS DRIVES. The viewer's OWN `frame()` and `_fitTable()`, once per
  * model, against a Box3 built from that model's real measured bounds - the

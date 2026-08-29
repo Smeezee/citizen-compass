@@ -1,5 +1,11 @@
 """A1 acceptance against the REAL database, in a transaction that is rolled back.
 
+RULE16: UNPROVEN - closer than most, and the ROWS are independent: real locations
+out of the real database rather than fixtures shaped to suit the
+resolver, which is the whole reason this exists beside the unit control.
+But `resolve_path` is imported and asked, so the answer is still the code
+under test's own. Real input, self-reported verdict.
+
 The unit control (checks/_verify_location_hierarchy.py) proves the resolver with
 fake objects. This proves the same thing through the actual table, actual FKs
 and actual ORM relationship loading - because "it works on a stand-in class" and

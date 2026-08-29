@@ -1,6 +1,14 @@
 /**
  * H1g-3 - COLOUR IS NEVER THE ONLY CARRIER, AND THE DEFAULT PALETTE SURVIVES
  * DICHROMACY.
+
+ *
+ * RULE16: INDEPENDENT - the dichromacy simulation is implemented here from the
+ * published transform rather than taken from anything the page provides,
+ * and the file PROVES ITS OWN INSTRUMENT before using it: white must stay
+ * white, blue must stay blue under protanopia, red must land on a known
+ * value. A control whose measuring device is unverified is measuring
+ * nothing, and this one says so by checking the device first.
  *
  * TWO CLAIMS, AND THEY ARE NOT THE SAME CLAIM. The order puts the first one
  * first and it is right to: "a person cannot configure their way out of a

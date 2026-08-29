@@ -1,6 +1,16 @@
 /**
  * E7b - WHY THE HULLS READ SOFTER THAN THE PROTOTYPE'S. TWO CANDIDATE CAUSES,
  * MEASURED, NOT GUESSED BETWEEN.
+
+ *
+ * RULE16: INDEPENDENT - the shipped constants are read out of the viewer and
+ * compared against figures that came from somewhere else entirely: the
+ * prototype's own captures. The viewer cannot satisfy this by being
+ * internally consistent, because the number it has to agree with was not
+ * produced by it. The risk this carries is staleness rather than
+ * circularity - and it has already been paid once, in the glow term the
+ * header marks SUPERSEDED when G1 rebuilt the rim and 0.04 stopped
+ * describing anything.
  *
  * The order names them:
  *   1. Draco quantises NORMAL, and the edge detector reads normals.

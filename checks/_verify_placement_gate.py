@@ -44,6 +44,19 @@ import sys
 
 PLACE = os.path.join("data-layer", "derived", "hardpoint-placement")
 MARGIN = 0.06
+MODELS_DIR = None   # set in main()
+
+
+def _odd(j):
+    """Is this hull's MODEL taller than it is long? Read from the mesh."""
+    import os as _os
+    f = j.get("model")
+    if not f or not MODELS_DIR:
+        return False
+    e = glb_extent(_os.path.join(MODELS_DIR, f))
+    return bool(e and e[1] > e[2])
+
+
 WITHHOLD_MAX = 4
 # Re-stated here, not imported, for the same reason the gate is re-implemented:
 # a check that reads its own threshold out of the code under test agrees with
@@ -57,7 +70,39 @@ EXTERIOR = re.compile(
     r"top|bottom|left|right|front|back|rear|side)", re.I)
 
 
-def gate(points, box_min, box_max):
+def glb_extent(path):
+    """The mesh's own extent, read from the GLB header - not from any record
+    this pipeline wrote. Kept here rather than taking the placer's `hull_box`
+    so the orientation rule is judged against the artist's file."""
+    import struct
+    try:
+        with open(path, "rb") as fh:
+            head = fh.read(20)
+            if len(head) < 20 or head[:4] != b"glTF":
+                return None
+            raw = fh.read(struct.unpack_from("<I", head, 12)[0])
+        g = json.loads(raw.decode("utf-8", "replace"))
+    except Exception:
+        return None
+    mn = [float("inf")] * 3
+    mx = [float("-inf")] * 3
+    for m in g.get("meshes") or []:
+        for pr in m.get("primitives") or []:
+            ai = (pr.get("attributes") or {}).get("POSITION")
+            if ai is None:
+                continue
+            a = (g.get("accessors") or [])[ai]
+            if not a.get("min") or not a.get("max"):
+                continue
+            for i in range(3):
+                mn[i] = min(mn[i], a["min"][i])
+                mx[i] = max(mx[i], a["max"][i])
+    if mn[0] == float("inf"):
+        return None
+    return [mx[i] - mn[i] for i in range(3)]
+
+
+def gate(points, box_min, box_max, odd_shape=False):
     """(passed, n_exterior, n_outside) for one hull's converted points."""
     ext = [box_max[i] - box_min[i] for i in range(3)]
     ctr = [(box_min[i] + box_max[i]) / 2.0 for i in range(3)]
@@ -96,6 +141,13 @@ def gate(points, box_min, box_max):
     # scale and a full-hull-length offset through on the Eclipse and the Sabre.
     # This check caught that too. The withholding is bounded by an absolute
     # count: pose mismatches run 1-3, the smallest frame error observed is 23.
+    # THE ORIENTATION RULE, re-implemented alongside the rest. A model that
+    # measures taller than it is long cannot have CIG's Length matched to its
+    # fore/aft extent, so its scale came off the wrong axis and nothing built
+    # on it is trustworthy - however plausible the result looks.
+    if odd_shape:
+        return False, n, out
+
     m, pr = mirror(points)
     proven = pr >= MIRROR_MIN_PAIRS and m >= pr * MIRROR_MIN_FRACTION
     # THE VETO, re-implemented alongside the licence. A hull with enough pairs
@@ -170,6 +222,8 @@ MUTATORS = [
 
 
 def main():
+    global MODELS_DIR
+    MODELS_DIR = os.path.join("testing", "_deploy", "models")
     if not os.path.isdir(PLACE):
         print("NOT PERFORMED - no placement directory. Run "
               "build_hardpoint_placement.py first.")
@@ -187,7 +241,7 @@ def main():
     for cls in files:
         j = load(cls)
         _ok, n, _o = gate(j["hardpoints"], j["hull_box"]["min"],
-                          j["hull_box"]["max"])
+                          j["hull_box"]["max"], _odd(j))
         if n >= 8:
             subjects.append((cls, j, n))
         if len(subjects) >= 6:
@@ -213,7 +267,7 @@ def main():
         if _hard in files and not any(c == _hard for c, _j, _n in subjects):
             _j = load(_hard)
             _ok, _n, _o = gate(_j["hardpoints"], _j["hull_box"]["min"],
-                               _j["hull_box"]["max"])
+                               _j["hull_box"]["max"], _odd(_j))
             subjects.append((_hard, _j, _n))
 
     failures = []
@@ -232,7 +286,7 @@ def main():
                   "named negative below" % cls)
             continue
         ok, ne, out = gate(j["hardpoints"], j["hull_box"]["min"],
-                           j["hull_box"]["max"])
+                           j["hull_box"]["max"], _odd(j))
         state = "pass" if ok else "REFUSED"
         print("  %-34s %-8s %d of %d exterior outside" % (cls, state, out, ne))
         if not ok:
@@ -250,7 +304,7 @@ def main():
             continue
         _neg += 1
         ok, ne, out = gate(j["hardpoints"], j["hull_box"]["min"],
-                           j["hull_box"]["max"])
+                           j["hull_box"]["max"], _odd(j))
         print("  %-34s %-8s %d of %d exterior outside"
               % (cls, "PASSED" if ok else "refused", out, ne))
         if ok:
@@ -266,7 +320,8 @@ def main():
         for cls, j, n in subjects:
             pts = [{"name": h["name"], "pos": fn(h["pos"])}
                    for h in j["hardpoints"]]
-            ok, ne, out = gate(pts, j["hull_box"]["min"], j["hull_box"]["max"])
+            ok, ne, out = gate(pts, j["hull_box"]["min"], j["hull_box"]["max"],
+                               _odd(j))
             state = "PASSED" if ok else "refused"
             print("  %-34s %-8s %d of %d exterior outside"
                   % (cls, state, out, ne))

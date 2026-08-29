@@ -74,6 +74,20 @@ AFTER = os.path.join(SRC, "loadout_marker.gen.js")
 # client overlay most days, and every hull that gains CIG coordinates then
 # reads as "moved" against a snapshot taken before it did.
 #
+# RE-TAKEN AGAIN 2026-08-29, and this one was a REMOVAL rather than a
+# gain. Ten ships were drawing every hardpoint dot in a heap the size of a
+# cockpit, labelled `cig` - C1 found it by photographing all 295 ships, not
+# by a check, because containment, mirror, provenance and census all passed
+# on a heap. The placement now refuses a model it cannot orient, and those
+# hulls' CIG markers are gone on purpose.
+#
+# THE LIST WAS READ BEFORE THE SNAPSHOT, which is the condition C1 set:
+# 14 distinct hulls, every one of them from the orientation-refused set -
+# Tiburon, Khartu-al, San'tok.yai, Pitbull, Basher, Railen, Reliant Kore,
+# Starlite, 600i Executive, M80, both Auroras, Hermes, Mantis. No other
+# ship appeared. If one had, that would have been the finding rather than
+# the baseline.
+#
 # Re-taken 2026-08-28 after the Vanduul Glaive gained 8 CIG-positioned
 # markers - previously one of the refused asymmetric hulls, so the movement
 # was the pipeline working. The pinned four were checked FIRST and all four
@@ -86,7 +100,7 @@ AFTER = os.path.join(SRC, "loadout_marker.gen.js")
 # re-take bakes in something wrong. Not done here because it changes what
 # the control costs the sweep, and that is a decision rather than a fix.
 BEFORE = os.path.join(REPO, "data-layer", "derived", "holo-hardpoints",
-                      "loadout_marker.pre-C1-20260828.js")
+                      "loadout_marker.pre-C1-20260829.js")
 
 # C3's pinned four - the Retaliator's countermeasure launchers, the only ports
 # that already had markers before any of this work and therefore the ones a fix

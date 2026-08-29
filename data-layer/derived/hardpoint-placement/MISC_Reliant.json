@@ -23,8 +23,9 @@
    8.92762279510498
   ]
  },
- "acceptance": true,
- "acceptance_note": "2 of 11 exterior mounts withheld - outside the hull box, but this hull's frame is proven by its mirror (13 of 14 exterior pairs), so the rest is placed",
+ "odd_shape": true,
+ "acceptance": false,
+ "acceptance_note": "the model measures taller (29.4) than it is long (15.4), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap",
  "frame_proven": true,
  "mirror_matched": 13,
  "mirror_pairs": 14,

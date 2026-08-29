@@ -1,6 +1,14 @@
 /**
  * H1f: the look controls exist, are closed by default, and every one of them
  * reaches the viewer.
+
+ *
+ * RULE16: UNPROVEN - `reaches the viewer` is checked by moving a control and reading
+ * the viewer's own value back, so both ends of that assertion are the page.
+ * A control wired to the wrong uniform would still show a value that moved.
+ * The independent half is the INVENTORY: the four sliders are named here and
+ * each must be present by name, so one disappearing fails even if a new one
+ * arrives to keep the count right.
  *
  * Sleven on the first pass: "It looks good for the first pass, but it's
  * definitely not where I want it... I don't see that." The renderer landed and

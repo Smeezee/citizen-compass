@@ -23,6 +23,7 @@
    0.9525555372238159
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
  "acceptance_note": "",
  "frame_proven": true,
@@ -31,6 +32,7 @@
  "exterior_mounts": 10,
  "exterior_outside": [],
  "outside_any": [
+  "hardpoint_engine_attach",
   "hardpoint_back_landing_gear_left",
   "hardpoint_back_landing_gear_right",
   "hardpoint_front_landing_gear_front"
@@ -123,7 +125,8 @@
     0.0,
     -0.04772,
     1.09704
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_left_lower_front",

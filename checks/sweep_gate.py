@@ -99,7 +99,7 @@ def fingerprint(payload_dir):
 
 
 def write_receipt(payload_dir, *, passed, failed, skipped, not_run,
-                  partial, self_test, seconds):
+                  partial, self_test, seconds, deployed_only=()):
     """Called by run_all_controls.py when a sweep finishes. ONE writer.
 
     The receipt records what the sweep SAW, including the reasons it would not
@@ -117,6 +117,18 @@ def write_receipt(payload_dir, *, passed, failed, skipped, not_run,
         "not_run": sorted(not_run),
         "partial": bool(partial),
         "self_test": bool(self_test),
+        # FAILURES THAT ARE ABOUT THE LIVE SITE, NOT THIS PAYLOAD.
+        #
+        # The three --include-deployed controls answer a different question, and
+        # one of them - "the served ship page is byte-identical to the one just
+        # built" - CANNOT be green until the deploy that makes it so has
+        # happened. Counting it against the gate would mean the deploy is
+        # blocked by the absence of the deploy.
+        #
+        # Found on 2026-08-28 by running the sweep the way Sleven asked for it,
+        # `--include-deployed`, which nothing had done before. `check()` reports
+        # these and does not block on them.
+        "deployed_only": sorted(deployed_only),
     }
     with io.open(RECEIPT, "w", encoding="utf-8", newline="\n") as fh:
         json.dump(rec, fh, indent=1, sort_keys=True)
@@ -168,11 +180,38 @@ def check(payload_dir):
         print("sweep   : THE PAYLOAD CHANGED SINCE THE LAST SWEEP.")
         print("          swept   %s" % (rec.get("fingerprint") or "?")[:32])
         print("          current %s" % want[:32])
-        print("          swept at %s. Re-run the sweep against what is actually")
-        print("          about to be uploaded." % rec.get("at"))
+        # THE %s WAS ON THE LINE ABOVE AND THE % OPERATOR ON THIS ONE, so this
+        # branch printed "swept at %s." and then raised TypeError. Found on
+        # 2026-08-28 by Sleven running the deploy while a sweep was rebuilding
+        # the payload - the first time this path had ever executed.
+        #
+        # It failed CLOSED, which is the safe direction, but it refused by
+        # CRASHING rather than by deciding. An exception here is
+        # indistinguishable from a considered refusal, and on the success path
+        # the same mistake would have blocked every deploy in the project.
+        print("          swept at %s. Re-run the sweep against what is actually"
+              % (rec.get("at") or "an unrecorded time"))
+        print("          about to be uploaded.")
         return 1
 
-    bad = list(rec.get("failed") or []) + list(rec.get("not_run") or [])
+    live = set(rec.get("deployed_only") or [])
+    bad = [n for n in (list(rec.get("failed") or [])
+                       + list(rec.get("not_run") or [])) if n not in live]
+
+    # REPORTED WHETHER OR NOT THEY BLOCK. A deployed-site failure is real
+    # information - the served site is behind, or is broken - and hiding it here
+    # would be the silent success this whole file exists against.
+    if live:
+        print("sweep   : %d control(s) failed ABOUT THE LIVE SITE rather than "
+              "about this payload:" % len(live))
+        for name in sorted(live):
+            print("          LIVE     %s" % name)
+        print("          These do not block: one of them asserts the SERVED page")
+        print("          matches the one just built, which no action before a")
+        print("          deploy can make true. Deploying is their remedy, and")
+        print("          re-running with --include-deployed afterwards is how")
+        print("          you find out whether it worked.")
+
     if bad:
         print("sweep   : the last sweep of THIS payload was not clean.")
         for name in bad:

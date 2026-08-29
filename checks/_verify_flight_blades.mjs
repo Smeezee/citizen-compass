@@ -1,6 +1,12 @@
 /**
  * E9 - THE HULL CONSTRAINT ON FLIGHT BLADES EXISTS, IT IS CALLED RequiredTags,
  * AND IT WAS IN THE SNAPSHOT ALL ALONG.
+
+ *
+ * RULE16: INDEPENDENT - the constraint is read out of CIG's own snapshot and the
+ * page is then required to honour it. The snapshot is not something this
+ * site produced, so a page that fitted a blade to the wrong hull cannot
+ * make itself right by being consistent about it.
  *
  * Sleven, 2026-08-23: "an Anvil C8R Pisces able to put an Avenger Stalker
  * flight blade? I don't know what that is or why it's even on there... I could

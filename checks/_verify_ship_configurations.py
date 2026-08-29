@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 """Prove the configuration builder's checks can FAIL. Hard rule 12.
 
+RULE16: UNPROVEN - it imports build_ship_configurations and drives that module's
+own checks, so a check whose rule is wrong is wrong on both sides of every
+assertion. What it proves is the half rule 12 asks for: each check refuses
+the configuration constructed here to trip it.
+
 `build_ship_configurations.py` decides what an edition actually gives you and
 how a ship can be obtained. Both answers go on a page a visitor reads as fact,
 and both are the kind of thing that looks right until somebody plants a case

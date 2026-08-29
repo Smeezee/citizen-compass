@@ -77,6 +77,56 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 SRC = os.path.join(ROOT, "testing", "_src")
+
+# Q13: WHO OWNS THE FILE THAT MOVED, read from OWNERS.md.
+#
+# On 2026-08-27 this control fired on two writes to testing/_src and the finding
+# was written up as a rule 14 breach. It was not: both files were already C1's,
+# in NEXT.md and in CURRENT-STATE.md, and had been for weeks. The detector was
+# right to fire - the payload really was behind its source - and wrong only in
+# what the READER concluded, because ownership lived in prose no program could
+# read.
+#
+# So drift now says WHOSE source moved. A file with a declared owner is a stale
+# payload and says so; a file with NO declared owner is a gap in OWNERS.md, and
+# OWNERS.md's own text calls finding one worth reporting. Neither is asserted -
+# this control's subject is whether _deploy was built from _src, not who typed
+# the source - but a reader gets the answer without having to guess at it.
+OWNERS_MD = os.path.join(ROOT, "OWNERS.md")
+
+
+def owner_of(rel_path):
+    """The declared owner of a repo-relative path, or None. Never raises."""
+    try:
+        with open(OWNERS_MD, "r", encoding="utf-8") as fh:
+            lines = fh.read().splitlines()
+    except OSError:
+        return None
+    who, best, best_len = None, None, -1
+    for line in lines:
+        if line.startswith("## "):
+            who = line[3:].split()[0].strip().rstrip(".")
+            continue
+        if who and line.startswith("    ") and line.strip():
+            claim = line.strip()
+            if claim.startswith("#") or " " in claim:
+                continue
+            norm = rel_path.replace(os.sep, "/")
+            hit = norm == claim or (claim.endswith("/") and norm.startswith(claim))
+            if hit and len(claim) > best_len:
+                best, best_len = who, len(claim)
+    return best
+
+
+def owner_note(src_name):
+    rel = "testing/_src/" + src_name
+    who = owner_of(rel)
+    if who:
+        return ("%s is owned by %s - this is a payload behind its source, "
+                "not an unowned write" % (rel, who))
+    return ("%s has NO declared owner in OWNERS.md - that is a gap rather than "
+            "permission, and is worth reporting" % rel)
+
 DEPLOY = os.path.join(ROOT, "testing", "_deploy")
 BUILD = os.path.join(SRC, "build_deploy.py")
 
@@ -441,7 +491,8 @@ def page_problems(src_name, out_name, ship_pages):
         # COPIED VERBATIM. No transform is declared for these, so any
         # difference at all is a hand edit.
         if read_bytes(s_path) != read_bytes(d_path):
-            return ["%s differs from _src/%s" % (out_name, src_name)]
+            return ["%s differs from _src/%s  [%s]"
+                    % (out_name, src_name, owner_note(src_name))]
         return []
     # TRANSFORMED. Every injection the build makes is declared, and the source
     # text either side of every one of them must still be there, byte for byte,
@@ -467,8 +518,9 @@ def page_problems(src_name, out_name, ship_pages):
     gaps = split_by_declared(d_text, segments)
     if gaps is None:
         return ["%s no longer contains its _src/%s text outside the declared "
-                "injections (%s)"
-                % (out_name, src_name, " and ".join(gap_names))]
+                "injections (%s)  [%s]"
+                % (out_name, src_name, " and ".join(gap_names),
+                   owner_note(src_name))]
     found = []
     for name, gap in zip(gap_names, gaps):
         problem = gap_problem(name, gap, out_name, ship_pages)

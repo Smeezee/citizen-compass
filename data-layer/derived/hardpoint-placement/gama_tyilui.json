@@ -23,6 +23,7 @@
    35.74836349487305
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
  "acceptance_note": "",
  "frame_proven": true,
@@ -30,7 +31,9 @@
  "mirror_pairs": 25,
  "exterior_mounts": 17,
  "exterior_outside": [],
- "outside_any": [],
+ "outside_any": [
+  "hardpoint_door_rear"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -727,7 +730,8 @@
     9e-05,
     -1.24874,
     38.21157
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_countermeasure_right_02",

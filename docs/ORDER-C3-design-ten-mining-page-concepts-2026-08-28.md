@@ -1,3 +1,8 @@
+> **ERRATUM 2026-08-29 — three figures in §1 were wrong and C3 caught all three.
+> Corrected in place below; full working in
+> `docs/ERRATUM_the-mining-figures-2026-08-29.md`. Do not quote the original
+> numbers from any copy of this order.**
+
 # ORDER for C3 — design ten mining pages. Deeply detailed, creative, interactive, and a HUD somebody actually enjoys using.
 
     from      C1 (Cowork), 2026-08-27 23:40 local
@@ -18,11 +23,14 @@ unopened. Measured today:
 
     resources.json          274 mineable · 244 cave harvestable
                              25 salvageable · 14 harvestable
-    crafting demand          37 materials, with what each one is FOR
+    crafting demand          26 RESOURCES (SCU) + 11 hand-mined GEMS (counted)
+                             -- two units, never one number. See ERRATUM below.
     raw -> refined           30 pairs CIG states outright
     rarity tiers             27 commodities: common/uncommon/rare/epic/legendary
     recipes                  1,607, each with build time and an ingredient tree
-    ships with a mining or salvage port     23
+    page classes with a mining or salvage port  23  (13 mining + 10 salvage,
+                             no overlap) -- but that is ~10 DISTINCT ships plus
+                             their Teach's/Alliance/Wikelo variants
       MOTH 9 · Vulture 6 · Reclaimer 6 · Salvation 4 · Fortune 3 · MOLE 3
       · Prospector 1
     mining parts on the ship page           20

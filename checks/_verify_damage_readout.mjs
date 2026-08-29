@@ -1,5 +1,12 @@
 /**
  * B7 acceptance: THE DAMAGE READOUT, TOLD APART.
+
+ *
+ * RULE16: INDEPENDENT - the numbers the readout must show are taken from the parts
+ * data and compared against what was rendered, so a readout that displays a
+ * confident wrong figure fails. The distinction the section is named for -
+ * telling two damage kinds apart - is decided from the data's own fields,
+ * not from how the page chose to group them.
  *
  * The page showed one figure - Sustained DPS, noted "pilot-fired weapons".
  * Correct, and not enough. Measured across the fleet:

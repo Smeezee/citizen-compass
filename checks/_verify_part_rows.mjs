@@ -1,5 +1,11 @@
 /**
  * E2: no part row is a name and two zeros.
+
+ *
+ * RULE16: INDEPENDENT - the parts that HAVE headline stats are counted in the data
+ * and every one of them is then required to show them: `shown.length ===
+ * withStats.length`. A page that silently dropped a figure it was given
+ * cannot pass, because the count it must match was never its own.
  *
  * Sleven, on the Gladius Valiant's `Turret mount · size 3`:
  * "some of them don't provide any information." The row read

@@ -1384,51 +1384,27 @@ console.log("\n--- N8: the grouping is Editable, never a list of types ---");
 console.log("\n--- N9: the page claims exactly the certainty it has ---");
 {
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
-  const note = el("markernote").innerHTML;
-  record(note.length > 200, "a hull with markers carries the note", `${note.length} chars`);
-  record(/game's own geometry|game files/i.test(note) && /decoded/i.test(note),
-    "and says the measured positions come from the game's own geometry");
-  /* THE HEDGE IS GONE AND THESE FOLLOW IT.
-   *
-   * Until 2026-08-27 the note said BOTH things and admitted it could not say
-   * which applied to the ship in front of you - the right answer while the
-   * marker file was [PortId, x, y, z] and carried no provenance. Q9 added the
-   * fifth element and the note now counts THIS ship's own dots.
-   *
-   * So the claim to defend is no longer "it still apologises". It is that the
-   * note says the right thing FOR THE SHIP RENDERED: name the estimate as an
-   * estimate when there is one, and do not hedge when there is not. The
-   * provenance is read from the page's own counter so the assertion follows
-   * whichever ship this section happens to be driving. */
-  const pv = JSON.parse(vm.runInContext(
-    "JSON.stringify(mountProvenance(shipId))", sandbox));
-  if (pv.est > 0) {
-    record(/name/i.test(note) && /snapped/i.test(note) && /estimate/i.test(note),
-      `this ship has ${pv.est} estimated dot(s), so the note names the fallback`);
-  } else {
-    record(!/an estimate/i.test(note),
-      `every one of this ship's ${pv.cig} dots is CIG's, so the note does not `
-      + "offer an estimate it does not have");
-  }
-  record(!/cannot yet tell you which/i.test(note),
-    "and the old fleet-wide hedge is gone - the note is about THIS ship",
-    note.slice(0, 0));
-  /* AND IT PUTS THE COUNT IN FRONT OF THE READER. The note has three shapes and
-   * this asserts the one that matches the ship being driven, by reading the
-   * page's own counter rather than assuming which hull the section picked. */
-  if (pv.est === 0) {
-    record(new RegExp("all " + pv.total + " dots?", "i").test(note),
-      `and it says so as a count: "All ${pv.total} dots"`, note.slice(0, 90));
-  } else if (pv.cig === 0) {
-    record(/no position in the/i.test(note),
-      `and says all ${pv.est} have no published position`, note.slice(0, 90));
-  } else {
-    record(note.includes(String(pv.cig)) && note.includes(String(pv.est)),
-      `and gives both numbers: ${pv.cig} from geometry, ${pv.est} estimated`);
-  }
-  record(/not estimated/.test(note) && /size|type|fitted/i.test(note),
-    "and that what each port IS remains unestimated");
+  /* THE NOTE'S WORDING IS NOT ASSERTED HERE ANY MORE (Q14, 2026-08-28).
 
+     Five assertions stood here and every one of them described the marker
+     note's sentence. They went red when the note stopped hedging - correctly,
+     because Q9 gave every dot its own provenance and the page could finally
+     say which kind each ship's dots are. I rewrote them that morning to assert
+     the NEW wording, which worked and was still the wrong shape: two controls
+     asserting one sentence is how both of them went stale on the same day.
+
+     THEY LIVE IN checks/_verify_marker_note.mjs NOW, which C1 owns, and which
+     asserts more than these did. It computes the expected counts from
+     loadout_marker.gen.js by RE-IMPLEMENTING the grouping rule, so the page and
+     the check reach the number by two routes - where these read the page's own
+     mountProvenance() and asked it to agree with itself.
+
+     Verified before deleting rather than after: 17 pass clean, and
+     --mutate-fleetwide, --mutate-blind and --self-test each exit non-zero.
+
+     WHAT STAYS BELOW IS N9'S OTHER HALF: the old sentences must be gone from
+     everywhere, including index.html. Those three greps are not duplicated
+     anywhere and are still doing real work. */
   /* THE OLD SENTENCE MUST BE GONE FROM EVERYWHERE, including index. */
   const stripped = html.replace(/<!--[\s\S]*?-->/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
   record(!/Nothing here is estimated/.test(stripped),
@@ -1437,9 +1413,9 @@ console.log("\n--- N9: the page claims exactly the certainty it has ---");
     "and so is \"measured from this hull's own model geometry\"");
   record(!/positions have been measured/i.test(stripped),
     "and the wording that IMPLIED measurement where markers do appear");
-  notes.push("N9: the marker note states the positions come from the mount's " +
-    "name and are not measured, says why that cannot currently be better, and " +
-    "keeps the axis and nose described as measured because they are");
+  notes.push("N9: the old measurement claims are gone from the ship page and " +
+    "from index; the note's own wording is asserted in _verify_marker_note.mjs, " +
+    "which recomputes the counts from the marker file rather than asking the page");
 
   /* A hull with NO markers says something different and equally honest.
 

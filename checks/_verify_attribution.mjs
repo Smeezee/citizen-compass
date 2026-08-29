@@ -1,6 +1,20 @@
 /**
  * A1 + A3: the trademark notice and the source/contact notice, on the pages
  * that ship.
+
+ *
+ * RULE16: UNPROVEN - deliberately so, and the one place the label should not be
+ * read as a criticism. The expected wording is taken from
+ * testing/_src/attribution.py - the BUILD'S OWN constant - so the pages are
+ * compared against the same definition that produced them, and a change to
+ * that definition passes here unremarked.
+ * 
+ * That is required rather than convenient. Hard rule 8 makes the legal text
+ * Sleven's alone and rule 14 forbids a second writer for it, so a control
+ * carrying its own copy would be both a rule violation and the worse kind of
+ * useless: it would keep passing while the page said something different,
+ * because both sides would be reading the checker's copy.
+ * _verify_deploy_drift.py makes the same trade for the same reason.
  *
  * WHY THIS RESOLVES RATHER THAN GREPS
  * -----------------------------------

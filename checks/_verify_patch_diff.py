@@ -2,6 +2,16 @@
 """
 C5b - THE CHECK THE DIFF TOOL CANNOT PASS WHILE BROKEN.
 
+RULE16: INDEPENDENT - the diff tool is run as a subprocess between two snapshots
+built here, so the change it must report is one this file already knows.
+The title is the rule: a broken tool cannot pass, because the expected
+answer did not come from the tool.
+The pattern, said once because several controls in this repo share it:
+driving a real program as a SUBPROCESS with input this file constructed,
+and judging the exit code and the printed refusal, is independent. The
+tool cannot pass by agreeing with itself, because what must be refused was
+decided here and nothing is imported from it.
+
 A diff tool that reports spurious changes passes every other check you can
 write against it. It parses, it runs, it produces plausible output, and the
 output is wrong in the one way nobody can see without a known answer.

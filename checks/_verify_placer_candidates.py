@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
 """Rule 12 control on P1 - the placer's input must not come from its output.
 
+RULE16: INDEPENDENT - the deciding evidence is a PERTURBATION: the fleet file is
+emptied and the candidate count must not move. If the placer were reading
+its own output, emptying that output would change the answer, and the
+number would fall. It does not - 186 either way - and no assertion about
+the source could have established that.
+
+The snapshot comparison beside it is weaker and says so in its own
+comment: it diffs today's hardpoints_fleet.json against a stored copy, and
+place_fleet.py - the only thing that writes that file - is not in this
+repository.
+
 THE DEFECT THIS GUARDS, STATED EXACTLY
 ======================================
 `build_matched.py` seeded its candidate set from `hardpoints_fleet.json`, which

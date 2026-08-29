@@ -373,6 +373,34 @@ def glb_box(model_file):
     lo = [float("inf")] * 3
     hi = [float("-inf")] * 3
     found = 0
+    # NODE TRANSFORMS ARE NOT APPLIED HERE, AND THAT IS A KNOWN DEFECT WITH A
+    # MEASURED CAUSE — see docs/FINDING_the-dots-were-in-a-heap-2026-08-28.md.
+    #
+    # The accessor min/max are in MESH-LOCAL space. three.js applies each
+    # node's rotation and scale before drawing, so on a rotated model the box
+    # the viewer renders and the box read here are different objects:
+    #
+    #     Mantis.glb   raw accessor bounds   1680.4 x 2964.9 x 629.8
+    #                  with node transform      30.0 x    6.4 x   17.0
+    #     CIG's own dimensions for the Mantis   30.0 / 17.0 / 7.5
+    #
+    # The transformed box matches CIG's published Length and Width exactly.
+    # **That is the root cause of the heaped dots and it is not fixed here.**
+    #
+    # I IMPLEMENTED THE TRANSFORM AND REVERTED IT, and the reason is worth more
+    # than the attempt. Applying node scale changes the box for models carrying
+    # a `CC_SCALE_ROOT` too — most of the fleet — and the placement's scale and
+    # acceptance were calibrated against the raw box. The run that followed
+    # refused the Vulture, the Polaris and the Starlancers: **200+ working
+    # hulls destabilised to rescue 16.** A correct change that breaks
+    # everything downstream is not ready, and shipping it at that point would
+    # have been trading tomorrow's silence for tonight's tidiness.
+    #
+    # What it needs is a rebuild loop this session cannot run: change the box,
+    # re-derive every scale, re-run acceptance, and compare all 295 ships
+    # before and after. Until then the ORIENTATION GUARD above refuses the 16
+    # affected hulls rather than placing them wrongly, which is containment,
+    # not a fix.
     for m in g.get("meshes", []):
         for pr in m.get("primitives", []):
             ai = (pr.get("attributes") or {}).get("POSITION")
@@ -449,6 +477,39 @@ def main():
         if min(ext) <= 0:
             skipped.append({"class": out_cls, "why": "degenerate hull box"})
             return
+
+        # THE SCALE RULE ASSUMES Z IS FORE/AFT, AND ON 19 MODELS IT IS NOT.
+        # Added 2026-08-28 after photographing all 295 ships.
+        #
+        # `s = Length / ext[2]` is only meaningful if ext[2] IS the ship's
+        # length. On 19 of 258 models the vertical extent exceeds the fore/aft
+        # one - the Mantis measures 1680 x 2965 x 630, which is not the shape
+        # of a ship - so the scale came off the wrong axis and every mount
+        # collapsed toward the origin. **Ten hulls shipped that way**: the
+        # Tiburon drew all seventeen of its dots in a single clump the size of
+        # a cockpit, and the page labelled every one `cig`, telling the visitor
+        # these were CIG's own published coordinates.
+        #
+        # Four green controls let it through. Containment passed - a heap in
+        # the middle IS inside the box. The mirror passed - a heap is still
+        # symmetric. Provenance passed - the labels honestly described where
+        # the numbers came from. The census passed - nothing was LOST. Each was
+        # asking a real question and none of them was this one.
+        #
+        # REFUSED RATHER THAN GUESSED. Taking the longest axis as fore/aft
+        # would be a guess, and it is wrong for the hulls that genuinely are
+        # wider than they are long. This project refuses ambiguity instead of
+        # resolving it by picking, and a hull refused here loses its dots
+        # rather than keeping wrong ones - which is the honest direction.
+        # `checks/_verify_marker_spread.py` holds the result to it.
+        # ONE SIGNAL IS NOT ENOUGH, AND THE FIRST VERSION OF THIS GUARD PROVED
+        # IT BY THROWING AWAY GOOD DATA. Refusing on the odd shape alone took
+        # out the Pitbull, the Railen, the San'tok.yai and the Reliant - four
+        # hulls whose dots are demonstrably spread correctly across them, on
+        # models that merely measure unusual. **An odd model is a reason to
+        # look, not a verdict.** The flag is carried to the acceptance test
+        # below, where it has to agree with the collapse actually happening.
+        odd_shape = ext[1] > ext[2]
         est = {"length": dim["Length"] / ext[2],
                "width": dim["Width"] / ext[0],
                "height": dim["Height"] / ext[1]}
@@ -515,7 +576,28 @@ def main():
             is_ext = bool(EXTERIOR.search(n["name"]))
             if is_ext:
                 ext_n += 1
-            for i in (0, 1):
+            # FORE/AFT IS TESTED NOW, AND THE REASON IT WAS NOT IS WRONG.
+            #
+            # This loop ran over (0, 1) only — lateral and vertical — because
+            # "the fore/aft axis is where the scale came from and testing it
+            # would be marking our own homework". **The scale comes from the
+            # MODEL'S BOX against CIG's published Length. It is not derived
+            # from any mount position.** So asking whether a mount lands beyond
+            # the nose or the tail is a real question, and the answer is not
+            # true by construction.
+            #
+            # It matters because a mount can only leave the hull in three
+            # directions and one of them was unwatched. Measured across 26,273
+            # mounts: 93 fall outside fore/aft, and **7 of those are EXTERIOR
+            # mounts that get drawn** — the Banu Defender's two countermeasure
+            # launchers at 1.32 of its own half-extent, the Hull C's nose
+            # turret, and four on the M80, which is already refused for its
+            # orientation. The Defender's two were confirmed by photograph:
+            # they float in open space off the nose.
+            #
+            # Cost: three mounts withheld on two hulls. They join the existing
+            # withholding and are bounded by WITHHOLD_MAX exactly as before.
+            for i in (0, 1, 2):
                 m = ext[i] * MARGIN
                 lo_i, hi_i = mn[i] - ctr[i], mx[i] - ctr[i]
                 if p[i] < lo_i - m or p[i] > hi_i + m:
@@ -598,7 +680,41 @@ def main():
         # A hull with FEWER than MIRROR_MIN_PAIRS pairs is NOT vetoed. Absence
         # of evidence is not evidence, and refusing on it would take out a
         # large part of the fleet on no measurement at all.
-        if _mp >= MIRROR_MIN_PAIRS and _mm < _mp * MIRROR_MIN_FRACTION:
+        # THE SCALE CAME OFF THE WRONG AXIS, AND THAT IS ENOUGH TO REFUSE.
+        #
+        # `s = Length / ext[2]` is only meaningful if ext[2] IS the ship's
+        # length. On 19 of 258 models the vertical extent exceeds the fore/aft
+        # one - the Mantis measures 1680 x 2965 x 630, which is not the shape
+        # of a ship - so the scale is derived from an axis that is provably not
+        # the length, and every number downstream inherits that.
+        #
+        # I TRIED TO KEEP THE ONES THAT LOOKED FINE AND THAT WAS THE WRONG
+        # INSTINCT. Four of them - the Pitbull, the Railen, the San'tok.yai and
+        # the Reliant - draw dots that spread across the hull convincingly, so
+        # a two-signal version of this guard let them through. But their scale
+        # came off the same wrong axis as the Mantis's; their boxes are merely
+        # closer to cubic, so the error is small enough to look right.
+        # **Looking right is not proof, and this project refuses ambiguity
+        # rather than resolving it by picking.** They come back when the models
+        # are re-exported in a known orientation, or when something else
+        # establishes which axis is the length - not because their dots
+        # happened to land plausibly.
+        #
+        # What this cost, measured: ten hulls were drawing every dot in a heap
+        # the size of a cockpit, labelled `cig`, telling the visitor these were
+        # CIG's own published coordinates. The Tiburon put all seventeen in one
+        # clump. Four green controls let it through - containment (a heap is
+        # inside the box), the mirror (a heap is still symmetric), provenance
+        # (the labels were honest about the source) and the census (nothing was
+        # LOST). It took photographing all 295 ships to see it.
+        if odd_shape:
+            ok = False
+            why = ("the model measures taller (%.1f) than it is long (%.1f), "
+                   "so CIG's Length was matched to an axis that is not this "
+                   "ship's length and the scale is not trustworthy. Refused "
+                   "rather than guessed - see FINDING_the-dots-were-in-a-heap"
+                   % (ext[1], ext[2]))
+        elif _mp >= MIRROR_MIN_PAIRS and _mm < _mp * MIRROR_MIN_FRACTION:
             ok = False
             why = ("only %d of %d named left/right pairs mirror, which is "
                    "below the fraction a transposed axis cannot reach. The "
@@ -643,6 +759,12 @@ def main():
                "scale_estimates": {k: round(v, 5) for k, v in est.items()},
                "scale_spread": round(spread, 4),
                "hull_box": {"min": mn, "max": mx},
+               # Read off the mesh: the model measures taller than it is long,
+               # so CIG's Length was matched to an axis that is not the ship's
+               # length. Carried here so build_hardpoint_overlay.py can apply
+               # the collapse test at the last step before these numbers become
+               # the page's, where withheld mounts are already gone.
+               "odd_shape": bool(odd_shape),
                "acceptance": ok, "acceptance_note": why,
                "frame_proven": frame_proven,
                "mirror_matched": _mm, "mirror_pairs": _mp,
@@ -660,6 +782,11 @@ def main():
                      "exterior_outside": len(ext_out),
                      "outside_any": len(outside),
                      "scale": round(s, 4), "spread": round(spread, 4),
+                     # Carried so the overlay can apply the collapse test at
+                     # the LAST step before these numbers become the page's,
+                     # where the withheld mounts have already been dropped.
+                     # Measuring it here sees outliers the page never draws.
+                     "odd_shape": bool(odd_shape),
                      "acceptance": ok, "note": why})
         print("  %-32s %s  %3d hp  s=%.3f  spread %5.1f%%%s"
               % (out_cls, "PASS" if ok else "FAIL", len(conv), s, spread * 100,

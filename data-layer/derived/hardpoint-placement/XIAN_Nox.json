@@ -23,6 +23,7 @@
    3.0176737308502197
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
  "acceptance_note": "",
  "frame_proven": true,
@@ -30,7 +31,14 @@
  "mirror_pairs": 15,
  "exterior_mounts": 5,
  "exterior_outside": [],
- "outside_any": [],
+ "outside_any": [
+  "hardpoint_thruster_front_left_A",
+  "hardpoint_thruster_front_right_A",
+  "hardpoint_thruster_front_top_left",
+  "hardpoint_thruster_front_top_right",
+  "hardpoint_fuel_intake",
+  "hardpoint_ping"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -311,7 +319,8 @@
     -0.26254,
     -0.1834,
     -2.98559
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_front_left_B",
@@ -327,7 +336,8 @@
     0.26254,
     -0.18339,
     -2.98559
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_front_right_B",
@@ -343,7 +353,8 @@
     -0.146,
     -0.02014,
     -2.98319
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_front_top_right",
@@ -351,7 +362,8 @@
     0.14601,
     -0.02014,
     -2.98319
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_left",
@@ -415,7 +427,8 @@
     0.0,
     -0.45443,
     -3.10357
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_shield",
@@ -487,7 +500,8 @@
     0.0,
     -0.21631,
     -3.07741
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_rear_right",

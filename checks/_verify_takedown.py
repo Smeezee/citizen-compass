@@ -2,6 +2,17 @@
 # -*- coding: utf-8 -*-
 """A4: the off switch, executed - not described.
 
+RULE16: INDEPENDENT - the takedown script is run as a subprocess with real
+arguments, exactly as a person would run it, and the evidence is what is
+left on disk afterwards: the file gone from the payload, a copy in
+_to_delete, the register stamped. None of that is the script's own
+report of what it did.
+The pattern, said once because several controls in this repo share it:
+driving a real program as a SUBPROCESS with input this file constructed,
+and judging the exit code and the printed refusal, is independent. The
+tool cannot pass by agreeing with itself, because what must be refused was
+decided here and nothing is imported from it.
+
     "A takedown script nobody has ever executed is a script that fails the
     first time it is needed, which is the worst possible time."
 

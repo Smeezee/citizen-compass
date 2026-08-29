@@ -1,5 +1,12 @@
 /**
  * ERRATUM CONTROL, 2026-08-22: a ship name must RESOLVE to the ship page.
+
+ *
+ * RULE16: INDEPENDENT - the page's escapeHtml is driven with a known input and
+ * required to produce a known output (`A<b>&` must become `A&lt;b&gt;&amp;`),
+ * which is an expectation the page did not supply. The routing half is a
+ * whole-set claim over the records rather than a sample: every record with a
+ * LOADOUT_LINK entry must emit a ship-page href, counted from the data.
  *
  * WHY THIS FILE EXISTS AND THE OLD CHECK DOES NOT COUNT
  * ----------------------------------------------------

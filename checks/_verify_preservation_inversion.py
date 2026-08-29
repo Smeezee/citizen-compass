@@ -3,6 +3,13 @@
 """
 _verify_preservation_inversion.py - H7: protect by default, and prove it.
 
+RULE16: INDEPENDENT - the guard is installed on a REAL engine and the question is
+then put to the database rather than to the guard: the row is either
+still there or it is not, and Postgres says which. The inversion this
+file is named for is exactly the case where asking the code would give
+the wrong answer - a delete refused for the wrong reason looks identical
+from the guard's side.
+
 WHAT CHANGED, AND WHY IT NEEDED A CONTROL OF ITS OWN
 ====================================================
 app/preservation.py used to name sixteen tables and protect those. Everything

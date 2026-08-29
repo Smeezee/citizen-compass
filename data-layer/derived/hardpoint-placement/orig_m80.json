@@ -23,14 +23,37 @@
    6.710580825805664
   ]
  },
- "acceptance": true,
- "acceptance_note": "",
+ "odd_shape": true,
+ "acceptance": false,
+ "acceptance_note": "the model measures taller (47.9) than it is long (13.8), so CIG's Length was matched to an axis that is not this ship's length and the scale is not trustworthy. Refused rather than guessed - see FINDING_the-dots-were-in-a-heap",
  "frame_proven": true,
  "mirror_matched": 8,
  "mirror_pairs": 8,
  "exterior_mounts": 11,
- "exterior_outside": [],
- "outside_any": [],
+ "exterior_outside": [
+  "hardpoint_countermeasures_left",
+  "hardpoint_countermeasures_right",
+  "hardpoint_weapon_rearleft",
+  "hardpoint_weapon_rearright"
+ ],
+ "outside_any": [
+  "hardpoint_thruster_main_right",
+  "hardpoint_thruster_main_middle",
+  "hardpoint_thruster_main_left",
+  "hardpoint_seat_pilot",
+  "hardpoint_seat_dashboard",
+  "hardpoint_fuelport_ground",
+  "hardpoint_radar",
+  "hardpoint_thruster_mav_RBL",
+  "hardpoint_countermeasures_left",
+  "hardpoint_thruster_mav_RBR",
+  "hardpoint_countermeasures_right",
+  "hardpoint_thruster_mav_RL",
+  "hardpoint_thruster_mav_RTL",
+  "hardpoint_weapon_rearleft",
+  "hardpoint_thruster_mav_RTR",
+  "hardpoint_weapon_rearright"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -119,7 +142,8 @@
     3.57756,
     -0.10286,
     12.98996
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_main_middle",
@@ -127,7 +151,8 @@
     0.0,
     0.51255,
     11.10468
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_main_left",
@@ -135,7 +160,8 @@
     -3.57755,
     -0.10286,
     12.98996
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_selfDestruct",
@@ -151,7 +177,8 @@
     -0.0,
     1.18946,
     -9.89465
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_seat_dashboard",
@@ -159,7 +186,8 @@
     0.0,
     1.20077,
     -10.80693
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_seat_access",
@@ -279,7 +307,8 @@
     -3.00193,
     -2.40154,
     9.60616
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_fuel_tank_quantum",
@@ -487,7 +516,8 @@
     -0.00044,
     -0.99096,
     -12.19527
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_weapon_frontleft",
@@ -511,7 +541,8 @@
     -5.89816,
     -1.89554,
     11.65924
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_countermeasures_left",
@@ -519,7 +550,8 @@
     -3.30212,
     -2.40154,
     10.50674
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_underleft",
@@ -551,7 +583,8 @@
     5.89817,
     -1.89554,
     11.65924
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_countermeasures_right",
@@ -559,7 +592,8 @@
     3.30212,
     -2.40154,
     10.50674
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_retro_underright",
@@ -591,7 +625,8 @@
     -5.36735,
     0.51776,
     11.08731
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_mav_RTL",
@@ -599,7 +634,8 @@
     -5.98696,
     0.02004,
     12.94087
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_weapon_rearleft",
@@ -607,7 +643,8 @@
     -9.03788,
     -1.29677,
     14.81058
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_mav_RTR",
@@ -615,7 +652,8 @@
     5.97668,
     0.01027,
     12.93617
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_thruster_mav_RR",
@@ -631,7 +669,8 @@
     2.34118,
     -1.01261,
     8.65727
-   ]
+   ],
+   "outside": true
   }
  ]
 }

@@ -2,6 +2,13 @@
 # -*- coding: utf-8 -*-
 """Prove pull_and_clear's verification can FAIL. Hard rule 12.
 
+RULE16: UNPROVEN - it imports verify() from pull_and_clear and judges what that
+function returns about files this file wrote. The independent half is the
+files themselves: a copy that is genuinely short, genuinely different,
+genuinely absent. `verify()` decides whether something may be deleted
+from the only other place it exists, so being able to watch it say NO is
+the point - but it cannot be its own witness.
+
 `verify()` decides whether a file is safe to delete from the only other place it
 exists. If it can only ever return True, then pull_and_clear is not a careful
 tool - it is `rm` with a progress bar and a reassuring name.

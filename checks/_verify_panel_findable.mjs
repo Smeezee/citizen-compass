@@ -1,6 +1,13 @@
 /**
  * Q3 / E6 - THE CONTROL PANEL NOBODY COULD FIND, AND H1f-2's PERSISTENCE,
  * WHICH IS WHY IT MATTERS MORE THAN IT DID.
+
+ *
+ * RULE16: INDEPENDENT - every assertion is about what the SHIPPED MARKUP contains,
+ * and the requirements came from Sleven's report rather than from the page:
+ * the control must not be labelled `Look`, it must say what it does, it
+ * must carry the gear glyph and its aria wiring. The markup cannot argue
+ * with a grep, and none of these strings is one the page chose for itself.
  *
  * Sleven reported the ENTIRE control panel as missing while looking straight
  * at it. The only way in was a word - `Look` - set in the muted colour, in the

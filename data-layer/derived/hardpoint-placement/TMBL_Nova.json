@@ -23,6 +23,7 @@
    7.955498695373535
   ]
  },
+ "odd_shape": false,
  "acceptance": true,
  "acceptance_note": "",
  "frame_proven": true,
@@ -30,7 +31,9 @@
  "mirror_pairs": 12,
  "exterior_mounts": 6,
  "exterior_outside": [],
- "outside_any": [],
+ "outside_any": [
+  "hardpoint_transponder"
+ ],
  "frame": "GLB units. X lateral, Y up, forward is -Z.",
  "hardpoints": [
   {
@@ -295,7 +298,8 @@
     0.0127,
     -0.52939,
     9.35265
-   ]
+   ],
+   "outside": true
   },
   {
    "name": "hardpoint_drive_sprocket_right",

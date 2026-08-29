@@ -53,6 +53,117 @@ turned an outside session's recommendation into pressure and that was wrong.
 
 # CODE'S QUEUE
 
+## Q20 — COMMIT AND PUSH TODAY'S WORK. **SLEVEN SAID YES, 2026-08-29.**
+
+**He was asked directly and answered yes.** That is the go-ahead rule 1 requires,
+and it covers **committing and pushing to GitHub only** — not the live site,
+which stays where it is.
+
+    504 files uncommitted, everything since 1a1b4b7 yesterday morning
+
+**NEVER `git add -A`.** Stage by path, the way you did for `1a1b4b7`.
+
+**CHECKED BEFORE ASKING, so you do not have to re-derive it:**
+
+    _to_delete/            gitignored - confirmed. It holds 5.2 GB, including
+                           C1's model tarballs. It must not enter a commit.
+    *.tgz, *.glb, models/  nothing of that kind is staged
+    the only oddity        data-layer/derived/holo-hardpoints/
+                           loadout_marker.pre-C1-20260829.js - your backup.
+                           Your call whether it belongs in the history.
+
+**AND ONE THING THAT WOULD HAVE STOPPED YOU DEAD.** C1's `git status` left a
+`.git/index.lock` behind — the Cowork mount cannot delete files, so git could
+not clean up after itself. It has been moved to `_to_delete/git-locks/`.
+**If a git command ever fails with `Unable to create '.git/index.lock'`, that is
+why, and moving the file is the fix.** C1 will stop running `git status` on that
+mount.
+
+**What is in this commit, in one line each** — the day is large and the message
+should say so:
+
+    the heap fix          10 hulls were drawing every dot in one clump, labelled
+                          as CIG's own coordinates. Placement now refuses a model
+                          it cannot orient. Root cause found and NOT fixed - see
+                          the finding, it is a node-transform bug in glb_box.
+    the deploy gate       proven on a real collision, then fixed twice: it
+                          refused by crashing, and the control could not tell
+    OWNERS.md             ownership became machine-readable; rule 14 enforced
+    four new controls     marker provenance, marker census, marker spread,
+                          identical options, swap loop
+    Q7                    104 of 105 checks labelled for rule 16
+    the contact sheet     295 ships photographed twice and every dot measured
+                          against a clean silhouette of its own hull
+
+**Verify after:** `git log --stat -1` names only files you expect, and nothing
+under `_to_delete/`. **Nothing goes to the live site.** Going live is still off
+the queue until Sleven raises it himself.
+
+**ONE MORE PLACEMENT CHANGE LANDED AFTER THIS ITEM WAS WRITTEN — rebuild with
+it.** The acceptance test now checks the FORE/AFT axis, which it never did.
+
+The old comment said testing it "would be marking our own homework, because the
+fore/aft axis is where the scale came from". **That reasoning is wrong.** The
+scale comes from the MODEL'S BOX against CIG's published Length; it is not
+derived from any mount position, so asking whether a mount lands beyond the nose
+is a real question with an answer that is not true by construction. **A mount
+can only leave the hull in three directions and one of them was unwatched.**
+
+Measured across 26,273 mounts: 93 fall outside fore/aft, and **7 are EXTERIOR
+mounts that actually get drawn.** The Banu Defender's two countermeasure
+launchers sit at 1.32 of its own half-extent — confirmed by photograph, floating
+in open space off the nose — plus the Hull C's nose turret and four on the M80,
+which is already refused for orientation.
+
+    cost   3 mounts withheld on 2 hulls. Both hulls still pass; the
+           withholding is bounded by WITHHOLD_MAX exactly as before.
+    gain   the last two of the four off-hull hulls found by photography
+
+Derived data is regenerated and C1's five controls are green. **The deployed
+marker file still carries the offending dots until you rebuild.**
+
+## THE BOARD, RECONCILED 2026-08-28 EVENING — READ THIS FIRST
+
+**The queue had gone stale enough to waste your time.** Eight items were finished
+and still reading as open. This is the state of every one, checked rather than
+remembered, against a sweep that ran **105 of 105 green with 0 skipped and 0 not
+run**.
+
+    OPEN, IN THE ORDER I WOULD DO THEM
+      Q7    the last 23 rule-16 labels          81 of 104 done
+      Q15   clearTimeout in _loadout_harness    one line
+      Q5    roadmap watcher R1-R3               only R0 is done
+      Q13   point drift detection at OWNERS.md
+      Q3    STATUS UNKNOWN - its DONE-WHEN names
+            `checks/_verify_holo_placement.py`, which does not exist.
+            Say what happened to it before doing anything.
+
+    DONE, DO NOT RE-DO
+      Q1    armour naming        _verify_armour_naming.mjs green
+      Q2    failed build blocked  superseded by Q10's gate, proven on a real collision
+      Q4    disclosure bars       _verify_disclosure.mjs green
+      Q6    collector selftest    575 checks, 0 failed, on Windows 2026-08-27
+      Q8    stage-still + mutators  C1 ran it in a real browser
+      Q9    placed_from in markers
+      Q10   the deploy gate       and it caught a live collision today
+      Q11   craft_data wired      it is in the deployed payload
+      Q12   the 41 hulls verified C1 photographed all 295 ships, 0 failures
+      Q14   N9 assertions removed _verify_ship_page.mjs 242 green
+      Q16   the rebuild
+      Q17   identical-options line  built, deployed, verified on the served site
+      Q18   deployed-site controls  ran, 3 of 3 passed
+
+**Q12 is closed by a contact sheet, not by a check.** Every ship with a model —
+295 of them — was loaded in a real browser and photographed with its markers
+showing. **2,309 dots, 0 failures. 26 ships show no dots and 25 have at least
+one estimated dot.** Sleven has the sheet and is reviewing it. **Ships with no
+hardpoints are DEFERRED by his instruction** — finish everything else first.
+
+**Nothing here is committed.** 174 files, all of today. Committing is fine when
+you reach a clean stopping point; pushing to the live site is not, and going
+live is still off the queue until Sleven raises it.
+
+
 ### Q1 — 31 SHIPS PRINT ANOTHER SHIP'S NAME ON THEIR ARMOUR. LIVE AND VISIBLE.
 **DONE-WHEN** the armour heading is derived from the SHIP, not from the item's
 own `Name`, and no ship page prints an armour name naming a different ship.
@@ -169,6 +280,88 @@ run a Windows binary — **that is stale for Code**, which ran
 **Do not write another collector check until these run.** If they cannot run,
 the reason is the deliverable.
 
+### Q19 — REBUILD ONCE MORE, AND ONE OPTIONAL FIX THAT IS YOURS
+**DONE-WHEN** a rebuild has run against today's placement and
+`_verify_marker_provenance.py` and `_verify_marker_spread.py` both exit 0.
+**BLOCKED-BY** nothing. **Two controls are RED and both are stale-build, not
+defects — read this before treating either as breakage.**
+
+**WHAT HAPPENED.** Ten ships were drawing every hardpoint dot in a single clump
+the size of a cockpit, and the page labelled all of them `cig` — CIG's own
+published coordinates. The Tiburon put all seventeen in one heap.
+
+**Four green controls let it through.** Containment passed, because a heap is
+inside the box. The mirror passed, because a heap is symmetric. Provenance
+passed, because the labels honestly described where the numbers came from. The
+census passed, because nothing was lost. **It took photographing all 295 ships
+to see it.**
+
+The cause: the scale rule matches CIG's Length to the model's Z extent, and **19
+of 258 models measure taller than they are long** — the Mantis is 1680 x 2965 x
+630. On those the scale came off the wrong axis.
+
+**Placement now refuses a model it cannot orient.** You rebuilt at 03:18 against
+an earlier, two-signal version of that guard; it has since been made strict, so
+the derived data no longer carries Pitbull, Railen, San'tok.yai, Reliant, M80 or
+Starlite and **the deployed marker file still does.** That is the entire content
+of both red controls. One rebuild clears them.
+
+    python checks/_verify_marker_provenance.py    expect 0 after the rebuild
+    python checks/_verify_marker_spread.py        expect 0 after the rebuild
+    python checks/_verify_marker_spread.py --self-test   expect NON-ZERO
+
+**Every marker loss is already declared in `checks/marker_census.json` with the
+reason**, so the census will report them and not block you.
+
+**ONE CONTROL OF YOURS NEEDS ITS BASELINE MOVED, AND ONLY YOU SHOULD DO IT.**
+`_verify_child_markers.py` asserts *"every marker that existed before is still
+there, unmoved"* and is now red, naming the Tiburon, the Railen, the Reliant
+Kore, the Khartu-al, the San'tok.yai and the rest. **It is right.** Those markers
+were removed on purpose — they were the heap — and its baseline predates the
+removal.
+
+C1 has not touched it. Re-baseline it against the rebuilt payload, and **read
+the list it prints before you do**: every name on it should be one of the 16
+orientation-refused hulls. If any other ship appears there, something else moved
+and that is the finding, not the baseline.
+
+**THE ROOT CAUSE IS FOUND AND DELIBERATELY NOT FIXED, WHICH IS WORTH YOUR
+JUDGEMENT.** The placer reads the model's box from raw accessor bounds and
+ignores node transforms; three.js applies them. On a rotated model the two are
+different objects:
+
+    Mantis.glb   raw accessor bounds   1680.4 x 2964.9 x 629.8
+                 with node transform      30.0 x    6.4 x   17.0
+    CIG's own dimensions                 30.0 /   17.0 /    7.5
+
+The transformed box matches CIG's published Length and Width **exactly**. C1
+implemented the transform and reverted it: applying node scale also changes the
+box for every model carrying a `CC_SCALE_ROOT`, and the run that followed refused
+the Vulture, the Polaris and the Starlancers — **200+ working hulls destabilised
+to rescue 16.** It needs a change-and-compare loop across all 295 ships, which is
+a session's work with a build in it, and the build is yours.
+
+## THE OPTIONAL PART, AND IT IS GENUINELY YOURS
+
+**The M80 and the Starlite heap on the page and pass the placer's own
+measurement.** The placer measures every mount; the page draws one dot per mount
+ROOT and picks the shallowest. A couple of outliers the visitor never sees push
+the placer's number above the line.
+
+**The right place for that test is the emitter, where PortIds exist** — the
+grouping the page uses cannot be reconstructed from CIG node names in the
+overlay, and I am not going to approximate it. That is `build_deploy.py`, which
+is yours.
+
+Roughly: group the emitted markers by `PortId.split(".")[0]`, take the shallowest
+of each, and if a hull's drawn dots span less than 0.47 of it while its model
+measures taller than it is long, drop that hull's CIG markers and let it fall
+back to estimates. **`_verify_marker_spread.py` already computes exactly this**
+and will tell you if you have it right.
+
+**Take it or leave it.** The control catches them either way; the difference is
+whether the sweep goes red or the build quietly does the right thing.
+
 ### Q7 — LABEL EVERY CHECK THAT CANNOT MEET RULE 16
 **DONE-WHEN** every check in `checks/` either draws its truth from a real
 source or carries an UNPROVEN label naming what it could not reach.
@@ -180,32 +373,47 @@ one.
 
 **Standing at 2026-08-27 22:51: 29 labelled, 68 to go, 0 malformed.**
 
-### Q8 — RUN `_verify_stage_still.mjs` AND ALL THREE OF ITS MUTATORS
-**DONE-WHEN** the clean run exits 0 and each of the three mutators exits
-non-zero, with the section that went red named in the handoff.
-**BLOCKED-BY** nothing. It needs a build and a browser, both of which are on
-your machine and neither of which is on C1's.
+### Q8 — DONE 2026-08-28 BY C1, IN A REAL BROWSER. NOT YOURS ANY MORE.
+**Do not run this. It has been run.** Clean and all three mutators, in headless
+Chromium, on the 400i.
 
-    node checks/_verify_stage_still.mjs
-    node checks/_verify_stage_still.mjs --mutate-pan          section 2 must go red
-    node checks/_verify_stage_still.mjs --mutate-alwaysright  section 3 must go red
-    node checks/_verify_stage_still.mjs --mutate-opaque       section 4 must go red
+    clean                    13 of 13 assertions pass
+    --mutate-pan             2 red - camera moved tx 0 -> 12.65, px 53.9 -> 66.5
+    --mutate-alwaysright     2 red - a LEFT marker opened the panel right
+    --mutate-opaque          2 red - hull alpha 1, material not transparent
 
-**C1 WROTE THIS AND GENUINELY CANNOT RUN IT** — and that sentence now has to
-earn itself, because the general version of it was wrong. `_verify_stage_still.mjs`
-drives **Playwright**, and there is no browser in the Cowork VM. But C1 CAN run
-every harness-based control — 32 of the 33 page controls were executed here on
-2026-08-28, exit codes read
-(`docs/FINDING_c1-can-run-the-page-controls-2026-08-28.md`). **This one is a
-real exception, not the rule it was written as.** It is the ONLY control over the
-thing Sleven asked for most plainly — *"I really want the ship to stop shifting
-when we open a thing"* — so an unrun control here is the same as no control.
+**Each mutator went red in its own section and nowhere else.** The thing Sleven
+asked for most plainly — *"I really want the ship to stop shifting"* — is now
+proven, not asserted: the camera is byte-identical before and after a marker
+click, and a second marker on a different mount does not move it either.
 
-**`--mutate-pan` is the one to watch.** It began as two separate mutators and
-BOTH would have passed: restoring the shift alone moves nothing on a click, and
-making `setObstruction` call `reframe()` alone re-centres on a centre the camera
-is already at. They are one mutator now. **If it still passes, the check is
-wrong — say so.** C1 would rather be told than have it sit green.
+**HOW, because the reason C1 could not do this for two days was wrong in a way
+worth writing down.** The blocker was never "no browser". It was three things
+that each looked like the same wall:
+
+    checks/.playwright-browsers holds a WINDOWS headless shell   cannot exec on Linux
+    the Cowork VM's allowlist refuses cdn.playwright.dev         cannot download one
+    C1's own container HAS Chromium, at a path and build number
+      playwright will not find by itself                         cannot launch it
+
+**One environment variable closed it.** `_verify_stage_still.mjs` now honours
+`CC_CHROMIUM` (executable path) and `CC_NO_SANDBOX`. Unset, behaviour is
+identical to before, so nothing about your runs changes.
+
+    CC_CHROMIUM=/path/to/chrome CC_NO_SANDBOX=1 node checks/_verify_stage_still.mjs
+
+**SEVEN OF THE NINE PLAYWRIGHT CONTROLS NOW RUN AWAY FROM YOUR MACHINE** and
+all seven pass: `_verify_stage_still`, `_verify_armour_naming`,
+`_verify_disclosure`, `_verify_settings_revision`, `_verify_panel_dismiss`,
+`_verify_marker_positions`, `_verify_camera_framing` (34 assertions).
+
+**The two that do not are honest about why:** `_verify_model_scale` and
+`_verify_imported_models` need the whole 458 MB model library, not a sample.
+Those stay yours until somebody decides that transfer is worth it.
+
+**The other six checks launch Playwright with a hardcoded path and were run in
+C1's sandbox with a symlink rather than by editing your files.** If you want
+them portable too, the same two lines drop into each — C1 has not touched them.
 
 ### Q9 — PUT `placed_from` IN THE MARKER FILE — DONE, AND IT WAS WRONG ON 41 HULLS UNTIL 04:45
 You built it and it works. **C1 then measured what it emitted and found the
@@ -231,7 +439,19 @@ Your rebuild has already picked it up. Measured on the emitted file:
 
 Full working: `docs/FINDING_the-page-called-335-cig-mounts-estimates-2026-08-28.md`.
 
-### Q12 — PUT THE 41 CLIENT-RECORD HULLS THROUGH THE BROWSER CONTROL
+### Q12 — DONE 2026-08-28 BY C1. ALL 295 SHIPS, NOT JUST THE 41.
+**Do not run this.** Every ship with a model was loaded in headless Chromium and
+photographed with its markers rendered — the served page, not a model of it.
+
+    295 ships photographed    2,309 dots drawn    0 failures
+    26 ships show no dots     25 have at least one estimated dot
+
+Sleven has the contact sheet. **Ships with no hardpoints are DEFERRED on his
+instruction** until everything else is finished — do not start on them.
+
+The original text follows for the record.
+
+### Q12 (ORIGINAL) — PUT THE 41 CLIENT-RECORD HULLS THROUGH THE BROWSER CONTROL
 **DONE-WHEN** the 41 hulls that arrive through `fleet_records_client.json` have
 been through `_verify_marker_positions.mjs` (or whatever it has become), and the
 result is in a handoff by name.
@@ -407,6 +627,81 @@ This closes the stated precondition of
 that counts markers before and after and refuses on any loss... the condition of
 doing it at all."* **The collapse itself is still Sleven's decision and has not
 been made.**
+
+### Q18 — RUN THE THREE DEPLOYED-SITE CONTROLS. THAT IS THE WHOLE ITEM.
+**DONE-WHEN** `python checks/run_all_controls.py --include-deployed` has been
+run and the three deployed controls have reported a real verdict.
+**BLOCKED-BY** nothing. **It has never been blocked by anything.**
+
+    python checks/run_all_controls.py --include-deployed
+
+**WHAT THIS ITEM SAID AN HOUR AGO WAS WRONG, TOP TO BOTTOM, AND THE ERROR IS
+WORTH MORE THAN THE ITEM.**
+
+It claimed the testing site sits behind Cloudflare Access, that three controls
+had never run because they could not authenticate, and it sent Sleven into the
+Cloudflare dashboard to create a service token. He went looking, could not find
+the menus, and said so — which is the only reason this was caught.
+
+**C1 read a 403 and inferred a lock without ever reading the response body.**
+The body says:
+
+    x-deny-reason: host_not_allowed
+    Host not in allowlist: citizencompasstesting.citizencompass-contact.workers.dev.
+    Add this host to your network egress settings to allow access.
+
+**That is C1's own sandbox refusing to make the request. It never left the
+building.** Nothing about the site, nothing about Cloudflare, nothing about the
+password. The same wall is why `_verify_find_deployed.mjs` reports `fetch
+failed` on the Cowork VM: that VM has its own allowlist too.
+
+**And the three controls are not blocked at all.** They are in `NEEDS` in
+`run_all_controls.py`, skipped unless `--include-deployed` is passed, **and the
+reason is written right there** — they make ~450 network requests and click
+1,200 markers over the wire, so they are opt-in rather than part of every sweep.
+**Deliberate, documented, and C1 read past it.**
+
+**Code's machine has ordinary internet.** One flag answers the question that
+started all of this — *how much of what we built is actually on the test site* —
+and no dashboard, no token, and no password is involved.
+
+**THE LESSON, because this is the third time this week.** A number or a barrier
+that gets repeated stops being examined. C1 saw "403", reached for the most
+technical explanation available, wrote an order around it, and got a person to
+go looking for menus that do not exist in his account. **The body of the
+response said what was wrong in one sentence and nobody read it.** Read the
+error before theorising about it.
+
+### Q17 — BUILD AND DEPLOY THE IDENTICAL-OPTIONS LINE
+**DONE-WHEN** the testing site shows it and
+`node checks/_verify_identical_options.mjs` exits 0 against the built page.
+**BLOCKED-BY** nothing. Page source is done and green; it needs a build.
+
+**Sleven approved it directly on 2026-08-28.** Where every part a port offers is
+identical on every figure CIG publishes, the picker now says so instead of
+sitting silent:
+
+> **These 3 are identical on every stat the game publishes.** Different names
+> and makers, the same numbers all the way across — so this one is yours to
+> pick on looks or on price.
+
+Both surfaces carry it — the pane picker and the stage dock — from one function.
+
+    node checks/_verify_identical_options.mjs                    10 pass
+    node checks/_verify_identical_options.mjs --mutate-always    section C red
+    node checks/_verify_identical_options.mjs --mutate-never     3 red
+    node checks/_verify_identical_options.mjs --mutate-name      3 red
+    node checks/_verify_identical_options.mjs --self-test        NON-ZERO
+
+**A mount that carries other parts is excluded, and the control is why.** The
+first build put the line on the Sabre's missile mount: 39 racks, all mass 20 at
+size 4, identical by the part table — and named "Gatac Missile Rack 8xS1" and
+"20xS3" on screen. A rack's real difference is its child ports, one level down.
+**True of our data, visibly false to a player.** Ports with children now say
+nothing.
+
+**Everything else on the page is unchanged** — 35 harness controls run, 35
+green, including `_verify_ship_page.mjs` and `_verify_swap_loop.mjs`.
 
 ### Q11 — WIRE `craft_data.gen.js` INTO THE BUILD (ONE LINE, PLUS A TAG)
 **DONE-WHEN** a part in the ship page's picker that has a recipe shows its

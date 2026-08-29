@@ -1,6 +1,12 @@
 """
 Rule 12 proof for the absence pass.
 
+RULE16: UNPROVEN - it imports mark_absent and disclaimer_for from app.absence and
+asks those functions to act, so a pass with the wrong idea of 'absent'
+would be wrong on both sides. The database IS the witness for what ended
+up marked, which is the better half, but the rule doing the marking is
+the rule under test.
+
 The failure shape this guards against is the dangerous kind: **a row that looks
 perfectly fine**. So the headline test is not "does marking work" but "if I
 break the marking, does the row stay `live`" - the negative control the order

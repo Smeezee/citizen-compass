@@ -73,11 +73,20 @@ _passed = []
 _failed = []
 
 
-def check(label, got, want=True):
+def check(label, got, want=True, detail=""):
+    """The detail is PRINTED ON FAILURE, which it was not until 2026-08-28.
+
+    A failing assertion whose evidence is thrown away costs a debugging cycle
+    every time: the crash assertion below reported "a traceback is not a
+    decision" and named neither the script nor the traceback, and finding out
+    which run it meant took a separate probe.
+    """
     expected = (not want) if SELFTEST else want
     ok = bool(got) == bool(expected)
     (_passed if ok else _failed).append(label)
     print("  %s  %s" % ("PASS" if ok else "FAIL", label))
+    if not ok and detail:
+        print("        %s" % str(detail)[:400])
     return ok
 
 
@@ -259,6 +268,9 @@ def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
     return proj
 
 
+_ALL_OUTPUT = []
+
+
 def run_script(script, proj, extra=()):
     """Run one of the real deploy scripts with -WhatIf. Returns (code, output).
 
@@ -276,7 +288,15 @@ def run_script(script, proj, extra=()):
         capture_output=True, text=True, encoding="utf-8", errors="replace",
         cwd=ROOT,
     )
-    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+    out = (proc.stdout or "") + (proc.stderr or "")
+    # EVERY OUTPUT IS KEPT so the control can assert that no run REFUSED BY
+    # CRASHING. On 2026-08-28 sweep_gate.py raised TypeError on the
+    # payload-changed branch - the deploy was correctly stopped, but by an
+    # exception rather than by a decision, and `code != 0` cannot tell those
+    # apart. A gate that crashes on its refusal path would crash on its success
+    # path the day the same mistake lands there.
+    _ALL_OUTPUT.append((script, out))
+    return proc.returncode, out
 
 
 def main():
@@ -653,6 +673,18 @@ def main():
             # make_project always builds at tmp/proj, so proj2 IS proj - the
             # second call overwrote the first. One removal, not two.
             shutil.rmtree(proj2, ignore_errors=True)
+
+        crashed = [(sc, o) for sc, o in _ALL_OUTPUT if "Traceback" in o]
+        # THE THIRD POSITIONAL IS `want`, NOT `detail`. Passing the evidence
+        # there set want="" whenever nothing had crashed, so the assertion
+        # INVERTED: it failed exactly when it should have passed and would have
+        # passed on a real crash. Caught the same afternoon it was written,
+        # by the detail printing as empty on a failure that named no run.
+        check("no deploy-script run in this control refused by CRASHING - a "
+              "traceback is not a decision",
+              not crashed,
+              detail="; ".join("%s: %s" % (sc, o[o.index("Traceback"):][:80])
+                               for sc, o in crashed[:2]))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
