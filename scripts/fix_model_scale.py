@@ -205,7 +205,19 @@ def main():
 
     log("\n-- measure and scale in Blender " + ("" if args.write else "(DRY RUN)"))
     if not args.write:
-        log("  would import each sc-ships/<folder>/model.glb, measure its world")
+        # THE DRY RUN SAID model.glb WHATEVER --source WAS SET TO.
+        # The flag itself is applied correctly a few lines above; only this
+        # description was hard-coded. That is still a defect: Q3 exists
+        # BECAUSE these ships were once scaled from the wrong file, and a
+        # dry run that names the wrong source is how somebody approves
+        # exactly that again. It now prints what will actually be read, and
+        # the per-ship path, so the claim can be checked rather than trusted.
+        log("  would import each sc-ships/<folder>/%s, measure its world"
+            % src_name)
+        for s in ships:
+            _sp = os.path.join(SC_SHIPS, s["folder"], src_name)
+            log("    %-28s %s  %s" % (s["ship"], src_name,
+                "exists" if os.path.exists(_sp) else "MISSING - would fail"))
         log("  bounding box, scale by target_max / measured_max, and write")
         log("  %s/<folder>/model_scaled.glb" % os.path.relpath(stage, REPO))
         log("\n-- compress, then move the current files aside and install (DRY RUN)")

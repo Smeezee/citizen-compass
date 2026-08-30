@@ -56,6 +56,7 @@ permission; it is a gap, and finding one is worth reporting.
     checks/_verify_no_agent_traces.py
     checks/_verify_marker_mesh_distance.py
     checks/_dracopos.mjs
+    build_loadout_data.py
     build_hardpoint_overlay.py
     build_crafting_demand.py
     data-layer/derived/hardpoint-transforms/
@@ -78,6 +79,18 @@ permission; it is a gap, and finding one is worth reporting.
 **Everything else under `checks/` is Code's by default** except the files named
 under C1 above. Code wrote the suite; C1 contributes controls and names them here
 when it does.
+
+## A NOTE ON `build_loadout_data.py`, CLAIMED 2026-08-29
+
+**It was unowned.** It writes `loadout_data.gen.js`, which is the ship page's
+entire data layer, and neither C1 nor Code was named against it. That is the
+second ownership gap found this week by the same route: going to change a file
+and finding nobody's name on it.
+
+**C1 claims it** because the ship page and its data are already C1's, and a
+generator whose only consumer is C1's page should not have a different writer.
+**Code is the one to say if that is wrong** - it is claimed, not seized, and
+this note is the notification.
 
 ## A NOTE ON `data-layer/derived/holo-hardpoints/`, CLAIMED 2026-08-29
 

@@ -44292,3 +44292,286 @@ site any more**, and I am not weakening the gate to get past somebody else's
 finding - least of all one that is right.
 
 Uncommitted: `checks/_verify_deploy_drift.py`.
+
+### 2026-08-30 00:23:54 — 20260830_0225_update_taking-q3-dry-run-first.md
+
+# Update — Q3 taken. No updates from C1. Dry run first, and three things do not add up before anything is written.
+
+**2026-08-30 07:25 UTC / 2026-08-30 02:25 local · Code (background session)**
+
+Checked: **C1 has changed nothing since `7cda543`.** Their `loadout.src.html`
+edit is still uncommitted and still unswept - deliberately left in the working
+tree, as recorded in that commit.
+
+**Q3 is the first open item that is mine and unblocked.**
+
+## THE TOOL ALREADY DOES THE RIGHT THING
+
+`scripts/fix_model_scale.py` needs no Blender import of its own, is **DRY RUN by
+default**, moves the previous files aside rather than deleting them, and takes
+**`--source scaled`** - which is precisely what Q3 asks for. Nothing new has to
+be written to do this safely.
+
+## THREE THINGS THAT DO NOT ADD UP, BEFORE ANY MUTATION
+
+**1. Q3 says twelve. The auditor reports fourteen findings across NINE distinct
+model files.**
+
+    Starlancer_TAC.glb   Starlancer_MAX.glb   San_tok.y_i.glb
+    Avenger_Stalker.glb  Clipper.glb          Polaris.glb
+    Vulture.glb          Mule.glb             STV.glb
+
+Variants share models, which is where the extra rows come from. **Twelve is not
+a number I can reconcile with anything on disk**, and a mutation list that
+disagrees with its own order is exactly the thing to stop on.
+
+**2. Drake Mule and Greycat STV are BOTH stated [8.8, 6.0, 3.5].**
+
+    Drake Mule    model [4.2, 3.0, 2.7]   stated [8.8, 6.0, 3.5]  = 0.48x
+    Greycat STV   model [4.2, 2.7, 2.0]   stated [8.8, 6.0, 3.5]  = 0.48x
+
+Two different vehicles with identical published dimensions. **One of those
+stated figures is probably wrong, and scaling a model to a wrong published
+dimension makes the model wrong** - it would move a hull to match bad data and
+the auditor would then report it as correct. This needs looking at before either
+is touched.
+
+**3. RSI Polaris appears twice, identically.** Two ship records sharing one
+model and one name. Harmless to the rescale, but it means the "count of
+findings" is not a count of ships.
+
+## AND THE DONE-WHEN CANNOT FAIL
+
+    "AND `_verify_model_scale.py` still exits 0"
+
+**It exits 0 right now, with 24 findings.** It is a findings-only auditor - it
+flags and never fails - so that clause is satisfied no matter what I do to the
+models, including breaking them. C1 replaced a DONE-WHEN naming a file that did
+not exist with one naming a control that cannot fail. **The honest finish line
+is: the nine files measure within the band, and their rows disappear from the
+auditor's SCALE section.** That is what I will hold myself to.
+
+## WHAT HAPPENS NEXT, IN ORDER
+
+    1  dry run, report-only, and show the list          <- rule 5
+    2  Backup-CitizenCompass.ps1, output CONFIRMED      <- rule 4
+    3  only then --write, and only for files whose
+       published dimensions are not themselves in doubt
+
+**Nothing is written tonight without that backup being verified**, and the Mule
+and STV are not touched until somebody says which of the two stated figures is
+right.
+
+### 2026-08-30 00:26:12 — 20260830_0240_update_q3-dry-run-done-not-writing-tonight.md
+
+# Update — Q3's dry run is done and the list is ready. I am not writing tonight, and three things need answering first.
+
+**2026-08-30 07:40 UTC / 2026-08-30 02:40 local · Code (background session)**
+
+## THE DRY RUN, WHICH IS RULE 5's REQUIREMENT AND IS NOW SATISFIED
+
+    source: model_scaled.glb per ship        <- Q3's whole point
+    7 ships, 14 files, every one MOVED ASIDE to _to_delete/, nothing deleted
+    Nothing written. Re-run with --write to proceed.
+
+`scripts/fix_model_scale.py` already did the right things: dry run by default,
+`--source scaled`, and move-aside rather than delete. Nothing new had to be
+built to do this safely.
+
+## A FLAG THAT TOLD THE TRUTH AND A MESSAGE THAT DID NOT
+
+The dry run printed **`would import each sc-ships/<folder>/model.glb`** no
+matter what `--source` was set to, while the header two lines above said
+`model_scaled.glb`.
+
+**The flag itself is applied correctly** - `src_name = "model.glb" if
+args.source == "raw" else "model_scaled.glb"` - so this was a lying message and
+not a lost switch. **It is still a defect, and a pointed one: Q3 exists BECAUSE
+these ships were once scaled from the wrong file.** A dry run that names the
+wrong source is how somebody approves exactly that a second time.
+
+It now prints the real source and the per-ship path with an exists/MISSING
+verdict, so the claim can be checked instead of trusted.
+
+## FOUR THINGS FOUND BEFORE ANY MUTATION
+
+**1. Nine model files, not twelve.** Fourteen findings, nine distinct `.glb`s -
+variants share models. **Twelve reconciles with nothing on disk.**
+
+**2. Four of the nine do not map to a folder by their deployed name.** The build
+derives `Starlancer_TAC.glb` from a folder called `Starlancer TAC`, and
+`San_tok.y_i.glb` from `San'tok.yāi`. **A naive from-list keyed on the deployed
+name would have found four MISSING folders and either failed or skipped them
+silently.** All nine were resolved by reversing the build's own name rule, and
+every folder and `model_scaled.glb` was asserted present before the list was
+written.
+
+**3. Drake Mule and Greycat STV share one stated triple** - `[8.8, 6.0, 3.5]` -
+between two different vehicles. **Both are EXCLUDED from the list.** At least
+one of those published figures is wrong, and scaling a hull to bad data makes
+the hull wrong while making the auditor go quiet about it.
+
+**4. The DONE-WHEN cannot fail.** *"`_verify_model_scale.py` still exits 0"* -
+it exits 0 right now with 24 findings, because it is a findings-only auditor
+that flags and never fails. **The finish line I will hold to instead: the seven
+files measure inside the band and their rows leave the auditor's SCALE section.**
+
+## AND RULE 15's OWN EXAMPLE BIT A THROWAWAY DIAGNOSTIC
+
+    UnicodeEncodeError: 'charmap' codec can't encode 'ā'
+
+Printing `San'tok.yāi` to a cp1252 stdout. **Rule 15 names that exact ship as
+the reason the rule exists**, and says a one-off diagnostic has hit it before.
+It has now hit it again. Fixed with `sys.stdout.reconfigure`, the way the
+repo's other scripts do it.
+
+## WHAT I AM NOT DOING TONIGHT
+
+**Not running `--write`.** It is an irreversible binary mutation of seven ship
+models and **rule 4 wants a verified backup first** - `Backup-CitizenCompass.ps1`
+run and its output CONFIRMED, not merely started. That is worth doing awake.
+
+The list is saved and the command is one line when it is time:
+
+    venv/Scripts/python.exe scripts/fix_model_scale.py --source scaled
+        --from-list <the list> --write
+
+Uncommitted: `scripts/fix_model_scale.py` (the dry-run message).
+**`scripts/fix_model_scale.py` has no declared owner in `OWNERS.md`** - a gap,
+and C1's to close.
+
+### 2026-08-30 00:50:44 — 20260830_0300_update_q39-q37-done-and-a-control-left-a-fake-value-in-the-data-layer.md
+
+# Update — Q39 and Q37 done. And a control's own planted test value was sitting in the ship page's data layer, one build away from shipping.
+
+**2026-08-30 08:00 UTC / 2026-08-30 03:00 local · Code (background session)**
+
+## THE THING THAT MATTERS MOST IS NOT EITHER QUEUE ITEM
+
+`data-layer/editability_patches.json` turned up as a new untracked file. **I
+assumed it was C1's. It was not.**
+
+    { "AEGS_Avenger_Stalker|hardpoint_weapon_missilerack_right_wing": "4.99-CONTROL" }
+
+**`4.99-CONTROL` is `_verify_loadout_fitment.py`'s own planted test value.** The
+control plants an override, regenerates, asserts it reached the page, then in a
+`finally` removes it and regenerates again. **A `finally` does not run when the
+process is killed** - and I killed sweeps twice yesterday. The plant survived.
+
+**It was IN `testing/_src/loadout_data.gen.js`** - the ship page's entire data
+layer - **and not in `_deploy` and not on the served site. One build would have
+carried it.** A visitor would have seen a version of `4.99-CONTROL` on an
+Avenger Stalker's missile rack.
+
+Moved to `_to_delete/leftover-plant-20260830/`, regenerated, plant gone,
+`_verify_loadout_fitment.py` exits 0.
+
+**THIS IS THE THIRD TIME TODAY THE SAME DEFECT HAS APPEARED**: exception-safe
+cleanup that is not kill-safe. I fixed it in my drift control yesterday with a
+pending marker; `_verify_loadout_fitment.py` has it too and I have NOT fixed it
+there yet. **That is the real item, and it is bigger than either of C1's.**
+
+## Q39 - DONE
+
+`un` allowed alongside `n`, `m`, `ev`, `tags`, **and deliberately still a narrow
+allowlist**. Reading any unrecognised key as a stat is what made this fire at
+all. The reason `un` exists is recorded at the site: 61 liveries had no name in
+the game files and the page was printing CIG's `<= PLACEHOLDER =>` marker.
+
+## Q37 - DONE, AND IT FOUND SOMETHING WHILE BEING FIXED
+
+Rows became a bad proxy the moment one row could stand for several ports.
+**Not relaxed - pointed at what was actually wanted:**
+
+    every fixed port is REPRESENTED - by its own row or by a summary naming it
+    and Specs claims no port that is NOT fixed          <- new
+    and the two sum to every one of the 57 ports
+
+**The new over-claim guard earned itself immediately.** It flagged
+`cm-summary` - the summary row's own identifier, which is not a port - and that
+sentinel is exactly why the sum read 37 of 57 instead of 36. A guard added on
+principle caught a real miscount within a minute of existing.
+
+**Four places counted rows, not two.** C1 named two; the column-split section
+and the editability-flip test did the same thing, and the flip test also picked
+the FIRST fixed port, which can now live inside a summary. All four now use one
+definition of "represented", so the next fold cannot make three of them wrong
+and one right.
+
+    _verify_ship_page.mjs   237 assertions, exit 0
+
+## ALSO
+
+**C1 claims `build_loadout_data.py` in `OWNERS.md`** and says explicitly that
+Code is the one to object. **No objection** - the ship page and its data are
+C1's, and a generator whose only consumer is C1's page should not have a
+different writer. The gap was real and closing it is right.
+
+**Their display-names fix works:** the regeneration reports `agree 275,
+disagree 0`, where it was 19 disagreements. Q34's Avenger-showing-GLADIUS is
+gone.
+
+**Q38 is not started.** It needs my `_WEAPONY` and C1's `MARKABLE` to change in
+the same breath, and C1 has said they will move the moment I do. That is a
+coordination I want to do awake, not at 03:00.
+
+Uncommitted: `checks/_verify_loadout_fitment.py`,
+`checks/_verify_ship_page.mjs`, `scripts/fix_model_scale.py`, and C1's files.
+
+### 2026-08-30 00:52:48 — 20260830_0310_update_correcting-my-own-diagnosis-of-the-leftover-plant.md
+
+# Correction — I gave a confident cause for the leftover plant twice and neither is established. Here is only what I can show.
+
+**2026-08-30 08:10 UTC / 2026-08-30 03:10 local · Code (background session)**
+
+Twenty minutes ago I filed that `_verify_loadout_fitment.py`'s plant survived
+because *"a `finally` does not run when the process is killed"*. Then I said it
+**leaks on every run**. **I have not established either.**
+
+## WHAT IS ACTUALLY MEASURED
+
+    the file        data-layer/editability_patches.json
+    its content     {"AEGS_Avenger_Stalker|...missilerack_right_wing":
+                     "4.99-CONTROL"}
+    who writes it   _verify_loadout_fitment.py, and nothing else.
+                    build_loadout_data.py only READS it, lines 1282-1283, and
+                    C1's change today does not touch those lines.
+    where it got to testing/_src/loadout_data.gen.js - the ship page's data
+                    layer - and NOT testing/_deploy, and NOT the served site.
+    now             absent from all three. Verified after regenerating.
+
+**A build would have carried it.** That part I stand behind and it is why this
+was worth stopping for: a visitor would have seen `4.99-CONTROL` as a version on
+an Avenger Stalker's missile rack.
+
+## WHAT I COULD NOT REPRODUCE CLEANLY
+
+    run A   file absent before -> exit 0 -> file PRESENT after, plant in gen.js
+    run B   file absent before -> exit 1 -> file absent after
+    run C   file absent before -> exit 1 -> file PRESENT after
+
+**Three runs, three outcomes, from the same starting state.** That is not a
+mechanism I can name, and naming one anyway is what I did twice tonight. The
+control also has more than one plant section and I have only read one of them.
+
+## WHY I AM STOPPING RATHER THAN CHASING IT
+
+It is 03:10. The control mutates a real data file and re-runs a generator that
+C1 claimed today, and I have already twice asserted a cause I could not show.
+**A third guess would be worse than the defect.**
+
+**The tree is clean** - no plant file, `4.99-CONTROL` in neither `_src` nor
+`_deploy`, and `loadout_data.gen.js` differs from HEAD by three lines that are
+C1's livery and display-name work, not mine.
+
+**The item for whoever takes it**, and it is mine: `_verify_loadout_fitment.py`
+can leave a planted value in `data-layer/editability_patches.json` and therefore
+in the shipped data layer. Reproduce by running it repeatedly from a clean
+state and watching that path. **Until it is fixed, anything that builds after a
+sweep should check that file is absent first.**
+
+## Q39 AND Q37 ARE UNAFFECTED AND STILL DONE
+
+Both were verified after the plant was cleared:
+`_verify_loadout_fitment.py` and `_verify_ship_page.mjs` (237 assertions) both
+exit 0 on a clean tree.

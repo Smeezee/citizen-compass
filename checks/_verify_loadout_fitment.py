@@ -697,8 +697,19 @@ def run(data, ships, items, strict=True):
           "scoped by the port's RequiredTags",
           "biggest set %d of %d liveries" % (biggest, len(PAINTS)))
     # AND liveries take no part in the readout: they carry no stats.
+    #
+    # `un` IS PROVENANCE, NOT PERFORMANCE  (2026-08-30). 61 liveries had no
+    # name in the game files and the page was printing CIG's own
+    # <= PLACEHOLDER => marker as the paint's name. They now carry a label
+    # built from CIG's identifier, and `un` marks that the WORDING is ours
+    # rather than the game's. A livery still moves no number on the readout,
+    # so the assertion's intent is untouched.
+    #
+    # DELIBERATELY STILL A NARROW ALLOWLIST rather than 'ignore unknown
+    # keys'. Reading any unrecognised key as a stat is what made this fire
+    # at all, and it is the only reason anybody looked.
     statty = [k for k, v in PAINTS.items()
-              if set(v) - {"n", "m", "ev", "tags"}]
+              if set(v) - {"n", "m", "ev", "tags", "un"}]
     check(not statty,
           "no livery carries a performance stat (L7: they do not move the "
           "readout)", str(statty[:3]))

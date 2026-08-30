@@ -1278,7 +1278,7 @@ CC_THEME.apply();
            layer is opt-in. -->
       <button type="button" id="cc-tune" aria-expanded="false"
               aria-controls="cc-tune-panel"
-              title="Display settings - render style, colour, detail, grid and spin"
+              title="Display settings - render style, color, detail, grid and spin"
               ><span class="ico" aria-hidden="true">&#9881;</span>Display</button>
       <div id="cc-tune-panel" hidden role="dialog"
            aria-label="How the ship looks"></div>
@@ -1861,7 +1861,7 @@ const EXPLAIN={
   "Turret DPS":"What a gunner adds, per second, from the turrets on this hull. It needs somebody in the seat: the pilot cannot fire these. Shown separately rather than added to the pilot figure, and shown only on ships that have turrets.",
   "Missile payload":"The total damage of every missile this ship is carrying, added up. This is a ONE-SHOT figure - fire them and they are gone - so it is never added to a per-second number. Shown only on ships that carry missiles.",
   "Alpha strike":"The damage of one full volley, everything firing once together. High alpha wins the first exchange; high sustained DPS wins a long one.",
-  "Effective HP":"Hull plus shields - roughly how much damage the ship absorbs before it is destroyed. Armour changes what that costs an attacker, by damage type.",
+  "Effective HP":"Hull plus shields - roughly how much damage the ship absorbs before it is destroyed. Armor changes what that costs an attacker, by damage type.",
   "Shield regen":"How fast the shields come back per second once they stop being hit.",
   "IR signature":"Heat. The hotter you run, the further away somebody can see you. Lower is stealthier.",
   "EM signature":"Electromagnetic noise from powered components. Turn things off and it drops. Lower is stealthier.",
@@ -2030,7 +2030,7 @@ function renderStats(){
          ${["Infrared","Electromagnetic","CrossSection"].filter(k=>sm[k]!=null)
            .map(k=>`${k==="CrossSection"?"cross-section":k.toLowerCase()}
            <b>${Math.round(sm[k]*100)}%</b>`).join(" · ")}.
-         Armour moves stealth, so the numbers above are what the components do
+         Armor moves stealth, so the numbers above are what the components do
          and this is what the hull does to them.`
       : "";
   }
@@ -2080,8 +2080,8 @@ function renderArmour(){
   const el=$('armour'); if(!el) return;
   const sh=ship(), a=sh.arm&&ARMOR[sh.arm];
   if(!a){
-    el.innerHTML=`<h2>Hull armour</h2>
-      <p class="gap">The game files list no armour for this hull, so no damage
+    el.innerHTML=`<h2>Hull armor</h2>
+      <p class="gap">The game files list no armor for this hull, so no damage
       or signal resistance can be stated for it. That is an absence in the data,
       not a hull with no protection.</p>`;
     return;
@@ -2097,15 +2097,15 @@ function renderArmour(){
       <div class="k">${k}</div><div class="v">${Math.round(v*100)}%</div>
       <div class="s">${v===1?"no effect":good?"damage reduced":"damage increased"}</div></div>`;
   };
-  let h=`<h2>Hull armour — fixed, and it changes two things</h2>
-    <p class="sub2">${a.n}. This cannot be changed: the game marks every armour
+  let h=`<h2>Hull armor — fixed, and it changes two things</h2>
+    <p class="sub2">${a.n}. This cannot be changed: the game marks every armor
     port on every ship as not editable. It is here because it is part of the
     ship and it moves both what survives and what can see you.</p>
     <h3>Damage taken, by type</h3><div class="resrow">`;
   ["Physical","Energy","Distortion","Thermal","Biochemical","Stun"].forEach(k=>{h+=cell(k,dm[k]);});
   h+=`</div>`;
   if(Object.keys(sm).length){
-    h+=`<h3>Signature, by channel — armour moves stealth too</h3><div class="resrow">`;
+    h+=`<h3>Signature, by channel — armor moves stealth too</h3><div class="resrow">`;
     ["CrossSection","Infrared","Electromagnetic"].forEach(k=>{
       h+=cell(k==="CrossSection"?"Cross-section":k,sm[k]);});
     h+=`</div>`;
@@ -2160,17 +2160,17 @@ function renderMatchup(){
   const rb=calc(B), sh=ship();
   const mix=rb.mix, chan=Object.keys(mix).filter(k=>mix[k]>0);
   if(!chan.length){
-    el.innerHTML=`<h2>What this build's guns do against armour</h2>
+    el.innerHTML=`<h2>What this build's guns do against armor</h2>
       <p class="gap">This build has no pilot-fired weapon with a stated damage
       type, so there is nothing to match against a hull.</p>`;
     return;
   }
   const profs=armourProfiles().slice(0,5);
   const raw=chan.reduce((t,k)=>t+mix[k],0);
-  let h=`<h2>What this build's guns do against armour</h2>
+  let h=`<h2>What this build's guns do against armor</h2>
     <p class="sub2">This build fires
     ${chan.map(k=>`<b>${Math.round(mix[k])} ${k.toLowerCase()}</b>`).join(" + ")}
-    DPS. Armour multiplies each channel separately, so the same guns do
+    DPS. Armor multiplies each channel separately, so the same guns do
     different work against different hulls — which is why survivability cannot
     be one number and neither can damage.</p>
     <table><tr><th>Against a hull like</th><th>Takes</th>
@@ -2813,15 +2813,22 @@ function renderLiveries(){
     and it is tied to this hull by the game's own tag. It changes nothing about
     how the ship performs.
     <b>These are not shown on the model.</b> The game files give a livery a name
-    and a colour word in its class name, not a texture, so painting the model
-    would mean guessing at the colour — and a guessed colour on a page whose
+    and a color word in its class name, not a texture, so painting the model
+    would mean guessing at the color — and a guessed color on a page whose
     whole point is verifiable data is worse than none.</p>`;
   Object.keys(byEvent).sort().forEach(ev=>{
     h+=`<h3>${ev==="Standard"?"Available":ev}</h3><div class="paints">`;
     byEvent[ev].sort((a,b)=>(PAINTS[a].n||a).localeCompare(PAINTS[b].n||b))
       .forEach(k=>{
         const p=PAINTS[k]||{};
-        h+=`<div class="paint"><b>${p.n||k}</b><small>${p.m||""}</small></div>`;
+        /* V5: 61 of these had no name in the game files at all and the page
+           printed CIG's `<= PLACEHOLDER =>` marker as if it were the paint's
+           name. It now shows a label built from CIG's own identifier, and
+           SAYS SO on the line below - because a name we formatted and a name
+           the game gave are different claims and this page does not blur
+           those anywhere else. */
+        const sub=[p.m||"", unnamedTag(p)].filter(Boolean).join(" · ");
+        h+=`<div class="paint"><b>${p.n||k}</b><small>${sub}</small></div>`;
       });
     h+=`</div>`;
   });
@@ -3764,10 +3771,19 @@ function dockStatText(part, key, unit){
    ALREADY uses to preview a change in the right rail on hover, so H8 is
    satisfied by reusing the site's own mechanism rather than by adding a second
    one that could disagree with it. */
+/* V5: "NOT NAMED IN THE GAME" IS A SENTENCE, NOT A NUMBER.
+   `nn` used to be set to the number 1 by the generator while these two lines
+   composed `[p.m, p.nn].join(" · ")`, so 1,450 parts rendered their family
+   line as "Unknown Manufacturer · 1" the moment somebody clicked one. The
+   generator now ships `un` as a flag and the wording lives here, which is the
+   right side of the line for it. */
+function unnamedTag(p){
+  return (p && p.un) ? "not named in the game files" : "";
+}
 function dockRow(id, key, unit, lower, fittedId, isFitted){
   const p=P[id]||{}, f=P[fittedId]||{};
   const size=(p.s==null)?"":`<i class="sz">S${p.s}</i>`;
-  const fam=[p.m, p.nn].filter(Boolean).join(" · ");
+  const fam=[p.m, unnamedTag(p)].filter(Boolean).join(" · ");
   let right;
   if(isFitted){
     right=`<span class="fittag">FITTED</span>`;
@@ -3876,7 +3892,7 @@ function fixedDockHTML(slot){
       const v=p[k]; if(v==null||v==="") return "";
       return `<div class="fxr"><span>${lab}</span><b>${fmt(v)}${u?" "+u:""}</b></div>`;
     }).join("");
-  const fam=[p.m,p.nn].filter(Boolean).join(" · ");
+  const fam=[p.m,unnamedTag(p)].filter(Boolean).join(" · ");
   /* IT CARRIES THE SITE'S OWN `fixedpanel` CLASS. That class is how the rest
      of the page - and every control - recognises "this is the fixed-mount
      panel" as distinct from a picker. Renaming the surface without keeping it
@@ -4879,16 +4895,74 @@ function renderSpecs(){
    NO HEADING WHEN THERE IS NOTHING UNDER IT. A "Fixed" heading over an empty
    list is the navigation equivalent of an empty picker, and 20-odd hulls in
    this fleet genuinely have no fixed ports at all. */
+/* V4: COUNTERMEASURES ARE A FLIGHT CONTROL, NOT A CHOICE, AND THE PAGE NOW
+   SAYS SO IN ONE LINE INSTEAD OF UP TO TEN ROWS.
+
+   SLEVEN, 2026-08-29: "I do not believe we need a hardpoint for them. There's
+   just a tiny bit of information that needs to be provided to the user, not a
+   whole hardpoint they can click on and read about."
+
+   MEASURED BEFORE AGREEING, across all 316 ships:
+       282 of 316 hulls carry countermeasures - it is not a fighter thing.
+           The 34 without are ground vehicles, plus three Argo utility craft.
+       716 of 720 slots are FIXED. The only four a player can change in the
+           whole game are on the Tumbril Nova, which is a tank.
+       602 markers - 10% of every dot in the fleet - are countermeasures.
+
+   AND CIG'S OWN KEYBINDS SETTLE WHAT THEY ARE. From the game's action map,
+   carried on our own keybinds page: `Noise - Deploy` on J, `Decoy - Launch
+   Burst` on H, burst size on ralt+H / lalt+H, and a Panic Launch that
+   "launches a large percentage of the countermeasure magazine". A player
+   presses a key. There is nothing to fit.
+
+   THE FACTS ARE NOT LOST, WHICH WAS THE WHOLE CONDITION. What is carried, how
+   many of each, and how to fire it. Grouping is by the fitted part's own
+   display NAME - an exact string, not a guess at chaff-versus-flare from a
+   class name. Rule: no fuzzy matching, here as everywhere. */
+function cmSummary(cm){
+  if(!cm.length) return "";
+  const by=new Map();
+  cm.forEach(s=>{
+    const p=P[s.stock];
+    const n=p?p.n:"not fitted";
+    by.set(n,(by.get(n)||0)+1);
+  });
+  const parts=[...by.entries()].sort((a,b)=>b[1]-a[1])
+    .map(([n,c])=>`${c} &times; ${n}`).join(" &middot; ");
+  /* THE SUMMARY NAMES THE PORTS IT STANDS FOR, so a control can assert that
+     every fixed port is REPRESENTED rather than that the row count equals the
+     port count. fixedSpecRow()'s own comment already asked for exactly this -
+     "a control can therefore assert WHICH ports are here by id rather than
+     counting rows and hoping" - and folding rows into a summary is the first
+     thing that makes counting rows wrong. */
+  return `<div class="grp"><h3>Countermeasures</h3></div>
+    <div class="slot fixed" data-fixed="cm-summary"
+         data-cm-ports="${cm.map(s=>s.id).join(",")}">
+      <span class="sz">${cm.length}</span><span class="nm">
+      <b>${parts}</b><small>Fired in flight, not fitted in a workshop &mdash;
+      <b>J</b> deploys noise, <b>H</b> launches a decoy. The game does not let
+      you change the launchers, so there is nothing here to pick.
+      <span class="tag">FIXED</span></small></span>
+      <span class="pr"><b>&mdash;</b>flight control</span></div>`;
+}
+
 function fixedSpecs(sh){
-  const shut=(sh.slots||[]).filter(x=>!swappable(x));
-  if(!shut.length) return "";
-  let h=`<h3>Fixed ports &mdash; ${shut.length}</h3>
+  const all=(sh.slots||[]).filter(x=>!swappable(x));
+  /* The countermeasure rows leave the list and become one summary above it.
+     They are still `shut` for every count on this page, because they are still
+     fixed ports on the ship and the header must not start lying about how many
+     there are. */
+  const cm=all.filter(x=>x.t==="def");
+  const shut=all.filter(x=>x.t!=="def");
+  if(!all.length) return "";
+  let h=`<h3>Fixed ports &mdash; ${all.length}</h3>
     <p class="sub2">These are part of the ship and they still count toward
     every number on the loadout tab &mdash; a thruster changes this ship's mass
     whether or not you chose it. The game does not allow them to be changed, so
     they are listed here rather than in the column of things you can change.
     Their markers on the model are still there, and clicking one says the same
     as the row below.</p><div class="fixedspecs">`;
+  h+=cmSummary(cm);
   let lastF=null;
   shut.forEach(s=>{
     const g=tgroup(s.t);
@@ -4956,10 +5030,10 @@ function renderTunePanel(){
   h+=`<div class="grp2"><h4>Style</h4><div class="row2">`;
   modes.forEach(m=>{ h+=`<button type="button" data-style="${m[0]}"
     class="${m[0]===cur?'on':''}">${m[1]}</button>`; });
-  h+=`</div></div><div class="grp2"><h4>Colour</h4><div class="row2">`;
+  h+=`</div></div><div class="grp2"><h4>Color</h4><div class="row2">`;
   cols.forEach((hex,i)=>{ h+=`<button type="button" class="sw${hex===col?' on':''}"
     data-colour="${hex}" title="${CC_COLOUR_NAMES[i]||''}"
-    aria-label="${CC_COLOUR_NAMES[i]||'colour'}"
+    aria-label="${CC_COLOUR_NAMES[i]||'color'}"
     style="background:#${hex.toString(16).padStart(6,'0')}"></button>`; });
   h+=`</div></div><div class="grp2"><h4>Detail</h4>
     <label for="tune-int">Line intensity <b>${_view.slider('lineInt').toFixed(2)}</b></label>

@@ -465,19 +465,35 @@ def part_record(it, type_name, fitted=False):
     mfr = st.get("Manufacturer")
     mfr = (mfr or {}).get("Name") if isinstance(mfr, dict) else None
 
-    name = st.get("Name") or it.get("name") or it.get("className")
+    name, _unnamed = resolve_name(it)
     rec = {
         "n": name,
         "m": mfr or it.get("manufacturer") or "Unknown",
         "t": code_for(type_name),
         "s": num(it.get("size")) or 0,
     }
-    if placeholder:
-        # The className, spaced out. Derived, never invented: `GATS_Ballistic
-        # Gatling_Barrel_S2` reads as "GATS Ballistic Gatling Barrel S2", which
-        # is what the game file actually calls it.
-        rec["n"] = (it.get("className") or "").replace("_", " ").strip() or "Unnamed part"
-        rec["nn"] = 1
+    if _unnamed:
+        # The game does not name this item. `n` above is OUR formatting of
+        # CIG's identifier, and the page must say so rather than imply CIG
+        # wrote it.
+        rec["un"] = 1
+    # THE PLACEHOLDER OVERRIDE IS GONE, AND IT WAS OVERWRITING A CORRECT NAME.
+    #
+    # It used to fire whenever the entity record said `<= PLACEHOLDER =>` and
+    # replace `n` with the spaced-out className. It ran AFTER the name was
+    # resolved, so on 2026-08-29 it was throwing away four names CIG's own
+    # localisation had just supplied - the Sabre Raven's and the Khartu-al's
+    # countermeasure launchers, which the game names perfectly well.
+    #
+    # `resolve_name()` already refuses a placeholder from every source and
+    # falls through to the same className formatting, so the override was doing
+    # nothing this file does not now do earlier and better.
+    #
+    # `nn` IS GONE WITH IT, AND IT WAS A BUG. It was set to the NUMBER 1 while
+    # the page composed `[p.m, p.nn].join(" · ")` - so 1,450 parts rendered
+    # their family line as "Unknown Manufacturer · 1" the moment a visitor
+    # clicked one. `un` replaces it as a flag the page turns into words, which
+    # is the right split: this file ships facts, the page ships wording.
 
     # MASS IS A REAL COUPLING AND MUST NOT BE DROPPED (L6). Fitted parts change
     # the ship's total mass, which changes handling - and since thrusters are
@@ -706,6 +722,99 @@ def part_record(it, type_name, fitted=False):
     return {k: v for k, v in rec.items() if v is not None}
 
 
+# --------------------------------------------------------------------------
+# V5: THE NAME THE GAME PUTS ON SCREEN, NOT THE ONE IN THE CODE
+# --------------------------------------------------------------------------
+# SLEVEN, 2026-08-29: "if they use something in the codes or in the files,
+# that's different than what the game uses. That's what we need to use. The
+# words we use need to match the ones that the players would see in game."
+#
+# `ship-items.json` carries the item's `Name` from the entity record. That is
+# the CODE side. `labels.json` in the same snapshot is CIG's localisation
+# table - 9,559 `item_Name*` entries, the strings the client renders. That is
+# the GAME side, and where the two differ the game side is the one a player has
+# ever seen.
+#
+# WHAT IT CORRECTED, MEASURED ON THE 08-01 SNAPSHOT:
+#     19 parts whose name disagreed with the game's, including a Gladius part
+#        labelled Avenger, a VariPuck S7 labelled S6, and a Khartu-al labelled
+#        "XIAN Scout CML Chaff".
+#
+# THE JOIN IS EXACT. `item_name` + the className, case-folded, and nothing
+# else - no prefix trimming, no nearest match. Case-folding is safe and was
+# CHECKED rather than assumed: of 9,559 keys, 0 collide when folded and 0
+# collide with conflicting values. NO FUZZY MATCHING, here as everywhere.
+_LABELS = {}
+_LABELS_PATH = os.path.join(SNAPDIR, "labels.json")
+if os.path.exists(_LABELS_PATH):
+    # Rule 15: this file is utf-8 and carries a BOM on its first key.
+    with io.open(_LABELS_PATH, encoding="utf-8-sig", errors="replace") as _fh:
+        for _k, _v in json.load(_fh).items():
+            if _k.lower().startswith("item_name") and isinstance(_v, str):
+                _LABELS[_k.lower()] = _v
+
+
+def cig_name(it):
+    """The string the game shows for this item, or None.
+
+    None is a real answer and the caller must handle it: CIG only localises
+    what a player can pick, so most items legitimately have no game-facing
+    name at all and inventing one would be worse than saying nothing.
+    """
+    cn = it.get("className") or ""
+    if not cn:
+        return None
+    v = _LABELS.get("item_name" + cn.lower())
+    if not v or "PLACEHOLDER" in v.upper():
+        return None
+    return v.strip() or None
+
+
+def readable_from_class(cn, strip_prefix=None):
+    """A readable label built from CIG's own identifier. OURS, NOT CIG's.
+
+    Used only where the game names nothing and the record's own Name is absent
+    or is CIG's `<= PLACEHOLDER =>` marker. It reformats an identifier; it does
+    not invent a fact. Every record that gets one is flagged `un` so the page
+    can say the game does not name it, rather than passing our formatting off
+    as the game's word.
+    """
+    if not cn:
+        return None
+    t = cn
+    if strip_prefix and t.lower().startswith(strip_prefix.lower()):
+        t = t[len(strip_prefix):]
+    t = t.replace("_", " ").strip()
+    return " ".join(w for w in t.split() if w) or None
+
+
+def resolve_name(it, strip_prefix=None):
+    """(name, unnamed) - the game's word first, ours last, never a class name.
+
+    ORDER, AND WHY. The game's string beats the entity record because a player
+    has only ever seen the first one. The entity record beats our formatting
+    because it is still CIG's text. A raw className never survives to the page:
+    it is an identifier, and printing one is how
+    `MRCK_S04_KRIG_S65_Stingray_Left` reached a visitor.
+    """
+    v = cig_name(it)
+    if v:
+        return v, False
+    st = it.get("stdItem") or {}
+    for cand in (st.get("Name"), it.get("name")):
+        if not isinstance(cand, str):
+            continue
+        cand = cand.strip()
+        if not cand or "PLACEHOLDER" in cand.upper():
+            continue
+        # An entity Name that IS the className is the identifier wearing a
+        # different field. Fall through and format it honestly instead.
+        if cand == (it.get("className") or ""):
+            continue
+        return cand, False
+    return readable_from_class(it.get("className"), strip_prefix), True
+
+
 def paint_record(it):
     """A livery. NO STATS - it takes no part in the readout, per L7.
 
@@ -715,10 +824,13 @@ def paint_record(it):
     st = it.get("stdItem") or {}
     mfr = st.get("Manufacturer")
     mfr = (mfr or {}).get("Name") if isinstance(mfr, dict) else None
+    _pn, _punnamed = resolve_name(it, strip_prefix="Paint_")
     rec = {
-        "n": st.get("Name") or it.get("name") or it.get("className"),
+        "n": _pn,
         "m": mfr or it.get("manufacturer") or "",
     }
+    if _punnamed:
+        rec["un"] = 1
     ev = it.get("event_source") or st.get("EventSource")
     if isinstance(ev, str) and ev:
         rec["ev"] = ev
@@ -737,8 +849,10 @@ def armor_record(it):
     restate the multiplier against a 1.0 baseline and the page can subtract.
     """
     a = dict_or_none((it.get("stdItem") or {}).get("Armor")) or {}
-    out = {"n": (it.get("stdItem") or {}).get("Name") or it.get("name")
-                or it.get("className")}
+    _an, _aunnamed = resolve_name(it)
+    out = {"n": _an}
+    if _aunnamed:
+        out["un"] = 1
     for src, dst in (("DamageMultipliers", "dm"), ("SignalMultipliers", "sm"),
                      ("PenetrationResistance", "pr"), ("Deflection", "df")):
         d = dict_or_none(a.get(src))
@@ -1345,10 +1459,14 @@ def main():
         bares = {_bare(n) for n in armor_ships.get(k, ()) if _bare(n)}
         base = _base_of(bares) if bares else None
         if base:
-            rec["n"] = "%s ship armour" % base
+            # US spelling on Sleven's instruction, 2026-08-30. CIG's own
+            # string for these is "<Ship> Ship Armor"; ours differs only in
+            # capitalisation, which is deliberate - the page sentence-cases its
+            # own headings and does not shout a component's name.
+            rec["n"] = "%s ship armor" % base
             named += 1
         else:
-            rec["n"] = "Ship armour"
+            rec["n"] = "Ship armor"
             unnamed += 1
         if len(bares) > 1:
             rec["of"] = sorted(bares)

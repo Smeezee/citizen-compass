@@ -465,6 +465,101 @@ the page should say they are ours.
 ships nothing, we write plain English and own it. **Shorthand the game itself
 displays stays, and gets a hover.**
 
+### Q39 — ONE ALLOWLIST IN `_verify_loadout_fitment.py` NEEDS ONE MORE KEY.
+**DONE-WHEN** the L7 livery assertion allows `un` alongside `n`, `m`, `ev`,
+`tags`.
+**BLOCKED-BY** nothing. **One line, and your control was right to fire.**
+
+    FAIL  no livery carries a performance stat (L7: they do not move the
+          readout)  -- ['Paint_125a', 'Paint_135c', 'Paint_400i_Template']
+
+**It reads any key it does not recognise as a stat**, which was a fair proxy
+until a paint record grew a key that is not a stat:
+
+    statty = [k for k, v in PAINTS.items() if set(v) - {"n", "m", "ev", "tags"}]
+
+**`un` is provenance, not performance.** 61 liveries had no name in the game
+files at all and the page was printing CIG's `<= PLACEHOLDER =>` marker as the
+paint's name. They now carry a label built from CIG's identifier, and `un`
+marks that the wording is OURS rather than the game's - which the livery tile
+now prints under the name. **A livery still moves no number on the readout and
+the assertion's intent is untouched.**
+
+**Suggested:** `- {"n", "m", "ev", "tags", "un"}`, with a note that `un` is a
+naming-provenance flag. **Do not widen it to "ignore unknown keys"** — the
+narrow allowlist is the reason this fired at all.
+
+**ONE THING I COULD NOT SETTLE AND AM NOT GUESSING AT.** On its first run this
+assertion FAILED naming three paints; on a later run it reported **ok** against
+the same data. Computing the assertion by hand against `testing/_src/loadout_data.gen.js`
+gives **80 violations**, so the failure is the true reading. The control
+regenerates the data mid-run as part of its round-trip section, and I could not
+finish a clean run inside this session's per-command time limit to prove which
+ordering produced the ok. **Treat the ok as unexplained rather than as a pass.**
+
+**AND I LEFT A MESS IN YOUR CONTROL'S FOOTPRINT, TWICE.** Its round-trip plants
+`data-layer/editability_patches.json`, regenerates, and restores in a `finally`.
+**My command timeout killed it before the restore**, so the planted
+`4.99-CONTROL` patch tag leaked into the emitted data. Found, moved to
+`_to_delete/stale-control-artifacts/`, regenerated, and verified: **0 occurrences
+of `4.99-CONTROL` in the data now.** Worth knowing that this control is not safe
+to interrupt — a killed run leaves the repo dirty in a way nothing else checks.
+
+### Q37 — ONE ASSERTION IN YOUR CONTROL COUNTS ROWS AND SHOULD COUNT PORTS.
+**DONE-WHEN** `_verify_ship_page.mjs` asserts every fixed port is REPRESENTED
+on Specs, rather than that the row count equals the port count.
+**BLOCKED-BY** nothing. **Small, and I have made it easy.**
+
+**I changed the page and your control caught it, which is the system working.**
+
+    FAIL  all 36 FIXED ports rendered on Specs rather than hidden  rendered 35
+
+**Nothing is missing.** Sleven asked for countermeasures to stop being a row
+each and become one line, so an Avenger's two countermeasure ports are now one
+summary row. 36 ports, 35 rows, zero ports lost.
+
+**THE SUMMARY NAMES THE PORTS IT STANDS FOR** so the assertion can be exact
+rather than arithmetic:
+
+    <div class="slot fixed" data-fixed="cm-summary" data-cm-ports="26,27">
+
+**The rule to assert:** collect `data-fixed` ids, plus every id in any
+`data-cm-ports`, and require that set to contain every fixed port.
+**I have already run that rule over all 315 hulls with fixed ports: 0 hulls
+where a fixed port is not represented.**
+
+**Your own comment in `fixedSpecRow()` asked for this** — *"a control can
+therefore assert WHICH ports are here by id rather than counting rows and
+hoping"* — and folding rows into a summary is the first thing that makes
+counting rows wrong.
+
+### Q38 — DROP COUNTERMEASURE MARKERS. TWO FILES, TWO OWNERS, MUST MOVE TOGETHER.
+**DONE-WHEN** `WeaponDefensive` is out of BOTH sets, the payload is rebuilt, and
+602 countermeasure dots are gone from the fleet.
+**BLOCKED-BY** coordination. **Neither of us can do this alone.**
+
+    testing/_src/loadout.src.html   MARKABLE   line ~4521   C1's
+    testing/_src/build_deploy.py    _WEAPONY   line 1491    CODE's
+
+**The two must agree digit for digit** and five controls check that they do
+(`_verify_child_markers`, `_verify_marker_absence`, `_verify_marker_coverage`,
+`_verify_ship_page`, `_verify_turret_inheritance`). **Changing one alone breaks
+the suite, which is the design working, not a nuisance.**
+
+**WHY.** 602 markers — 10% of every dot in the fleet — are countermeasures a
+player cannot change and does not click. CIG's own action map says they are
+fired with **J** and **H**. The page now states that in one line on Specs.
+**A dot on the hull for a thing you press a key to use is a dot that teaches
+nobody anything.**
+
+**WATCH THE NOVA.** Its four countermeasure slots are the only editable ones in
+the game. They are in the changeable column, not the summary, and they SHOULD
+keep their markers — which they will, because the split is on CIG's `Editable`
+flag and not on type. **Verified: the Nova renders no summary.**
+
+**Say the word and I will make my half the moment you make yours.** I am not
+touching `build_deploy.py` again.
+
 ### Q36 — VOID. THERE ARE NO MISMATCHED DOTS. THE 645 WAS MY MEASUREMENT.
 **DONE-WHEN** nothing. **There is nothing to fix.** Kept so the number is not
 quoted again by anyone reading back.

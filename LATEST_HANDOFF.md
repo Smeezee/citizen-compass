@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #850 — 2026-08-30 12:18 AM
+# LATEST_HANDOFF.md — Update #856 — 2026-08-30 12:54 AM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-30 00:18:24 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-30 00:54:37 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,294 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119498 files (13787.21 MB)
 
-**Scripts:** 53  |  **3D models:** 1141  |  **Docs:** 1410
+**Scripts:** 53  |  **3D models:** 1141  |  **Docs:** 1417
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-30 00:52:48 — 20260830_0310_update_correcting-my-own-diagnosis-of-the-leftover-plant.md
+
+# Correction — I gave a confident cause for the leftover plant twice and neither is established. Here is only what I can show.
+
+**2026-08-30 08:10 UTC / 2026-08-30 03:10 local · Code (background session)**
+
+Twenty minutes ago I filed that `_verify_loadout_fitment.py`'s plant survived
+because *"a `finally` does not run when the process is killed"*. Then I said it
+**leaks on every run**. **I have not established either.**
+
+## WHAT IS ACTUALLY MEASURED
+
+    the file        data-layer/editability_patches.json
+    its content     {"AEGS_Avenger_Stalker|...missilerack_right_wing":
+                     "4.99-CONTROL"}
+    who writes it   _verify_loadout_fitment.py, and nothing else.
+                    build_loadout_data.py only READS it, lines 1282-1283, and
+                    C1's change today does not touch those lines.
+    where it got to testing/_src/loadout_data.gen.js - the ship page's data
+                    layer - and NOT testing/_deploy, and NOT the served site.
+    now             absent from all three. Verified after regenerating.
+
+**A build would have carried it.** That part I stand behind and it is why this
+was worth stopping for: a visitor would have seen `4.99-CONTROL` as a version on
+an Avenger Stalker's missile rack.
+
+## WHAT I COULD NOT REPRODUCE CLEANLY
+
+    run A   file absent before -> exit 0 -> file PRESENT after, plant in gen.js
+    run B   file absent before -> exit 1 -> file absent after
+    run C   file absent before -> exit 1 -> file PRESENT after
+
+**Three runs, three outcomes, from the same starting state.** That is not a
+mechanism I can name, and naming one anyway is what I did twice tonight. The
+control also has more than one plant section and I have only read one of them.
+
+## WHY I AM STOPPING RATHER THAN CHASING IT
+
+It is 03:10. The control mutates a real data file and re-runs a generator that
+C1 claimed today, and I have already twice asserted a cause I could not show.
+**A third guess would be worse than the defect.**
+
+**The tree is clean** - no plant file, `4.99-CONTROL` in neither `_src` nor
+`_deploy`, and `loadout_data.gen.js` differs from HEAD by three lines that are
+C1's livery and display-name work, not mine.
+
+**The item for whoever takes it**, and it is mine: `_verify_loadout_fitment.py`
+can leave a planted value in `data-layer/editability_patches.json` and therefore
+in the shipped data layer. Reproduce by running it repeatedly from a clean
+state and watching that path. **Until it is fixed, anything that builds after a
+sweep should check that file is absent first.**
+
+## Q39 AND Q37 ARE UNAFFECTED AND STILL DONE
+
+Both were verified after the plant was cleared:
+`_verify_loadout_fitment.py` and `_verify_ship_page.mjs` (237 assertions) both
+exit 0 on a clean tree.
+
+### 2026-08-30 00:50:44 — 20260830_0300_update_q39-q37-done-and-a-control-left-a-fake-value-in-the-data-layer.md
+
+# Update — Q39 and Q37 done. And a control's own planted test value was sitting in the ship page's data layer, one build away from shipping.
+
+**2026-08-30 08:00 UTC / 2026-08-30 03:00 local · Code (background session)**
+
+## THE THING THAT MATTERS MOST IS NOT EITHER QUEUE ITEM
+
+`data-layer/editability_patches.json` turned up as a new untracked file. **I
+assumed it was C1's. It was not.**
+
+    { "AEGS_Avenger_Stalker|hardpoint_weapon_missilerack_right_wing": "4.99-CONTROL" }
+
+**`4.99-CONTROL` is `_verify_loadout_fitment.py`'s own planted test value.** The
+control plants an override, regenerates, asserts it reached the page, then in a
+`finally` removes it and regenerates again. **A `finally` does not run when the
+process is killed** - and I killed sweeps twice yesterday. The plant survived.
+
+**It was IN `testing/_src/loadout_data.gen.js`** - the ship page's entire data
+layer - **and not in `_deploy` and not on the served site. One build would have
+carried it.** A visitor would have seen a version of `4.99-CONTROL` on an
+Avenger Stalker's missile rack.
+
+Moved to `_to_delete/leftover-plant-20260830/`, regenerated, plant gone,
+`_verify_loadout_fitment.py` exits 0.
+
+**THIS IS THE THIRD TIME TODAY THE SAME DEFECT HAS APPEARED**: exception-safe
+cleanup that is not kill-safe. I fixed it in my drift control yesterday with a
+pending marker; `_verify_loadout_fitment.py` has it too and I have NOT fixed it
+there yet. **That is the real item, and it is bigger than either of C1's.**
+
+## Q39 - DONE
+
+`un` allowed alongside `n`, `m`, `ev`, `tags`, **and deliberately still a narrow
+allowlist**. Reading any unrecognised key as a stat is what made this fire at
+all. The reason `un` exists is recorded at the site: 61 liveries had no name in
+the game files and the page was printing CIG's `<= PLACEHOLDER =>` marker.
+
+## Q37 - DONE, AND IT FOUND SOMETHING WHILE BEING FIXED
+
+Rows became a bad proxy the moment one row could stand for several ports.
+**Not relaxed - pointed at what was actually wanted:**
+
+    every fixed port is REPRESENTED - by its own row or by a summary naming it
+    and Specs claims no port that is NOT fixed          <- new
+    and the two sum to every one of the 57 ports
+
+**The new over-claim guard earned itself immediately.** It flagged
+`cm-summary` - the summary row's own identifier, which is not a port - and that
+sentinel is exactly why the sum read 37 of 57 instead of 36. A guard added on
+principle caught a real miscount within a minute of existing.
+
+**Four places counted rows, not two.** C1 named two; the column-split section
+and the editability-flip test did the same thing, and the flip test also picked
+the FIRST fixed port, which can now live inside a summary. All four now use one
+definition of "represented", so the next fold cannot make three of them wrong
+and one right.
+
+    _verify_ship_page.mjs   237 assertions, exit 0
+
+## ALSO
+
+**C1 claims `build_loadout_data.py` in `OWNERS.md`** and says explicitly that
+Code is the one to object. **No objection** - the ship page and its data are
+C1's, and a generator whose only consumer is C1's page should not have a
+different writer. The gap was real and closing it is right.
+
+**Their display-names fix works:** the regeneration reports `agree 275,
+disagree 0`, where it was 19 disagreements. Q34's Avenger-showing-GLADIUS is
+gone.
+
+**Q38 is not started.** It needs my `_WEAPONY` and C1's `MARKABLE` to change in
+the same breath, and C1 has said they will move the moment I do. That is a
+coordination I want to do awake, not at 03:00.
+
+Uncommitted: `checks/_verify_loadout_fitment.py`,
+`checks/_verify_ship_page.mjs`, `scripts/fix_model_scale.py`, and C1's files.
+
+### 2026-08-30 00:26:12 — 20260830_0240_update_q3-dry-run-done-not-writing-tonight.md
+
+# Update — Q3's dry run is done and the list is ready. I am not writing tonight, and three things need answering first.
+
+**2026-08-30 07:40 UTC / 2026-08-30 02:40 local · Code (background session)**
+
+## THE DRY RUN, WHICH IS RULE 5's REQUIREMENT AND IS NOW SATISFIED
+
+    source: model_scaled.glb per ship        <- Q3's whole point
+    7 ships, 14 files, every one MOVED ASIDE to _to_delete/, nothing deleted
+    Nothing written. Re-run with --write to proceed.
+
+`scripts/fix_model_scale.py` already did the right things: dry run by default,
+`--source scaled`, and move-aside rather than delete. Nothing new had to be
+built to do this safely.
+
+## A FLAG THAT TOLD THE TRUTH AND A MESSAGE THAT DID NOT
+
+The dry run printed **`would import each sc-ships/<folder>/model.glb`** no
+matter what `--source` was set to, while the header two lines above said
+`model_scaled.glb`.
+
+**The flag itself is applied correctly** - `src_name = "model.glb" if
+args.source == "raw" else "model_scaled.glb"` - so this was a lying message and
+not a lost switch. **It is still a defect, and a pointed one: Q3 exists BECAUSE
+these ships were once scaled from the wrong file.** A dry run that names the
+wrong source is how somebody approves exactly that a second time.
+
+It now prints the real source and the per-ship path with an exists/MISSING
+verdict, so the claim can be checked instead of trusted.
+
+## FOUR THINGS FOUND BEFORE ANY MUTATION
+
+**1. Nine model files, not twelve.** Fourteen findings, nine distinct `.glb`s -
+variants share models. **Twelve reconciles with nothing on disk.**
+
+**2. Four of the nine do not map to a folder by their deployed name.** The build
+derives `Starlancer_TAC.glb` from a folder called `Starlancer TAC`, and
+`San_tok.y_i.glb` from `San'tok.yāi`. **A naive from-list keyed on the deployed
+name would have found four MISSING folders and either failed or skipped them
+silently.** All nine were resolved by reversing the build's own name rule, and
+every folder and `model_scaled.glb` was asserted present before the list was
+written.
+
+**3. Drake Mule and Greycat STV share one stated triple** - `[8.8, 6.0, 3.5]` -
+between two different vehicles. **Both are EXCLUDED from the list.** At least
+one of those published figures is wrong, and scaling a hull to bad data makes
+the hull wrong while making the auditor go quiet about it.
+
+**4. The DONE-WHEN cannot fail.** *"`_verify_model_scale.py` still exits 0"* -
+it exits 0 right now with 24 findings, because it is a findings-only auditor
+that flags and never fails. **The finish line I will hold to instead: the seven
+files measure inside the band and their rows leave the auditor's SCALE section.**
+
+## AND RULE 15's OWN EXAMPLE BIT A THROWAWAY DIAGNOSTIC
+
+    UnicodeEncodeError: 'charmap' codec can't encode 'ā'
+
+Printing `San'tok.yāi` to a cp1252 stdout. **Rule 15 names that exact ship as
+the reason the rule exists**, and says a one-off diagnostic has hit it before.
+It has now hit it again. Fixed with `sys.stdout.reconfigure`, the way the
+repo's other scripts do it.
+
+## WHAT I AM NOT DOING TONIGHT
+
+**Not running `--write`.** It is an irreversible binary mutation of seven ship
+models and **rule 4 wants a verified backup first** - `Backup-CitizenCompass.ps1`
+run and its output CONFIRMED, not merely started. That is worth doing awake.
+
+The list is saved and the command is one line when it is time:
+
+    venv/Scripts/python.exe scripts/fix_model_scale.py --source scaled
+        --from-list <the list> --write
+
+Uncommitted: `scripts/fix_model_scale.py` (the dry-run message).
+**`scripts/fix_model_scale.py` has no declared owner in `OWNERS.md`** - a gap,
+and C1's to close.
+
+### 2026-08-30 00:23:54 — 20260830_0225_update_taking-q3-dry-run-first.md
+
+# Update — Q3 taken. No updates from C1. Dry run first, and three things do not add up before anything is written.
+
+**2026-08-30 07:25 UTC / 2026-08-30 02:25 local · Code (background session)**
+
+Checked: **C1 has changed nothing since `7cda543`.** Their `loadout.src.html`
+edit is still uncommitted and still unswept - deliberately left in the working
+tree, as recorded in that commit.
+
+**Q3 is the first open item that is mine and unblocked.**
+
+## THE TOOL ALREADY DOES THE RIGHT THING
+
+`scripts/fix_model_scale.py` needs no Blender import of its own, is **DRY RUN by
+default**, moves the previous files aside rather than deleting them, and takes
+**`--source scaled`** - which is precisely what Q3 asks for. Nothing new has to
+be written to do this safely.
+
+## THREE THINGS THAT DO NOT ADD UP, BEFORE ANY MUTATION
+
+**1. Q3 says twelve. The auditor reports fourteen findings across NINE distinct
+model files.**
+
+    Starlancer_TAC.glb   Starlancer_MAX.glb   San_tok.y_i.glb
+    Avenger_Stalker.glb  Clipper.glb          Polaris.glb
+    Vulture.glb          Mule.glb             STV.glb
+
+Variants share models, which is where the extra rows come from. **Twelve is not
+a number I can reconcile with anything on disk**, and a mutation list that
+disagrees with its own order is exactly the thing to stop on.
+
+**2. Drake Mule and Greycat STV are BOTH stated [8.8, 6.0, 3.5].**
+
+    Drake Mule    model [4.2, 3.0, 2.7]   stated [8.8, 6.0, 3.5]  = 0.48x
+    Greycat STV   model [4.2, 2.7, 2.0]   stated [8.8, 6.0, 3.5]  = 0.48x
+
+Two different vehicles with identical published dimensions. **One of those
+stated figures is probably wrong, and scaling a model to a wrong published
+dimension makes the model wrong** - it would move a hull to match bad data and
+the auditor would then report it as correct. This needs looking at before either
+is touched.
+
+**3. RSI Polaris appears twice, identically.** Two ship records sharing one
+model and one name. Harmless to the rescale, but it means the "count of
+findings" is not a count of ships.
+
+## AND THE DONE-WHEN CANNOT FAIL
+
+    "AND `_verify_model_scale.py` still exits 0"
+
+**It exits 0 right now, with 24 findings.** It is a findings-only auditor - it
+flags and never fails - so that clause is satisfied no matter what I do to the
+models, including breaking them. C1 replaced a DONE-WHEN naming a file that did
+not exist with one naming a control that cannot fail. **The honest finish line
+is: the nine files measure within the band, and their rows disappear from the
+auditor's SCALE section.** That is what I will hold myself to.
+
+## WHAT HAPPENS NEXT, IN ORDER
+
+    1  dry run, report-only, and show the list          <- rule 5
+    2  Backup-CitizenCompass.ps1, output CONFIRMED      <- rule 4
+    3  only then --write, and only for files whose
+       published dimensions are not themselves in doubt
+
+**Nothing is written tonight without that backup being verified**, and the Mule
+and STV are not touched until somebody says which of the two stated figures is
+right.
 
 ### 2026-08-30 00:17:36 — 20260830_0210_update_drift-control-fixed-deploy-blocked-by-c1s-two.md
 
@@ -1116,323 +1399,7 @@ recording the wrong event.
 Rule 12 applies: the list has to be proven not to hide a fourth. I will plant a
 loss that is NOT declared and confirm the control still goes red.
 
-### 2026-08-29 10:35:59 — 20260829_1120_update_q23-committed-and-pushed-d1e60b4.md
-
-# Update — committed and pushed as `d1e60b4`. 23 files, the drift fix and today's docs, tree clean. Nothing went to the live site and nothing went to the testing site either.
-
-**2026-08-29 11:20 local · Code (background session)**
-
-Sleven said commit and push, in this session, for this change. Rule 2 satisfied.
-
-    d1e60b4   23 files changed, 2,783 insertions, 796 deletions
-    4710d30..d1e60b4  main -> main
-    local HEAD == origin/main == d1e60b4
-    git status --porcelain    0 entries
-
-## Staged by path, never `git add -A`
-
-    checks/            _verify_deploy_drift.py, rule16_baseline.txt,
-                       _verify_panel_dismiss.mjs
-    testing/_src/      build_deploy.py, loadout_marker.gen.js
-    build_hardpoint_overlay.py
-    docs/              the DECISION, C1's ERRATUM, the proposal, 9 handoff
-                       updates and the running log
-    NEXT.md, OWNERS.md, LATEST_HANDOFF.md
-
-## Verified after, not assumed
-
-- **`_to_delete/` contributed 0 files.** Checked in the index before the commit
-  and in `git log -1 --name-only` after. The probes from this morning - three
-  rule-16 label probes and two restore probes - are all in there and none of
-  them entered history.
-- **No path outside the eight expected roots.** Filtered the commit's file list;
-  came back empty.
-- **The push landed** - `git fetch` and a hash comparison, not the push's own
-  output.
-
-## ONE FILE IN THIS COMMIT IS A PAYLOAD SOURCE, AND IT IS THE FORE/AFT CHANGE
-
-`testing/_src/loadout_marker.gen.js` moved by 4 lines - **that is C1's fore/aft
-withholding, landing in a tracked file for the first time.** It is what Q23 asks
-for. `testing/_deploy` is gitignored and is not in this or any commit.
-
-## Q23'S BLOCKER, STATED RATHER THAN IGNORED
-
-NEXT.md has Q23 **BLOCKED-BY Q21**, and Q21 is 2 of 3 - `MISC_Hull_C` port 2 is
-still in the payload. **Sleven told me to commit anyway, in this message.** The
-block was procedural rather than technical: nothing here depends on Q21 finishing,
-and leaving a day of work uncommitted to honour an ordering constraint would have
-been the worse call. Recording the deviation because it IS one.
-
-## C1's FILES CARRIED, NOT EDITED
-
-`OWNERS.md`, `NEXT.md`, `_verify_panel_dismiss.mjs`, `build_hardpoint_overlay.py`
-and the proposal are in this commit exactly as C1 left them. **The overlay's
-comment fix landed with a duplicated "So. So"** - C1's file, C1's to tidy, and I
-am not touching it to make a diff look neater.
-
-## STANDING
-
-    Q22, Q24, Q25   done
-    Q21             2 of 3
-    Q23             done as of this commit
-    Q26             blocked by Q21
-
-**The deploy is still refused** by `sweep_gate.py` on `_verify_child_markers.py`
-and `_verify_marker_census.py`. Both baselines are C1's. The served site stays on
-04:47 until C1 clears them - and the gate is not going to be weakened to get past
-its own finding.
-
-### 2026-08-29 10:34:19 — 20260829_1110_update_q25-done-the-separator-is-three-characters-and-a-lowercase-label-is-invisible.md
-
-# Update — Q25 done. The separator was never one character, the en dash is a worse trap than the comma, and a lowercase label is invisible to the gate.
-
-**2026-08-29 11:10 local · Code (background session)**
-
-`docs/DECISION_the-rule16-label-format-2026-08-29.md`, 149 lines. C1's
-instruction was *"write what the gate does, not what it should do — if they
-differ, that difference is the finding."* They differ in three places.
-
-## 1. THE SEPARATOR IS THREE CHARACTERS
-
-    LABEL = re.compile(r"RULE16:\s*(INDEPENDENT|UNPROVEN)\s*[-—:]\s*(.+)")
-
-**Hyphen, em dash AND colon all pass.** `RULE16: UNPROVEN: reason` is a valid
-label and always has been. Every error message the gate prints says *"with the
-separator"* and shows only the hyphen, so **the rule as communicated has been
-narrower than the rule as enforced since adoption.** Not a defect — a
-documentation gap, and the document is the fix.
-
-## 2. THE EN DASH IS WORSE THAN THE COMMA EVER WAS
-
-    ACCEPTED   RULE16: UNPROVEN — reason      em dash  U+2014
-    MALFORMED  RULE16: UNPROVEN – reason      en dash  U+2013
-
-**One pixel apart, treated oppositely.** The comma cost two people an hour and a
-comma is at least visible. The gate prints the offending line back in its error —
-where an en dash looks correct. Anyone who hits this should suspect the character
-before the code.
-
-## 3. THE ONE ACTUAL HOLE, AND I FOUND IT BY TESTING RATHER THAN READING
-
-**A lowercase label is not seen as a label at all.**
-
-    checks/_verify_zz_probe_lowercase.py
-      -> "a NEW check with no RULE16 label"
-
-The regex is case-sensitive and **so is the fallback that detects a MALFORMED
-label** — it greps for the literal `RULE16`. So `rule16: unproven - ...` produces
-neither a match nor a malformed report. It is classified **unlabelled**.
-
-**And `rule16_baseline.txt` excuses unlabelled files.** The baseline is matched
-on the reason string `"no RULE16: line"` (`_verify_rule16_labels.py:167`), which
-is precisely what a lowercase label produces. A baselined file carrying a
-lowercase label would be **silently excused while appearing to have declared
-itself.**
-
-It fails today only because the debt list is closed and a NEW unlabelled check is
-refused outright — **a second guard catching it, not the label logic working.**
-
-**Not fixed.** Q25 was to record behaviour, and changing the gate would make the
-document stale the day it was written. The fix is one word — case-insensitive
-loose detection so a lowercase label reports MALFORMED rather than absent — and
-it is mine when it is wanted.
-
-## HOW EACH ROW WAS ESTABLISHED
-
-Every acceptance row was run through the gate rather than reasoned about, and the
-three interesting ones — colon, en dash, lowercase — were run **end to end as
-real files in `checks/`**, so the gate discovered and classified them the way it
-would any control. All three are parked in `_to_delete/probes-20260829/`, and the
-suite is back to 105 of 105, 0 unlabelled, 0 malformed, GREEN.
-
-## STANDING
-
-    Q22  verified myself, 105 of 105
-    Q24  done - the comment, plus a second stale premise (numpy IS installed)
-    Q25  done - this
-    Q21  2 of 3. MISC_Hull_C port 2 still in the payload.
-    Q26  blocked by Q21
-    Q23  blocked by Q21
-
-**The deploy is still gated** on `_verify_child_markers.py` and
-`_verify_marker_census.py`, and both baselines are C1's to clear. Nothing I own
-is in the way of it.
-
-### 2026-08-29 10:23:25 — 20260829_1055_update_i-was-wrong-about-q21-the-withholding-did-arrive-and-the-deploy-is-gated.md
-
-# Update — I was wrong an hour ago: the withholding DID reach the marker file. Q21 is 2 of 3, the deploy is gated on two red controls, and both baselines are C1's to clear.
-
-**2026-08-29 10:55 local · Code (background session)**
-
-## THE CORRECTION, FIRST
-
-At 10:45 I filed that the fore/aft withholding *"cannot reach `loadout_marker.gen.js`
-through any build"* and that *"there is no port 50 or 51 in it to remove, and
-there never was."*
-
-**The second half was wrong and the first half was the wrong conclusion from a
-true measurement.**
-
-    BANU_Defender  port 50   GONE
-    BANU_Defender  port 51   GONE
-    MISC_Hull_C    port 2    PRESENT
-
-**Ports 50 and 51 were removed — at C1's 09:19 regeneration, which is before the
-09:47 baseline I measured from.** So my before AND my after both already had them
-gone, my build was correctly a no-op, and I read "my build changed nothing" as
-"the change can never arrive." Those are not the same statement and I should not
-have made the second one.
-
-**What survives from that update:** the marker pipeline genuinely does not read
-`data-layer/derived/hardpoint-placement/` — one grep hit, line 1560, model
-substitutions. The withholding reaches the payload through
-`holo-hardpoints-align/`, regenerated at 09:19. Both facts are true; I joined
-them into a false conclusion.
-
-## SO Q21 IS 2 OF 3, NOT 0 OF 3 AND NOT DONE
-
-`MISC_Hull_C` port 2 is still in the payload. That is the one named port the
-09:19 run did not take out, and I do not know why — it is C1's pipeline and I am
-not guessing at it.
-
-## THE SWEEP, AND IT IS THE FIRST CLEAN MEASUREMENT
-
-    104 ok, 2 failed, 0 skipped, 0 NOT RUN, in 677s
-
-**This is the first sweep in this repo that could not be perturbed by its own
-drift control.** Nothing rebuilt underneath it; every control measured the same
-payload. That is what this morning's work was for.
-
-## THE TWO REDS ARE THE WITHHOLDING ITSELF, ARRIVING AT BASELINES THAT PREDATE IT
-
-    _verify_child_markers.py   every marker that existed before is still there
-                               got ['Banu Defender:50', 'Banu Defender:51',
-                                    'MISC Hull C:34']
-    _verify_marker_census.py   REFUSED - BANU_Defender 10 -> 8
-
-**Neither is a defect. Both are controls correctly refusing a loss nobody has
-declared to them yet.** That is exactly what they are for, and I am not going to
-make them quiet.
-
-## AND I AM NOT CLEARING EITHER, BECAUSE NEITHER IS MINE TO CLEAR
-
-    _verify_marker_census.py    C1's in OWNERS.md
-    checks/marker_census.json   C1's in OWNERS.md
-    _verify_child_markers.py    MINE by the default clause - but its baseline is
-                                data-layer/derived/holo-hardpoints/
-                                loadout_marker.pre-C1-20260829.js, and C1
-                                CLAIMED that directory this morning.
-
-**So the control is mine and the file it compares against is C1's.** Re-taking
-that snapshot is a write into C1's path, and the whole point of this morning's
-rule 14 work was to stop doing exactly that. C1 sets the condition for re-taking
-it anyway — the pinned four checked first — and C1 is the one who can say
-whether losing `MISC Hull C:34` was intended.
-
-## THE DEPLOY IS REFUSED, AND I ASKED THE GATE RATHER THAN ASSUMING
-
-    $ python checks/sweep_gate.py --check testing/_deploy
-    sweep   : the last sweep of THIS payload was not clean.
-              FAILED   _verify_child_markers.py
-              FAILED   _verify_marker_census.py
-    GATE EXIT 1
-
-**Nothing was uploaded and I did not try to.** The served site stays on 04:47
-until the two reds are resolved by their owner. Weakening the gate to ship past
-its own finding is the one thing that is never on the table.
-
-## WHAT I NEED FROM C1, SPECIFICALLY
-
-    1  declare the BANU_Defender 10 -> 8 loss in marker_census.json, or say it
-       is not intended
-    2  say whether MISC Hull C:34 going was intended, and why port 2 stayed
-    3  authorise a re-take of loadout_marker.pre-C1-20260829.js, or take it
-
-Then the sweep goes green and the deploy runs without anything being bypassed.
-
-**Next while that waits: Q25, the separator DECISION doc.** It needs nothing
-from anyone.
-
-### 2026-08-29 10:08:34 — 20260829_1045_update_q21-cannot-be-closed-by-a-build-the-withholding-does-not-reach-the-marker-file.md
-
-# Update — Q21's DONE-WHEN cannot be reached by a build. The fore/aft withholding lands in a directory the marker pipeline never reads. Measured, not inferred.
-
-**2026-08-29 10:45 local · Code (background session)**
-
-I ran the build. **It exited 0 and produced a payload BYTE-IDENTICAL to the one
-already in `testing/_deploy`.** Not one marker moved.
-
-    hulls    259 -> 259        markers  6058 -> 6058
-    every hull that lost a marker:  none
-    BANU_Defender  before 8  after 8   removed: none
-    MISC_Hull_C    before 23 after 23  removed: none
-
-## WHY, AND IT IS NOT THAT THE BUILD FAILED
-
-**The fore/aft change is real and it IS in C1's script.** `build_hardpoint_placement.py:580`
-now loops `for i in (0, 1, 2)`, and `BANU_Defender.json` records the result:
-*"4 of 11 exterior mounts withheld"*. That work is done and I am not disputing it.
-
-**It lands in `data-layer/derived/hardpoint-placement/`. The marker file is not
-built from that directory.**
-
-    build_deploy.py:1309   data-layer/derived/holo-hardpoints/hardpoints_fleet.json
-    build_deploy.py:1398   data-layer/derived/holo-hardpoints-align/fleet_records_client.json
-    build_deploy.py:1413   data-layer/derived/holo-hardpoints-align/alignment_overlay_client.json
-
-    grep hardpoint-placement testing/_src/build_deploy.py
-      -> one hit, line 1560, about model substitutions. Nothing else.
-
-`hardpoints_fleet.json` is dated **2026-08-26** and is the file that decides
-which hulls get markers. **A withholding written into `hardpoint-placement/`
-cannot reach `loadout_marker.gen.js` through any build.**
-
-The port numbering says the same thing out loud: the marker file's
-`BANU_Defender` carries ports **0, 1, 58, 62**. There is no port 50 or 51 in it
-to remove, and there never was.
-
-## SO Q21'S PREMISE IS WRONG, NOT ITS GOAL
-
-*"only the deployed marker file is behind"* — it is not behind. It is built from
-a different source than the one that was fixed. **Re-running the build is not
-the missing step, and I could run it a hundred times.**
-
-I checked the two obvious alternatives before saying this:
-
-    build_hardpoint_overlay.py   edited 09:45, AFTER its 09:19 output - but the
-                                 change is a COMMENT ONLY (the place_fleet
-                                 erratum). Re-running it changes no numbers.
-                                 It also landed with a typo: "So. So".
-    a stale MANIFEST.json        still carries the old "marking our own
-                                 homework" sentence at 09:19, while the script
-                                 that wrote it no longer believes it.
-
-**This is C1's call, not mine.** `hardpoints_fleet.json` and the align
-directory are C1's in `OWNERS.md`, and the question — whether the withholding
-should propagate into the marker pipeline, or whether the marker pipeline should
-read the placement directory at all — is a data-model decision, not a build step.
-
-**Q26 inherits this.** Its line *"seven of the ten are the fore/aft escapees Q21
-removes"* does not hold: Q21 as written removes none of them.
-
-## WHAT I AM STILL DOING
-
-The served site is on 04:47 and the local payload is genuinely newer — today's
-client overlay regeneration is in it. **So I am sweeping and deploying anyway**,
-which fixes the staleness Sleven actually named. **It will not remove the three
-dots**, and I would rather say that before the deploy than have it discovered
-after.
-
-## AND ONE DEFECT IN MY OWN MORNING'S FIX, FOUND BY THIS
-
-The deployed marker file changed from `ef9be07` to `2536dbd` without a
-deliberate build. **I killed a sweep mid-run, and a killed process does not run
-`finally`** — so the drift control's rebuild survived and its restore never
-happened. My restore is exception-safe and **not** kill-safe, and I described it
-this morning as if it were both. Fixing that before the sweep, not after.
-
-*(+586 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+590 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

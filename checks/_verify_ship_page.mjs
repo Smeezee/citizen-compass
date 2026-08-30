@@ -260,19 +260,61 @@ record(colA.length > 500, "the build column rendered something at all");
    between the two lists. checks/_verify_column_split.mjs is the item's own
    control and drives the whole fleet; this stays as the regression guard in
    the place that noticed. */
+/* WHICH FIXED PORTS SPECS IS STANDING FOR - one definition, used everywhere.
+   A port is represented by its own row (data-fixed) OR by a summary row that
+   names it (data-cm-ports). "cm-summary" is the summary's own identifier, not
+   a port, and counting it as one is what made the sum read 37 of 57. */
+function representedFixed(html) {
+  const out = new Set();
+  for (const m of html.matchAll(/data-fixed="([^"]+)"/g))
+    if (m[1] !== "cm-summary") out.add(m[1]);
+  for (const m of html.matchAll(/data-cm-ports="([^"]+)"/g))
+    for (const id of m[1].split(",")) if (id.trim()) out.add(id.trim());
+  return out;
+}
+
 const specsHtml = el("specs").innerHTML;
 const renderedOpen = (colA.match(/class="slot/g) || []).length;
 const renderedFixed = (specsHtml.match(/class="slot fixed"/g) || []).length;
 record(renderedOpen === editSlots.length,
   `the column holds exactly the ${editSlots.length} ports that can be changed`,
   `rendered ${renderedOpen}`);
-record(renderedFixed === fixedSlots.length,
-  `all ${fixedSlots.length} FIXED ports rendered on Specs rather than hidden`,
-  `rendered ${renderedFixed}`);
-record(renderedOpen + renderedFixed === SH.slots.length,
+/* COUNTING ROWS WENT WRONG THE MOMENT A ROW COULD STAND FOR SEVERAL PORTS.
+   Sleven asked for countermeasures to stop being a row each and become one
+   line, so an Avenger's two countermeasure ports are now one summary row: 36
+   ports, 35 rows, and nothing missing. The old assertion read that as a port
+   being hidden.
+
+   THE FIX IS NOT TO RELAX IT. It is to assert the thing actually wanted -
+   every fixed port is REPRESENTED - which is stricter than the count ever was,
+   because a row standing for the wrong ports now fails where the arithmetic
+   would still have added up. My own comment in fixedSpecRow() asked for exactly
+   this: "a control can therefore assert WHICH ports are here by id rather than
+   counting rows and hoping". Folding rows into a summary is the first thing
+   that makes counting rows wrong. */
+const shownFixed = representedFixed(specsHtml);
+/* The summary row carries data-fixed="cm-summary" - a row identifier, not a
+   port id - and names the ports it stands for in data-cm-ports. Counting the
+   sentinel as a port is what made the sum read 37 of 57 rather than 36, and it
+   is why the over-claim guard below is worth having: it caught this. */
+
+const missingFixed = fixedSlots.map(s => String(s.id))
+  .filter(id => !shownFixed.has(id));
+record(missingFixed.length === 0,
+  `every one of the ${fixedSlots.length} FIXED ports is represented on Specs, `
+  + `by its own row or by a summary that names it`,
+  `missing ${JSON.stringify(missingFixed.slice(0, 5))}`);
+/* The summary must not claim ports that are not fixed, or the set above could
+   be satisfied by a row that names anything it likes. */
+const fixedIds = new Set(fixedSlots.map(s => String(s.id)));
+const overclaimed = [...shownFixed].filter(id => !fixedIds.has(id));
+record(overclaimed.length === 0,
+  "and Specs claims no port that is not fixed",
+  `overclaimed ${JSON.stringify(overclaimed.slice(0, 5))}`);
+record(renderedOpen + shownFixed.size === SH.slots.length,
   `and the two sum to every one of the ${SH.slots.length} ports - none lost `
   + `between the lists`,
-  `${renderedOpen} + ${renderedFixed}`);
+  `${renderedOpen} + ${shownFixed.size}`);
 record(/can'?t be changed|does not allow this to be changed|no part for this port/.test(specsHtml),
   "a fixed port says plainly that it cannot be changed");
 // It names the part in it. "Fuel tank - LOCKED" tells a visitor nothing.
@@ -1287,8 +1329,9 @@ console.log("\n--- N7 as B1 left it: fixed ports leave the column, and still cou
 
   /* STILL RENDERED, just elsewhere. A move that dropped them would satisfy
      "they are out of the column" and lose them. */
+  // PORTS REPRESENTED, not rows drawn - one summary row can stand for several.
   const rendered = (colA.match(/class="slot/g) || []).length
-    + (specsHtml.match(/class="slot fixed"/g) || []).length;
+    + representedFixed(specsHtml).size;
   record(rendered === SH.slots.length,
     "every port is still rendered - moved, not dropped",
     `${rendered} of ${SH.slots.length}`);
@@ -1336,7 +1379,7 @@ console.log("\n--- N8: the grouping is Editable, never a list of types ---");
   const donorRule = Object.keys(FITS).find((k) => (FITS[k] || []).length > 2);
 
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
-  record(el("specs").innerHTML.includes(`data-fixed="${fixedSlot.id}"`),
+  record(representedFixed(el("specs").innerHTML).has(String(fixedSlot.id)),
     `the port starts on the Specs tab (${fixedSlot.id})`);
   record(!el("colA").innerHTML.includes(`data-slot="${fixedSlot.id}"`),
     "and not in the column of things that can be changed");
@@ -1359,7 +1402,7 @@ console.log("\n--- N8: the grouping is Editable, never a list of types ---");
 
   // put it back, and confirm it goes back - a one-way move would also pass above
   vm.runInContext(`delete __slot.fit;reset();renderAll();`, sandbox);
-  record(el("specs").innerHTML.includes(`data-fixed="${fixedSlot.id}"`),
+  record(representedFixed(el("specs").innerHTML).has(String(fixedSlot.id)),
     "and flipping it back returns it to Specs");
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();resetView();renderAll();`, sandbox);
 }
