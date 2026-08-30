@@ -50,6 +50,22 @@ const consentFile = "collector-consent.txt"
 // terms is not agreement to new ones, and quietly widening what a tool collects
 // while holding on to a year-old yes is the exact behaviour this file exists to
 // avoid.
+// Version 4, 2026-08-30. The chat promise was stronger than the mechanism.
+// "Your chat. Chat is never sampled, at all." was true only in the sense that
+// nothing was sampled from anywhere - there is no reader. But a picture is the
+// whole Star Citizen window, and chat drawn inside that window is inside the
+// picture. Q45 makes those pictures longer-lived, which is what made a comfort-
+// able sentence into one that would soon be false.
+//
+// What replaced it is the promise the program can actually keep, and it is a
+// stronger one: no picture is ever taken by itself. no_auto_capture_selftest.go
+// drives the real loop with every trigger that ever fired a capture, requires
+// ZERO pictures, then presses a key and requires one. The person chooses the
+// moment, and the text now says what follows from that rather than what would
+// be nicer to read.
+//
+// Sleven approved the wording, 2026-08-30. Hard rule 8: this text is his.
+//
 // Version 2, 2026-08-08. Three things in version 1 became untrue and it is
 // worth writing down which, because every one of them drifted the same way -
 // the code grew a capability and the promise did not move with it:
@@ -91,7 +107,7 @@ const consentFile = "collector-consent.txt"
 //
 // Bumping asks everybody again. Agreement to the old wording is not agreement
 // to this one.
-const consentVersion = 3
+const consentVersion = 4
 
 const consentText = `Citizen Collector
 
@@ -105,8 +121,17 @@ WHAT IT READS
 
 WHAT IT NEVER READS
   - Any other program. It checks the window belongs to Star Citizen first.
-  - Your chat. Chat is never sampled, at all.
   - Your password, your account, your email, your files.
+
+WHAT IT NEVER DOES ON ITS OWN
+  It never takes a picture by itself. Not on a timer, not when you dock,
+  not when you open a shop. Every picture exists because YOU pressed the
+  key.
+
+  So it does not go hunting for your chat - but a picture is the whole
+  Star Citizen window, and if chat is open when you press the key, chat
+  is in it. Close it first, or delete the picture afterwards. They sit
+  on your own disk until you press SEND MY DATA.
 
 WHAT IS KEPT ON YOUR OWN DISK
   Everything it notices, including player names it saw in the log - yours

@@ -177,7 +177,18 @@ func runConsentSelftest(check func(name string, ok bool, detail string)) {
 	// rewrite that quietly drops one is a regression even though nothing false
 	// was added.
 	keep := []struct{ label, phrase string }{
-		{"chat is never sampled", "chat is never sampled"},
+		// REPLACED, NOT DELETED, 2026-08-30. Deleting this row would have taken
+		// the guard away with the claim and left nothing watching the space it
+		// used to hold. The old sentence - "chat is never sampled, at all" -
+		// promised more than the mechanism delivers: a picture is the whole
+		// game window, and chat drawn in it is in the picture.
+		//
+		// The first row guards the promise that IS kept. The second guards the
+		// admission that goes with it, and it is the one that matters: without
+		// it, a future rewrite could quietly restore the comfortable version by
+		// dropping the awkward half, and the first row would still pass.
+		{"no picture is taken by itself", "never takes a picture by itself"},
+		{"chat can be in a picture", "if chat is open when you press the key"},
 		{"nothing is sent automatically", "nothing is sent automatically"},
 		{"the game window only", "and nothing else on your screen"},
 		{"how to stop it", "how to stop it"},
