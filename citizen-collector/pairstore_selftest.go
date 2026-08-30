@@ -140,14 +140,49 @@ func runPairStoreSelftest(check func(name string, ok bool, detail string)) {
 	// If somebody adds a context to the enum and forgets the allowlist, this
 	// says so rather than the store silently refusing everything from it.
 	for _, c := range []PairContext{CtxInventory, CtxItemInspect, CtxGroundPmt,
-		CtxHUDTarget, CtxShopKiosk} {
+		CtxShopKiosk} {
 		ok, _ := ContextAllowed(c)
 		if !ok {
 			check("every named context is on the allowlist", false, string(c))
 			return
 		}
 	}
-	check("every named context is on the allowlist", true, "5 contexts")
+	check("every allowed context is on the allowlist", true, "4 contexts")
+
+	// HUD TARGET IS DEFINED AND NOT ALLOWED, and that is the assertion.
+	// A HUD target can be a player-piloted ship, so its label can be a person's
+	// handle. nameclass.go cannot tell one from the other - measured
+	// 2026-08-30: it swaps six of ten real item labels and still passes
+	// "xX_Pilot_Xx" as an NPC role. So the context is off the list until
+	// something can make that distinction, and this control is what stops it
+	// being put back without one.
+	hudOK, hudWhy := ContextAllowed(CtxHUDTarget)
+	check("hud_target is DEFINED but NOT recordable - it can show a person",
+		!hudOK, hudWhy)
+	storedHUD, _, _ := ps.StorePair("Some Pilot", CtxHUDTarget, region,
+		8, 8, "b", at.Add(6*time.Minute))
+	check("and a hud_target pair is refused in practice, not just on paper",
+		!storedHUD, detailf("stored=%v", storedHUD))
+
+	// A DELTA IS ONE LINE, NOT THE WHOLE ENTRY AGAIN. Without this, the
+	// quadratic growth that made a tenth sighting rewrite nine views would come
+	// back unnoticed - every other assertion here passes either way.
+	idx2 := filepath.Join(root, "pairs", "pairs.jsonl")
+	b1, _ := os.ReadFile(idx2)
+	_, _, _ = ps.StorePair("Hazard-Zone Repeater", CtxInventory,
+		[]byte("REGION-C"), 8, 8, "b", at.Add(7*time.Minute))
+	b2, _ := os.ReadFile(idx2)
+	grew := len(b2) - len(b1)
+	entries2, _ := ps.Entries()
+	views2 := 0
+	for _, e := range entries2 {
+		if e.Label == "Hazard-Zone Repeater" {
+			views2 = len(e.Views)
+		}
+	}
+	check("a third view appends a DELTA - one view's worth, not the entry again",
+		views2 == 3 && grew > 0 && grew < 320,
+		detailf("%d view(s), index grew %d bytes", views2, grew))
 
 	bad, why := ContextAllowed(PairContext("anything_else"))
 	check("and an unnamed one is not, with a reason",

@@ -93,11 +93,40 @@ const (
 // pairContextAllowed is the allowlist, with each entry's reason written down -
 // the same convention packageExcluded uses, and for the same reason: the list
 // is where somebody will look when they want to know why.
+// CtxHUDTarget IS DELIBERATELY ABSENT FROM THIS MAP  (2026-08-30).
+//
+// A HUD target can be a PLAYER-PILOTED ship, so the text beside it can be a
+// person's handle - and the standing rule is that nothing derived from a frame
+// carries a name. Review asked for the label to be routed through
+// nameclass.go's ClassifyName. I measured it against real labels first and it
+// is the wrong instrument for this text, in BOTH directions:
+//
+//	CST-313 Castillo   SWAP - treated as a person   legitimate item label
+//	MRX                SWAP                          legitimate
+//	M2C Swarm          SWAP                          legitimate
+//	Gladius            SWAP                          legitimate
+//	Hull armor         SWAP                          legitimate
+//	VariPuck S7        SWAP                          legitimate
+//
+//	xX_Pilot_Xx        KEEP - "NPC role vocabulary"  a handle, kept
+//	Jane Doe           KEEP - "mission NPC (spaced)"  a handle shape, kept
+//
+// It is tuned for names the GAME LOG writes - NPC archetypes, asset ids,
+// pseudonyms - and it would swap six of ten real item labels while still
+// passing the exact handle shape the concern is about. Wiring it in would make
+// the store useless AND leave the hole open.
+//
+// So the allowlist does the work instead, which is what it is for: the context
+// that can show a person is NOT ON IT. The constant stays defined so the
+// refusal names something real, and so re-admitting it is a deliberate edit
+// with this comment in front of whoever makes it.
+//
+// TO RE-ADMIT IT, something must be able to tell a ship's name from a player's
+// handle. ClassifyName cannot. That is a real item, not a line change.
 var pairContextAllowed = map[PairContext]string{
 	CtxInventory:   "the object is drawn AND named in one frame",
 	CtxItemInspect: "the object, rotatable, with its name beside it",
 	CtxGroundPmt:   "the interaction prompt names the thing being looked at",
-	CtxHUDTarget:   "a ship's name while the ship is on screen",
 	CtxShopKiosk:   "a priced item drawn beside its own label",
 }
 
@@ -125,6 +154,21 @@ type PairEntry struct {
 	Views   []PairView `json:"views"`
 }
 
+// PairDelta is ONE NEW VIEW on an entry that already exists.
+//
+// Attaching a view used to re-append the whole entry with every prior view, so
+// the file grew quadratically in a store meant to accumulate for months - the
+// tenth sighting of one object rewrote nine views to record one. Raised in
+// review 2026-08-30.
+//
+// STILL APPEND-ONLY: this is an extra line, never an edit. load() folds deltas
+// onto the entry they name, in file order, so the log remains the whole truth
+// and the newest line still wins.
+type PairDelta struct {
+	Key  string   `json:"key"`
+	View PairView `json:"view"`
+}
+
 // PairRefusal records a pair that was NOT stored, and why. It is written to the
 // index like anything else: a refusal nobody can count is indistinguishable
 // from a pair nobody offered.
@@ -141,6 +185,18 @@ type PairStore struct {
 	dir   string
 	index string
 	blobs string
+
+	// state is folded ONCE at open and maintained in memory thereafter.
+	//
+	// It used to be re-read and re-parsed from disk on every StorePair: O(n)
+	// per write and O(n^2) over a store designed to grow for months, on a
+	// machine that is also running a game. Raised in review 2026-08-30 and it
+	// is right - this is the one structure here whose whole purpose is to get
+	// large.
+	//
+	// APPEND-ONLY IS UNAFFECTED. The file is still only ever appended to; what
+	// changed is that the reader stops re-deriving what it already knows.
+	state map[string]*PairEntry
 }
 
 // NewPairStore prepares pairs/ beside the other collector output. It creates
@@ -151,11 +207,17 @@ func NewPairStore(root string) (*PairStore, error) {
 	if err := os.MkdirAll(blobs, 0o755); err != nil {
 		return nil, fmt.Errorf("pairs directory: %w", err)
 	}
-	return &PairStore{
+	ps := &PairStore{
 		dir:   dir,
 		index: filepath.Join(dir, "pairs.jsonl"),
 		blobs: blobs,
-	}, nil
+	}
+	st, err := ps.foldFromDisk()
+	if err != nil {
+		return nil, err
+	}
+	ps.state = st
+	return ps, nil
 }
 
 func pairKey(label string, ctx PairContext) string {
@@ -238,11 +300,7 @@ func (ps *PairStore) StorePair(label string, ctx PairContext, region []byte,
 		Image: imgHash, Bytes: len(region), Width: w, Height: h,
 	}
 
-	existing, err := ps.load()
-	if err != nil {
-		return false, "", err
-	}
-	if e, ok := existing[key]; ok {
+	if e, ok := ps.state[key]; ok {
 		for _, v := range e.Views {
 			if v.Image == imgHash {
 				// Same label, same context, same bytes: already recorded. Not
@@ -250,13 +308,23 @@ func (ps *PairStore) StorePair(label string, ctx PairContext, region []byte,
 				return true, key, nil
 			}
 		}
+		// ONE LINE FOR ONE VIEW, not the whole entry again.
+		if err := ps.appendLine(PairDelta{Key: key, View: view}); err != nil {
+			return false, "", err
+		}
 		e.Views = append(e.Views, view)
-		return true, key, ps.appendLine(e)
+		return true, key, nil
 	}
-	return true, key, ps.appendLine(PairEntry{
+	entry := PairEntry{
 		Key: key, Label: label, Context: string(ctx),
 		First: view.At, Views: []PairView{view},
-	})
+	}
+	if err := ps.appendLine(entry); err != nil {
+		return false, "", err
+	}
+	cp := entry
+	ps.state[key] = &cp
+	return true, key, nil
 }
 
 // appendLine is the ONLY writer of the index, and it only ever appends.
@@ -284,8 +352,8 @@ func (ps *PairStore) appendLine(v interface{}) error {
 // A TRUNCATED FINAL LINE IS SURVIVED, NOT FATAL. A crash mid-write leaves a
 // partial line; refusing to read the file because of it would lose every pair
 // before it, which is the opposite of what an append-only store is for.
-func (ps *PairStore) load() (map[string]PairEntry, error) {
-	out := map[string]PairEntry{}
+func (ps *PairStore) foldFromDisk() (map[string]*PairEntry, error) {
+	out := map[string]*PairEntry{}
 	raw, err := os.ReadFile(ps.index)
 	if os.IsNotExist(err) {
 		return out, nil
@@ -299,8 +367,10 @@ func (ps *PairStore) load() (map[string]PairEntry, error) {
 			continue
 		}
 		var probe struct {
-			Refused bool   `json:"refused"`
-			Key     string `json:"key"`
+			Refused bool      `json:"refused"`
+			Key     string    `json:"key"`
+			Label   string    `json:"label"`
+			View    *PairView `json:"view"`
 		}
 		if json.Unmarshal([]byte(line), &probe) != nil {
 			continue // partial or corrupt line; the rest of the log still counts
@@ -308,11 +378,23 @@ func (ps *PairStore) load() (map[string]PairEntry, error) {
 		if probe.Refused || probe.Key == "" {
 			continue // refusals are recorded, not folded into state
 		}
+		// A DELTA carries a view and no label; an ENTRY carries a label. The
+		// two are told apart by shape rather than by a type field, so an older
+		// file with no deltas in it folds identically.
+		if probe.View != nil && probe.Label == "" {
+			if e, ok := out[probe.Key]; ok {
+				e.Views = append(e.Views, *probe.View)
+			}
+			// A delta naming an entry this log has not seen is dropped rather
+			// than inventing a label-less entry out of it.
+			continue
+		}
 		var e PairEntry
 		if json.Unmarshal([]byte(line), &e) != nil {
 			continue
 		}
-		out[e.Key] = e
+		cp := e
+		out[e.Key] = &cp
 	}
 	return out, nil
 }
@@ -322,18 +404,14 @@ func (ps *PairStore) load() (map[string]PairEntry, error) {
 func (ps *PairStore) Entries() ([]PairEntry, error) {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
-	m, err := ps.load()
-	if err != nil {
-		return nil, err
-	}
-	keys := make([]string, 0, len(m))
-	for k := range m {
+	keys := make([]string, 0, len(ps.state))
+	for k := range ps.state {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	out := make([]PairEntry, 0, len(keys))
 	for _, k := range keys {
-		out = append(out, m[k])
+		out = append(out, *ps.state[k])
 	}
 	return out, nil
 }

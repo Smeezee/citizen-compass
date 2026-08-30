@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #866 — 2026-08-30 3:10 AM
+# LATEST_HANDOFF.md — Update #867 — 2026-08-30 3:13 AM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-30 03:10:59 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-30 03:13:31 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,61 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119498 files (13787.21 MB)
 
-**Scripts:** 53  |  **3D models:** 1147  |  **Docs:** 1432
+**Scripts:** 53  |  **3D models:** 1147  |  **Docs:** 1433
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-30 03:12:47 — 20260830_0335_update_committed-b9de329-and-the-4-10-header-is-ahead-of-the-data.md
+
+# Update — pushed `b9de329`. And the live-site header now claims 4.10 while the data still says 4.9.
+
+**2026-08-30 08:35 UTC / 2026-08-30 03:35 local · Code (background session)**
+
+    b9de329   35 files changed, 3,075 insertions, 488 deletions
+    6b1837f..b9de329      local == remote      tree clean
+    no _to_delete, no node_modules, no .exe, no editability_patches
+
+## THE ONE THING TO READ IF YOU READ NOTHING ELSE
+
+    releases/latest.html   Live 4.10.0 "Siege of Orison"   <- C1, today
+    static/preview.html    same
+    loadout_data.gen.js    last_verified_patch "4.9"       <- unchanged
+
+**The header claim is ahead of the numbers.** Q46's DONE-WHEN is
+`build_loadout_data.py` pinned to `20260827T225641Z` / `last_verified_patch
+4.10`, it is **BLOCKED-BY Sleven's go-ahead**, and C1 records that they have not
+flipped it.
+
+**Committing published nothing** - the live site goes out by manual Netlify
+Drop from `releases/latest.html`, not from git. **But that file is the live
+payload's source**, and if it were dropped as it stands the site would tell a
+visitor its numbers are verified against 4.10 when every one of them was checked
+against 4.9.
+
+**I have not touched it.** It is C1's file, the version flip is Q46, and Q46 is
+Sleven's call. Recording it here because a mismatch that lives quietly in a
+tracked file is exactly the kind of thing that gets discovered after a drop
+rather than before one.
+
+## WHAT WENT IN
+
+    Q45 first slice   pairstore.go + pairstore_selftest.go, //go:build master,
+                      proven absent from the crew binary by symbol and string
+    Q42               answered, nothing changed - 299 transactions found
+    the checksum fix  the find page now publishes the hash of what it SERVES
+    the sixth copy    _verify_picker_deployed.mjs, found after shipping
+
+## STILL OPEN
+
+**The website needs one clean sweep and a redeploy.** The last sweep measured a
+moving tree - eight `_src` files changed under it - and C1 has since changed more
+of them plus the two live-site files. **Nothing is wrong with the served site**;
+it is the local payload that has moved ahead of the last clean measurement.
+
+**Q45's next slice** needs a caller. Today the only thing that feeds `StorePair`
+is the selftest, which is what the order asked for.
 
 ### 2026-08-30 03:10:15 — 20260830_0320_update_q45-is-master-only-and-proven-absent-from-crew.md
 
@@ -1330,57 +1380,7 @@ thirteen-minute re-sweep because somebody ran three controls.
 byte for byte, and confirm the gate still passes on it. A fix I cannot show
 working is not a fix.
 
-### 2026-08-29 22:51:22 — 20260830_0010_update_committed-and-pushed-162231e.md
-
-# Update — committed and pushed as `162231e`. The injection fix and Q29 are in history; tree clean.
-
-**2026-08-30 04:10 UTC / 2026-08-29 23:10 local · Code (background session)**
-
-Sleven said commit and push, in this session, for this change. Rule 2 satisfied.
-
-    162231e   20 files changed, 2,660 insertions, 423 deletions
-    85e1d3b..162231e  main -> main
-    local HEAD == origin/main == 162231e
-    git status --porcelain    0 entries
-
-## Verified after, not assumed
-
-- **`_to_delete/` contributed 0 files.** Checked in the index before and in
-  `git log -1 --name-only` after. Today's thirteen probes are all in there and
-  none entered history.
-- **No path outside the five expected roots.** Filtered the file list; empty.
-- **The push landed** - `git fetch` and a hash comparison.
-
-## THE DAY, IN FOUR COMMITS
-
-    4710d30   the heap fix, the deploy gate, 295 ships photographed
-    d1e60b4   the drift control stops writing to what it audits
-    85e1d3b   three markers declared rather than forgotten, and deployed
-    162231e   the sweep can say "I could not look", and the clock stops
-              being a false red
-
-## WHAT IS OPEN, HONESTLY
-
-    Q26   withdrawn. C1's mesh distance is the measurement now.
-    Q28   C1's to design - two placement writers, one containment gate
-    Q30   open, and my answer changed to "not sufficient": --only should
-          write its own receipt. Mine to fix on a word.
-    the served site   still one date stamp behind local. Not broken, not
-                      matching. A deploy would close it - the gate refuses
-                      today only because the draco control is NOT RUN.
-    draco3d           not installed. Asked properly rather than acting on a
-                      conditional offer; rule 7 says downloaded code is data.
-
-## AND ONE THING I WOULD SAY OUT LOUD
-
-`checks/_verify_no_agent_traces.py` and
-`docs/FINDING_the-public-source-reads-like-a-work-log-2026-08-29.md` arrived
-from C1 today and are committed here unread by me beyond their names. **They are
-about what the public source says**, which touches rule 8's territory even if it
-is not legal text. Sleven should look at that one himself rather than take my
-word that it is fine, because I have not formed one.
-
-*(+598 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+599 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
