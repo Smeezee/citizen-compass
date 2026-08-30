@@ -242,7 +242,12 @@ console.log("\n--- 2. the Aegis Reclaimer ---");
   record(shownNow() === N,
     "and asking puts all of them up - no invented threshold refuses them",
     `${shownNow()} up`);
-  record(/all labelled/.test(hintNow()),
+  /* SPELLING-AGNOSTIC. This pinned "labelled" and went red on 2026-08-30
+     when Sleven's US-spelling instruction reached the visible copy. The page
+     still says the labels all fit, which is the property; how it is spelled is
+     house style, and a control that asserts house style fails the day house
+     style changes. */
+  record(/all labell?ed/.test(hintNow()),
     "and the page says so", hintNow());
   run("allLabels=null;renderLabels();");
 }
@@ -366,7 +371,7 @@ console.log("\n--- 5. the toggle overrides the solver, both ways ---");
   H.dispatch(["#cc-lbl-toggle"]);
   record(shownNow() === N5, "pressing the control shows all " + N5,
     `${shownNow()}`);
-  record(/all labelled/.test(hintNow()) && !/no room/.test(hintNow()),
+  record(/all labell?ed/.test(hintNow()) && !/no room/.test(hintNow()),
     "and the line says they all fit - the hull places fine and the page must "
     + "not claim otherwise", hintNow());
   H.dispatch(["#cc-lbl-toggle"]);

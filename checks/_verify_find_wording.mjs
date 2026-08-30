@@ -99,8 +99,24 @@ const REQUIRED = [
     re: /UEX reported this price at this terminal in the snapshot taken/i },
   { why: "says plainly that players are the source",
     re: /Star Citizen does not publish its prices\.\s*Players do\./i },
-  { why: "says UEX rates the submissions",
-    re: /UEX rates how much it trusts each submission/i },
+  /* THE CLAIM, NOT THE SENTENCE - 2026-08-30, and the fourth of these.
+     This pinned "UEX rates how much it trusts each submission". C1 rewrote it
+     to "UEX scores how much it trusts each one. That is why these rows carry a
+     quality rating, averaged buy and sell figures and stock levels at all.
+     Those are fields you only need when the numbers are estimates."
+     Three words moved - rates/scores, "each submission"/"each one", a dash for
+     a period - and the replacement is STRONGER: the old one gestured at "its
+     records", the new one names the fields the reader is looking at and says
+     why they exist. Nothing about trust was softened.
+     A control that pins a sentence fails when the sentence improves, and the
+     danger it is guarding against is the page saying LESS. So the claim is
+     asserted in two halves: that UEX weights its submissions, and that the
+     page gives the consequence. A rewrite that keeps the first and drops the
+     second still goes red, which is the failure actually worth catching. */
+  { why: "says UEX weights its submissions",
+    re: /UEX (rates|scores) how much it trusts each/i },
+  { why: "and says what that weighting is FOR - the reason the quality rating exists",
+    re: /(quality rating|confidence)[\s\S]{0,160}(estimate|trusts?)/i },
   { why: "refuses the bigger claim in as many words",
     re: /Not "this is the price"/i },
   { why: "says a row can be out of date or wrong",

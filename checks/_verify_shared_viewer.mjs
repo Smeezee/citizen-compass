@@ -247,8 +247,23 @@ console.log("\n--- N1: every route into a ship lands on the SHIP PAGE ---");
    *
    * What is still worth asserting here is structural: that the second writer
    * which made the failure possible is gone for good. */
-  record(!/function decorate\s*\(/.test(indexCode),
-    "no post-render rewriter edits the name cells after the site builds them");
+  /* NARROWED 2026-08-30, AND THE REASON MATTERS MORE THAN THE FIX.
+     This forbade any function LITERALLY NAMED decorate(, and a glossary
+     decorator arrived that shares the name and does the opposite of the
+     defect: it is opt-in per root, skips anything already marked, and its own
+     comment says a glossary that rewrites the whole document "is how you end
+     up with PDC underlined inside somebody's ship name".
+     A NAME IS NOT A BEHAVIOUR. gamelog_mine.go states the same lesson from the
+     other side - "matched on the PAYLOAD SHAPE, never on the emitting class
+     name" - because CIG renamed a class and a name-keyed parser went silent.
+     Here the name collided instead and a correct page went red.
+     What is asserted now is the thing that was actually wrong: a rewriter
+     REACHING THE NAME CELLS. The old defect called decorate on the container
+     holding them. A decorate that is never handed that container cannot be it,
+     and the href counts above - which have been seen failing against the real
+     bug and reproducing its 229 - are what prove the cells are right. */
+  record(!/decorate\s*\(\s*(document\b|[A-Za-z_$][\w$]*\s*\.\s*(body|documentElement)|\$\(\s*["'](?:ships?|shipTable|shipList|rows|tbl|index)["']\s*\))/i.test(indexCode),
+    "no post-render rewriter is handed the name-cell container");
   record(!/MutationObserver\s*\(\s*decorate/.test(indexCode),
     "and no observer drives one");
   record(!/td\.textContent\.trim\(\)/.test(indexCode),

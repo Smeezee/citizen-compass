@@ -190,8 +190,13 @@ console.log("\n--- 4. a missile carrier: a payload, never a per-second ---");
   record(hasRow(html, "Missile payload"),
     `${SHIPS[k].n} shows a missile payload`);
   record(c.mdmg > 0, "with a real figure behind it", String(c.mdmg));
-  record(/one shot, not per second/.test(html),
-    "labelled one-shot, in the row itself");
+  /* THE MEANING, NOT THE SENTENCE. This matched the literal string "one shot,
+     not per second". C1 rephrased the copy to "fired once. Not per second" -
+     same claim, different words - and the control went red on a row that says
+     exactly what it is supposed to say. What matters is that the row tells a
+     reader the figure is a single volley rather than a rate. */
+  record(/(one[- ]shot|fired once)[\s\S]{0,40}not per second/i.test(html),
+    "labelled as one volley rather than a rate, in the row itself");
   /* THE ASSERTION THAT MATTERS: it is not folded into a DPS number. */
   const pilotSum = (SHIPS[k].slots || [])
     .filter((s) => !s.turret)
