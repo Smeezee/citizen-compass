@@ -83,6 +83,7 @@ Rule 15: every open states its encoding.
 import ast
 import hashlib
 import json
+import re
 import os
 import shutil
 import subprocess
@@ -590,6 +591,68 @@ def page_problems(src_name, out_name, ship_pages):
 # upload. Putting the previous receipt back is the difference between "the
 # payload was built ok" and "a checker rebuilt something once".
 # ---------------------------------------------------------------------------
+# THE FOURTH DECLARED INJECTION: THE TESTING DATE STAMP  (2026-08-30)
+#
+# build_deploy.py:741 stamps the UTC date into index.html - twice, the <title>
+# and the <h1> - on the TESTING payload only; `--live` skips it and says so.
+# It is the only thing on the page that tells a viewer which build they are
+# looking at, and it is worth more than a convenient byte comparison.
+#
+# BUT IT MAKES THE REBUILD NON-REPRODUCIBLE ACROSS 00:00 UTC. Section 4's whole
+# proof of the assembled file is "rebuild and require the bytes not to move",
+# and across the boundary they move on their own. A sweep whose snapshot is
+# taken before midnight and whose rebuild lands after it would name index.html
+# as drifted, preserve both copies as evidence, and go red - for the clock.
+#
+# Found 2026-08-30 by a payload fingerprint moving when nothing had been built:
+# served said `testing 2026-08-29`, local said `testing 2026-08-30`, and the
+# other nineteen files were identical.
+# docs/FINDING_the-payload-changes-at-utc-midnight-2026-08-30.md
+#
+# DECLARED AS NARROWLY AS THE VENDOR MARKER AND THE TRADEMARK STRIP, and for
+# the same reason: an exemption is a hole, and "ignore anything that looks like
+# a date" is the widest kind of hole there is. What is tolerated here is
+# EXACTLY this: index.html, the literal text `testing <ISO date>`, the same
+# number of occurrences on both sides, and EVERY OTHER BYTE IN THE FILE
+# IDENTICAL. A stamp that appeared in a different file, appeared a different
+# number of times, or arrived alongside any other change is NOT this and fails.
+TESTING_STAMP = re.compile(r"testing \d{4}-\d{2}-\d{2}")
+
+
+def stamp_only_difference(old_path, new_path):
+    """(is_stamp_only, note). True when two files differ ONLY by the stamp.
+
+    Compared as text with the stamps replaced by a fixed token, so the rest of
+    the file is still held to byte equality. The occurrence count is checked
+    separately: normalising first would happily accept a file that had gained a
+    second stamp, which is a change and not this one.
+    """
+    try:
+        old, new = text_of(old_path), text_of(new_path)
+    except OSError as exc:
+        return False, "could not be read: %s" % exc
+    a, b = TESTING_STAMP.findall(old), TESTING_STAMP.findall(new)
+    if not a or not b:
+        return False, "no date stamp on one side (%d before, %d after)" % (len(a), len(b))
+    if len(a) != len(b):
+        return False, "the stamp count changed: %d -> %d" % (len(a), len(b))
+    if len(set(a)) != 1 or len(set(b)) != 1:
+        # A PAGE SHOWING TWO DIFFERENT DATES IS A DEFECT, NOT THIS DECLARATION.
+        # The build substitutes both occurrences from one `_stamp`, so they
+        # cannot legitimately disagree. Without this, a rebuild that updated
+        # the <title> and not the <h1> would be waved through as "only the
+        # stamp moved" - which is true, and is also a page telling a viewer two
+        # different things about which build they are looking at.
+        return False, ("the stamps within one file disagree: %s / %s"
+                       % (sorted(set(a)), sorted(set(b))))
+    if a == b:
+        return False, "the stamps are identical, so they are not the difference"
+    if TESTING_STAMP.sub("<STAMP>", old) != TESTING_STAMP.sub("<STAMP>", new):
+        return False, "the file changed somewhere other than the stamp"
+    return True, "%s -> %s, %d occurrence(s), every other byte identical" % (
+        a[0], b[0], len(a))
+
+
 RESTORE_DIR = os.path.join(ROOT, "_to_delete", "deploy_drift_restore")
 
 
@@ -878,6 +941,7 @@ def main():
     build_failed = None
     after = None
     moved_pages = []
+    stamp_ok, stamp_why = False, None
     try:
         proc = subprocess.run([sys.executable, BUILD], capture_output=True,
                               text=True, cwd=ROOT)
@@ -885,6 +949,15 @@ def main():
             build_failed = ((proc.stdout or "") + (proc.stderr or "")).strip()
         else:
             after = sha(index_path) if os.path.exists(index_path) else None
+            # MEASURED HERE, INSIDE THE TRY, AND THAT IS NOT A STYLE CHOICE.
+            # The finally below RESTORES index.html to the snapshot, so asking
+            # this question afterwards compares the snapshot against itself and
+            # gets "the stamps are identical" every time. The first version did
+            # exactly that and reported a false red on a planted stamp - caught
+            # because the plant was supposed to go green and did not.
+            if before != after and index_path in keep:
+                stamp_ok, stamp_why = stamp_only_difference(
+                    keep[index_path][0], index_path)
             moved_pages = [out for out, h in before_all.items()
                            if not os.path.exists(os.path.join(DEPLOY, out))
                            or sha(os.path.join(DEPLOY, out)) != h]
@@ -912,9 +985,26 @@ def main():
               not leftover)
         return 1
 
-    check("index.html is byte-identical after a rebuild - it is what the build "
-          "produces, not something anybody edited", before == after,
+    stamp_note = None
+    if before != after and stamp_why is not None:
+        # The one tolerated difference, and it has to be PROVEN to be that
+        # difference rather than assumed from the fact that a rebuild happened.
+        if stamp_ok:
+            stamp_note = stamp_why
+            after = before          # the stamp is declared; nothing else moved
+        else:
+            print("     the rebuild changed index.html and it is NOT the "
+                  "declared stamp: %s" % stamp_why)
+    check("index.html is byte-identical after a rebuild, outside the declared "
+          "date stamp - it is what the build produces, not something anybody "
+          "edited", before == after,
           )
+    if stamp_note:
+        print("     DECLARED: the testing date stamp moved (%s)." % stamp_note)
+        print("     build_deploy.py:741 stamps the UTC date, so a rebuild "
+              "across 00:00 UTC is not byte-reproducible. Tolerated here "
+              "for index.html and the stamp text alone - see "
+              "docs/FINDING_the-payload-changes-at-utc-midnight-2026-08-30.md")
     check("and so is every copied file"
           + (" (moved: %s)" % ", ".join(moved_pages) if moved_pages else ""),
           not moved_pages)

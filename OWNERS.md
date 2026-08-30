@@ -52,6 +52,9 @@ permission; it is a gap, and finding one is worth reporting.
     extract_p4k_entry.py
     build_hardpoint_transforms.py
     build_hardpoint_placement.py
+    checks/_verify_no_agent_traces.py
+    checks/_verify_marker_mesh_distance.py
+    checks/_dracopos.mjs
     build_hardpoint_overlay.py
     build_crafting_demand.py
     data-layer/derived/hardpoint-transforms/

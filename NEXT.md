@@ -147,7 +147,78 @@ source of truth costs — three dry-run cycles for you, an hour for me.
 **Write what the gate does, not what it should do.** If they differ, that
 difference is the finding.
 
-### Q26 — THE OFF-HULL TEN. SEVEN ARE ACCOUNTED FOR; THREE ARE THE REAL ITEM.
+### Q26 — RE-MEASURED AGAINST THE MESH. MY OWN TEST WAS WRONG IN BOTH DIRECTIONS.
+**DONE-WHEN** the Glaive's nose pair is either placed or refused with a measured
+reason, and the Corsair's whole marker set has been asked about as one question.
+**BLOCKED-BY** C1 for the Glaive. **Nothing here is Code's until C1 has ruled.**
+
+**DO NOT WORK THE OLD LIST. IT WAS PRODUCED BY A PHOTOGRAPH.** `offhull.py`
+asks whether a hull pixel is near a dot in a clean silhouette — that measures
+VISIBILITY, and I recorded it as POSITION. A concave hull shows the background
+through its own gaps, so a mount in a recess is photographed against empty space
+and called adrift, at every camera angle, forever.
+
+**Measured instead against the decoded mesh, in 3D:**
+
+    TMBL_Storm_AA  port 4    0.560   rank 2 of 4    FINE - port 2 is farther
+                                                    out at 0.566 and passed
+    DRAK_Corsair   port 93   6.004   rank 12 of 38  FINE - mid-table
+    DRAK_Corsair   port 80   6.291   rank  7 of 38  FINE
+    DRAK_Corsair   port 94   8.138   rank  2 of 38  but port 67 at 7.518 was
+                                                    never flagged
+    VNCL_Glaive    port 43   5.488   rank  1 of 16  REAL - 15x the median
+    VNCL_Glaive    port 44   5.481   rank  2 of 16  REAL - AND NEVER FLAGGED
+
+**PORTS 43 AND 44 ARE `Gun nose left` AND `Gun nose right`.** A mirrored pair,
+seven thousandths of a unit apart. **The test flagged one and passed the other**,
+on a repository whose entire mirror machinery exists because left and right must
+match. Nothing in the data separated them — only which side faced the camera.
+
+**THE CORSAIR IS A HULL-LEVEL QUESTION, NOT THREE MOUNTS.** Its median marker
+sits 2.56 units from the nearest surface — 4.7% of hull length, the widest of
+any hull measured. Ask it about all 38, most likely about its articulated wings
+sitting in a different pose in the Fan Kit export than in CIG's transforms.
+
+**NEW CONTROL: `checks/_verify_marker_mesh_distance.py`** (C1's, in OWNERS.md).
+Distance to the nearest real vertex, per hull, outliers judged against **that
+hull's own distribution** — one fleet threshold would condemn every Corsair
+mount and clear every Glaive one. **RULE16: INDEPENDENT.** `--self-test`
+displaces a marker and requires a catch.
+
+**IT EXITS 2, NOT PERFORMED, WHERE `draco3d` IS ABSENT** — the hull meshes are
+Draco-compressed. That is the honest answer and it is currently printed as FAIL
+by the sweep, which is Q29 exactly, arriving on a new control the day it was
+written. **`npm i draco3d` makes it run; do not add it to a shared package.json
+without saying so.**
+
+**`offhull.py` is not deleted.** *Is a dot visible against the hull from the
+default view* is a real question. It is no longer evidence of a misplaced mount.
+
+### AND THEN IT WAS RUN ON ALL 256 HULLS
+
+    5,800 markers - 256 hulls - 60 flagged on 20 hulls   (self-test: caught, exit 9)
+
+    GAMA_Tyilui              15 flagged   worst 28.0% of hull length
+    VNCL_Glaive               3 flagged   worst 17.8%
+    ESPR_Talon_Shrike         6 flagged   worst  9.0%
+    CRUS_Starlifter_A2 x2     2 each      worst  7.6%
+    ANVL_Gladiator            4 flagged   worst  6.2%
+    RSI_Constellation_Phoenix 3 flagged   worst  5.1%
+    + Star Runner, Redeemer, Prowler, Scorpius, C8X Pisces,
+      Cutlass Black x4, Cutlass Red x2, Phoenix Emerald, Starlifter C2
+
+**`GAMA_Tyilui` has fifteen markers adrift, one of them 28% of the hull's own
+length from any surface of it, and nothing in this repository has ever mentioned
+it.** It photographed clean because its mounts are adrift into places with hull
+behind them.
+
+**AND `DRAK_Corsair` IS NOT ON THE LIST.** Not one of its 38 markers is an
+outlier against its own hull. **All three dots the photograph flagged are
+ordinary members of a wide distribution.**
+
+`docs/FINDING_the-off-hull-test-flagged-one-gun-of-a-matched-pair-2026-08-29.md`
+
+### Q26 (ORIGINAL) — THE OFF-HULL TEN. Superseded by the measurement above.
 **DONE-WHEN** re-measured against the DEPLOYED payload, and each of the three
 survivors is either on the hull or has a named cause.
 **BLOCKED-BY** Q27, because the deploy is gated on it.
@@ -289,6 +360,86 @@ lost but the record of it. **One artifact, two writers, outputs not
 interchangeable** — which is rule 14's shape even though it is one script. You
 may decide fail-closed is sufficient. Say which, so the next person does not
 rediscover it.
+
+### Q31 — THE PUBLIC SOURCE SAYS HOW THE SITE IS BUILT. STRIP COMMENTS AT DEPLOY.
+**DONE-WHEN** `checks/_verify_no_agent_traces.py` exits 0 against
+`testing/_deploy`, three.js's `@license` header still present in `holo.html`,
+and every page still renders and passes the existing controls.
+**BLOCKED-BY** nothing. **This is Sleven's instruction, given directly
+2026-08-29, and it jumps the queue: it is about what strangers can read.**
+
+**HIS WORDS:** nothing on the public site may hint it was built by anything
+other than a person — not the pages, and not the source behind them.
+
+**THE PAGES THEMSELVES ARE CLEAN.** I rendered all seven in a real browser and
+read every text node, title, alt, aria-label and meta tag. **Zero traces in
+anything a visitor sees on screen.** No AI vendor named anywhere. The one
+"C1" x28 is the Crusader C1 Spirit; "Copilot turret" is a seat; "DRACOWorker"
+is three.js.
+
+**VIEW-SOURCE IS A DIFFERENT STORY.**
+
+    1,114 comment blocks - ~315,000 characters - shipped to every visitor
+    45 traces in 12 files, EVERY ONE of them in a comment, none in the page
+
+    "it is C1's file and not mine to edit"
+    "loadout can point at this file whenever C1 wants. IT WANTS."
+    "Agreeing with C1's call here, not overriding it."
+    "C3's brief proposed shipping ..."
+    Sleven quoted giving instructions, in five files
+    ORDER_the-disclosure-bar-2026-08-27, FINDING_fixed-hardpoints-derived
+    "rule 14", build_deploy.py, loadout.src.html
+
+**Anyone pressing Ctrl+U reads a conversation between a person and several
+named agents.** That is the whole of the problem and it is one problem, not 45.
+
+**DO NOT HAND-EDIT 1,114 COMMENTS.** They are worth keeping — they are the best
+documentation this project has. **They should not ship.** The fix is one step in
+`build_deploy.py` (yours): strip comments on the way into `_deploy`, leave
+`_src` untouched.
+
+**TWO THINGS THE STRIP MUST NOT DO.**
+
+1. **`holo.html` carries three.js's MIT header** — `@license Copyright
+   2010-2021 Three.js Authors`. **Removing it breaches the licence the library
+   is used under.** Keep any block matching `@license` or `@preserve`; that is
+   the convention every minifier already follows and the control allows it.
+2. **Do not touch `_src`.** The comments are the reason anyone can maintain
+   this. Stripping at the source would be trading the documentation for the
+   privacy, and we can have both.
+
+**MIND THE `.gen.js` HEADERS TOO.** They open with `GENERATED by
+testing/_src/build_deploy.py - do not hand edit`. Harmless-sounding, but it
+names the build script and the repo layout on a public URL.
+
+**THE CONTROL IS WRITTEN AND PROVEN** — `checks/_verify_no_agent_traces.py`
+(C1's, in OWNERS.md). **RULE16: INDEPENDENT**, it reads the deployed bytes and
+knows nothing about `_src`. `--self-test` plants all seven trace kinds and
+catches all seven, and holds fire on five look-alikes including the C1 Spirit
+and the MIT header. **It exits 1 today, by design.**
+
+`docs/FINDING_the-public-source-reads-like-a-work-log-2026-08-29.md`
+
+### Q32 — 250 EM-DASHES IN THE VISIBLE COPY. SLEVEN'S CALL, NOT MINE.
+**DONE-WHEN** Sleven has ruled. **Nobody rewrites site copy before then.**
+**BLOCKED-BY** Sleven.
+
+The words on screen name no AI and use no AI vocabulary — I checked for the
+whole tell list (delve, seamless, robust, leverage, tapestry, testament to,
+dive into and thirty more) and the site is clean. **What it does have is my
+punctuation.**
+
+    mid-sentence em-dashes in visible copy    ~250
+      index 171 · loadout 59 · keybinds 9 · download 6 · find 2 · stick 3
+
+(The other 1,105 in the index are single "—" cells meaning *no value* in a
+table. Those are fine and are not counted here.)
+
+**A mid-sentence em-dash at this density is one of the most-cited tells there
+is, and it is mine — I wrote most of this copy.** But it is also just good
+punctuation, and 250 rewrites would change the voice of the site on my
+judgement rather than Sleven's. **He decides whether that voice is a problem
+before a word of it moves.**
 
 ### Q23 — DONE 2026-08-29 as `d1e60b4`, ahead of Q21, on Sleven's direct instruction. NEXT COMMIT COVERS Q27 AND TODAY'S CENSUS DECLARATION.
 **DONE-WHEN** the fore/aft change and today's docs are committed and pushed.
@@ -455,8 +606,16 @@ upload does not happen.**
 
 ### Q3 — SCALE THE 12 FROM `model_scaled.glb`, NOT FROM `model.glb`
 **DONE-WHEN** the 12 pre-existing wrong-scale models are at their published
-dimensions AND `_verify_holo_placement.py` still passes all 8 checks.
-**BLOCKED-BY** nothing. **C1 has ruled - see the reasoning below.**
+dimensions AND `_verify_model_scale.py` still exits 0.
+**BLOCKED-BY** nothing.
+
+**C1 NAMED A CHECK FILE THAT DOES NOT EXIST.** This item's DONE-WHEN said
+`_verify_holo_placement.py` "still passes all 8 checks". **There is no such
+file in `checks/` and there is no evidence there ever was.** Anyone taking this
+item had an unverifiable finish line and no way to know it without going to
+look — the second time today one of my DONE-WHENs sent someone at a thing that
+was not there. The real control is `_verify_model_scale.py`, which reports
+findings and never rescales, per the auditor rule.
 
 Code's finding: he rescales from `sc-ships/<ship>/model.glb`, but the deployed
 model came from `model_scaled.glb`, and **for some ships those two are not the
@@ -490,10 +649,27 @@ page's antivirus notice, find's error and empty states, and the keybinds
 capture warnings are all NEVER. **A block collapsed that should not have been
 is a warning nobody reads.**
 
-### Q5 — THE ROADMAP WATCHER, PAST R0
-**DONE-WHEN** R1-R3 of `AMENDS_roadmap-watcher-board-1-is-wrong-2026-08-27.md`
-are built and the watcher reports a real board state.
-**BLOCKED-BY** nothing. R0 is done — the board is identified.
+### Q5 — THE ROADMAP WATCHER: R1 AND R2 ARE BUILT. ONLY R3 IS LEFT.
+**DONE-WHEN** the watcher can answer *"what has CIG announced since the patch
+our data was verified against"* — R3 — and says so in its own output.
+**BLOCKED-BY** nothing.
+
+**RE-SCOPED 2026-08-29 after checking rather than assuming.**
+`checks/_verify_roadmap_watch.py` declares itself *"R1/R2 of AMENDS..."* and is
+green in the 106-of-106 sweep, including the negative assertion that a
+`time_modified`-only change produces silence. **R0, R1 and R2 are done.** This
+item was carrying all three as if none had been started.
+
+**R3 IS THE ONLY REMAINING PIECE AND IT IS A DIFFERENT QUESTION FROM THE ONE
+THE SITE ALREADY ANSWERS.** Every row carries `last_verified_patch` — what our
+data was checked against. The watcher answers the other half: what CIG has
+announced since. **Do not fold R3 into `last_verified_patch`; they are siblings,
+not the same field.**
+
+**Scope guard from the amends, unchanged:** the API is the route, never article
+text; a roundup URL may be recorded as a pointer for a person, never as
+evidence; the watcher REPORTS and never acts. Whether a roadmap change alters
+what this site does is Sleven's call.
 
 Key on card presence plus a payload hash. **Never on `updateDate`** — the API
 returns Aug 2024 for a card the UI renders as Aug 2021.

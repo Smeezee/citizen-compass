@@ -208,6 +208,43 @@ def main():
 
         secs = time.time() - t0
         combined = (proc.stdout or "") + (proc.stderr or "")
+
+        # EXIT 2 MEANS "I COULD NOT LOOK", WHICH IS NEITHER A PASS NOR A FAIL.
+        #
+        # Until 2026-08-29 this classifier had two outcomes - zero or FAIL - and
+        # NOT RUN was reachable only when the runner could not launch the
+        # process at all. A control that STARTS, finds its resource absent and
+        # says so had no exit code that meant what it was saying, so it printed
+        # as a defect.
+        #
+        # Two controls were already trying: _verify_community_mark.py exits 2
+        # with "NOT PERFORMED ... never as a pass", and _verify_panel_dismiss.mjs
+        # exits 2 when Chromium is missing. C1 found it by running the suite on
+        # a Linux VM with no PostgreSQL, no Chromium and no PowerShell: twelve
+        # DB controls, nine browser controls and deploy_guards all reported FAIL
+        # with nothing broken. Read that cold and you go hunting twenty defects
+        # that do not exist.
+        #
+        # NOTHING HERE IS MADE TO PASS. not_run already counts against the
+        # sweep (see the return at the end), goes into the receipt, and
+        # sweep_gate refuses on it in as many words: "a control that could not
+        # be run is counted against the sweep, never as a pass." The only thing
+        # that changes is which true sentence gets printed.
+        #
+        # AND IT APPLIES UNDER --self-test TOO, which is the half that would
+        # have bitten. There, ok = (code != 0), so a control that could not look
+        # would have been counted as having CAUGHT the planted defect. That is
+        # the silent success this suite exists against, wearing the colours of
+        # the test that is supposed to find it.
+        if code == 2:
+            why = next((l.strip() for l in combined.splitlines()
+                        if "NOT PERFORMED" in l),
+                       (tail[0] or "exit 2 with no reason given").strip())
+            not_run.append((name, why))
+            print("  NOTRUN %-41s exit 2  %5.1fs  %s"
+                  % (name, secs, why[:60]))
+            continue
+
         if args.self_test and name in SELF_TEST_ZERO_MEANS_CAUGHT:
             markers = SELF_TEST_ZERO_MEANS_CAUGHT[name]
             missing = [m for m in markers if m not in combined]

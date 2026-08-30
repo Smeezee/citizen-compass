@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #836 — 2026-08-29 1:39 PM
+# LATEST_HANDOFF.md — Update #841 — 2026-08-29 10:31 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-29 13:39:29 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-29 22:31:44 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,377 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119498 files (13787.21 MB)
 
-**Scripts:** 53  |  **3D models:** 1135  |  **Docs:** 1390
+**Scripts:** 53  |  **3D models:** 1137  |  **Docs:** 1398
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-29 22:30:57 — 20260829_1250_update_q29-done-and-the-payload-changes-at-utc-midnight.md
+
+# Update — Q29 is built and proven in both modes, the new draco control now reads as NOT RUN instead of FAIL, and chasing a moved fingerprint found that the payload rewrites itself at UTC midnight.
+
+**2026-08-30 03:50 UTC / 2026-08-29 22:50 local · Code (background session)**
+
+## Q29 — DONE
+
+    exit 0          PASSED
+    exit 2          NOT RUN, with the control's own reason printed
+    anything else   FAILED
+
+    106 ok, 0 failed, 0 skipped, 1 NOT RUN, in 778s
+    NOTRUN _verify_marker_mesh_distance.py  exit 2  NOT PERFORMED - NO_DRACO...
+
+**Nothing was made to pass.** The gate still refuses, in its own words:
+
+    sweep : the last sweep of THIS payload was not clean.
+            NOT RUN  _verify_marker_mesh_distance.py
+            A control that could not be run is counted against the
+            sweep, never as a pass.
+    GATE EXIT 1
+
+**Proven in both modes, probes parked in `_to_delete/probes-20260829/`:**
+
+    NORMAL     exit 0 -> ok     exit 1 -> FAIL     exit 2 -> NOTRUN + reason
+    SELF-TEST  exit 2 -> NOTRUN
+
+**The self-test half is the one that mattered.** There `ok = (code != 0)`, so
+before this change a control that COULD NOT LOOK was counted as having CAUGHT
+the planted defect — the silent success this suite exists against, wearing the
+colours of the test meant to find it.
+
+## AND I DID Q30 TO MYSELF WITHIN THE HOUR
+
+My `--only` probe run overwrote the full receipt, exactly as C1's did. It failed
+closed and the gate caught it — **and I have changed my mind about whether that
+is sufficient.** Two sessions destroyed the same artifact the same day, both
+doing legitimate work. "The gate catches it" is what you say about a defect you
+have decided to keep. **A subset run should write its own receipt somewhere
+else.** Mine to fix if Sleven wants it.
+
+## THE PAYLOAD REWRITES ITSELF AT UTC MIDNIGHT
+
+The sweep's fingerprint moved from `add0c868` to `0f4f5ff3` with nobody having
+built anything. All twenty payload files were fetched from the served site and
+compared. **Nineteen identical. `index.html` differs by two lines, and both are
+a date.**
+
+    -testing 2026-08-29        build_deploy.py:741
+    +testing 2026-08-30        _stamp = datetime.now(timezone.utc).strftime(...)
+
+**Three guards assume a rebuild is reproducible and it is not:**
+
+- **`_verify_deploy_drift.py`, mine** — its entire proof of the assembled file
+  is "rebuild and require the bytes not to move". A sweep straddling 00:00 UTC
+  will report a drift that does not exist. It has not happened yet only because
+  tonight's sweep began after the rollover.
+- **`sweep_gate.py`'s fingerprint** — content-based, so the clock silently
+  invalidates a clean receipt.
+- **The served site** — today's deploy shipped `08-29`, local now says `08-30`.
+  Neither is wrong and they do not match.
+
+`docs/FINDING_the-payload-changes-at-utc-midnight-2026-08-30.md`, with three
+options. **I would declare the stamp as a fourth narrow injection in the drift
+control**, the way the vendor marker and trademark strip already are. Small
+change, my file, not made without a word.
+
+## TWO FALSE TRAILS ON THE WAY, BOTH MINE
+
+- A first comparison said EVERY file differed. `sha256sum FILE` prefixes its
+  output with a backslash when the path contains one, shifting `cut -c1-12` by a
+  character. Hashing through stdin removed the filename and the artifact.
+- A second said two pages differed when they had simply not been fetched — the
+  worker answers `/loadout`, not `/loadout.html`, and returns 307. **An empty
+  response hashes perfectly well**: `e3b0c442...` is the SHA-256 of nothing and
+  it sits in a comparison looking exactly like data.
+
+## STANDING
+
+    Q26  withdrawn - my measurement was a photograph too
+    Q29  done
+    Q30  open, and my answer changed: not sufficient
+
+**Uncommitted:** `checks/run_all_controls.py`, `checks/_diag_offhull.mjs`, the
+UTC finding. **Not done:** `npm i draco3d`, which I have asked about properly
+rather than acting on a conditional offer.
+
+### 2026-08-29 22:12:08 — 20260829_1245_update_q26-withdrawn-taking-q29.md
+
+# Update — my Q26 measurement is withdrawn, C1's mesh distance supersedes it, and I am taking Q29 because a control written today is already printing FAIL for saying "I could not look".
+
+**2026-08-29 12:45 local · Code (background session)**
+
+## WITHDRAWN, WITHOUT ARGUMENT
+
+**The old off-hull list came from photographs and was wrong in both
+directions, and mine was the same method.** `DRAK_Corsair` 80/93/94 and
+`TMBL_Storm_AA` 4 are FINE against the mesh - Storm AA port 4 is the second
+CLOSEST of its four. **I reported six off-hull dots this morning and four of
+them are not off the hull.**
+
+My instrument was not the problem - I found and fixed two contaminations in it.
+**The measurement was.** A silhouette says where a dot is against a picture of
+the hull; it cannot say where the dot is against the hull. C1's control decodes
+the mesh and measures against vertices, which is a different claim and a better
+one. **I am not defending the pixel numbers and the three "new" dots I raised
+are withdrawn with them.**
+
+The one I got right is the one that matters least: `VNCL_Glaive` 43. And the
+real finding is the pair, not the port -
+
+    43 and 44 - "Gun nose left" / "Gun nose right", 0.007 units apart,
+    a mirrored pair, and the old test flagged ONE and passed the other.
+
+**That is the whole indictment of the old test and it is not something a
+photograph could have told anyone.**
+
+**`GAMA_Tyilui`: 15 markers flagged, worst at 28% of hull length, never
+mentioned anywhere in this repo before today.** 60 flagged on 20 hulls across
+5,800 markers.
+
+**The Glaive ruling is C1's and none of this is mine to fix.**
+
+## WHAT IS MINE, AND IT ARRIVED ON SCHEDULE
+
+    $ venv/Scripts/python.exe checks/_verify_marker_mesh_distance.py
+    NOT PERFORMED - NO_DRACO. The hull meshes are Draco-compressed and cannot
+    be read without it, so no marker was measured.
+    EXIT 2
+
+**Verified myself rather than taken from the note.** That is exactly right and
+my sweep will print it as `FAIL ... exit 2`.
+
+**Q29 predicted this and it landed on a control written the same day.** A
+brand-new, correctly-written control whose first appearance in a sweep is a
+false red. Read that output cold and you go looking for a defect in the newest
+thing in the repo, which is where you would look anyway.
+
+## WHAT I AM BUILDING
+
+    exit 0   PASSED
+    exit 2   NOT RUN, with the control's own reason printed
+    anything else   FAILED
+
+**NOT RUN still counts against the sweep and the deploy gate still refuses on
+it** - `sweep_gate.py` already says so in as many words: *"a control that could
+not be run is counted against the sweep, never as a pass."* **The only thing
+changing is which true sentence gets printed.** If I make either state pass I
+have built the silent success this suite exists against.
+
+Then the DB-backed controls, which currently leak a traceback where they should
+say what is absent.
+
+## ONE THING I AM NOT DOING WITHOUT ASKING PROPERLY
+
+**`npm i draco3d`.** Sleven has offered it and constrained it - not into a
+shared `package.json` without saying so. **Rule 7 says downloaded code is data
+and is not to be imported or run**, and a decode library imported by a control
+is exactly that. Playwright got here through a dated `docs/DECISION_*`. I will
+ask for this one properly rather than treat a conditional offer as the
+authorisation, and Q29 does not depend on it: the honest NOT PERFORMED is the
+correct state whether or not draco is ever installed.
+
+### 2026-08-29 14:20:44 — 20260829_1230_update_q26-measured-and-there-are-more-than-three.md
+
+# Update — Q26 measured against the deployed payload. The three survivors are real, there are SIX not three, and my instrument was wrong twice before it was right.
+
+**2026-08-29 12:30 local · Code (background session)**
+
+`offhull.py` is not in this repository, so the method was rebuilt:
+`checks/_diag_offhull.mjs`. Diagnostic, not a gate - it needs a browser, which
+is why C1 kept theirs out of the sweep too.
+
+## THE RESULT, AGAINST THE SITE AS SERVED
+
+    DRAK_Corsair    7 of 15 dots on the hull exactly
+      port 94  37px  7.05% of hull span      port 80  18px  3.43%
+      port 70  24px  4.57%                   (+ four under 15px)
+      port 93  19px  3.62%
+    TMBL_Storm_AA   2 of 5
+      port 1   17px  2.96%                   port 4   16px  2.79%
+    VNCL_Glaive     6 of 9
+      port 43  29px  5.33%                   port 44  18px  3.31%
+
+**C1's three all reproduce.** `DRAK_Corsair` 80/93/94, `TMBL_Storm_AA` 4,
+`VNCL_Glaive` 43 - every one still off the hull on the payload deployed an hour
+ago.
+
+## BUT THERE ARE THREE MORE AT C1'S OWN THRESHOLD
+
+C1's audit named only dots at 15px and above. Applying that same cut to this
+measurement finds **three the fleet-wide audit did not list**:
+
+    DRAK_Corsair   port 70   24px
+    TMBL_Storm_AA  port 1    17px
+    VNCL_Glaive    port 44   18px
+
+**Six, not three.** I am not claiming C1's audit was wrong - it measured 259
+hulls at one framing and this measured three at another, and I cannot re-run
+theirs. What I can say is that on the served payload these six are off the hull
+and three of them are not on anyone's list.
+
+## THE NAMED CAUSE, AND IT IS C1'S HYPOTHESIS CONFIRMED BY EYE
+
+The ringed screenshot shows it: the Corsair's four sit in open space **above the
+tail fin, above the wing root, and below the fuselage** - adjacent to the hull,
+not on it. Inside the model's axis-aligned box, outside its mesh. **The box is
+not the hull**, exactly as C1 said.
+
+**I have not widened the acceptance test and will not.** A containment gate that
+passes these is not a gate with the wrong number in it; it is a gate measuring
+the wrong shape.
+
+## MY INSTRUMENT WAS WRONG TWICE, AND BOTH WOULD HAVE SHIPPED A WRONG ANSWER
+
+**1. It counted the viewer's own chrome as hull.** "Any pixel that is not the
+field colour" includes the Display button, Start spin, the mounts pill and the
+drag-to-rotate hint. **A dot over the Display button would have measured as ON
+THE HULL.** Caught because the hull's bounding box came back 788px wide on all
+three ships - the frame, not the ship - which is impossible. Then confirmed by
+looking at the picture rather than the number.
+
+**2. A faint ring on the canvas's own rounded border survived that fix**, about
+ten pixels in the outermost column, still holding the bounding box at full
+width. Now only the largest connected blob counts as the ship.
+
+Spans went 788 / 788 / 788 -> **525 / 574 / 544**. The distances did not move,
+which is luck rather than vindication: for these particular dots the ship was
+always nearer than the contamination. It would not always be.
+
+**And a third thing, which is why C1's numbers and mine differ at all:** a pixel
+distance is not a property of the ship, it is a property of how big the ship
+happens to be drawn. `VNCL_Glaive` port 43 is 16px in C1's audit and 29px here,
+and neither is wrong. Every distance is now also reported as a **fraction of the
+hull's own on-screen span**, which is comparable between runs.
+
+**Threshold sensitivity checked before trusting any of it:** 6, 12, 18, 30, 50
+all give the same ports at the same distances. The answer does not depend on
+where the line is drawn.
+
+## STANDING
+
+    Q26  measured. The three are six, the cause is named, and the fix is not
+         mine to design - a containment gate that uses the mesh rather than the
+         box is C1's pipeline.
+
+New file: `checks/_diag_offhull.mjs`. Probes parked in
+`_to_delete/probes-20260829/`. Nothing committed.
+
+### 2026-08-29 14:10:33 — 20260829_1215_update_q26-taken-offhull-py-is-not-in-the-repo.md
+
+# Update — Q26 taken. C1's `offhull.py` is not in this repository, so the measurement has to be rebuilt rather than re-run.
+
+**2026-08-29 12:15 local · Code (background session)**
+
+Checked the queue rather than assuming it. **C1 re-scoped two items since my
+commit** — Q3 now names `_verify_model_scale.py` (the old DONE-WHEN named
+`_verify_holo_placement.py`, which does not exist), and Q5 is down to R3 alone
+because R0/R1/R2 are built and green in the 106-of-106 sweep. Neither is the
+head of the queue.
+
+**Q26 is the first item whose DONE-WHEN is unsatisfied and whose BLOCKED-BY is
+now clear** — Q27 closed it.
+
+## THE OBSTACLE, FOUND BEFORE STARTING RATHER THAN HALFWAY THROUGH
+
+    find . -name "offhull*"   ->  nothing
+
+**`offhull.py` is not in this repository.** It is the tool Q26's method rests on
+and the one that produced the ten. It ran on C1's Cowork mount. **This is the
+third time today a document has pointed at a file that is not here** —
+`place_fleet.py` (which turned out to BE here), `_verify_holo_placement.py`
+(which is not), and now this one.
+
+**I am not asking C1 for it.** The measurement is reproducible: a browser, two
+screenshots per hull, and a distance from each marker to the nearest pixel of
+its own silhouette. Three hulls, not 259, so the fifty minutes does not apply.
+
+## AND ONE STALE CLAIM I WILL NOT BE INHERITING
+
+`_verify_hull_solid.mjs` opens with *"THERE IS NO BROWSER AND NO GPU ON THIS
+MACHINE and none was installed (rule 7)"*, and declines the pixel measurement on
+that basis. **That was true when it was written and is not true now** —
+`docs/DECISION_the-checks-get-a-real-browser-2026-08-26.md` put Playwright and
+Chromium on this machine, and I drove 27 hulls through it at 08:40 today.
+
+**That is a NOT PERFORMED that has outlived its reason**, which is the same
+shape of defect as a declaration that outlives its reason. Recording it here;
+whether that control should now take the measurement it declined is a separate
+item and I am not folding it into Q26.
+
+## WHAT I AM BUILDING
+
+A diagnostic, not a sweep control — it needs a browser and it is slow, which is
+the same reason C1 kept `offhull.py` out of the sweep:
+
+    for each of DRAK_Corsair, TMBL_Storm_AA, VNCL_Glaive
+      shot 1  the page as served, markers visible
+      shot 2  the same frame with #cc-marks hidden  -> the silhouette
+      marker screen positions read from the DOM at the same moment
+      distance from each marker to the nearest hull pixel
+
+**A dot cannot be measured against a picture that contains it**, which is why
+the second shot exists. That is C1's method and I am not improving on it.
+
+**Measured against the DEPLOYED payload**, per the DONE-WHEN — the three
+survivors were untouched by today's withholding, so I expect them to reproduce.
+Expecting is not measuring.
+
+### 2026-08-29 13:41:02 — 20260829_1205_update_committed-and-pushed-85e1d3b.md
+
+# Update — committed and pushed as `85e1d3b`. Q27 and the deploy are in history; working tree clean.
+
+**2026-08-29 12:05 local · Code (background session)**
+
+Sleven said commit and push, in this session, for this change. Rule 2 satisfied.
+
+    85e1d3b   14 files changed, 1,232 insertions, 412 deletions
+    d1e60b4..85e1d3b  main -> main
+    local HEAD == origin/main == 85e1d3b
+    git status --porcelain    0 entries
+
+## Staged by path, never `git add -A`
+
+    checks/     _verify_child_markers.py (Q27), and C1's _verify_marker_census.py
+                and marker_census.json
+    build_hardpoint_overlay.py
+    docs/       two of C1's findings, CURRENT-STATE.md, three handoff updates
+                and the running log
+    NEXT.md, LATEST_HANDOFF.md
+
+## Verified after, not assumed
+
+- **`_to_delete/` contributed 0 files** - checked in the index before and in
+  `git log -1 --name-only` after. Today's eight probes are all in there and none
+  entered history.
+- **No path outside the five expected roots.** Filtered the file list; empty.
+- **The push landed** - `git fetch` and a hash comparison, not the push's own
+  output.
+
+## THE DAY, IN THREE COMMITS
+
+    4710d30   the heap fix, the deploy gate, 295 ships photographed
+    d1e60b4   the drift control stops writing to what it audits
+    85e1d3b   three markers declared rather than forgotten, and deployed
+
+## STANDING
+
+    Q21, Q22, Q23, Q24, Q25, Q27      done
+    Q26   unblocked - the three survivors, against a payload now deployed
+    Q28   C1's to design. Not mine.
+    Q29   open. The sweep cannot say "I could not look".
+    Q30   open, and it is a question for Sleven rather than work:
+          `--only` overwrites the same receipt a full sweep writes. It failed
+          CLOSED and the gate caught it. Whether fail-closed is sufficient, or
+          whether a partial should write somewhere else, is a call not a fix.
+
+**The testing site is current and verified on its served bytes.** Going live
+remains Sleven's and is untouched.
+
+**Next, unless told otherwise: Q29.** Two controls already exit 2 to say a
+resource was absent and both print as FAIL. Nothing about it weakens a gate -
+both states still count against the sweep - and it stops a clean machine from
+looking like twenty defects.
 
 ### 2026-08-29 13:38:45 — 20260829_1200_update_q27-done-and-the-testing-site-is-deployed-and-verified.md
 
@@ -1154,416 +1520,7 @@ the control will say if that changes. **Taken if it goes red.**
 
 Nothing committed since `1a1b4b7` - and that is now a very large tree.
 
-### 2026-08-28 22:42:02 — 20260828_2245_update_q7-is-done-except-c1s-one-file.md
-
-# Update — Q7 is done except for one file, and that one is C1's. 104 labelled, 1 left, and the debt list is a single line.
-
-**2026-08-28 22:45 local · Code (background session)**
-
-    labelled     104  (55 INDEPENDENT, 49 UNPROVEN)     was 81
-    unlabelled     1
-    malformed      0
-
-    rule16_baseline.txt now contains exactly one entry:
-        _verify_panel_dismiss.mjs
-
-**`OWNERS.md` names that file as C1's, so it is C1's to label.** Every other
-control in `checks/` now declares where its truth comes from, or names what it
-could not reach.
-
-Twenty-two controls in this pass, in two tranches. **All twenty-two green
-afterwards**, including the two that go over the network.
-
-## The strongest labels came from the same three shapes
-
-**Run it as a subprocess with input you built.** `_verify_patch_diff`,
-`_verify_takedown`, `_verify_hardpoint_data`, `_verify_community_mark`,
-`_verify_extremity_placement`, `_verify_turret_inheritance` - nothing imported,
-the expectation decided here, the verdict read from an exit code and what was
-left on disk.
-
-**Perturb it and require the answer to move, or not to.**
-`_verify_placer_candidates` empties the fleet file and requires the candidate
-count NOT to fall - 186 either way. **If the placer were reading its own output,
-emptying that output would change the answer.** No assertion about the source
-could have established that.
-
-**Go and look at the served bytes.** `_verify_deployed_links` and
-`_verify_picker_deployed` fetch the deployed origin. A build exiting 0 is not
-accepted as evidence about what a visitor receives.
-
-## And one UNPROVEN that is a requirement rather than a shortfall
-
-`_verify_attribution.mjs` takes the expected wording from
-`testing/_src/attribution.py` - **the build's own constant** - so the pages are
-compared against the same definition that produced them.
-
-**That is required, not convenient.** Hard rule 8 makes the legal text Sleven's
-alone and rule 14 forbids a second writer for it. A control carrying its own
-copy would be a rule violation AND the worse kind of useless: it would keep
-passing while the page said something different, because both sides would be
-reading the checker's copy. `_verify_deploy_drift.py` makes the same trade for
-the same reason, and both labels say so.
-
-**UNPROVEN is not a grade.** Nineteen of the forty-nine are files whose subject
-is a checker, and proving a checker fires on planted input is rule 12's job
-rather than rule 16's.
-
-## THE FOURTH COMMA
-
-`RULE16: UNPROVEN, deliberately, and this is...` - the separator again, fourth
-time across two sessions.
-
-The format wants `VERDICT - reason` and English wants a comma after the verdict.
-It has now cost C1 an hour and me three dry-run cycles. **The gate accepting a
-comma would be the wrong fix** - the separator is what makes the reason
-machine-readable - but the trap is in the format and it will catch the next
-person too. Worth a `docs/DECISION_*` rather than a fifth occurrence.
-
-## What Q7 actually produced, beyond the labels
-
-Writing one forces the question *"what would this check fail to notice"*, and
-five answers were specific enough to act on:
-
-    _verify_label_cold_start   asserts a source STRING, not a behaviour
-    _verify_labels             counts the page against the page
-    _verify_ship_page_fits     models a browser's layout rather than measuring it
-    _verify_hull_solid         already said so itself, before rule 16 existed
-    _verify_ship_page N9       duplicated a sentence another control asserts
-                               better - deleted under Q14
-
-Nothing committed since `1a1b4b7`.
-
-### 2026-08-28 22:25:23 — 20260828_2225_update_the-sweep-measured-a-moving-dataset.md
-
-# Update — That sweep measured a moving dataset. C1 regenerated the overlay while it ran, and three marker controls disagree with themselves ten minutes apart.
-
-**2026-08-28 22:25 local · Code (background session)**
-
-    103 ok, 3 failed, 0 skipped, 0 NOT RUN, in 683s
-
-    FAIL  _verify_marker_census.py
-    FAIL  _verify_marker_provenance.py
-    FAIL  _verify_marker_spread.py
-
-**Do not read those three as findings. The sweep was measuring something that
-was being rewritten underneath it.**
-
-## The evidence
-
-    sweep ran                              22:12 - 22:23
-    data-layer/hardpoint-placement/        written 22:18:56
-    data-layer/holo-hardpoints-align/      written 22:19:08
-    testing/_src/loadout_marker.gen.js     written 22:23:24
-
-**C1 regenerated the placement and the client overlay in the middle of the
-run**, and the sweep's own `_verify_deploy_drift.py` then rebuilt the marker
-file from the new data. Controls that ran before that point read one dataset and
-controls that ran after read another.
-
-The count says it plainly:
-
-    markers carrying a label, during the sweep    6,133
-    markers carrying a label, ten minutes later   6,060
-
-And re-running the same three now:
-
-    _verify_marker_provenance.py   FAILED in the sweep -> passes now
-    _verify_marker_spread.py       FAILED in the sweep -> passes now
-    _verify_marker_census.py       passed in the sweep -> FAILS now (ORIG_m80)
-
-**Three controls, all disagreeing with their own result from ten minutes
-earlier, in both directions.** That is not three defects; it is one measurement
-taken during a write.
-
-## The structural half, which is mine
-
-This is the third time today a sweep has been perturbed, and twice it was
-avoidable:
-
-    this morning   I edited checks/ while a sweep executed those files
-    this evening   C1 regenerated data-layer/ while a sweep read it
-    all day        the sweep's OWN _verify_deploy_drift.py rebuilds the
-                   artifacts that later controls read, so a control's result
-                   depends on where its name sorts relative to "d"
-
-**The third one is a real defect in the sweep and it is mine.** A control that
-rebuilds shared artifacts mid-run makes every control after it a measurement of
-a different state from every control before it. It has not bitten on its own
-because the rebuild is normally byte-identical - but "normally" is doing all the
-work in that sentence, and tonight the data moved underneath it.
-
-**I am not fixing it in this pass**, because the fix is a design decision rather
-than a repair: either the sweep refuses to run controls that mutate shared
-state, or it snapshots the payload first, or the drift control stops rebuilding
-and reports instead. That belongs in a `docs/DECISION_*` with C1, not in a
-20-minute edit at 22:30.
-
-## What I am NOT doing
-
-**Re-running the sweep now.** The data settled at 22:19 and has not moved in six
-minutes, but a receipt taken while C1 may still be mid-run is worth nothing, and
-I have already spent one 683-second sweep finding that out.
-
-The gate is refusing on the stale receipt, which is correct: the payload
-fingerprint moved to `9ccd3bbf` and nothing has vouched for it.
-
-## What is true regardless
-
-    Q13, Q14, Q15   done and verified individually, not by the sweep
-    Q7              81 of 104
-    served site     f278ca37; its ship page still matches the last build
-    live site       404, never deployed
-
-`_verify_marker_census.py`'s current failure on `ORIG_m80` may be real or may be
-the same moving target. **It is C1's control and C1's data.** I will look at it
-when the dataset has been still for long enough to mean something, and say which
-it was.
-
-### 2026-08-28 22:12:32 — 20260828_2215_update_q15-q14-q13-done.md
-
-# Update — Q15, Q14 and Q13 done. And the `%s` fix printed a real refusal correctly for the first time.
-
-**2026-08-28 22:15 local · Code (background session)**
-
----
-
-# Q15 — `clearTimeout`, AND I TOOK THE HARDER OPTION
-
-C1 offered `clearTimeout: () => {}` and noted the alternative would be "closer to
-a browser". **The stub really cancels now.**
-
-    setTimeout   returns a SLOT INDEX rather than timers.length. Two pending
-                 timers could otherwise share an id the moment one was
-                 cancelled, and the id identified nothing.
-    clearTimeout empties that slot.
-    flushTimers  skips an emptied slot and does NOT count it - `ran` is what a
-                 control asserts on, and counting a callback that never fired
-                 would report deferred work that did not happen.
-
-**And the flush uses a cursor rather than `shift()`.** A callback may cancel a
-later one, and `shift()` renumbers everything behind it - so `clearTimeout(4)`
-would have emptied whatever had moved into slot 4. That would have been a bug
-introduced by the fix for a bug.
-
-    node checks/_verify_swap_loop.mjs    28/28, and no NOT PERFORMED lines
-
-**All 22 harness-using controls re-run: 0 failing.**
-
----
-
-# Q14 — DELETED, AFTER CHECKING THE REPLACEMENT WAS BETTER
-
-I said this morning that deleting would leave nothing checking the per-ship
-claim. **That was wrong, and Q14 answers it directly**: the five assertions live
-in `checks/_verify_marker_note.mjs`, which asserts MORE than N9 did.
-
-**Verified before deleting rather than after:**
-
-    node checks/_verify_marker_note.mjs                     17 pass
-    node checks/_verify_marker_note.mjs --mutate-fleetwide  exit 1
-    node checks/_verify_marker_note.mjs --mutate-blind      exit 1
-    node checks/_verify_marker_note.mjs --self-test         exit 1
-
-and its own closing line is the reason it is better than what I wrote:
-
-> The expected counts were computed from `loadout_marker.gen.js` by
-> re-implementing its grouping rule, **never by asking the page.**
-
-Mine read the page's own `mountProvenance()` and asked it to agree with itself.
-C1's reaches the number by a second route. **That is the difference between
-UNPROVEN and INDEPENDENT, in the one place it mattered most.**
-
-Five assertions gone, the three "the old sentence is gone from everywhere" greps
-kept - they are not duplicated anywhere. `_verify_ship_page.mjs` **236 passed,
-0 failed**, and the ledger line now points a reader at where the wording IS
-asserted.
-
----
-
-# Q13 — DRIFT NOW NAMES THE OWNER
-
-`_verify_deploy_drift.py` reads `OWNERS.md` and says whose source moved:
-
-    testing/_src/loadout.src.html is owned by C1 - this is a payload behind its
-        source, not an unowned write
-    testing/_src/build_deploy.py is owned by CODE - ...
-    testing/_src/keybinds.src.html has NO declared owner in OWNERS.md - that is
-        a gap rather than permission, and is worth reporting
-
-**Not asserted, deliberately.** This control's subject is whether `_deploy` was
-built from `_src`, not who typed the source. What changed is that a reader gets
-the answer instead of having to guess - which is the whole of what went wrong on
-2026-08-27, when the detector was right and the conclusion I drew from it was
-not.
-
-**The unowned case is reported rather than passed over**, because `OWNERS.md`'s
-own text says a path with no declared owner "is not permission; it is a gap, and
-finding one is worth reporting". `keybinds.src.html`, `find.src.html` and
-`holo.html` are all in that state today.
-
-`_verify_owners.py` exits 0; `--self-test` exits non-zero.
-
----
-
-# TWO THINGS FOUND WHILE VERIFYING
-
-**The `%s` fix works, confirmed on a real refusal.** The gate refused a stale
-payload just now and printed the line that crashed this afternoon:
-
-    swept at 2026-08-28T13:20:02. Re-run the sweep against what is actually
-    about to be uploaded.
-
-**And the drift control found `_deploy` stale on its first run tonight** -
-index.html differed from a fresh rebuild. Its own section 4 rebuilt, and it has
-been 12/0 since; a separate rebuild I ran afterwards produced byte-identical
-output, so the assembly is reproducible. **I cannot attribute what changed in
-the nine hours I was idle and am not going to invent a cause.** What is certain
-is that the payload had drifted from its sources, the control caught it, and the
-rebuild reconciled them.
-
-Consequence: the payload fingerprint moved (`c40e02e7` -> `b7d61308`), so the
-receipt is stale and a deploy is correctly refused until a sweep runs. One is
-running.
-
-The served ship page still matches the local build (`ad81f666`), so what moved
-is not the ship page.
-
-Q7 stands at 81 of 104.
-
-### 2026-08-28 22:06:28 — 20260828_2208_update_checked-updates-four-new-items.md
-
-# Update — Checked updates. `NEXT.md` was rewritten at 21:59 and carries Q11–Q18; four of them are mine and three are already satisfied.
-
-**2026-08-28 22:08 local · Code (background session)** — nine hours since my last
-note. No new C1 handoff entries in that time, but `NEXT.md` nearly doubled
-(34 KB -> 62 KB) and `CURRENT-STATE.md` moved with it.
-
-## What I am taking
-
-    Q15  clearTimeout missing from _loadout_harness.mjs - one line, my file,
-         and it is why two assertions in C1's _verify_swap_loop.mjs report
-         NOT PERFORMED
-    Q13  point drift detection at OWNERS.md so a write by a path's declared
-         owner does not read as a collision
-    Q14  the three marker-note assertions in N9 - and I have a question about
-         this one rather than an answer, below
-    Q7   23 of 104 still unlabelled
-
-## What I believe is already done, and will verify rather than assume
-
-    Q11  craft_data.gen.js wired - done at 10:09, and it was three lines
-         rather than the one the order names
-    Q16  rebuild against today's placement - done; _verify_marker_provenance.py
-         passed in the 105/0 sweep
-    Q17  build and deploy the identical-options line - deployed as ef57ca6b,
-         and the served page is byte-identical to the build
-    Q18  run the three deployed-site controls - done at Sleven's asking; all
-         three green in the 105/0 sweep
-
-**Checking each DONE-WHEN before I claim any of them**, as `NEXT.md` asks.
-
-## Q14 — I DID SOMETHING DIFFERENT FROM WHAT IT ASKS, AND IT IS ALREADY GREEN
-
-Q14 says **delete** the three marker-note assertions because the wording is N9's
-subject and duplicating it is what let them go stale.
-
-At 10:20 I did not delete them. I **rewrote them to assert the new claim**: the
-note now says the right thing FOR THE SHIP RENDERED, read from the page's own
-`mountProvenance(shipId)` so the assertion follows whichever hull the section
-drives. The suite has been green since, including the 105/0 sweep.
-
-So Q14's second half is met and its first half is not — they still assert
-wording, just wording that is currently true.
-
-**C1's reasoning is better than my instinct on one point**: two controls
-asserting one sentence is exactly how both went stale on 2026-08-28, and it cost
-five red assertions. But deleting outright leaves nothing checking that a page
-which CAN now tell the difference actually says so.
-
-**I will read Q14 in full and answer it properly rather than half-doing either.**
-If the answer is delete, the thing that must not be lost is the per-ship claim,
-and it belongs in one control rather than none.
-
-## Q15's design question, answered before I write it
-
-C1 offers `clearTimeout: () => {}` as a no-op and notes the alternative:
-
-> if the stub instead REMOVED the pending callback, `flushTimers()` would stop
-> running a callback the page had cancelled — which is closer to a browser and
-> would catch a different class of defect.
-
-**I am taking the second.** A no-op closes the item; removing the callback makes
-the harness able to catch a page that cancels a timer and one that does not,
-which is a distinction a browser makes and a stub that swallows the id cannot.
-
-### 2026-08-28 13:20:35 — 20260828_1322_update_105-of-105-nothing-skipped.md
-
-# Update — 105 ok, 0 failed, 0 skipped, 0 NOT RUN. Every control in the project green in one run, for the first time.
-
-**2026-08-28 13:22 local · Code (background session)**
-
-    105 ok, 0 failed, 0 skipped, 0 NOT RUN, in 635s
-    sweep receipt: 105 passed, 0 failed, payload c40e02e7a49809e1
-
-    sweep   : 105 control(s) green against this exact payload (2026-08-28T13:20:02)
-    gate exit=0
-
-## What is different about this one
-
-**0 SKIPPED.** Every previous clean sweep skipped three controls by design - the
-ones that go to the network. This run included them at Sleven's asking, and all
-three passed:
-
-    _verify_deployed_links.mjs    ~450 requests against the deployed origin
-    _verify_find_deployed.mjs     real rows read back from the live testing site
-    _verify_picker_deployed.mjs   all 1,200 hull markers clicked over the wire
-
-**0 NOT RUN.** Nothing was unrunnable, which is the number that would matter
-most if it were not zero - a control that cannot run is counted against the
-sweep and never as a pass.
-
-## The three things that had been drifting apart all afternoon now agree
-
-    payload fingerprint   c40e02e7a49809e1...
-    receipt fingerprint   c40e02e7a49809e1...
-    served /loadout       ad81f666d41d3d88
-    local  _deploy        ad81f666d41d3d88
-
-And the fingerprint did not move across the sweep, which means
-`_verify_deploy_drift.py`'s rebuild produced the payload byte for byte - the
-thing that control exists to assert, confirmed from the outside by the
-fingerprint rather than from inside by its own comparison.
-
-## What it took to get here, in one afternoon
-
-Every failure between the first `--include-deployed` run and this one was mine,
-and none of them was in what ships:
-
-    _verify_picker_deployed   the served page was one C1 feature behind -> deploy
-    sweep_gate.py             refused by CRASHING on a %s in the wrong string
-    _verify_deploy_guards     asserted `code != 0`, which cannot tell a refusal
-                              from a traceback
-    the fix for that          passed the evidence in the `want` position, so it
-                              inverted
-    check()                   never printed its detail, which is why the
-                              inversion took a probe to find
-
-**Four of those five were in the machinery built to prove the machinery.** The
-one that was not was a stale deploy, and the control caught it.
-
-## Standing
-
-    Q1-Q6, Q8, Q9, Q10   done
-    Q7                   81 of 104 labelled, 23 to go
-    testing site         f278ca37, and the served bytes match the build
-    live site            still 404 - deploy_live.ps1 has never been run for real
-
-There is a large uncommitted tree: Q7 tranches 6, 7 and 8, the deployed-only
-split in the sweep gate, the crash assertion, `check()`'s detail printing, and
-the `%s` fix. Nothing committed since `1a1b4b7`.
-
-*(+572 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+577 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 
