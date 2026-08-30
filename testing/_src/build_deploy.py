@@ -55,6 +55,38 @@ SITE  = os.path.join(REPO, 'releases', 'latest.html')
 LAYER = os.path.join(SRC, '_layer.src.html')
 
 # ---------------------------------------------------------------------------
+# Q31: COMMENTS DO NOT SHIP. THEY STAY IN _src.
+#
+# Sleven, 2026-08-29: nothing on the public site may hint it was built by
+# anything other than a person - not the pages, and not the source behind them.
+# The pages were already clean. View-source was not: 1,114 comment blocks, and
+# 45 of them read as a conversation between a person and several named agents.
+#
+# One function, used at EVERY point where text enters _deploy, so there is no
+# second path a file can arrive by. The scanner is testing/_src/strip_comments.py
+# and it is proven separately by checks/_verify_comment_strip.py, which hands
+# every stripped file to `node --check` rather than believing the stripper.
+#
+# @license and @preserve survive - holo.html carries three.js's MIT header and
+# removing it would breach the licence the library is used under.
+# ---------------------------------------------------------------------------
+sys.path.insert(0, SRC)
+import strip_comments as _strip
+_stripped_total = 0
+
+def _for_deploy(name, text):
+    """The only way text becomes a file in _deploy."""
+    global _stripped_total
+    try:
+        out, n = _strip.strip_for(name, text)
+    except ValueError as _exc:
+        sys.exit("COMMENT STRIP REFUSED on %s: %s -- the file is not shaped "
+                 "the way the scanner expects, and guessing would ship a "
+                 "truncated page. Nothing was written." % (name, _exc))
+    _stripped_total += n
+    return out
+
+# ---------------------------------------------------------------------------
 # THE BUILD RECEIPT - so a FAILED BUILD CANNOT BE FOLLOWED BY AN UPLOAD.
 #
 # 2026-08-27: build and deploy were chained in one command, the build exited 1,
@@ -490,7 +522,12 @@ _TYPE = _re.compile(r"""\btype\s*=\s*["']([^"']+)["']""", _re.I)
 _JS_TYPES = {"text/javascript", "application/javascript", "module",
              "application/ecmascript", "text/ecmascript"}
 
-def _check_inline_js(path):
+def _check_inline_js(path, require_any=True):
+    # require_any: the two SOURCE pages this was written for must contain
+    # scripts, and a page that suddenly has none is a defect worth refusing on.
+    # The post-strip pass over _deploy re-uses the parser but not that rule -
+    # download.html legitimately carries no script, and refusing on it would be
+    # a check crying wolf at a page that is exactly as it should be.
     html = io.open(path, encoding="utf-8").read()
     n = 0
     for _m in _SCRIPT.finditer(html):
@@ -509,7 +546,7 @@ def _check_inline_js(path):
         if _r.returncode != 0:
             sys.exit("SYNTAX ERROR in %s, inline script %d - refusing to build:\n%s"
                      % (os.path.basename(path), n, _r.stderr))
-    if n == 0:
+    if n == 0 and require_any:
         sys.exit("NO EXECUTABLE INLINE SCRIPTS FOUND in %s. That is not a page this\n"
                  "build understands, and reporting a pass on it would be a check\n"
                  "that never looked." % os.path.basename(path))
@@ -1015,7 +1052,8 @@ if CC_DISC_MARKER in out:
     _disc_used.append('index.html')
 
 out = _with_attribution(out, 'index.html', True)
-open(OUT+'/index.html','w',encoding='utf-8',newline='').write(out)
+open(OUT+'/index.html','w',encoding='utf-8',newline='').write(
+    _for_deploy('index.html', out))
 
 # ---------------------------------------------------------------------------
 # L9. THE SHIP PAGE NEEDS THE SAME MODEL, SO IT NEEDS THE SAME JOIN.
@@ -1956,6 +1994,7 @@ elif os.path.exists(_craft_src):
 # four generated files this list had just gained.
 #
 # Both sides now import the same list. There is nothing left to keep in step.
+
 from deploy_pages import PAGES
 # VENDOR INLINING FOR COPIED PAGES - §0 option 1, not a new allowed directory.
 #
@@ -2003,7 +2042,8 @@ for _src_name, _out_name in PAGES:
             _txt = _txt.replace(
                 _dev_line, 'const LOADOUT_MODEL_URL=%s;' % json.dumps(_MODEL_DEPLOY))
             open(os.path.join(OUT, _out_name), 'w',
-                 encoding='utf-8', newline='\n').write(_txt)
+                 encoding='utf-8', newline='\n').write(
+                     _for_deploy(_out_name, _txt))
             _copied.append(_out_name)
             continue
         _txt = rd(_s) if _src_name.endswith('.html') else None
@@ -2023,14 +2063,20 @@ for _src_name, _out_name in PAGES:
                          % _src_name)
             _txt = _with_attribution(_txt, _out_name,
                                      _out_name in _SHIP_CONTENT_PAGES)
-            open(_dst, 'w', encoding='utf-8', newline='').write(_txt)
+            open(_dst, 'w', encoding='utf-8', newline='').write(
+                _for_deploy(_out_name, _txt))
             _vendored.append(_out_name)
         elif _txt is not None:
             _txt = _with_attribution(_txt, _out_name,
                                      _out_name in _SHIP_CONTENT_PAGES)
-            open(_dst, 'w', encoding='utf-8', newline='').write(_txt)
+            open(_dst, 'w', encoding='utf-8', newline='').write(
+                _for_deploy(_out_name, _txt))
         else:
-            shutil.copyfile(_s, _dst)
+            # EVEN THE UNTOUCHED FILES. A page needing no substitution
+            # was copied byte for byte, which would have been the one
+            # route comments still shipped by.
+            open(_dst, 'w', encoding='utf-8', newline='').write(
+                _for_deploy(_out_name, rd(_s)))
         _copied.append(_out_name)
     else:
         _absent.append(_src_name)
@@ -2173,6 +2219,41 @@ else:
 # ---------------------------------------------------------------------------
 from check_deploy_clean import enforce as _deploy_guard
 _allowed = {'index.html'} | {_o for _s, _o in PAGES}
+
+# ---------------------------------------------------------------------------
+# Q31: THE STRIP IS PROVEN ON THE WAY OUT, NOT ASSUMED.
+#
+# checks/_verify_no_agent_traces.py asks whether the words are gone. It would
+# be perfectly happy with a strip that also deleted a line of code, because a
+# broken page contains no traces either. THIS asks the other question, of the
+# thing that lands in _deploy, and it asks node rather than the scanner.
+#
+# A page that loses a script and still renders is the exact failure this
+# project keeps finding, and it would ship looking fine.
+# ---------------------------------------------------------------------------
+_bad_js = []
+for _n in sorted(os.listdir(OUT)):
+    _p = os.path.join(OUT, _n)
+    if not os.path.isfile(_p):
+        continue
+    if _n.endswith('.js'):
+        _r = _sp.run([_node, '--check', _p], capture_output=True, text=True,
+                     encoding='utf-8', errors='replace')
+        if _r.returncode != 0:
+            _bad_js.append('%s: %s' % (_n, (_r.stderr or '').strip().splitlines()[:1]))
+    elif _n.endswith('.html'):
+        try:
+            _check_inline_js(_p, require_any=False)
+        except SystemExit as _e:
+            _bad_js.append(str(_e))
+if _bad_js:
+    sys.exit("BUILD FAILED: the comment strip left JavaScript that does not "
+             "parse. Nothing has been uploaded." + "\n  " +
+             "\n  ".join(_bad_js))
+print('comment strip: %d comment(s) removed on the way into _deploy; '
+      'every deployed .js and inline script still parses' % _stripped_total)
+
+
 if _deploy_guard(OUT, allowed_files=_allowed):
     sys.exit("BUILD FAILED: refusing to leave _deploy in a state that would "
              "publish unexpected files. Nothing has been uploaded.")

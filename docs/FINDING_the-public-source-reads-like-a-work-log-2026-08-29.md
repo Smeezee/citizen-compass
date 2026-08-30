@@ -91,9 +91,22 @@ C1 Spirit, the Copilot turret and the MIT header.
 
 ## 5. THE ONE THING I AM NOT DOING ON MY OWN JUDGEMENT
 
-The visible copy carries **about 250 mid-sentence em-dashes** — 171 on the index
-alone. At that density it is a well-known tell, and **it is mine: I wrote most
+The visible copy carries mid-sentence em-dashes, and **it is mine: I wrote most
 of this copy.**
+
+**I FIRST REPORTED 250, WITH 171 ON THE INDEX. THAT WAS WRONG.** I counted
+rendered lines, and the index repeats the same eight strings once per ship, 254
+times over. Counted once each:
+
+    111   unique lines site-wide
+     33   unique lines that are sentences at all
+    ~20   where the dash is a writing habit rather than a separator
+
+**Ninety of them are label separators** — `Cooler left — 23 fit`,
+`Transponder — the game does not allow this to be changed` — doing a colon's
+job. Rewriting those would make the interface worse. **A count that cannot tell
+a label from a sentence is not a measurement, and I published one before I
+looked at what I had counted.**
 
 It is also just punctuation, used correctly. Rewriting 250 sentences would
 change the voice of the site on my opinion rather than Sleven's, on a site whose

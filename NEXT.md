@@ -420,26 +420,147 @@ and the MIT header. **It exits 1 today, by design.**
 
 `docs/FINDING_the-public-source-reads-like-a-work-log-2026-08-29.md`
 
-### Q32 — 250 EM-DASHES IN THE VISIBLE COPY. SLEVEN'S CALL, NOT MINE.
-**DONE-WHEN** Sleven has ruled. **Nobody rewrites site copy before then.**
-**BLOCKED-BY** Sleven.
+### Q33 — SUPERSEDED THE SAME DAY. USE WHAT THE GAME SHOWS, NOT WHAT I INVENT.
+**DONE-WHEN** every name on screen is either CIG's own display string or
+honestly our own words, and shorthand carries a hover explanation.
+**BLOCKED-BY** nothing. **C1's.**
 
-The words on screen name no AI and use no AI vocabulary — I checked for the
-whole tell list (delve, seamless, robust, leverage, tapestry, testament to,
-dive into and thirty more) and the site is clean. **What it does have is my
-punctuation.**
+**I HAD THIS WRONG AND SLEVEN CORRECTED IT.** His rule, in his own words:
 
-    mid-sentence em-dashes in visible copy    ~250
-      index 171 · loadout 59 · keybinds 9 · download 6 · find 2 · stick 3
+> *"if they use something in the codes or in the files, that's different than
+> what the game uses. That's what we need to use. The words we use need to
+> match the ones that the players would see in game. If a shorthand version of
+> a word saves space and is generally well known, I would rather use that."*
 
-(The other 1,105 in the index are single "—" cells meaning *no value* in a
-table. Those are fine and are not counted here.)
+**I had recommended expanding `mav` to "Maneuvering" across 348 labels, on
+CIG's developer post.** Then I opened CIG's own localisation file:
 
-**A mid-sentence em-dash at this density is one of the most-cited tells there
-is, and it is mine — I wrote most of this copy.** But it is also just good
-punctuation, and 250 rewrites would change the voice of the site on my
-judgement rather than Sleven's. **He decides whether that voice is a problem
-before a word of it moves.**
+    item_nameaegs_idris_mav_fixed_civ   ->   "Fixed Mav Thruster"
+    itemPort_hardpoint_PDC              ->   "PDC"
+
+**The game says "Mav Thruster" and "PDC" on screen.** Expanding either would
+have moved us further from what a player sees, not closer. **The developer post
+is the file side; `labels.json` is the game side, and the game side wins.**
+
+**`labels.json` IS THE ANSWER AND IT HAS BEEN ON THE MACHINE ALL ALONG.**
+90,363 entries in every snapshot - the strings the client actually renders.
+
+    item_Name*    9,584 component display names
+    itemPort_*      381 hardpoint display names, e.g.
+                        "Weapon - Left Wing 01", "Missile Rack - Left",
+                        "Shield Generator - Left", "Missile Attach Point 01"
+
+**AND THE COVERAGE PATTERN IS ITSELF THE FINDING.** CIG localises what a player
+can pick and nothing else:
+
+    guns 41%  ·  PDC 39%  ·  weapons 34%  ·  shields 25%  ·  coolers 25%
+    thrusters 0 of 941  ·  cargo grid 0 of 223  ·  fuel 0 of 74  ·  radar 0 of 15
+
+**Zero of 941 thruster hardpoints have a name, because no player ever picks
+one.** So "Thruster Mav Body Left Bot" is not a label to translate - **it is a
+label the game never shows anybody.** Our own plain words are correct there, and
+the page should say they are ours.
+
+**THE RULE, THEN:** CIG ships a display string, we print it **verbatim**. CIG
+ships nothing, we write plain English and own it. **Shorthand the game itself
+displays stays, and gets a hover.**
+
+### Q34 — 112 NAMES ON THE LIVE TEST SITE ARE WRONG, AND CIG'S OWN FILE SAYS SO.
+**DONE-WHEN** `checks/_verify_display_names.py` exits 0.
+**BLOCKED-BY** nothing. **This is live and visible. It jumps the queue.**
+
+    61   items display CIG's own placeholder text: `<= PLACEHOLDER =>`
+     6   truncated at an escaped quote - the game's MRX "Torrent" reaches
+         the page as `MRX \`
+    26   display a raw class name, underscores and all:
+         MRCK_S04_KRIG_S65_Stingray_Left, Paint_Cutlass_Black_Procyon
+    19   disagree with the name the game shows
+
+**THE DISAGREEMENTS ARE NOT COSMETIC:**
+
+    page: Aegis Gladius - Noise Launcher     game: Aegis Avenger - Noise Launcher
+    page: VariPuck S6 Gimbal Mount           game: VariPuck S7 Gimbal Mount
+    page: XIAN Scout CML Chaff               game: Aopoa Khartu-al - Noise Launcher
+    page: MSD-481 Missile Rack               game: SNT-481 Missile Rack
+
+**A part on a Gladius is labelled Avenger. A size 7 mount is labelled S6.** That
+is the same defect class as Q1's armour naming, in a second place, and no
+control has ever looked.
+
+**61 PLACEHOLDERS ARE THE WORST OF IT** - they are paint names, and publishing
+CIG's unwritten-yet marker as a product name is worse than an empty cell.
+
+**THE CONTROL IS WRITTEN AND PROVEN** - `checks/_verify_display_names.py`
+(C1's, in OWNERS.md). **RULE16: INDEPENDENT** - truth from `labels.json`, which
+the build never reads. `--self-test` plants all four defects and catches all
+four, and stays quiet on the three things it must tolerate: a name CIG does not
+ship, shorthand the game itself shows, and a CIG name we already match.
+**Exits 1 today, by design.**
+
+`docs/FINDING_the-game-has-its-own-words-and-we-had-them-all-along-2026-08-29.md`
+
+### Q35 — HOVER EXPLANATIONS FOR SHORTHAND. SLEVEN ASKED FOR THIS DIRECTLY.
+**DONE-WHEN** any shorthand or jargon term on a page explains itself on hover
+AND on tap, and the glossary has one writer.
+**BLOCKED-BY** Q34. **Fix what the words ARE before explaining them.**
+
+> *"If people have a question about, okay, what does this word mean? If they
+> hover over the word a tiny little box pops up while they're hovering, that
+> gives a description of what the actual word is."*
+
+**ONE GLOSSARY FILE, ONE MECHANISM, EVERY PAGE.** Not per-page tagging - that is
+five copies that drift, which is the mistake the disclosure bar already made
+once. Terms come from the glossary; the pages carry no definitions of their own.
+
+**MUST WORK ON TOUCH.** Hover alone hides the explanation from every phone. Tap
+opens it, tap elsewhere closes it.
+
+**MUST RESPECT THE ACCESSIBILITY MODES.** The site has dyslexia-friendly, low
+vision and calm modes. A tooltip that ignores them is worse than none.
+
+**Starting set, all confirmed against a source:** PDC, Mav, S1-S10, IR, EM, CS
+(spell it out - most players read CrimeStat), RS, DPS (say burst or sustained),
+alpha damage, SCU, aUEC, QT, QD, SCM, NAV, VLM, gimbal vs fixed mount,
+hardpoint, ballistic, distortion.
+
+### Q32 — I SAID 250. IT IS 20. THE COUNT WAS WRONG AND THE WRONG COUNT WAS MINE.
+**DONE-WHEN** Sleven has seen the sample and ruled.
+**BLOCKED-BY** Sleven. **Nobody rewrites site copy before then.**
+
+**THE CORRECTION FIRST.** I reported *"~250 mid-sentence em-dashes, 171 on the
+index alone"*. **I was counting rendered lines, and the index repeats the same
+eight strings once per ship, 254 times over.**
+
+    250   what I told Sleven          WRONG - counted repeats
+    111   unique lines site-wide
+     33   unique lines that are sentences at all
+    ~20   where the dash is a writing habit rather than a separator
+
+**About ninety of the hundred and eleven are label separators** doing the job of
+a colon, and rewriting them would make the interface worse rather than less
+AI-sounding:
+
+    Aegis Dynamics · Cooler left — 23 fit
+    Transponder — the game does not allow this to be changed
+    Low vision — 150%, bold, high contrast, roomy rows
+
+**Those stay.** A count that cannot tell a label from a sentence is not a
+measurement, and I published one.
+
+**THE REAL WORK IS 20 SENTENCES**, spread over loadout (8), download (3),
+keybinds (4), find (3), index (1), stick-test (1). Every rewrite keeps the
+meaning and roughly the length, and none touches a number, a ship name, or
+anything a control measures. **All but the index line are in files C1 owns.**
+
+**A before/after of all twenty went to Sleven 2026-08-29.** Nothing changes
+until he says so.
+
+**AND THE HONEST READ, WHICH IS NOT "YES REWRITE IT".** The copy names no AI,
+uses no AI vocabulary, is specific, cites its sources and says plainly what it
+does not know — which is the opposite of how machine-written filler reads.
+**Nobody was going to guess AI from the punctuation.** The instruction was
+*nothing that even hints*, and this is the one habit that hints, so it is worth
+his ruling — but it was never the emergency my first number implied.
 
 ### Q23 — DONE 2026-08-29 as `d1e60b4`, ahead of Q21, on Sleven's direct instruction. NEXT COMMIT COVERS Q27 AND TODAY'S CENSUS DECLARATION.
 **DONE-WHEN** the fore/aft change and today's docs are committed and pushed.

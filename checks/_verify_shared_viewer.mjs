@@ -79,10 +79,21 @@ const loadoutCode = strip(loadoutHtml);
 
 console.log("--- 1. exactly ONE implementation, in the shipped bytes ---");
 const SENTINEL = /INDEX IS A LIST\. The ship panel and its 3D viewer are retired/;
-record(SENTINEL.test(indexHtml) && !SENTINEL.test(indexCode),
-  "the comment stripper works: index explains where the viewer lives in prose, "
-  + "and that prose is not in the code",
-  "if this fails, every assertion below it is checking nothing");
+/* PROVEN ON A FIXTURE, NOT ON WHATEVER THE PAGE HAPPENS TO CONTAIN.
+   This guard used to require the SHIPPED page to carry a particular comment
+   and then check the stripper had removed it. That tested the fixture as much
+   as the stripper, and the fixture was somebody else's prose. Q31 stopped
+   comments shipping at all on 2026-08-30 and this went red on a page that was
+   perfectly correct.
+   The fixture is now local and cannot be taken away by a change to the build.
+   The second half - that the stripped code is not EMPTY - is what catches a
+   stripper that removed too much, which the old form never checked. */
+const _fx = "var a = 1; /* SENTINEL-LIKE PROSE */\n// SENTINEL-LIKE PROSE\nvar b = 2;";
+record(/SENTINEL-LIKE PROSE/.test(_fx) && !/SENTINEL-LIKE PROSE/.test(strip(_fx))
+       && indexCode.trim().length > 0 && loadoutCode.trim().length > 0,
+  "the comment stripper works, proven on a local fixture, and neither page's "
+  + "stripped code is empty - if this fails, every assertion below it is "
+  + "checking nothing");
 
 const RENDERER = /new\s+THREE\.WebGLRenderer/g;
 const inViewer = (viewerJs.match(RENDERER) || []).length;
