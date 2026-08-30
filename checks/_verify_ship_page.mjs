@@ -848,10 +848,27 @@ console.log("\n--- L14: the three kinds of incomplete ship, each said out loud -
 
   // AND THE STINGRAY IS NOT HERE. A ship with no verifiable specs is the
   // opposite of what this site is for.
-  const stingray = Object.keys(SHIPS).filter((k) => /Stingray|S-65/i.test(SHIPS[k].n));
-  record(stingray.length === 0,
-    "the Kruger S-65 Stingray is NOT in the dataset - PTU-only, no Ship Matrix " +
-    "entry, no published specs", `${stingray.length} found`);
+  /* THE STINGRAY SHIPPED. 2026-08-30, with the 4.10 pull.
+     This asserted the Kruger S-65 Stingray was NOT in the dataset, because in
+     4.9 it was PTU-only with no Ship Matrix entry and no published specs - and
+     "a ship with no verifiable specs is the opposite of what this site is for"
+     is the reason that mattered, not the ship's name.
+     In 4.10 it is live and carries the lot: arm, cargo, crew, dim, eng, hull,
+     pen, 81 slots, and CIG's own precomputed aggregates. Measured before this
+     was changed.
+     SO THE REASON IS ASSERTED INSTEAD OF THE NAME. Any ship in the dataset
+     must carry verifiable specs. That is what the original was protecting and
+     it now covers every ship rather than one, which is stronger than what it
+     replaced - a second spec-less ship under a different name would have
+     walked straight past the old form. */
+  const specless = Object.keys(SHIPS).filter((k) => {
+    const s = SHIPS[k];
+    return !s.dim && !s.hull && !(s.slots && s.slots.length);
+  });
+  record(specless.length === 0,
+    "no ship in the dataset is without verifiable specs - no dimensions, no " +
+    "hull figure and no ports would mean a page asserting nothing",
+    specless.slice(0, 5).join(", "));
 
   vm.runInContext(`shipId=${JSON.stringify(shipKey)};reset();renderAll();`, sandbox);
 }

@@ -543,12 +543,33 @@ def run(data, ships, items, strict=True):
     # stated" for those eleven rather than invent a 1.0 baseline.
     with_arm = [r for r in SHIPS.values() if r.get("arm")]
     no_arm = sorted(r["n"] for r in SHIPS.values() if not r.get("arm"))
-    check(len(with_arm) == 305,
-          "305 of 316 records resolve hull armour - the measured figure",
-          "%d resolved, %d without: %s" % (len(with_arm), len(no_arm), no_arm))
-    check(len(no_arm) == 11,
-          "exactly 11 records carry no armour, and they are the known eleven",
-          str(no_arm))
+    # PINNED TO 4.9's DATASET UNTIL 2026-08-30. This asserted "305 of 316" and
+    # "exactly 11", and the 4.10 pull made it 307 of 318 - two ships added,
+    # nothing about armour resolution changed. A count is a fact about one
+    # snapshot; the PROPERTY is that every record either resolves armour or is
+    # one of a known set that CIG gives no armour port.
+    #
+    # The named set is the assertion now. It cannot drift quietly the way a
+    # number can: a twelfth record appearing without armour fails here by NAME,
+    # and says which one, which is what a reader needs.
+    KNOWN_NO_ARMOUR = {
+        "ATLS Cool Metal Color", "ATLS Orange Line", "ATLS Snowland Color",
+        "Aegis Idris-P", "Argo ATLS", "Argo ATLS GEO", "Argo ATLS GEO IKTI",
+        "Argo ATLS IKTI", "Argo ATLS IKTI Rad", "Greycat PTV", "Power Suit",
+    }
+    unexpected = sorted(set(no_arm) - KNOWN_NO_ARMOUR)
+    check(not unexpected,
+          "every record without hull armour is one CIG gives no armour port - "
+          "exosuits, the PTV and the Idris-P",
+          "unexpected: %s" % unexpected if unexpected else
+          "%d resolved, %d without, all known" % (len(with_arm), len(no_arm)))
+    # AND THE COVERAGE IS STILL OVERWHELMING, so a collapse cannot hide behind
+    # a set that happens to match. Without this, emptying LOADOUT_ARMOR would
+    # satisfy the check above by making no_arm equal the known set and nothing
+    # else - which is exactly the shape of a check that cannot fail.
+    check(len(with_arm) > 250,
+          "and the overwhelming majority of records DO resolve one",
+          "%d resolved" % len(with_arm))
     check(all(r["arm"] in ARMOR for r in with_arm),
           "every resolved armour key names a record in LOADOUT_ARMOR")
     NOTES.append("L5 coverage: %d of %d records resolve hull armour; the %d "

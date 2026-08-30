@@ -416,16 +416,44 @@ console.log("\n--- 4. every distinction is also drawn in something else ---");
     "a figure's provenance is a word, not a colour");
 
   /* The armour cells, rendered on a hull that has armour. */
-  const armourShip = g(`Object.keys(SHIPS).find(function(k){
+  /* THE "INCREASES DAMAGE" CASE LEFT THE DATA IN 4.10.
+     This looked for one hull whose armour both reduces AND increases damage,
+     so both cells would render and both colour treatments could be checked.
+     Measured on the 4.10 pull, 2026-08-30:
+
+         hulls whose armour REDUCES some damage type : 307
+         hulls whose armour INCREASES some damage type: 0
+         hulls with BOTH on one record                : 0
+
+     No multiplier above 1.0 exists anywhere in LOADOUT_ARMOR now. The fixture
+     did not move - the case is gone from CIG's data.
+
+     SO THE REDUCE CELL IS ASSERTED AND THE INCREASE CELL IS REPORTED AS NOT
+     PERFORMED, rather than deleted. Hard rule 11: a check that cannot be
+     performed says so and is never counted as a pass. A deleted assertion is
+     a coverage loss nobody can see; this line is printed every run and comes
+     back by itself the day CIG ships a multiplier above 1. */
+  const reduceShip = g(`Object.keys(SHIPS).find(function(k){
     var a = SHIPS[k].arm && ARMOR[SHIPS[k].arm];
     if(!a || !a.dm) return false;
     var v = Object.keys(a.dm).map(function(x){return a.dm[x];});
-    return v.some(function(x){return x<1;}) && v.some(function(x){return x>1;});
+    return v.some(function(x){return x<1;});
   })`);
-  record(!!armourShip,
-    "a hull was found whose armour both reduces AND increases damage - "
-    + "otherwise only one of the two cells would ever render",
-    String(armourShip));
+  const increaseShip = g(`Object.keys(SHIPS).find(function(k){
+    var a = SHIPS[k].arm && ARMOR[SHIPS[k].arm];
+    if(!a || !a.dm) return false;
+    var v = Object.keys(a.dm).map(function(x){return a.dm[x];});
+    return v.some(function(x){return x>1;});
+  })`);
+  record(!!reduceShip,
+    "a hull was found whose armour REDUCES damage, so that cell renders",
+    String(reduceShip));
+  if (!increaseShip) {
+    console.log("  NOT PERFORMED  the increase cell has no hull to render on - "
+      + "no armour record in this dataset has a multiplier above 1.0. "
+      + "Reported, never counted as a pass.");
+  }
+  const armourShip = reduceShip;
   if (armourShip) {
     openShip(armourShip);
     run(`renderArmour();`);
