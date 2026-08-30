@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #856 — 2026-08-30 12:54 AM
+# LATEST_HANDOFF.md — Update #861 — 2026-08-30 1:47 AM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-30 00:54:37 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-30 01:47:17 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,199 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119498 files (13787.21 MB)
 
-**Scripts:** 53  |  **3D models:** 1141  |  **Docs:** 1417
+**Scripts:** 53  |  **3D models:** 1143  |  **Docs:** 1426
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-30 01:46:35 — 20260830_0930_update_built-swept-and-the-deploy-is-blocked-by-nine-readable-names.md
+
+# Update — built and swept. My four controls are fixed. The deploy is blocked by nine names a visitor can read, and they are C1's.
+
+**2026-08-30 14:30 UTC / 2026-08-30 09:30 local · Code (background session)**
+
+## THE BUILD CARRIED EVERYTHING
+
+    cmSummary     src 2  deploy 2      Hull armor    src 2  deploy 2
+    unnamedTag    src 4  deploy 4      Hull armour   src 0  deploy 0
+    comment strip: 1677 removed; every deployed .js and inline script parses
+    Greycat 3, Grey's Market 3         <- names preserved, as instructed
+
+## DRACO IS IN, AND NOT RUN IS GONE
+
+    106 ok, 4 failed, 0 skipped, 0 NOT RUN, in 926s
+
+`_verify_marker_mesh_distance.py` now runs and passes - 5,800 markers on 256
+hulls. Installed `--no-save` into `checks/node_modules`; **`checks/package.json`
+is byte-identical**, which was Sleven's constraint.
+
+## FOUR OF MINE, AND THEY WERE ALL ONE DEFECT
+
+**`_verify_column_split.mjs`** read `data-fixed` alone in TWO places and put
+**716 ports on the wrong side fleet-wide** - every one a countermeasure sitting
+exactly where it belongs. Its L4 section also sampled the first fixed port with
+a part, which is now inside the summary and has no row: `indexOf` returned -1,
+the "row" became the last character of the page, and three content assertions
+failed against a correct page. **27 assertions, exit 0.**
+
+**`_verify_panel_findable.mjs`** asserted the title contained `colour`. Sleven's
+US-spelling instruction reached the copy and it went red. **A control that pins
+the spelling of a word is asserting house style, not behaviour** - it now
+accepts `colou?r`.
+
+**THAT IS FIVE PLACES ACROSS THREE FILES.** C1 named two. `_verify_ship_page`
+held four, `_verify_column_split` three more. The rule "a fixed port is
+represented by its own row OR by a summary naming it" is now written out
+identically in three files, **and that is the weakness**: the sixth copy is the
+one that will be missed. Worth one shared helper, and I am not building it at
+the end of a pass.
+
+## THE DEPLOY IS REFUSED, AND IT IS RIGHT TO BE
+
+    _verify_display_names.py   REFUSED - 9 name(s) a visitor can read
+
+    truncated  6
+      BMBRCK_S03_BEHR_Single_S03   shows 'CST-313 \'
+      Turret_PDC_BEHR_G            shows 'MRX \'      game  MRX "Torrent"
+    disagrees  3
+      MRCK_S04_KRIG_S65_Stingray_Left   shows the raw class name
+
+**Six names are truncated at a backslash.** `MRX "Torrent"` becomes `MRX \` -
+which reads like an escaping bug in the name derivation, where a quoted name is
+cut at the escaped quote. **C1's own control caught it**, which is the system
+working, and it is C1's to fix: `build_loadout_data.py` is theirs as of today.
+
+**I have not deployed.** Nine wrong names on a page whose claim is that its
+numbers can be trusted is not something to ship past a red control.
+
+`_verify_picker_deployed.mjs` is the fourth failure and is deployed-only -
+expected until this ships.
+
+## ANSWERS
+
+**C1 claiming `build_loadout_data.py` is not wrong.** The ship page and its data
+are theirs; a generator whose only consumer is C1's page should not have a
+different writer.
+
+**Q38 not touched.** Ping and we move `_WEAPONY` and `MARKABLE` together.
+
+**Q44 recorded:** no fuzzy matching in the reader, Levenshtein out, exact
+vocabulary hits only. Not started.
+
+## AND ONE THING C1'S SPELLING PASS MISSED
+
+Identifiers were correctly left alone - `id="armour"`, `_view.colour()`,
+`data-colour`. **Five pieces of VISIBLE copy were not:**
+
+    index.html    "Calm - muted colour, no motion, soft borders"
+    index.html    "Turning this down helps if bright colours feel harsh"
+    loadout.html  <th>vs. unarmoured</th>
+
+C1's files. Reported, not edited.
+
+### 2026-08-30 01:25:35 — 20260830_0900_update_build-sweep-deploy-taken.md
+
+# Update — build, sweep, deploy, commit. Taking it, and installing draco3d because the gate cannot pass without it.
+
+**2026-08-30 14:00 UTC / 2026-08-30 09:00 local · Code (background session)**
+
+C1's work is all in `_src` and none of it is on the site: 107 corrected item
+names, US spelling, the countermeasure summary, and the "Unknown Manufacturer -
+1" fix on 1,450 parts.
+
+## THE ONE DECISION THIS FORCES
+
+**The deploy gate refuses today on `_verify_marker_mesh_distance.py` being NOT
+RUN**, because draco3d is absent. A NOT RUN counts against the sweep and never
+as a pass - that is my own Q29 work and I am not going to walk around it.
+
+**So deploying requires installing draco3d.** Sleven offered it conditionally on
+2026-08-29 - *"npm i draco3d if you want it live; don't add it to a shared
+package.json without saying so"* - and has now instructed a deploy. **I am
+treating the instruction plus the offer as the authorisation**, which is more
+than I was willing to act on when it was the offer alone.
+
+**Installed with `--no-save` into `checks/node_modules`.** There is no repo-root
+`package.json`; the only one is `checks/package.json`, which is the shared file
+he named. `--no-save` makes the control runnable and **leaves that manifest
+untouched**, which is the constraint kept rather than worked around.
+
+**Rule 7 says downloaded code is data and is not to be imported or run.** This
+is an exception granted by Sleven, the same way Playwright was - and Playwright
+got a dated `docs/DECISION_*` for it. **This deserves one too**, and it is C1's
+control rather than mine, so I am recording the fact here and not writing the
+decision unasked.
+
+## ORDER, AND WHY
+
+    1  install draco3d      so the control can run at all
+    2  build                carry _src into _deploy
+    3  full sweep           one sweep, not two - a subset would only write a
+                            partial receipt and could not open the gate
+    4  sweep_gate --check   ask, do not assume
+    5  deploy               only if it passes
+    6  commit and push
+
+## OWNERSHIP
+
+**C1 claims `build_loadout_data.py` and asked me to say if that is wrong. It is
+not wrong.** The ship page and its data are already C1's, and a generator whose
+only consumer is C1's page should not have a different writer. Recorded here
+because they asked in writing and deserve an answer in writing.
+
+## Q38 IS NOT IN THIS PASS
+
+Agreed and understood: my `_WEAPONY` and C1's `MARKABLE` change together or not
+at all, and five controls check that they agree. **I will ping when I take it.**
+
+### 2026-08-30 00:56:53 — 20260830_0320_update_committed-and-pushed-bd4cac2.md
+
+# Update — committed and pushed as `bd4cac2`. Q37 and Q39 in history; tree clean.
+
+**2026-08-30 08:20 UTC / 2026-08-30 03:20 local · Code (background session)**
+
+    bd4cac2   18 files changed, 1,639 insertions, 367 deletions
+    7cda543..bd4cac2  main -> main
+    local == remote == bd4cac2      git status --porcelain   0 entries
+
+## Verified after, not assumed
+
+- **`_to_delete/` contributed 0 files**, and **`editability_patches.json` is not
+  in the commit** - checked for both by name in the index before and in
+  `git log -1 --name-only` after. The leftover plant did not enter history.
+- No path outside the eight expected roots.
+- Push confirmed by fetch and hash comparison.
+
+## THE ONE JUDGEMENT CALL, REVERSED FROM LAST TIME
+
+`testing/_src/loadout.src.html` is IN this commit. **I excluded it from
+`7cda543` because no sweep had seen it.** It is included now because my Q37 fix
+asserts on the markup it introduces - `data-cm-ports` and the `cm-summary` row -
+so committing the control without the page would leave a control that cannot
+pass. **They were verified together** by `_verify_ship_page` (237 assertions)
+and `_verify_loadout_fitment`, both exit 0. **A full sweep still has not run
+over it**, and that is in the commit message rather than left to be discovered.
+
+## WHERE THINGS STAND
+
+    Q37, Q39     done
+    Q3           dry run done, list ready, NOT written - wants a verified
+                 backup (rule 4) and an answer on Mule/STV sharing one stated
+                 dimension triple
+    Q38          not started - my _WEAPONY and C1's MARKABLE must move in the
+                 same breath, 602 markers, two owners
+    the deploy   still refused: _verify_marker_mesh_distance.py is NOT RUN
+                 without draco3d. That is the only blocker left that is not
+                 mine, and it is a one-line install away whenever Sleven says.
+
+## OPEN AND MINE, AND IT IS THE ONE I WOULD TAKE FIRST
+
+**`_verify_loadout_fitment.py` can leave a planted value in
+`data-layer/editability_patches.json`** and therefore in the shipped data layer.
+Cause not established - I guessed twice and could show neither. Until it is
+fixed, **anything that builds after a sweep should check that file is absent
+first.**
 
 ### 2026-08-30 00:52:48 — 20260830_0310_update_correcting-my-own-diagnosis-of-the-leftover-plant.md
 
@@ -1209,197 +1397,7 @@ the second shot exists. That is C1's method and I am not improving on it.
 survivors were untouched by today's withholding, so I expect them to reproduce.
 Expecting is not measuring.
 
-### 2026-08-29 13:41:02 — 20260829_1205_update_committed-and-pushed-85e1d3b.md
-
-# Update — committed and pushed as `85e1d3b`. Q27 and the deploy are in history; working tree clean.
-
-**2026-08-29 12:05 local · Code (background session)**
-
-Sleven said commit and push, in this session, for this change. Rule 2 satisfied.
-
-    85e1d3b   14 files changed, 1,232 insertions, 412 deletions
-    d1e60b4..85e1d3b  main -> main
-    local HEAD == origin/main == 85e1d3b
-    git status --porcelain    0 entries
-
-## Staged by path, never `git add -A`
-
-    checks/     _verify_child_markers.py (Q27), and C1's _verify_marker_census.py
-                and marker_census.json
-    build_hardpoint_overlay.py
-    docs/       two of C1's findings, CURRENT-STATE.md, three handoff updates
-                and the running log
-    NEXT.md, LATEST_HANDOFF.md
-
-## Verified after, not assumed
-
-- **`_to_delete/` contributed 0 files** - checked in the index before and in
-  `git log -1 --name-only` after. Today's eight probes are all in there and none
-  entered history.
-- **No path outside the five expected roots.** Filtered the file list; empty.
-- **The push landed** - `git fetch` and a hash comparison, not the push's own
-  output.
-
-## THE DAY, IN THREE COMMITS
-
-    4710d30   the heap fix, the deploy gate, 295 ships photographed
-    d1e60b4   the drift control stops writing to what it audits
-    85e1d3b   three markers declared rather than forgotten, and deployed
-
-## STANDING
-
-    Q21, Q22, Q23, Q24, Q25, Q27      done
-    Q26   unblocked - the three survivors, against a payload now deployed
-    Q28   C1's to design. Not mine.
-    Q29   open. The sweep cannot say "I could not look".
-    Q30   open, and it is a question for Sleven rather than work:
-          `--only` overwrites the same receipt a full sweep writes. It failed
-          CLOSED and the gate caught it. Whether fail-closed is sufficient, or
-          whether a partial should write somewhere else, is a call not a fix.
-
-**The testing site is current and verified on its served bytes.** Going live
-remains Sleven's and is untouched.
-
-**Next, unless told otherwise: Q29.** Two controls already exit 2 to say a
-resource was absent and both print as FAIL. Nothing about it weakens a gate -
-both states still count against the sweep - and it stops a clean machine from
-looking like twenty defects.
-
-### 2026-08-29 13:38:45 — 20260829_1200_update_q27-done-and-the-testing-site-is-deployed-and-verified.md
-
-# Update — Q27 done with declared exceptions, the sweep is 106 of 106, and the testing site is deployed and verified on the served bytes.
-
-**2026-08-29 12:00 local · Code (background session)**
-
-## Q27 — DECLARED, NOT RE-BASELINED
-
-Three exceptions in `_verify_child_markers.py`, each declaring the WHOLE
-transition rather than just a port name, printed on every run:
-
-    BANU_Defender 50   [-0.30751, 0.01049,  1.32494] cig  ->  REMOVED
-    BANU_Defender 51   [ 0.30751, 0.01049,  1.32494] cig  ->  REMOVED
-    MISC_Hull_C   34   [-0.0,    -0.10429, -1.27827] cig
-                    -> [-0.00408, 0.00157, -1.00356] est
-
-**I measured all three against the real data before writing them down** and they
-match C1's table exactly. The third is declared as a DEMOTION, not a removal -
-the mount kept its marker, the CIG position was withheld, and the page now says
-`est`. Calling that "removed" would record the wrong event.
-
-**A port name alone would have excused any future change to those mounts**,
-including a second real regression landing on the same one. Both ends are
-asserted.
-
-## PROVEN THREE WAYS, RULE 12
-
-    undeclared loss     FAIL  got=['Aegis Gladius:9']    the list does not blanket-excuse
-    wrong transition    FAIL  x2 - unmoved AND stale     two independent alarms
-    stale declaration   FAIL  got=['AEGS_Gladius:1']     a declaration nothing fires is fiction
-
-All three probes are in `_to_delete/probes-20260829/`, never deleted.
-
-## THE SWEEP AND THE GATE
-
-    106 ok, 0 failed, 0 skipped, 0 NOT RUN, in 706s
-    sweep_gate --check testing/_deploy
-      106 control(s) green against this exact payload (2026-08-29T13:35:46)
-      GATE EXIT 0
-
-**The gate was refusing C1's `--only` receipt, exactly as Sleven said** - 9
-controls, 3.7s, `partial: true`, naming a child-markers red that no longer
-existed. Not the payload.
-
-## DEPLOYED, AND VERIFIED ON THE SERVED BYTES RATHER THAN ON EXIT 0
-
-    Uploaded 1 of 1 asset   + /loadout_marker.gen.js
-    https://citizencompasstesting.citizencompass-contact.workers.dev
-    Version a0f092a4-89f4-407e-b061-6b951ee3ad3d
-
-**One file changed, and it is the fore/aft withholding.** The other 524 were
-already uploaded.
-
-The deploy script says in as many words that exit 0 is not proof, so:
-
-    /                        HTTP 200    431,674 bytes
-    /models/Hammerhead.glb   HTTP 200  3,608,636 bytes
-    /loadout_marker.gen.js   HTTP 200    282,961 bytes
-    served sha256 == local sha256   (2536dbdbe37aec05)
-    index carries id="cc-kb" and id="cc-panel"
-
-**And the three ports, read off the file the site is actually serving:**
-
-    259 hulls, 6058 markers
-    BANU_Defender port 50   GONE
-    BANU_Defender port 51   GONE
-    MISC_Hull_C   port 34   ['34', -0.00408, 0.00157, -1.00356, 'est']
-
-The three deployed-site controls - `_verify_find_deployed.mjs`,
-`_verify_deployed_links.mjs`, `_verify_picker_deployed.mjs` - are all green
-against the new deploy.
-
-**The site is no longer on 04:47.**
-
-## WHAT THAT CLOSES
-
-    Q21  DONE - the deploy gate passes
-    Q27  DONE - declared exceptions, baseline untouched
-    Q26  UNBLOCKED - the three survivors can now be measured against a
-         payload that is actually deployed
-
-Uncommitted: `checks/_verify_child_markers.py` and today's updates. Nothing has
-been committed since `d1e60b4`.
-
-**Not started: Q26, Q28 (C1's), Q29, Q30.** Q29 is the one I would take next -
-the sweep cannot say "I could not look", and two controls already exit 2 trying.
-
-### 2026-08-29 13:22:11 — 20260829_1145_update_q27-taking-the-declared-exception-list.md
-
-# Update — Q27 taken. Declared exceptions, not a re-taken baseline, and C1's reasoning for that is right.
-
-**2026-08-29 11:45 local · Code (background session)**
-
-Sleven said go, Q27 first. Filing before I start, rule 13.
-
-**C1 asked me to choose and said it would not argue twice. I am not choosing
-differently: the declared-exception list is correct and re-taking the snapshot is
-not.** Absorbing a loss into a baseline is the exact failure
-`_verify_marker_census.py` exists to prevent, and it would be the same failure
-in my file. A baseline re-taken quietly and one re-taken on purpose look
-identical in six weeks; three declared entries that print on every run do not.
-
-**And C1 is right that the red control produced the day's best evidence.**
-Section 6 says 244 hulls changed and names exactly three moved markers. A
-fleet-wide change to the containment rule moved three markers and nothing else,
-with the four pinned negative controls holding. That is worth more than the pass
-would have been.
-
-## THE CORRECTION I AM ACCEPTING
-
-Q21's DONE-WHEN said `MISC_Hull_C` port **2**. It is port **34**, the nose
-turret. Port 2 is at fore/aft -0.97267, inside the box, and was never an
-escapee. **I spent time hunting a port with nothing wrong with it.** C1 has
-owned that. What I will note for myself: I reported "port 2 PRESENT" as a
-finding without asking whether the number in the order was right, which is the
-same trust I would not extend to a check's own output.
-
-## WHAT I AM BUILDING
-
-Three declared exceptions in `_verify_child_markers.py`, each carrying its
-reason and printed on every run:
-
-    BANU_Defender 50   cig -1.32494 fore/aft  -> REMOVED
-    BANU_Defender 51   cig  1.32494 fore/aft  -> REMOVED
-    MISC_Hull_C   34   cig -1.27827           -> demoted to est -1.00356
-
-**The third is not a removal and must not be declared as one.** The mount kept
-its marker; the CIG position was withheld and it fell back to a name-derived
-estimate the page now labels `est`. A control that calls that "removed" would be
-recording the wrong event.
-
-Rule 12 applies: the list has to be proven not to hide a fourth. I will plant a
-loss that is NOT declared and confirm the control still goes red.
-
-*(+590 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+593 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

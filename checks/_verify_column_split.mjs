@@ -123,8 +123,21 @@ record(!/fixed-group|<details/.test(colA),
 /* --------------------------------------- 2. Specs holds ALL of them, in full */
 console.log("\n--- 2. Specs holds all of them, with L4's content intact ---");
 const specs = el("specs").innerHTML;
-const inSpecs = new Set(
-  [...specs.matchAll(/data-fixed="([^"]+)"/g)].map((m) => m[1]));
+/* REPRESENTED, NOT DRAWN - the same rule _verify_ship_page.mjs uses.
+   Countermeasures became one summary row on 2026-08-30, so a fixed port can be
+   named by a summary rather than owning a row: data-cm-ports lists the ports it
+   stands for, and data-fixed="cm-summary" is the row's own identifier and not a
+   port. Reading data-fixed alone reports those ports as missing from Specs when
+   they are on it, and counts the sentinel as a port that does not exist.
+
+   THIS IS THE FIFTH PLACE THAT COUNTED ROWS. C1 named two, _verify_ship_page
+   held four, and this is in a different file - which is the argument for the
+   rule living in one shape everybody copies rather than in one file. */
+const inSpecs = new Set();
+for (const m of specs.matchAll(/data-fixed="([^"]+)"/g))
+  if (m[1] !== "cm-summary") inSpecs.add(m[1]);
+for (const m of specs.matchAll(/data-cm-ports="([^"]+)"/g))
+  for (const id of m[1].split(",")) if (id.trim()) inSpecs.add(id.trim());
 const missingFromSpecs = fixedOf(SH).filter((s) => !inSpecs.has(s.id));
 record(missingFromSpecs.length === 0,
   `ALL ${fixedOf(SH).length} fixed ports appear on the Specs tab`,
@@ -143,8 +156,17 @@ record(inCol.size + inSpecs.size === SH.slots.length,
 
 /* L4's content, on a real row rather than in the abstract. */
 {
-  const s = fixedOf(SH).find((x) => x.stock && H.PARTS[x.stock]);
-  record(!!s, "a fixed port with a fitted part exists to check L4 against");
+  /* A port with its OWN ROW, because this section reads a row's contents.
+     It used to take the first fixed port with a part; since 2026-08-30 that can
+     be a countermeasure folded into the summary, which has no data-fixed row of
+     its own - indexOf then returned -1, the "row" was the last character of the
+     page, and three content assertions failed against a page that was correct.
+     Narrowing the SAMPLE is not weakening the ASSERTION: every fixed port is
+     still required to be represented, in section 2 and fleet-wide in section 5. */
+  const s = fixedOf(SH).find((x) => x.stock && H.PARTS[x.stock]
+    && specs.includes(`data-fixed="${x.id}"`));
+  record(!!s, "a fixed port with a fitted part AND a row of its own exists to "
+    + "check L4 against");
   if (s) {
     const part = H.PARTS[s.stock];
     const row = specs.slice(specs.indexOf(`data-fixed="${s.id}"`));
@@ -206,8 +228,17 @@ console.log("\n--- 5. the split is the port's own flag, on every hull ---");
     openShip(k);
     const col = new Set([...el("colA").innerHTML
       .matchAll(/data-slot="([^"]+)"/g)].map((m) => m[1]));
-    const spec = new Set([...el("specs").innerHTML
-      .matchAll(/data-fixed="([^"]+)"/g)].map((m) => m[1]));
+    // The same "represented" rule as section 2 - a fixed port can be named by
+    // the countermeasure summary instead of owning a row, and "cm-summary" is
+    // the row's identifier rather than a port. Reading data-fixed alone put
+    // 716 ports on the wrong side of this comparison across the fleet, every
+    // one of them a countermeasure that was exactly where it belongs.
+    const specHtml = el("specs").innerHTML;
+    const spec = new Set();
+    for (const m of specHtml.matchAll(/data-fixed="([^"]+)"/g))
+      if (m[1] !== "cm-summary") spec.add(m[1]);
+    for (const m of specHtml.matchAll(/data-cm-ports="([^"]+)"/g))
+      for (const id of m[1].split(",")) if (id.trim()) spec.add(id.trim());
     checked++;
     for (const s of sh.slots) {
       const where = s.fit ? col : spec;

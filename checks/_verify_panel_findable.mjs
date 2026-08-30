@@ -143,8 +143,13 @@ console.log("\n--- 1. the way in ---");
     "the gear is hidden from a screen reader, which gets the words instead");
   record(/aria-controls="cc-tune-panel"/.test(tag),
     "and the control declares what it opens");
+  /* SPELLING-AGNOSTIC ON PURPOSE. This asserted "colour" and went red on
+     2026-08-30 when Sleven's US-spelling instruction reached the visible copy -
+     the title still lists exactly what the panel holds, which is the thing
+     being checked. A control that pins the spelling of a word is asserting
+     house style, not behaviour, and it fails the day house style changes. */
   record(/title="[^"]*style[^"]*"/i.test(tag)
-    && /title="[^"]*colour[^"]*"/i.test(tag),
+    && /title="[^"]*colou?r[^"]*"/i.test(tag),
     "with a title that lists what is inside rather than describing an activity",
     (/title="([^"]*)"/.exec(tag) || [])[1]);
 

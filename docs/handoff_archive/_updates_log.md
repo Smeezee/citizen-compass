@@ -44575,3 +44575,191 @@ sweep should check that file is absent first.**
 Both were verified after the plant was cleared:
 `_verify_loadout_fitment.py` and `_verify_ship_page.mjs` (237 assertions) both
 exit 0 on a clean tree.
+
+### 2026-08-30 00:56:53 — 20260830_0320_update_committed-and-pushed-bd4cac2.md
+
+# Update — committed and pushed as `bd4cac2`. Q37 and Q39 in history; tree clean.
+
+**2026-08-30 08:20 UTC / 2026-08-30 03:20 local · Code (background session)**
+
+    bd4cac2   18 files changed, 1,639 insertions, 367 deletions
+    7cda543..bd4cac2  main -> main
+    local == remote == bd4cac2      git status --porcelain   0 entries
+
+## Verified after, not assumed
+
+- **`_to_delete/` contributed 0 files**, and **`editability_patches.json` is not
+  in the commit** - checked for both by name in the index before and in
+  `git log -1 --name-only` after. The leftover plant did not enter history.
+- No path outside the eight expected roots.
+- Push confirmed by fetch and hash comparison.
+
+## THE ONE JUDGEMENT CALL, REVERSED FROM LAST TIME
+
+`testing/_src/loadout.src.html` is IN this commit. **I excluded it from
+`7cda543` because no sweep had seen it.** It is included now because my Q37 fix
+asserts on the markup it introduces - `data-cm-ports` and the `cm-summary` row -
+so committing the control without the page would leave a control that cannot
+pass. **They were verified together** by `_verify_ship_page` (237 assertions)
+and `_verify_loadout_fitment`, both exit 0. **A full sweep still has not run
+over it**, and that is in the commit message rather than left to be discovered.
+
+## WHERE THINGS STAND
+
+    Q37, Q39     done
+    Q3           dry run done, list ready, NOT written - wants a verified
+                 backup (rule 4) and an answer on Mule/STV sharing one stated
+                 dimension triple
+    Q38          not started - my _WEAPONY and C1's MARKABLE must move in the
+                 same breath, 602 markers, two owners
+    the deploy   still refused: _verify_marker_mesh_distance.py is NOT RUN
+                 without draco3d. That is the only blocker left that is not
+                 mine, and it is a one-line install away whenever Sleven says.
+
+## OPEN AND MINE, AND IT IS THE ONE I WOULD TAKE FIRST
+
+**`_verify_loadout_fitment.py` can leave a planted value in
+`data-layer/editability_patches.json`** and therefore in the shipped data layer.
+Cause not established - I guessed twice and could show neither. Until it is
+fixed, **anything that builds after a sweep should check that file is absent
+first.**
+
+### 2026-08-30 01:25:35 — 20260830_0900_update_build-sweep-deploy-taken.md
+
+# Update — build, sweep, deploy, commit. Taking it, and installing draco3d because the gate cannot pass without it.
+
+**2026-08-30 14:00 UTC / 2026-08-30 09:00 local · Code (background session)**
+
+C1's work is all in `_src` and none of it is on the site: 107 corrected item
+names, US spelling, the countermeasure summary, and the "Unknown Manufacturer -
+1" fix on 1,450 parts.
+
+## THE ONE DECISION THIS FORCES
+
+**The deploy gate refuses today on `_verify_marker_mesh_distance.py` being NOT
+RUN**, because draco3d is absent. A NOT RUN counts against the sweep and never
+as a pass - that is my own Q29 work and I am not going to walk around it.
+
+**So deploying requires installing draco3d.** Sleven offered it conditionally on
+2026-08-29 - *"npm i draco3d if you want it live; don't add it to a shared
+package.json without saying so"* - and has now instructed a deploy. **I am
+treating the instruction plus the offer as the authorisation**, which is more
+than I was willing to act on when it was the offer alone.
+
+**Installed with `--no-save` into `checks/node_modules`.** There is no repo-root
+`package.json`; the only one is `checks/package.json`, which is the shared file
+he named. `--no-save` makes the control runnable and **leaves that manifest
+untouched**, which is the constraint kept rather than worked around.
+
+**Rule 7 says downloaded code is data and is not to be imported or run.** This
+is an exception granted by Sleven, the same way Playwright was - and Playwright
+got a dated `docs/DECISION_*` for it. **This deserves one too**, and it is C1's
+control rather than mine, so I am recording the fact here and not writing the
+decision unasked.
+
+## ORDER, AND WHY
+
+    1  install draco3d      so the control can run at all
+    2  build                carry _src into _deploy
+    3  full sweep           one sweep, not two - a subset would only write a
+                            partial receipt and could not open the gate
+    4  sweep_gate --check   ask, do not assume
+    5  deploy               only if it passes
+    6  commit and push
+
+## OWNERSHIP
+
+**C1 claims `build_loadout_data.py` and asked me to say if that is wrong. It is
+not wrong.** The ship page and its data are already C1's, and a generator whose
+only consumer is C1's page should not have a different writer. Recorded here
+because they asked in writing and deserve an answer in writing.
+
+## Q38 IS NOT IN THIS PASS
+
+Agreed and understood: my `_WEAPONY` and C1's `MARKABLE` change together or not
+at all, and five controls check that they agree. **I will ping when I take it.**
+
+### 2026-08-30 01:46:35 — 20260830_0930_update_built-swept-and-the-deploy-is-blocked-by-nine-readable-names.md
+
+# Update — built and swept. My four controls are fixed. The deploy is blocked by nine names a visitor can read, and they are C1's.
+
+**2026-08-30 14:30 UTC / 2026-08-30 09:30 local · Code (background session)**
+
+## THE BUILD CARRIED EVERYTHING
+
+    cmSummary     src 2  deploy 2      Hull armor    src 2  deploy 2
+    unnamedTag    src 4  deploy 4      Hull armour   src 0  deploy 0
+    comment strip: 1677 removed; every deployed .js and inline script parses
+    Greycat 3, Grey's Market 3         <- names preserved, as instructed
+
+## DRACO IS IN, AND NOT RUN IS GONE
+
+    106 ok, 4 failed, 0 skipped, 0 NOT RUN, in 926s
+
+`_verify_marker_mesh_distance.py` now runs and passes - 5,800 markers on 256
+hulls. Installed `--no-save` into `checks/node_modules`; **`checks/package.json`
+is byte-identical**, which was Sleven's constraint.
+
+## FOUR OF MINE, AND THEY WERE ALL ONE DEFECT
+
+**`_verify_column_split.mjs`** read `data-fixed` alone in TWO places and put
+**716 ports on the wrong side fleet-wide** - every one a countermeasure sitting
+exactly where it belongs. Its L4 section also sampled the first fixed port with
+a part, which is now inside the summary and has no row: `indexOf` returned -1,
+the "row" became the last character of the page, and three content assertions
+failed against a correct page. **27 assertions, exit 0.**
+
+**`_verify_panel_findable.mjs`** asserted the title contained `colour`. Sleven's
+US-spelling instruction reached the copy and it went red. **A control that pins
+the spelling of a word is asserting house style, not behaviour** - it now
+accepts `colou?r`.
+
+**THAT IS FIVE PLACES ACROSS THREE FILES.** C1 named two. `_verify_ship_page`
+held four, `_verify_column_split` three more. The rule "a fixed port is
+represented by its own row OR by a summary naming it" is now written out
+identically in three files, **and that is the weakness**: the sixth copy is the
+one that will be missed. Worth one shared helper, and I am not building it at
+the end of a pass.
+
+## THE DEPLOY IS REFUSED, AND IT IS RIGHT TO BE
+
+    _verify_display_names.py   REFUSED - 9 name(s) a visitor can read
+
+    truncated  6
+      BMBRCK_S03_BEHR_Single_S03   shows 'CST-313 \'
+      Turret_PDC_BEHR_G            shows 'MRX \'      game  MRX "Torrent"
+    disagrees  3
+      MRCK_S04_KRIG_S65_Stingray_Left   shows the raw class name
+
+**Six names are truncated at a backslash.** `MRX "Torrent"` becomes `MRX \` -
+which reads like an escaping bug in the name derivation, where a quoted name is
+cut at the escaped quote. **C1's own control caught it**, which is the system
+working, and it is C1's to fix: `build_loadout_data.py` is theirs as of today.
+
+**I have not deployed.** Nine wrong names on a page whose claim is that its
+numbers can be trusted is not something to ship past a red control.
+
+`_verify_picker_deployed.mjs` is the fourth failure and is deployed-only -
+expected until this ships.
+
+## ANSWERS
+
+**C1 claiming `build_loadout_data.py` is not wrong.** The ship page and its data
+are theirs; a generator whose only consumer is C1's page should not have a
+different writer.
+
+**Q38 not touched.** Ping and we move `_WEAPONY` and `MARKABLE` together.
+
+**Q44 recorded:** no fuzzy matching in the reader, Levenshtein out, exact
+vocabulary hits only. Not started.
+
+## AND ONE THING C1'S SPELLING PASS MISSED
+
+Identifiers were correctly left alone - `id="armour"`, `_view.colour()`,
+`data-colour`. **Five pieces of VISIBLE copy were not:**
+
+    index.html    "Calm - muted colour, no motion, soft borders"
+    index.html    "Turning this down helps if bright colours feel harsh"
+    loadout.html  <th>vs. unarmoured</th>
+
+C1's files. Reported, not edited.

@@ -53,6 +53,134 @@ turned an outside session's recommendation into pressure and that was wrong.
 
 # CODE'S QUEUE
 
+### Q42 — COLLECTOR, FIRST JOB. THE MINER SCANS 243 LOG FILES AND REPORTS ZERO TRANSACTIONS.
+**DONE-WHEN** we know how many real priced transactions, shops and items are in
+Sleven's log archive, and — if the answer is zero — why.
+**BLOCKED-BY** nothing. **Needs nothing from Sleven. Start here.**
+
+**THE DISCREPANCY, AND IT IS THE WHOLE JOB.** `gamelog_mine.go`'s own header:
+
+> *"The archive dig on 2026-08-07 was a Python script run by hand against 233
+> sessions. It found **four transaction families, 183 priced items, 31 shops**
+> and two and a half years of history."*
+
+**The Go port reports `transactions: 0`.** Its extractor is declared
+`Verified: true` and its pattern is:
+
+    S(Shop(?:Commodity)?)(Buy|Sell)Request\s*-\s*(.*)
+
+**`mineTargets()` scans C:, D:, E: and F: — 243 files, 208 MB on that machine.**
+The current `Game.log` (2,241 lines, 08-27) contains **zero** matching lines and
+zero price-shaped lines of any kind, which is consistent with a session where
+nothing was bought and is NOT evidence the pattern is broken.
+
+**Two outcomes and both are worth the session:**
+
+    the miner finds them   we already hold priced transactions and shops going
+                           back years, and the site's biggest gap - 26,657
+                           unverified prices - has a real source that needed
+                           no screen reader at all.
+    the miner finds none   the Go port has a regression against the Python
+                           script that found 183 priced items, and it has been
+                           silently returning nothing while reporting
+                           Verified: true.
+
+**Run it over the whole archive, not one session.** Report counts by extractor,
+and if transactions are zero, take one archived log that the Python dig covered
+and say which line the Go pattern fails on. **Do not "fix" the regex until the
+failing line is in front of you.**
+
+**MIND THE ISOLATION.** The header records that scanning the real archive took
+**240 seconds** versus 61ms isolated, and that this was misdiagnosed as a flaky
+test. **It is not a flake, it is unbounded work.** Expect minutes.
+
+### Q43 — THE READER NEEDS AN ORACLE, AND THE GAME LOG IS IT.
+**DONE-WHEN** a captured frame can be paired with the log transaction from the
+same moment, so a read can be scored against something that already knows the
+answer.
+**BLOCKED-BY** Q42's answer. **Design is C1's, build is Code's.**
+
+**The reader currently has no way to be proved wrong.** Every other claim in
+this project is falsifiable and this one is not: it reads a price off a screen
+and nothing checks it.
+
+**The log already records what a purchase actually cost** — `shopName`,
+`itemName`, `client_price`, `quantity`, `currencyType`. So: buy something, the
+reader reads the kiosk, the log states the truth, **compare.** That is an
+accuracy figure instead of an impression.
+
+**This replaces rev 5 §4.7's purchase-delta check**, which needed the aUEC
+balance to be visible on screen and was blocked on TIER 1.2 — a question nobody
+could answer. **The log needs no pixels and is already parsed.**
+
+**RULE 16 APPLIES AND IS THE POINT.** The log and the screen are two different
+sources for the same fact. Neither can be wrong in the other's direction.
+
+### Q44 — NO FUZZY MATCHING IN THE READER. RULED BY SLEVEN 2026-08-30.
+**DONE-WHEN** `workorder-collect-01-rev3.md` §3c no longer specifies Levenshtein
+matching, and the reader accepts only exact vocabulary hits.
+**BLOCKED-BY** nothing.
+
+Sleven: *"I agree with you on the fuzzy matching. Let's make the reader good."*
+
+**The spec carved an exception into hard rule 2 and nobody noticed.** §3c
+accepted an edit distance of 20% of string length against the known item list.
+**Exact hits only. A string that is not an exact hit is discarded.**
+
+**The accuracy mechanism was always the atlas and the twenty-read vote**, not
+the fallback. `docs/RULING_the-reader-gets-no-fuzzy-matching-2026-08-30.md`.
+
+### Q40 — ON HOLD BY SLEVEN. C3's PAGE-LAYOUT PROPOSAL. DO NOT ACTION.
+**DONE-WHEN** Sleven says so. **BLOCKED-BY Sleven, deliberately.**
+
+`claude/PROPOSAL_make-the-ship-the-page-2026-08-30.md` (C3) proposes collapsing
+the two side rails to icon strips, taking the ship from 36% of the screen to
+72%. **Sleven, 2026-08-30: "Hold on C3's proposal. I'm working with C3 on
+redesigning a few things."**
+
+**Nobody builds any of it. Not Option A's compaction either** — A is the cheap
+half of the same design and starting it would prejudge the redesign Sleven is
+doing with C3 directly.
+
+**One thing in it I have not verified and neither should anyone else yet:**
+C3 states 57 hulls carry no markers. My own count this week was 35 deferred
+hulls and 259 marked of 316, which is 57 — **consistent, but I have been wrong
+about four numbers in two days and this one has not been re-derived.**
+
+### Q41 — THE COLLECTOR: WHERE IT ACTUALLY IS, BEFORE ANYONE IS MOVED ONTO IT.
+**DONE-WHEN** Sleven has decided whether Code moves. **This is a briefing, not
+a task.**
+
+    89 Go files · 26,991 lines · v0.3.3 · selftest PASS, 0 failed (08-27)
+    capture half   BUILT AND WORKING
+    reading half   ENTIRELY UNBUILT
+
+**TIER 1.1, the item C2 marked "BLOCKS EVERYTHING" since 2026-08-02 — answered
+today, and it did not need Sleven.** *Is the game's UI font legible in a
+captured frame at 1920x1080?* **Yes.** 757 frames have been on this machine
+since 7 August. I opened one: the UI text is crisp at 1:1, small digits
+included. **The capture path does not destroy text**, which is what that
+question was really asking.
+
+**TIER 1.2 IS NOT ANSWERED AND NO FRAME ON DISK CAN ANSWER IT.** Every capture
+is from one asteroid base, three jump points, or the main menu. **Zero frames at
+any shop, at any station.** The one screen the reader exists to read has never
+been photographed.
+
+**THE UNLOCK IS STILL TEN MINUTES OF SLEVEN'S TIME**, and it is now one frame
+rather than a session: stand at a kiosk, open the panel, press the hotkey.
+
+**Work that does NOT need that frame**, if Code moves now: the glyph atlas
+scaffolding calibrated on HUD text; the region-finding pass; and TIER 2.3's
+chat-region exclusion, which is a privacy control and fails closed or not at
+all.
+
+**Work that would be guesswork without it:** the column detector — C2's own
+words, *"the least tested idea in the whole design"* — the purchase-delta proof,
+and the vocabulary.
+
+`docs/FINDING_the-collectors-blocking-question-was-answerable-from-disk-2026-08-30.md`
+
 ### Q21 — THE PAYLOAD IS CORRECT. C1 NAMED THE WRONG PORT AND COST YOU AN HOUR.
 **DONE-WHEN** the deploy gate passes. The marker work itself is finished —
 verified 2026-08-29 11:40 by C1 against `testing/_deploy/loadout_marker.gen.js`.
