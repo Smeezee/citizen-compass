@@ -47,9 +47,22 @@ type Board struct {
 	Msg     string `json:"msg"`
 
 	Data struct {
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		LastUpdated int64  `json:"last_updated"`
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+
+		// DECLARED 2026-08-30, Q5c. RSI puts the answer here:
+		//
+		//	"Live Version: 4.10.0 . Latest Roadmap Roundup: 08/26/2026
+		//	 . PTU Version: o"
+		//
+		// This struct did not ask for it, so Go discarded it at unmarshal on
+		// every poll for months while the watcher reported on cards instead
+		// and the site stayed a full patch behind. An undeclared field is not
+		// a missing field - it is a field being thrown away silently, which is
+		// the same shape as the `success` envelope above.
+		Description string `json:"description"`
+
+		LastUpdated int64 `json:"last_updated"`
 		Releases    []struct {
 			Name string `json:"name"`
 			// AN INT, NOT A BOOL. RSI sends `"released": 1` / `0`. Declaring it
@@ -100,8 +113,19 @@ type Card struct {
 
 // FetchResult is one poll of one board.
 type FetchResult struct {
-	Board       int
-	Surface     string // the board's own name - "Release View", "Squadron 42"
+	Board   int
+	Surface string // the board's own name - "Release View", "Squadron 42"
+
+	// Description is the board's own status line, Q5c:
+	//
+	//	"Live Version: 4.10.0 . Latest Roadmap Roundup: 08/26/2026
+	//	 . PTU Version: o"
+	//
+	// Carried through rather than parsed here: FetchBoard's job is what came
+	// off the wire, and reading meaning out of prose belongs in livever.go
+	// where the failure modes are tested.
+	Description string
+
 	Status      int
 	Bytes       int
 	LastUpdated int64
@@ -160,6 +184,7 @@ func FetchBoard(client *http.Client, cfg Config, board int) FetchResult {
 		return res
 	}
 	res.Surface = b.Data.Name
+	res.Description = b.Data.Description
 	res.LastUpdated = b.Data.LastUpdated
 	for _, rel := range b.Data.Releases {
 		for _, c := range rel.Cards {
@@ -184,6 +209,16 @@ func FetchBoard(client *http.Client, cfg Config, board int) FetchResult {
 // possible later, but it is not what this triggers on.
 func Matches(cards []Card, watch string) []Card {
 	var out []Card
+	// Q5a, 2026-08-30: "*" IS EVERY CARD.
+	//
+	// The filter was "Constellation" - seeded on one test ship and never
+	// widened - and a board-wide question cannot be answered through a
+	// one-ship filter. Note that a substring match would ALREADY have let "*"
+	// through as a literal and matched nothing, which reads exactly like a
+	// quiet board. That is the failure this branch removes.
+	if strings.TrimSpace(watch) == "*" {
+		return append(out, cards...)
+	}
 	w := strings.ToLower(watch)
 	for _, c := range cards {
 		if strings.Contains(strings.ToLower(c.Name), w) {

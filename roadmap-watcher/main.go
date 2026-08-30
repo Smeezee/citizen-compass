@@ -114,6 +114,34 @@ func runOnce(log *pipelinelog.Logger, cfg Config, statePath, trigger string) {
 
 		matches := Matches(res.Cards, cfg.Watch)
 
+		// Q5c: THE ANSWER WAS ALREADY IN THE PAYLOAD.
+		//
+		// RSI states the live version in the board's own description, and this
+		// program downloaded it every four hours while board.go's struct threw
+		// it away. Reported here rather than computed anywhere: both sides come
+		// from somewhere else - the version from RSI, the verified patch from
+		// the page's own data layer - so neither can agree with itself. Rule 16.
+		//
+		// UNREADABLE NEVER RENDERS AS LEVEL. ParseLiveVersions returns problems
+		// rather than an error precisely because a caller that can ignore an
+		// error will, and "I could not read it" and "nothing changed" are the
+		// two things a tripwire must never confuse.
+		lv := ParseLiveVersions(res.Description)
+		verified, vErr := ReadVerifiedPatch(filepath.Dir(statePath))
+		if vErr != nil {
+			log.Logf("live version: could not read the site's own "+
+				"last_verified_patch (%v) - reporting the gap as NOT KNOWN", vErr)
+		}
+		behind, line := PatchGap(lv, verified)
+		log.Logf("%s", line)
+		if behind {
+			log.Logf("  the site's rows say %s; RSI says live is %s%s", verified,
+				lv.Live, roundupSuffix(lv))
+		}
+		for _, pr := range lv.Problems {
+			log.Logf("  live version: %s", pr)
+		}
+
 		// APPENDED BEFORE THE DIFF, ON PURPOSE.
 		//
 		// Diff MUTATES the stored fingerprints - that is how it works, and it

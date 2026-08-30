@@ -59,14 +59,27 @@ type Config struct {
 
 func defaultConfig() Config {
 	return Config{
-		IntervalHours:    4,
-		Boards:           []int{1, 2},
+		IntervalHours: 4,
+
+		// BOARD 2 RETIRED 2026-08-30, Q5d. Squadron 42's own payload says
+		// "This version of the Squadron 42 Roadmap will not be updated" -
+		// confirmed live on that date, and the watcher now reads that field.
+		// Polling a board that declares itself dead every four hours is work
+		// that can only ever report nothing, and a tripwire that cannot fire
+		// looks exactly like coverage. Re-add 2 if RSI revives it; the URL
+		// still resolves and nothing else about it changed.
+		Boards:           []int{1},
 		BoardURL:         "https://robertsspaceindustries.com/api/roadmap/v1/boards/%d",
 		StaleAfterCycles: 3,
 		Stage2Enabled:    false,
 		GraphQLURL:       "https://robertsspaceindustries.com/graphql",
-		Watch:            "Constellation",
-		UserAgent:        "CitizenCompass-RoadmapWatcher/1.0 (+https://citizencompass.netlify.app)",
+		// "*" IS EVERY CARD, Q5a. This was "Constellation" - seeded on one
+		// test ship and never widened - and the baseline held three cards as a
+		// result. R3's question is board-wide and a one-ship filter cannot
+		// answer it. The settings file is gitignored, so this default is the
+		// only place the decision survives a fresh checkout.
+		Watch:     "*",
+		UserAgent: "CitizenCompass-RoadmapWatcher/1.0 (+https://citizencompass.netlify.app)",
 	}
 }
 
@@ -86,8 +99,18 @@ func (c Config) Validate() error {
 	if len(c.Boards) == 0 {
 		return fmt.Errorf("no boards configured, so there is nothing to check")
 	}
+	// Q5a, 2026-08-30: "*" WATCHES THE WHOLE BOARD.
+	//
+	// This required a non-empty substring, and the settings file carried
+	// "Constellation" - seeded on one test ship and never widened. R3's
+	// question is board-wide and cannot be answered through a one-ship filter.
+	//
+	// EMPTY IS STILL REJECTED. An empty string would make a forgotten field and
+	// a deliberate "everything" identical, and this program's whole job is
+	// telling those two apart. "*" has to be typed on purpose.
 	if c.BoardURL == "" || c.Watch == "" {
-		return fmt.Errorf("board_url and watch must both be set")
+		return fmt.Errorf("board_url and watch must both be set " +
+			"(watch \"*\" means every card on the board)")
 	}
 	return nil
 }
