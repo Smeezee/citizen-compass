@@ -322,9 +322,18 @@ def main():
             self_test=bool(args.self_test),
             seconds=time.time() - started)
         print("")
+        # NAMES THE PATH IT ACTUALLY WROTE. It used to print sweep_gate.RECEIPT
+        # unconditionally, so a --only run announced the full receipt's path
+        # while writing over it - the message and the act disagreeing is how
+        # the Q30 clobber stayed invisible for a day.
+        _rpath = sweep_gate.receipt_path(bool(wanted), bool(args.self_test))
         print("sweep receipt: %s  (%d passed, %d failed, payload %s)"
-              % (os.path.relpath(sweep_gate.RECEIPT, REPO), rec["passed"],
+              % (os.path.relpath(_rpath, REPO), rec["passed"],
                  len(rec["failed"]), rec["fingerprint"][:16]))
+        if _rpath != sweep_gate.RECEIPT:
+            print("               this was a %s run, so it did NOT touch %s"
+                  % ("--self-test" if args.self_test else "--only",
+                     os.path.relpath(sweep_gate.RECEIPT, REPO)))
     except Exception as exc:                     # pragma: no cover - reported
         print("")
         print("SWEEP RECEIPT NOT WRITTEN: %s: %s" % (type(exc).__name__, exc))

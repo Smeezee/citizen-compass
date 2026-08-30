@@ -69,6 +69,33 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 RECEIPT = os.path.join(HERE, ".last_sweep.json")
 
+# TWO KINDS OF RUN, TWO PATHS - Q30, 2026-08-30.
+#
+# A full sweep of 106 controls and a three-control `--only` subset were both
+# writing `.last_sweep.json`, and the second destroyed the first. It failed
+# CLOSED - the gate refuses a receipt marked partial - so nothing ever shipped
+# on a subset. It still cost the full receipt twice in one day: C1 lost one at
+# 17:50, reported it, and asked whether fail-closed was good enough; I said it
+# might be, then did the identical thing within the hour while proving Q29.
+#
+# ONE ARTIFACT, TWO WRITERS, OUTPUTS NOT INTERCHANGEABLE. That is rule 14's
+# shape even though it is one script, and "the gate catches it" is what you say
+# about a defect you have decided to keep.
+#
+# --self-test goes to the partial path for the same reason: it inverts every
+# expectation, so it is not a sweep of the payload either, and the gate already
+# refuses on it. Until today a self-test run also took a good receipt down.
+#
+# THE GATE STILL READS `RECEIPT` AND NOTHING ELSE, so a partial cannot
+# masquerade as a sweep. What changes is that it no longer erases one.
+RECEIPT_PARTIAL = os.path.join(HERE, ".last_sweep_partial.json")
+
+
+def receipt_path(partial, self_test):
+    """Where a run of this kind records what it saw."""
+    return RECEIPT_PARTIAL if (partial or self_test) else RECEIPT
+
+
 MODEL_EXT = ".glb"
 
 
@@ -130,7 +157,8 @@ def write_receipt(payload_dir, *, passed, failed, skipped, not_run,
         # these and does not block on them.
         "deployed_only": sorted(deployed_only),
     }
-    with io.open(RECEIPT, "w", encoding="utf-8", newline="\n") as fh:
+    path = receipt_path(partial, self_test)
+    with io.open(path, "w", encoding="utf-8", newline="\n") as fh:
         json.dump(rec, fh, indent=1, sort_keys=True)
         fh.write("\n")
     return rec
@@ -153,6 +181,17 @@ def check(payload_dir):
         print("          to be uploaded. Run:")
         print("")
         print("              venv\\Scripts\\python.exe checks\\run_all_controls.py")
+        if os.path.exists(RECEIPT_PARTIAL):
+            # Says where the subset went, so nobody concludes their run
+            # vanished. A partial is still not a sweep and this does not read
+            # it - it is named so the separation is visible rather than
+            # mysterious.
+            print("")
+            print("          (a PARTIAL receipt exists at %s."
+                  % os.path.relpath(RECEIPT_PARTIAL, REPO))
+            print("           It is not read here - a subset is not a sweep -")
+            print("           and it is kept separately so it cannot overwrite")
+            print("           the real one.)")
         return 1
 
     try:

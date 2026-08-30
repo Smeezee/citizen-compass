@@ -128,3 +128,7 @@ testing/_src/.last_build.json
 # has, which is worse than no receipt: the gate fails closed on a missing one
 # and would be fooled by a stale one.
 checks/.last_sweep.json
+# Its sibling, for the same reason. Q30 split --only and --self-test runs onto
+# their own path so a subset can no longer overwrite the real receipt; both are
+# machine state and neither belongs in history.
+checks/.last_sweep_partial.json

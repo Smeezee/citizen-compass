@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #841 — 2026-08-29 10:31 PM
+# LATEST_HANDOFF.md — Update #845 — 2026-08-29 11:02 PM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-29 22:31:44 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-29 23:02:50 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,251 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119498 files (13787.21 MB)
 
-**Scripts:** 53  |  **3D models:** 1137  |  **Docs:** 1398
+**Scripts:** 53  |  **3D models:** 1137  |  **Docs:** 1402
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-29 23:02:03 — 20260830_0030_update_q30-done-a-subset-can-no-longer-erase-a-sweep.md
+
+# Update — Q30 done. A subset run can no longer erase a sweep, and the message that hid it for a day now names the path it actually wrote.
+
+**2026-08-30 04:30 UTC / 2026-08-29 23:30 local · Code (background session)**
+
+My call, made and built rather than restated: **fail-closed was not sufficient.**
+
+    a full sweep   -> checks/.last_sweep.json          unchanged
+    --only         -> checks/.last_sweep_partial.json
+    --self-test    -> checks/.last_sweep_partial.json
+
+**Self-test goes with it** because it inverts every expectation, so it is not a
+sweep of the payload either - and until today a self-test run also took a good
+receipt down with it.
+
+## PROVEN, NOT ASSERTED
+
+    routing        partial=F self_test=F  -> .last_sweep.json
+                   the other three combinations -> .last_sweep_partial.json
+
+    a 3-control --only run
+      before  at 2026-08-29T22:26:57  partial=False  passed=106
+      after   at 2026-08-29T22:26:57  partial=False  passed=106
+      FULL RECEIPT BYTE-IDENTICAL - untouched
+      partial went to .last_sweep_partial.json, 3 passed
+
+    with the full receipt moved aside (rule 1: moved, not deleted)
+      GATE EXIT 1, and it NAMES the partial while refusing to read it:
+      "a subset is not a sweep - and it is kept separately so it cannot
+       overwrite the real one."
+      full receipt put back, byte-identical to before the test
+
+**The gate did not change its mind about anything.** It reads the full receipt
+and nothing else, so a partial still cannot masquerade as a sweep.
+
+## THE MESSAGE THAT HID IT
+
+`run_all_controls.py` printed `sweep_gate.RECEIPT` unconditionally, so a
+`--only` run **announced the full receipt's path while writing over it.** The
+message and the act disagreed, which is why the clobber went unnoticed until C1
+happened to check. It now names the path it actually wrote, and says outright
+when it did not touch the real one.
+
+## ONE THING BROKE ON THE WAY AND THE EXISTING GUARD CAUGHT IT
+
+My first patch aborted on an assertion **after** making its edit in memory, so
+nothing reached disk - and the two later patches landed referring to a helper
+that did not exist. The subset run then reported:
+
+    SWEEP RECEIPT NOT WRITTEN: NameError: name 'receipt_path' is not defined
+    The deploy gate refuses on a missing receipt, so this fails closed
+    rather than quietly.
+
+**Exactly as designed.** A receipt that cannot be written is reported and does
+not silently look unreceipted-but-fine. I had not written that guard today and
+it caught my own mistake within a minute.
+
+## ALSO
+
+`checks/.last_sweep_partial.json` added to `.gitignore` beside its sibling -
+both are machine state and neither belongs in history. `.gitignore` has no
+declared owner in `OWNERS.md`; the edit is one line adjacent to the existing
+entry and is recorded here rather than done quietly.
+
+## STANDING
+
+    Q29, Q30   done
+    Q3, Q5     the two still open, and both are older than today
+    Q28        C1's
+    draco3d    still not installed, still asked rather than assumed
+
+Uncommitted: `checks/sweep_gate.py`, `checks/run_all_controls.py`, `.gitignore`.
+
+### 2026-08-29 22:58:46 — 20260830_0020_update_taking-q30.md
+
+# Update — taking Q30. My own answer to it changed once I did the same thing C1 did, so I am building the fix rather than re-stating the opinion.
+
+**2026-08-30 04:20 UTC / 2026-08-29 23:20 local · Code (background session)**
+
+Checked for updates: **C1 has changed nothing since `162231e`.** The queue is
+where I left it, so I am taking the first open item that is mine and unblocked.
+
+    Q26  withdrawn - C1's mesh distance supersedes it, and the Glaive is C1's
+    Q28  BLOCKED-BY C1 by its own text
+    Q29  done, verified in place at run_all_controls.py:239
+    Q30  MINE, unblocked, DONE-WHEN is "your call"
+    Q3   open - scale the 12 from model_scaled.glb
+    Q5   open - R3 of the roadmap watcher
+
+**Q30's DONE-WHEN is literally my call, and I have made it: fail-closed is not
+sufficient.** C1 destroyed the full receipt with `--only`, reported it honestly,
+and asked whether that was good enough. I said it might be. **Then I did exactly
+the same thing within the hour**, running probe subsets while proving Q29. Two
+sessions, same artifact, same day, both doing legitimate work.
+
+"The gate catches it" is what you say about a defect you have decided to keep.
+
+## THE SHAPE, AND IT IS RULE 14 INSIDE ONE SCRIPT
+
+`sweep_gate.py`'s own docstring says **ONE writer** and it is right about the
+writer. The defect is that **one path carries two kinds of run whose outputs are
+not interchangeable**: a full sweep of 106 controls and a three-control subset
+both write `checks/.last_sweep.json`, and the second silently destroys the first.
+
+## WHAT I AM BUILDING
+
+    a full sweep        -> checks/.last_sweep.json          (unchanged)
+    --only              -> checks/.last_sweep_partial.json
+    --self-test         -> checks/.last_sweep_partial.json
+
+**Self-test goes with it for the same reason.** It inverts every expectation, so
+it is not a sweep of the payload either, and the gate already refuses on it -
+which means today a self-test run also destroys a good receipt.
+
+**The gate does not change its mind about anything.** It reads the full receipt
+only, so a partial can never masquerade as one. What changes is that a partial
+no longer takes the full one down with it - and a full receipt that is still
+valid for an unchanged payload survives, which is strictly better than forcing a
+thirteen-minute re-sweep because somebody ran three controls.
+
+**Rule 12 applies:** I will run a subset, confirm the full receipt is untouched
+byte for byte, and confirm the gate still passes on it. A fix I cannot show
+working is not a fix.
+
+### 2026-08-29 22:51:22 — 20260830_0010_update_committed-and-pushed-162231e.md
+
+# Update — committed and pushed as `162231e`. The injection fix and Q29 are in history; tree clean.
+
+**2026-08-30 04:10 UTC / 2026-08-29 23:10 local · Code (background session)**
+
+Sleven said commit and push, in this session, for this change. Rule 2 satisfied.
+
+    162231e   20 files changed, 2,660 insertions, 423 deletions
+    85e1d3b..162231e  main -> main
+    local HEAD == origin/main == 162231e
+    git status --porcelain    0 entries
+
+## Verified after, not assumed
+
+- **`_to_delete/` contributed 0 files.** Checked in the index before and in
+  `git log -1 --name-only` after. Today's thirteen probes are all in there and
+  none entered history.
+- **No path outside the five expected roots.** Filtered the file list; empty.
+- **The push landed** - `git fetch` and a hash comparison.
+
+## THE DAY, IN FOUR COMMITS
+
+    4710d30   the heap fix, the deploy gate, 295 ships photographed
+    d1e60b4   the drift control stops writing to what it audits
+    85e1d3b   three markers declared rather than forgotten, and deployed
+    162231e   the sweep can say "I could not look", and the clock stops
+              being a false red
+
+## WHAT IS OPEN, HONESTLY
+
+    Q26   withdrawn. C1's mesh distance is the measurement now.
+    Q28   C1's to design - two placement writers, one containment gate
+    Q30   open, and my answer changed to "not sufficient": --only should
+          write its own receipt. Mine to fix on a word.
+    the served site   still one date stamp behind local. Not broken, not
+                      matching. A deploy would close it - the gate refuses
+                      today only because the draco control is NOT RUN.
+    draco3d           not installed. Asked properly rather than acting on a
+                      conditional offer; rule 7 says downloaded code is data.
+
+## AND ONE THING I WOULD SAY OUT LOUD
+
+`checks/_verify_no_agent_traces.py` and
+`docs/FINDING_the-public-source-reads-like-a-work-log-2026-08-29.md` arrived
+from C1 today and are committed here unread by me beyond their names. **They are
+about what the public source says**, which touches rule 8's territory even if it
+is not legal text. Sleven should look at that one himself rather than take my
+word that it is fine, because I have not formed one.
+
+### 2026-08-29 22:50:32 — 20260830_0000_update_the-utc-stamp-is-declared-and-my-first-wiring-of-it-was-wrong.md
+
+# Update — the UTC date stamp is a declared injection now, narrowed twice, and my first wiring of it compared a file against itself.
+
+**2026-08-30 04:00 UTC / 2026-08-29 23:00 local · Code (background session)**
+
+Option A, as Sleven asked. `build_deploy.py:741` stamps the UTC date into
+`index.html` twice; across 00:00 UTC a rebuild is not byte-reproducible, and
+section 4's whole proof is "rebuild and require the bytes not to move".
+
+## DECLARED AS NARROWLY AS THE VENDOR MARKER AND THE TRADEMARK STRIP
+
+Tolerated: **`index.html`, the literal text `testing <ISO date>`, the same
+number of occurrences on both sides, every stamp in a file agreeing with every
+other, and EVERY OTHER BYTE IDENTICAL.** Anything else is not this.
+
+    stamp only, both occurrences   ACCEPTED
+    stamp + a hand edit            refused - changed somewhere other than the stamp
+    only ONE occurrence moves      refused - the stamps within one file disagree
+    an extra stamp appears         refused - the stamp count changed: 3 -> 2
+    identical files                refused - the stamps are not the difference
+    a hand edit, no stamp move     refused - the stamps are not the difference
+
+**The third row is a hole I opened and closed.** My first version tolerated one
+stamp moving while the other did not - "only the stamp changed" is true of that,
+and it is also a page telling a viewer two different things about which build
+they are looking at. The build substitutes both from one `_stamp`, so they
+cannot legitimately disagree.
+
+## AND THE WIRING WAS WRONG BEFORE IT WAS RIGHT
+
+The first version called the comparison **after** the `finally` that restores
+`_deploy`. So it compared the snapshot against the file the snapshot had just
+been restored onto - itself - and reported *"the stamps are identical"* on a
+plant designed to make it fire.
+
+**It only surfaced because the plant was supposed to go GREEN and went red.**
+A test that expects a pass catches a class of defect that a test expecting a
+failure never will: I would have shipped a declaration that could not fire and
+believed it worked, because everything I had run until then was supposed to
+fail. The comparison is now taken inside the try, before anything is put back,
+and the comment at the site says why.
+
+## PROVEN END TO END, NOT JUST IN A UNIT
+
+    planted the 08-29 stamp        PASS + "DECLARED: the testing date stamp
+                                   moved (2 occurrence(s), every other byte
+                                   identical)"
+    planted stamp + a hand edit    FAIL - "it is NOT the declared stamp: the
+                                   file changed somewhere other than the stamp"
+    clean run                      exit 0
+    --self-test                    exit 1, correct
+
+`testing/_deploy/index.html` was restored to the real build afterwards and the
+hash checked against the copy taken before the plants: `0fe83cfc32c3` both
+sides.
+
+## STILL TRUE, AND NOT FIXED BY THIS
+
+**The served site and the local payload still differ by that stamp** - the
+deploy shipped `08-29`, local says `08-30`. This makes the drift control honest
+about it; it does not make them match. And `sweep_gate.py`'s fingerprint is
+still content-based, so a clean receipt still goes stale at UTC midnight.
+Both are in the finding.
 
 ### 2026-08-29 22:30:57 — 20260829_1250_update_q29-done-and-the-payload-changes-at-utc-midnight.md
 
@@ -1221,306 +1461,7 @@ have flagged it twice and not ruled. I will rule on it rather than ask.
 
 Going live is Sleven's and stays off the queue.
 
-### 2026-08-29 09:22:26 — 20260829_0940_update_q20-done-committed-and-pushed-4710d30.md
-
-# Update — Q20 done. 383 files committed and pushed as `4710d30`; working tree is clean and nothing went to the live site.
-
-**2026-08-29 09:40 local · Code (background session)**
-
-Sleven gave the go-ahead in this session, so rule 2 is satisfied for this change.
-
-    4710d30   383 files changed, 14,043 insertions, 17,912 deletions
-    1a1b4b7..4710d30  main -> main
-    local HEAD == origin/main == 4710d30
-    git status --porcelain    0 entries
-
-## Staged by path, never `git add -A`
-
-    data-layer/derived/hardpoint-placement     285
-    data-layer/derived/holo-hardpoints-align     3
-    data-layer/derived/holo-hardpoints           2
-    data-layer/derived/crafting-demand           1
-    checks/                                     65
-    docs/                                       20
-    testing/_src/loadout_marker.gen.js           1
-    build_hardpoint_placement.py, build_hardpoint_overlay.py,
-    OWNERS.md, NEXT.md, LATEST_HANDOFF.md        5
-
-## Verified after, not assumed
-
-- **`_to_delete/` contributed 0 files** - checked in the index before the commit
-  and again in `git log -1 --name-only` after it. The 5.2 GB of C1 tarballs did
-  not enter history.
-- **No path outside the expected set.** I filtered the commit's file list against
-  the eight roots above and it came back empty.
-- **No `.git/index.lock` trouble.** It was already absent; C1's stale lock is in
-  `_to_delete/git-locks/`.
-- **Nothing binary or oversized.** Largest entry is `_updates_log.md` at 2.0 MB,
-  text, already tracked.
-- **The push landed** - `git fetch` then a hash comparison, not the push's own
-  output.
-
-Line-ending warnings (LF to CRLF) appeared on the 285 placement JSONs. Cosmetic,
-Windows-normal, no content change.
-
-## What went in, and one thing that did not
-
-NEXT.md left the backup to my judgement, so:
-`loadout_marker.pre-C1-20260829.js` **is in history**. The matching deletion of
-`pre-C1-20260828.js` went in with it, so the tree is coherent rather than
-carrying a dangling delete. **That deletion was not mine** - the file was removed
-instead of moved to `_to_delete/`, against rule 1, and I do not know which
-session did it. Content survives in `1a1b4b7`. It is recorded in the commit
-message rather than quietly absorbed.
-
-**Nothing reached the live site.** GitHub only, as the go-ahead covered. Going
-live remains off the queue until Sleven raises it.
-
-## Standing
-
-**Code's queue is now empty.** Q7's last label is C1's file. The three
-outstanding items are unchanged and none are queue work: the
-`_verify_deploy_drift.py` rebuild-during-sweep decision (mine to make and I have
-deferred it twice), the RULE16 separator trap, and going live.
-
-### 2026-08-29 09:19:03 — 20260829_0930_update_asked-whats-next-queue-is-empty-except-q20.md
-
-# Update — asked "what's next": Code's queue is empty except Q20, which needs Sleven's word in this session.
-
-**2026-08-29 09:30 local · Code (background session)**
-
-Sleven asked what is next. I checked the DONE-WHENs rather than reading the
-board, per NEXT.md's own instruction.
-
-## What I checked, not remembered
-
-    git status --porcelain      382 entries: 363 M, 18 ??, 1 D
-    last commit                 1a1b4b7, 2026-08-28 10:52
-    staged                      0
-    _to_delete/                 gitignored, .gitignore:46 - confirmed, 0 entries
-    .git/index.lock             absent; C1's stale lock is already moved aside
-
-NEXT.md's Q20 quotes 504 files. It is 382 now. The number moved; the item did
-not.
-
-## The state
-
-**Q1-Q6, Q8-Q19 and Q12 (ORIGINAL) are closed.** Q7 stands at 104 of 105, and
-the last one is C1's file, not mine. **Q20 - commit and push - is the only
-thing at the head of the queue.**
-
-NEXT.md records that Sleven said yes to Q20 on 2026-08-29. **I have not acted
-on it.** Hard rule 2 wants the go-ahead in the message, for the change, and
-what I have is C1's record of one. I asked rather than assumed. It costs a
-minute; the alternative is a push nobody authorised in this session.
-
-## One thing I found while scoping it
-
-    D  data-layer/derived/holo-hardpoints/loadout_marker.pre-C1-20260828.js
-    ?? data-layer/derived/holo-hardpoints/loadout_marker.pre-C1-20260829.js
-
-Yesterday's backup was **deleted from the working tree**, not moved to
-`_to_delete/`, and today's replaced it. It is tracked, so the content is safe in
-`1a1b4b7` and recoverable. Flagging it rather than fixing it: I did not do it,
-and I do not know which session did. **Rule 1 was not followed on that file.**
-
-## Standing
-
-Waiting on Sleven for Q20. Nothing else on Code's queue is open. The three
-outstanding non-queue items are unchanged: the `_verify_deploy_drift.py`
-rebuild-during-sweep decision, the RULE16 separator trap (four occurrences,
-two people), and going live - his.
-
-### 2026-08-29 08:30:40 — 20260829_0840_update_q12-original-the-client-record-hulls-are-through-the-browser.md
-
-# Update — Q12 (ORIGINAL) done: all 27 client-record hulls driven through a real browser, 27 of 27 draw their markers. And C1's newest finding says why it mattered.
-
-**2026-08-29 08:40 local · Code (background session)**
-
-    ---- 27 client-record hull(s), drawn on screen ----
-    27 hull(s) driven; 0 have no ship row, 0 carry no marker
-    ok   the client-record hulls were actually driven  (27 of 27)
-    ok   and every one of them draws its markers  (27 of 27)
-
-    GREEN - the markers on the page are on CIG's own coordinates.
-
-**The 41 are 27 now** - the orientation refusal withdrew the rest overnight -
-and the DONE-WHEN asks for the result by name, so: every one of
-`AEGS_Eclipse`, `BANU_Defender`, `CRUS_Star_Runner`, `DRAK_Dragonfly`,
-`MISC_Fury`, `ORIG_600i`, `ORIG_85x`, `TMBL_Nova`, `gama_tyilui`, `mrai_pulse`,
-`mrai_pulse_lx`, the five `rsi_aurora_gs_*`, the four `crus_starfighter_*`, the
-four `crus_starlifter_*`, `aegs_eclipse_bis2950`, `aegs_gladius_pir` and
-`orig_600i_bis2951` was loaded in Chromium and asserted to draw.
-
-## Why this was worth doing rather than declaring answered
-
-`_verify_marker_provenance.py` proves every dot the page calls `cig` sits on its
-own hull's CIG coordinate. **It cannot say whether that coordinate renders where
-the mount is**, and no browser control had ever looked at these hulls.
-
-**C1's off-hull audit, filed at 23:49 last night, makes that concrete.** Ten dots
-float in empty space across four hulls - and the worst in the entire fleet, port
-51 on the **Banu Defender at 38px clear of its own silhouette**, is a
-client-record hull. These are also the hulls whose provenance was wrong for a
-day.
-
-## What it adds, and what it deliberately does not
-
-It asserts the markers exist and are DRAWN. **It does not assert they are on the
-hull** - that needs a silhouette and a second screenshot, which is what
-`offhull.py` does in fifty minutes and a sweep cannot. A dot in the wrong place
-still passes here; a hull that draws nothing does not. The label says so.
-
-Cost: the control goes from 8.6s to **77s**. That is real and it is the price of
-27 model loads in a browser. Still half of `_verify_broken_checker_end_to_end`'s
-126s, which is the sweep's current ceiling.
-
-## THE SECTION CAUGHT ITSELF TWICE BEFORE IT CAUGHT ANYTHING ELSE
-
-I wrote a `check(checked > 0, ...)` guard - *"a section that drove nothing is not
-a section that passed"* - and it earned its place immediately:
-
-    FAIL the client-record hulls were actually driven  (0 of 27)
-    ok   and every one of them draws its markers  (0 of 0)
-
-**Twice.** Both times my key lookup went through `SHIPS[k].cls`, and the second
-assertion sat there reporting green on an empty set beside it.
-
-**`SHIPS` rows carry no `cls` field at all.** MARKS and SHIPS share a key
-directly - the page itself reads `MARKS[shipId]`. Without the guard this section
-would have shipped as two green lines that had looked at nothing, which is the
-exact defect the whole suite exists against.
-
-**It also explains something I had seen and not chased.** Every
-`_diag_served_ship.mjs` run all week printed `"marksForClass": null`, because my
-diagnostic used the same wrong indirection. The number was always null and I read
-past it for two days.
-
-And the Gladius block above it finds its own ship by a NAME SUBSTRING for the
-same reason - its `SHIPS[k].cls === c` term has never matched anything. Not
-touched: it works, and changing a passing control's lookup at 08:40 to tidy it is
-how a green suite becomes a red one.
-
-## Standing
-
-    Q1-Q6, Q8-Q19 and Q12 (ORIGINAL)   done
-    Q7                                 104 of 105; the last is C1's file
-
-**Nothing on Code's queue is open.** What is outstanding is not queue work:
-
-- **a very large uncommitted tree** - two days of it, since `1a1b4b7`
-- **the decision I have flagged twice and not made**: the sweep's own
-  `_verify_deploy_drift.py` rebuilds the artifacts other controls read, which
-  perturbs measurements AND destroyed a "before" copy I needed last night
-- **the RULE16 separator trap** - four occurrences, two people
-- **going live** - Sleven's, and the worker still 404s
-
-### 2026-08-28 23:50:48 — 20260828_2352_update_q19-done-the-heap-is-off-the-site.md
-
-# Update — Q19 done. The heap is off the served site, 106 controls green, and I lost a piece of my own evidence on the way.
-
-**2026-08-28 23:52 local · Code (background session)**
-Version `588f1f6c-50a4-45a5-9b70-9c5a91a7b833`.
-
----
-
-# THE HEAP IS GONE FROM WHAT A VISITOR GETS
-
-    106 ok, 0 failed, 0 skipped, 0 NOT RUN, in 616s
-    2 files uploaded
-
-Verified from the SERVED bytes, not the build log:
-
-    served 283,031 bytes  ef9be078c18f8de5
-    provenance: 1,875 cig / 141 est / 4,044 anc = 6,060
-
-    AEGS_Tiburon                     0 markers, 0 labelled cig
-    RSI_Mantis                       0 markers, 0 labelled cig
-    RSI_Hermes                       0 markers, 0 labelled cig
-    MISC_Starlite                    0 markers, 0 labelled cig
-    ORIG_m80                         0 markers, 0 labelled cig
-    GLSN_Basher                      0 markers, 0 labelled cig
-    ORIG_600i_Executive_Edition      0 markers, 0 labelled cig
-    RSI_Aurora_Mk2                   0 markers, 0 labelled cig
-
-And on the served page itself: **the Tiburon renders its model and draws zero
-dots**, where until this deploy it drew seventeen in a clump and called them
-CIG's own. The Buccaneer is unaffected - 337px of spread, dots where they belong.
-
-**Absent beats confidently wrong**, and that trade is now made on the live
-testing site rather than in the tree.
-
-## The fleet-level cost, stated rather than buried
-
-    markers   6,326 -> 6,060    (-266)
-    cig       2,006 -> 1,875    (-131)
-
-Fourteen hulls lost their CIG markers. That is the correct outcome - they were
-never CIG's positions, the scale came off the wrong axis on models that measure
-taller than they are long - but it IS a visible reduction and Sleven should hear
-it as one rather than discover it.
-
-## The baseline, re-taken with C1's condition checked FIRST
-
-C1 asked that the list be read before the snapshot, and that any name outside the
-orientation-refused set be treated as the finding rather than the baseline.
-
-    14 distinct hulls: Tiburon, Khartu-al, San'tok.yai, Pitbull, Basher, Railen,
-    Reliant Kore, Starlite, 600i Executive, M80, Aurora GS SE, Aurora Mk2,
-    Hermes, Mantis
-
-**Every one is from that set. No stranger appeared.** Restore verified
-byte-identical (`ef9be078` both sides), control 16/0, all four known-bad inputs
-still exiting 1.
-
----
-
-# A MISTAKE IN MY OWN EVIDENCE, AND IT IS WORTH THE PARAGRAPH
-
-I tried to measure exactly what the page lost by diffing the marker file I had
-saved aside against the new one. It reported **0 hulls lost markers and 0 hulls
-had fewer** - which is plainly false, since the Tiburon went from seventeen to
-none.
-
-**The copy I saved as "SHIPPED" was already the fixed build.** The sweep's own
-`_verify_deploy_drift.py` rebuilt the payload at 22:23, after C1's 22:19 data
-fix, so by the time I copied it aside at 23:37 the heap was already out of it.
-My "before" was an "after".
-
-**I nearly reported 0/0 as though nothing had changed.** The numbers above come
-from the fleet totals and the served bytes instead, which I can actually stand
-behind. The true pre-fix marker file is the one that was being served until
-tonight and I no longer have it locally.
-
-Two things follow: **the drift control rebuilding mid-sweep destroys evidence as
-well as perturbing measurements**, which is another entry for the decision I
-flagged at 22:25 and have not made; and a "before" copy is worth taking before
-the first rebuild rather than after the third.
-
----
-
-# Q19'S OPTIONAL PART: NOT TAKEN, WITH A REASON
-
-C1 offered an emitter-side rule - group by `PortId.split(".")[0]`, take the
-shallowest, drop a hull's CIG markers if its drawn dots span under 0.47 while the
-model measures taller than long.
-
-**`_verify_marker_spread.py` exits 0 right now.** C1's placement fix already
-covers the M80 and the Starlite, so the rule would have nothing to catch today.
-Adding a guard with no work to do is inventing one rather than needing one, and
-the control will say if that changes. **Taken if it goes red.**
-
----
-
-    Q1-Q6, Q8-Q19    done
-    Q7               104 of 105 labelled; the last is _verify_panel_dismiss.mjs,
-                     which OWNERS.md names as C1's
-    testing site     588f1f6c, served bytes match the build
-    live site        404, never run for real
-
-Nothing committed since `1a1b4b7` - and that is now a very large tree.
-
-*(+577 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+581 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

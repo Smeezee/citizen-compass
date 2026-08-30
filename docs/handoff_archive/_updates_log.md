@@ -43771,3 +43771,178 @@ deploy shipped `08-29`, local says `08-30`. This makes the drift control honest
 about it; it does not make them match. And `sweep_gate.py`'s fingerprint is
 still content-based, so a clean receipt still goes stale at UTC midnight.
 Both are in the finding.
+
+### 2026-08-29 22:51:22 — 20260830_0010_update_committed-and-pushed-162231e.md
+
+# Update — committed and pushed as `162231e`. The injection fix and Q29 are in history; tree clean.
+
+**2026-08-30 04:10 UTC / 2026-08-29 23:10 local · Code (background session)**
+
+Sleven said commit and push, in this session, for this change. Rule 2 satisfied.
+
+    162231e   20 files changed, 2,660 insertions, 423 deletions
+    85e1d3b..162231e  main -> main
+    local HEAD == origin/main == 162231e
+    git status --porcelain    0 entries
+
+## Verified after, not assumed
+
+- **`_to_delete/` contributed 0 files.** Checked in the index before and in
+  `git log -1 --name-only` after. Today's thirteen probes are all in there and
+  none entered history.
+- **No path outside the five expected roots.** Filtered the file list; empty.
+- **The push landed** - `git fetch` and a hash comparison.
+
+## THE DAY, IN FOUR COMMITS
+
+    4710d30   the heap fix, the deploy gate, 295 ships photographed
+    d1e60b4   the drift control stops writing to what it audits
+    85e1d3b   three markers declared rather than forgotten, and deployed
+    162231e   the sweep can say "I could not look", and the clock stops
+              being a false red
+
+## WHAT IS OPEN, HONESTLY
+
+    Q26   withdrawn. C1's mesh distance is the measurement now.
+    Q28   C1's to design - two placement writers, one containment gate
+    Q30   open, and my answer changed to "not sufficient": --only should
+          write its own receipt. Mine to fix on a word.
+    the served site   still one date stamp behind local. Not broken, not
+                      matching. A deploy would close it - the gate refuses
+                      today only because the draco control is NOT RUN.
+    draco3d           not installed. Asked properly rather than acting on a
+                      conditional offer; rule 7 says downloaded code is data.
+
+## AND ONE THING I WOULD SAY OUT LOUD
+
+`checks/_verify_no_agent_traces.py` and
+`docs/FINDING_the-public-source-reads-like-a-work-log-2026-08-29.md` arrived
+from C1 today and are committed here unread by me beyond their names. **They are
+about what the public source says**, which touches rule 8's territory even if it
+is not legal text. Sleven should look at that one himself rather than take my
+word that it is fine, because I have not formed one.
+
+### 2026-08-29 22:58:46 — 20260830_0020_update_taking-q30.md
+
+# Update — taking Q30. My own answer to it changed once I did the same thing C1 did, so I am building the fix rather than re-stating the opinion.
+
+**2026-08-30 04:20 UTC / 2026-08-29 23:20 local · Code (background session)**
+
+Checked for updates: **C1 has changed nothing since `162231e`.** The queue is
+where I left it, so I am taking the first open item that is mine and unblocked.
+
+    Q26  withdrawn - C1's mesh distance supersedes it, and the Glaive is C1's
+    Q28  BLOCKED-BY C1 by its own text
+    Q29  done, verified in place at run_all_controls.py:239
+    Q30  MINE, unblocked, DONE-WHEN is "your call"
+    Q3   open - scale the 12 from model_scaled.glb
+    Q5   open - R3 of the roadmap watcher
+
+**Q30's DONE-WHEN is literally my call, and I have made it: fail-closed is not
+sufficient.** C1 destroyed the full receipt with `--only`, reported it honestly,
+and asked whether that was good enough. I said it might be. **Then I did exactly
+the same thing within the hour**, running probe subsets while proving Q29. Two
+sessions, same artifact, same day, both doing legitimate work.
+
+"The gate catches it" is what you say about a defect you have decided to keep.
+
+## THE SHAPE, AND IT IS RULE 14 INSIDE ONE SCRIPT
+
+`sweep_gate.py`'s own docstring says **ONE writer** and it is right about the
+writer. The defect is that **one path carries two kinds of run whose outputs are
+not interchangeable**: a full sweep of 106 controls and a three-control subset
+both write `checks/.last_sweep.json`, and the second silently destroys the first.
+
+## WHAT I AM BUILDING
+
+    a full sweep        -> checks/.last_sweep.json          (unchanged)
+    --only              -> checks/.last_sweep_partial.json
+    --self-test         -> checks/.last_sweep_partial.json
+
+**Self-test goes with it for the same reason.** It inverts every expectation, so
+it is not a sweep of the payload either, and the gate already refuses on it -
+which means today a self-test run also destroys a good receipt.
+
+**The gate does not change its mind about anything.** It reads the full receipt
+only, so a partial can never masquerade as one. What changes is that a partial
+no longer takes the full one down with it - and a full receipt that is still
+valid for an unchanged payload survives, which is strictly better than forcing a
+thirteen-minute re-sweep because somebody ran three controls.
+
+**Rule 12 applies:** I will run a subset, confirm the full receipt is untouched
+byte for byte, and confirm the gate still passes on it. A fix I cannot show
+working is not a fix.
+
+### 2026-08-29 23:02:03 — 20260830_0030_update_q30-done-a-subset-can-no-longer-erase-a-sweep.md
+
+# Update — Q30 done. A subset run can no longer erase a sweep, and the message that hid it for a day now names the path it actually wrote.
+
+**2026-08-30 04:30 UTC / 2026-08-29 23:30 local · Code (background session)**
+
+My call, made and built rather than restated: **fail-closed was not sufficient.**
+
+    a full sweep   -> checks/.last_sweep.json          unchanged
+    --only         -> checks/.last_sweep_partial.json
+    --self-test    -> checks/.last_sweep_partial.json
+
+**Self-test goes with it** because it inverts every expectation, so it is not a
+sweep of the payload either - and until today a self-test run also took a good
+receipt down with it.
+
+## PROVEN, NOT ASSERTED
+
+    routing        partial=F self_test=F  -> .last_sweep.json
+                   the other three combinations -> .last_sweep_partial.json
+
+    a 3-control --only run
+      before  at 2026-08-29T22:26:57  partial=False  passed=106
+      after   at 2026-08-29T22:26:57  partial=False  passed=106
+      FULL RECEIPT BYTE-IDENTICAL - untouched
+      partial went to .last_sweep_partial.json, 3 passed
+
+    with the full receipt moved aside (rule 1: moved, not deleted)
+      GATE EXIT 1, and it NAMES the partial while refusing to read it:
+      "a subset is not a sweep - and it is kept separately so it cannot
+       overwrite the real one."
+      full receipt put back, byte-identical to before the test
+
+**The gate did not change its mind about anything.** It reads the full receipt
+and nothing else, so a partial still cannot masquerade as a sweep.
+
+## THE MESSAGE THAT HID IT
+
+`run_all_controls.py` printed `sweep_gate.RECEIPT` unconditionally, so a
+`--only` run **announced the full receipt's path while writing over it.** The
+message and the act disagreed, which is why the clobber went unnoticed until C1
+happened to check. It now names the path it actually wrote, and says outright
+when it did not touch the real one.
+
+## ONE THING BROKE ON THE WAY AND THE EXISTING GUARD CAUGHT IT
+
+My first patch aborted on an assertion **after** making its edit in memory, so
+nothing reached disk - and the two later patches landed referring to a helper
+that did not exist. The subset run then reported:
+
+    SWEEP RECEIPT NOT WRITTEN: NameError: name 'receipt_path' is not defined
+    The deploy gate refuses on a missing receipt, so this fails closed
+    rather than quietly.
+
+**Exactly as designed.** A receipt that cannot be written is reported and does
+not silently look unreceipted-but-fine. I had not written that guard today and
+it caught my own mistake within a minute.
+
+## ALSO
+
+`checks/.last_sweep_partial.json` added to `.gitignore` beside its sibling -
+both are machine state and neither belongs in history. `.gitignore` has no
+declared owner in `OWNERS.md`; the edit is one line adjacent to the existing
+entry and is recorded here rather than done quietly.
+
+## STANDING
+
+    Q29, Q30   done
+    Q3, Q5     the two still open, and both are older than today
+    Q28        C1's
+    draco3d    still not installed, still asked rather than assumed
+
+Uncommitted: `checks/sweep_gate.py`, `checks/run_all_controls.py`, `.gitignore`.
