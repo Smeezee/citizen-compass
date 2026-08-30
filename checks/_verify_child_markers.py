@@ -99,8 +99,17 @@ AFTER = os.path.join(SRC, "loadout_marker.gen.js")
 # about 90 seconds - and it removes the treadmill and every chance a manual
 # re-take bakes in something wrong. Not done here because it changes what
 # the control costs the sweep, and that is a decision rather than a fix.
-BEFORE = os.path.join(REPO, "data-layer", "derived", "holo-hardpoints",
-                      "loadout_marker.pre-C1-20260829.js")
+# THE FIXTURE LIVES WITH THE CONTROL NOW (2026-08-30).
+#
+# It was data-layer/derived/holo-hardpoints/loadout_marker.pre-C1-20260829.js,
+# a directory C1 claimed on 2026-08-29. That put this control behind an edit
+# somebody else had to make: every time the ship data moved, keeping the suite
+# green and rule 14 pulled in opposite directions. The old file is untouched
+# where it is.
+#
+# Re-taken on purpose after the 4.10 pull, with what moved recorded in
+# checks/_fixtures_markers/README.md and the pinned four checked first.
+BEFORE = os.path.join(HERE, "_fixtures_markers", "loadout_marker.baseline.js")
 
 # C3's pinned four - the Retaliator's countermeasure launchers, the only ports
 # that already had markers before any of this work and therefore the ones a fix
@@ -195,28 +204,21 @@ def bench():
 # waved through. REMOVE THESE when the snapshot is next re-taken for an
 # unrelated reason - at that point the movement is in the baseline and the
 # entries are fiction.
-DECLARED = {
-    ("BANU_Defender", "50"): {
-        "was": [-0.30751, 0.01049, 1.32494],
-        "now": None,
-        "why": "countermeasure launcher at 1.32 of the half-extent - "
-               "photographed floating in open space off the nose. CIG position "
-               "withheld, and with no fallback the marker is gone.",
-    },
-    ("BANU_Defender", "51"): {
-        "was": [0.30751, 0.01049, 1.32494],
-        "now": None,
-        "why": "the mirror of port 50, same 1.32, same withholding.",
-    },
-    ("MISC_Hull_C", "34"): {
-        "was": [-0.0, -0.10429, -1.27827],
-        "now": [-0.00408, 0.00157, -1.00356],
-        "why": "the nose turret, 1.28 half-extents off the nose and labelled "
-               "'cig' - CIG's own truth, for a dot in empty space. NOT a "
-               "removal: the CIG position was withheld and the mount fell back "
-               "to a name-derived estimate the page now labels 'est'.",
-    },
-}
+# EMPTY SINCE THE 2026-08-30 RE-TAKE, AND THAT IS THE DESIGN WORKING.
+#
+# This held three declarations for C1's fore/aft withholding - BANU_Defender
+# 50 and 51 removed, MISC_Hull_C 34 demoted to est. The comment above them said:
+# "REMOVE THESE when the snapshot is next re-taken for an unrelated reason - at
+# that point the movement is in the baseline and the entries are fiction."
+#
+# That moment arrived. The 4.10 pull forced a re-take, the withholding is now
+# part of the baseline, and the control's own "a declaration nothing fires is
+# fiction" assertion would have failed on all three. It predicted its own
+# retirement and the check that enforces it is unchanged.
+#
+# The declarations are not lost: what they recorded is in
+# checks/_fixtures_markers/README.md and in the commit that made them.
+DECLARED = {}
 
 
 MARKABLE = {"WeaponGun", "Turret", "MissileLauncher", "WeaponDefensive",
