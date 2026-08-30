@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #848 — 2026-08-29 11:35 PM
+# LATEST_HANDOFF.md — Update #850 — 2026-08-30 12:18 AM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-29 23:35:25 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-30 00:18:24 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,162 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119498 files (13787.21 MB)
 
-**Scripts:** 53  |  **3D models:** 1137  |  **Docs:** 1407
+**Scripts:** 53  |  **3D models:** 1141  |  **Docs:** 1410
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-30 00:17:36 — 20260830_0210_update_drift-control-fixed-deploy-blocked-by-c1s-two.md
+
+# Update — the drift control is fixed and proven. The deploy is now blocked by two controls that are both C1's, and one of them is finding a real, visible defect.
+
+**2026-08-30 07:10 UTC / 2026-08-30 02:10 local · Code (background session)**
+
+## THE FIX, AND WHY THE SECOND ATTEMPT WORKED
+
+I measured instead of guessing, and there were two causes, not one:
+
+    keybinds.html / loadout.html   diverged exactly at /* CC_DISC_CSS */
+    find.src.html                  is CRLF; its output is LF
+
+**The injection markers are themselves comments.** `<!-- CC_VENDOR_THREE -->`
+and `/* CC_DISC_CSS */` - so stripping the source deletes the anchors the
+segmentation is built on, and every page diverges at the first one. Stripping
+the SEGMENTS instead fails differently: a segment can begin inside a `<script>`
+block and the stripper then reads JavaScript as markup, which is why
+`loadout.html` and its 437 template literals was the page that broke last night.
+
+**Protect the markers, strip the whole document exactly as the build does, put
+the markers back.** Plus the disclosure gap now compares against
+`strip_css(_disc.css)`, because the CSS is substituted in and the page stripped
+after.
+
+    14 passed, 0 failed        --self-test exit 1
+
+## IT IS A RECONCILIATION, NOT AN EXEMPTION, AND I PROVED THAT
+
+Only the `_src` side is stripped, so a comment HAND-ADDED to `_deploy` still
+has nothing to match against:
+
+    planted a comment at the end of _deploy/download.html
+      FAIL every copied file in _deploy is its _src source byte for byte
+      FAIL and so is every copied file (moved: download.html)
+
+Two independent assertions. `download.html` restored byte-identical. Section 5's
+existing plants still pass through the new comparison, so the detection path is
+whole.
+
+**Declared honestly:** the control now imports the build's own stripper, so a
+change to the STRIPPER passes here unremarked - the same trade
+`attribution.TRADEMARK_HTML` already makes. `_verify_comment_strip.py` is what
+closes it, by proving the stripper against node rather than against itself.
+
+## THE SWEEP
+
+    107 ok, 2 failed, 0 skipped, 1 NOT RUN, in 782s
+
+    _verify_display_names.py        FAILED     C1's, OWNERS.md line 55
+    _verify_marker_mesh_distance.py NOT RUN    C1's, line 57, needs draco3d
+    _verify_picker_deployed.mjs     deployed-only, expected until this ships
+
+**Everything of mine is green**, including the two guards I repaired and the
+drift control.
+
+## AND C1'S CONTROL IS FINDING SOMETHING REAL
+
+    19 parts show a name that disagrees with the game's
+
+    AEGS_Avenger_CML_Chaff   shows "Aegis Gladius - Noise Launcher"
+                             game  "Aegis Avenger - Noise Launcher"
+    ANVL_F7A_CML_Chaff       shows "Anvil Noise Launcher"
+                             game  "Anvil Hornet F7A - Noise Launcher"
+
+**An Avenger part is printing GLADIUS on the page.** That is the same shape as
+Q1 - 31 ships printing another ship's name on their armour - on a page whose
+whole claim is that the numbers can be trusted. It is C1's control and C1's
+pipeline, and I am reporting it rather than touching it.
+
+## THE DEPLOY IS STILL BLOCKED AND I HAVE NOT DEPLOYED
+
+    GATE EXIT 1
+
+Both blockers are C1's. **Nothing of mine stands between the payload and the
+site any more**, and I am not weakening the gate to get past somebody else's
+finding - least of all one that is right.
+
+Uncommitted: `checks/_verify_deploy_drift.py`.
+
+### 2026-08-29 23:59:20 — 20260830_0140_update_q31-is-built-and-the-deploy-is-blocked-by-my-own-control.md
+
+# Update — Q31's strip is done and proven. The deploy is BLOCKED by my own drift control, correctly, and I stopped trying to reconcile it rather than keep making it worse.
+
+**2026-08-30 06:40 UTC / 2026-08-30 01:40 local · Code (background session)**
+
+## WHAT IS DONE AND PROVEN
+
+    _verify_no_agent_traces.py   PASS, exit 0
+    _verify_comment_strip.py     21 assertions, exit 0; --self-test exit 1
+    comment strip: 1672 removed; every deployed .js and inline script parses
+    browser controls             camera framing, panel dismiss, hull solid,
+                                 disclosure, armour naming - all green
+    @license                     survived
+    comments in _src / _deploy   165 / 0
+
+## THE SWEEP FOUND FOUR THINGS AND I FIXED THREE
+
+    104 ok, 4 failed, 0 skipped, 1 NOT RUN, in 831s
+
+**_verify_find_page.mjs and _verify_shared_viewer.mjs** both carried a guard
+reading *"the comment stripper works"* - each required the SHIPPED page to
+contain a particular comment and then checked their own regex had removed it.
+**They were testing the fixture as much as the stripper, and Q31 took the
+fixture away.** Both now prove their stripper on a LOCAL fixture and also assert
+the stripped code is not empty, which the old form never did. Green.
+
+**_verify_find_page.mjs also required `GENERATED by build_find_data.py` in the
+DEPLOYED data file** - the exact class of trace Q31 removes. **Two requirements
+in direct conflict, and the instruction wins.** The claim moved to `_src`, where
+the header still is, plus a new assertion that the deployed copy does NOT name
+it. Green.
+
+**_verify_picker_deployed.mjs** is a deployed-site control comparing served
+against local; the served site is the pre-strip payload, so it is expected and
+the gate already counts it as deployed-only.
+
+## THE FOURTH IS MINE AND I STOPPED
+
+**`_verify_deploy_drift.py` is red because the comment strip is a transform it
+does not know about**, and that is the control doing its job. Section 3 holds
+every copied file byte-for-byte against `_src` outside declared injections; the
+strip makes all of them differ.
+
+**I tried to reconcile it and made it worse.** Applying the build's own strip to
+the `_src` side got the `.js` and `.gen.js` files clean and left one page
+failing. Switching to a whole-document strip with protected markers - because
+the markers ARE comments, so segmenting first hands the stripper a fragment that
+can begin inside a `<script>` - took it from one failing page to four.
+
+**So I stopped.** The working copy is preserved at
+`_to_delete/drift-wip-20260830/` and the control is restored to its committed
+state. **Reconciling it by accretion at 01:40 is how a guard ends up with a hole
+in it**, and this is the control that makes an unauthorised write to `_deploy`
+loud.
+
+**What I think the answer is, for whoever picks it up:** section 4 already
+proves the payload by REBUILDING and comparing, and it passes. Section 3's
+byte-comparison against `_src` is what the strip complicates. Whether section 3
+should compare against a stripped source, or whether the rebuild in section 4
+now makes it redundant, is a design question and wants a clear head.
+
+## THE DEPLOY IS BLOCKED AND I DID NOT DEPLOY
+
+    sweep_gate --check testing/_deploy   EXIT 1
+
+Sleven asked for sweep, deploy, commit and push. **The sweep refused the deploy
+and I am not going around it.** The served site stays on the pre-strip payload,
+which is the safe direction: nothing about it is wrong, it just still carries
+its comments.
 
 ### 2026-08-29 23:34:38 — 20260830_0110_update_q31-comments-no-longer-ship.md
 
@@ -1281,123 +1432,7 @@ deliberate build. **I killed a sweep mid-run, and a killed process does not run
 happened. My restore is exception-safe and **not** kill-safe, and I described it
 this morning as if it were both. Fixing that before the sweep, not after.
 
-### 2026-08-29 10:02:43 — 20260829_1030_update_q21-received-build-sweep-deploy.md
-
-# Update — Q21 through Q26 received. Taking Q21 (rebuild and deploy) with Q24 folded into its run, as the order says.
-
-**2026-08-29 10:30 local · Code (background session)**
-
-Sleven relayed C1's answers and put Q21 first. Filing before I start, rule 13.
-
-## THE FOUR ANSWERS, AND WHAT I DO WITH EACH
-
-    Q22  the last rule-16 label      C1 did it. VERIFIED MYSELF, not taken on
-                                     the line: 105 labelled, 0 unlabelled,
-                                     0 malformed. I had already removed the
-                                     closed baseline entry at 09:52.
-    holo-hardpoints/                 claimed by C1 in OWNERS.md. Closed.
-    Q25  the separator DECISION doc  MINE. I own the enforcer, so I am the only
-                                     one who can write what it enforces.
-    Q26  the off-hull ten            BLOCKED-BY Q21. Not measuring the old
-                                     payload.
-
-## WHAT I AM DOING NOW
-
-    1  Q24  the false comment at build_deploy.py:1359 - my file, one line
-    2       python testing/_src/build_deploy.py
-    3       assert BANU_Defender 50/51 and MISC_Hull_C 2 are gone
-    4       run_all_controls.py --include-deployed
-    5       deploy_testing.ps1
-    6       verify the served site
-
-## ONE LINE IN Q21 IS NOW STALE, AND IT MATTERS FOR THE ORDER
-
-Q21 ends: *"Sweep first, let it finish, then deploy — the sweep rebuilds the
-payload."*
-
-**The sweep no longer rebuilds the payload.** I removed that this morning:
-`_verify_deploy_drift.py` snapshots, rebuilds, compares and puts everything back
-byte for byte, mtimes included. **Q21's own command list is already right** -
-build, then sweep, then deploy - so nothing about the plan changes. But the
-reason given for the order is gone, and the order now matters MORE rather than
-less: **a sweep will no longer quietly fix a payload somebody forgot to build.**
-
-## AND I STOPPED A SWEEP TO DO THIS
-
-The clean re-run I started at 09:58 was measuring the payload Q21 replaces.
-Killed rather than left to finish - its drift finding is the one Q21 closes, and
-a green-or-red on a superseded payload tells nobody anything. **The verification
-of the drift fix does not depend on it**: that stands on the 612-file
-before/after manifest, hash and mtime, which is already recorded.
-
-## Q24 IS C1'S RULE 14 VIOLATION AND I AM NOT RE-LITIGATING IT
-
-C1 edited `build_deploy.py:1359`, caught it, reverted it, and wrote the erratum.
-`git diff` on that file is empty and it is byte-identical to `4710d30` — **I
-checked rather than took the sentence.** Self-caught and self-reported is the
-system working. I am making the edit because the file is mine.
-
-### 2026-08-29 09:57:00 — 20260829_1015_update_i-did-the-thing-the-fix-is-about-to-my-own-verification.md
-
-# Update — I perturbed my own verification the way the defect perturbs the sweep. Sweep killed, results discarded, and the mistake is recorded rather than tidied away.
-
-**2026-08-29 10:15 local · Code (background session)**
-
-## WHAT I DID
-
-I started a full sweep in the background to confirm the drift fix in the place
-it was built for — **and then kept editing and running
-`checks/_verify_deploy_drift.py` while that sweep was executing it.**
-
-**That is the exact defect I spent the morning fixing, done to my own
-verification.** It is also the first of the three perturbations the 28th's
-update lists — *"this morning I edited checks/ while a sweep executed those
-files"* — so it is the second time, not the first.
-
-## HOW IT SHOWED
-
-An independent manifest of `testing/_deploy` and `testing/_src` came back with
-content differences I could not account for:
-
-    _deploy/holo.html               hash moved
-    _deploy/loadout.html            hash moved
-    _deploy/loadout_marker.gen.js   ef9be07 -> 2536dbd, in _deploy AND _src
-    _src/.last_build.json           hash moved
-
-**None of those were my probe.** The probe left bytes intact and moved only
-mtimes. The moving hashes are a concurrently-running sweep: its own copy of the
-drift control planting into `_deploy` in section 5, and a rebuild landing from a
-version of the file that no longer existed on disk by the time it ran.
-
-## WHAT I DID ABOUT IT
-
-**Killed the sweep and discarded its results.** A sweep whose controls changed
-underneath it measures nothing, and reporting a number off it would be
-manufacturing exactly the confidence this project calls SILENT SUCCESS.
-
-Nothing was lost — the sweep was confirmation, not the work — and the fix's own
-verification stands on its own evidence, taken before the sweep and repeated
-after it:
-
-    612 files, hash AND mtime, before and after a full run
-    IDENTICAL - EVERY HASH AND EVERY MTIME
-
-**Next: put the tree back to the state the manifest recorded before any of
-this**, then re-run the sweep with nothing else touching `checks/` — which is
-the only way its result means anything.
-
-## THE RULE THAT IS MISSING, AND IT IS NOT A NEW ONE
-
-A sweep has no lock. Nothing stopped me editing a control mid-run, and nothing
-stopped C1 regenerating `data-layer/` mid-run on the 28th. **Rule 14's own
-words apply: a rule that depends on remembering it is a convention, not a
-guard.** The drift control was the one perturbation I could close by
-construction, and it is closed. The other two are still open by design.
-
-Not proposing a fix for that in this update. Recording it so the next session
-does not rediscover it as a surprise.
-
-*(+584 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+586 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

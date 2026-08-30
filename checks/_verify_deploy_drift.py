@@ -199,6 +199,33 @@ SEAM_FILES = {
 # in attribution_point() below, and section 4's rebuild is what proves the two
 # still agree.
 sys.path.insert(0, SRC)
+
+# THE COMMENT STRIP IS THE FOURTH TRANSFORM  (Q31, 2026-08-30).
+#
+# The build removes every comment on the way into _deploy - Sleven's
+# instruction that nothing public may hint at how the site was built. That made
+# every copied file differ from its source and this control said so, which is
+# what it is for. Reconciling it is not the same as exempting it.
+#
+# NOT AN EXEMPTION. "Comment-shaped regions may differ" would be a hole the
+# width of any comment anybody cares to add. Instead the SAME function the
+# build uses is applied to the _src side, so everything outside comments is
+# still held to byte equality - and a comment HAND-ADDED to _deploy still
+# shows, because the _deploy side is never stripped here.
+#
+# RULE 16: this shares a source with the build, deliberately, the same trade
+# attribution.TRADEMARK_HTML makes below. A change to the stripper itself
+# passes here unremarked; checks/_verify_comment_strip.py is what closes that,
+# by proving the stripper against node rather than against itself.
+try:
+    import strip_comments as _strip
+    STRIP_ERROR = None
+except Exception as _exc:                      # pragma: no cover - reported
+    _strip = None
+    STRIP_ERROR = ("NOT PERFORMED - testing/_src/strip_comments.py could not "
+                   "be imported (%s), so what the build removes is unknown. "
+                   "Reported, never passed." % _exc)
+
 try:
     import attribution as _attr
     TRADEMARK_HTML = _attr.TRADEMARK_HTML
@@ -329,6 +356,44 @@ def attribution_point(s_text):
 # one needing another hand-written ordering case. The sentinel is a byte pair
 # no HTML source contains.
 ATTR_SENTINEL = "\x00CC_ATTRIBUTION_POINT\x00"
+def src_as_deployed(src_name, text):
+    """The _src text as the build leaves it: comments gone, markers intact.
+
+    THE MARKERS ARE THEMSELVES COMMENTS - <!-- CC_VENDOR_THREE --> and
+    /* CC_DISC_CSS */ - so a plain strip deletes the very anchors the
+    segmentation is built on, and every page then diverges at the first one.
+    Measured on 2026-08-30: keybinds.html and loadout.html both diverged
+    exactly at the disclosure marker, which is what sent the first attempt at
+    this looking for a drift that was not there.
+
+    Stripping the segments individually instead does not work either: a segment
+    can begin inside a <script> block, and the stripper then reads JavaScript
+    as markup. loadout.html, with 437 template literals, is where that showed.
+
+    So the markers are protected, the WHOLE document is stripped exactly as the
+    build strips it, and the markers are put back.
+    """
+    if _strip is None:
+        return text
+    guard = {}
+    for n, (lit, _nm) in enumerate(INJECTION_MARKERS):
+        if lit and lit in text:
+            token = "@@CCMARK%d@@" % n
+            guard[token] = lit
+            text = text.replace(lit, token)
+    try:
+        out, _n = _strip.strip_for(src_name, text)
+    except ValueError:
+        # Malformed for the stripper. Return the text UNCHANGED so the
+        # comparison fails loudly rather than passing something never compared.
+        for token, lit in guard.items():
+            text = text.replace(token, lit)
+        return text
+    for token, lit in guard.items():
+        out = out.replace(token, lit)
+    return out
+
+
 INJECTION_MARKERS = (
     (ATTR_SENTINEL, "attribution"),
     (VENDOR_MARKER, "vendor"),
@@ -436,7 +501,16 @@ def gap_problem(name, gap, out_name, ship_pages):
         if DISC_MARKER in gap:
             return ("the disclosure-CSS marker is still there - the shared CSS "
                     "was not substituted and the bars ship unstyled")
-        if gap != text_of(DISC_CSS_PATH):
+        # AS THE BUILD LEAVES IT: _disc.css is substituted in and the page
+        # is then stripped, so what ships is the CSS without its comments.
+        # Still byte for byte - against the right expectation.
+        _want_css = text_of(DISC_CSS_PATH)
+        if _strip is not None:
+            try:
+                _want_css, _dn = _strip.strip_css(_want_css)
+            except ValueError:
+                pass
+        if gap != _want_css:
             return ("what was substituted is not _disc.css byte for byte - it "
                     "was edited in _deploy, or the build substituted something "
                     "else")
@@ -487,7 +561,7 @@ def page_problems(src_name, out_name, ship_pages):
         return ["%s is MISSING from _deploy" % out_name]
     if out_name in SEAM_FILES:
         prefix, dev, dep = SEAM_FILES[out_name]
-        s_lines = text_of(s_path).split("\n")
+        s_lines = src_as_deployed(src_name, text_of(s_path)).split(chr(10))
         d_lines = text_of(d_path).split("\n")
         if len(s_lines) != len(d_lines):
             return ["%s has a different number of lines from _src/%s"
@@ -506,14 +580,18 @@ def page_problems(src_name, out_name, ship_pages):
     if not src_name.endswith(".html"):
         # COPIED VERBATIM. No transform is declared for these, so any
         # difference at all is a hand edit.
-        if read_bytes(s_path) != read_bytes(d_path):
+        # COMPARED AFTER THE BUILD'S OWN STRIP rather than as raw bytes.
+        # Everything outside comments is still held to equality, and a
+        # comment hand-added to _deploy still shows - only the _src side
+        # is stripped.
+        if src_as_deployed(src_name, text_of(s_path)) != text_of(d_path):
             return ["%s differs from _src/%s  [%s]"
                     % (out_name, src_name, owner_note(src_name))]
         return []
     # TRANSFORMED. Every injection the build makes is declared, and the source
     # text either side of every one of them must still be there, byte for byte,
     # anchored at BOTH ends of the file.
-    s_text = text_of(s_path)
+    s_text = src_as_deployed(src_name, text_of(s_path))
     d_text = text_of(d_path)
     # THE BUILD NORMALISES LINE ENDINGS - it writes every page with
     # newline='\n' - and `find.src.html` is the one source still saved CRLF.

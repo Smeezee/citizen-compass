@@ -465,6 +465,37 @@ the page should say they are ours.
 ships nothing, we write plain English and own it. **Shorthand the game itself
 displays stays, and gets a hover.**
 
+### Q36 — VOID. THERE ARE NO MISMATCHED DOTS. THE 645 WAS MY MEASUREMENT.
+**DONE-WHEN** nothing. **There is nothing to fix.** Kept so the number is not
+quoted again by anyone reading back.
+
+**I reported 645 markers (10.6%) on 59 hulls pointing at ports their ship's
+parts list does not contain.** Sleven told me to fix them first. **Going to look
+before changing anything is the only reason nothing was broken.**
+
+**THE ERROR.** A marker's PortId is `3.loadout.0`. I compared
+`PortId.split(".")[0]` — `3` — against the slot list. Port `3` is a turret
+PARENT and is not itself a slot; **`3.loadout.0`, the gun inside it, is.** I
+threw away the part of the identifier that made it resolve, then reported the
+ones I had broken.
+
+    matched on the ROOT of the PortId      645 orphans, 59 hulls
+    matched on the FULL PortId               0 orphans,  0 hulls
+
+**All 6,058 markers resolve to a real slot.** The Hammerhead's six turrets that
+looked absent are ports 3, 4, 5, 54, 77 and 78, and every one of their guns is
+in the list.
+
+**THIS IS THE FOURTH WRONG NUMBER I HAVE PUBLISHED TODAY** — the port that was
+never broken, the em-dash count that counted repeats, the off-hull dots that
+were fine, and this. **Every one was a measurement that discarded something,
+and every one read as a finding until somebody opened the data.**
+
+**WORTH KEEPING FROM IT:** *"every drawn marker resolves to a slot on its own
+ship"* is a real assertion and it passes today. It belongs in a control so a
+future build cannot break it quietly. Folded into Q34's control rather than
+given a file of its own.
+
 ### Q34 — 112 NAMES ON THE LIVE TEST SITE ARE WRONG, AND CIG'S OWN FILE SAYS SO.
 **DONE-WHEN** `checks/_verify_display_names.py` exits 0.
 **BLOCKED-BY** nothing. **This is live and visible. It jumps the queue.**
