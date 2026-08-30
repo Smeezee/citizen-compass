@@ -143,12 +143,31 @@ probabilistic.
 
 ### 3c. Then the vocabulary does the rest
 
-**The string does not need to be perfect.** Match it against the known list —
-7,728 items, ~200 commodities, 479 shops, the location set — using **Levenshtein
-distance, accept at ≤ 20% of string length.**
+**RULED 2026-08-30 BY SLEVEN: EXACT HITS ONLY. The fuzzy fallback is out.**
 
-`Ar?light Pist?l` resolves to Arclight Pistol because nothing else is close.
-**A string matching nothing is discarded, never guessed.**
+Match the string against the known list — 7,728 items, ~200 commodities, 479
+shops, the location set — and **accept only an exact hit. Anything else is
+discarded.**
+
+**What this replaced, and why it was wrong.** This section specified Levenshtein
+distance accepting at ≤ 20% of string length, and offered `Ar?light Pist?l`
+resolving to Arclight Pistol as the reason. **That carved an exception into hard
+rule 11 and nobody noticed for three revisions**: a 20% edit distance against a
+7,728-entry list does not resolve a misread, it *picks the nearest thing*, and
+the output is indistinguishable from a correct read. A wrong item name that
+looks right is worse than no reading at all, because nothing downstream can tell
+it happened.
+
+**The accuracy mechanism was always the atlas and the twenty-read vote**, not
+the fallback. A glyph below the atlas threshold already emits `?`; a string
+carrying a `?` is not an exact hit and is discarded. That is the whole
+mechanism, and it now has no way around itself.
+
+**A discard is not a loss. It is a labelled gap** — the same principle Q45's
+pair store is built on: an honest unknown is what tells you what to teach next,
+and a guess can never do that because it never reports one.
+
+`docs/RULING_the-reader-gets-no-fuzzy-matching-2026-08-30.md`.
 
 **Prices are easier still:** digits, commas, and the aUEC suffix. Ten glyphs.
 **A price that fails to parse is dropped, never rounded or inferred.**
@@ -253,7 +272,7 @@ One consent page. **Nothing runs until they click yes.**
     read budget                        never exceeds 4 regions/sec
     scene load                         >14 zones changing triggers zero reads
     atlas match                        >= 0.80 per glyph or emit '?'
-    vocabulary match                   Levenshtein <= 20% of length, else discard
+    vocabulary match                   EXACT hit or discard - no edit distance
     price parse failure                dropped, never inferred
     output                             contains no handle, no chat, no other player
     export                             one zip, sends in a chat message

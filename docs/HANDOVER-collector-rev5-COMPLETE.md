@@ -473,11 +473,21 @@ consistent column gap across ≥3 lines gives columns. **No extra machinery.**
 
 ### Then the vocabulary does the rest
 
-**The string does not need to be perfect.** Match against the known list using
-**Levenshtein distance, accept at ≤ 20% of string length.**
+**RULED 2026-08-30 BY SLEVEN: EXACT HITS ONLY.** Match against the known list
+and **accept only an exact hit. Anything else is discarded.**
 
-`Ar?light Pist?l` resolves to Arclight Pistol because nothing else is close.
-**A string matching nothing is discarded, never guessed.**
+This section specified Levenshtein distance at ≤ 20% of string length, with
+`Ar?light Pist?l` resolving to Arclight Pistol as the example. Against a
+7,728-entry list a 20% edit distance does not resolve a misread - **it picks the
+nearest thing, and the output is indistinguishable from a correct read.**
+
+The accuracy mechanism was always the atlas and the twenty-read vote. A glyph
+below threshold already emits `?`; a string carrying `?` is not an exact hit and
+is discarded. **A discard is a labelled gap, which is worth more than a guess
+because a guess never reports one.**
+
+Full reasoning in `workorder-collect-01-rev3.md` §3c and
+`docs/RULING_the-reader-gets-no-fuzzy-matching-2026-08-30.md`.
 
 ## 4.6 The priors — what we hand each zone
 
@@ -823,7 +833,7 @@ anything. They should not wait behind the collector.**
     read budget                      never exceeds 4 regions/sec
     scene load                       >14 zones changing triggers zero reads
     atlas match                      >= 0.80 per glyph or emit '?'
-    vocabulary match                 Levenshtein <= 20% of length, else discard
+    vocabulary match                 EXACT hit or discard - no edit distance
     price parse failure              dropped, never inferred
     known-shop agreement             reported every session, both failure modes
                                      distinguished
