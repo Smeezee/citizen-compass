@@ -88,6 +88,13 @@ today.
 been delivered.** Code reads the repo. Anything Code must act on goes in
 `inbox/`. **C3 reads the project**, so an order for C3 goes in both.
 
+**Four ownership gaps have now been found the same way** - going to change a
+file and finding nobody's name on it. `build_loadout_data.py`,
+`holo-hardpoints/`, and on 2026-08-30 the page-copy set: `_layer.src.html`,
+`keybinds.src.html`, `device_engine.js`, `kb_overlay.inc.html`. All claimed by
+C1, all claimed rather than seized, all notified in `OWNERS.md`. **The rate says
+the gap is systemic, not bad luck.**
+
 **`OWNERS.md` is the machine-readable list of who writes what**, and it replaced
 a prose list that lived in two documents and drifted. `checks/_verify_owners.py`
 holds it to its own rule and fails if `NEXT.md` grows a second copy. Rule 14 is
@@ -317,16 +324,58 @@ bucket public. Do not add a list, read or delete route to the Worker. Do not
 remove `send_url`/`send_key` from `collector-settings.txt`. Do not auto-send.
 Nothing is deleted that the server has not confirmed receiving.**
 
+**The page speaks the game's words, and a control keeps it that way.**
+`checks/_verify_us_spelling.py` judges every page source against CIG's own
+`labels.json` from the pinned snapshot - not against a word list somebody typed.
+24 British/American pairs the game decides for American are enforced; the ones
+it does not decide are named and left alone. **`grey` is deliberately NOT
+enforced: ship liveries say Grey (141) and only clothing says Gray (14), so the
+ship spelling wins.** It was "corrected" to `gray` on 2026-08-30 and put back.
+Sleven's rule is not "write American" - it is *"the words we use need to match
+the ones that the players would see in game."*
+
+**A hover glossary, once, for every page.** `_layer.src.html` carries the table
+(21 sourced terms), the CSS and the mechanism; the ship page names WHERE and
+WHICH terms are safe (`GLOSS_ON_PARTS`). It decorates the live DOM after render
+rather than marking up `partRow`, so the string `checks/_verify_part_rows.mjs`
+matches is byte-for-byte unchanged. Hover, tap, keyboard focus and Escape all
+work. `#stats` is deliberately excluded - every row there already carries its
+own `title`/`aria-label` from `EXPLAIN`, and two tooltips on one row is worse
+than one. The same control asserts every term the page turns loose has a
+definition behind it.
+
+**`Alpha strike` is now `Alpha damage`** across all six places it appeared -
+players and calculators say alpha damage; *alpha strike* is a US Navy and
+MechWarrior phrase.
+
+**THE DEVICE PANEL IS GENERATED INTO ITS HOSTS AND A HAND EDIT WILL VANISH.**
+`device_engine.js` is the single writer; `inject_engine.py` copies it into
+`_layer.src.html` and `keybinds.src.html` on every build, between fixed
+boundary markers, behind a `node --check` gate. A hand fix to either host was
+silently reverted by a build on 2026-08-30 - correctly, and with no warning.
+**Fix the master, then inject.** `inject_engine.py` is still unowned; the
+natural owner is Code.
+
 **Armour and shields.** Armour resolves through each ship's own `Loadout`;
 **eight** distinct damage-multiplier profiles. **Every shield in the game is
 identical** — 73 items, one Absorption profile. Energy absorption is fixed at
 1.00; physical is a **range, 0 to 0.45**, and what moves it along that range is
 not established. Do not publish 45% as a value.
 
-**Patch data: the 4.10 snapshot is on the machine and in use**
-(`snapshots/20260827T225641Z`, 318 ship classes). The hardpoint placement scales
-against 4.10 lengths as of 2026-08-27. Weapon findings written before that date
-are 4.9 and say so.
+**Patch data: TWO HALVES OF THE SITE ARE PINNED TO DIFFERENT PATCHES, and the
+old sentence here hid it.** Precisely:
+
+    the ship page's data layer   snapshot 20260801T204744Z, stamped 4.9
+    the hardpoint placement      scales against 4.10 lengths (since 08-27)
+    the 4.10 snapshot on disk    20260827T225641Z, COMPLETE - counted
+    the game                     Live Version 4.10.0, PTU empty
+
+`build_loadout_data.py` hard-pins `SNAPSHOT` and `LAST_VERIFIED_PATCH`, on
+purpose. **The 4.10 pull is two lines, is not blocked, and is queued as Q46
+awaiting Sleven's go-ahead** - it brings in the Kruger S65 Stingray and will
+produce correct refusals where CIG fixed two of their own class-name typos.
+`docs/FINDING_the-4-10-pull-is-two-lines-and-here-is-exactly-what-changes-2026-08-30.md`.
+Weapon findings written before 2026-08-27 are 4.9 and say so.
 
 ---
 
@@ -369,5 +418,15 @@ are 4.9 and say so.
 
 ---
 
-*C1, updated 2026-08-29 midday. Split out of a 13,571-word document that had to be read in full
+**The roadmap watcher answers R3 already and throws the answer away.**
+`GET /api/roadmap/v1/boards/1` returns `data.description` = *"Live Version:
+4.10.0 ▪ Latest Roadmap Roundup: 08/26/2026 ▪ PTU Version: ø"*. `board.go`'s
+`Board.Data` struct does not declare `description`, so Go discards it at
+unmarshal. **And the watcher has never run on its own schedule**
+(`last_good_scheduled_run` is empty) and is filtered to `"watch":
+"Constellation"`, which is why its baseline holds three cards. Q5 re-scoped to
+four items in priority order; R3 is third because it is the least valuable.
+`docs/FINDING_r3-is-a-struct-field-the-watcher-already-downloads-2026-08-30.md`.
+
+*C1, updated 2026-08-30 morning. Split out of a 13,571-word document that had to be read in full
 to be trusted. If this one ever needs that again, it has failed.*

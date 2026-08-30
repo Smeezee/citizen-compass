@@ -465,8 +465,8 @@ function renderDevice(){
        '<div class="id">'+p.buttons.length+' buttons · '+p.axes.length+' axes · '+
        (p.mapping==="standard"?"standard mapping":"raw / no standard mapping")+'</div></div>';
   });
-  h+='<button class="tg" id="cc-kb-dvcal" title="Take the current stick positions as centre">'+
-     'Set centre</button><button class="tg" id="cc-kb-dvcopy">Copy device report</button></div>';
+  h+='<button class="tg" id="cc-kb-dvcal" title="Take the current stick positions as center">'+
+     'Set center</button><button class="tg" id="cc-kb-dvcopy">Copy device report</button></div>';
 
   list.forEach(function(p){
     h+='<div class="dvsec">'+esc(p.id)+' — buttons</div><div class="btngrid">';
@@ -499,7 +499,7 @@ function renderDevice(){
      'one but <b>not confirmed for your stick</b> — move one axis at a time and check '+
      'the right row lights up.<br>'+
      'A value in orange at rest is <b>drift</b>: the axis is not returning to centre. '+
-     'Press <code>Set centre</code> with everything released to zero it here — '+
+     'Press <code>Set center</code> with everything released to zero it here — '+
      'that only changes this page, not the game.</div>';
   host.innerHTML=h;
 

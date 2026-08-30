@@ -44763,3 +44763,361 @@ Identifiers were correctly left alone - `id="armour"`, `_view.colour()`,
     loadout.html  <th>vs. unarmoured</th>
 
 C1's files. Reported, not edited.
+
+### 2026-08-30 01:52:03 — 20260830_0945_update_q42-taken.md
+
+# Update — pushed `6b1837f`. Taking Q42: the miner reports zero transactions while declaring the extractor Verified.
+
+**2026-08-30 14:45 UTC / 2026-08-30 09:45 local · Code (background session)**
+
+    6b1837f   14 files changed      bd4cac2..6b1837f      tree clean
+    no _to_delete, no node_modules, no editability_patches in the commit
+
+A stale `.git/index.lock` from 01:20 blocked staging - C1's Cowork mount cannot
+delete files, exactly as `NEXT.md` records. **Confirmed no git process was
+running**, then moved it to `_to_delete/git-locks/`.
+
+## Q42, AND THE NUMBER I AM MEASURING AGAINST
+
+The Python dig's own manifest is on disk and gives me the target rather than a
+remembered figure:
+
+    data-layer/derived/gamelog-mining/MANIFEST.json
+      sessions_read      233
+      item_txn_rows      286
+      commodity_txn_rows  10
+      parse_errors         0
+
+The archive is where the header says: **243 files, 209 MB**, at
+`Program Files/Roberts Space Industries/StarCitizen/LIVE/logbackups`. Read only -
+rule 6 is about writing outside the repo, and I am not writing there.
+
+The pattern under suspicion, and I am **not touching it** until a failing line is
+in front of me:
+
+    reMineTxn = S(Shop(?:Commodity)?)(Buy|Sell)Request\s*-\s*(.*)
+
+Its extractor declares `Verified: true`. **A verified extractor reporting zero
+is either a broken pattern or a false declaration, and both are worth more than
+the transactions.**
+
+## EXPECTATIONS SET BEFORE RUNNING
+
+The header records **240s over the real archive against 61ms isolated**, and
+that the gap was once misdiagnosed as a flaky test. **It is unbounded work, not
+a flake.** I am budgeting minutes and will not kill it for being slow - killing
+long runs is how I lost a payload copy yesterday.
+
+### 2026-08-30 01:54:54 — 20260830_1000_update_q42-the-premise-is-wrong-the-miner-finds-299.md
+
+# Update — Q42: the miner is not broken. It finds 299 transactions across all four families, and the regex needed no change.
+
+**2026-08-30 15:00 UTC / 2026-08-30 10:00 local · Code (background session)**
+
+**The order's premise does not survive the measurement, and the order is what
+made that visible: *"run the miner over the FULL archive - 243 files, 208 MB,
+not one session."* Run that way, transactions is not zero.**
+
+    archive: 244 file(s), 208.3 MB
+
+    extractor              verified   hits
+    transaction            true       299
+    location_inventory     true       1041
+    quantum_route          true       339
+    ship_class             true       23648
+    mission_template       true       2115
+    mission_objective      true       7670
+    game_tip               true       3383
+    equipment              true       16876
+    mission_payout         true       312
+    contract               true       948
+    actor_death            true       121
+    vehicle_destroyed      true       11
+    mineable_rock          true       20
+    object_container       false      0
+    spawn_location         false      0
+    location_inventory_name false     0
+
+## AGAINST THE PYTHON DIG, WHICH IS THE ONLY HONEST COMPARISON
+
+    Python 2026-08-07        item 286   commodity 10    233 sessions
+    Go today                 item 289   commodity 10    244 files
+
+    family commodity buy      1
+    family commodity sell     9
+    family item buy         279
+    family item sell         10
+
+**All four transaction families the header names are present.** Commodity
+matches exactly at 10. Item is 289 against 286 - three more, which is what a
+larger archive read eleven files later should look like, not a discrepancy.
+
+## SO NOTHING IS CHANGED, AND THAT IS THE DELIVERABLE
+
+**I did not touch `reMineTxn`.** The order said not to before a failing line was
+in front of me. **There is no failing line, because there is no failure** - and
+changing a working pattern on the strength of a wrong premise is exactly what
+the instruction was protecting against.
+
+**The `transactions: 0` was real but it was measuring one session.** A single
+Game.log from a player who did not shop that session contains no
+`SShopBuyRequest`, and zero is the correct answer to that question. The
+extractor's `Verified: true` is also correct: the pattern is confirmed by 299
+live samples.
+
+**The two zeros that remain are the two UNVERIFIED patterns**, plus
+`location_inventory_name`, which the file already documents as speculative -
+1038 RequestLocationInventory lines across the archive and not one carrying
+`name="`. **Every zero in that table is a zero the file already predicted.**
+
+## AND ONE FIGURE IN THE HEADER IS STALE
+
+    header says   240 SECONDS over the real archive
+    measured      35.1 seconds, 244 files, 208.3 MB
+
+**The reasoning around it still stands** - it is unbounded work proportional to
+how much someone has played, and isolating it from the selftest was right. But
+the number a future reader would plan against is off by a factor of seven.
+`gamelog_mine.go` is not in `OWNERS.md`; I am reporting the figure rather than
+editing someone's file to correct a comment.
+
+## THE DIAGNOSTIC
+
+`citizen-collector/zz_q42_archive_test.go`. A test file, so it never reaches the
+shipped binary; gated behind `CC_Q42=1`, so nobody reads 208 MB of somebody's
+play history by accident - which is the header's own complaint about the
+selftest that did exactly that; and it writes to `t.TempDir()`. It reports the
+program's own per-extractor accounting via `buildExtractors`, not a second count
+written by me.
+
+    CC_Q42=1 go test -run Q42 -v -timeout 40m
+
+### 2026-08-30 02:39:14 — 20260830_0245_update_deployed-then-a-sweep-measured-a-moving-tree.md
+
+# Update — deployed and verified, then found a defect I had shipped. And the sweep after it measured a moving tree, so its nine failures are void.
+
+**2026-08-30 07:45 UTC / 2026-08-30 02:45 local · Code (background session)**
+
+## THE DEPLOY WENT OUT AND IS VERIFIED ON SERVED BYTES
+
+    109 ok, 0 NOT RUN     GATE EXIT 0     20 files uploaded
+    Version 8a200ac3-096e-4c6c-9a70-8bb04d40fbcf
+
+    /                      HTTP 200    392,871 bytes
+    /models/Hammerhead.glb HTTP 200  3,608,636 bytes
+    PLACEHOLDER              0
+    Unknown Manufacturer - 1 0
+    4.99-CONTROL             0
+    Torrent                  3   <- was truncated to 'MRX \'
+
+C1's 107 corrected names, the US spelling, the countermeasure summary and the
+1,450-part manufacturer fix are all live.
+
+## THEN THE DEPLOYED-SITE CONTROL CAUGHT SOMETHING I SHIPPED
+
+**The find page was publishing a checksum for a file it does not serve.**
+`build_find_data.py` hashes the `_src` data file; **Q31's comment strip removes
+1,169 bytes on the way into `_deploy`**, so the page told a visitor their
+correct download was corrupt.
+
+    the downloaded file hashes to exactly what the page claims   FAIL
+    and its byte count matches too    991988 vs 993157
+
+**That is mine, from yesterday, on the one page whose claim is that its numbers
+can be trusted.** Not fixed by exempting the file from the strip - its header
+names `build_find_data.py` on a public URL, which is the trace Q31 removes. **The
+checksum moved instead**, because it is a promise about the bytes a person
+downloads:
+
+    find checksum: recomputed over the SERVED bytes (991988, ac431efc)
+
+The drift control then flagged it as an undeclared transform, correctly, so it
+is **declared by VERIFICATION rather than exemption**: it re-derives the hash
+from what `_deploy` actually serves and requires the published figures to match.
+A stale or hand-edited checksum still fails. 14 passed, 0 failed.
+
+**And the sixth copy of the row-counting rule was where I said it would be.**
+`_verify_picker_deployed.mjs`, found by the DEPLOYED control after shipping
+rather than by the sweep. I wrote *"the sixth copy is the one that will be
+missed"* and then missed it.
+
+## THE SWEEP AFTER THAT IS NOT A MEASUREMENT
+
+    101 ok, 9 failed          <- do not act on this
+
+**C1 edited eight `_src` files during the run** - `device_engine.js`,
+`download.src.html`, `kb_overlay.inc.html`, `keybinds.src.html`,
+`stick-test.src.html`, `_layer.src.html`, `find.src.html`, `loadout.src.html` -
+and added `checks/_verify_us_spelling.py` at **02:30:19**, eight minutes before
+the receipt at 02:38:17.
+
+**So the sweep read a `_deploy` built from a `_src` that no longer existed**, and
+one of its nine failures is simply the new control having no RULE16 label yet:
+
+    _verify_us_spelling.py: a NEW check with no RULE16 label
+
+**I am not chasing the other eight.** Three controls disagreed with themselves in
+both directions on 2026-08-28 for exactly this reason, and the lesson recorded
+then was that it is one measurement taken during a write, not several defects.
+
+**THIS IS THE THIRD TIME.** 08-28: C1 regenerated `data-layer/` mid-sweep. 08-29:
+I edited `checks/` mid-sweep. Today: C1 edited `_src/` mid-sweep. **The sweep has
+no lock and rule 14's own words apply - a rule that depends on everyone
+remembering it is a convention, not a guard.** I closed the one perturbation I
+owned, the drift control's rebuild. **The other two are still open by design.**
+
+## WHAT I AM DOING
+
+Rebuilding from the `_src` that exists now, sweeping once, and deploying only if
+that sweep is clean. **If C1 is still editing, this will happen again**, and the
+next honest step is not a fourth sweep - it is a way for a sweep to refuse to
+start, or to declare itself void, when its inputs move underneath it.
+
+### 2026-08-30 03:04:28 — 20260830_0300_update_q45-first-slice-built.md
+
+# Update — Q45 first slice is built. The store records from five named contexts and refuses everything else, out loud.
+
+**2026-08-30 08:00 UTC / 2026-08-30 03:00 local · Code (background session)**
+
+    new   citizen-collector/pairstore.go
+    new   citizen-collector/pairstore_selftest.go
+    edit  citizen-collector/package.go     pairs/ excluded from the crew package
+    edit  citizen-collector/main.go        6 lines, registering the selftest
+
+## C1'S CORRECTION WAS RIGHT AND I BUILT TO IT
+
+`scrub_policy.go` is **not wired to this**. It governs the fields of `MineStore`,
+a struct built from the game log; it has no view of a pixel. **No chat-region
+exclusion was built**, because none exists and inventing one here would have
+been the same mistake in a new file.
+
+**What was taken is the INVERSION.** A pair is recorded only from a named
+screen context; anything else is refused and the refusal is written down:
+
+    inventory · item_inspect · ground_prompt · hud_target · shop_kiosk
+
+**The default is refusal.** A context nobody has thought of yet cannot leak in
+by being unanticipated, which is the failure a blocklist has and an allowlist
+does not.
+
+## TWELVE ASSERTIONS, AND THE NEGATIVE CONTROLS ARE THE POINT
+
+    [ok] pair from a named context is recorded
+    [ok] the same pair twice collapses to ONE entry            1 entr(ies)
+    [ok] a second VIEW attaches to the existing entry          1 entr(ies), 2 view(s)
+    [ok] a different label is a different entry - the key is not the context
+    [ok] an UNLISTED context is refused, not stored            stored=false
+    [ok] and the store says WHICH context it refused           map[chat_window:1]
+    [ok] half a pair is refused - no label, or no view
+    [ok] a re-opened store reads what the first one wrote
+    [ok] the index is APPEND-ONLY - earlier bytes are unchanged  1422 -> 1688 bytes
+    [ok] a truncated final line survives - the log before it still reads
+    [ok] every named context is on the allowlist               5 contexts
+    [ok] and an unnamed one is not, with a reason
+
+**Three of those exist only to stop a weaker implementation passing.** "A
+different label is a different entry" fails anything keyed on context alone.
+"The index is APPEND-ONLY, proven by bytes" is the only one a store that
+rewrote its index would fail - every other assertion would still pass. And the
+truncated-line case is what stops a crash mid-write from costing every pair
+before it.
+
+## THE FAILURE I SAW WAS MY OWN INVOCATION
+
+`go run .` builds a CONSOLE binary, so `CONSOLE: this binary is a GUI build`
+correctly reported subsystem 3. **Built the way the release builds it -
+`-ldflags "-H windowsgui"` - the whole selftest exits 0.** The check was right
+and I was holding it wrong.
+
+## WHAT IS DELIBERATELY ABSENT
+
+No recognition, no classifier, no matching, no OCR. No capture trigger, no
+hotkey, no send path. The store is fed through `StorePair` and **today the only
+caller is the selftest**, which is what the order asked for.
+
+`pairs/` is local and now sits in `packageExcluded` beside `captures` with its
+reason written down: *"your screenshots, cut up - same reason as captures"*.
+
+## AND THE LINE THAT IS SLEVEN'S, UNTOUCHED
+
+The consent text says *"Your chat. Chat is never sampled, at all."* Chat drawn
+inside the Star Citizen window is inside a picture of that window, and Q45 makes
+those pictures longer-lived. **C1 marked that as Sleven's to rule on and I have
+not acted on it.** The store's allowlist means no pair is recorded from a chat
+context - but that is a narrower claim than the consent line makes, and the gap
+is the product promise, not the code.
+
+## STILL PENDING ON THE WEBSITE
+
+The find-checksum fix and the picker fix are built and uncommitted. **The sweep
+that would clear them measured a moving tree** - C1 edited eight `_src` files
+mid-run - so it needs one clean sweep before a redeploy. The site as served is
+correct and verified; only the published checksum on the find page is stale, and
+that is the thing the fix corrects.
+
+### 2026-08-30 03:10:15 — 20260830_0320_update_q45-is-master-only-and-proven-absent-from-crew.md
+
+# Update — Q45 is master-only, and the crew binary is proven not to contain it. Symbols and strings, both directions.
+
+**2026-08-30 08:20 UTC / 2026-08-30 03:20 local · Code (background session)**
+
+Sleven's ruling applied: `//go:build master` on both files, `pairs/` written by
+the master build only, and **absent from the crew binary rather than compiled
+and disabled.**
+
+## THE PROOF, BOTH DIRECTIONS
+
+    go tool nm            crew   master
+      StorePair              0      2
+      NewPairStore           0      1
+      ContextAllowed         0      2
+      runPairStoreSelftest   0      2
+      pairContextAllowed     0      1
+
+    strings only this store would put in a binary
+      pairs.jsonl                    0      1
+      item_inspect                   0      1
+      ground_prompt                  0      1
+      "is not on the recorded list"  0      1
+
+    crew   11,747,840 bytes
+    master 11,788,288 bytes
+
+**Measured in both directions on purpose.** A search that came back zero for
+both builds would prove only that I was looking in the wrong place; the master
+column is what makes the crew column mean something.
+
+    crew   --selftest  exit 0
+    master --selftest  exit 0
+
+## HOW IT IS WIRED, AND WHAT IT DID NOT FORK
+
+The call site left shared `main.go` and went behind `runVariantSelftests`,
+**defined in both variant files** - the pattern `masterOnlyCommands()` and
+`registerBenchFlags()` already use. Real in `variant_master.go`, empty in
+`variant_crew.go` with the reason written at the site.
+
+**Nothing was forked.** Capture, logging, the send path and the scrub layer are
+untouched and remain one implementation each. The only shared file that changed
+is `main.go`, by six lines, and it now names a hook rather than a feature.
+
+## ONE THING I AM FLAGGING RATHER THAN DECIDING
+
+`package.go`'s `packageExcluded` still carries `"pairs"`, and `package.go` is
+shared - so the literal string `pairs` appears in the crew binary twice.
+
+**It is not the pair store**, and every symbol and distinctive string of the
+store is absent. But the ruling says *"must not contain it at all"*, so the
+question is whether a defensive exclusion entry counts.
+
+**My read: it should stay.** It costs nothing, it is documentation of a decision
+in the place someone will look, and if a crew binary ever packaged a folder that
+a master build had written, that entry is what keeps `pairs/` out of the zip.
+**Removing it would make the crew build safer in appearance and less safe in
+behaviour.** If that reading is wrong, say so and it comes out in one line.
+
+## STILL PENDING
+
+The website's find-checksum and picker fixes are built and uncommitted, waiting
+on one clean sweep - the last one measured a moving tree while C1 edited eight
+`_src` files mid-run.

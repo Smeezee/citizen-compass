@@ -53,10 +53,214 @@ turned an outside session's recommendation into pressure and that was wrong.
 
 # CODE'S QUEUE
 
-### Q42 — COLLECTOR, FIRST JOB. THE MINER SCANS 243 LOG FILES AND REPORTS ZERO TRANSACTIONS.
-**DONE-WHEN** we know how many real priced transactions, shops and items are in
-Sleven's log archive, and — if the answer is zero — why.
-**BLOCKED-BY** nothing. **Needs nothing from Sleven. Start here.**
+### Q45 — THE PAIR STORE. THE GAME LABELS ITS OWN OBJECTS; RECORD THAT.
+**DONE-WHEN** the collector records (view, label, context, moment) whenever the
+game shows an object and names it in the same frame, and the store survives
+restarts and grows across sessions.
+**BLOCKED-BY** nothing. **Sleven approved it as foundational, 2026-08-30.**
+**Build it BEFORE the reader. It starts paying the day it ships and it is worth
+more the earlier it starts.**
+
+**SLEVEN'S INSIGHT, AND IT IS BETTER THAN THE DESIGN IT REPLACES.** I said FPS
+weapons and armour could never be recognised because we hold 5,420 of them by
+name and **zero models**. He answered: *"When I pick it up on the ground, we can
+learn as we go. Nothing is off the table if we can teach it. We just need to
+build it to where it can be taught."*
+
+**He is right and I was reasoning from today's inventory as if it were
+permanent.** The game itself solves the problem that kills most visual
+recognition work - labelled examples:
+
+    inventory screen     the object is drawn AND named, in one frame
+    ground interaction   the prompt names the thing you are looking at
+    item inspect         the object, rotatable, with its name beside it
+    HUD target           a ship's name, while the ship is on screen
+
+**Every one of those is a labelled training example the player generates by
+playing.** Nobody annotates anything. **A month of ordinary play produces a
+training set that would otherwise take a person weeks to build by hand.**
+
+**WHAT THIS ITEM IS, AND WHAT IT IS NOT.** It RECORDS pairs. It does not
+recognise, classify, or train. **No model, no ML, nothing to get wrong yet.**
+It is the substrate every later recogniser is built from, and it is small.
+
+    for each pair      the image region, the exact text, which screen it came
+                       from, the game build, the moment
+    dedup              the same item seen twice is one entry with two views,
+                       not two entries
+    growth             append-only across sessions, like the gamelog dataset
+
+**AND IT MUST BE ABLE TO SAY IT DOES NOT KNOW.** That is the whole point of
+building it teachable: **an honest unknown is what tells you what to teach
+next.** A recogniser that guesses can never be taught, because it never reports
+a gap.
+
+**THIS IS Q44'S RULING ARRIVING FROM THE OTHER DIRECTION.** Refusing to guess is
+not only about accuracy - it is the learning mechanism. **Every refusal is a
+labelled gap.** The two rules are the same rule.
+
+**PRIVACY IS UNCHANGED AND APPLIES IN FULL.** A frame may contain a name;
+nothing derived from a frame ever may. The pair store holds frames, so it is
+internal working material, and the chat-region exclusion (rev 5 TIER 2.3) is a
+prerequisite rather than a nicety.
+
+**THREE MODEL ROUTES I RULED OUT TOO FAST AND SHOULD NOT HAVE.** Recorded so
+nobody inherits my error: community-made models, which nobody has looked for;
+`Data.p4k` extraction, **which this project already does for hardpoints** - and
+whose RIGHTS QUESTION IS SLEVEN'S ALONE, rule 8, not assumed here; and
+photographing an item in the inspect view, which is free.
+
+
+### SLEVEN'S RULING, 2026-08-30 — THE LEARNING HALF IS THE MASTER BUILD ONLY.
+
+> *"There'll be two versions of the Collector once we redesign it. For right
+> now, only my version needs this type of learning program, and what it's able
+> to capture. Everything else, we'll keep it basic to what we've already been
+> doing. So that way we can build it and figure out on my end before we give it
+> to anyone else."*
+
+    pairstore.go            //go:build master
+    pairstore_selftest.go   //go:build master
+    pairs/                  written by the master build ONLY
+
+**THE CREW BINARY MUST NOT CONTAIN IT AT ALL** - not compiled and disabled, not
+present and unused. **Absent.** `variant_crew.go` already states the principle:
+*"absent from the shipped binary rather than merely hidden in it - a menu item
+that is compiled out cannot be found by a curious crew member."* **Prove it:
+build the crew binary and show the symbol is not in it.**
+
+**EVERYTHING SHARED STAYS SHARED.** Capture, logging, the send path and the
+scrub layer are one implementation each, used by both builds. **That is the
+whole point of the flag and Q45 must not fork any of them.**
+
+**AND IT REMOVES A QUESTION FROM THE CRITICAL PATH.** Whether a pair store
+changes what a CONTRIBUTOR agrees to is moot for this slice - it does not ship
+to contributors. **Sleven is the only subject, on his own machine, with his own
+frames.** Build it, learn what it needs, and nobody else is asked to agree to
+anything until it is understood.
+
+`docs/DECISION_the-learning-half-is-master-only-and-the-consent-text-is-corrected-2026-08-30.md`
+
+**FIRST SLICE, AND IT IS THE WHOLE OF WHAT CODE BUILDS BEFORE COMING BACK.**
+Q45 is large. This is the part that is fully specified today, and it ships on
+its own:
+
+    new file        citizen-collector/pairstore.go
+    new file        citizen-collector/pairstore_selftest.go
+    writes to       citizen-collector/pairs/          (append-only, like captures/)
+
+    a PAIR is        one image region + the exact text drawn beside it + which
+                     screen it came from + the game build + the moment
+    the index        one JSONL line per pair, image bytes beside it by hash
+    dedup            same text + same screen + a region that hashes equal is
+                     ONE entry with a second view recorded, never two entries
+    survives         restart, and appends across sessions - it is never
+                     rewritten, never compacted, never truncated
+
+**IT DOES NOT RECOGNISE ANYTHING.** No model, no classifier, no matching, no
+OCR decisions of its own. It records what the game already put on screen next
+to itself. Anything that looks like inference in this file is out of scope and
+belongs to a later item.
+
+**WHERE THE TEXT COMES FROM IS NOT DECIDED HERE.** Wire the store behind an
+interface the caller feeds. If nothing feeds it yet, the selftest feeds it.
+**Do not add a capture trigger, a hotkey, or an auto-send path in this slice.**
+
+**CORRECTION 2026-08-30, AND CODE WAS RIGHT TO STOP AND ASK.** The paragraph
+that stood here said *"`scrub_policy.go` governs this store exactly as it
+governs `captures/`... if the chat-region exclusion is not in force on this
+path, the store does not record."* **Both halves are wrong and neither was
+checked before it was written.**
+
+    scrub_policy.go   governs the FIELDS OF MineStore, a struct built from
+                      the game LOG. It has no view of a pixel and cannot
+                      govern pairs/. DO NOT WIRE IT TO THIS.
+    the chat-region   DOES NOT EXIST. Nothing in the collector masks or
+    exclusion         excludes a screen region. I described a design item
+                      as a shipped precondition. DO NOT BUILD IT HERE.
+
+**WHAT THE PRIVACY GUARANTEE ACTUALLY RESTS ON, MEASURED.** Every picture this
+program takes is taken by a KEY PRESS. `no_auto_capture_selftest.go` drives the
+real loop with a log containing every trigger that ever fired a capture and
+requires ZERO pictures - then presses a key and requires one, so the negative
+control cannot rot. **The player chooses the moment. That is the guarantee, and
+it is a better one than masking.**
+
+**SO Q45 TAKES `scrub_policy.go`'s PRINCIPLE AND NOT ITS CODE.** That file's
+real contribution is an inversion: *a field with no policy is not exported, and
+the export says so out loud.* **The pair store inverts the same way:**
+
+    records ONLY from a NAMED screen context - inventory, item inspect,
+    ground prompt, HUD target, shop kiosk. A context that is not on the
+    list is NOT RECORDED, and the store says which one it refused.
+
+**THREE THINGS THAT DO NOT CHANGE IN THIS SLICE.**
+
+    pairs/ is LOCAL.       Not added to the send path. Sending a new kind of
+                           thing is a change to what the consent text
+                           promises, and that text is Sleven's.
+    pairs/ is EXCLUDED     from the crew package, beside `captures`, in
+                           `package.go`'s `packageExcluded`, with its reason
+                           written down like every other entry there.
+    the standing rule      a frame may contain a name; nothing DERIVED from
+                           a frame ever may.
+
+**AND ONE THING FOR SLEVEN, NOT FOR CODE.** The consent text says *"Your chat.
+Chat is never sampled, at all."* Chat drawn inside the Star Citizen window is
+inside a picture of that window. **The promise is stronger than the mechanism**,
+and Q45 makes those pictures longer-lived. **That is a product promise and it is
+Sleven's to rule on. Code does not act on this line.**
+
+**`--self-test` EXITS NON-ZERO WHEN ITS CONTROLS ARE DECISIVE**, rule 12: plant
+a duplicate that must collapse to one entry, plant a second view that must
+attach to an existing entry rather than create one, kill and restart between
+writes and prove the index still reads, and plant one pair that violates the
+scrub policy and prove it is REFUSED rather than stored. A selftest that cannot
+fail is not a control.
+
+**REPORT BEFORE WRITING, rule 5.** If any part of this reads as wrong for the
+codebase as it actually is, say so and take the next item - Code has been right
+against C1 four times.
+
+### Q46 — THE 4.10 PULL. MEASURED, UNBLOCKED, AND IT IS SLEVEN'S MOMENT TO PICK.
+**DONE-WHEN** `build_loadout_data.py` is pinned to `20260827T225641Z` /
+`last_verified_patch 4.10`, the data layer is regenerated, and the full page
+control suite has run on Windows against it.
+**BLOCKED-BY** Sleven's go-ahead only. Nothing technical.
+**C1 OWNS THE FILE AND HAS NOT FLIPPED IT.** See
+`docs/FINDING_the-4-10-pull-is-two-lines-and-here-is-exactly-what-changes-2026-08-30.md`.
+
+    the page's data    snapshot 20260801T204744Z, stamped 4.9
+    placement          already scales against 4.10 lengths
+    the game           Live Version 4.10.0, PTU empty
+
+**The snapshot is complete - counted, not assumed.** 318 ships (was 316), 5,394
+ship-items (was 5,384), 90,363 labels (was 90,121), same 45 keys per record.
+The 4.10 files are HALF the bytes of the 4.9 ones and that is formatting, not
+loss. **Bytes would have said the opposite of the truth.**
+
+**What moves:** the Kruger **S65 Stingray** arrives, and a ballistic variant -
+a ship the site does not have. 19 items in, 9 out. 156 label strings changed,
+27 new `item_Name*` keys.
+
+**TWO OF THE REMOVALS ARE CIG FIXING THEIR OWN TYPOS** -
+`ABitQuickerThanStandart` -> `...Standard`, `HyrodgenPrefilled` ->
+`Hydrogen...`. **Anything keyed on the old name loses its match at the pull, and
+under rule 2 that is CORRECT: it refuses rather than guesses.** Expect refusals
+and do not loosen a matcher to remove them.
+
+**THE PIN STAYS A PIN.** Two constants, changed deliberately. A generator that
+takes the newest snapshot on disk is one whose output changes because somebody
+downloaded something.
+
+**Do it BEFORE the next batch of page work, not after** - every name check and
+control run made against 4.9 gets re-validated against 4.10 anyway.
+
+### Q42 — DONE 2026-08-30 BY CODE. THE PREMISE WAS MINE AND IT WAS WRONG.
+**DONE-WHEN** satisfied: 244 files, 208.3 MB, **299 transactions across all four
+extractor families, and the regex needed no change.** The zero came from a
+one-session run, not a broken miner. Kept below for the reasoning.
+**Nothing further here. Do not re-run it.**
 
 **THE DISCREPANCY, AND IT IS THE WHOLE JOB.** `gamelog_mine.go`'s own header:
 
@@ -275,7 +479,46 @@ source of truth costs — three dry-run cycles for you, an hour for me.
 **Write what the gate does, not what it should do.** If they differ, that
 difference is the finding.
 
-### Q26 — RE-MEASURED AGAINST THE MESH. MY OWN TEST WAS WRONG IN BOTH DIRECTIONS.
+### Q26 — RULED 2026-08-30. THE GLAIVE'S NOSE PAIR IS REFUSED, BY A GENERAL RULE.
+**DONE-WHEN** placement withholds a mount that is an extreme outlier from its
+own hull's mesh, and the Glaive's ports 43 and 44 stop being drawn.
+**BLOCKED-BY** nothing. **C1's.**
+
+**THE MEASUREMENT.** Glaive span 30.8 units, median marker 0.37 from the mesh:
+
+    port 43  cig  unit (-0.03643, -0.19315, -0.64181)   5.49 units from mesh
+    port 44  cig  unit ( 0.03689, -0.19315, -0.64181)   5.48 units from mesh
+    port 30  cig  unit (-0.45457, -0.12119, -1.08683)   1.77 units  <- FINE
+
+**43 and 44 are a matched pair, symmetric to four decimal places, both 15x the
+hull's median distance, and they sit in the hollow between the ship's forward
+arms.** Port 30 is further forward than either - past the nose in unit terms -
+and lands 1.77 from real geometry, so **the nose region is not short of mesh.
+These two are in a hole.**
+
+**THE RULING: REFUSE THEM, AND NEVER BY NAME.** This project's own rule is that
+a hull is told apart from the data, never from a list of ship names. **A
+`if ship == "Glaive"` exception is forbidden and would be the fifth time this
+project reached for one.**
+
+**THE GENERAL RULE:** a mount whose distance from its own hull's mesh is an
+extreme outlier **against that hull's own distribution** is withheld, exactly as
+a mount outside the box is. Judged per hull, never fleet-wide — the Storm AA's
+markers all sit within 0.57 units and the Corsair's median is 2.56; one
+threshold would condemn every Corsair mount and clear every Glaive one.
+
+**IMPACT, ALREADY MEASURED:** `_verify_marker_mesh_distance.py` at k=6 MAD with
+a 4%-of-span floor flags **60 markers on 20 hulls** out of 5,800. That is the
+withholding this creates. **GAMA_Tyilui alone is 15 of them.**
+
+**WHY IT IS NOT BUILT IN THIS PASS.** `build_hardpoint_placement.py` reads the
+glb's accessor bounds, not its vertices — it has never decoded a mesh. The
+distance rule needs the vertices, which means the Draco decode moves from
+`checks/` into the build. **That is a real change to the pipeline and it is not
+something to bolt on at the end of a session.** The ruling stands; the build is
+the next unit of work on this item.
+
+### Q26 (ORIGINAL) — RE-MEASURED AGAINST THE MESH. MY OWN TEST WAS WRONG IN BOTH DIRECTIONS.
 **DONE-WHEN** the Glaive's nose pair is either placed or refused with a measured
 reason, and the Corsair's whole marker set has been asked about as one question.
 **BLOCKED-BY** C1 for the Glaive. **Nothing here is Code's until C1 has ruled.**
@@ -1024,12 +1267,55 @@ page's antivirus notice, find's error and empty states, and the keybinds
 capture warnings are all NEVER. **A block collapsed that should not have been
 is a warning nobody reads.**
 
-### Q5 — THE ROADMAP WATCHER: R1 AND R2 ARE BUILT. ONLY R3 IS LEFT.
-**DONE-WHEN** the watcher can answer *"what has CIG announced since the patch
-our data was verified against"* — R3 — and says so in its own output.
-**BLOCKED-BY** nothing.
+### Q5 — THE ROADMAP WATCHER. R3 IS THE SMALLEST OF FOUR THINGS AND THE LEAST VALUABLE.
+**DONE-WHEN** all four of a-d below are true. **RE-SCOPED 2026-08-30 by C1
+after reading the state file and the live payload** — see
+`docs/FINDING_r3-is-a-struct-field-the-watcher-already-downloads-2026-08-30.md`.
+**BLOCKED-BY** nothing. **Do a, b, c, d in that order; R3 is c.**
 
-**RE-SCOPED 2026-08-29 after checking rather than assuming.**
+**THE ANSWER R3 IS SUPPOSED TO COMPUTE IS ALREADY IN THE PAYLOAD.**
+`GET /api/roadmap/v1/boards/1` returns, at `data.description`:
+
+    Live Version: 4.10.0 ▪ Latest Roadmap Roundup: 08/26/2026 ▪ PTU Version: ø
+
+**`board.go`'s `Board.Data` struct does not declare `description`, so Go throws
+it away at unmarshal.** The watcher downloads the answer every four hours and
+reports on cards instead. Our `last_verified_patch` is 4.9. **We are one full
+patch behind live and the site says 4.9 on every row.**
+
+    a  WIDEN THE FILTER AND TAKE A REAL BASELINE.
+       `roadmap-watcher-settings.json` says `"watch": "Constellation"`. The
+       baseline holds THREE cards, all `"source":"manual"`. Nothing is broken -
+       it was seeded on one test subject and never widened. R3's question is
+       board-wide and cannot be answered through a one-ship filter.
+
+    b  INSTALL IT AS A SERVICE.
+       `"last_good_scheduled_run": ""` - it has NEVER run on its own schedule.
+       `"last_run_by": "manual"`, thirteen days ago. The standing rule already
+       covers this: long-running components auto-start, run silent, survive
+       reboot. A tripwire nobody trips is not a tripwire.
+
+    c  R3 ITSELF - one struct field, one parser, one comparison.
+       Read `description`. Parse Live Version, PTU Version, Roundup date.
+       Compare against `last_verified_patch` read from the page's own data
+       layer (LOADOUT_META), NOT from a constant in the watcher. Report the gap.
+       PARSE DEFENSIVELY AND FAIL LOUD: the field is prose with a stable shape,
+       not a schema. If it cannot be read, say "I could not read the live
+       version" - the same lesson as the `success` envelope in the same file.
+       AN UNREADABLE FIELD MUST NEVER RENDER AS "NO CHANGE".
+
+    d  BOARD 2 DECLARES ITSELF DEAD, IN ITS OWN PAYLOAD.
+       Squadron 42's `data.description`: "This version of the Squadron 42
+       Roadmap will not be updated." We poll it every four hours. Retire it or
+       write down why we still do. Silently polling it is not an option.
+
+**THE ORDER IS DELIBERATE AND R3 IS THIRD ON PURPOSE.** A watcher that answers
+R3 perfectly, four hours after somebody remembers to double-click it, is worth
+less than one that runs.
+
+**THE 2026-08-29 RE-SCOPE, KEPT FOR ITS REASONING AND SUPERSEDED BY THE ABOVE.**
+It was right that R0-R2 are done and wrong that R3 was therefore all that was
+left; it read the controls and not the state file.
 `checks/_verify_roadmap_watch.py` declares itself *"R1/R2 of AMENDS..."* and is
 green in the 106-of-106 sweep, including the negative assertion that a
 `time_modified`-only change produces silence. **R0, R1 and R2 are done.** This

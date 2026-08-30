@@ -245,8 +245,22 @@ console.log("\n--- the left column holds zero fixed ports; Specs holds all ---")
   openShip(k);
   const col = new Set([...el("colA").innerHTML
     .matchAll(/data-slot="([^"]+)"/g)].map((m) => m[1]));
-  const spec = new Set([...el("specs").innerHTML
-    .matchAll(/data-fixed="([^"]+)"/g)].map((m) => m[1]));
+  /* REPRESENTED, NOT DRAWN - the same rule _verify_ship_page.mjs and
+     _verify_column_split.mjs use. Countermeasures became one summary row on
+     2026-08-30, so a fixed port can be named by data-cm-ports instead of
+     owning a data-fixed row, and data-fixed="cm-summary" is the row's own
+     identifier rather than a port.
+  
+     THIS IS THE SIXTH COPY OF THIS RULE, in the fourth file, and it was
+     found by the DEPLOYED-SITE control after the payload shipped rather
+     than by the sweep. That is the argument for one shared helper: I wrote
+     'the sixth copy is the one that will be missed' and then missed it. */
+  const specsHtml = el("specs").innerHTML;
+  const spec = new Set();
+  for (const m of specsHtml.matchAll(/data-fixed="([^"]+)"/g))
+    if (m[1] !== "cm-summary") spec.add(m[1]);
+  for (const m of specsHtml.matchAll(/data-cm-ports="([^"]+)"/g))
+    for (const id of m[1].split(",")) if (id.trim()) spec.add(id.trim());
   const sh = SHIPS[k];
   const fixed = (sh.slots || []).filter((s) => !s.fit);
   record(fixed.every((s) => !col.has(s.id)),

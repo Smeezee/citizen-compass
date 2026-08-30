@@ -330,8 +330,8 @@ function whatThisIs() {
     Star Citizen does not publish its prices. Players do.
     <br><br>
     Somebody stood at that terminal, saw that number, and typed it into UEX.
-    UEX rates how much it trusts each submission — that is why its records
-    carry a quality score, averaged buy and sell figures and stock levels at
+    UEX scores how much it trusts each one. That is why these rows carry a
+    quality rating, averaged buy and sell figures and stock levels at
     all. Those are fields you only need when the numbers are estimates.
     <br><br>
     So here is the whole of what this page can honestly say:
@@ -465,8 +465,8 @@ function home() {
     <b>UEX report</b>, dated.
     <details class="disc inline"><summary><span class="opener">what that means</span></summary>
     <div class="body"><p>The invented items and shops that used to be here are
-    gone. This page is generated from our database and shipped with the page —
-    so it works whether or not our server is up.</p></div></details></div>`
+    gone. This page is generated from our database and shipped with the page, so it works whether
+    or not our server is up.</p></div></details></div>`
     + `<div style="max-width:760px;margin:14px auto 0">${whatThisIs()}</div>`
     + sourceBox();
 }
@@ -530,7 +530,7 @@ function item(ref) {
   if (!it) {
     return searchBox("") +
       `<div style="max-width:900px;margin:18px auto 0"><div class="none">
-        <b>We don't have that item.</b> Nothing in the catalogue matches
+        <b>We don't have that item.</b> Nothing in the catalog matches
         "${esc(ref)}".</div></div>`;
   }
 

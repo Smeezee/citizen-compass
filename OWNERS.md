@@ -58,6 +58,13 @@ permission; it is a gap, and finding one is worth reporting.
     checks/_dracopos.mjs
     build_loadout_data.py
     build_hardpoint_overlay.py
+    testing/_src/_layer.src.html
+    testing/_src/keybinds.src.html
+    testing/_src/device_engine.js
+    testing/_src/kb_overlay.inc.html
+    checks/_verify_us_spelling.py
+    releases/latest.html
+    static/preview.html
     build_crafting_demand.py
     data-layer/derived/hardpoint-transforms/
     data-layer/derived/hardpoint-placement/
@@ -108,6 +115,73 @@ superseded files move to `_to_delete/` like everything else.**
 
 `docs/PROPOSAL_the-marker-pipeline-is-four-layers-deep-2026-08-27.md` proposes
 retiring the file to a named fallback. That decision is Sleven's and is not made.
+
+## A NOTE ON THE PAGE-COPY FILES, CLAIMED 2026-08-30 — AND ON WHAT I GOT WRONG
+
+    testing/_src/_layer.src.html        injected into every page
+    testing/_src/keybinds.src.html      the keybind tester
+    testing/_src/device_engine.js       the device panel, one writer
+    testing/_src/kb_overlay.inc.html    the overlay's copy of the same panel
+
+**All four were unowned. That is the fourth gap found the same way in three
+days: going to change a file and finding nobody's name on it.** Three of the
+four were found by C1, which says the gap is systemic, not a run of bad luck.
+
+**AND THE FIRST VERSION OF THIS NOTE, WRITTEN AN HOUR EARLIER, WAS WRONG.** It
+said `_layer.src.html` and `keybinds.src.html` *"share code by copy"* and that
+*"today's US-spelling pass had to be applied twice, by hand."* Both halves are
+false and the truth is better: **`device_engine.js` is the single writer of the
+device panel, and `inject_engine.py` copies it into both hosts on every build,
+between fixed boundary markers, with a `node --check` gate that refuses to
+inject code that does not parse.** Rule 14 was already satisfied here before
+anyone claimed anything. I wrote a finding about duplication into a file whose
+job is to record ownership, without reading the script that manages it.
+
+**HOW IT SURFACED, WHICH IS THE ARGUMENT FOR THE CLAIM.** The hand edit to the
+two hosts was silently reverted by a build - correctly, because the hosts are
+generated in that region and the master had not changed. Nothing warned; the
+edit simply stopped existing. **An unowned generated region is where that
+happens**, and it is why the master is claimed here rather than the hosts alone.
+
+**`testing/_src/inject_engine.py` IS STILL UNOWNED AND IS NOT CLAIMED HERE.**
+It is build tooling, `build_deploy.py` calls it, and `build_deploy.py` is
+Code's. **It is reported, not taken** - the natural owner is Code and that is
+Code's call to make.
+
+**Code is the one to say if any of these claims is wrong.** They are claimed,
+not seized, and this note is the notification.
+
+## A NOTE ON THE LIVE SITE'S TWO FILES, CLAIMED 2026-08-30 — AND THEY DISAGREE
+
+    static/preview.html      286,228 bytes    the master, per CLAUDE.md
+    releases/latest.html     205,362 bytes    the mirror, and the one PUBLISHED
+
+**`CLAUDE.md` says the live site is served from `static/preview.html` mirrored
+into `releases/latest.html`, by manual Netlify Drop.** The two are 80,866 bytes
+and 33 diff lines apart. **The mirror is what the public gets, so on the live
+site the master is not the master.**
+
+They differ in exactly two places, and one of them is not a session's to settle:
+
+    fonts    the MASTER embeds four faces as base64 and calls nothing.
+             The MIRROR - the live file - @imports them from
+             fonts.googleapis.com, so every visitor's browser contacts Google.
+    legal    the MASTER carries an extra paragraph the live file does not:
+             "This site is not endorsed by or affiliated with the Cloud
+             Imperium or Roberts Space Industries group of companies..."
+
+**THE LEGAL DIFFERENCE IS RULE 8 AND IS NOT TOUCHED.** The live file is not
+bare - it carries its own unofficial-site disclaimer and a trademark bar. What
+it does not carry is the master's SECOND paragraph. **Whether that paragraph
+belongs on the public site is Sleven's decision alone**, and no session
+reconciles it.
+
+**BOTH FILES ARE CLAIMED SO THAT THE DIVERGENCE STOPS BEING ACCIDENTAL.** The
+2026-08-30 patch-banner correction was applied to BOTH, identically, and the
+diff is still 33 lines — deliberately. **Syncing them is a decision, not a
+tidy-up, and it was not made here.**
+
+**They were unowned, which is the fifth gap in three days.**
 
 ## SLEVEN — his alone, and not by convention.
 

@@ -56,6 +56,38 @@ parked behind a question nobody has asked in three weeks. It is on the queue.
 
 ---
 
+## CORRECTED ON DISK, NOT YET PUBLIC — 2026-08-30
+
+**The public page says the wrong patch and has since 4.10 shipped.** It reads
+*"Alpha 4.9.0 (LIVE July 15-16, 2026)"* and its badge says *Live 4.9.0 / PTU
+4.10.0*. **4.10 is live and PTU is empty** — verified from RSI's own roadmap API
+field (`data.description`: *"Live Version: 4.10.0 ... PTU Version: ø"*) and from
+RSI's own Spectrum thread *"Alpha 4.10 LIVE - Hotfix Central"*, published
+2026-08-27.
+
+**Both source files are corrected on disk. NOTHING IS DEPLOYED**, so this is not
+a LOG entry and does not go in the table below. The public site still says 4.9.
+
+    Patch: Alpha 4.10.0 "Siege of Orison" (LIVE)  |  Compiled/updated: 2026-08-30
+    ● Live 4.10.0       ◆ PTU —
+
+**The live date is deliberately absent** — no RSI source states one for 4.10 and
+a date that cannot be sourced does not go on the public site.
+
+**Also measured, and never measured before on the PUBLIC files:** 0 AI/agent
+traces and 0 spelling defects against the game's own strings, in both files.
+
+**And the live site has TWO source files that disagree by 33 lines** —
+`static/preview.html` (the master) and `releases/latest.html` (the mirror, and
+the one actually published). The live file pulls its fonts from
+`fonts.googleapis.com` where the master embeds them, and the master carries a
+second legal paragraph the live file does not. **The legal difference is rule 8
+and is untouched.** The patch correction was applied to both identically so the
+divergence is unchanged. See
+`docs/FINDING_the-live-site-was-a-month-wrong-about-the-patch-and-has-two-source-files-2026-08-30.md`.
+
+---
+
 ## THE RULE FOR THIS FILE
 
 An entry is added only when **all four** are true:

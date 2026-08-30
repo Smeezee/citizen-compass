@@ -63,3 +63,13 @@ func masterOnlyCommands() map[string]func() int {
 		// "calibrate":        runCalibration,       // blocked - reading half
 	}
 }
+
+// runVariantSelftests runs the controls that only exist in this build.
+//
+// Q45's pair store is master-only by Sleven's ruling of 2026-08-30: the
+// learning half does not ship to crew. The crew copy of this function is empty
+// and pairstore.go is not compiled into that binary at all, so there is no
+// symbol to find and no folder to wonder about.
+func runVariantSelftests(check func(name string, ok bool, detail string)) {
+	runPairStoreSelftest(check)
+}

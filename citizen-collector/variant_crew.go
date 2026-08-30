@@ -53,3 +53,14 @@ func masterOnlyCommands() map[string]func() int { return nil }
 func registerBenchFlags() func() (allowAny bool, windowHint string) {
 	return func() (bool, string) { return false, "" }
 }
+
+// runVariantSelftests is EMPTY in the crew build, and that is the whole point.
+//
+// The master build tests its pair store here. This binary does not contain one:
+// pairstore.go carries //go:build master, so it is absent rather than present
+// and switched off - the same treatment calibration, zone tuning, the review pen
+// and the package generator get, and for the same reason.
+//
+// If this ever needs to do something, it is a crew-side control and belongs to
+// the crew build; it is not a place to reach a master-only feature from.
+func runVariantSelftests(check func(name string, ok bool, detail string)) {}

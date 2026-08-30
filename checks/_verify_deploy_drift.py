@@ -559,6 +559,36 @@ def page_problems(src_name, out_name, ship_pages):
     d_path = os.path.join(DEPLOY, out_name)
     if not os.path.exists(d_path):
         return ["%s is MISSING from _deploy" % out_name]
+    if out_name == "find_checksum.gen.js":
+        # THE FIFTH DECLARED TRANSFORM, AND IT IS VERIFIED RATHER THAN EXEMPTED.
+        #
+        # build_find_data.py hashes the _src data file; Q31's comment strip then
+        # removes that file's header on the way into _deploy, so the published
+        # sha256 described bytes nobody could download. The build now recomputes
+        # the checksum over the SERVED bytes, which makes this file legitimately
+        # differ from its source.
+        #
+        # An exemption here would be a hole in the one file whose entire job is
+        # to be trustworthy. So instead of tolerating the difference, this
+        # RE-DERIVES it: hash what _deploy actually serves and require the
+        # published figures to be exactly that. A hand-edited checksum still
+        # fails, and so does a stale one.
+        import hashlib as _hl
+        data = os.path.join(DEPLOY, "find_data.gen.js")
+        if not os.path.exists(data):
+            return ["find_checksum.gen.js is in _deploy but find_data.gen.js "
+                    "is not - a checksum for a file that is not served"]
+        raw = read_bytes(data)
+        want_sha = _hl.sha256(raw).hexdigest()
+        got = text_of(d_path)
+        if want_sha not in got:
+            return ["find_checksum.gen.js does not carry the sha256 of the "
+                    "find_data.gen.js actually in _deploy - the page would tell "
+                    "a visitor their correct download is corrupt"]
+        if str(len(raw)) not in got:
+            return ["find_checksum.gen.js does not carry the byte count of the "
+                    "find_data.gen.js actually in _deploy (%d)" % len(raw)]
+        return []
     if out_name in SEAM_FILES:
         prefix, dev, dep = SEAM_FILES[out_name]
         s_lines = src_as_deployed(src_name, text_of(s_path)).split(chr(10))

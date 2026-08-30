@@ -1448,7 +1448,7 @@ let changedTimer=null;
 const CHANGED_MS=2200;
 function markChanges(before,after){
   changedStats=new Map();
-  const WATCH=[["Sustained DPS","dps"],["Alpha strike","alpha"],
+  const WATCH=[["Sustained DPS","dps"],["Alpha damage","alpha"],
     ["Effective HP","ehp"],["Shield regen","regen"],["IR signature","ir"],
     ["EM signature","em"],["Total mass","mass"],["Fitted containers","scu"],
     ["Radar sensitivity","sens"],["Radar piercing","pierce"],
@@ -1609,8 +1609,8 @@ function fillProvenance(){
         <section>
           <h5>What is not here</h5>
           <p>Prices and shop locations are market data and are not in the game
-          files. Doors, seats and screens are not fittable components in CIG's
-          data &mdash; that is a category boundary, not missing data.${
+          files. Doors, seats and screens are not components you can fit. That is how
+          CIG sorts them, not a gap in our data.${
           META.ports_with_no_part?` ${META.ports_with_no_part} ports accept a
           component type that has no matching part in the game files at that
           size; they are shown, and they say so, rather than opening an empty
@@ -1860,13 +1860,13 @@ const EXPLAIN={
   "Sustained DPS":"How much damage this ship's pilot-fired guns do every second, if you hold the trigger down and never overheat. Turret guns a gunner fires are not counted here - they have their own figure, because one number cannot mean both what you can do alone and what a crew can do.",
   "Turret DPS":"What a gunner adds, per second, from the turrets on this hull. It needs somebody in the seat: the pilot cannot fire these. Shown separately rather than added to the pilot figure, and shown only on ships that have turrets.",
   "Missile payload":"The total damage of every missile this ship is carrying, added up. This is a ONE-SHOT figure - fire them and they are gone - so it is never added to a per-second number. Shown only on ships that carry missiles.",
-  "Alpha strike":"The damage of one full volley, everything firing once together. High alpha wins the first exchange; high sustained DPS wins a long one.",
+  "Alpha damage":"The damage of one full volley, everything firing once together. High alpha wins the first exchange; high sustained DPS wins a long one.",
   "Effective HP":"Hull plus shields - roughly how much damage the ship absorbs before it is destroyed. Armor changes what that costs an attacker, by damage type.",
   "Shield regen":"How fast the shields come back per second once they stop being hit.",
   "IR signature":"Heat. The hotter you run, the further away somebody can see you. Lower is stealthier.",
   "EM signature":"Electromagnetic noise from powered components. Turn things off and it drops. Lower is stealthier.",
   "Distortion pool":"How much distortion damage - the kind that disables rather than destroys - the hull soaks up before systems start failing.",
-  "Quantum range":"How far the ship can travel on one full quantum tank, in gigametres.",
+  "Quantum range":"How far the ship can travel on one full quantum tank, in gigameters.",
   "SCM speed":"Combat speed. What the ship does with weapons out.",
   "Max speed":"Top speed with everything wound out and no weapons.",
   "Total mass":"The hull plus everything fitted. Heavier turns and stops worse - and because thrusters are almost never swappable, mass is the main handling lever a player actually has.",
@@ -1947,7 +1947,7 @@ function renderStats(){
   if(ra.hasPilotGun || !ra.hasTurret){
     h+= stat("Sustained DPS",dpsA,dpsB,"what the pilot can fire",
              false,false,null,dcA,dcB);
-    h+= stat("Alpha strike",ra.alpha,rb.alpha,"one full volley from the pilot's guns",
+    h+= stat("Alpha damage",ra.alpha,rb.alpha,"one full volley from the pilot's guns",
              false,false,null,false,false);
   }else{
     /* THE 11 TURRET-ONLY SHIPS. The pilot figure is 0 and that is TRUE, so it
@@ -1964,7 +1964,7 @@ function renderStats(){
   }
   if(ra.hasMissile){
     h+= stat("Missile payload",ra.mdmg,rb.mdmg,
-             "total damage of every missile carried &mdash; one shot, not per second",
+             "everything you are carrying, fired once. Not per second",
              false,false,null,false,false);
   }
   /* --- survivability, and it is NOT one number (L5) ------------------ */
@@ -2170,11 +2170,12 @@ function renderMatchup(){
   let h=`<h2>What this build's guns do against armor</h2>
     <p class="sub2">This build fires
     ${chan.map(k=>`<b>${Math.round(mix[k])} ${k.toLowerCase()}</b>`).join(" + ")}
-    DPS. Armor multiplies each channel separately, so the same guns do
-    different work against different hulls — which is why survivability cannot
-    be one number and neither can damage.</p>
+    DPS. Armor works differently against each damage type, so the same gun that
+    shreds one ship can barely scratch another. That is why there is no single
+    toughness number, and no single damage number either. It depends what you
+    are shooting at.</p>
     <table><tr><th>Against a hull like</th><th>Takes</th>
-    <th>Effective DPS</th><th>vs. unarmoured</th></tr>`;
+    <th>Effective DPS</th><th>vs. unarmored</th></tr>`;
   profs.forEach(pr=>{
     const eff=effectiveDps(mix,pr.dm);
     const pct=Math.round(eff/Math.max(raw,1)*100);
@@ -2366,8 +2367,8 @@ function renderCol(which){
    claim, and a part that does not fit is ABSENT rather than greyed. */
 function renderPicker(){
   if(!sel){$('picker').innerHTML=`<div class="empty">Click any port on the left
-    or right to see what fits it.<br><br>Fixed ports are shown too — they are
-    part of the ship — but the game does not allow them to be changed.
+    or right to see what fits it.<br><br>Fixed hardpoints are here too, because they are
+    part of the ship. You just cannot swap them.
     <br><br>Hover an option and the numbers above preview the change.</div>`;return;}
   const sh=ship(), slot=sh.slots.find(x=>x.id===sel.slot);
   /* A selection naming a port this ship does not have is a bug, not a state -
@@ -2888,11 +2889,11 @@ function renderEngineering(){
   h+=`</div>
     <details class="disc"><summary>
       <span class="stamp">COUNTS ONLY</span>
-      <span class="srcline">fuse ratings and failure behaviour are not in the game files</span>
+      <span class="srcline">fuse ratings and failure behavior are not in the game files</span>
       <span class="opener">What this data does not say</span>
     </summary><div class="body"><div class="cols"><section>
     <h5>What this data does not say</h5>
-    <p>Fuse <b>ratings</b> and failure behaviour are not in the game files
+    <p>Fuse <b>ratings</b> and failure behavior are not in the game files
     &mdash; only counts and positions. Whether a blown relay disables the
     components near it <b>is not stated anywhere</b>. The ship's own
     penetration figures <em>suggest</em> damage reaches fuses before
@@ -3692,7 +3693,7 @@ function drawDockLeader(){
 /* ================= THE DOCKED HARDPOINT PICKER (H2-H8) ==================
 
    H4: THE TABS USE THIS SITE'S OWN WORDS. loadout.html's WATCH table already
-   settled the stat names - Sustained DPS, Alpha strike, Effective HP, Shield
+   settled the stat names - Sustained DPS, Alpha damage, Effective HP, Shield
    regen, EM signature, IR signature, Total mass - and the tabs carry the short
    form a player says out loud. Nothing here invents a word.
 
@@ -3704,7 +3705,7 @@ function drawDockLeader(){
 const DOCK_TABS=[
   /* key, tab word, unit, lower-is-better, the WATCH label it is short for */
   ["dps",  "DPS",       "",   false, "Sustained DPS"],
-  ["alpha","Alpha",     "",   false, "Alpha strike"],
+  ["alpha","Alpha",     "",   false, "Alpha damage"],
   ["ehp",  "Shield HP", "",   false, "Effective HP"],
   ["regen","Regen",     "",   false, "Shield regen"],
   ["cool", "Cooling",   "",   false, "Cooling"],
@@ -3883,7 +3884,7 @@ function dockedPickerHTML(slot){
    fact about the DATA rather than dressed up as an explanation. */
 function fixedDockHTML(slot){
   const build=editing==="A"?A:B, id=build[slot.id]||slot.stock, p=P[id]||{};
-  const rows=[["Sustained DPS","dps",""],["Alpha strike","alpha",""],
+  const rows=[["Sustained DPS","dps",""],["Alpha damage","alpha",""],
     ["Effective HP","ehp",""],["Shield regen","regen",""],
     ["Cooling","cool",""],["Power","cap",""],["Power draw","pw",""],
     ["Quantum range","qt","Gm"],["Fitted containers","scu",""],
@@ -4438,11 +4439,11 @@ function renderLabelCount(total, shown, dropped, showing, weapons){
       : `${what} &middot; labels off`;
     act = dropped ? "show all labels anyway" : "show all labels";
   }else if(dropped){
-    msg=`${what} &middot; ${shown} labelled, ${dropped} with
+    msg=`${what} &middot; ${shown} labeled, ${dropped} with
       no room`;
     act="hide labels";
   }else{
-    msg=`${what} &middot; all labelled`;
+    msg=`${what} &middot; all labeled`;
     act="hide labels";
   }
   el.classList.toggle('off', !showing);
@@ -4845,6 +4846,44 @@ function renderChrome(){
   const cols=$('cols'); if(cols) cols.classList.toggle('two', twoUp);
 }
 
+/* THE SHORTHAND ON A PART ROW GETS A DEFINITION ON HOVER.
+
+   Sleven: "If a shorthand version of a word saves space and is generally well
+   known, I would rather use that. And then if people have a question about,
+   okay, what does this word mean, if they hover over the word a tiny little
+   box pops up."
+
+   THE TABLE AND THE MECHANISM LIVE IN `_layer.src.html`, once, for every page.
+   This function only says WHERE on the ship page to apply it and WHICH terms
+   are safe to apply there. Both halves of that are deliberate.
+
+   WHY A SCANNER AND NOT MARKUP IN `partRow`. `partRow` returns a string that
+   `checks/_verify_part_rows.mjs` matches against exactly - `/IR <b>0<\/b>/`
+   and friends. Wrapping those labels at the generator would break a control
+   that is Code's file, to add something that does not need to be there:
+   decoration happens in the live DOM, after render, so the generated string
+   the control reads is byte-for-byte what it was. **The right place for a
+   presentation layer is the presentation, not the generator.**
+
+   WHY A NAMED LIST AND NOT THE WHOLE TABLE. `alpha`, `fixed`, `gimbal`,
+   `ballistic`, `distortion`, `hardpoint` are ordinary English words and `CS`
+   means CrimeStat to most players. Turned loose on a container that holds
+   PART NAMES AND MANUFACTURER NAMES, they would underline the inside of
+   somebody's ship. **These six are the ones that appear on a part row as bare
+   shorthand and nowhere else in it.**
+
+   `#stats` IS DELIBERATELY NOT IN THE LIST. Every row there already carries
+   its own `title` and `aria-label` from `EXPLAIN`, reachable by keyboard.
+   Two tooltips on one row is worse than one. */
+const GLOSS_ON_PARTS = ["DPS","SCU","IR","EM","PDC","Mav"];
+
+function glossPage(){
+  if(!window.ccGlossary) return;              /* layer absent: page still works */
+  ["colA","colB","picker","cc-panel"].forEach(id=>{
+    const el=$(id); if(el) ccGlossary.decorate(el, GLOSS_ON_PARTS);
+  });
+}
+
 function renderAll(){
   renderChrome();
   renderStats();renderCol("A");if(twoUp)renderCol("B");renderPicker();renderBuy();
@@ -4852,6 +4891,7 @@ function renderAll(){
   renderTabs();showModel();renderMarkers();renderLabels();renderStagePanel();applyTuneState();renderMarkerNote();renderRsi();
   renderAcq();renderRelated();renderRecord();
   $('shipname').textContent=shipLabel(shipId);
+  glossPage();
   writeHash();
 }
 
@@ -4956,9 +4996,8 @@ function fixedSpecs(sh){
   const shut=all.filter(x=>x.t!=="def");
   if(!all.length) return "";
   let h=`<h3>Fixed ports &mdash; ${all.length}</h3>
-    <p class="sub2">These are part of the ship and they still count toward
-    every number on the loadout tab &mdash; a thruster changes this ship's mass
-    whether or not you chose it. The game does not allow them to be changed, so
+    <p class="sub2">You cannot swap these, but they still count toward every number here. A
+    thruster adds mass whether or not you picked it. The game does not allow them to be changed, so
     they are listed here rather than in the column of things you can change.
     Their markers on the model are still there, and clicking one says the same
     as the row below.</p><div class="fixedspecs">`;

@@ -403,8 +403,8 @@ function buildDevice(list){
      logged to a console - "it just doesn't do anything" is the report this
      control has already generated once. */
   if(slotNote) h+='<div class="slotnote">'+esc(slotNote)+'</div>';
-  h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as centre">'+
-     'Set centre</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
+  h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as center">'+
+     'Set center</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
      '<button class="tg" id="'+ID_+'dvhide">Hide unused buttons</button>'+
      '<button class="tg" id="'+ID_+'dvall">'+dvAllLabel(list)+'</button>'+
      '<span class="dvcap" id="'+ID_+'dvcapnote"></span></div>';
@@ -445,7 +445,7 @@ function buildDevice(list){
      'and check the right row lights up.<br>'+
      '<b>POV hats are detected, not guessed</b>: a hat reports 1.286 at rest, '+
      'which no ordinary axis can reach.<br>'+
-     'A value in orange at rest is <b>drift</b>. <code>Set centre</code> zeroes it '+
+     'A value in orange at rest is <b>drift</b>. <code>Set center</code> zeroes it '+
      'on this page only, never in the game — and it is deliberately refused on a '+
      'hat, where a resting 1.286 is correct.</div>';
   host.innerHTML=h;
@@ -520,7 +520,7 @@ function paintDevice(list){
       var adj=v-c, txt, cls="axrow", pct;
       if(isHat){
         var dir=hatDir(v);
-        txt = dir ? dir.replace('_','-') : "centred";
+        txt = dir ? dir.replace('_','-') : "centered";
         if(dir) cls="axrow hot";
         pct = dir ? 90 : 50;
       } else {

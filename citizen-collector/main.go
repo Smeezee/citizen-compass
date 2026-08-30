@@ -543,6 +543,12 @@ func selftest(outDir string) int {
 	// exists because of the 40-capture audit, not because of a crash.
 	runHotkeyBurstSelftest(check)
 	runNoAutoCaptureSelftest(check)
+	// The master build's own controls. Placed immediately after the
+	// no-auto-capture control because that control IS the pair store's privacy
+	// guarantee: every picture is taken by a key press. In the crew build this
+	// is an empty function and the store it would have tested is not in the
+	// binary at all - see variant_crew.go.
+	runVariantSelftests(check)
 	runDiarySelftest(check)
 	runActivitySelftest(check)
 	runSelfInstallSelftest(check)

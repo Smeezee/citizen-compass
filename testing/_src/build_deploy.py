@@ -2254,6 +2254,44 @@ print('comment strip: %d comment(s) removed on the way into _deploy; '
       'every deployed .js and inline script still parses' % _stripped_total)
 
 
+
+# ---------------------------------------------------------------------------
+# THE PUBLISHED CHECKSUM DESCRIBES WHAT IS SERVED, NOT WHAT _src HOLDS.
+#
+# build_find_data.py hashes testing/_src/find_data.gen.js and the find page
+# publishes that sha256 and byte count so a visitor can verify their download.
+# Q31's comment strip then removes the file's header on the way into _deploy -
+# 1,169 bytes - and the served file stopped matching its own published hash.
+#
+# FOUND BY _verify_find_deployed.mjs MINUTES AFTER THE 2026-08-30 DEPLOY:
+#   "the downloaded file hashes to exactly what the page claims"  FAIL
+#   "and its byte count matches too"   991988 vs 993157
+#
+# A page whose whole claim is that its numbers can be trusted, telling a
+# visitor their correct download is corrupt. The deployed-site controls exist
+# for exactly this and they earned themselves.
+#
+# NOT FIXED BY EXEMPTING THE FILE FROM THE STRIP. Its header names
+# build_find_data.py on a public URL, which is the trace Q31 removes. The
+# checksum is what has to move: it is a promise about the bytes a person
+# downloads, so it is computed over those bytes.
+# ---------------------------------------------------------------------------
+import hashlib as _hl
+_fd = os.path.join(OUT, 'find_data.gen.js')
+_fc = os.path.join(OUT, 'find_checksum.gen.js')
+if os.path.exists(_fd) and os.path.exists(_fc):
+    _raw = open(_fd, 'rb').read()
+    _sum = {'algorithm': 'sha256', 'bytes': len(_raw),
+            'file': 'find_data.gen.js', 'sha256': _hl.sha256(_raw).hexdigest()}
+    open(_fc, 'w', encoding='utf-8', newline='').write(
+        'const FIND_CHECKSUM=%s;\n' % json.dumps(_sum, separators=(',', ':')))
+    print('find checksum: recomputed over the SERVED bytes (%d, %s)'
+          % (_sum['bytes'], _sum['sha256'][:16]))
+elif os.path.exists(_fc):
+    sys.exit('find_checksum.gen.js is in _deploy but find_data.gen.js is not. '
+             'Refusing to publish a checksum for a file that is not there.')
+
+
 if _deploy_guard(OUT, allowed_files=_allowed):
     sys.exit("BUILD FAILED: refusing to leave _deploy in a state that would "
              "publish unexpected files. Nothing has been uploaded.")

@@ -1,4 +1,4 @@
-# LATEST_HANDOFF.md — Update #861 — 2026-08-30 1:47 AM
+# LATEST_HANDOFF.md — Update #866 — 2026-08-30 3:10 AM
 
 ---
 
@@ -10,7 +10,7 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 
 ## CURRENT STATE (auto)
 
-**Generated:** 2026-08-30 01:47:17 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
+**Generated:** 2026-08-30 03:10:59 (auto-regenerated every time a file lands in inbox/ or this script runs — don't hand-edit this section)
 
 **Project health score:** 35/100
 - Data completeness: 0%
@@ -24,11 +24,369 @@ Copy/paste this whole file into a new AI conversation for instant context. It's 
 **Data layers:**
 - data-layer: 119498 files (13787.21 MB)
 
-**Scripts:** 53  |  **3D models:** 1143  |  **Docs:** 1426
+**Scripts:** 53  |  **3D models:** 1147  |  **Docs:** 1432
 
 ---
 
 ## RECENT UPDATES (append-only, newest first)
+
+### 2026-08-30 03:10:15 — 20260830_0320_update_q45-is-master-only-and-proven-absent-from-crew.md
+
+# Update — Q45 is master-only, and the crew binary is proven not to contain it. Symbols and strings, both directions.
+
+**2026-08-30 08:20 UTC / 2026-08-30 03:20 local · Code (background session)**
+
+Sleven's ruling applied: `//go:build master` on both files, `pairs/` written by
+the master build only, and **absent from the crew binary rather than compiled
+and disabled.**
+
+## THE PROOF, BOTH DIRECTIONS
+
+    go tool nm            crew   master
+      StorePair              0      2
+      NewPairStore           0      1
+      ContextAllowed         0      2
+      runPairStoreSelftest   0      2
+      pairContextAllowed     0      1
+
+    strings only this store would put in a binary
+      pairs.jsonl                    0      1
+      item_inspect                   0      1
+      ground_prompt                  0      1
+      "is not on the recorded list"  0      1
+
+    crew   11,747,840 bytes
+    master 11,788,288 bytes
+
+**Measured in both directions on purpose.** A search that came back zero for
+both builds would prove only that I was looking in the wrong place; the master
+column is what makes the crew column mean something.
+
+    crew   --selftest  exit 0
+    master --selftest  exit 0
+
+## HOW IT IS WIRED, AND WHAT IT DID NOT FORK
+
+The call site left shared `main.go` and went behind `runVariantSelftests`,
+**defined in both variant files** - the pattern `masterOnlyCommands()` and
+`registerBenchFlags()` already use. Real in `variant_master.go`, empty in
+`variant_crew.go` with the reason written at the site.
+
+**Nothing was forked.** Capture, logging, the send path and the scrub layer are
+untouched and remain one implementation each. The only shared file that changed
+is `main.go`, by six lines, and it now names a hook rather than a feature.
+
+## ONE THING I AM FLAGGING RATHER THAN DECIDING
+
+`package.go`'s `packageExcluded` still carries `"pairs"`, and `package.go` is
+shared - so the literal string `pairs` appears in the crew binary twice.
+
+**It is not the pair store**, and every symbol and distinctive string of the
+store is absent. But the ruling says *"must not contain it at all"*, so the
+question is whether a defensive exclusion entry counts.
+
+**My read: it should stay.** It costs nothing, it is documentation of a decision
+in the place someone will look, and if a crew binary ever packaged a folder that
+a master build had written, that entry is what keeps `pairs/` out of the zip.
+**Removing it would make the crew build safer in appearance and less safe in
+behaviour.** If that reading is wrong, say so and it comes out in one line.
+
+## STILL PENDING
+
+The website's find-checksum and picker fixes are built and uncommitted, waiting
+on one clean sweep - the last one measured a moving tree while C1 edited eight
+`_src` files mid-run.
+
+### 2026-08-30 03:04:28 — 20260830_0300_update_q45-first-slice-built.md
+
+# Update — Q45 first slice is built. The store records from five named contexts and refuses everything else, out loud.
+
+**2026-08-30 08:00 UTC / 2026-08-30 03:00 local · Code (background session)**
+
+    new   citizen-collector/pairstore.go
+    new   citizen-collector/pairstore_selftest.go
+    edit  citizen-collector/package.go     pairs/ excluded from the crew package
+    edit  citizen-collector/main.go        6 lines, registering the selftest
+
+## C1'S CORRECTION WAS RIGHT AND I BUILT TO IT
+
+`scrub_policy.go` is **not wired to this**. It governs the fields of `MineStore`,
+a struct built from the game log; it has no view of a pixel. **No chat-region
+exclusion was built**, because none exists and inventing one here would have
+been the same mistake in a new file.
+
+**What was taken is the INVERSION.** A pair is recorded only from a named
+screen context; anything else is refused and the refusal is written down:
+
+    inventory · item_inspect · ground_prompt · hud_target · shop_kiosk
+
+**The default is refusal.** A context nobody has thought of yet cannot leak in
+by being unanticipated, which is the failure a blocklist has and an allowlist
+does not.
+
+## TWELVE ASSERTIONS, AND THE NEGATIVE CONTROLS ARE THE POINT
+
+    [ok] pair from a named context is recorded
+    [ok] the same pair twice collapses to ONE entry            1 entr(ies)
+    [ok] a second VIEW attaches to the existing entry          1 entr(ies), 2 view(s)
+    [ok] a different label is a different entry - the key is not the context
+    [ok] an UNLISTED context is refused, not stored            stored=false
+    [ok] and the store says WHICH context it refused           map[chat_window:1]
+    [ok] half a pair is refused - no label, or no view
+    [ok] a re-opened store reads what the first one wrote
+    [ok] the index is APPEND-ONLY - earlier bytes are unchanged  1422 -> 1688 bytes
+    [ok] a truncated final line survives - the log before it still reads
+    [ok] every named context is on the allowlist               5 contexts
+    [ok] and an unnamed one is not, with a reason
+
+**Three of those exist only to stop a weaker implementation passing.** "A
+different label is a different entry" fails anything keyed on context alone.
+"The index is APPEND-ONLY, proven by bytes" is the only one a store that
+rewrote its index would fail - every other assertion would still pass. And the
+truncated-line case is what stops a crash mid-write from costing every pair
+before it.
+
+## THE FAILURE I SAW WAS MY OWN INVOCATION
+
+`go run .` builds a CONSOLE binary, so `CONSOLE: this binary is a GUI build`
+correctly reported subsystem 3. **Built the way the release builds it -
+`-ldflags "-H windowsgui"` - the whole selftest exits 0.** The check was right
+and I was holding it wrong.
+
+## WHAT IS DELIBERATELY ABSENT
+
+No recognition, no classifier, no matching, no OCR. No capture trigger, no
+hotkey, no send path. The store is fed through `StorePair` and **today the only
+caller is the selftest**, which is what the order asked for.
+
+`pairs/` is local and now sits in `packageExcluded` beside `captures` with its
+reason written down: *"your screenshots, cut up - same reason as captures"*.
+
+## AND THE LINE THAT IS SLEVEN'S, UNTOUCHED
+
+The consent text says *"Your chat. Chat is never sampled, at all."* Chat drawn
+inside the Star Citizen window is inside a picture of that window, and Q45 makes
+those pictures longer-lived. **C1 marked that as Sleven's to rule on and I have
+not acted on it.** The store's allowlist means no pair is recorded from a chat
+context - but that is a narrower claim than the consent line makes, and the gap
+is the product promise, not the code.
+
+## STILL PENDING ON THE WEBSITE
+
+The find-checksum fix and the picker fix are built and uncommitted. **The sweep
+that would clear them measured a moving tree** - C1 edited eight `_src` files
+mid-run - so it needs one clean sweep before a redeploy. The site as served is
+correct and verified; only the published checksum on the find page is stale, and
+that is the thing the fix corrects.
+
+### 2026-08-30 02:39:14 — 20260830_0245_update_deployed-then-a-sweep-measured-a-moving-tree.md
+
+# Update — deployed and verified, then found a defect I had shipped. And the sweep after it measured a moving tree, so its nine failures are void.
+
+**2026-08-30 07:45 UTC / 2026-08-30 02:45 local · Code (background session)**
+
+## THE DEPLOY WENT OUT AND IS VERIFIED ON SERVED BYTES
+
+    109 ok, 0 NOT RUN     GATE EXIT 0     20 files uploaded
+    Version 8a200ac3-096e-4c6c-9a70-8bb04d40fbcf
+
+    /                      HTTP 200    392,871 bytes
+    /models/Hammerhead.glb HTTP 200  3,608,636 bytes
+    PLACEHOLDER              0
+    Unknown Manufacturer - 1 0
+    4.99-CONTROL             0
+    Torrent                  3   <- was truncated to 'MRX \'
+
+C1's 107 corrected names, the US spelling, the countermeasure summary and the
+1,450-part manufacturer fix are all live.
+
+## THEN THE DEPLOYED-SITE CONTROL CAUGHT SOMETHING I SHIPPED
+
+**The find page was publishing a checksum for a file it does not serve.**
+`build_find_data.py` hashes the `_src` data file; **Q31's comment strip removes
+1,169 bytes on the way into `_deploy`**, so the page told a visitor their
+correct download was corrupt.
+
+    the downloaded file hashes to exactly what the page claims   FAIL
+    and its byte count matches too    991988 vs 993157
+
+**That is mine, from yesterday, on the one page whose claim is that its numbers
+can be trusted.** Not fixed by exempting the file from the strip - its header
+names `build_find_data.py` on a public URL, which is the trace Q31 removes. **The
+checksum moved instead**, because it is a promise about the bytes a person
+downloads:
+
+    find checksum: recomputed over the SERVED bytes (991988, ac431efc)
+
+The drift control then flagged it as an undeclared transform, correctly, so it
+is **declared by VERIFICATION rather than exemption**: it re-derives the hash
+from what `_deploy` actually serves and requires the published figures to match.
+A stale or hand-edited checksum still fails. 14 passed, 0 failed.
+
+**And the sixth copy of the row-counting rule was where I said it would be.**
+`_verify_picker_deployed.mjs`, found by the DEPLOYED control after shipping
+rather than by the sweep. I wrote *"the sixth copy is the one that will be
+missed"* and then missed it.
+
+## THE SWEEP AFTER THAT IS NOT A MEASUREMENT
+
+    101 ok, 9 failed          <- do not act on this
+
+**C1 edited eight `_src` files during the run** - `device_engine.js`,
+`download.src.html`, `kb_overlay.inc.html`, `keybinds.src.html`,
+`stick-test.src.html`, `_layer.src.html`, `find.src.html`, `loadout.src.html` -
+and added `checks/_verify_us_spelling.py` at **02:30:19**, eight minutes before
+the receipt at 02:38:17.
+
+**So the sweep read a `_deploy` built from a `_src` that no longer existed**, and
+one of its nine failures is simply the new control having no RULE16 label yet:
+
+    _verify_us_spelling.py: a NEW check with no RULE16 label
+
+**I am not chasing the other eight.** Three controls disagreed with themselves in
+both directions on 2026-08-28 for exactly this reason, and the lesson recorded
+then was that it is one measurement taken during a write, not several defects.
+
+**THIS IS THE THIRD TIME.** 08-28: C1 regenerated `data-layer/` mid-sweep. 08-29:
+I edited `checks/` mid-sweep. Today: C1 edited `_src/` mid-sweep. **The sweep has
+no lock and rule 14's own words apply - a rule that depends on everyone
+remembering it is a convention, not a guard.** I closed the one perturbation I
+owned, the drift control's rebuild. **The other two are still open by design.**
+
+## WHAT I AM DOING
+
+Rebuilding from the `_src` that exists now, sweeping once, and deploying only if
+that sweep is clean. **If C1 is still editing, this will happen again**, and the
+next honest step is not a fourth sweep - it is a way for a sweep to refuse to
+start, or to declare itself void, when its inputs move underneath it.
+
+### 2026-08-30 01:54:54 — 20260830_1000_update_q42-the-premise-is-wrong-the-miner-finds-299.md
+
+# Update — Q42: the miner is not broken. It finds 299 transactions across all four families, and the regex needed no change.
+
+**2026-08-30 15:00 UTC / 2026-08-30 10:00 local · Code (background session)**
+
+**The order's premise does not survive the measurement, and the order is what
+made that visible: *"run the miner over the FULL archive - 243 files, 208 MB,
+not one session."* Run that way, transactions is not zero.**
+
+    archive: 244 file(s), 208.3 MB
+
+    extractor              verified   hits
+    transaction            true       299
+    location_inventory     true       1041
+    quantum_route          true       339
+    ship_class             true       23648
+    mission_template       true       2115
+    mission_objective      true       7670
+    game_tip               true       3383
+    equipment              true       16876
+    mission_payout         true       312
+    contract               true       948
+    actor_death            true       121
+    vehicle_destroyed      true       11
+    mineable_rock          true       20
+    object_container       false      0
+    spawn_location         false      0
+    location_inventory_name false     0
+
+## AGAINST THE PYTHON DIG, WHICH IS THE ONLY HONEST COMPARISON
+
+    Python 2026-08-07        item 286   commodity 10    233 sessions
+    Go today                 item 289   commodity 10    244 files
+
+    family commodity buy      1
+    family commodity sell     9
+    family item buy         279
+    family item sell         10
+
+**All four transaction families the header names are present.** Commodity
+matches exactly at 10. Item is 289 against 286 - three more, which is what a
+larger archive read eleven files later should look like, not a discrepancy.
+
+## SO NOTHING IS CHANGED, AND THAT IS THE DELIVERABLE
+
+**I did not touch `reMineTxn`.** The order said not to before a failing line was
+in front of me. **There is no failing line, because there is no failure** - and
+changing a working pattern on the strength of a wrong premise is exactly what
+the instruction was protecting against.
+
+**The `transactions: 0` was real but it was measuring one session.** A single
+Game.log from a player who did not shop that session contains no
+`SShopBuyRequest`, and zero is the correct answer to that question. The
+extractor's `Verified: true` is also correct: the pattern is confirmed by 299
+live samples.
+
+**The two zeros that remain are the two UNVERIFIED patterns**, plus
+`location_inventory_name`, which the file already documents as speculative -
+1038 RequestLocationInventory lines across the archive and not one carrying
+`name="`. **Every zero in that table is a zero the file already predicted.**
+
+## AND ONE FIGURE IN THE HEADER IS STALE
+
+    header says   240 SECONDS over the real archive
+    measured      35.1 seconds, 244 files, 208.3 MB
+
+**The reasoning around it still stands** - it is unbounded work proportional to
+how much someone has played, and isolating it from the selftest was right. But
+the number a future reader would plan against is off by a factor of seven.
+`gamelog_mine.go` is not in `OWNERS.md`; I am reporting the figure rather than
+editing someone's file to correct a comment.
+
+## THE DIAGNOSTIC
+
+`citizen-collector/zz_q42_archive_test.go`. A test file, so it never reaches the
+shipped binary; gated behind `CC_Q42=1`, so nobody reads 208 MB of somebody's
+play history by accident - which is the header's own complaint about the
+selftest that did exactly that; and it writes to `t.TempDir()`. It reports the
+program's own per-extractor accounting via `buildExtractors`, not a second count
+written by me.
+
+    CC_Q42=1 go test -run Q42 -v -timeout 40m
+
+### 2026-08-30 01:52:03 — 20260830_0945_update_q42-taken.md
+
+# Update — pushed `6b1837f`. Taking Q42: the miner reports zero transactions while declaring the extractor Verified.
+
+**2026-08-30 14:45 UTC / 2026-08-30 09:45 local · Code (background session)**
+
+    6b1837f   14 files changed      bd4cac2..6b1837f      tree clean
+    no _to_delete, no node_modules, no editability_patches in the commit
+
+A stale `.git/index.lock` from 01:20 blocked staging - C1's Cowork mount cannot
+delete files, exactly as `NEXT.md` records. **Confirmed no git process was
+running**, then moved it to `_to_delete/git-locks/`.
+
+## Q42, AND THE NUMBER I AM MEASURING AGAINST
+
+The Python dig's own manifest is on disk and gives me the target rather than a
+remembered figure:
+
+    data-layer/derived/gamelog-mining/MANIFEST.json
+      sessions_read      233
+      item_txn_rows      286
+      commodity_txn_rows  10
+      parse_errors         0
+
+The archive is where the header says: **243 files, 209 MB**, at
+`Program Files/Roberts Space Industries/StarCitizen/LIVE/logbackups`. Read only -
+rule 6 is about writing outside the repo, and I am not writing there.
+
+The pattern under suspicion, and I am **not touching it** until a failing line is
+in front of me:
+
+    reMineTxn = S(Shop(?:Commodity)?)(Buy|Sell)Request\s*-\s*(.*)
+
+Its extractor declares `Verified: true`. **A verified extractor reporting zero
+is either a broken pattern or a false declaration, and both are worth more than
+the transactions.**
+
+## EXPECTATIONS SET BEFORE RUNNING
+
+The header records **240s over the real archive against 61ms isolated**, and
+that the gap was once misdiagnosed as a flaky test. **It is unbounded work, not
+a flake.** I am budgeting minutes and will not kill it for being slow - killing
+long runs is how I lost a payload copy yesterday.
 
 ### 2026-08-30 01:46:35 — 20260830_0930_update_built-swept-and-the-deploy-is-blocked-by-nine-readable-names.md
 
@@ -1022,382 +1380,7 @@ about what the public source says**, which touches rule 8's territory even if it
 is not legal text. Sleven should look at that one himself rather than take my
 word that it is fine, because I have not formed one.
 
-### 2026-08-29 22:50:32 — 20260830_0000_update_the-utc-stamp-is-declared-and-my-first-wiring-of-it-was-wrong.md
-
-# Update — the UTC date stamp is a declared injection now, narrowed twice, and my first wiring of it compared a file against itself.
-
-**2026-08-30 04:00 UTC / 2026-08-29 23:00 local · Code (background session)**
-
-Option A, as Sleven asked. `build_deploy.py:741` stamps the UTC date into
-`index.html` twice; across 00:00 UTC a rebuild is not byte-reproducible, and
-section 4's whole proof is "rebuild and require the bytes not to move".
-
-## DECLARED AS NARROWLY AS THE VENDOR MARKER AND THE TRADEMARK STRIP
-
-Tolerated: **`index.html`, the literal text `testing <ISO date>`, the same
-number of occurrences on both sides, every stamp in a file agreeing with every
-other, and EVERY OTHER BYTE IDENTICAL.** Anything else is not this.
-
-    stamp only, both occurrences   ACCEPTED
-    stamp + a hand edit            refused - changed somewhere other than the stamp
-    only ONE occurrence moves      refused - the stamps within one file disagree
-    an extra stamp appears         refused - the stamp count changed: 3 -> 2
-    identical files                refused - the stamps are not the difference
-    a hand edit, no stamp move     refused - the stamps are not the difference
-
-**The third row is a hole I opened and closed.** My first version tolerated one
-stamp moving while the other did not - "only the stamp changed" is true of that,
-and it is also a page telling a viewer two different things about which build
-they are looking at. The build substitutes both from one `_stamp`, so they
-cannot legitimately disagree.
-
-## AND THE WIRING WAS WRONG BEFORE IT WAS RIGHT
-
-The first version called the comparison **after** the `finally` that restores
-`_deploy`. So it compared the snapshot against the file the snapshot had just
-been restored onto - itself - and reported *"the stamps are identical"* on a
-plant designed to make it fire.
-
-**It only surfaced because the plant was supposed to go GREEN and went red.**
-A test that expects a pass catches a class of defect that a test expecting a
-failure never will: I would have shipped a declaration that could not fire and
-believed it worked, because everything I had run until then was supposed to
-fail. The comparison is now taken inside the try, before anything is put back,
-and the comment at the site says why.
-
-## PROVEN END TO END, NOT JUST IN A UNIT
-
-    planted the 08-29 stamp        PASS + "DECLARED: the testing date stamp
-                                   moved (2 occurrence(s), every other byte
-                                   identical)"
-    planted stamp + a hand edit    FAIL - "it is NOT the declared stamp: the
-                                   file changed somewhere other than the stamp"
-    clean run                      exit 0
-    --self-test                    exit 1, correct
-
-`testing/_deploy/index.html` was restored to the real build afterwards and the
-hash checked against the copy taken before the plants: `0fe83cfc32c3` both
-sides.
-
-## STILL TRUE, AND NOT FIXED BY THIS
-
-**The served site and the local payload still differ by that stamp** - the
-deploy shipped `08-29`, local says `08-30`. This makes the drift control honest
-about it; it does not make them match. And `sweep_gate.py`'s fingerprint is
-still content-based, so a clean receipt still goes stale at UTC midnight.
-Both are in the finding.
-
-### 2026-08-29 22:30:57 — 20260829_1250_update_q29-done-and-the-payload-changes-at-utc-midnight.md
-
-# Update — Q29 is built and proven in both modes, the new draco control now reads as NOT RUN instead of FAIL, and chasing a moved fingerprint found that the payload rewrites itself at UTC midnight.
-
-**2026-08-30 03:50 UTC / 2026-08-29 22:50 local · Code (background session)**
-
-## Q29 — DONE
-
-    exit 0          PASSED
-    exit 2          NOT RUN, with the control's own reason printed
-    anything else   FAILED
-
-    106 ok, 0 failed, 0 skipped, 1 NOT RUN, in 778s
-    NOTRUN _verify_marker_mesh_distance.py  exit 2  NOT PERFORMED - NO_DRACO...
-
-**Nothing was made to pass.** The gate still refuses, in its own words:
-
-    sweep : the last sweep of THIS payload was not clean.
-            NOT RUN  _verify_marker_mesh_distance.py
-            A control that could not be run is counted against the
-            sweep, never as a pass.
-    GATE EXIT 1
-
-**Proven in both modes, probes parked in `_to_delete/probes-20260829/`:**
-
-    NORMAL     exit 0 -> ok     exit 1 -> FAIL     exit 2 -> NOTRUN + reason
-    SELF-TEST  exit 2 -> NOTRUN
-
-**The self-test half is the one that mattered.** There `ok = (code != 0)`, so
-before this change a control that COULD NOT LOOK was counted as having CAUGHT
-the planted defect — the silent success this suite exists against, wearing the
-colours of the test meant to find it.
-
-## AND I DID Q30 TO MYSELF WITHIN THE HOUR
-
-My `--only` probe run overwrote the full receipt, exactly as C1's did. It failed
-closed and the gate caught it — **and I have changed my mind about whether that
-is sufficient.** Two sessions destroyed the same artifact the same day, both
-doing legitimate work. "The gate catches it" is what you say about a defect you
-have decided to keep. **A subset run should write its own receipt somewhere
-else.** Mine to fix if Sleven wants it.
-
-## THE PAYLOAD REWRITES ITSELF AT UTC MIDNIGHT
-
-The sweep's fingerprint moved from `add0c868` to `0f4f5ff3` with nobody having
-built anything. All twenty payload files were fetched from the served site and
-compared. **Nineteen identical. `index.html` differs by two lines, and both are
-a date.**
-
-    -testing 2026-08-29        build_deploy.py:741
-    +testing 2026-08-30        _stamp = datetime.now(timezone.utc).strftime(...)
-
-**Three guards assume a rebuild is reproducible and it is not:**
-
-- **`_verify_deploy_drift.py`, mine** — its entire proof of the assembled file
-  is "rebuild and require the bytes not to move". A sweep straddling 00:00 UTC
-  will report a drift that does not exist. It has not happened yet only because
-  tonight's sweep began after the rollover.
-- **`sweep_gate.py`'s fingerprint** — content-based, so the clock silently
-  invalidates a clean receipt.
-- **The served site** — today's deploy shipped `08-29`, local now says `08-30`.
-  Neither is wrong and they do not match.
-
-`docs/FINDING_the-payload-changes-at-utc-midnight-2026-08-30.md`, with three
-options. **I would declare the stamp as a fourth narrow injection in the drift
-control**, the way the vendor marker and trademark strip already are. Small
-change, my file, not made without a word.
-
-## TWO FALSE TRAILS ON THE WAY, BOTH MINE
-
-- A first comparison said EVERY file differed. `sha256sum FILE` prefixes its
-  output with a backslash when the path contains one, shifting `cut -c1-12` by a
-  character. Hashing through stdin removed the filename and the artifact.
-- A second said two pages differed when they had simply not been fetched — the
-  worker answers `/loadout`, not `/loadout.html`, and returns 307. **An empty
-  response hashes perfectly well**: `e3b0c442...` is the SHA-256 of nothing and
-  it sits in a comparison looking exactly like data.
-
-## STANDING
-
-    Q26  withdrawn - my measurement was a photograph too
-    Q29  done
-    Q30  open, and my answer changed: not sufficient
-
-**Uncommitted:** `checks/run_all_controls.py`, `checks/_diag_offhull.mjs`, the
-UTC finding. **Not done:** `npm i draco3d`, which I have asked about properly
-rather than acting on a conditional offer.
-
-### 2026-08-29 22:12:08 — 20260829_1245_update_q26-withdrawn-taking-q29.md
-
-# Update — my Q26 measurement is withdrawn, C1's mesh distance supersedes it, and I am taking Q29 because a control written today is already printing FAIL for saying "I could not look".
-
-**2026-08-29 12:45 local · Code (background session)**
-
-## WITHDRAWN, WITHOUT ARGUMENT
-
-**The old off-hull list came from photographs and was wrong in both
-directions, and mine was the same method.** `DRAK_Corsair` 80/93/94 and
-`TMBL_Storm_AA` 4 are FINE against the mesh - Storm AA port 4 is the second
-CLOSEST of its four. **I reported six off-hull dots this morning and four of
-them are not off the hull.**
-
-My instrument was not the problem - I found and fixed two contaminations in it.
-**The measurement was.** A silhouette says where a dot is against a picture of
-the hull; it cannot say where the dot is against the hull. C1's control decodes
-the mesh and measures against vertices, which is a different claim and a better
-one. **I am not defending the pixel numbers and the three "new" dots I raised
-are withdrawn with them.**
-
-The one I got right is the one that matters least: `VNCL_Glaive` 43. And the
-real finding is the pair, not the port -
-
-    43 and 44 - "Gun nose left" / "Gun nose right", 0.007 units apart,
-    a mirrored pair, and the old test flagged ONE and passed the other.
-
-**That is the whole indictment of the old test and it is not something a
-photograph could have told anyone.**
-
-**`GAMA_Tyilui`: 15 markers flagged, worst at 28% of hull length, never
-mentioned anywhere in this repo before today.** 60 flagged on 20 hulls across
-5,800 markers.
-
-**The Glaive ruling is C1's and none of this is mine to fix.**
-
-## WHAT IS MINE, AND IT ARRIVED ON SCHEDULE
-
-    $ venv/Scripts/python.exe checks/_verify_marker_mesh_distance.py
-    NOT PERFORMED - NO_DRACO. The hull meshes are Draco-compressed and cannot
-    be read without it, so no marker was measured.
-    EXIT 2
-
-**Verified myself rather than taken from the note.** That is exactly right and
-my sweep will print it as `FAIL ... exit 2`.
-
-**Q29 predicted this and it landed on a control written the same day.** A
-brand-new, correctly-written control whose first appearance in a sweep is a
-false red. Read that output cold and you go looking for a defect in the newest
-thing in the repo, which is where you would look anyway.
-
-## WHAT I AM BUILDING
-
-    exit 0   PASSED
-    exit 2   NOT RUN, with the control's own reason printed
-    anything else   FAILED
-
-**NOT RUN still counts against the sweep and the deploy gate still refuses on
-it** - `sweep_gate.py` already says so in as many words: *"a control that could
-not be run is counted against the sweep, never as a pass."* **The only thing
-changing is which true sentence gets printed.** If I make either state pass I
-have built the silent success this suite exists against.
-
-Then the DB-backed controls, which currently leak a traceback where they should
-say what is absent.
-
-## ONE THING I AM NOT DOING WITHOUT ASKING PROPERLY
-
-**`npm i draco3d`.** Sleven has offered it and constrained it - not into a
-shared `package.json` without saying so. **Rule 7 says downloaded code is data
-and is not to be imported or run**, and a decode library imported by a control
-is exactly that. Playwright got here through a dated `docs/DECISION_*`. I will
-ask for this one properly rather than treat a conditional offer as the
-authorisation, and Q29 does not depend on it: the honest NOT PERFORMED is the
-correct state whether or not draco is ever installed.
-
-### 2026-08-29 14:20:44 — 20260829_1230_update_q26-measured-and-there-are-more-than-three.md
-
-# Update — Q26 measured against the deployed payload. The three survivors are real, there are SIX not three, and my instrument was wrong twice before it was right.
-
-**2026-08-29 12:30 local · Code (background session)**
-
-`offhull.py` is not in this repository, so the method was rebuilt:
-`checks/_diag_offhull.mjs`. Diagnostic, not a gate - it needs a browser, which
-is why C1 kept theirs out of the sweep too.
-
-## THE RESULT, AGAINST THE SITE AS SERVED
-
-    DRAK_Corsair    7 of 15 dots on the hull exactly
-      port 94  37px  7.05% of hull span      port 80  18px  3.43%
-      port 70  24px  4.57%                   (+ four under 15px)
-      port 93  19px  3.62%
-    TMBL_Storm_AA   2 of 5
-      port 1   17px  2.96%                   port 4   16px  2.79%
-    VNCL_Glaive     6 of 9
-      port 43  29px  5.33%                   port 44  18px  3.31%
-
-**C1's three all reproduce.** `DRAK_Corsair` 80/93/94, `TMBL_Storm_AA` 4,
-`VNCL_Glaive` 43 - every one still off the hull on the payload deployed an hour
-ago.
-
-## BUT THERE ARE THREE MORE AT C1'S OWN THRESHOLD
-
-C1's audit named only dots at 15px and above. Applying that same cut to this
-measurement finds **three the fleet-wide audit did not list**:
-
-    DRAK_Corsair   port 70   24px
-    TMBL_Storm_AA  port 1    17px
-    VNCL_Glaive    port 44   18px
-
-**Six, not three.** I am not claiming C1's audit was wrong - it measured 259
-hulls at one framing and this measured three at another, and I cannot re-run
-theirs. What I can say is that on the served payload these six are off the hull
-and three of them are not on anyone's list.
-
-## THE NAMED CAUSE, AND IT IS C1'S HYPOTHESIS CONFIRMED BY EYE
-
-The ringed screenshot shows it: the Corsair's four sit in open space **above the
-tail fin, above the wing root, and below the fuselage** - adjacent to the hull,
-not on it. Inside the model's axis-aligned box, outside its mesh. **The box is
-not the hull**, exactly as C1 said.
-
-**I have not widened the acceptance test and will not.** A containment gate that
-passes these is not a gate with the wrong number in it; it is a gate measuring
-the wrong shape.
-
-## MY INSTRUMENT WAS WRONG TWICE, AND BOTH WOULD HAVE SHIPPED A WRONG ANSWER
-
-**1. It counted the viewer's own chrome as hull.** "Any pixel that is not the
-field colour" includes the Display button, Start spin, the mounts pill and the
-drag-to-rotate hint. **A dot over the Display button would have measured as ON
-THE HULL.** Caught because the hull's bounding box came back 788px wide on all
-three ships - the frame, not the ship - which is impossible. Then confirmed by
-looking at the picture rather than the number.
-
-**2. A faint ring on the canvas's own rounded border survived that fix**, about
-ten pixels in the outermost column, still holding the bounding box at full
-width. Now only the largest connected blob counts as the ship.
-
-Spans went 788 / 788 / 788 -> **525 / 574 / 544**. The distances did not move,
-which is luck rather than vindication: for these particular dots the ship was
-always nearer than the contamination. It would not always be.
-
-**And a third thing, which is why C1's numbers and mine differ at all:** a pixel
-distance is not a property of the ship, it is a property of how big the ship
-happens to be drawn. `VNCL_Glaive` port 43 is 16px in C1's audit and 29px here,
-and neither is wrong. Every distance is now also reported as a **fraction of the
-hull's own on-screen span**, which is comparable between runs.
-
-**Threshold sensitivity checked before trusting any of it:** 6, 12, 18, 30, 50
-all give the same ports at the same distances. The answer does not depend on
-where the line is drawn.
-
-## STANDING
-
-    Q26  measured. The three are six, the cause is named, and the fix is not
-         mine to design - a containment gate that uses the mesh rather than the
-         box is C1's pipeline.
-
-New file: `checks/_diag_offhull.mjs`. Probes parked in
-`_to_delete/probes-20260829/`. Nothing committed.
-
-### 2026-08-29 14:10:33 — 20260829_1215_update_q26-taken-offhull-py-is-not-in-the-repo.md
-
-# Update — Q26 taken. C1's `offhull.py` is not in this repository, so the measurement has to be rebuilt rather than re-run.
-
-**2026-08-29 12:15 local · Code (background session)**
-
-Checked the queue rather than assuming it. **C1 re-scoped two items since my
-commit** — Q3 now names `_verify_model_scale.py` (the old DONE-WHEN named
-`_verify_holo_placement.py`, which does not exist), and Q5 is down to R3 alone
-because R0/R1/R2 are built and green in the 106-of-106 sweep. Neither is the
-head of the queue.
-
-**Q26 is the first item whose DONE-WHEN is unsatisfied and whose BLOCKED-BY is
-now clear** — Q27 closed it.
-
-## THE OBSTACLE, FOUND BEFORE STARTING RATHER THAN HALFWAY THROUGH
-
-    find . -name "offhull*"   ->  nothing
-
-**`offhull.py` is not in this repository.** It is the tool Q26's method rests on
-and the one that produced the ten. It ran on C1's Cowork mount. **This is the
-third time today a document has pointed at a file that is not here** —
-`place_fleet.py` (which turned out to BE here), `_verify_holo_placement.py`
-(which is not), and now this one.
-
-**I am not asking C1 for it.** The measurement is reproducible: a browser, two
-screenshots per hull, and a distance from each marker to the nearest pixel of
-its own silhouette. Three hulls, not 259, so the fifty minutes does not apply.
-
-## AND ONE STALE CLAIM I WILL NOT BE INHERITING
-
-`_verify_hull_solid.mjs` opens with *"THERE IS NO BROWSER AND NO GPU ON THIS
-MACHINE and none was installed (rule 7)"*, and declines the pixel measurement on
-that basis. **That was true when it was written and is not true now** —
-`docs/DECISION_the-checks-get-a-real-browser-2026-08-26.md` put Playwright and
-Chromium on this machine, and I drove 27 hulls through it at 08:40 today.
-
-**That is a NOT PERFORMED that has outlived its reason**, which is the same
-shape of defect as a declaration that outlives its reason. Recording it here;
-whether that control should now take the measurement it declined is a separate
-item and I am not folding it into Q26.
-
-## WHAT I AM BUILDING
-
-A diagnostic, not a sweep control — it needs a browser and it is slow, which is
-the same reason C1 kept `offhull.py` out of the sweep:
-
-    for each of DRAK_Corsair, TMBL_Storm_AA, VNCL_Glaive
-      shot 1  the page as served, markers visible
-      shot 2  the same frame with #cc-marks hidden  -> the silhouette
-      marker screen positions read from the DOM at the same moment
-      distance from each marker to the nearest hull pixel
-
-**A dot cannot be measured against a picture that contains it**, which is why
-the second shot exists. That is C1's method and I am not improving on it.
-
-**Measured against the DEPLOYED payload**, per the DONE-WHEN — the three
-survivors were untouched by today's withholding, so I expect them to reproduce.
-Expecting is not measuring.
-
-*(+593 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
+*(+598 older update(s) — full history in docs/handoff_archive/_updates_log.md)*
 
 ---
 

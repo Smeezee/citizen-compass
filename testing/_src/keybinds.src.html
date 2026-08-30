@@ -1476,8 +1476,8 @@ function buildDevice(list){
      logged to a console - "it just doesn't do anything" is the report this
      control has already generated once. */
   if(slotNote) h+='<div class="slotnote">'+esc(slotNote)+'</div>';
-  h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as centre">'+
-     'Set centre</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
+  h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as center">'+
+     'Set center</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
      '<button class="tg" id="'+ID_+'dvhide">Hide unused buttons</button>'+
      '<button class="tg" id="'+ID_+'dvall">'+dvAllLabel(list)+'</button>'+
      '<span class="dvcap" id="'+ID_+'dvcapnote"></span></div>';
@@ -1518,7 +1518,7 @@ function buildDevice(list){
      'and check the right row lights up.<br>'+
      '<b>POV hats are detected, not guessed</b>: a hat reports 1.286 at rest, '+
      'which no ordinary axis can reach.<br>'+
-     'A value in orange at rest is <b>drift</b>. <code>Set centre</code> zeroes it '+
+     'A value in orange at rest is <b>drift</b>. <code>Set center</code> zeroes it '+
      'on this page only, never in the game — and it is deliberately refused on a '+
      'hat, where a resting 1.286 is correct.</div>';
   host.innerHTML=h;
@@ -1593,7 +1593,7 @@ function paintDevice(list){
       var adj=v-c, txt, cls="axrow", pct;
       if(isHat){
         var dir=hatDir(v);
-        txt = dir ? dir.replace('_','-') : "centred";
+        txt = dir ? dir.replace('_','-') : "centered";
         if(dir) cls="axrow hot";
         pct = dir ? 90 : 50;
       } else {
@@ -2006,7 +2006,7 @@ render();
     <span class="count" id="kbbcount"></span>
   </div>
   <div class="devstate none" id="kbbdev">Looking for flight sticks&hellip;</div>
-  <div class="editnote" id="kbbedit">Starting from Star Citizen's stock defaults &mdash; no changes yet. Click any binding to set it.</div>
+  <div class="editnote" id="kbbedit">Starting from Star Citizen's stock defaults, nothing changed yet. Click any binding to set it.</div>
   <!-- Said at the moment of binding, not discovered later in the file. -->
   <div class="unattnote" id="kbbunatt" style="display:none"></div>
   <div id="kbblist"></div>
@@ -2022,8 +2022,8 @@ render();
     <span class="srcline">never seen in a mapping file read so far, which is not the same as refused</span>
     <span class="opener">What UNATTESTED means</span>
   </summary><div class="body"><div class="dofnote">
-    <strong>UNATTESTED is not rejected.</strong> It means the axis has never appeared in
-    any mapping file read so far &mdash; not that the game refuses it. Those are
+    <strong>UNATTESTED is not rejected.</strong> It means the axis has never appeared in any mapping file we have read. It does not mean
+    the game refuses it. Those are
     different claims and only the first one is supported by evidence.
   </div></div></details>
 </div>

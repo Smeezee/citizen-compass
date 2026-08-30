@@ -341,7 +341,7 @@ body{padding-top:30px}
   <div id="cc-tabs">
     <button data-p="quick" class="on">Quick</button>
     <button data-p="type">Type</button>
-    <button data-p="colour">Colour</button>
+    <button data-p="colour">Color</button>
     <button data-p="layout">Layout</button>
     <button data-p="export">Export</button>
   </div>
@@ -358,7 +358,7 @@ body{padding-top:30px}
           <button class="wide" data-pre="lowvis">Low vision &mdash; 150%, bold, high contrast, roomy rows</button>
           <button class="wide" data-pre="light">Light mode</button>
           <button class="wide" data-pre="amber">Amber on black</button>
-          <button class="wide" data-pre="calm">Calm &mdash; muted colour, no motion, soft borders</button>
+          <button class="wide" data-pre="calm">Calm &mdash; muted color, no motion, soft borders</button>
         </div>
       </div>
       <div class="cc-g">
@@ -407,8 +407,8 @@ body{padding-top:30px}
         <div class="cc-sws" id="cc-acc"></div></div>
       <div class="cc-g"><div class="t">Second accent</div>
         <div class="cc-sws" id="cc-acc2"></div></div>
-      <div class="cc-g"><div class="t">Colour intensity <em id="cc-sat-v">100%</em></div>
-        <p class="cc-hint">Turning this down helps if bright colours feel harsh or smear.</p>
+      <div class="cc-g"><div class="t">Color intensity <em id="cc-sat-v">100%</em></div>
+        <p class="cc-hint">Turning this down helps if bright colors feel harsh or smear.</p>
         <input type="range" id="cc-sat" min="0" max="150" step="10" value="100"></div>
     </div>
 
@@ -1470,8 +1470,8 @@ function buildDevice(list){
      logged to a console - "it just doesn't do anything" is the report this
      control has already generated once. */
   if(slotNote) h+='<div class="slotnote">'+esc(slotNote)+'</div>';
-  h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as centre">'+
-     'Set centre</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
+  h+='<button class="tg" id="'+ID_+'dvcal" title="Take the current stick positions as center">'+
+     'Set center</button><button class="tg" id="'+ID_+'dvcopy">Copy device report</button>'+
      '<button class="tg" id="'+ID_+'dvhide">Hide unused buttons</button>'+
      '<button class="tg" id="'+ID_+'dvall">'+dvAllLabel(list)+'</button>'+
      '<span class="dvcap" id="'+ID_+'dvcapnote"></span></div>';
@@ -1512,7 +1512,7 @@ function buildDevice(list){
      'and check the right row lights up.<br>'+
      '<b>POV hats are detected, not guessed</b>: a hat reports 1.286 at rest, '+
      'which no ordinary axis can reach.<br>'+
-     'A value in orange at rest is <b>drift</b>. <code>Set centre</code> zeroes it '+
+     'A value in orange at rest is <b>drift</b>. <code>Set center</code> zeroes it '+
      'on this page only, never in the game — and it is deliberately refused on a '+
      'hat, where a resting 1.286 is correct.</div>';
   host.innerHTML=h;
@@ -1587,7 +1587,7 @@ function paintDevice(list){
       var adj=v-c, txt, cls="axrow", pct;
       if(isHat){
         var dir=hatDir(v);
-        txt = dir ? dir.replace('_','-') : "centred";
+        txt = dir ? dir.replace('_','-') : "centered";
         if(dir) cls="axrow hot";
         pct = dir ? 90 : 50;
       } else {
@@ -3444,7 +3444,7 @@ body.cc-help-open #cc-help-tab{transform:translateX(calc(-1 * var(--cc-help-w)))
       });
     }else{
       var fb = (V.not_yet_covered && V.not_yet_covered.generic_fallback) || {};
-      h += '<div class="vname">We don\'t recognise your device yet</div>';
+      h += '<div class="vname">We don\'t recognize your device yet</div>';
       h += '<div class="vdev">' + (idStr
              ? 'Browser reports: ' + esc(idStr) + (vid ? ' (vendor ' + esc(vid) + ')' : ' (no USB vendor id in that string)')
              : 'No controller is being reported by the browser right now.') + '</div>';
@@ -3569,5 +3569,204 @@ body.cc-help-open #cc-help-tab{transform:translateX(calc(-1 * var(--cc-help-w)))
   window.ccHelpClose = close;
   window.ccHelpNode = function(){ return cur; };
   window.ccHelpGraph = function(){ return G; };
+})();
+</script>
+
+<style>
+/* ===================== THE GLOSSARY, V7 =====================================
+   SLEVEN, 2026-08-30: "If a shorthand version of a word saves space and is
+   generally well known, I would rather use that. And then if people have a
+   question about, okay, what does this word mean? If they hover over the word
+   a tiny little box pops up."
+
+   ONE GLOSSARY, ONE MECHANISM, EVERY PAGE - and it lives here because this
+   file is injected into all of them. Five per-page copies is the mistake the
+   disclosure bar already made once.
+
+   IT USES THE SITE'S OWN TOKENS AND NOTHING ELSE, so it inherits every
+   accessibility mode: dyslexia-friendly font, low-vision sizing, calm's muted
+   palette. A tooltip that ignores those is worse than no tooltip. */
+.gl{
+  border-bottom:1px dotted currentColor; cursor:help;
+  text-underline-offset:2px;
+}
+.gl:focus-visible{outline:2px solid var(--acc,#7cd);outline-offset:2px}
+#cc-gl{
+  position:fixed; z-index:9999; max-width:min(22rem,80vw);
+  padding:.55rem .7rem; border-radius:6px;
+  background:var(--panel,#151a20); color:var(--fg,#e8e6e3);
+  border:1px solid var(--line,#2a3038);
+  box-shadow:0 6px 22px rgba(0,0,0,.45);
+  font-size:.92em; line-height:1.45; pointer-events:none;
+  opacity:0; transform:translateY(2px); transition:opacity .12s ease;
+}
+#cc-gl.on{opacity:1; transform:none}
+#cc-gl b{display:block; margin-bottom:.15rem}
+#cc-gl i{display:block; margin-top:.3rem; opacity:.75; font-style:normal; font-size:.9em}
+/* CALM MODE TURNS OFF MOTION EVERYWHERE ELSE AND MUST HERE TOO. */
+@media (prefers-reduced-motion: reduce){ #cc-gl{transition:none} }
+</style>
+<script>
+/* THE TERMS. Every one was checked against a source on 2026-08-29/30 -
+   CIG's own developer posts, docs.sc, starcitizen.tools, the community
+   glossaries - and the reference is docs/REFERENCE_the-words-players-actually-
+   use-2026-08-29.md.
+
+   TWO RULES ABOUT WHAT GOES IN HERE.
+   1. If the GAME shows the shorthand, the shorthand stays and this explains
+      it. CIG's own strings say `PDC` and `Fixed Mav Thruster`. Expanding
+      those on the page would move us AWAY from what a player sees.
+   2. Nothing goes in that we cannot source. An invented definition on a page
+      whose whole claim is verifiable data is worse than no definition. */
+window.CC_GLOSSARY = {
+  "PDC":      ["Point Defense", "A close-in defensive mount. The game labels both the hardpoint and the turret subtype just “PDC”, and a turret set to this mode reads “Point Defense” on the HUD. Behring's PDC is a rack of sixteen Size 1 missiles."],
+  "Mav":      ["Maneuvering thruster", "The small thrusters that turn and strafe the ship, as opposed to the main and retro engines. The game calls the part a “Mav Thruster”."],
+  "aUEC":     ["Alpha United Earth Credit", "The in-game money during Alpha. Wiped between some patches."],
+  "SCU":      ["Standard Cargo Unit", "The box size cargo is measured in."],
+  "QT":       ["Quantum Travel", "Fast travel between locations in a system."],
+  "QD":       ["Quantum Drive", "The component that does it. Bigger is not always better — range, speed and fuel use trade off."],
+  "SCM":      ["Standard Control Mode", "The slower Master Mode. Shields and weapons available."],
+  "NAV":      ["Navigation Mode", "The faster Master Mode, for traveling rather than fighting."],
+  "IR":       ["Infrared signature", "Heat your ship gives off. Thrusters and components make it. Heat-seeking missiles track it."],
+  "EM":       ["Electromagnetic signature", "Electrical noise from powered parts — power plants, shields, energy weapons. EM missiles track it."],
+  "CS":       ["Cross-Section", "How big a radar return your hull makes, which changes with the angle you present. Not CrimeStat — different CS."],
+  "RS":       ["Resource Signature", "What dedicated scanners look for: minable rocks, wrecks, cave mouths."],
+  "DPS":      ["Damage Per Second", "Sustained, over a full fire-and-reload cycle — not the burst figure, which flatters a small magazine."],
+  "alpha":    ["Alpha damage", "Everything you are carrying, fired once. One shot, not per second."],
+  "ballistic":["Ballistic weapon", "Fires solid rounds and carries limited ammo. Punches part of its damage straight through a shield to the hull."],
+  "distortion":["Distortion damage", "Cannot hurt the hull. Strips shields fast, and on bare hull degrades power and components."],
+  "gimbal":   ["Gimbal Mount", "A mount that lets the gun swivel to track a target. Costs you one weapon size against a fixed mount."],
+  "fixed":    ["Fixed mount", "The gun is bolted straight to the hardpoint. You aim the ship, and you get the biggest gun the hardpoint allows."],
+  "hardpoint":["Hardpoint", "A spot on the ship a part attaches to. CIG's word — in the game files it is an “itemport”."],
+  "livery":   ["Livery", "A paint scheme. It changes nothing about how the ship performs."],
+  "VLM":      ["Vehicle Loadout Manager", "The in-game screen, in mobiGlas, where you actually swap components."]
+};
+
+(function(){
+  "use strict";
+  var box = null, cur = null;
+
+  function node(){
+    if (box) return box;
+    box = document.createElement("div");
+    box.id = "cc-gl";
+    box.setAttribute("role","tooltip");
+    box.hidden = true;
+    document.body.appendChild(box);
+    return box;
+  }
+
+  function entry(el){
+    var k = el.getAttribute("data-gl");
+    if (!k) return null;
+    var g = window.CC_GLOSSARY[k];
+    /* A TERM WITH NO ENTRY SHOWS NOTHING AT ALL. It does not invent one and it
+       does not show the key. Rule: say what is known or say nothing. */
+    return g ? g : null;
+  }
+
+  function place(el){
+    var b = node(), r = el.getBoundingClientRect();
+    b.hidden = false;
+    var w = b.offsetWidth, h = b.offsetHeight;
+    var x = r.left + r.width/2 - w/2;
+    var y = r.top - h - 8;
+    if (y < 6) y = r.bottom + 8;                 /* flip below if no room up */
+    if (x < 6) x = 6;
+    if (x + w > innerWidth - 6) x = innerWidth - w - 6;
+    b.style.left = Math.round(x) + "px";
+    b.style.top  = Math.round(y) + "px";
+  }
+
+  function open(el){
+    var g = entry(el); if (!g) return;
+    var b = node();
+    b.innerHTML = "";
+    var t = document.createElement("b"); t.textContent = g[0]; b.appendChild(t);
+    var d = document.createTextNode(g[1]); b.appendChild(d);
+    b.hidden = false; place(el); b.classList.add("on");
+    el.setAttribute("aria-describedby","cc-gl");
+    cur = el;
+  }
+
+  function close(){
+    if (!box) return;
+    box.classList.remove("on"); box.hidden = true;
+    if (cur) cur.removeAttribute("aria-describedby");
+    cur = null;
+  }
+
+  /* HOVER FOR A MOUSE, TAP FOR A FINGER, FOCUS FOR A KEYBOARD.
+     Hover alone would hide every one of these from every phone, which is most
+     of the people who read this site on a break at work. */
+  document.addEventListener("mouseover", function(e){
+    var el = e.target.closest && e.target.closest("[data-gl]");
+    if (el) open(el); else if (cur && !e.target.closest("#cc-gl")) close();
+  });
+  document.addEventListener("focusin", function(e){
+    var el = e.target.closest && e.target.closest("[data-gl]");
+    if (el) open(el);
+  });
+  document.addEventListener("focusout", close);
+  document.addEventListener("click", function(e){
+    var el = e.target.closest && e.target.closest("[data-gl]");
+    if (!el) { close(); return; }
+    /* A TAP ON A TERM MUST NEVER EAT A LINK. If the term ever sits inside an
+       anchor or a button, that control wins and the tooltip stays out of it. */
+    if (!el.closest("a,button")) e.preventDefault();
+    if (cur === el) close(); else open(el);
+  });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") close(); });
+  addEventListener("scroll", function(){ if (cur) place(cur); }, true);
+  addEventListener("resize", close);
+
+  /* MARK UP A TERM WHEREVER IT APPEARS AS A WHOLE WORD, inside a container the
+     caller names. Text nodes only - it never touches an attribute, a script,
+     or an element that is already marked. A page opts in; nothing is scanned
+     globally, because a glossary that rewrites the whole document is how you
+     end up with "PDC" underlined inside somebody's ship name. */
+  function decorate(root, terms){
+    if (!root) return 0;
+    var keys = terms || Object.keys(window.CC_GLOSSARY);
+    /* ONE ALTERNATION, BUILT ONCE, ESCAPED ONCE. It was built twice - escaped
+       for the test, raw for the split - and the day a key contains a dot the
+       two stop agreeing. Nothing in the table has one today. That is exactly
+       when to fix it. */
+    var alt = keys.map(function(k){
+      return k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }).join("|");
+    var rx = new RegExp("\\b(" + alt + ")\\b");
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var hits = [], n;
+    while ((n = w.nextNode())) {
+      var p = n.parentElement;
+      if (!p) continue;
+      var tag = p.tagName;
+      if (tag === "SCRIPT" || tag === "STYLE" || p.closest("[data-gl]")) continue;
+      if (rx.test(n.nodeValue)) hits.push(n);
+    }
+    var count = 0;
+    hits.forEach(function(t){
+      var parts = t.nodeValue.split(new RegExp("\\b(" + alt + ")\\b"));
+      if (parts.length < 2) return;
+      var frag = document.createDocumentFragment();
+      parts.forEach(function(seg){
+        if (window.CC_GLOSSARY[seg]) {
+          var s = document.createElement("span");
+          s.className = "gl"; s.tabIndex = 0;
+          s.setAttribute("data-gl", seg);
+          s.textContent = seg;
+          frag.appendChild(s); count++;
+        } else if (seg) {
+          frag.appendChild(document.createTextNode(seg));
+        }
+      });
+      t.parentNode.replaceChild(frag, t);
+    });
+    return count;
+  }
+
+  window.ccGlossary = { open: open, close: close, decorate: decorate,
+                        node: function(){ return box; },
+                        current: function(){ return cur; } };
 })();
 </script>

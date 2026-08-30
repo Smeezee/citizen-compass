@@ -55,13 +55,14 @@ type PackageResult struct {
 // not explicitly included is already left out - this list exists so the reason
 // for each omission is written down where somebody will read it.
 var packageExcluded = map[string]string{
-	"collector-install-id.txt":  "the recipient must get their own, or their reports count as yours",
-	"collector-scrub-salt.bin":  "your pseudonym salt; sharing it would let your tokens be matched to theirs",
-	"collector-consent.txt":     "your agreement is not theirs to inherit - they get asked",
-	"collector-auto.log":        "your session history",
-	"gamelog-dataset.json":      "your data",
-	"collector-master.exe":      "your build, with your tools in it",
-	"captures":                  "your screenshots",
+	"collector-install-id.txt": "the recipient must get their own, or their reports count as yours",
+	"collector-scrub-salt.bin": "your pseudonym salt; sharing it would let your tokens be matched to theirs",
+	"collector-consent.txt":    "your agreement is not theirs to inherit - they get asked",
+	"collector-auto.log":       "your session history",
+	"gamelog-dataset.json":     "your data",
+	"collector-master.exe":     "your build, with your tools in it",
+	"captures":                 "your screenshots",
+	"pairs":                    "your screenshots, cut up - same reason as captures",
 }
 
 // BuildCrewPackage writes a zip somebody else can run.
