@@ -68,8 +68,19 @@ RSI's own Spectrum thread *"Alpha 4.10 LIVE - Hotfix Central"*, published
 **Both source files are corrected on disk. NOTHING IS DEPLOYED**, so this is not
 a LOG entry and does not go in the table below. The public site still says 4.9.
 
-    Patch: Alpha 4.10.0 "Siege of Orison" (LIVE)  |  Compiled/updated: 2026-08-30
+    Patch: Alpha 4.10.0 "Siege of Orison" (LIVE)  |  Ship data compiled: 2026-07-30
     ● Live 4.10.0       ◆ PTU —
+
+**AND THE FIRST VERSION OF THIS FIX CARRIED AN ERROR OF C1'S, CAUGHT BY CODE.**
+It moved `Compiled/updated` to 2026-08-30. **That date is a claim about the
+SHIP DATA - when the prices and dealer rows were compiled - and nothing was
+compiled.** A header was edited and stamped as though the page had been rebuilt.
+
+**The label is now `Ship data compiled: 2026-07-30`, which is the truth and is
+better than what was there before.** The old line said 4.9 was live, which hid
+the gap entirely by being wrong about the patch. The page now states both facts
+and lets a reader judge the distance between them: **the game is on 4.10, our
+numbers are from July.**
 
 **The live date is deliberately absent** — no RSI source states one for 4.10 and
 a date that cannot be sourced does not go on the public site.
