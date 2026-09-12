@@ -25,6 +25,7 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 
+	"citizencompass/pkg/apikeyguard"
 	"citizencompass/pkg/pipelinelog"
 )
 
@@ -33,6 +34,7 @@ var (
 	inboxDir      string
 	needsReviewDir string
 	docsDir       string
+	correspondenceDir string
 	shipsDir      string
 	modelsUnsortedDir string
 	handoffArchiveDir string
@@ -100,6 +102,8 @@ func logMsg(format string, args ...interface{}) {
 
 func main() {
 	once := flag.Bool("once", false, "Run health-score refresh + LATEST_HANDOFF.md regeneration a single time and exit, without starting the file watcher")
+	bootOnce := flag.String("boot-once", "", "Generate BOOT.md ONCE to this path (audit-only) and exit: no watcher, no log, no handoff")
+	rootFlag := flag.String("root", "", "Project root (default: the folder the executable is in)")
 	flag.Parse()
 
 	exePath, err := os.Executable()
@@ -107,10 +111,22 @@ func main() {
 		log.Fatalf("could not determine executable path: %v", err)
 	}
 	projectRoot = filepath.Dir(exePath)
+	if *rootFlag != "" {
+		projectRoot = *rootFlag
+	}
+
+	// -boot-once IS AUDIT-ONLY AND COMES FIRST ON PURPOSE (brain two v0,
+	// 2026-09-12). It reads the tree, writes one page to the path it was given,
+	// and exits - before the logger exists, so it never adds a line to the live
+	// watcher's log, and before any inbox is read or any file is filed.
+	if *bootOnce != "" {
+		os.Exit(runBootOnce(projectRoot, *bootOnce))
+	}
 
 	inboxDir = filepath.Join(projectRoot, "inbox")
 	needsReviewDir = filepath.Join(projectRoot, "_needs_review")
 	docsDir = filepath.Join(projectRoot, "docs")
+	correspondenceDir = filepath.Join(projectRoot, "correspondence")
 	shipsDir = filepath.Join(projectRoot, "tests", "testing-site", "ships")
 	modelsUnsortedDir = filepath.Join(projectRoot, "models", "_unsorted")
 	handoffArchiveDir = filepath.Join(projectRoot, "docs", "handoff_archive")
@@ -121,6 +137,21 @@ func main() {
 	initHandoffPaths()
 
 	logger = pipelinelog.New(projectRoot, "inbox_watcher")
+
+	// THE STARTUP GUARD. Sleven's order, 2026-09-09.
+	//
+	// This process runs unattended and never stops. If ANTHROPIC_API_KEY is
+	// ever set in the environment it inherits, anything that later grows an AI
+	// call inside it would bill a metered account and look like nothing
+	// happened. It refuses to start instead.
+	//
+	// PLACED AFTER THE LOGGER ON PURPOSE, and this is the whole of "make it
+	// loud". A refusal on stderr from a Task Scheduler process goes nowhere
+	// anybody looks. logs/inbox_watcher.log is read by people on this project
+	// every day, so that is where a refusal has to land. Nothing has been done
+	// before this point except working out paths - no inbox is read, no file is
+	// filed, nothing is written but the log line itself.
+	apikeyguard.Enforce("inbox_watcher.exe", func(msg string) { logMsg("%s", msg) })
 
 	os.MkdirAll(inboxDir, 0755)
 
@@ -235,6 +266,11 @@ func main() {
 		}
 	}()
 
+	// THE BEAT (Architecture's ruling, 2026-09-12): desk fetch and a fresh
+	// BOOT.md every tickInterval, mail or no mail. See ticker.go.
+	startBeat(projectRoot)
+	logMsg("Beat started: desk fetch + BOOT.md every %s", tickInterval)
+
 	select {}
 }
 
@@ -305,8 +341,66 @@ func processPath(path string) {
 	}
 	logMsg("✓ %s -> %s (%s)", filepath.Base(path), dest, note)
 
+	// COALESCE THE EXPENSIVE TAIL WHEN MORE FILES ARE ALREADY WAITING.
+	//
+	// rescanAndScore() + regenerateHandoff() ran after EVERY file and together
+	// cost about seventy seconds - the rescan being the expensive half. With
+	// nine memos queued that is a tray that takes half an hour to drain, and
+	// measured on 2026-09-07 it was routing roughly one file every two to
+	// three minutes.
+	//
+	// THAT IS A CORRECTNESS PROBLEM, NOT A SPEED ONE. The same day, three
+	// orders landed on one row - publish it, remove it, keep it - each
+	// reversing the last. A slow tray means acting on an order that has already
+	// been withdrawn. It cost nothing that time only because the delay was
+	// longer than the reversal.
+	//
+	// The regeneration is NOT redundant - I checked before changing this, and
+	// the output differs between runs, so skipping it entirely would lose
+	// content. It is only the REPETITION that is waste: doing it once after a
+	// batch says exactly what doing it nine times says.
+	//
+	// THE FLOOD GUARD IS THE POINT. Deferring while anything is pending would
+	// let a directory that never empties defer forever, and the handoff would
+	// silently stop updating - which is worse than slow, because it looks fine.
+	// So at most maxCoalesced files in a row may defer; the next one pays the
+	// cost regardless.
+	if pendingInboxFiles() > 0 && coalescedRuns < maxCoalesced {
+		coalescedRuns++
+		logMsg("  %d more file(s) waiting - deferring the rescan (%d/%d)",
+			pendingInboxFiles(), coalescedRuns, maxCoalesced)
+		return
+	}
+	coalescedRuns = 0
+
 	rescanAndScore()
 	regenerateHandoff()
+}
+
+// maxCoalesced caps how many files in a row may defer the rescan. Ten is a
+// batch; it is not "until the queue is empty", because a queue that never
+// empties would defer forever.
+const maxCoalesced = 10
+
+var coalescedRuns int
+
+// pendingInboxFiles counts files still waiting at the top of inbox/.
+//
+// Top level only, and deliberately: the protected subdirectories under inbox/
+// are not a work queue, and counting them would make the watcher believe it is
+// permanently busy and never regenerate.
+func pendingInboxFiles() int {
+	entries, err := os.ReadDir(inboxDir)
+	if err != nil {
+		return 0
+	}
+	n := 0
+	for _, e := range entries {
+		if !e.IsDir() {
+			n++
+		}
+	}
+	return n
 }
 
 // waitUntilStable waits until a file's size stops changing across

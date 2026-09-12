@@ -2,6 +2,7 @@ go 1.26.5
 
 use (
 	./citizen-collector
+	./pkg/apikeyguard
 	./pkg/pgconn
 	./pkg/pipelinelog
 	./registry-builder

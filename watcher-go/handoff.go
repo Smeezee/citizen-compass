@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -162,6 +163,40 @@ func isUpdateDoc(path string, text string) bool {
 
 // appendUpdate appends one timestamped entry to the running updates log --
 // never overwrites, matching generate_handoff.py's append_update() exactly.
+// existingEOL reports the line ending a file already uses, so an append matches
+// it instead of mixing two conventions into one file.
+//
+// FIX THE PRODUCER, NOT THE PRODUCT (2026-08-30). `git ls-files --eol` found
+// seven files with MIXED worktree endings, and `docs/handoff_archive/
+// _updates_log.md` is one of them - **written by us**. This function appended a
+// bare "\n" to a file whose existing lines end "\r\n", every single time an
+// update was filed, so the mixing was not historical: it was a live producer
+// and would have kept going.
+//
+// Matching the file rather than normalising it is deliberate. Rewriting the log
+// to one convention is a bulk mutation of a file nobody has complained about, to
+// fix a fault that costs nothing today. Appending correctly stops the recurrence
+// and touches nothing that already exists.
+//
+// An unreadable or empty file answers "\n": a new log should be LF, and a
+// failure to read is not a reason to guess CRLF.
+func existingEOL(path string) string {
+	f, err := os.Open(path)
+	if err != nil {
+		return "\n"
+	}
+	defer f.Close()
+	buf := make([]byte, 8192)
+	n, _ := f.Read(buf)
+	b := buf[:n]
+	crlf := bytes.Count(b, []byte("\r\n"))
+	lf := bytes.Count(b, []byte("\n")) - crlf
+	if crlf > lf {
+		return "\r\n"
+	}
+	return "\n"
+}
+
 func appendUpdate(text string, sourceName string) error {
 	if err := os.MkdirAll(handoffArchiveDir, 0755); err != nil {
 		return err
@@ -174,6 +209,13 @@ func appendUpdate(text string, sourceName string) error {
 		needsLeadingBlank = true
 	}
 
+	// Match what the file already uses. The entry is composed with "\n"
+	// throughout and converted once, here, so no caller has to remember.
+	eol := existingEOL(updatesLogPath())
+	if eol != "\n" {
+		entry = strings.ReplaceAll(entry, "\n", eol)
+	}
+
 	f, err := os.OpenFile(updatesLogPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
@@ -181,7 +223,7 @@ func appendUpdate(text string, sourceName string) error {
 	defer f.Close()
 
 	if needsLeadingBlank {
-		if _, err := f.WriteString("\n"); err != nil {
+		if _, err := f.WriteString(eol); err != nil {
 			return err
 		}
 	}

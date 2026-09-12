@@ -47,6 +47,16 @@ func classifyMarkdown(path string) (string, string, error) {
 	}
 	text := string(raw)
 
+	// MEMOS ARE CHECKED FIRST, and the order matters. A memo whose Subject
+	// contains the word "update" would otherwise be filed into the handoff
+	// archive - which is the exact defect routing_prefix_test.go records, a
+	// WORK ORDER swallowed because "UPDATE" appeared inside "updateDate".
+	// readMemo is strict (To AND From AND Subject), so putting it first cannot
+	// capture an ordinary document.
+	if note, dest, handled, err := classifyMemo(path, text); handled {
+		return note, dest, err
+	}
+
 	if isHandoffDoc(path, text) {
 		stamp := time.Now().Format("20060102_150405")
 		dest := filepath.Join(handoffArchiveDir, fmt.Sprintf("%s_%s", stamp, filepath.Base(path)))
