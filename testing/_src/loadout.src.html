@@ -3,6 +3,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Citizen Compass — Loadout Bench</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Citizen Compass">
+<meta property="og:title" content="Citizen Compass — ship loadout">
+<meta property="og:description" content="Fit a ship, see what changes, know where to buy — before you fly. Shared builds open ready to tweak.__CC_PATCH__">
+<meta property="og:url" content="__CC_ORIGIN__/loadout">
+<meta property="og:image" content="__CC_ORIGIN__/og-loadout.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Citizen Compass — ship loadout">
+<meta name="twitter:description" content="Fit a ship, see what changes, know where to buy — before you fly. Shared builds open ready to tweak.__CC_PATCH__">
+<meta name="twitter:image" content="__CC_ORIGIN__/og-loadout.png">
 <style>
 /* ===================== H1g: THE PALETTE IS A TOKEN SET =====================
    EVERY COLOUR ON THIS PAGE IS A TOKEN AND THERE ARE NO LITERALS BELOW THIS
@@ -815,6 +825,7 @@ td.p{color:var(--accent2);font-weight:700;white-space:nowrap}
 footer{margin:24px -16px 0;padding:15px 16px;background:var(--footerbg);border-top:1px solid var(--line);
  color:var(--faint);font:400 12.5px/1.6 inherit}
 </style>
+<!-- CC_GLOSSARY -->  <!-- the hover glossary is injected here at build; see cc_glossary.inc.html -->
 <script>
 /* ============ H1g-1/H1g-2: ONE DIMMER, AND IT DIMS THE WHOLE PAGE ==========
 
@@ -1185,7 +1196,24 @@ CC_THEME.apply();
 </script>
 
 <div class="top">
-  <a href="index.html" style="text-decoration:none;font-weight:700">&larr; All ships</a>
+  <a href="index.html" id="allships" style="text-decoration:none;font-weight:700">&larr; All ships</a>
+<script>
+/* THE BACK LINK GOES WHERE YOU CAME FROM, AND ONLY WHERE THE CARD SAID SO.
+   This was hardcoded to index.html - the OLD front page. A visitor who reached a ship
+   from /next and clicked it landed on the old page with NO WAY BACK. Sleven hit exactly
+   that on 2026-09-07 and had to be told the URL.
+   NOT document.referrer: it is empty on a reload, stripped by some referrer policies, and
+   attacker-settable. The card states its own origin in the query string and this reads that
+   ONE value by exact equality. Anything else, including no parameter at all, keeps
+   index.html - fail closed to the page that has always worked.
+   THIS IS A PATCH WITH AN EXPIRY. It exists only because the site currently has two front
+   pages. The day /next becomes the front page, this block and the from=next in
+   tools/frontpage/build_next_frontpage.py are both deleted. */
+(function(){try{
+  var a=document.getElementById("allships");
+  if(a && new URLSearchParams(location.search).get("from")==="next"){a.setAttribute("href","next.html");}
+}catch(e){}})();
+</script>
   <h1 id="shipname">Ship</h1>
   <select id="ship"></select>
   <span class="spacer"></span>
@@ -1567,7 +1595,14 @@ function fillProvenance(){
   n.innerHTML=`<details class="disc" id="provdisc">
     <summary>
       <span class="stamp">PATCH ${_pat}</span>
-      <span class="srcline">from Star Citizen's game files &middot;
+      <!-- Q62.T-008: "component data" is not decoration. The badge used to read
+           "from Star Citizen's game files" with nothing limiting it, while the
+           panel it opens says in its own words "Prices and shop locations are
+           market data and are not in the game files." Two statements on one
+           screen, and the unscoped one was the wrong one. The body already
+           scopes the claim to component names, manufacturers, sizes and stats;
+           the badge now says the same thing the body does. -->
+      <span class="srcline">component data from Star Citizen's game files &middot;
         scunpacked ${_snap}</span>
       <span class="opener">Where these numbers come from</span>
     </summary>
@@ -1603,8 +1638,15 @@ function fillProvenance(){
           <span class="src cig">CIG</span>. As soon as you change a part there is
           no CIG figure for that build, so the page sums the fitted components
           itself and marks it <span class="src ours">summed</span>. Our sum
-          reproduces CIG's pilot DPS on 272 of the 275 ships CIG publishes one
-          for.</p>
+          reproduces CIG's sustained pilot DPS${META.cig_sdps_total
+          ?` on ${META.cig_sdps_agree} of the ${META.cig_sdps_total} ships CIG publishes one for`
+          :` &mdash; the agreement count is not in this build's data`}. Both
+          figures add up each gun's own sustained damage; neither accounts for
+          guns sharing power or heat.</p>`+/* THE COUNT IS PRINTED FROM
+          LOADOUT_META, NEVER TYPED - it said "272 of the 275" by hand while the
+          generator counted 277 and 0 (Architecture, 2026-09-12). The last
+          sentence is a PLACEHOLDER stating the plain fact until Echo's wording
+          for what agreement means lands (BRIEF-002). */`
         </section>
         <section>
           <h5>What is not here</h5>
@@ -1731,7 +1773,10 @@ function calc(build,over){
          /* B7: THREE DIFFERENT QUESTIONS, THREE DIFFERENT NUMBERS.
             `dps`/`alpha` are the PILOT's and are not touched - they are the
             proven IsPilotSlaveable outermost-lock figure that agrees with
-            CIG's own on 275 of 275 ships.
+            CIG's own sustained figure. THE COUNT IS NOT TYPED HERE: the page
+            prints it from LOADOUT_META.cig_sdps_agree / cig_sdps_total, which
+            the generator computes on every build (a typed "275 of 275" sat
+            here after the data had moved to 277).
             `tdps`/`talpha` are what GUNNERS add. One number cannot mean both
             "what you can do alone" and "what a crew can do", so they are not
             merged, and Sleven's correction stands: a ship having turrets does
@@ -1767,8 +1812,11 @@ function calc(build,over){
       if(p.dps) r.hasPilotGun=true;
       /* THE DAMAGE MIX, not just the total. Armour resists six channels
          separately, so a total DPS cannot be matched against a hull at all -
-         it has to be carried apart to be put back together. */
-      if(p.dmg) for(const k in p.dmg) r.mix[k]=(r.mix[k]||0)+p.dmg[k];
+         it has to be carried apart to be put back together.
+         `mix` IS BURST. CIG splits only burst by channel; `r.dps` above is
+         sustained. The matchup says burst wherever it prints these. */
+      if(p.burst_by_channel) for(const k in p.burst_by_channel)
+        r.mix[k]=(r.mix[k]||0)+p.burst_by_channel[k];
     }else{
       /* B7: COUNTED, AND KEPT APART. The exclusion above was right and stays;
          what was missing is that the excluded half was then thrown away
@@ -2167,15 +2215,23 @@ function renderMatchup(){
   }
   const profs=armourProfiles().slice(0,5);
   const raw=chan.reduce((t,k)=>t+mix[k],0);
+  /* BURST, SAID EVERYWHERE IT PRINTS (Architecture's ruling (b), 2026-09-12).
+     CIG splits damage by type only for BURST; the headline above is SUSTAINED.
+     Two units on one page, each labelled - we label, we do not model a
+     sustained split CIG never published. */
   let h=`<h2>What this build's guns do against armor</h2>
     <p class="sub2">This build fires
     ${chan.map(k=>`<b>${Math.round(mix[k])} ${k.toLowerCase()}</b>`).join(" + ")}
-    DPS. Armor works differently against each damage type, so the same gun that
+    burst DPS. Armor works differently against each damage type, so the same gun that
     shreds one ship can barely scratch another. That is why there is no single
     toughness number, and no single damage number either. It depends what you
     are shooting at.</p>
+    <p class="sub2">These are <b>burst</b> figures &mdash; what the guns do before
+    heat and ammunition catch up &mdash; because CIG splits damage by type only for
+    burst. The Sustained DPS above is a different, lower number and is not
+    comparable with this table.</p>
     <table><tr><th>Against a hull like</th><th>Takes</th>
-    <th>Effective DPS</th><th>vs. unarmored</th></tr>`;
+    <th>Effective burst DPS</th><th>vs. unarmored (burst)</th></tr>`;
   profs.forEach(pr=>{
     const eff=effectiveDps(mix,pr.dm);
     const pct=Math.round(eff/Math.max(raw,1)*100);
@@ -2197,6 +2253,13 @@ function renderMatchup(){
     <p>Nothing here says one gun is better. A ballistic loadout that looks weak
     against an energy-resistant hull is the stronger choice against a
     physical-resistant one, and both facts are on this table at once.</p>
+    </section><section>
+    <h5>Every figure here is burst</h5>
+    <p>CIG publishes damage split by type only as burst, so this table is burst
+    throughout. For a build that mixes damage types, the &ldquo;vs.
+    unarmored&rdquo; percentage is weighted by each type&rsquo;s share of the
+    burst, which can differ from its share once heat and ammunition set in.
+    CIG does not publish that sustained split, so we do not calculate one.</p>
     </section></div></div></details>`;
 
   /* THE SHIELD IS IN FRONT OF THE ARMOUR AND THE TABLE ABOVE IGNORES IT.
@@ -2452,7 +2515,10 @@ const CC_MEANS={
 function partRow(k, fit, pinned, headKey){
   const p=P[k]||{};
   const bits=[];
-  const LEAD={dps:["DPS",v=>v], ehp:["HP",fmt], qt:["Range",v=>v+"Gm"],
+  /* "Sustained DPS", not "DPS" (Architecture, 2026-09-12): p.dps IS the
+     sustained figure (Damage.Sustained), and a visitor checking a CF-447's
+     414.5 against a tool that quotes CIG's burst 817.9 concluded we were wrong. */
+  const LEAD={dps:["Sustained DPS",v=>v], ehp:["HP",fmt], qt:["Range",v=>v+"Gm"],
     cap:["Power",fmt], cool:["Cooling",v=>v], scu:["SCU",v=>v],
     gn:["Carries",()=>p.gn+" \u00d7 S"+p.gs], hp:["HP",fmt],
     pw:["Draw",fmt], ms:["Mass",fmt], s:["Size",v=>"S"+v]};
@@ -2462,7 +2528,7 @@ function partRow(k, fit, pinned, headKey){
       <b>${LEAD[lead][1](p[lead])}</b></span>`);
   }
   const seen = k2 => k2===lead;
-  if(p.dps&&!seen('dps'))bits.push(`<span>DPS <b>${p.dps}</b></span>`);
+  if(p.dps&&!seen('dps'))bits.push(`<span>Sustained DPS <b>${p.dps}</b></span>`);
   if(p.ehp&&!seen('ehp'))bits.push(`<span>HP <b>${fmt(p.ehp)}</b></span>`);
   if(p.qt&&!seen('qt'))bits.push(`<span>Range <b>${p.qt}Gm</b></span>`);
   if(p.cap&&!seen('cap'))bits.push(`<span>Power <b>${fmt(p.cap)}</b></span>`);
@@ -3159,6 +3225,13 @@ function renderAcq(){
     <div class="v">${sh.m||i.smfr||"\u2014"}</div></div>`);
   if(sh.role||i.srole) bits.push(`<div class="a"><div class="k">Role</div>
     <div class="v">${sh.role||i.srole}</div></div>`);
+  /* THE CATEGORY, AND WHERE IT CAME FROM - Architecture's ruling, 2026-09-12.
+     The front page files a ship under a category bucket. This page is the
+     record, so it shows RSI's own role string exactly and says whose words
+     those are - or, where no RSI role joined, says the category is ours. */
+  if(i.cat) bits.push(`<div class="a"><div class="k">Category</div>
+    <div class="v">${i.csrc==="rsi"?(i.rrole||i.cat):i.cat}</div>
+    <div class="k">${i.csrc==="rsi"?"RSI&rsquo;s published ship role":"our own category, from game data &mdash; no RSI role joined for this ship"}</div></div>`);
   el.innerHTML=bits.join("");
 }
 

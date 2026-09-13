@@ -58,6 +58,7 @@ Rule 15: every open states its encoding.
 """
 
 import json
+import ast
 import os
 import shutil
 import subprocess
@@ -150,7 +151,28 @@ def _load_sweep_gate():
     return mod
 
 
+def _front_door_page():
+    """The page the front door serves, read out of the REAL deploy_pages.py.
+
+    Parsed rather than restated: a literal "next.html" here would be a second
+    writer for the same fact, and the day the front door moves again this
+    fixture would be modelling yesterday's payload while still passing.
+    """
+    src = os.path.join(ROOT, "testing", "_src", "deploy_pages.py")
+    tree = ast.parse(read(src), filename=src)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "FRONT_DOOR_PAGE":
+                    return ast.literal_eval(node.value)
+    raise SystemExit(
+        "NOT PERFORMED: FRONT_DOOR_PAGE could not be read out of "
+        "deploy_pages.py, so this control cannot build a payload with a front "
+        "door in it. Reported rather than passed.")
+
+
 def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
+                 front_gate=None, front_stamp=None,
                  extra_file=None, models=True, index=True,
                  browser_checks=True, red_check=None, receipt=None,
                  sweep="clean"):
@@ -172,6 +194,23 @@ def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
             (STAMP_HEAD if stamp else PLAIN_HEAD) +
             "</body></html>")
         write(os.path.join(deploy, "index.html"), body)
+        # THE FRONT DOOR. Both deploy scripts prove the gate and the stamp on
+        # this page too since 2026-09-11, so a fixture without it models a
+        # payload that cannot exist and would fail for the wrong reason.
+        #
+        # front_gate and front_stamp default to whatever index.html got. Set
+        # them apart and you get the payload that caused this change: a
+        # perfect index.html beside a front door missing its markers, which is
+        # the ONLY shape that tells an index-only guard from a correct one.
+        _fg = gate if front_gate is None else front_gate
+        _fs = stamp if front_stamp is None else front_stamp
+        front_body = (
+            "<html><head>" + (STAMP_TITLE if _fs else PLAIN_TITLE) +
+            "</head><body>" +
+            (GATE_MARKUP if _fg else "") +
+            (STAMP_HEAD if _fs else PLAIN_HEAD) +
+            "</body></html>")
+        write(os.path.join(deploy, _front_door_page()), front_body)
 
     if models:
         write(os.path.join(deploy, "models", "Hammerhead.glb"), "not really a glb")
@@ -199,7 +238,7 @@ def make_project(tmp, *, gate=True, stamp=True, live_name="citizencompass",
     #
     # Copied rather than stubbed, for the same reason the guard itself is: a
     # stub would be testing the stub.
-    for _dep in ("check_deploy_clean.py", "deploy_pages.py"):
+    for _dep in ("check_deploy_clean.py", "deploy_pages.py", "front_door.py"):
         shutil.copyfile(os.path.join(ROOT, "testing", "_src", _dep),
                         os.path.join(proj, "testing", "_src", _dep))
 
@@ -352,6 +391,42 @@ def main():
         check("and never got as far as saying it would publish",
               "WOULD PUBLISH" not in out)
 
+        shutil.rmtree(proj)
+
+        # ---------------------------------------------------------------
+        # THE ASYMMETRIC PAYLOAD - the one that actually happened.
+        #
+        # On 2026-09-11 Q54 moved the front door onto another page. index.html
+        # stayed gated and stamped, the served entry point carried neither, and
+        # deploy_testing.ps1 - which read index.html by name - printed
+        # "testing stamp present" on that very deploy.
+        #
+        # A guard that reads only index.html PASSES both cases below. That is
+        # what makes them the ones worth having.
+        print("\n1b. THE FRONT DOOR ALONE IS UNMARKED - index.html is perfect")
+        proj = make_project(tmp, gate=True, stamp=True, front_stamp=False)
+        code, out = run_script("deploy_testing.ps1", proj)
+        check("deploy_testing.ps1 REFUSES a payload whose FRONT DOOR carries "
+              "no stamp, even though index.html does", code != 0)
+        check("and names the stamp as the reason", "testing <date>" in out)
+        check("and never got as far as its dry run",
+              "-WhatIf: would run" not in out)
+        shutil.rmtree(proj)
+
+        proj = make_project(tmp, gate=True, stamp=True, front_gate=False)
+        code, out = run_script("deploy_testing.ps1", proj)
+        check("deploy_testing.ps1 REFUSES a payload whose FRONT DOOR carries "
+              "no password gate, even though index.html does", code != 0)
+        check("and names the gate as the reason", "PASSWORD GATE" in out)
+        shutil.rmtree(proj)
+
+        # And the live script's half of the same asymmetry: a stamp on the
+        # front door alone must still stop a live publish.
+        proj = make_project(tmp, gate=False, stamp=False, front_stamp=True)
+        code, out = run_script("deploy_live.ps1", proj)
+        check("deploy_live.ps1 REFUSES a payload stamped on the FRONT DOOR "
+              "alone, even though index.html is clean", code != 0)
+        check("and names the stamp as the reason", "testing <date>" in out)
         shutil.rmtree(proj)
 
         # ---------------------------------------------------------------

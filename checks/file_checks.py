@@ -9,8 +9,11 @@ Each function takes `repo_root: Path` and returns list[Finding].
 """
 
 import csv
+import datetime
+import hashlib
 import io
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -811,6 +814,927 @@ def broken_internal_link_check(repo_root: Path) -> list[Finding]:
     return findings
 
 
+# --- document truth ----------------------------------------------------------
+#
+# THE SIX DOCUMENT CHECKS. Ordered by Sleven 2026-09-08: he asked for a
+# repeatable way to fact-check the project's own files, was offered automatic
+# checks or a standing manual pass, and answered BOTH. These are the automatic
+# half. Each one is tied to an incident that already happened here.
+#
+# THEY ARE AUDITOR-LAYER, NOT SWEEP. They flag; they never gate a deploy, and
+# they add zero seconds to the deploy sweep because nothing in the sweep calls
+# them.
+#
+# THE STANDING LIMIT, WHICH IS PART OF THE ORDER RATHER THAN ADVICE:
+# a check that flags constantly becomes wallpaper. Each of these must be QUIET
+# when things are fine. Where a rule is being introduced over a backlog that
+# predates it, the backlog is reported as ONE line carrying a count - never as
+# one finding per historical file, which is how a checker gets switched off
+# inside a week.
+
+# THE SCOPE RULE, AND IT IS NOT OPTIONAL.
+#
+# History is allowed to name dead paths. Documents asserting a PRESENT state are
+# not. docs/handoff_archive/ holds 773 documents that correctly describe a
+# repository that no longer exists; a check firing on those produces hundreds of
+# correct, useless findings.
+#
+# So: this list, and nothing else.
+#
+# CURRENT-STATE LEFT THIS LIST ON 2026-09-12 (Architecture's approval,
+# memo_build_check-6-is-approved-and-three-things-are-mine-to-fix). BOOT.md is
+# the state now and docs/CURRENT-STATE.md is history - which, by the rule above,
+# may name dead paths. Kept here it was already reporting 10 dead paths in a file
+# nobody updates, a count that could only grow. The root CURRENT-STATE.md entry
+# went with it; that file no longer exists.
+#
+# AND BOOT.md IS DELIBERATELY NOT HERE. It prints MISSING paths on purpose - that
+# is its honesty rule - so this check would report every honest MISSING line as
+# a defect. _verify_document_checks.py holds both of these.
+PRESENT_STATE_DOCS = (
+    "CLAUDE.md",
+    "OWNERS.md",
+    "NEXT.md",
+    "LIVE.md",
+    "START-CODE.md",
+    "docs/UX_DOCTRINE.md",
+    "docs/ARCHITECTURE_DECISIONS.md",
+)
+PRESENT_STATE_GLOBS = ("docs/DECISION_*.md", "docs/RULING_*.md")
+
+
+def _present_state_documents(repo_root: Path) -> list[Path]:
+    """Every document asserting a present state, per the scope rule above. An
+    entry that does not exist is simply absent from the list - a missing state
+    document is check 1's business, not check 6's."""
+    out = [repo_root / rel for rel in PRESENT_STATE_DOCS]
+    for pattern in PRESENT_STATE_GLOBS:
+        out.extend(sorted(repo_root.glob(pattern)))
+    return [p for p in out if p.is_file()]
+
+
+def _doc_text(path: Path) -> str | None:
+    """Rule 15: the encoding is stated. Returns None when the file cannot be
+    read, so every caller reports NOT PERFORMED rather than clean."""
+    try:
+        return path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return None
+
+
+def _rel(repo_root: Path, path: Path) -> str:
+    return str(path.relative_to(repo_root)).replace("\\", "/")
+
+
+# --- 1. state_document_agreement ---------------------------------------------
+
+# Basenames that CLAIM to be the current state of the project. A file is in this
+# family because of what its name promises, not because of what it contains.
+STATE_DOC_NAMES = ("CURRENT-STATE.md", "CURRENT_STATE.md", "PROJECT-STATE.md")
+
+# Where a session is told to start reading, and where ownership is recorded.
+ONBOARDING_DOCS = ("CLAUDE.md", "START-CODE.md", "README.md", "OWNERS.md")
+
+# Directory names never descended into when looking for a state document.
+#
+# THIS IS A COST FIX, MEASURED. The first version used Path.rglob over the whole
+# tree and took 19.4 SECONDS - this repository holds ~29,000 files cloned from
+# third-party sources, and a bare rglob walks every one of them. Pruning takes it
+# under a tenth of a second. None of these can hold a state document:
+# external-sources is landed third-party data, handoff_archive is history,
+# _to_delete is the rule 1 holding pen, and the rest are machinery.
+STATE_SCAN_PRUNE = frozenset((
+    ".git", ".claude", "node_modules", "venv", "__pycache__",
+    "_to_delete", "handoff_archive", "external-sources", "snapshots",
+    "captures", "models", "releases",
+))
+
+
+def _find_state_documents(repo_root: Path) -> list[Path]:
+    """Every file in the tree whose NAME claims to be project state, found by
+    a pruned walk rather than a full one."""
+    found = []
+    for dirpath, dirnames, filenames in os.walk(repo_root):
+        dirnames[:] = [d for d in dirnames if d not in STATE_SCAN_PRUNE]
+        for name in filenames:
+            if name in STATE_DOC_NAMES:
+                found.append(Path(dirpath) / name)
+    return sorted(found)
+
+_STATE_REF = re.compile(r"`([^`\n]*(?:CURRENT-STATE|CURRENT_STATE|PROJECT-STATE)\.md)`")
+
+
+def state_document_agreement_check(repo_root: Path) -> list[Finding]:
+    """Two files claiming to be the current state, and onboarding pointing at
+    the wrong one.
+
+    THE INCIDENT. On 2026-09-07 the audit desk produced a nineteen-finding
+    project audit from the root CURRENT-STATE.md - a 76-line note from
+    2026-08-02 about which URL is which - and never opened the 1,403-line
+    authoritative one in docs/. Two findings lost their recommendations and one
+    was withdrawn entirely. The root file's NAME claimed to be project state and
+    its content was not, and the boot instructions pointed at it first.
+
+    THREE ARMS.
+      A  more than one state document on disk, and one of them does not name the
+         newest as authoritative
+      B  an onboarding or ownership document names a state document that is NOT
+         ON DISK - the pointer outlived the file
+      C  onboarding names a state document that is older than another one on
+         disk, which is the 2026-09-07 incident exactly
+
+    'Newest' is decided by modification time and nothing else. That is a weak
+    signal on its own, which is why arm A wants an explicit pointer rather than
+    trusting the clock: the finding is THE ABSENCE OF A POINTER, not the age.
+    """
+    findings: list[Finding] = []
+
+    on_disk = _find_state_documents(repo_root)
+    rel = {p: _rel(repo_root, p) for p in on_disk}
+
+    if not on_disk:
+        return [Finding(
+            "state_document_agreement", None, "LIMITATION",
+            "no file named " + " or ".join(STATE_DOC_NAMES) + " exists anywhere in "
+            "the tree, so there is nothing to compare. Reported as NOT PERFORMED "
+            "rather than as a pass over an empty set.")]
+
+    newest = max(on_disk, key=lambda p: p.stat().st_mtime)
+
+    # Arm A - siblings must name the newest one.
+    if len(on_disk) > 1:
+        for p in on_disk:
+            if p == newest:
+                continue
+            text = _doc_text(p)
+            if text is None:
+                findings.append(Finding(
+                    "state_document_agreement", rel[p], "LIMITATION",
+                    "could not be read, so whether it points at the authoritative "
+                    "state document is unknown. Not reported as clean."))
+                continue
+            if rel[newest] not in text:
+                findings.append(Finding(
+                    "state_document_agreement", rel[p], "DEFECT",
+                    f"claims to be project state by its name and does NOT name "
+                    f"{rel[newest]} - the newest state document - anywhere in its "
+                    f"text. Two files claiming one job with no pointer between them "
+                    f"is how a reader ends up in the wrong one. Either point at the "
+                    f"authoritative file in its first lines, or rename this one to "
+                    f"say what it actually covers."))
+
+    # Arms B and C - what the onboarding documents point at.
+    for name in ONBOARDING_DOCS:
+        doc = repo_root / name
+        if not doc.is_file():
+            continue
+        text = _doc_text(doc)
+        if text is None:
+            findings.append(Finding(
+                "state_document_agreement", name, "LIMITATION",
+                "could not be read, so its state-document pointers were not "
+                "examined. Not reported as clean."))
+            continue
+        for ref in sorted(set(_STATE_REF.findall(text))):
+            target = repo_root / ref
+            if not target.is_file():
+                findings.append(Finding(
+                    "state_document_agreement", name, "DEFECT",
+                    f"points a reader at {ref!r}, which is not on disk. A pointer "
+                    f"that outlived its file sends the reader nowhere, and there is "
+                    f"no error to tell them so."))
+            elif len(on_disk) > 1 and target.resolve() != newest.resolve():
+                findings.append(Finding(
+                    "state_document_agreement", name, "DEFECT",
+                    f"points a reader at {ref!r}, which is OLDER than {rel[newest]}. "
+                    f"This is the 2026-09-07 incident exactly: a whole audit was "
+                    f"produced from the stale file because onboarding named it "
+                    f"first."))
+
+    if not findings:
+        present_onboarding = [n for n in ONBOARDING_DOCS if (repo_root / n).is_file()]
+        findings.append(Finding(
+            "state_document_agreement", None, "PASS",
+            f"{len(on_disk)} state document(s) on disk ({', '.join(rel.values())}); "
+            f"newest is {rel[newest]}; every state-document pointer in "
+            f"{', '.join(present_onboarding)} resolves to a file that exists and "
+            f"none names an older sibling"))
+    return findings
+
+
+# --- 2. finding_resolution_marker --------------------------------------------
+
+# THE RULE STARTS HERE. Documents written before this date predate it and are
+# reported as ONE backlog line, not as one finding each - see the standing limit
+# at the top of this section. 91 FINDING documents existed on the day the rule
+# was written and 85 carried no marker of any kind; firing 85 times on day one
+# would have retired this checker inside a week.
+FINDING_MARKER_RULE_STARTS = "2026-09-09"
+
+_MARKER = re.compile(
+    r"^[ \t>*_]*(?:\*\*)?\s*(?:Status|STATUS|Resolution|RESOLUTION)\s*(?:\*\*)?\s*:"
+    r"\s*(?:\*\*)?\s*(OPEN|CLOSED|WITHDRAWN|SUPERSEDED)\b",
+    re.MULTILINE)
+_ISO_DATE = re.compile(r"\b20\d{2}-\d{2}-\d{2}\b")
+_DATED_NAME = re.compile(r"(20\d{2}-\d{2}-\d{2})")
+
+
+def finding_resolution_marker_check(repo_root: Path) -> list[Finding]:
+    """A FINDING_*.md with no OPEN / CLOSED / WITHDRAWN line and a date.
+
+    THE INCIDENT. This project writes findings constantly and closes them in
+    conversation. A reader six months later cannot tell a live problem from one
+    that was fixed the same evening, and has to reconstruct it from surrounding
+    documents - which is how a closed finding gets re-opened and worked twice.
+
+    WHAT COUNTS AS A MARKER: a line reading Status: or Resolution: followed by
+    OPEN, CLOSED, WITHDRAWN or SUPERSEDED, AND an ISO date somewhere in the
+    document. Both, because a status with no date does not say when it became
+    true, and this project has already been bitten by a status that was correct
+    when written and stale when read.
+
+    THE CUTOFF IS THE WHOLE DESIGN. Only documents dated on or after
+    FINDING_MARKER_RULE_STARTS are held to it. The backlog is one LIMITATION
+    line carrying a count that should only ever go down.
+    """
+    findings: list[Finding] = []
+    docs = sorted(repo_root.glob("docs/FINDING_*.md"))
+    if not docs:
+        return [Finding(
+            "finding_resolution_marker", "docs/FINDING_*.md", "LIMITATION",
+            "no FINDING documents found, so nothing was examined. Reported as NOT "
+            "PERFORMED rather than as a pass over an empty corpus.")]
+
+    backlog: list[str] = []
+    unreadable = 0
+    checked = 0
+    in_scope = 0
+    for doc in docs:
+        rel = _rel(repo_root, doc)
+        text = _doc_text(doc)
+        if text is None:
+            unreadable += 1
+            findings.append(Finding(
+                "finding_resolution_marker", rel, "LIMITATION",
+                "could not be read, so its resolution marker was not examined. Not "
+                "reported as clean."))
+            continue
+        checked += 1
+        name_hit = _DATED_NAME.search(doc.name)
+        this_date = (name_hit.group(1) if name_hit
+                     else datetime.date.fromtimestamp(doc.stat().st_mtime).isoformat())
+        if _MARKER.search(text) and _ISO_DATE.search(text):
+            if this_date >= FINDING_MARKER_RULE_STARTS:
+                in_scope += 1
+            continue
+
+        # The document's own date: the one in its filename if it has one,
+        # otherwise its modification time. Never guessed, never inferred from
+        # neighbours.
+        doc_date = this_date
+
+        if doc_date < FINDING_MARKER_RULE_STARTS:
+            backlog.append(rel)
+            continue
+        in_scope += 1
+
+        missing = []
+        if not _MARKER.search(text):
+            missing.append("no Status:/Resolution: line reading OPEN, CLOSED, "
+                           "WITHDRAWN or SUPERSEDED")
+        if not _ISO_DATE.search(text):
+            missing.append("no ISO date anywhere in the document")
+        findings.append(Finding(
+            "finding_resolution_marker", rel, "DEFECT",
+            f"dated {doc_date}, on or after the rule start "
+            f"{FINDING_MARKER_RULE_STARTS}, and has {' and '.join(missing)}. A "
+            f"finding nobody can date and nobody can tell the status of gets worked "
+            f"twice."))
+
+    if backlog:
+        findings.append(Finding(
+            "finding_resolution_marker", "docs/FINDING_*.md", "LIMITATION",
+            f"{len(backlog)} of {checked} FINDING document(s) predate "
+            f"{FINDING_MARKER_RULE_STARTS} and carry no resolution marker. This is a "
+            f"KNOWN BACKLOG, reported as one line rather than {len(backlog)} "
+            f"findings, deliberately - see the standing limit in this section. The "
+            f"count is the thing to watch and it should only ever go down. First "
+            f"few: {backlog[:5]}"))
+
+    if any(f.result == "DEFECT" for f in findings):
+        return findings
+
+    # NO PASS OVER AN EMPTY SET. If not one document is yet in scope, saying
+    # "every document in scope carries a marker" is true of nothing and reads as
+    # a clean bill of health - the silent-success shape this project keeps
+    # finding. It says so instead, and starts passing the day the first
+    # in-scope document is written.
+    if in_scope == 0:
+        findings.append(Finding(
+            "finding_resolution_marker", "docs/FINDING_*.md", "LIMITATION",
+            f"{checked} FINDING document(s) examined"
+            + (f", {unreadable} unreadable" if unreadable else "")
+            + f", and NONE is dated on or after the rule start "
+              f"{FINDING_MARKER_RULE_STARTS}. Nothing is in scope yet, so this is "
+              f"reported as NOT PERFORMED rather than as a pass over an empty set."))
+    else:
+        findings.insert(0, Finding(
+            "finding_resolution_marker", "docs/FINDING_*.md", "PASS",
+            f"{checked} FINDING document(s) examined"
+            + (f", {unreadable} unreadable" if unreadable else "")
+            + f"; all {in_scope} dated on or after {FINDING_MARKER_RULE_STARTS} "
+              f"carry a status marker and a date"))
+    return findings
+
+
+# --- 3. derived_number_freshness ---------------------------------------------
+
+# WHAT IS DERIVED FROM WHAT. Each entry: the generated artifact, the files it is
+# generated FROM, and the tool that does it. Adding an entry is one line.
+#
+# The snapshot directory is deliberately NOT written here. It is read out of the
+# generator's own source, so this check learns which snapshot feeds the output
+# from the thing that does the feeding - rule 16, a different source than the
+# artifact being judged.
+DERIVED_ARTIFACTS = [
+    {
+        "output": "testing/_src/loadout_data.gen.js",
+        "generator": "build_loadout_data.py",
+        "inputs": ["data-layer/ship_resolution.json"],
+        "snapshot_inputs": ["ships.json", "ship-items.json"],
+    },
+]
+
+FRESHNESS_STATE = "checks/.derived_freshness.json"
+_SNAPSHOT_CONST = re.compile(r'^SNAPSHOT\s*=\s*"([^"]+)"', re.MULTILINE)
+_SNAPSHOT_DIR = "data-layer/external-sources/scunpacked-data/snapshots"
+
+
+def _sha256(path: Path) -> str | None:
+    try:
+        digest = hashlib.sha256()
+        with open(path, "rb") as fh:
+            for block in iter(lambda: fh.read(1 << 20), b""):
+                digest.update(block)
+        return digest.hexdigest()
+    except OSError:
+        return None
+
+
+def derived_number_freshness_check(repo_root: Path) -> list[Finding]:
+    """A number meant to be regenerated has stopped moving.
+
+    THE INCIDENT, and it is written in the generator's own comment:
+    build_loadout_data.py carried LAST_VERIFIED_PATCH = "4.9" for WEEKS after the
+    snapshot beside it had moved on to 4.10. The site published a hand-typed
+    summary of evidence that was already on disk and already newer. Nothing was
+    broken, nothing failed, and the number was simply wrong for a month.
+
+    HOW IT DECIDES, AND WHY NOT MODIFICATION TIMES. A git checkout stamps every
+    file with the checkout time, so an mtime comparison reports whatever the last
+    clone did - a check that cannot fail on demand, which is the exact shape rule
+    12 is about. So this hashes CONTENT: the inputs together, and the output.
+
+      inputs changed, output did not  ->  DEFECT. The thing it is derived from
+                                          moved and the derived thing did not.
+      both changed, or neither        ->  quiet, and the baseline is updated.
+
+    THE BASELINE IS A SIDECAR the checker maintains itself
+    (checks/.derived_freshness.json). A first run has nothing to compare against
+    and reports LIMITATION, because saying PASS there would be a pass over no
+    evidence at all.
+    """
+    findings: list[Finding] = []
+    state_path = repo_root / FRESHNESS_STATE
+    try:
+        state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {}
+    except (OSError, ValueError):
+        state = {}
+    if not isinstance(state, dict):
+        state = {}
+    new_state = dict(state)
+
+    for entry in DERIVED_ARTIFACTS:
+        out_rel = entry["output"]
+        out_path = repo_root / out_rel
+        inputs = [repo_root / i for i in entry["inputs"]]
+
+        # Resolve the snapshot-relative inputs from the generator's own source.
+        if entry.get("snapshot_inputs"):
+            gen_text = _doc_text(repo_root / entry["generator"])
+            snap = _SNAPSHOT_CONST.search(gen_text) if gen_text else None
+            if snap is None:
+                findings.append(Finding(
+                    "derived_number_freshness", out_rel, "LIMITATION",
+                    f"could not read the SNAPSHOT constant out of "
+                    f"{entry['generator']}, so this artifact's real inputs are "
+                    f"unknown and its freshness was NOT CHECKED. Reported rather "
+                    f"than assumed fresh."))
+                continue
+            snapdir = repo_root / _SNAPSHOT_DIR / snap.group(1)
+            inputs.extend(snapdir / n for n in entry["snapshot_inputs"])
+
+        if not out_path.exists():
+            findings.append(Finding(
+                "derived_number_freshness", out_rel, "DEFECT",
+                f"is registered as a derived artifact and is not on disk. It has "
+                f"not stopped moving - it is not there at all. Generator: "
+                f"{entry['generator']}."))
+            continue
+
+        missing = [_rel(repo_root, p) for p in inputs if not p.exists()]
+        if missing:
+            findings.append(Finding(
+                "derived_number_freshness", out_rel, "LIMITATION",
+                f"input(s) not on disk: {missing}. Freshness was NOT CHECKED for "
+                f"this artifact - an absent input cannot be compared, and a pass "
+                f"here would be a pass over nothing."))
+            continue
+
+        input_digests: list[str] | None = []
+        for p in sorted(inputs):
+            digest = _sha256(p)
+            if digest is None:
+                input_digests = None
+                break
+            input_digests.append(digest)
+        out_digest = _sha256(out_path)
+        if input_digests is None or out_digest is None:
+            findings.append(Finding(
+                "derived_number_freshness", out_rel, "LIMITATION",
+                "an input or the output could not be read, so freshness was NOT "
+                "CHECKED. Not reported as fresh."))
+            continue
+
+        inputs_sha = hashlib.sha256("".join(input_digests).encode("utf-8")).hexdigest()
+        new_state[out_rel] = {"inputs_sha": inputs_sha, "output_sha": out_digest}
+        previous = state.get(out_rel)
+
+        if not isinstance(previous, dict) or "inputs_sha" not in previous:
+            findings.append(Finding(
+                "derived_number_freshness", out_rel, "LIMITATION",
+                f"first run for this artifact - the baseline was recorded in "
+                f"{FRESHNESS_STATE} and there is nothing to compare it against yet. "
+                f"Reported as NOT PERFORMED rather than as a pass."))
+            continue
+
+        if previous["inputs_sha"] != inputs_sha and previous.get("output_sha") == out_digest:
+            findings.append(Finding(
+                "derived_number_freshness", out_rel, "DEFECT",
+                f"its inputs changed and it did NOT. The {len(inputs)} input file(s) "
+                f"have different contents than when this last ran, and the derived "
+                f"artifact is byte-for-byte identical. Re-run {entry['generator']}. "
+                f"This is the LAST_VERIFIED_PATCH = \"4.9\" shape: a number that "
+                f"stopped moving while the thing it describes moved on."))
+
+    try:
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+        state_path.write_text(json.dumps(new_state, indent=1, sort_keys=True),
+                              encoding="utf-8")
+    except OSError as e:
+        findings.append(Finding(
+            "derived_number_freshness", FRESHNESS_STATE, "LIMITATION",
+            f"could not write the freshness baseline: {type(e).__name__}: {e}. The "
+            f"next run will have nothing to compare against and will say so."))
+
+    if not findings:
+        findings.append(Finding(
+            "derived_number_freshness", None, "PASS",
+            f"{len(DERIVED_ARTIFACTS)} derived artifact(s) checked; none is stale "
+            f"against the inputs it is generated from"))
+    return findings
+
+
+# --- 4. published_patch_currency ---------------------------------------------
+
+PUBLISHED_PAGES = ("static/preview.html", "releases/latest.html")
+_PAGE_PATCH = re.compile(r"Patch:\s*Alpha\s+(\d+(?:\.\d+)+)")
+_MANIFEST_SUBJECT_PATCH = re.compile(r"(\d+\.\d+(?:\.\d+)?)-(?:LIVE|PTU|EPTU)", re.IGNORECASE)
+
+
+def _version_tuple(text: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in text.split(".") if part.isdigit())
+
+
+def published_patch_currency_check(repo_root: Path) -> list[Finding]:
+    """The patch the public page states is behind the newest patch we know of.
+
+    THE INCIDENT. The live site said 4.9 for a month after the data under it had
+    moved on - docs/FINDING_the-live-site-was-a-month-wrong-about-the-patch-and-
+    has-two-source-files-2026-08-30.md. The evidence was on disk the whole time.
+
+    RULE 16, INDEPENDENT. The two sides come from different places and neither is
+    derived from the other:
+      subject      the 'Patch: Alpha X.Y.Z' line the published page renders
+      expectation  the upstream commit subject recorded in the external source
+                   manifests - '4.10.0-LIVE.12519617' - which is what the landed
+                   data actually IS, captured by the pull at landing time
+
+    IT DOES NOT GUESS. No manifest, no parseable subject, or no patch line on the
+    page: each is reported as NOT PERFORMED, naming what was missing. A silent
+    pass here would be the site claiming currency against nothing.
+    """
+    findings: list[Finding] = []
+
+    manifest_dir = repo_root / "data-layer" / "external-source-manifests"
+    manifests = sorted(manifest_dir.glob("*/*.json"))
+    known: list[tuple[tuple[int, ...], str, str]] = []
+    for manifest in manifests:
+        text = _doc_text(manifest)
+        if text is None:
+            continue
+        try:
+            data = json.loads(text)
+        except ValueError:
+            continue
+        if not isinstance(data, dict):
+            continue
+        git_meta = data.get("git_metadata_captured_before_stripping")
+        subject = git_meta.get("git_head_subject") if isinstance(git_meta, dict) else None
+        if not isinstance(subject, str):
+            continue
+        hit = _MANIFEST_SUBJECT_PATCH.search(subject)
+        if hit:
+            known.append((_version_tuple(hit.group(1)), hit.group(1),
+                          _rel(repo_root, manifest)))
+
+    if not known:
+        return [Finding(
+            "published_patch_currency", "data-layer/external-source-manifests",
+            "LIMITATION",
+            f"examined {len(manifests)} manifest(s) and none carried a parseable "
+            f"game build in git_head_subject, so there is no independent answer to "
+            f"compare the page against. Reported as NOT PERFORMED - never as a "
+            f"pass, because a pass here would mean the site is current according to "
+            f"nothing.")]
+
+    newest_version, newest_string, newest_source = max(known)
+
+    for rel in PUBLISHED_PAGES:
+        page = repo_root / rel
+        if not page.is_file():
+            continue
+        text = _doc_text(page)
+        if text is None:
+            findings.append(Finding(
+                "published_patch_currency", rel, "LIMITATION",
+                "the published page could not be read, so the patch it states was "
+                "not examined. Not reported as current."))
+            continue
+        hit = _PAGE_PATCH.search(text)
+        if hit is None:
+            findings.append(Finding(
+                "published_patch_currency", rel, "WARNING",
+                "no 'Patch: Alpha X.Y.Z' line found on a published page. Either the "
+                "page stopped stating which patch it describes - which is rule 20's "
+                "whole subject, a number with no date on it - or this check is "
+                "looking for wording that has since changed. Reported rather than "
+                "passed."))
+            continue
+        stated = hit.group(1)
+        if _version_tuple(stated) < newest_version:
+            findings.append(Finding(
+                "published_patch_currency", rel, "DEFECT",
+                f"states Alpha {stated}; the newest game build on disk is "
+                f"{newest_string}, recorded in {newest_source}. The public page is "
+                f"behind data we already hold. The live site was a month wrong about "
+                f"exactly this once already."))
+        elif _version_tuple(stated) > newest_version:
+            findings.append(Finding(
+                "published_patch_currency", rel, "WARNING",
+                f"states Alpha {stated}, which is NEWER than anything on disk "
+                f"({newest_string}, from {newest_source}). The page is claiming a "
+                f"patch no landed snapshot backs. Reported, not corrected - it may "
+                f"be a hand-typed number running ahead of the pull."))
+
+    if not findings:
+        findings.append(Finding(
+            "published_patch_currency", ", ".join(PUBLISHED_PAGES), "PASS",
+            f"published page(s) state the current build {newest_string}, matching "
+            f"{newest_source} ({len(known)} manifest(s) read)"))
+    return findings
+
+
+# --- 5. sweep_runtime_drift --------------------------------------------------
+
+SWEEP_RECEIPT = "checks/.last_sweep.json"
+SWEEP_HISTORY = "checks/.sweep_runtime_history.json"
+# What counts as material. BOTH must be true, so a fast sweep wobbling by a few
+# seconds never speaks and a real regression always does.
+SWEEP_DRIFT_FRACTION = 0.25
+SWEEP_DRIFT_SECONDS = 60.0
+SWEEP_HISTORY_KEEP = 20
+
+
+def sweep_runtime_drift_check(repo_root: Path) -> list[Finding]:
+    """A full sweep's time moves materially against the previous receipt.
+
+    WHY IT IS WORTH A CHECK. One control is already 42.7% of the sweep. Controls
+    keep being added, and the cost of the whole gate is what decides whether
+    anybody still runs it before deploying. A sweep that quietly doubles is how a
+    gate stops being run at all - and nothing in this project was watching that
+    number.
+
+    IT COMPARES RECEIPTS, NOT CLOCKS. checks/.last_sweep.json is a SINGLE
+    RECEIPT, overwritten by each sweep, so there is no history in it to compare
+    against. This check keeps its own small rolling history keyed by the
+    receipt's own 'at' timestamp, and only ever appends a receipt it has not
+    already seen. IT NEVER WRITES THE RECEIPT - rule 14, one writer, and the
+    sweep owns that file.
+
+    PARTIAL AND FAILED SWEEPS ARE RECORDED AND NOT COMPARED. A sweep that skipped
+    controls took less time for a reason that has nothing to do with drift, and
+    comparing it would manufacture a finding.
+    """
+    findings: list[Finding] = []
+    receipt_path = repo_root / SWEEP_RECEIPT
+    if not receipt_path.exists():
+        return [Finding(
+            "sweep_runtime_drift", SWEEP_RECEIPT, "LIMITATION",
+            "no sweep receipt on disk, so there is no runtime to compare. Reported "
+            "as NOT PERFORMED.")]
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        return [Finding(
+            "sweep_runtime_drift", SWEEP_RECEIPT, "LIMITATION",
+            f"the sweep receipt could not be read or parsed ({type(e).__name__}), so "
+            f"runtime drift was NOT CHECKED. Not reported as steady.")]
+
+    at = receipt.get("at")
+    seconds = receipt.get("seconds")
+    if not isinstance(at, str) or not isinstance(seconds, (int, float)):
+        return [Finding(
+            "sweep_runtime_drift", SWEEP_RECEIPT, "LIMITATION",
+            "the sweep receipt carries no 'at' or no 'seconds', so there is nothing "
+            "to compare. Reported as NOT PERFORMED.")]
+
+    history_path = repo_root / SWEEP_HISTORY
+    try:
+        history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else []
+    except (OSError, ValueError):
+        history = []
+    if not isinstance(history, list):
+        history = []
+
+    partial = bool(receipt.get("partial") or receipt.get("failed") or receipt.get("not_run"))
+    timings = receipt.get("timings") if isinstance(receipt.get("timings"), dict) else {}
+    entry = {"at": at, "seconds": float(seconds), "passed": receipt.get("passed"),
+             "partial": partial, "timings": timings}
+
+    already_seen = {h.get("at") for h in history if isinstance(h, dict)}
+    if at not in already_seen:
+        history.append(entry)
+        history = history[-SWEEP_HISTORY_KEEP:]
+        try:
+            history_path.parent.mkdir(parents=True, exist_ok=True)
+            history_path.write_text(json.dumps(history, indent=1), encoding="utf-8")
+        except OSError as e:
+            findings.append(Finding(
+                "sweep_runtime_drift", SWEEP_HISTORY, "LIMITATION",
+                f"could not write the runtime history ({type(e).__name__}), so the "
+                f"next run will have nothing to compare against and will say so."))
+
+    comparable = [h for h in history
+                  if isinstance(h, dict) and not h.get("partial") and h.get("at") != at
+                  and isinstance(h.get("seconds"), (int, float))]
+
+    if partial:
+        findings.append(Finding(
+            "sweep_runtime_drift", SWEEP_RECEIPT, "LIMITATION",
+            f"the receipt at {at} is partial or carries failures, so its "
+            f"{float(seconds):.0f}s was recorded but NOT compared. A sweep that did "
+            f"not finish took less time for a reason that is not drift."))
+    elif not comparable:
+        findings.append(Finding(
+            "sweep_runtime_drift", SWEEP_RECEIPT, "LIMITATION",
+            f"the receipt at {at} ({float(seconds):.0f}s) was recorded; there is no "
+            f"earlier complete receipt in {SWEEP_HISTORY} to compare it against yet. "
+            f"Reported as NOT PERFORMED rather than as steady."))
+    else:
+        previous = comparable[-1]
+        delta = float(seconds) - float(previous["seconds"])
+        fraction = abs(delta) / float(previous["seconds"]) if previous["seconds"] else 0.0
+        if abs(delta) >= SWEEP_DRIFT_SECONDS and fraction >= SWEEP_DRIFT_FRACTION:
+            was = previous.get("timings") or {}
+            movers = [(now - was[name], name, was[name], now)
+                      for name, now in timings.items()
+                      if isinstance(now, (int, float)) and isinstance(was.get(name), (int, float))]
+            movers.sort(key=lambda m: abs(m[0]), reverse=True)
+            biggest = (", ".join(f"{name} {before:.1f}s -> {after:.1f}s"
+                                 for _, name, before, after in movers[:3])
+                       or "no per-control timings present on both receipts")
+            findings.append(Finding(
+                "sweep_runtime_drift", SWEEP_RECEIPT, "WARNING",
+                f"the full sweep moved {delta:+.0f}s ({fraction * 100:.0f}%) against "
+                f"the previous complete receipt: {float(previous['seconds']):.0f}s at "
+                f"{previous['at']} -> {float(seconds):.0f}s at {at}. Biggest movers: "
+                f"{biggest}. FLAG ONLY - a sweep taking longer is not a defect, it is "
+                f"a cost, and the cost is what decides whether the gate keeps being "
+                f"run."))
+
+    if not findings:
+        findings.append(Finding(
+            "sweep_runtime_drift", SWEEP_RECEIPT, "PASS",
+            f"full sweep at {at} took {float(seconds):.0f}s, within "
+            f"{SWEEP_DRIFT_FRACTION * 100:.0f}% of the previous complete receipt "
+            f"({len(comparable)} in history)"))
+    return findings
+
+
+# --- 6. named_thing_exists ---------------------------------------------------
+
+# Namespaces a present-state document may legitimately name without the path
+# being on this disk. Each is here for a stated reason, and this list is the
+# whole exception - nothing else is excused.
+#
+#   claude/          the claude.ai project workspace. Partially mirrored here,
+#                    authoritative there. A path under it is not this repo's to
+#                    resolve.
+#   correspondence/  a MOVING filing system. A letter is answered and moves from
+#                    open/<desk>/ to answered/ under a new name, by design. A
+#                    path into it records where a letter WAS, never a claim about
+#                    where it is now.
+#   inbox/           the same, one step earlier: the watcher files it and empties
+#                    the folder.
+#   _to_delete/      the rule 1 holding pen, gitignored, emptied by Sleven. Its
+#                    contents are transient on purpose - and a document naming a
+#                    path in there is usually saying it is GONE, which is the
+#                    opposite of the claim this check tests.
+NAMED_THING_EXEMPT_PREFIXES = ("claude/", "correspondence/", "inbox/", "_to_delete/")
+
+_BACKTICKED = re.compile(r"`([^`\n]{3,160})`")
+_REPO_PATH_SHAPE = re.compile(r"^[A-Za-z0-9_.\-]+(?:/[A-Za-z0-9_.\-]+)+/?$")
+
+
+def named_thing_exists_check(repo_root: Path) -> list[Finding]:
+    """A document asserting a present state names a file, folder or tool that is
+    not there.
+
+    THE INCIDENT, and it is the sharpest one in the set. CLAUDE.md said the
+    retired Python handoff files were moved to
+    _to_delete/python_handoff_path_retired_20260801/. That folder does not exist
+    and the files are nowhere on disk; they were in git at 5081be4 the whole
+    time. Rule 1's entire promise is that things are moved aside rather than
+    deleted - and THE DOCUMENT CARRYING THAT PROMISE was describing a location
+    that was not there. Anyone checking whether rule 1 had been honoured would
+    have found an empty answer and had to guess.
+
+    THE SCOPE RULE. Present-state documents only (PRESENT_STATE_DOCS), and
+    repo-relative paths only.
+
+    WHAT IT WILL NOT LOOK AT, and every rule here is here because measuring said
+    so, on 2026-09-09, over this repository:
+      no slash        `build_deploy.py` and `.glb` are shorthand and file
+                      extensions, not paths. Requiring a slash took the first
+                      measurement from 316 candidates down to 41.
+      unknown root    `Freelancer_DUR/MAX/MIS` and `wheelFL/FR/BL/BR` are prose
+                      that happens to contain slashes. A repo-relative path whose
+                      FIRST SEGMENT is not in the repo is not a path. 41 -> 21.
+      globs, ellipses `data-layer/exports/...` names a shape, not a file.
+      the exemptions  NAMED_THING_EXEMPT_PREFIXES, each with its reason above.
+
+    Rule 17 applies: existence is tested by exact path and never by looking for
+    something nearby with a similar name. A path is there, or it is reported.
+    """
+    findings: list[Finding] = []
+    docs = _present_state_documents(repo_root)
+    if not docs:
+        return [Finding(
+            "named_thing_exists", None, "LIMITATION",
+            "none of the present-state documents exist, so nothing was examined. "
+            "Reported as NOT PERFORMED.")]
+
+    candidates = 0
+    for doc in docs:
+        rel_doc = _rel(repo_root, doc)
+        text = _doc_text(doc)
+        if text is None:
+            findings.append(Finding(
+                "named_thing_exists", rel_doc, "LIMITATION",
+                "could not be read, so the paths it names were not examined. Not "
+                "reported as clean."))
+            continue
+
+        missing = []
+        for token in sorted(set(_BACKTICKED.findall(text))):
+            token = token.strip()
+            if "/" not in token or "*" in token or "..." in token:
+                continue
+            if not _REPO_PATH_SHAPE.match(token):
+                continue
+            if token.startswith(("http", "www.")):
+                continue
+            if token.startswith(NAMED_THING_EXEMPT_PREFIXES):
+                continue
+            if not (repo_root / token.split("/")[0]).exists():
+                continue
+            candidates += 1
+            if not (repo_root / token).exists():
+                missing.append(token)
+
+        if missing:
+            findings.append(Finding(
+                "named_thing_exists", rel_doc, "DEFECT",
+                f"asserts a present state and names {len(missing)} repo-relative "
+                f"path(s) that are not on disk: {missing}. A current document "
+                f"pointing at something that is not there sends a reader nowhere, "
+                f"and there is no error to tell them so."))
+
+    if not findings:
+        findings.append(Finding(
+            "named_thing_exists", None, "PASS",
+            f"{len(docs)} present-state document(s) examined, {candidates} "
+            f"repo-relative path(s) named, every one of them on disk"))
+    return findings
+
+
+# --- 7. skill_mirror -----------------------------------------------------------
+
+def _files_under(root: Path) -> dict[str, Path]:
+    """Every file below root, keyed by its exact posix path relative to root."""
+    return {str(p.relative_to(root)).replace("\\", "/"): p
+            for p in sorted(root.rglob("*")) if p.is_file()}
+
+
+def skill_mirror_check(repo_root: Path) -> list[Finding]:
+    """.claude/skills/ holds something other than the bytes skills/ holds.
+
+    THE RULING, Architecture 2026-09-12 and 2026-09-13: skills/ is the source of
+    truth and .claude/skills/ is the loader's copy. A hand-kept mirror is the
+    two-places defect this project paid for three times in one week, so the two
+    are held byte-identical by this check - never by somebody remembering.
+
+    WHAT IT IS NOT: a sync. It never writes either tree. If they differ, skills/
+    is right and the mirror is wrong, and the check still only reports - a
+    control that quietly re-copies is the same defect with a nicer face.
+
+    THE SCOPE. Every file under a skill folder (skills/<name>/...) must be at the
+    same path under .claude/skills/ with the same bytes, and every file under
+    .claude/skills/ must be in skills/ likewise. Top-level files in skills/ (the
+    README) are for people, not the loader, and need no counterpart.
+
+    Rule 17: paths are compared as exact strings from enumerating both trees, so
+    SKILL.md and skill.md are two different files here even on a disk that would
+    open either name. Bytes are compared whole.
+
+    It stays valid if a junction ever replaces the copy: the two trees are then
+    one tree and it passes trivially. Whether skills/ is tracked in git does not
+    matter - it compares what is on this disk, and git never sees .claude/.
+    """
+    name = "skill_mirror"
+    source = repo_root / "skills"
+    mirror = repo_root / ".claude" / "skills"
+    if not source.is_dir():
+        return [Finding(name, "skills/", "LIMITATION",
+                        "skills/ is not on disk, so there is no source to compare. "
+                        "Reported as NOT PERFORMED.")]
+    if not mirror.is_dir():
+        return [Finding(name, ".claude/skills/", "LIMITATION",
+                        ".claude/skills/ is not on this machine (.claude/ is "
+                        "gitignored, so a fresh clone has none). Nothing to "
+                        "compare. Reported as NOT PERFORMED.")]
+
+    src_all = _files_under(source)
+    src = {rel: p for rel, p in src_all.items() if "/" in rel}
+    mir = _files_under(mirror)
+    findings: list[Finding] = []
+    for rel in sorted(set(src) - set(mir)):
+        findings.append(Finding(
+            name, f"skills/{rel}", "DEFECT",
+            f"skills/{rel} has no copy at .claude/skills/{rel}, so the loader "
+            f"cannot see it. Nothing was copied."))
+    for rel in sorted(set(mir) - set(src_all)):
+        findings.append(Finding(
+            name, f".claude/skills/{rel}", "DEFECT",
+            f".claude/skills/{rel} has no source at skills/{rel}, so the loader "
+            f"runs a file the record does not hold. Nothing was removed."))
+    for rel in sorted(set(mir) & set(src_all)):
+        try:
+            a, b = src_all[rel].read_bytes(), mir[rel].read_bytes()
+        except OSError as e:
+            findings.append(Finding(
+                name, f"skills/{rel}", "LIMITATION",
+                f"could not read one side ({e}), so it was not compared. Not "
+                f"reported as identical."))
+            continue
+        if a != b:
+            at = next((i for i, (x, y) in enumerate(zip(a, b)) if x != y),
+                      min(len(a), len(b)))
+            findings.append(Finding(
+                name, f"skills/{rel}", "DEFECT",
+                f"skills/{rel} ({len(a)} bytes) and .claude/skills/{rel} "
+                f"({len(b)} bytes) differ, first at byte {at}. skills/ is the "
+                f"source of truth; nothing was changed."))
+
+    if not findings:
+        findings.append(Finding(
+            name, None, "PASS",
+            f"{len(src)} skill file(s) compared, byte-identical in skills/ and "
+            f".claude/skills/ both ways"))
+    return findings
+
+
 # A checker may emit findings under a check_name that is not its registered
 # name. missing_or_corrupt_3d_model_check emits missing_preview_image, and the
 # consequence was real: no registered checker owned that name, so the lifecycle
@@ -972,4 +1896,14 @@ CHECKERS = [
     ("fan_kit_compliance", fan_kit_compliance_check),
     ("broken_internal_link", broken_internal_link_check),
     ("unreleased_content", unreleased_content_check),
+    # The six document checks, ordered 2026-09-08. Auditor layer only -
+    # nothing in the deploy sweep calls these, so they cost the sweep nothing.
+    ("state_document_agreement", state_document_agreement_check),
+    ("finding_resolution_marker", finding_resolution_marker_check),
+    ("derived_number_freshness", derived_number_freshness_check),
+    ("published_patch_currency", published_patch_currency_check),
+    ("sweep_runtime_drift", sweep_runtime_drift_check),
+    ("named_thing_exists", named_thing_exists_check),
+    # The seventh, ordered 2026-09-13: skills/ and .claude/skills/ byte-identical.
+    ("skill_mirror", skill_mirror_check),
 ]

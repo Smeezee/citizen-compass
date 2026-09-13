@@ -166,6 +166,22 @@ VENDOR_MARKER = "<!-- CC_VENDOR_THREE -->"
 DISC_MARKER = "/* CC_DISC_CSS */"
 DISC_CSS_PATH = os.path.join(SRC, "_disc.css")
 
+# THE GLOSSARY, DECLARED 2026-08-30 - AND THIS CONTROL FOUND IT FIRST.
+#
+# Q35 moved the glossary into one shared include and build_deploy.py began
+# substituting it wherever a page carries the marker. I added that injection and
+# did not declare it here, and the very next sweep went red on loadout.html:
+#
+#     loadout.html no longer contains its _src/loadout.src.html text outside the
+#     declared injections (disclosure and vendor and attribution)
+#
+# WHICH IS THE CONTROL DOING EXACTLY ITS JOB. An injection nobody declared and a
+# hand edit in _deploy are the same shape from the outside, and this section
+# exists so the second one is loud. Declaring it is the fix; widening the test
+# would have removed the only thing that noticed.
+GLOSS_MARKER = "<!-- CC_GLOSSARY -->"
+GLOSS_INC_PATH = os.path.join(SRC, "cc_glossary.inc.html")
+
 # THE ONE LINE THE BUILD IS ALLOWED TO REWRITE ON THE WAY INTO _deploy.
 #
 # `loadout_model.gen.js` names where a 3D model lives, and that differs between
@@ -306,6 +322,59 @@ def build_pages():
     return None
 
 
+def assembled_files():
+    """The files the build ASSEMBLES rather than copies, read out of
+    deploy_pages.py.
+
+    Q54, 2026-09-11. This existed as a hand-written {"index.html"} in THREE
+    places - here, in build_deploy.py's deploy-guard call, and in
+    deploy_pages.py itself. Two of the three were copies, and the day Q54
+    added classic.html and _redirects to the real one the build refused its
+    own payload while this control called the two files strays. Both were
+    correct about what they had been told and both had been told something
+    stale, which is the two-lists defect deploy_pages.py was created to end.
+
+    Returns None if it cannot be read, which the caller reports rather than
+    treating as an empty set - an empty set here would call every assembled
+    file a stray and bury the real answer in noise.
+    """
+    if not os.path.exists(PAGES_SRC):
+        return None
+    tree = ast.parse(text_of(PAGES_SRC), filename=PAGES_SRC)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "ASSEMBLED":
+                    return set(ast.literal_eval(node.value))
+    return None
+
+
+def front_door_page():
+    """WHICH page the front door serves, read out of deploy_pages.py.
+
+    Q54, 2026-09-11. That page - and only that page - has the password gate
+    injected into it by the build, so this control has to expect the gate
+    there and to go on refusing it everywhere else. Parsed rather than
+    restated, for the same reason PAGES is: a literal here would be a second
+    writer for the same fact, and the day the front door moves again this
+    check would still be checking yesterday's answer while PASSING.
+
+    Returns None if the name is absent, which the caller reports as NOT
+    PERFORMED. A None that quietly meant "no page is gated" would pass a
+    payload whose gate had been stripped.
+    """
+    if not os.path.exists(PAGES_SRC):
+        return None
+    tree = ast.parse(text_of(PAGES_SRC), filename=PAGES_SRC)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and \
+                        target.id == "FRONT_DOOR_PAGE":
+                    return ast.literal_eval(node.value)
+    return None
+
+
 BUILD_SRC = os.path.join(SRC, "build_deploy.py")
 
 
@@ -391,17 +460,104 @@ def src_as_deployed(src_name, text):
         return text
     for token, lit in guard.items():
         out = out.replace(token, lit)
-    return out
+    return _share_card_values(out)
+
+
+# THE SHARE CARD, DECLARED 2026-09-13 - AND THIS CONTROL FOUND IT FIRST, AGAIN.
+# build_deploy.py fills two VALUE markers in loadout.src.html's Open Graph tags:
+# __CC_ORIGIN__ with the host the payload is served from, and __CC_PATCH__ with
+# " · Patch <n>" from the snapshot manifest. They are substitutions of a value
+# rather than injections of a block, so they are applied to the SOURCE here,
+# before it is compared - with the TESTING origin, because _deploy is the
+# testing payload, and the patch read the way the build reads it. Every other
+# byte of those tags is still held to equality, so a hand edit still fails.
+# If the patch cannot be read, the markers are left in place and the comparison
+# fails loudly rather than passing something that was never compared.
+SHARE_ORIGIN_MARKER = "__CC_ORIGIN__"
+SHARE_PATCH_MARKER = "__CC_PATCH__"
+SHARE_TESTING_ORIGIN = "https://citizencompasstesting.citizencompass-contact.workers.dev"
+_share_patch_cache = []
+
+
+def _share_card_values(text):
+    if SHARE_ORIGIN_MARKER not in text and SHARE_PATCH_MARKER not in text:
+        return text
+    if not _share_patch_cache:
+        try:
+            if ROOT not in sys.path:
+                sys.path.insert(0, ROOT)
+            import build_loadout_data as _bl
+            _share_patch_cache.append(" · Patch %s" % _bl.LAST_VERIFIED_PATCH
+                                      if _bl.LAST_VERIFIED_PATCH else "")
+        except BaseException:                     # noqa: BLE001 - incl. its sys.exit
+            _share_patch_cache.append(None)
+    patch = _share_patch_cache[0]
+    if patch is None:
+        return text
+    return (text.replace(SHARE_ORIGIN_MARKER, SHARE_TESTING_ORIGIN)
+                .replace(SHARE_PATCH_MARKER, patch))
+
+
+# The password gate is injected at a POSITION too, like attribution, so it
+# gets a sentinel on the same principle. Q54, 2026-09-11.
+GATE_SENTINEL = "\x00CC_GATE_POINT\x00"
+
+
+def gate_point(s_text):
+    """WHERE the build injects the password gate, by the build's own rule.
+
+    build_deploy inserts it immediately after the first `<body ...>` tag
+    closes, because the gate has to be the first thing in the body for its
+    `body > *:not(#cc-gate)` rule to hide everything else.
+
+    Returns the index, or None if there is no <body> - which the build itself
+    refuses to proceed past, so this returning None means the source changed
+    shape and the caller must report rather than assume.
+    """
+    i = s_text.lower().find("<body")
+    if i == -1:
+        return None
+    j = s_text.find(">", i)
+    if j == -1:
+        return None
+    return j + 1
+
+
+# The testing stamp is the front door's second positional injection, added
+# 2026-09-11 when Q54's front-door move left the served entry point with no
+# stamp on it while index.html went on carrying one.
+STAMP_SENTINEL = "\x00CC_STAMP_POINT\x00"
+
+
+def stamp_point(s_text):
+    """WHERE the build injects the testing stamp, by the build's own rule.
+
+    build_deploy puts it immediately AFTER `<span id="ver">` closes - a sibling
+    of the version, not a child of it.
+
+    IT USED TO GO INSIDE. That put it under `@media(max-width:560px){#top
+    span{display:none}}`, so on a phone the stamp was in the bytes and not on
+    the screen, and the deploy guard - which reads bytes - passed anyway.
+
+    Returns the index, or None if that span is not there - which the build
+    itself refuses to proceed past, so None means the source changed shape and
+    the caller must report rather than assume.
+    """
+    m = re.search(r'(<span id="ver">.*?)(</span>)', s_text, re.S)
+    return m.end(2) if m else None
 
 
 INJECTION_MARKERS = (
     (ATTR_SENTINEL, "attribution"),
     (VENDOR_MARKER, "vendor"),
     (DISC_MARKER, "disclosure"),
+    (GLOSS_MARKER, "glossary"),
+    (GATE_SENTINEL, "gate"),
+    (STAMP_SENTINEL, "stamp"),
 )
 
 
-def declared_transforms(s_text):
+def declared_transforms(s_text, gated=False):
     """The source text cut into the literal segments the deploy file MUST
     still contain, in order, with one declared injection between each pair.
 
@@ -417,6 +573,21 @@ def declared_transforms(s_text):
     """
     before, after = attribution_point(s_text)
     rest = before + ATTR_SENTINEL + after
+    # The gate, for the one page that becomes the front door. Spliced after
+    # the attribution sentinel because its position is EARLY in the body and
+    # attribution's is at the closing tag - so the two never collide, and
+    # finding the <body> in `rest` finds the same place it is in s_text.
+    if gated:
+        gp = gate_point(rest)
+        if gp is not None:
+            rest = rest[:gp] + GATE_SENTINEL + rest[gp:]
+        # AFTER the gate, and searched afresh, because splicing the gate
+        # sentinel in shifts every index after it. The stamp point is inside
+        # the masthead and the gate point is the top of <body>, so the order
+        # is fixed and they cannot collide.
+        sp = stamp_point(rest)
+        if sp is not None:
+            rest = rest[:sp] + STAMP_SENTINEL + rest[sp:]
     segments, names = [], []
     while True:
         hit = None
@@ -482,6 +653,83 @@ def gap_problem(name, gap, out_name, ship_pages):
                         configuration rather than source - and that body is
                         _verify_attribution's subject, not this one's.
     """
+    if name == "gate":
+        # PINNED BY SHAPE AND BY ONE SPECIFIC FAILURE, not byte for byte.
+        #
+        # Byte equality would need the build's own GATE literal, and importing
+        # build_deploy.py to get it runs a full build. Parsing it out is
+        # possible but the string is assembled with a substitution, so what
+        # ships is not what the literal says - the expectation would have to
+        # reimplement the substitution, which is the same source proving
+        # itself (rule 16). So this pins the three things that actually go
+        # wrong, and says plainly that it is not byte equality.
+        g = gap.strip()
+        if not g:
+            return ("the front door's password gate is MISSING - the bare URL "
+                    "would serve the site to anyone, and nothing else would "
+                    "have said so")
+        if 'id="cc-gate"' not in g:
+            return "what was injected at the front door's body is not the gate"
+        if "cc-locked" not in g:
+            return ("the gate is there but carries no cc-locked rule, so it "
+                    "would render ON TOP OF a fully visible page")
+        if "__GATEHASH__" in g:
+            # The one that would look completely fine and let nobody in.
+            return ("the gate shipped with __GATEHASH__ unsubstituted - the "
+                    "password could never match and the front door would be "
+                    "shut to everyone including Sleven")
+        if not g.startswith("<style"):
+            return ("something is in front of the gate inside <body> - the "
+                    "gap is the gate's and nothing else's")
+        if not g.endswith("</script>"):
+            return ("something follows the gate inside its own gap - text "
+                    "appended here is exactly what a hand edit looks like")
+        return None
+    if name == "stamp":
+        # PINNED TO THE SHAPE THE BUILD WRITES, including the date format.
+        # "a stamp is there" would pass a stamp whose date had been hand-edited
+        # in _deploy, and the whole point of the stamp is that its date is
+        # derived from the clock rather than typed.
+        g = gap.strip()
+        if not g:
+            return ("the front door carries NO testing stamp - it would be "
+                    "indistinguishable from the live site, which is the defect "
+                    "the stamp exists to prevent")
+        m = re.match(r'^<span class="cc-teststamp" style="([^"]*)">'
+                     r'testing (\d{4}-\d{2}-\d{2})</span>$', g)
+        if not m:
+            return ("what was injected beside the version is not the testing "
+                    "stamp the build writes: %r" % g[:80])
+        # THE ONE DECLARATION THAT DOES THE WORK, pinned by itself.
+        # Everything else in that style attribute is appearance. `display:
+        # inline` is what beats `#top span{display:none}` at phone width, and
+        # without it the stamp is present in the bytes and invisible on a
+        # phone - which is the exact defect this stamp was moved to fix, and
+        # which every byte-level check would still have called a pass.
+        if 'display:inline' not in m.group(1):
+            return ("the testing stamp carries no display:inline, so the "
+                    "page's own max-width:560px rule hides it on a phone - "
+                    "present in the bytes, invisible on the screen")
+        # THE DATE, AGAINST THE OTHER STAMPED PAGE IN THE SAME PAYLOAD.
+        # One build stamps both from one clock read, so they agree or something
+        # edited one of them. The expectation comes from a different file than
+        # the subject, which is the only way this check is worth anything.
+        _idx = os.path.join(DEPLOY, "index.html")
+        if not os.path.exists(_idx):
+            return ("NOT PERFORMED - index.html is absent, so the front door's "
+                    "stamp date cannot be checked against anything. Reported, "
+                    "never passed.")
+        _other = re.search(r'>testing (\d{4}-\d{2}-\d{2})<', text_of(_idx))
+        if not _other:
+            return ("NOT PERFORMED - index.html carries no testing stamp, so "
+                    "the front door's stamp date has nothing to agree with. "
+                    "Reported, never passed.")
+        if m.group(2) != _other.group(1):
+            return ("the front door is stamped %s and index.html is stamped "
+                    "%s. One build stamps both from one clock read, so one of "
+                    "them was edited after the build."
+                    % (m.group(2), _other.group(1)))
+        return None
     if name == "vendor":
         if not gap.strip():
             return "the vendor marker was replaced with nothing"
@@ -515,6 +763,37 @@ def gap_problem(name, gap, out_name, ship_pages):
                     "was edited in _deploy, or the build substituted something "
                     "else")
         return None
+    if name == "glossary":
+        # Pinned to the include byte for byte, for the same reason the
+        # disclosure CSS is: "the glossary is there" would pass a page whose
+        # TERMS had been edited in _deploy only. A definition changed where no
+        # source diff shows it is precisely the class this section exists for,
+        # and a wrong definition is worse than none - the site's whole claim is
+        # that what it says is checkable.
+        if not os.path.exists(GLOSS_INC_PATH):
+            return ("NOT PERFORMED - testing/_src/cc_glossary.inc.html is "
+                    "missing, so what the build substitutes for %s is unknown "
+                    "and the gap cannot be checked. Reported, never passed."
+                    % GLOSS_MARKER)
+        if not gap.strip():
+            return "the glossary marker was replaced with nothing"
+        if GLOSS_MARKER in gap:
+            return ("the glossary marker is still there - the shared include "
+                    "was not substituted and the page explains nothing")
+        # AS THE BUILD LEAVES IT. The include is substituted in and the page is
+        # then comment-stripped, so what ships is the include without its
+        # comments. strip_for dispatches on the .html suffix.
+        _want = text_of(GLOSS_INC_PATH)
+        if _strip is not None:
+            try:
+                _want, _gn = _strip.strip_for("cc_glossary.inc.html", _want)
+            except ValueError:
+                pass
+        if gap != _want:
+            return ("what was substituted is not cc_glossary.inc.html byte for "
+                    "byte - it was edited in _deploy, or the build substituted "
+                    "something else")
+        return None
     if name == "attribution":
         if ATTR_IMPORT_ERROR:
             return ATTR_IMPORT_ERROR
@@ -544,7 +823,7 @@ def gap_problem(name, gap, out_name, ship_pages):
     return "unknown transform %r" % name       # pragma: no cover - unreachable
 
 
-def page_problems(src_name, out_name, ship_pages):
+def page_problems(src_name, out_name, ship_pages, front_door=None):
     """THE ONE COMPARISON, in one place.
 
     Section 3 runs this over _deploy. Section 5 runs THE SAME FUNCTION over
@@ -559,6 +838,15 @@ def page_problems(src_name, out_name, ship_pages):
     d_path = os.path.join(DEPLOY, out_name)
     if not os.path.exists(d_path):
         return ["%s is MISSING from _deploy" % out_name]
+    if src_name.lower().endswith(".png"):
+        # BINARY, COPIED BYTE FOR BYTE (build_deploy.py BINARY_EXT, the share
+        # card, 2026-09-13). Read as text it crashed this whole check on its
+        # first byte (0x89) and took section 3 down with it. No transform is
+        # declared for an image, so any difference at all is a hand edit.
+        if read_bytes(s_path) != read_bytes(d_path):
+            return ["%s differs from _src/%s byte for byte  [%s]"
+                    % (out_name, src_name, owner_note(src_name))]
+        return []
     if out_name == "find_checksum.gen.js":
         # THE FIFTH DECLARED TRANSFORM, AND IT IS VERIFIED RATHER THAN EXEMPTED.
         #
@@ -638,7 +926,11 @@ def page_problems(src_name, out_name, ship_pages):
                 "produce - it writes every page with newline='\\n'. Something "
                 "edited it after the build." % out_name]
     s_text = s_text.replace("\r\n", "\n")
-    segments, gap_names = declared_transforms(s_text)
+    # Q54: only the front-door page carries the gate. Every other page is
+    # still held to having NO gate, because `gated` stays False for them and
+    # an unexpected gate then lands in no declared gap at all.
+    segments, gap_names = declared_transforms(
+        s_text, gated=(front_door is not None and out_name == front_door))
     gaps = split_by_declared(d_text, segments)
     if gaps is None:
         return ["%s no longer contains its _src/%s text outside the declared "
@@ -835,12 +1127,45 @@ def recover_interrupted():
     """A previous run was killed between its rebuild and its restore.
 
     Returns a list of what it put back. Empty list means there was nothing to
-    recover, which is the normal case.
+    recover, which is the normal case. A `refused` key means the journal was not
+    written on this machine and NOTHING was touched.
+
+    IT REFUSES A JOURNAL THAT IS NOT THIS CHECKOUT'S, AND THAT IS THE WHOLE
+    POINT OF THE CHECK BELOW.
+
+    On 2026-09-05 a journal written on a Cowork VM was sitting in this repo,
+    listing about eighty absolute paths under
+    `/sessions/rcw-.../mnt/citizen-compass/`. This function runs FIRST, before
+    any assertion, and copies each preserved file back over its target. On
+    Windows those paths did not resolve, so it raised FileNotFoundError and
+    stopped.
+
+    THE CRASH WAS THE ONLY THING THAT SAVED IT. Had the paths resolved - a
+    checkout at a matching location, a mounted share, a rerun on the machine
+    that wrote it - this would have silently overwritten eighty source and
+    deploy files, including ones two sessions had edited that day, before
+    printing a single line.
+
+    "Safe by accident" is not safe. A recovery that acts on absolute paths from
+    a file it did not write must check whose paths they are.
     """
     if not os.path.exists(PENDING):
         return None
     with open(PENDING, encoding="utf-8") as fh:
         rec = json.load(fh)
+
+    here = os.path.abspath(ROOT)
+    foreign = [p for p in sorted(rec.get("files", {}))
+               if os.path.abspath(p) != here
+               and not os.path.abspath(p).startswith(here + os.sep)]
+    if foreign:
+        # NOTHING IS TOUCHED AND THE MARKER IS LEFT ALONE. The journal may still
+        # be the live recovery record of the machine that wrote it, and clearing
+        # it here would strand that restore. It is reported and left.
+        return {"at": rec.get("written_at"), "restored": [],
+                "refused": foreign, "root": here,
+                "total": len(rec.get("files", {}))}
+
     put_back = []
     for path, (copy_name, want_hash, want_mtime) in sorted(rec["files"].items()):
         copy_path = os.path.join(RESTORE_DIR, copy_name)
@@ -966,7 +1291,9 @@ def main():
         print("NOT PERFORMED: could not read PAGES out of %s, so there is no "
               "list of what _deploy should contain. Reported as not performed, "
               "never as passed." % os.path.relpath(PAGES_SRC, ROOT))
-        return 1
+        # NOT RUN (exit 2), not FAIL: this could not look, it did not find a
+        # defect. run_all_controls.py:381. Still red, still gates the deploy.
+        return 2
     check("PAGES read from deploy_pages.py without running the build "
           "(%d entries)" % len(pages), len(pages) > 5)
     check("and every source it names exists in _src",
@@ -975,7 +1302,13 @@ def main():
     print("\n2. EVERY FILE IN _deploy HAS A PRODUCER")
     # Not the same question as check_deploy_clean's "is it allowed" - this asks
     # whether anything in there is something the build would not have put there.
-    produced = {"index.html"} | {out for _, out in pages}
+    assembled = assembled_files()
+    if assembled is None:
+        print("     NOT PERFORMED: ASSEMBLED could not be read out of "
+              "deploy_pages.py, so what\n     the build assembles rather than "
+              "copies is unknown. Reported, not assumed.")
+        return 2
+    produced = assembled | {out for _, out in pages}
     strays, dirs = [], []
     for name in sorted(os.listdir(DEPLOY)):
         full = os.path.join(DEPLOY, name)
@@ -985,6 +1318,45 @@ def main():
             strays.append(name)
     check("no file in _deploy is unaccounted for"
           + (" (found %s)" % ", ".join(strays) if strays else ""), not strays)
+
+    # THE TWO FILES Q54 ADDED ARE COVERED, NOT JUST PERMITTED.
+    #
+    # Being on the ASSEMBLED list only stops them being called strays. Nothing
+    # above this would notice classic.html drifting away from the page it is
+    # supposed to BE, or the front-door rule losing the one property that makes
+    # it serve rather than redirect - and both would look completely normal.
+    _front = front_door_page()
+    _classic = os.path.join(DEPLOY, "classic.html")
+    _index = os.path.join(DEPLOY, "index.html")
+    if "classic.html" in assembled and os.path.exists(_classic):
+        _same = (os.path.exists(_index)
+                 and text_of(_classic) == text_of(_index))
+        check("classic.html is the old front page byte for byte - it is "
+              "index.html under an address of its own"
+              + ("" if _same else "\n         classic.html and index.html "
+                                  "DIFFER, so /classic is serving something "
+                                  "other than the page it stands in for"),
+              _same)
+    _red = os.path.join(DEPLOY, "_redirects")
+    if "_redirects" in assembled and os.path.exists(_red):
+        _txt = text_of(_red)
+        _rules = [l.strip() for l in _txt.splitlines()
+                  if l.strip() and not l.strip().startswith("#")]
+        if _front is None:
+            print("     NOT PERFORMED for the front-door rule: "
+                  "FRONT_DOOR_PAGE could not be read.")
+        else:
+            _want = "/ /%s 200" % _front[:-len(".html")]
+            _why = ""
+            if _rules != [_want]:
+                _why = ("\n         _redirects says %r; it must be exactly "
+                        "[%r]. A .html on the destination makes Cloudflare "
+                        "hand it back to html_handling, and the front door "
+                        "silently stops SERVING the new page and starts "
+                        "REDIRECTING to it - measured on a fixture "
+                        "2026-09-11." % (_rules, _want))
+            check("the front door rule serves %s at / with a 200%s"
+                  % (_front, _why), _rules == [_want])
     check("and the only directories are the asset payloads (%s)"
           % ", ".join(sorted(dirs)), set(dirs) <= set(ASSET_DIRS))
 
@@ -1005,9 +1377,19 @@ def main():
     if ships is None:
         print("     _SHIP_CONTENT_PAGES could not be read out of "
               "build_deploy.py. Reported per file below rather than assumed.")
+    front = front_door_page()
+    if front is None:
+        print("     NOT PERFORMED for the gate: FRONT_DOOR_PAGE could not be "
+              "read out of deploy_pages.py, so which page should carry the "
+              "password gate is unknown. Reported, never passed - a missing "
+              "name here would otherwise read as 'no page is gated' and pass "
+              "a payload whose gate had been stripped.")
+    else:
+        print("     front door: %s carries the password gate; every other "
+              "copied page must not" % front)
     drifted = []
     for src_name, out_name in pages:
-        drifted.extend(page_problems(src_name, out_name, ships))
+        drifted.extend(page_problems(src_name, out_name, ships, front))
     check("every copied file in _deploy is its _src source byte for byte, "
           "outside the injections declared above"
           + ("\n         " + "\n         ".join(drifted) if drifted else ""),
@@ -1016,7 +1398,22 @@ def main():
     print("\n4. THE ASSEMBLED FILE - index.html, PROVEN BY REBUILDING  "
           "(non-destructive since 2026-08-29)")
     recovered = recover_interrupted()
-    if recovered is not None:
+    if recovered is not None and recovered.get("refused"):
+        print("     A RESTORE JOURNAL IS PRESENT AND IT IS NOT THIS MACHINE'S "
+              "(%s)." % recovered["at"])
+        print("     %d of %d recorded paths are outside this checkout:"
+              % (len(recovered["refused"]), recovered["total"]))
+        for p in recovered["refused"][:5]:
+            print("       " + p)
+        if len(recovered["refused"]) > 5:
+            print("       ... and %d more" % (len(recovered["refused"]) - 5))
+        print("     this checkout: " + recovered["root"])
+        print("")
+        print("     NOTHING WAS RESTORED AND THE JOURNAL WAS LEFT IN PLACE.")
+        print("     It may still be the live recovery record of the machine")
+        print("     that wrote it; clearing it here would strand that restore.")
+        print("     Recover on that machine, or move the marker aside by hand.")
+    elif recovered is not None:
         print("     A PREVIOUS RUN WAS INTERRUPTED between its rebuild and its "
               "restore (%s)." % recovered["at"])
         if recovered["restored"]:
@@ -1026,6 +1423,10 @@ def main():
         else:
             print("     Nothing needed putting back - the tree already matched "
                   "the snapshot.")
+    if recovered is not None and recovered.get("refused"):
+        check("the restore journal present was written by THIS checkout",
+              "%d of %d paths point somewhere else - refusing to restore"
+              % (len(recovered["refused"]), recovered["total"]), False)
     check("no rebuild from a previous run was left sitting in _deploy"
           + ("" if not (recovered and recovered["restored"])
              else " (recovered %d file(s) - see above)"
@@ -1167,7 +1568,8 @@ def main():
             with open(victim, "w", encoding="utf-8", newline="") as fh:
                 fh.write(text)
             changed = read_bytes(victim) != original
-            found = page_problems(victim_src, victim_out, ships)
+            found = page_problems(victim_src, victim_out, ships,
+                                  front_door_page())
             shutil.copyfile(victim, os.path.join(keep, "%s__%s" % (tag, victim_out)))
             return changed, found
         finally:
