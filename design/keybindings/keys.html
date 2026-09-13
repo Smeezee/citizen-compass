@@ -1,0 +1,805 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>Keyboard First</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+ --void:#05080E;--pn:#0C131E;--pn2:#111A27;--ln:#1C2735;--ink:#EAF0F8;--mut:#8092A8;--dim:#4C5B70;
+ --acc:#F2661C;--gau:#45D6C8;
+ --c-flight:#4FA3E0;--c-foot:#E2574C;--c-eva:#B084E8;--c-veh:#E0A33C;--c-cam:#5FD39B;
+ --c-social:#E8C84A;--c-quick:#F08FB5;--c-voip:#7FD1E8;--c-spec:#9AA6B5;--c-unc:#6E7C90;
+ --fd:'Chakra Petch',ui-sans-serif,system-ui,sans-serif;--fb:'Barlow',ui-sans-serif,system-ui,sans-serif;
+ --fm:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--void);color:var(--ink);font:400 15px/1.5 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:focus-visible{outline:2px solid var(--gau);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+button{font-family:inherit}
+
+.top{display:flex;align-items:center;gap:16px;padding:12px 22px;border-bottom:1px solid var(--ln);flex-wrap:wrap}
+.logo{font:700 17px/1 var(--fd);letter-spacing:.05em}
+.logo b{color:var(--acc)}
+.logo span{display:block;font:400 8.5px/1.6 var(--fm);color:var(--dim);letter-spacing:.2em;text-transform:uppercase;margin-top:3px}
+.profile{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{background:var(--pn);border:1px solid var(--ln);border-radius:3px;color:var(--mut);cursor:pointer;
+ font:600 10.5px var(--fm);letter-spacing:.12em;text-transform:uppercase;padding:10px 14px}
+.btn:hover{color:var(--ink);border-color:var(--dim)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#180800}
+.btn.pri:hover{color:#180800}
+
+/* control strip */
+.strip{display:flex;align-items:center;gap:10px;padding:12px 22px;border-bottom:1px solid var(--ln);flex-wrap:wrap;
+ position:sticky;top:0;z-index:40;background:rgba(5,8,14,.96);backdrop-filter:blur(10px)}
+.seg{display:flex;border:1px solid var(--ln);border-radius:3px;overflow:hidden}
+.seg button{background:var(--pn);border:0;border-left:1px solid var(--ln);color:var(--mut);cursor:pointer;
+ font:600 10.5px var(--fm);letter-spacing:.1em;text-transform:uppercase;padding:10px 13px;transition:.12s}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed=true]{background:var(--m,#4FA3E0);color:#04080D}
+.seg button:hover:not([aria-pressed=true]){color:var(--ink)}
+.searchw{position:relative;flex:1 1 240px;min-width:190px}
+.searchw input{width:100%;background:var(--pn);border:1px solid var(--ln);border-radius:3px;color:var(--ink);
+ font:500 14px var(--fb);padding:10px 13px}
+.searchw input::placeholder{color:var(--dim)}
+.hits{position:absolute;left:0;right:0;top:calc(100% + 5px);background:#0A111C;border:1px solid #24324A;border-radius:3px;
+ z-index:60;max-height:340px;overflow:auto}
+.hits[hidden]{display:none}
+.hits button{display:flex;width:100%;gap:10px;align-items:center;background:none;border:0;border-bottom:1px solid #131C29;
+ color:var(--ink);cursor:pointer;font:500 13.5px var(--fb);padding:9px 12px;text-align:left}
+.hits button:hover{background:#131E2C}
+.hits button i{font-style:normal;margin-left:auto;font:700 11px var(--fm);color:var(--gau);white-space:nowrap}
+.hits button s{text-decoration:none;color:var(--dim);font:400 11px var(--fm)}
+.free{margin-left:auto}
+
+/* the board */
+.stage{padding:26px 22px 40px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.kb{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+.block{display:flex;flex-direction:column;gap:6px}
+.krow{display:flex;gap:6px}
+/* --- a key that looks like a key: outer shell, bevelled skirt, inset face --- */
+.key{position:relative;border:0;border-radius:7px;cursor:pointer;padding:0;
+ min-width:58px;height:70px;display:block;text-align:left;
+ background:linear-gradient(180deg,#26344A 0%,#1A2434 42%,#101823 100%);
+ box-shadow:0 4px 0 #070B12, 0 6px 9px rgba(0,0,0,.55), 0 0 0 1px #2C3A4E inset;
+ transition:transform .19s cubic-bezier(.22,.9,.28,1.25), box-shadow .26s ease,
+  background .26s ease;will-change:transform}
+.key .face{position:absolute;left:3px;right:3px;top:3px;bottom:6px;border-radius:5px;
+ background:linear-gradient(180deg,#1E2939 0%,#161F2C 60%,#121A25 100%);
+ box-shadow:0 1px 0 rgba(255,255,255,.075) inset, 0 -1px 0 rgba(0,0,0,.5) inset;
+ padding:5px 6px 4px;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.key .cap{font:700 10.5px var(--fm);letter-spacing:.02em;color:#7F91A8;flex:0 0 auto;line-height:1}
+.key .act{font:500 8.7px/1.2 var(--fb);color:var(--ink);opacity:.96;width:100%;
+ display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
+ overflow-wrap:normal;hyphens:none}
+.key.bound{background:linear-gradient(180deg,
+   color-mix(in srgb,var(--k) 38%,#26344A) 0%,
+   color-mix(in srgb,var(--k) 20%,#1A2434) 42%,
+   color-mix(in srgb,var(--k) 10%,#101823) 100%);
+ box-shadow:0 4px 0 color-mix(in srgb,var(--k) 22%,#070B12), 0 6px 9px rgba(0,0,0,.55),
+   0 0 0 1px color-mix(in srgb,var(--k) 45%,transparent) inset}
+.key.bound .face{background:linear-gradient(180deg,
+   color-mix(in srgb,var(--k) 17%,#1E2939) 0%, color-mix(in srgb,var(--k) 8%,#141D29) 70%, #111925 100%)}
+.key.bound .cap{color:var(--k)}
+.key.multi .face::after{content:'';position:absolute;right:5px;top:5px;width:5px;height:5px;border-radius:50%;
+ background:var(--k);box-shadow:0 0 5px var(--k)}
+/* bound somewhere else, not here */
+.key.elsew .face::after{content:'';position:absolute;right:5px;top:5px;width:0;height:0;
+ border-top:6px solid #46596F;border-left:6px solid transparent}
+.key.elsew .cap{color:#5D6E85}
+.elsewn{font:400 8px var(--fm);font-style:normal;color:#46596F;letter-spacing:.04em}
+.key:hover{transform:translateY(-2px);box-shadow:0 6px 0 #070B12,0 10px 14px rgba(0,0,0,.6),
+ 0 0 0 1px var(--k,var(--gau)) inset;z-index:3}
+.key:active,.key.down{transform:translateY(4px) scale(.982);
+ transition:transform .055s cubic-bezier(.4,0,.6,1), box-shadow .07s ease;
+ box-shadow:0 0 0 #070B12,0 1px 3px rgba(0,0,0,.6),
+  0 0 0 1.5px rgba(255,255,255,.5) inset,
+  0 0 0 2px var(--acc),
+  0 0 12px 0 color-mix(in srgb,var(--acc) 50%,transparent),
+  0 0 24px 2px color-mix(in srgb,var(--acc) 15%,transparent)}
+.key.sel{z-index:6;transform:translateY(-1px);
+ box-shadow:0 5px 0 #05080D,0 8px 12px rgba(0,0,0,.55),
+  0 0 0 1.5px rgba(255,255,255,.5) inset,
+  0 0 0 2px var(--acc),
+  0 0 13px 0 color-mix(in srgb,var(--acc) 52%,transparent),
+  0 0 26px 2px color-mix(in srgb,var(--acc) 16%,transparent)}
+.key.sel .face{background:linear-gradient(180deg,
+  color-mix(in srgb,var(--k,var(--gau)) 55%,#2A374A),
+  color-mix(in srgb,var(--k,var(--gau)) 26%,#1B2532) 72%,#141C27)}
+.key.sel .cap{color:#FFF}
+.key.hit{animation:hit 1.4s ease}
+@keyframes hit{0%,100%{box-shadow:0 4px 0 #070B12,0 6px 9px rgba(0,0,0,.55)}
+ 20%{box-shadow:0 4px 0 #070B12,0 0 0 5px rgba(242,102,28,.55)}}
+.key.dimmed{opacity:.15}
+.key.freek{background:linear-gradient(180deg,#1B4636,#12301F 45%,#0C2117)}
+.key.freek .face{background:linear-gradient(180deg,#153728,#0E2419 70%,#0B1D14)}
+.key.freek .cap{color:#5FD39B}
+.k-w15{min-width:88px}.k-w175{min-width:102px}.k-w2{min-width:118px}.k-w225{min-width:134px}
+.k-w25{min-width:148px}.k-w6{min-width:354px}
+.spacer{width:26px}
+
+/* ---- style switchers ---- */
+.styles{display:flex;gap:26px;flex-wrap:wrap;padding:12px 22px;border-bottom:1px solid var(--ln);
+ background:rgba(8,12,19,.6)}
+.sgrp{display:flex;align-items:center;gap:9px}
+.sgrp>span{font:600 9.5px var(--fm);letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.stage{padding:26px 22px 60px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.boardcol{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
+.kbwrap{position:relative}
+.spokes{position:absolute;inset:-260px -300px;width:calc(100% + 600px);height:calc(100% + 520px);
+ pointer-events:none;overflow:visible}
+.spokes path{stroke:var(--k,var(--acc));stroke-width:1;fill:none;opacity:.65}
+.spokes circle{fill:var(--k,var(--acc))}
+.spokes text{font:500 11px 'Barlow',sans-serif;fill:#D6E2F0}
+.spokes text.s{font:400 9px 'JetBrains Mono',monospace;fill:#6C7E94}
+
+/* ---- 1. GLASS: frosted, beside the key, never over it ---- */
+.glass{position:fixed;z-index:90;pointer-events:none;width:224px;padding:11px 13px 12px;border-radius:9px;
+ background:rgba(9,14,23,.40);backdrop-filter:blur(20px) saturate(1.5);
+ -webkit-backdrop-filter:blur(20px) saturate(1.5);
+ border:1px solid rgba(255,255,255,.10);
+ box-shadow:0 18px 44px rgba(0,0,0,.45);
+ opacity:0;transform:translateY(5px) scale(.985);
+ transition:opacity .16s ease, transform .19s cubic-bezier(.2,.9,.3,1.1)}
+.glass.on{opacity:1;transform:none}
+.glass::before{content:'';position:absolute;top:11px;bottom:11px;width:2px;border-radius:2px;
+ background:var(--k,var(--acc));opacity:.85}
+.glass.side-r::before{left:-1px}
+.glass.side-l::before{right:-1px}
+@keyframes gin{from{opacity:0;transform:translateY(4px) scale(.985)}}
+.glass[hidden]{display:none}
+.glass h5{margin:0;font:600 13px var(--fb);color:#F4F8FC}
+.glass .gsub{font:400 8.5px var(--fm);letter-spacing:.15em;text-transform:uppercase;color:#8398B0;margin:1px 0 8px}
+.glass .gl{padding:6px 0;border-top:1px solid rgba(255,255,255,.07)}
+.glass .gl:first-of-type{border-top:0}
+.glass .gl b{display:block;font:500 11.5px/1.32 var(--fb);color:#EDF3FA}
+.glass .gl i{font-style:normal;font:400 9px var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--k)}
+.glass .gmore{margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.055);
+ font:400 10.5px var(--fm);color:#6C7E94}
+.glass .gfree{color:#6FE3AE;font-size:12.5px}
+.glass .gx{position:absolute;top:5px;right:6px;width:20px;height:20px;border:0;border-radius:5px;
+ background:none;color:#7A8CA3;font:400 16px/1 var(--fb);cursor:pointer;pointer-events:auto}
+.glass .gx:hover{background:rgba(255,255,255,.08);color:#EAF0F8}
+
+/* ---- 2. GROW: the key itself opens. no box at all ---- */
+.key.grown{z-index:70;position:absolute;width:238px;height:auto;min-height:150px;
+ box-shadow:0 14px 0 #05080D,0 26px 50px rgba(0,0,0,.7),0 0 0 1px var(--k,var(--gau)) inset;
+ transition:none}
+.key.grown .face{position:relative;left:auto;right:auto;top:auto;bottom:auto;margin:4px 4px 10px;
+ padding:12px 13px 13px;gap:8px}
+.key.grown .cap{font-size:19px}
+.key.grown .act{-webkit-line-clamp:unset;font:500 11.5px/1.45 var(--fb);white-space:normal}
+.kb.hasgrown .key:not(.grown){opacity:.22}
+.growph{position:absolute;pointer-events:none}
+
+/* ---- 3. RIBBON: the row opens underneath ---- */
+.ribbon{position:absolute;z-index:80;pointer-events:none;animation:rop .15s ease-out}
+@keyframes rop{from{opacity:0;transform:translateY(-5px)}}
+.ribbon .rin{margin:0;padding:12px 16px;border-radius:6px;
+ background:linear-gradient(180deg,#141D2B,#0B1119);
+ border:1px solid #26374A;border-left:3px solid var(--k,var(--acc));
+ box-shadow:0 16px 34px rgba(0,0,0,.5);
+ display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+.ribbon .rk{font:700 13px var(--fm);color:var(--k,var(--acc));min-width:54px}
+.ribbon .rl{min-width:180px}
+.ribbon .rl b{display:block;font:500 12.5px var(--fb);color:var(--ink)}
+.ribbon .rl span{font:400 10px var(--fm);color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+
+/* ---- 4. QUIET: no box at all. the board goes quiet, the answer is just type ---- */
+.kb.quiet .key:not(.sel){opacity:.07}
+.kb.quiet .key.sel{opacity:1}
+.quiet-say{position:absolute;z-index:85;pointer-events:none;width:300px;
+ animation:qin .18s ease-out}
+@keyframes qin{from{opacity:0;transform:translateY(6px)}}
+.quiet-say .qk{font:700 11px var(--fm);letter-spacing:.22em;text-transform:uppercase;
+ color:var(--k,var(--acc));margin-bottom:10px}
+.quiet-say .ql{margin:0 0 11px}
+.quiet-say .ql b{display:block;font:500 18px/1.28 var(--fb);color:#F0F6FC;letter-spacing:-.01em}
+.quiet-say .ql i{font-style:normal;font:400 9.5px var(--fm);letter-spacing:.16em;
+ text-transform:uppercase;color:var(--k)}
+.quiet-say .qm{font:400 11px var(--fm);color:#5F718A;letter-spacing:.08em}
+
+/* ---- key light treatments ---- */
+.kb[data-g="edge"] .key.bound{background:linear-gradient(180deg,#212D40,#18212F 42%,#0E1622);
+ box-shadow:0 4px 0 #070B12,0 6px 9px rgba(0,0,0,.5),
+  0 0 0 1px color-mix(in srgb,var(--k) 25%,#2C3A4E) inset,
+  0 0 16px 1px color-mix(in srgb,var(--k) 42%,transparent),
+  0 0 34px 5px color-mix(in srgb,var(--k) 18%,transparent)}
+.kb[data-g="edge"] .key.bound .face{background:linear-gradient(180deg,
+  color-mix(in srgb,var(--k) 12%,#1D2736),color-mix(in srgb,var(--k) 5%,#151E2A) 68%,#121A25)}
+.kb[data-g="cap"] .key.bound{background:linear-gradient(180deg,#26344A,#1A2434 42%,#101823);
+ box-shadow:0 4px 0 #070B12,0 6px 9px rgba(0,0,0,.55),0 0 0 1px #2C3A4E inset}
+.kb[data-g="cap"] .key.bound .face{background:linear-gradient(180deg,
+  color-mix(in srgb,var(--k) 60%,#1B2534),color-mix(in srgb,var(--k) 20%,#131C27) 78%,#101822);
+ box-shadow:0 1px 0 color-mix(in srgb,var(--k) 70%,transparent) inset,0 -1px 0 rgba(0,0,0,.55) inset}
+.kb[data-g="under"] .key.bound{background:linear-gradient(180deg,#1D2637,#151E2A 42%,#0C131D);
+ box-shadow:0 5px 0 color-mix(in srgb,var(--k) 88%,#000),
+  0 11px 22px -1px color-mix(in srgb,var(--k) 85%,transparent),
+  0 16px 30px -4px color-mix(in srgb,var(--k) 45%,transparent),
+  0 0 0 1px #29374A inset}
+.kb[data-g="under"] .key.bound .face{background:linear-gradient(180deg,#1A2432,#131B26 65%,#101822)}
+.kb[data-g="under"] .key:not(.bound){box-shadow:0 4px 0 #070B12,0 6px 9px rgba(0,0,0,.5),0 0 0 1px #1E2733 inset}
+/* the pressed key always wins over whatever light mode is on */
+.kb[data-g] .key.sel{z-index:6;transform:translateY(-1px);
+ box-shadow:0 5px 0 #05080D,0 8px 12px rgba(0,0,0,.55),
+  0 0 0 1.5px rgba(255,255,255,.5) inset,
+  0 0 0 2px var(--acc),
+  0 0 13px 0 color-mix(in srgb,var(--acc) 52%,transparent),
+  0 0 26px 2px color-mix(in srgb,var(--acc) 16%,transparent)}
+.kb[data-g] .key.sel .face{background:linear-gradient(180deg,
+  color-mix(in srgb,var(--k,var(--gau)) 55%,#2A374A),
+  color-mix(in srgb,var(--k,var(--gau)) 26%,#1B2532) 72%,#141C27)}
+.kb[data-g] .key.sel .cap{color:#FFF}
+.kb[data-g] .key:active,.kb[data-g] .key.down{transform:translateY(4px) scale(.982);
+ transition:transform .055s cubic-bezier(.4,0,.6,1), box-shadow .07s ease;
+ box-shadow:0 0 0 #070B12,0 1px 3px rgba(0,0,0,.6),
+  0 0 0 1.5px rgba(255,255,255,.5) inset,
+  0 0 0 2px var(--acc),
+  0 0 12px 0 color-mix(in srgb,var(--acc) 50%,transparent),
+  0 0 24px 2px color-mix(in srgb,var(--acc) 15%,transparent)}
+
+/* ---- tap vs hold ---- */
+.kb .key.tapped{z-index:6;transform:translateY(0) scale(1);
+ box-shadow:0 4px 0 #05080D,0 7px 11px rgba(0,0,0,.55),
+  0 0 0 1.5px rgba(255,255,255,.42) inset,
+  0 0 0 2px var(--acc),
+  0 0 12px 0 color-mix(in srgb,var(--acc) 46%,transparent),
+  0 0 24px 2px color-mix(in srgb,var(--acc) 14%,transparent);
+ transition:transform .3s cubic-bezier(.18,1.5,.4,1), box-shadow .2s ease}
+.kb .key.tapped .cap{color:#FFF;transition:color .3s ease}
+/* one soft ring leaves the key when you let go */
+.kb .key.tapped::after{content:'';position:absolute;inset:0;border-radius:7px;pointer-events:none;
+ box-shadow:0 0 0 0 color-mix(in srgb,var(--acc) 45%,transparent);
+ animation:ripple .52s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes ripple{
+ 0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--acc) 45%,transparent);opacity:1}
+ 100%{box-shadow:0 0 0 8px color-mix(in srgb,var(--acc) 0%,transparent);opacity:0}}
+.key.holding::before{content:'';position:absolute;left:5px;bottom:8px;height:4px;width:0;
+ border-radius:3px;background:linear-gradient(90deg,var(--acc),#FFD9B8);
+ box-shadow:0 0 6px 0 var(--acc);z-index:8;
+ animation:holdfill var(--hold,450ms) cubic-bezier(.35,0,.65,1) forwards,
+  holdin .12s ease-out}
+@keyframes holdin{from{opacity:0}}
+@keyframes holdfill{to{width:calc(100% - 10px)}}
+.chip{position:fixed;z-index:95;pointer-events:none;padding:5px 10px;border-radius:6px;
+ background:rgba(9,14,23,.50);backdrop-filter:blur(16px) saturate(1.4);
+ -webkit-backdrop-filter:blur(16px) saturate(1.4);
+ border:1px solid rgba(255,255,255,.11);box-shadow:0 10px 26px rgba(0,0,0,.4);
+ font:500 11.5px var(--fb);color:#EAF0F8;white-space:nowrap;
+ display:flex;gap:9px;align-items:baseline;animation:gin .1s ease-out}
+.chip[hidden]{display:none}
+.chip b{color:var(--acc);font:700 11px var(--fm);letter-spacing:.06em}
+.chip i{font-style:normal;color:#7E90A7;font:400 9.5px var(--fm);letter-spacing:.12em;text-transform:uppercase}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:4px 22px 0;font-size:11.5px;color:var(--mut)}
+.legend button{background:none;border:0;color:inherit;cursor:pointer;font:inherit;display:flex;gap:6px;align-items:center;padding:3px 0}
+.legend button i{width:9px;height:9px;border-radius:2px;display:block}
+.legend button[aria-pressed=false]{opacity:.32}
+.statusline{text-align:center;color:var(--dim);font:400 11.5px var(--fm);letter-spacing:.08em;padding-bottom:6px}
+.statusline b{color:var(--gau);font-weight:600}
+footer{border-top:1px solid var(--ln);padding:20px 22px 46px;color:var(--dim);font-size:12px;text-align:center}
+
+/* --- small screens: never smash the keyboard --- */
+.stage{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.kb{min-width:min(100%,920px)}
+@media (max-width:1100px){
+  .top,.strip{padding:10px 14px;gap:10px}
+  .key{min-width:46px;height:56px;border-radius:6px}
+  .key .face{left:2px;right:2px;top:2px;bottom:5px;padding:4px 5px 3px}
+  .key .cap{font-size:9.5px}
+  .key .act{font-size:7.8px;-webkit-line-clamp:3}
+  .krow{gap:4px}.block{gap:4px}.kb{gap:16px}
+  .stage{padding:16px 12px 28px}
+}
+@media (max-width:820px){
+  /* keep key proportions; scroll horizontally instead of crushing */
+  .kb{flex-wrap:nowrap;justify-content:flex-start;padding-bottom:8px}
+  .stage{align-items:stretch}
+  .key{min-width:40px;height:50px}
+  .key .act{font-size:7.2px;-webkit-line-clamp:2}
+  .logo{font-size:15px}
+  .btn{padding:8px 10px;font-size:9.5px}
+  .searchw{flex:1 1 100%;min-width:0}
+  .strip{align-items:stretch}
+  .free{margin-left:0}
+}
+@media (max-width:520px){
+  .key{min-width:34px;height:44px;border-radius:5px}
+  .key .cap{font-size:8.5px}
+  .key .act{display:none} /* labels via panel/search on phones; caps stay readable */
+  .kb{gap:10px}
+  .krow{gap:3px}
+}
+</style>
+
+<div class="top">
+  <div class="logo">CITIZEN <b>COMPASS</b><span>keybindings</span></div>
+  <div class="profile">
+    <button class="btn">Import my profile</button>
+    <button class="btn pri">Export</button>
+  </div>
+</div>
+
+<div class="strip">
+  <div class="seg" id="modes" role="group" aria-label="Mode"></div>
+  <div class="seg" id="layers" role="group" aria-label="Modifier layer"></div>
+  <div class="searchw">
+    <input id="q" placeholder="Find an action — quantum, eject, salvage…" autocomplete="off" aria-label="Find an action">
+    <div class="hits" id="hits" hidden></div>
+  </div>
+  <button class="btn" id="numbtn" aria-pressed="true">Num Lock: on</button>
+  <button class="btn free" id="freebtn" aria-pressed="false">Show free keys</button>
+</div>
+
+<div class="styles">
+  <div class="sgrp"><span>Readout</span><div class="seg" id="rmode"></div></div>
+  <div class="sgrp"><span>Key light</span><div class="seg" id="gmode"></div></div>
+  <div class="sgrp"><span>Hold to open</span><div class="seg" id="hmode"></div></div>
+</div>
+<div class="stage">
+  <div class="boardcol">
+    <div class="statusline" id="status"></div>
+    <div class="kbwrap"><div class="kb" id="kb"></div><div id="quiet"></div></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</div>
+<div class="glass" id="glass" hidden></div>
+<div class="chip" id="chip" hidden></div>
+
+<footer>Redesign mockup · bindings are Star Citizen&rsquo;s own defaults, 691 actions read from the game files ·
+Star Citizen&reg; and Roberts Space Industries&reg; are registered trademarks of Cloud Imperium Rights LLC.</footer>
+
+<script id="KB" type="application/json">[{"a":"v_emergency_exit","l":"Emergency Exit Seat","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":"u+lshift","act":"tap"},{"a":"v_eject","l":"Eject","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":"ralt+y","act":"press"},{"a":"v_view_look_behind","l":"Look behind","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":"comma","act":"delayed_hold_no_retrigger"},{"a":"v_toggle_refuel_mode","l":"Toggle Refuel Operator Mode","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":"m","act":"press"},{"a":"v_set_refuel_mode","l":"Set Refuel Operator Mode","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":null,"act":"press"},{"a":"v_enter_remote_turret_1","l":"Enter Remote Turret 1","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":null,"act":"press"},{"a":"v_enter_remote_turret_2","l":"Enter Remote Turret 2","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":null,"act":"press"},{"a":"v_enter_remote_turret_3","l":"Enter Remote Turret 3","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":null,"act":"press"},{"a":"v_operator_mode_cycle_forward","l":"Next Operator Mode","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":"mouse3","act":"tap"},{"a":"v_operator_mode_cycle_back","l":"Previous Operator Mode","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":null,"act":"tap"},{"a":"v_light_amplification_toggle","l":"Light Amplification Toggle","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":"ralt+l","act":"tap"},{"a":"v_light_amplification_on","l":"Light Amplification On","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":null,"act":"tap"},{"a":"v_light_amplification_off","l":"Light Amplification Off","c":"Uncategorised","s":"Vehicles - Seats and Operator Modes","k":null,"act":"tap"},{"a":"v_self_destruct","l":"Self Destruct","c":"FLIGHT","s":"Vehicles - Cockpit","k":"backspace","act":"delayed_press_medium"},{"a":"v_cooler_throttle_up","l":"Increase Cooler Rate","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":null},{"a":"v_cooler_throttle_down","l":"Decrease Cooler Rate","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":null},{"a":"v_flightready","l":"Flight / Systems Ready","c":"FLIGHT","s":"Vehicles - Cockpit","k":"ralt+r","act":"press"},{"a":"v_toggle_all_doors","l":"Open/Close Doors (Toggle)","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":"press"},{"a":"v_open_all_doors","l":"Open All Doors","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":"press"},{"a":"v_close_all_doors","l":"Close All Doors","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":"press"},{"a":"v_toggle_all_doorlocks","l":"Lock/Unlock Doors (Toggle)","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":"press"},{"a":"v_lock_all_doors","l":"Lock All Doors","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":"press"},{"a":"v_unlock_all_doors","l":"Unlock All Doors","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":"press"},{"a":"v_toggle_all_portlocks","l":"Port Lock Toggle All","c":"FLIGHT","s":"Vehicles - Cockpit","k":"ralt+K","act":"press"},{"a":"v_lock_all_ports","l":"Port Lock All","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":"press"},{"a":"v_unlock_all_ports","l":"Port Unlock All","c":"FLIGHT","s":"Vehicles - Cockpit","k":null,"act":"press"},{"a":"v_mfd_interact_cycle_forwards_short","l":"MFD - Cycle Page - Forwards (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":"lalt+e","act":"tap"},{"a":"v_mfd_interact_cycle_forwards_long","l":"MFD - Cycle Page - Forwards (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_interact_cycle_backwards_short","l":"MFD - Cycle Page - Backwards (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":"lalt+q","act":"tap"},{"a":"v_mfd_interact_cycle_backwards_long","l":"MFD - Cycle Page - Backwards (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_movement_up_short","l":"MFD - Movement - Up (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_movement_up_long","l":"MFD - Movement - Up (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_movement_down_short","l":"MFD - Movement - Down (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_movement_down_long","l":"MFD - Movement - Down (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_movement_left_short","l":"MFD - Movement - Left (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_movement_left_long","l":"MFD - Movement - Left (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_movement_right_short","l":"MFD - Movement - Right (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_movement_right_long","l":"MFD - Movement - Right (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_primary_short","l":"MFD - Select - Primary (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_primary_long","l":"MFD - Select - Primary (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_cast_left_short","l":"MFD - Select - Left Cast (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_cast_left_long","l":"MFD - Select - Left Cast (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_cast_right_short","l":"MFD - Select - Right Cast (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_cast_right_long","l":"MFD - Select - Right Cast (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_1_short","l":"MFD - Select - MFD 1 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_1_long","l":"MFD - Select - MFD 1 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_2_short","l":"MFD - Select - MFD 2 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_2_long","l":"MFD - Select - MFD 2 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_3_short","l":"MFD - Select - MFD 3 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_3_long","l":"MFD - Select - MFD 3 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_4_short","l":"MFD - Select - MFD 4 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_4_long","l":"MFD - Select - MFD 4 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_5_short","l":"MFD - Select - MFD 5 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_5_long","l":"MFD - Select - MFD 5 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_6_short","l":"MFD - Select - MFD 6 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_6_long","l":"MFD - Select - MFD 6 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_7_short","l":"MFD - Select - MFD 7 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_7_long","l":"MFD - Select - MFD 7 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_8_short","l":"MFD - Select - MFD 8 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_8_long","l":"MFD - Select - MFD 8 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_9_short","l":"MFD - Select - MFD 9 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_9_long","l":"MFD - Select - MFD 9 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_soft_select_mfd_10_short","l":"MFD - Select - MFD 10 (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_soft_select_mfd_10_long","l":"MFD - Select - MDF 10 (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_select_view_self_status_short","l":"MFD - Set Page - Self Status (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_select_view_self_status_long","l":"MFD - Set Page - Self Status (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_select_view_target_status_short","l":"MFD - Set Page - Target Status (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_select_view_target_status_long","l":"MFD - Set Page - Target Status (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_select_view_scanning_short","l":"MFD - Set Page - Scanning (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_select_view_scanning_long","l":"MFD - Set Page - Scanning (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_select_view_configuration_short","l":"MFD - Set Page - Vehicle Configuration (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_select_view_configuration_long","l":"MFD - Set Page - Vehicle Configuration (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_select_view_comms_short","l":"MFD - Set Page - Communications (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_select_view_comms_long","l":"MFD - Set Page - Communications (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_select_view_ifcs_short","l":"MFD - Set Page - IFCS (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_select_view_ifcs_long","l":"MFD - Set Page - IFCS (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_select_view_diagnostics_short","l":"MFD - Set Page - Diagnostics (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_select_view_diagnostics_long","l":"MFD - Set Page - Diagnostics (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_mfd_select_view_resource_network_short","l":"MFD - Set Page - Resource Network (Short Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"tap"},{"a":"v_mfd_select_view_resource_network_long","l":"MFD - Set Page - Resource Network (Long Press)","c":"Uncategorised","s":"Vehicles - Multi Function Displays (MFDs)","k":null,"act":"delayed_press"},{"a":"v_view_yaw_left","l":"Look left","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_yaw_right","l":"Look right","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_yaw","l":"Look left / right","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_yaw_mouse","l":"Look left / right","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_pitch_up","l":"Look up","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_pitch_down","l":"Look down","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_pitch","l":"Look up / down","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_pitch_mouse","l":"Look up / down","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_cycle_fwd","l":"Cycle camera view","c":"FLIGHT","s":"Vehicles - View","k":"f4","act":"tap"},{"a":"v_view_mode","l":"Cycle camera orbit mode","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_zoom_in","l":"Zoom in (3rd person view)","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_zoom_out","l":"Zoom out (3rd person view)","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_freelook_mode","l":"Freelook (Hold)","c":"FLIGHT","s":"Vehicles - View","k":"z","act":"hold"},{"a":"v_view_dynamic_zoom_rel","l":"Dynamic Zoom In and Out (rel.)","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_dynamic_zoom_rel_in","l":"Dynamic Zoom In (rel.)","c":"FLIGHT","s":"Vehicles - View","k":null,"act":"all"},{"a":"v_view_dynamic_zoom_rel_out","l":"Dynamic Zoom Out (rel.)","c":"FLIGHT","s":"Vehicles - View","k":null,"act":"all"},{"a":"v_view_dynamic_zoom_abs","l":"Dynamic Zoom In and Out (abs.)","c":"FLIGHT","s":"Vehicles - View","k":null,"act":null},{"a":"v_view_dynamic_zoom_abs_toggle","l":"Dynamic Zoom Toggle (abs.)","c":"FLIGHT","s":"Vehicles - View","k":null,"act":"smart_toggle"},{"a":"v_ads_hold","l":"Precision Targeting - Hold","c":"FLIGHT","s":"Vehicles - View","k":null,"act":"hold"},{"a":"v_ads_toggle","l":"Precision Targeting - Toggle On / Off","c":"FLIGHT","s":"Vehicles - View","k":"mouse2","act":"tap"},{"a":"v_ads_stable_max_zoom_hold","l":"Precision Targeting - Maximum Zoom (hold)","c":"FLIGHT","s":"Vehicles - View","k":"mouse2","act":"delayed_hold"},{"a":"v_ads_cycle_tracking","l":"Precision Targeting - Toggle Camera Tracking","c":"FLIGHT","s":"Vehicles - View","k":"ralt+mouse2","act":"tap"},{"a":"v_pitch_up","l":"Pitch up","c":"FLIGHT","s":"Flight - Movement","k":"down","act":null},{"a":"v_pitch_down","l":"Pitch down","c":"FLIGHT","s":"Flight - Movement","k":"up","act":null},{"a":"v_pitch","l":"Pitch","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_pitch_mouse","l":"Pitch","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_yaw_left","l":"Yaw left","c":"FLIGHT","s":"Flight - Movement","k":"left","act":null},{"a":"v_yaw_right","l":"Yaw right","c":"FLIGHT","s":"Flight - Movement","k":"right","act":null},{"a":"v_yaw","l":"Yaw","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_yaw_mouse","l":"Yaw","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_roll_left","l":"Roll left","c":"FLIGHT","s":"Flight - Movement","k":"q","act":null},{"a":"v_roll_right","l":"Roll right","c":"FLIGHT","s":"Flight - Movement","k":"e","act":null},{"a":"v_roll","l":"Roll","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_roll_mouse","l":"Roll","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_toggle_relative_mouse_mode","l":"Cycle mouse mode (VJoy / Relative)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"smart_toggle"},{"a":"v_toggle_yaw_roll_swap","l":"Swap Yaw / Roll (Toggle)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"smart_toggle"},{"a":"v_strafe_up","l":"Strafe up (abs.)","c":"FLIGHT","s":"Flight - Movement","k":"space","act":null},{"a":"v_strafe_down","l":"Strafe down (abs.)","c":"FLIGHT","s":"Flight - Movement","k":"lctrl","act":null},{"a":"v_strafe_vertical","l":"Strafe up / down (abs.)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_strafe_left","l":"Strafe left (abs.)","c":"FLIGHT","s":"Flight - Movement","k":"a","act":null},{"a":"v_strafe_right","l":"Strafe right (abs.)","c":"FLIGHT","s":"Flight - Movement","k":"d","act":null},{"a":"v_strafe_lateral","l":"Strafe left / right (abs.)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_strafe_forward","l":"Throttle - Increase","c":"FLIGHT","s":"Flight - Movement","k":"w","act":null},{"a":"v_strafe_back","l":"Throttle - Decrease","c":"FLIGHT","s":"Flight - Movement","k":"s","act":null},{"a":"v_strafe_longitudinal","l":"Throttle - Forward / Back","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_strafe_longitudinal_invert","l":"Throttle - Forward / Back Invert","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_ifcs_throttle_swap_mode","l":"Throttle - Cruise Mode - Toggle","c":"FLIGHT","s":"Flight - Movement","k":"lalt+c","act":null},{"a":"v_ifcs_throttle_set_sticky","l":"Throttle - Cruise Mode - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_ifcs_throttle_set_normal","l":"Throttle - Cruise Mode - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_strafe_trim_set_long","l":"Throttle - Trim - Set (Long Press)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"delayed_press"},{"a":"v_strafe_trim_set_short","l":"Throttle - Trim - Set (Short Press)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_strafe_trim_set_100_long","l":"Throttle - Trim - Set To 100% (Long Press)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"delayed_press"},{"a":"v_strafe_trim_set_100_short","l":"Throttle - Trim - Set To 100% (Short Press)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_strafe_trim_set_50_long","l":"Throttle - Trim - Set To 50% (Long Press)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"delayed_press"},{"a":"v_strafe_trim_set_50_short","l":"Throttle - Trim - Set To 50% (Short Press)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_strafe_trim_reset_long","l":"Throttle - Trim - Release (Long Press)","c":"FLIGHT","s":"Flight - Movement","k":"x","act":"delayed_press"},{"a":"v_strafe_trim_reset_short","l":"Throttle - Trim - Release (Short Press)","c":"FLIGHT","s":"Flight - Movement","k":"x","act":"tap"},{"a":"v_afterburner","l":"Boost","c":"FLIGHT","s":"Flight - Movement","k":"lshift","act":"all"},{"a":"v_ifcs_speed_limiter_up","l":"Speed Limiter - Increase (hold)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_ifcs_speed_limiter_down","l":"Speed Limiter - Decrease (hold)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_ifcs_speed_limiter_increment","l":"Speed Limiter - Step Up (tap)","c":"FLIGHT","s":"Flight - Movement","k":"lalt+mwheel_up","act":"press"},{"a":"v_ifcs_speed_limiter_decrement","l":"Speed Limiter - Step Down (tap)","c":"FLIGHT","s":"Flight - Movement","k":"lalt+mwheel_down","act":"press"},{"a":"v_ifcs_speed_limiter_rel","l":"Speed Limiter (rel)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_ifcs_speed_limiter_abs","l":"Speed Limiter (abs)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_ifcs_speed_limiter_toggle","l":"Speed Limiter - Enable / Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_ifcs_speed_limiter_on","l":"Speed Limiter - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_speed_limiter_off","l":"Speed Limiter - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_accel_range_up","l":"Acceleration Limiter - Increase (hold)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_accel_range_down","l":"Acceleration Limiter - Decrease (hold)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_accel_range_increment","l":"Acceleration Limiter - Step Up (tap)","c":"FLIGHT","s":"Flight - Movement","k":"ralt+mwheel_up","act":"press"},{"a":"v_accel_range_decrement","l":"Acceleration Limiter - Step Down (tap)","c":"FLIGHT","s":"Flight - Movement","k":"ralt+mwheel_down","act":"press"},{"a":"v_accel_range_rel","l":"Acceleration Limiter (rel)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_accel_range_abs","l":"Acceleration Limiter (abs)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":null},{"a":"v_space_brake","l":"Spacebrake","c":"FLIGHT","s":"Flight - Movement","k":"x","act":null},{"a":"v_lock_rotation","l":"Lock Pitch / Yaw Movement (Toggle / Hold)","c":"FLIGHT","s":"Flight - Movement","k":"rshift","act":"smart_toggle"},{"a":"v_ifcs_gsafe_on","l":"G-Force safety on","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_gsafe_off","l":"G-Force safety off","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_toggle_gforce_safety","l":"G-Force Safety On/Off (Toggle / Hold)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_ifcs_toggle_esp","l":"E.S.P. - Toggle On / Off (Press)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"smart_toggle"},{"a":"v_ifcs_esp_hold","l":"E.S.P. - Enable Temporarily (Hold)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"hold"},{"a":"v_toggle_landing_system","l":"Landing System (Toggle)","c":"FLIGHT","s":"Flight - Movement","k":"n","act":"tap"},{"a":"v_deploy_landing_system","l":"Landing System (Deploy)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_retract_landing_system","l":"Landing System (Retract)","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_vtol_toggle","l":"Toggle VTOL","c":"FLIGHT","s":"Flight - Movement","k":"k","act":"tap"},{"a":"v_transform_deploy","l":"Expand Configuration","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_transform_retract","l":"Retract Configuration","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_transform_cycle","l":"Cycle Configuration","c":"FLIGHT","s":"Flight - Movement","k":"lalt+k","act":"tap"},{"a":"v_autoland","l":"Autoland","c":"FLIGHT","s":"Flight - Movement","k":"n","act":"delayed_press"},{"a":"v_atc_request","l":"Request Landing","c":"FLIGHT","s":"Flight - Movement","k":"lalt+n","act":"tap"},{"a":"v_atc_loading_area_request","l":"Request Cargo Loading","c":"FLIGHT","s":"Flight - Movement","k":"ralt+n","act":"tap"},{"a":"v_master_mode_cycle_long","l":"Cycle Master Mode (Long Press)","c":"FLIGHT","s":"Flight - Movement","k":"b","act":"delayed_press"},{"a":"v_master_mode_set_nav","l":"Set Master Mode to Nav","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_master_mode_set_scm","l":"Set Master Mode to SCM","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_toggle_jump_request","l":"Jump Drive - Request Jump","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_ifcs_gravity_compensation_toggle","l":"IFCS - Gravity Compensation - Toggle","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_ifcs_gravity_compensation_on","l":"IFCS - Gravity Compensation - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_gravity_compensation_off","l":"IFCS - Gravity Compensation - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_wind_compensation_toggle","l":"IFCS - Wind Compensation - Toggle","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_ifcs_wind_compensation_on","l":"IFCS - Wind Compensation - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_wind_compensation_off","l":"IFCS - Wind Compensation - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_auto_precision_mode_toggle","l":"Automatic Precision Mode - Toggle","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_auto_precision_mode_on","l":"Automatic Precision Mode - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_auto_precision_mode_off","l":"Automatic Precision Mode - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_proximity_assist_toggle","l":"IFCS - Proximity Assist - Toggle","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_ifcs_proximity_assist_on","l":"IFCS - Proximity Assist - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_proximity_assist_off","l":"IFCS - Proximity Assist - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_stability_toggle","l":"IFCS - Stability - Toggle","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_ifcs_stability_on","l":"IFCS - Stability - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_stability_off","l":"IFCS - Stability - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_core_toggle","l":"IFCS - Core - Toggle On / Off","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_ifcs_core_on","l":"IFCS - Core - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_core_off","l":"IFCS - Core - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_ifcs_reset_gmeter_max","l":"Reset Flight Accelerometer","c":"FLIGHT","s":"Flight - Movement","k":"ralt+c","act":"tap"},{"a":"v_flight_advanced_hud_toggle","l":"Advanced HUD - Toggle","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"tap"},{"a":"v_flight_advanced_hud_on","l":"Advanced HUD - Enable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_flight_advanced_hud_off","l":"Advanced HUD - Disable","c":"FLIGHT","s":"Flight - Movement","k":null,"act":"press"},{"a":"v_toggle_qdrive_engagement","l":"Engage Quantum Drive (Hold)","c":"Uncategorised","s":"Flight - Quantum Travel","k":"mouse1","act":"delayed_press"},{"a":"v_toggle_docking_request","l":"Docking\n(Initiate)","c":"Uncategorised","s":"Flight - Docking","k":"ralt+n","act":"tap"},{"a":"v_dock_toggle_view","l":"Toggle Docking Camera","c":"Uncategorised","s":"Flight - Docking","k":"0","act":"delayed_press"},{"a":"v_auto_targeting_toggle_long","l":"Auto Targeting - Toggle On/Off (Long Press)","c":"FLIGHT","s":"Vehicles - Targeting","k":"t","act":"delayed_press"},{"a":"v_auto_targeting_toggle_short","l":"Auto Targeting - Toggle On/Off (Short Press)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"tap"},{"a":"v_auto_targeting_enable_short","l":"Auto Targeting - Toggle On (Short Press)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"tap"},{"a":"v_auto_targeting_enable_long","l":"Auto Targeting - Toggle On (Long Press)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"delayed_press"},{"a":"v_auto_targeting_disable_short","l":"Auto Targeting - Toggle Off (Short Press)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"tap"},{"a":"v_auto_targeting_disable_long","l":"Auto Targeting - Toggle Off (Long Press)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"delayed_press"},{"a":"v_target_toggle_lock_index_1","l":"Pin Index 1 - Lock / Unlock Pinned Target","c":"FLIGHT","s":"Vehicles - Targeting","k":"1","act":"tap"},{"a":"v_target_toggle_lock_index_2","l":"Pin Index 2 - Lock / Unlock Pinned Target","c":"FLIGHT","s":"Vehicles - Targeting","k":"2","act":"tap"},{"a":"v_target_toggle_lock_index_3","l":"Pin Index 3 - Lock / Unlock Pinned Target","c":"FLIGHT","s":"Vehicles - Targeting","k":"3","act":"tap"},{"a":"v_target_toggle_pin_index_1","l":"Pin Index 1 - Pin / Unpin Selected Target","c":"FLIGHT","s":"Vehicles - Targeting","k":"lalt+1","act":"tap"},{"a":"v_target_toggle_pin_index_2","l":"Pin Index 2 - Pin / Unpin Selected Target","c":"FLIGHT","s":"Vehicles - Targeting","k":"lalt+2","act":"tap"},{"a":"v_target_toggle_pin_index_3","l":"Pin Index 3 - Pin / Unpin Selected Target","c":"FLIGHT","s":"Vehicles - Targeting","k":"lalt+3","act":"tap"},{"a":"v_target_toggle_pin_index_1_hold","l":"Pin Index 1 - Pin / Unpin Selected Target (Hold)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"delayed_press"},{"a":"v_target_toggle_pin_index_2_hold","l":"Pin Index 2 - Pin / Unpin Selected Target (Hold)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"delayed_press"},{"a":"v_target_toggle_pin_index_3_hold","l":"Pin Index 3 - Pin / Unpin Selected Target (Hold)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"delayed_press"},{"a":"v_target_pin_selected","l":"Pin Selected Target","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"tap"},{"a":"v_target_unpin_selected","l":"Unpin Selected Target","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"tap"},{"a":"v_target_pin_selected_hold","l":"Pin Selected Target (Hold)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"delayed_press"},{"a":"v_target_unpin_selected_hold","l":"Unpin Selected Target (Hold)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"delayed_press"},{"a":"v_target_remove_all_pins","l":"Remove All Pinned Targets","c":"FLIGHT","s":"Vehicles - Targeting","k":"0","act":"tap"},{"a":"v_target_lock_selected","l":"Lock Selected Target","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"tap"},{"a":"v_target_unlock","l":"Unlock Current Target","c":"FLIGHT","s":"Vehicles - Targeting","k":"lalt+t","act":"tap"},{"a":"v_look_ahead_enable","l":"Enable / Disable Look Ahead","c":"FLIGHT","s":"Vehicles - Targeting","k":"lalt+l","act":"smart_toggle"},{"a":"v_look_ahead_start_target_tracking","l":"Enable / Disable Target Padlock (Toggle, Hold)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"smart_toggle"},{"a":"v_target_tracking_auto_zoom","l":"Auto Zoom On Selected Target On / Off (Toggle, Hold)","c":"FLIGHT","s":"Vehicles - Targeting","k":null,"act":"smart_toggle"},{"a":"v_target_under_reticle","l":"Lock Target Under Reticle","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_in_view_back","l":"Cycle Lock - In View - Back","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_in_view_fwd","l":"Cycle Lock - In View - Forward","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"t","act":"tap"},{"a":"v_target_cycle_in_view_reset","l":"Cycle Lock - In View - Under Reticle","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"t","act":"tap"},{"a":"v_target_cycle_pinned_back","l":"Cycle Lock - Pinned - Back","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_pinned_fwd","l":"Cycle Lock - Pinned - Forward","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_pinned_reset","l":"Cycle Lock - Pinned - Reset to First","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_attacker_back","l":"Cycle Lock - Attackers - Back","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_attacker_fwd","l":"Cycle Lock - Attackers - Forward","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"4","act":"tap"},{"a":"v_target_cycle_attacker_reset","l":"Cycle Lock - Attackers - Reset to Closest","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"4","act":"tap"},{"a":"v_target_cycle_hostile_back","l":"Cycle Lock - Hostiles - Back","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_hostile_fwd","l":"Cycle Lock - Hostiles - Forward","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"5","act":"tap"},{"a":"v_target_cycle_hostile_reset","l":"Cycle Lock - Hostiles - Reset to Closest","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"5","act":"tap"},{"a":"v_target_cycle_friendly_back","l":"Cycle Lock - Friendlies - Back","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_friendly_fwd","l":"Cycle Lock - Friendlies - Forward","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"6","act":"tap"},{"a":"v_target_cycle_friendly_reset","l":"Cycle Lock - Friendlies - Reset to Closest","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"6","act":"tap"},{"a":"v_target_cycle_all_back","l":"Cycle Lock - All - Back","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_all_fwd","l":"Cycle Lock - All - Forward","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"7","act":"tap"},{"a":"v_target_cycle_all_reset","l":"Cycle Lock - All - Reset to Closest","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"7","act":"tap"},{"a":"v_target_cycle_subitem_back","l":"Cycle Lock - Sub-Target - Back","c":"FLIGHT","s":"Vehicles - Target Cycling","k":null,"act":"tap"},{"a":"v_target_cycle_subitem_fwd","l":"Cycle Lock - Sub-Target - Forward","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"r","act":"tap"},{"a":"v_target_cycle_subitem_reset","l":"Cycle Lock - Sub-Target - Reset to Main Target","c":"FLIGHT","s":"Vehicles - Target Cycling","k":"lalt+r","act":"tap"},{"a":"v_target_hail","l":"Hail Target","c":"FLIGHT","s":"Flight - Target Hailing","k":"9","act":"tap"},{"a":"v_invoke_ping","l":"Activate Ping (Hold & Release)","c":"FLIGHT","s":"Flight - Radar","k":"tab","act":"hold"},{"a":"v_scanning_trigger_scan","l":"Activate Scanning","c":"FLIGHT","s":"Vehicles - Scanning","k":null,"act":"hold"},{"a":"v_inc_scan_focus_level","l":"Increase Scanning Angle\u00a0","c":"FLIGHT","s":"Vehicles - Scanning","k":null,"act":"press"},{"a":"v_dec_scan_focus_level","l":"Decrease Scanning Angle","c":"FLIGHT","s":"Vehicles - Scanning","k":null,"act":"press"},{"a":"v_toggle_mining_laser_fire","l":"Fire Mining Laser (Toggle)","c":"FLIGHT","s":"Vehicles - Mining","k":"mouse1","act":"smart_toggle"},{"a":"v_toggle_mining_laser_type","l":"Switch Mining Laser (Toggle)","c":"FLIGHT","s":"Vehicles - Mining","k":"lalt+mouse1","act":"press"},{"a":"v_increase_mining_throttle","l":"Increase Mining Laser Power","c":"FLIGHT","s":"Vehicles - Mining","k":"maxis_z","act":"press"},{"a":"v_decrease_mining_throttle","l":"Decrease Mining Laser Power","c":"FLIGHT","s":"Vehicles - Mining","k":null,"act":"press"},{"a":"v_mining_throttle","l":"Increase / Decrease Mining Laser Power","c":"FLIGHT","s":"Vehicles - Mining","k":null,"act":null},{"a":"v_mining_use_consumable1","l":"Activate Mining Module (Slot 1)","c":"FLIGHT","s":"Vehicles - Mining","k":"lalt+1","act":"press"},{"a":"v_mining_use_consumable2","l":"Activate Mining Module (Slot 2)","c":"FLIGHT","s":"Vehicles - Mining","k":"lalt+2","act":"press"},{"a":"v_mining_use_consumable3","l":"Activate Mining Module (Slot 3)","c":"FLIGHT","s":"Vehicles - Mining","k":"lalt+3","act":"press"},{"a":"v_mining_use_permanent_modifier","l":"Toggle Laser Beam (High / low)","c":"FLIGHT","s":"Vehicles - Mining","k":"lalt+4","act":"press"},{"a":"v_jettison_volatile_cargo","l":"Jettison Cargo","c":"FLIGHT","s":"Vehicles - Mining","k":"lalt+j","act":"press"},{"a":"v_salvage_toggle_gimbal_mode","l":"Salvage Mode Gimbal (Toggle)","c":"FLIGHT","s":"Ungrouped","k":"g","act":"press"},{"a":"v_salvage_reset_gimbal","l":"Salvage Mode Gimbal Reset","c":"FLIGHT","s":"Ungrouped","k":"lalt+g","act":"press"},{"a":"v_salvage_increase_beam_spacing","l":"Increase Beam Spacing","c":"FLIGHT","s":"Ungrouped","k":null,"act":"press"},{"a":"v_salvage_decrease_beam_spacing","l":"Decrease Beam Spacing","c":"FLIGHT","s":"Ungrouped","k":null,"act":"press"},{"a":"v_salvage_beam_spacing_rel","l":"Relative Beam Spacing","c":"FLIGHT","s":"Ungrouped","k":"maxis_z","act":null},{"a":"v_salvage_beam_spacing_abs","l":"Absolute Beam Spacing","c":"FLIGHT","s":"Ungrouped","k":null,"act":null},{"a":"v_salvage_toggle_beam_spacing_axis","l":"Salvage Beam Axis (Toggle)","c":"FLIGHT","s":"Ungrouped","k":"lalt+mouse2","act":"press"},{"a":"v_salvage_cycle_modifiers_left","l":"Cycle Left Salvage Modifiers","c":"FLIGHT","s":"Ungrouped","k":null,"act":"press"},{"a":"v_salvage_cycle_modifiers_right","l":"Cycle Right Salvage Modifiers","c":"FLIGHT","s":"Ungrouped","k":null,"act":"press"},{"a":"turret_pitch_up","l":"Pitch up","c":"Uncategorised","s":"Turret Movement","k":null,"act":null},{"a":"turret_pitch_down","l":"Pitch down","c":"Uncategorised","s":"Turret Movement","k":null,"act":null},{"a":"turret_pitch","l":"Pitch","c":"Uncategorised","s":"Turret Movement","k":null,"act":null},{"a":"turret_pitch_mouse","l":"Pitch","c":"Uncategorised","s":"Turret Movement","k":null,"act":null},{"a":"turret_yaw_left","l":"Yaw left","c":"Uncategorised","s":"Turret Movement","k":null,"act":null},{"a":"turret_yaw_right","l":"Yaw right","c":"Uncategorised","s":"Turret Movement","k":null,"act":null},{"a":"turret_yaw","l":"Yaw","c":"Uncategorised","s":"Turret Movement","k":null,"act":null},{"a":"turret_yaw_mouse","l":"Yaw","c":"Uncategorised","s":"Turret Movement","k":null,"act":null},{"a":"turret_toggle_mouse_mode","l":"Toggle Turret Mouse Movement (VJoy, FPS style)","c":"Uncategorised","s":"Turret Movement","k":"q","act":"smart_toggle"},{"a":"turret_mouse_mode_cycle","l":"Turret Mouse Mode - Cycle Modes","c":"Uncategorised","s":"Turret Movement","k":"q","act":"press"},{"a":"turret_mouse_mode_set_vjoy","l":"Turret Mouse Mode - VJoy Dragging","c":"Uncategorised","s":"Turret Movement","k":null,"act":"press"},{"a":"turret_mouse_mode_set_1to1","l":"Turret Mouse Mode - Relative Dragging","c":"Uncategorised","s":"Turret Movement","k":null,"act":"press"},{"a":"turret_mouse_mode_set_pointer","l":"Turret Mouse Mode - Pointer","c":"Uncategorised","s":"Turret Movement","k":null,"act":"press"},{"a":"turret_remote_exit","l":"Exit Remote Turret","c":"Uncategorised","s":"Turret Movement","k":"y","act":null},{"a":"turret_gyromode","l":"Turret Gyro Stabilization (Toggle)","c":"Uncategorised","s":"Turret Movement","k":"e","act":"press"},{"a":"turret_remote_cycle_next","l":"Next Remote Turret","c":"Uncategorised","s":"Turret Movement","k":"d","act":"press"},{"a":"turret_remote_cycle_prev","l":"Previous Remote Turret","c":"Uncategorised","s":"Turret Movement","k":"a","act":"press"},{"a":"turret_esp_toggle","l":"Turret E.S.P. Toggle On / Off","c":"Uncategorised","s":"Turret Advanced","k":null,"act":"press"},{"a":"turret_esp_hold","l":"Turret E.S.P. - Enable Temporarily (Hold)","c":"Uncategorised","s":"Turret Advanced","k":null,"act":"hold"},{"a":"turret_recenter","l":"Recenter Turret (Hold)","c":"Uncategorised","s":"Turret Advanced","k":"c","act":"hold_no_retrigger"},{"a":"turret_limiter_toggle","l":"Turret - Speed Limiter - On/Off (Hold/Toggle)","c":"Uncategorised","s":"Turret Advanced","k":null,"act":"smart_toggle"},{"a":"turret_limiter_rel","l":"Turret - Speed Limiter (rel)","c":"Uncategorised","s":"Turret Advanced","k":null,"act":null},{"a":"turret_limiter_rel_increase","l":"Turret - Speed Limiter - Increase (rel)","c":"Uncategorised","s":"Turret Advanced","k":null,"act":"all"},{"a":"turret_limiter_rel_decrease","l":"Turret - Speed Limiter - Decrease (rel)","c":"Uncategorised","s":"Turret Advanced","k":null,"act":"all"},{"a":"turret_limiter_abs","l":"Turret - Speed Limiter (abs)","c":"Uncategorised","s":"Turret Advanced","k":null,"act":null},{"a":"turret_change_position","l":"Change Turret Position","c":"Uncategorised","s":"Turret Advanced","k":"s","act":"press"},{"a":"v_weapon_gimbals_state_toggle","l":"Gimbal State - Toggle Locked / Unlocked","c":"FLIGHT","s":"Vehicles - Weapons","k":"g","act":"tap"},{"a":"v_weapon_gimbals_state_set_locked","l":"Gimbal State - Set Locked","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_gimbals_state_set_unlocked","l":"Gimbal State - Set Unlocked","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_gimbals_unlocked_cycle_source","l":"Gimbal State - Unlocked - Cycle Source (VJoy / View)","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_aim_type_cycle","l":"Aim Mode - Cycle","c":"FLIGHT","s":"Vehicles - Weapons","k":"ralt+g","act":"tap"},{"a":"v_weapon_aim_type_set_pip_aiming","l":"Aim Mode - Set to PIP Aiming","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_aim_type_set_painting","l":"Aim Mode - Set to Painting","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_aim_type_set_auto","l":"Aim Mode - Set to Automatic","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_staggered_fire_toggle","l":"Staggered Fire - Toggle On / Off","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_staggered_fire_on","l":"Staggered Fire - On","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_staggered_fire_off","l":"Staggered Fire - Off","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_suppress_aim_assists_hold","l":"Suppress Aim Assists (Hold)","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"hold"},{"a":"v_weapon_pip_toggle_lead_lag","l":"Toggle Lead / Lag PIPs","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_set_lag","l":"Set Lag PIPs","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_set_lead","l":"Set Lead PIPs","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_combination_type_toggle","l":"PIP Combination Type: Toggle","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_combination_type_set_single","l":"PIP Combination Type: Set One PIP Per Weapon","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_combination_type_set_combined_weapon_group","l":"PIP Combination Type: Set One PIP Per Weapon Type","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_prec_line_toggle","l":"PIP Precision Lines Toggle","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_prec_line_on","l":"PIP Precision Lines On","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_prec_line_off","l":"PIP Precision Lines Off","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_fade_toggle","l":"PIP Fading Toggle","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_fade_on","l":"PIP Fading On","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_pip_fade_off","l":"PIP Fading Off","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_ui_scale_toggle","l":"Gunnery UI Magnification Toggle","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_ui_scale_on","l":"Gunnery UI Magnification On","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_ui_scale_off","l":"Gunnery UI Magnification Off","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"tap"},{"a":"v_weapon_convergence_distance_rel","l":"Manual Convergence Distance (rel.)","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":null},{"a":"v_weapon_convergence_distance_rel_increase","l":"Manual Convergence Distance - Increase","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_convergence_distance_rel_decrease","l":"Manual Convergence Distance - Decrease","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_convergence_distance_abs","l":"Manual Convergence Distance (abs.)","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":null},{"a":"v_weapon_convergence_distance_set_default","l":"Manual Convergence Distance - Reset","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_attack","l":"Weapon Preset - Fire","c":"FLIGHT","s":"Vehicles - Weapons","k":"mouse1","act":"all"},{"a":"v_weapon_preset_fire_guns0","l":"Weapon Presets - Fire Guns Group 1","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"all"},{"a":"v_weapon_preset_fire_guns1","l":"Weapon Presets - Fire Guns Group 2","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"all"},{"a":"v_weapon_preset_fire_guns2","l":"Weapon Presets - Fire Guns Group 3","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"all"},{"a":"v_weapon_preset_fire_guns3","l":"Weapon Presets - Fire Guns Group 4","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"all"},{"a":"v_weapon_preset_next","l":"Weapon Presets - Next","c":"FLIGHT","s":"Vehicles - Weapons","k":"mwheel_down","act":"press"},{"a":"v_weapon_preset_prev","l":"Weapon Presets - Previous","c":"FLIGHT","s":"Vehicles - Weapons","k":"mwheel_up","act":"press"},{"a":"v_weapon_preset_next_overflow","l":"Weapon Presets - Next (Overflow)","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_prev_overflow","l":"Weapon Presets - Previous (Overflow)","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_guns0","l":"Weapon Presets - Set Guns Group 1","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_guns1","l":"Weapon Presets - Set Guns Group 2","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_guns2","l":"Weapon Presets - Set Guns Group 3","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_guns3","l":"Weapon Presets - Set Guns Group 4","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_emp","l":"Weapon Presets - Set EMPs","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_qid_jammer","l":"Weapon Presets - Set Quantum Jammers (short range)","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_qid_pulse","l":"Weapon Presets - Set Quantum Snares / Pulse (long range)","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_preset_qid","l":"Weapon Presets - Set QIDs","c":"FLIGHT","s":"Vehicles - Weapons","k":null,"act":"press"},{"a":"v_weapon_toggle_launch_missile","l":"Launch Missiles (Tap)","c":"FLIGHT","s":"Vehicles - Missiles","k":"mouse1","act":"press"},{"a":"v_weapon_launch_missile","l":"Launch Missiles (Hold)","c":"FLIGHT","s":"Vehicles - Missiles","k":null,"act":"delayed_press"},{"a":"v_weapon_cycle_missile_fwd","l":"Cycle Next Missile Type","c":"FLIGHT","s":"Vehicles - Missiles","k":"mwheel_down","act":"press"},{"a":"v_weapon_cycle_missile_back","l":"Cycle Previous Missile Type","c":"FLIGHT","s":"Vehicles - Missiles","k":"mwheel_up","act":"press"},{"a":"v_weapon_increase_max_missiles","l":"Increase Number of Armed Missiles","c":"FLIGHT","s":"Vehicles - Missiles","k":"g","act":"tap"},{"a":"v_weapon_decrease_max_missiles","l":"Decrease Number of Armed Missiles","c":"FLIGHT","s":"Vehicles - Missiles","k":null,"act":"tap"},{"a":"v_weapon_reset_max_missiles","l":"Reset Number of Armed Missiles","c":"FLIGHT","s":"Vehicles - Missiles","k":"lalt+g","act":"tap"},{"a":"v_weapon_bombing_hud_range_increase","l":"Bombs - Increase HUD Range","c":"FLIGHT","s":"Vehicles - Missiles","k":null,"act":"tap"},{"a":"v_weapon_bombing_hud_range_decrease","l":"Bombs - Decrease HUD Range","c":"FLIGHT","s":"Vehicles - Missiles","k":null,"act":"tap"},{"a":"v_weapon_bombing_hud_range_reset","l":"Bombs - Reset HUD Range","c":"FLIGHT","s":"Vehicles - Missiles","k":null,"act":"tap"},{"a":"v_weapon_countermeasure_decoy_launch","l":"Decoy - Launch Burst (tap), Set and Launch Burst (hold)","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":"h","act":null},{"a":"v_weapon_countermeasure_decoy_burst_increase","l":"Decoy - Increase Burst Size (tap)","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":"ralt+h","act":"press"},{"a":"v_weapon_countermeasure_decoy_burst_decrease","l":"Decoy - Decrease Burst Size (tap)","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":"lalt+h","act":"press"},{"a":"v_weapon_countermeasure_decoy_launch_panic","l":"Decoy - Panic Launch (tap)","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":null,"act":"press"},{"a":"v_weapon_countermeasure_noise_launch","l":"Noise - Deploy (Tap)","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":"j","act":"press"},{"a":"v_shield_raise_level_forward","l":"Shield raise level front","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":null,"act":"press"},{"a":"v_shield_raise_level_back","l":"Shield raise level back","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":null,"act":"press"},{"a":"v_shield_raise_level_left","l":"Shield raise level left","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":null,"act":"press"},{"a":"v_shield_raise_level_right","l":"Shield raise level right","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":null,"act":"press"},{"a":"v_shield_raise_level_up","l":"Shield raise level top","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":null,"act":"press"},{"a":"v_shield_raise_level_down","l":"Shield raise level bottom","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":null,"act":"press"},{"a":"v_shield_reset_level","l":"Shield reset levels","c":"FLIGHT","s":"Vehicles - Shields and Countermeasures","k":null,"act":"press"},{"a":"v_power_toggle","l":"Toggle Power - All","c":"FLIGHT","s":"Flight - Power","k":"u","act":"press"},{"a":"v_power_set_on","l":"Set Power On","c":"FLIGHT","s":"Flight - Power","k":null,"act":"press"},{"a":"v_power_set_off","l":"Set Power Off","c":"FLIGHT","s":"Flight - Power","k":null,"act":"press"},{"a":"v_power_toggle_thrusters","l":"Toggle Power - Thrusters","c":"FLIGHT","s":"Flight - Power","k":"i","act":"press"},{"a":"v_power_set_thrusters_on","l":"Set Thrusters Power On","c":"FLIGHT","s":"Flight - Power","k":null,"act":"press"},{"a":"v_power_set_thrusters_off","l":"Set Thrusters Power Off","c":"FLIGHT","s":"Flight - Power","k":null,"act":"press"},{"a":"v_power_toggle_shields","l":"Toggle Power - Shields","c":"FLIGHT","s":"Flight - Power","k":"o","act":"press"},{"a":"v_power_set_shields_on","l":"Set Shields Power On","c":"FLIGHT","s":"Flight - Power","k":null,"act":"press"},{"a":"v_power_set_shields_off","l":"Set Shields Power Off","c":"FLIGHT","s":"Flight - Power","k":null,"act":"press"},{"a":"v_power_toggle_weapons","l":"Toggle Power - Weapons","c":"FLIGHT","s":"Flight - Power","k":"p","act":"press"},{"a":"v_power_set_weapons_on","l":"Set Weapons Power On","c":"FLIGHT","s":"Flight - Power","k":null,"act":"press"},{"a":"v_power_set_weapons_off","l":"Set Weapons Power Off","c":"FLIGHT","s":"Flight - Power","k":null,"act":"press"},{"a":"v_power_throttle_down","l":"Decrease Throttle","c":"FLIGHT","s":"Flight - Power","k":"f9","act":null},{"a":"v_power_throttle_min","l":"Decrease Throttle to Min","c":"FLIGHT","s":"Flight - Power","k":"f9","act":"double_tap"},{"a":"v_power_throttle_up","l":"Increase Throttle","c":"FLIGHT","s":"Flight - Power","k":"f10","act":null},{"a":"v_power_throttle_max","l":"Increase Throttle to Max","c":"FLIGHT","s":"Flight - Power","k":"f10","act":"double_tap"},{"a":"v_engineering_assignment_engine_increase","l":"Engines - Increase (Tap)","c":"FLIGHT","s":"Flight - Power","k":"f6","act":"tap"},{"a":"v_engineering_assignment_engine_decrease","l":"Engines - Decrease (Tap)","c":"FLIGHT","s":"Flight - Power","k":"f6+lalt","act":"tap"},{"a":"v_engineering_assignment_shields_increase","l":"Shields - Increase (Tap)","c":"FLIGHT","s":"Flight - Power","k":"f7","act":"tap"},{"a":"v_engineering_assignment_shields_decrease","l":"Shields - Decrease (Tap)","c":"FLIGHT","s":"Flight - Power","k":"f7+lalt","act":"tap"},{"a":"v_engineering_assignment_weapons_increase","l":"Weapons - Increase (Tap)","c":"FLIGHT","s":"Flight - Power","k":"f5","act":"tap"},{"a":"v_engineering_assignment_weapons_decrease","l":"Weapons - Decrease (Tap)","c":"FLIGHT","s":"Flight - Power","k":"f5+lalt","act":"tap"},{"a":"v_engineering_assignment_reset","l":"Reset Assignments","c":"FLIGHT","s":"Flight - Power","k":"f8","act":"press"},{"a":"v_cycle_pitch_ladder_mode","l":"Cycle Pitch Ladder Mode","c":"FLIGHT","s":"Flight - HUD","k":null,"act":"press"},{"a":"mobiglas","l":"mobiGlas (Toggle)","c":"FLIGHT","s":"Flight - HUD","k":"f1","act":"press"},{"a":"v_hud_open_scoreboard","l":"Scoreboard","c":"FLIGHT","s":"Flight - HUD","k":"f1","act":"all"},{"a":"v_starmap","l":"Map","c":"FLIGHT","s":"Flight - HUD","k":"f2","act":"press"},{"a":"visor_wipe","l":"Wipe Helmet Visor","c":"FLIGHT","s":"Flight - HUD","k":"lalt+x","act":"press"},{"a":"v_lights","l":"Headlights (Toggle)","c":"Uncategorised","s":"Lights","k":"l","act":"press"},{"a":"v_lights_on","l":"Headlights\n(Enable)","c":"Uncategorised","s":"Lights","k":null,"act":"press"},{"a":"v_lights_off","l":"Headlights\n(Enable)","c":"Uncategorised","s":"Lights","k":null,"act":"press"},{"a":"stopwatch_reset","l":"Reset (Long Press)","c":"Uncategorised","s":"Stop Watch","k":null,"act":"delayed_press"},{"a":"stopwatch_trigger","l":"Start / Pause (Short Press)","c":"Uncategorised","s":"Stop Watch","k":null,"act":"tap"},{"a":"moveleft","l":"Move Left","c":"ON FOOT","s":"On Foot - All","k":"a","act":"hold"},{"a":"moveright","l":"Move Right","c":"ON FOOT","s":"On Foot - All","k":"d","act":"hold"},{"a":"moveforward","l":"Move Forward","c":"ON FOOT","s":"On Foot - All","k":"w","act":"hold"},{"a":"moveback","l":"Move Backwards","c":"ON FOOT","s":"On Foot - All","k":"s","act":"hold"},{"a":"gp_movex","l":"Move Left / Right","c":"ON FOOT","s":"On Foot - All","k":null,"act":null},{"a":"gp_movey","l":"Move Forward / Backward","c":"ON FOOT","s":"On Foot - All","k":null,"act":null},{"a":"gp_rotateyaw","l":"Look (Yaw)","c":"ON FOOT","s":"On Foot - All","k":null,"act":null},{"a":"gp_rotatepitch","l":"Look (Pitch)","c":"ON FOOT","s":"On Foot - All","k":null,"act":null},{"a":"jump","l":"Jump","c":"ON FOOT","s":"On Foot - All","k":"space","act":"press"},{"a":"jump_hold","l":"Jump Thrusters - Activate (hold)","c":"ON FOOT","s":"On Foot - All","k":"space","act":null},{"a":"jump_release","l":"Jump Thrusters - Release","c":"ON FOOT","s":"On Foot - All","k":"space","act":null},{"a":"crouch","l":"Crouch","c":"ON FOOT","s":"On Foot - All","k":"c","act":"hold_toggle"},{"a":"gp_jump","l":"Jump","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"gp_crouch","l":"Crouch","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"prone","l":"Prone","c":"ON FOOT","s":"On Foot - All","k":"lctrl","act":"press"},{"a":"sprint","l":"Sprint","c":"ON FOOT","s":"On Foot - All","k":"lshift","act":"hold_toggle"},{"a":"walk","l":"Walk","c":"ON FOOT","s":"On Foot - All","k":null,"act":"tap"},{"a":"leanleft","l":"Lean Left","c":"ON FOOT","s":"On Foot - All","k":"q","act":"hold"},{"a":"leanright","l":"Lean Right","c":"ON FOOT","s":"On Foot - All","k":"e","act":"hold"},{"a":"ledgegrab","l":"Climb Ledges","c":"ON FOOT","s":"On Foot - All","k":"space","act":"hold"},{"a":"attack1","l":"Firearm - Attack","c":"ON FOOT","s":"On Foot - All","k":null,"act":"all"},{"a":"attackSecondary","l":"Tool - Secondary Fire","c":"ON FOOT","s":"On Foot - All","k":null,"act":"all"},{"a":"melee_AttackLightLeft","l":"Melee - Attack Light Left\u00a0","c":"ON FOOT","s":"On Foot - All","k":null,"act":"tap"},{"a":"melee_AttackLightRight","l":"Melee - Attack Light Right","c":"ON FOOT","s":"On Foot - All","k":null,"act":"tap"},{"a":"melee_AttackHeavyLeft","l":"Melee - Attack Heavy Left (Hold)","c":"ON FOOT","s":"On Foot - All","k":null,"act":"delayed_press"},{"a":"melee_AttackHeavyRight","l":"Melee - Attack Heavy Right (Hold)\u00a0","c":"ON FOOT","s":"On Foot - All","k":null,"act":"delayed_press"},{"a":"melee_block","l":"Melee - Block (Hold)","c":"ON FOOT","s":"On Foot - All","k":null,"act":"hold"},{"a":"melee_AttackSyringeStab","l":"Medical Pen - Inject Other","c":"ON FOOT","s":"On Foot - All","k":null,"act":"tap"},{"a":"melee_dodgeLeft","l":"Dodge left\u00a0","c":"ON FOOT","s":"On Foot - All","k":"a","act":"double_tap_nonblocking"},{"a":"melee_dodgeRight","l":"Dodge Right","c":"ON FOOT","s":"On Foot - All","k":"d","act":"double_tap_nonblocking"},{"a":"melee_dodgeBack","l":"Dodge Back\u00a0","c":"ON FOOT","s":"On Foot - All","k":"s","act":"double_tap_nonblocking"},{"a":"weapon_melee","l":"Melee - Attack (Ranged Weapon + Takedowns)","c":"ON FOOT","s":"On Foot - All","k":null,"act":"delayed_press"},{"a":"takedown_nonLethal","l":"Melee - Attack (Ranged Weapon + Takedowns)","c":"ON FOOT","s":"On Foot - All","k":null,"act":"delayed_press"},{"a":"throw_overhand","l":"Throw - Overarm & Two-Handed","c":"ON FOOT","s":"On Foot - All","k":null,"act":"hold"},{"a":"throw_underhand","l":"Throw - Underarm","c":"ON FOOT","s":"On Foot - All","k":null,"act":"hold"},{"a":"zoom","l":"Aim Down Sight","c":"ON FOOT","s":"On Foot - All","k":null,"act":"all"},{"a":"toggle_lowered","l":"Weapon Stance (Toggle)","c":"ON FOOT","s":"On Foot - All","k":"lalt+r","act":"tap"},{"a":"select_primary_pit","l":"Select Primary Weapon","c":"ON FOOT","s":"On Foot - All","k":"1","act":"tap"},{"a":"select_secondary_pit","l":"Select Secondary Weapon","c":"ON FOOT","s":"On Foot - All","k":"2","act":"tap"},{"a":"select_sidearm_pit","l":"Select Sidearm","c":"ON FOOT","s":"On Foot - All","k":"3","act":"tap"},{"a":"select_meleeweapon_pit","l":"Select Melee","c":"ON FOOT","s":"On Foot - All","k":"v","act":"tap"},{"a":"select_gadget_pit","l":"Select Gadget","c":"ON FOOT","s":"On Foot - All","k":"5","act":"tap"},{"a":"selectUnarmedCombat","l":"Unarmed Combat","c":"ON FOOT","s":"On Foot - All","k":"6","act":"tap"},{"a":"nextweapon","l":"Next Weapon","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"prevweapon","l":"Previous Weapon","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"reload","l":"Reload","c":"ON FOOT","s":"On Foot - All","k":"r","act":"tap"},{"a":"reloadSecondary","l":"Reload Secondary Fire","c":"ON FOOT","s":"On Foot - All","k":"lalt+b","act":"tap"},{"a":"ammoRepool","l":"Repool Ammunition","c":"ON FOOT","s":"On Foot - All","k":"lalt+1","act":"press"},{"a":"holster","l":"Holster Weapon","c":"ON FOOT","s":"On Foot - All","k":"r","act":"delayed_press_medium"},{"a":"drop","l":"Drop Item","c":"ON FOOT","s":"On Foot - All","k":null,"act":null},{"a":"inspect","l":"Inspect Item","c":"ON FOOT","s":"On Foot - All","k":null,"act":"tap"},{"a":"customize","l":"Customize Weapon","c":"ON FOOT","s":"On Foot - All","k":"j","act":"tap"},{"a":"stabilize","l":"Hold Breath (ADS)","c":"ON FOOT","s":"On Foot - All","k":"lshift","act":"hold"},{"a":"weapon_auxiliary_action","l":"FPS Underbarrel Attachment Action","c":"ON FOOT","s":"On Foot - All","k":"u","act":"press"},{"a":"weapon_change_firemode","l":"Change Fire Mode","c":"ON FOOT","s":"On Foot - All","k":"b","act":"press"},{"a":"weapon_zeroing_decrease","l":"Weapon Zeroing Decrease","c":"ON FOOT","s":"On Foot - All","k":"pgdn","act":"press"},{"a":"weapon_zeroing_increase","l":"Weapon Zeroing Increase / Auto","c":"ON FOOT","s":"On Foot - All","k":"pgup","act":"press"},{"a":"fixed_speed_increment","l":"Default Movement Speed Increase","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"fixed_speed_decrement","l":"Default Movement Speed Decrease","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"downedRevivalRequest","l":"Request Rescue (while Incapacitated)","c":"ON FOOT","s":"On Foot - All","k":"m","act":"delayed_hold_long"},{"a":"toggle_flashlight","l":"Flashlight (Toggle)","c":"ON FOOT","s":"On Foot - All","k":"t","act":"press"},{"a":"toggleEquipHelmet","l":"Toggle Equip Helmet","c":"ON FOOT","s":"On Foot - All","k":"ralt+h","act":"tap"},{"a":"toggleAttachHelmet","l":"Helmet\n(Equip)","c":"ON FOOT","s":"On Foot - All","k":"lalt+h","act":"tap"},{"a":"toggleHelmetState","l":"Default Movement Speed Increase","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"visor_wipe","l":"Wipe Helmet Visor","c":"ON FOOT","s":"On Foot - All","k":"lalt+x","act":"press"},{"a":"thirdperson","l":"Third Person View (Toggle)","c":"ON FOOT","s":"On Foot - All","k":"f4","act":"tap"},{"a":"free_thirdperson_camera","l":"Free View Camera (Hold)","c":"ON FOOT","s":"On Foot - All","k":"z","act":"hold"},{"a":"mobiglas","l":"mobiGlas (Toggle)","c":"ON FOOT","s":"On Foot - All","k":"f1","act":"press"},{"a":"ship_recall","l":"Recall Last Vehicle","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"pl_hud_open_scoreboard","l":"Scoreboard","c":"ON FOOT","s":"On Foot - All","k":"f1","act":null},{"a":"dismiss_corpse_marker","l":"Dismiss Corpse Marker","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"consume","l":"Firearm - Attack","c":"ON FOOT","s":"On Foot - All","k":null,"act":"hold"},{"a":"port_modification_select","l":"Port Modification Interact","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"v_starmap","l":"Map","c":"ON FOOT","s":"On Foot - All","k":"f2","act":"press"},{"a":"force_respawn","l":"Force Re-spawn (E.V.A. / On Foot)","c":"ON FOOT","s":"On Foot - All","k":"backspace","act":"delayed_press_medium"},{"a":"prone_rollleft","l":"Roll Left (while Prone)","c":"ON FOOT","s":"On Foot - All","k":null,"act":null},{"a":"prone_rollright","l":"Roll Right (while Prone)","c":"ON FOOT","s":"On Foot - All","k":null,"act":null},{"a":"tractor_beam_increase_distance","l":"Tractor Beam - Increase Distance","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"tractor_beam_decrease_distance","l":"Tractor Beam - Decrease Distance","c":"ON FOOT","s":"On Foot - All","k":null,"act":"press"},{"a":"incapacitatedRespawn","l":"Regen (while Incapacitated)","c":"ON FOOT","s":"On Foot - All","k":"backspace","act":"delayed_hold_long"},{"a":"eva_view_yaw_left","l":"View Left","c":"E.V.A.","s":"E.V.A - All","k":null,"act":"hold"},{"a":"eva_view_yaw_right","l":"View Right","c":"E.V.A.","s":"E.V.A - All","k":null,"act":"hold"},{"a":"eva_view_yaw","l":"View Left/Right","c":"E.V.A.","s":"E.V.A - All","k":null,"act":null},{"a":"eva_view_yaw_mouse","l":"View Left/Right","c":"E.V.A.","s":"E.V.A - All","k":null,"act":null},{"a":"eva_view_pitch_up","l":"View Up","c":"E.V.A.","s":"E.V.A - All","k":null,"act":"hold"},{"a":"eva_view_pitch_down","l":"View Down","c":"E.V.A.","s":"E.V.A - All","k":null,"act":"hold"},{"a":"eva_view_pitch","l":"View Up/Down","c":"E.V.A.","s":"E.V.A - All","k":null,"act":null},{"a":"eva_view_pitch_mouse","l":"View Up/Down","c":"E.V.A.","s":"E.V.A - All","k":null,"act":null},{"a":"eva_roll_left","l":"Roll Left","c":"E.V.A.","s":"E.V.A - All","k":"q","act":"hold"},{"a":"eva_roll_right","l":"Roll Right","c":"E.V.A.","s":"E.V.A - All","k":"e","act":"hold"},{"a":"eva_roll","l":"Roll Left/Right","c":"E.V.A.","s":"E.V.A - All","k":null,"act":null},{"a":"eva_strafe_up","l":"Strafe Up","c":"E.V.A.","s":"E.V.A - All","k":"space","act":"hold"},{"a":"eva_strafe_down","l":"Strafe Down","c":"E.V.A.","s":"E.V.A - All","k":"lctrl","act":"hold"},{"a":"eva_strafe_vertical","l":"Strafe Up/Down","c":"E.V.A.","s":"E.V.A - All","k":null,"act":null},{"a":"eva_strafe_left","l":"Strafe Left","c":"E.V.A.","s":"E.V.A - All","k":"a","act":"hold"},{"a":"eva_strafe_right","l":"Strafe Right","c":"E.V.A.","s":"E.V.A - All","k":"d","act":"hold"},{"a":"eva_strafe_lateral","l":"Strafe Left/Right","c":"E.V.A.","s":"E.V.A - All","k":null,"act":null},{"a":"eva_strafe_forward","l":"Strafe Forward","c":"E.V.A.","s":"E.V.A - All","k":"w","act":"hold"},{"a":"eva_strafe_back","l":"Strafe Backward","c":"E.V.A.","s":"E.V.A - All","k":"s","act":"hold"},{"a":"eva_strafe_longitudinal","l":"Strafe Forward/Backward","c":"E.V.A.","s":"E.V.A - All","k":null,"act":null},{"a":"eva_brake","l":"Brake","c":"E.V.A.","s":"E.V.A - All","k":"x","act":"hold"},{"a":"eva_boost","l":"Boost","c":"E.V.A.","s":"E.V.A - All","k":"lshift","act":"hold"},{"a":"eva_toggle_headlook_mode","l":"Freelook (Hold)","c":"E.V.A.","s":"E.V.A - All","k":"z","act":"hold"},{"a":"zgt_launch","l":"Launch from Surface","c":"Uncategorised","s":"E.V.A. - Zero-G Traversal","k":"space","act":"hold"},{"a":"zgt_detach","l":"Detach from Surface","c":"Uncategorised","s":"E.V.A. - Zero-G Traversal","k":"y","act":"press"},{"a":"zgt_roll_left","l":"Roll Left","c":"Uncategorised","s":"E.V.A. - Zero-G Traversal","k":"q","act":"press"},{"a":"zgt_roll_right","l":"Roll Right","c":"Uncategorised","s":"E.V.A. - Zero-G Traversal","k":"e","act":"press"},{"a":"v_horn","l":"Horn","c":"Vehicle","s":"Ground Vehicle - General","k":"space","act":null},{"a":"v_view_cycle_fwd","l":"Cycle camera view","c":"Vehicle","s":"Ground Vehicle - General","k":"f4","act":"tap"},{"a":"v_view_zoom_in","l":"Zoom in (3rd person view)","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":null},{"a":"v_view_zoom_out","l":"Zoom out (3rd person view)","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":null},{"a":"v_view_yaw_mouse","l":"Look left / right","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":null},{"a":"v_view_pitch_mouse","l":"Look up / down","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":null},{"a":"v_view_yaw","l":"Look left / right","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":null},{"a":"v_view_pitch","l":"Look up / down","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":null},{"a":"v_view_freelook_mode","l":"Freelook (Hold)","c":"Vehicle","s":"Ground Vehicle - General","k":"z","act":"hold"},{"a":"mobiglas","l":"mobiGlas (Toggle)","c":"Vehicle","s":"Ground Vehicle - General","k":"f1","act":"press"},{"a":"v_flightready","l":"Flight / Systems Ready","c":"Vehicle","s":"Ground Vehicle - General","k":"ralt+r","act":"press"},{"a":"v_toggle_all_doors","l":"Open/Close Doors (Toggle)","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":"press"},{"a":"v_open_all_doors","l":"Open All Doors","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":"press"},{"a":"v_close_all_doors","l":"Close All Doors","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":"press"},{"a":"v_toggle_all_doorlocks","l":"Lock/Unlock Doors (Toggle)","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":"press"},{"a":"v_lock_all_doors","l":"Lock All Doors","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":"press"},{"a":"v_unlock_all_doors","l":"Unlock All Doors","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":"press"},{"a":"v_toggle_all_portlocks","l":"Port Lock Toggle All","c":"Vehicle","s":"Ground Vehicle - General","k":"ralt+K","act":"press"},{"a":"v_lock_all_ports","l":"Port Lock All","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":"press"},{"a":"v_unlock_all_ports","l":"Port Unlock All","c":"Vehicle","s":"Ground Vehicle - General","k":null,"act":"press"},{"a":"v_starmap","l":"Map","c":"Vehicle","s":"Ground Vehicle - General","k":"f2","act":"press"},{"a":"visor_wipe","l":"Wipe Helmet Visor","c":"Vehicle","s":"Ground Vehicle - General","k":"lalt+x","act":"press"},{"a":"v_move_forward","l":"Drive Forward","c":"Vehicle","s":"Ground Vehicle - Movement","k":"w","act":null},{"a":"v_move_back","l":"Drive Backward","c":"Vehicle","s":"Ground Vehicle - Movement","k":"s","act":null},{"a":"v_move","l":"Drive Forward / Backward","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_yaw_left","l":"Turn Left","c":"Vehicle","s":"Ground Vehicle - Movement","k":"a","act":null},{"a":"v_yaw_right","l":"Turn Right","c":"Vehicle","s":"Ground Vehicle - Movement","k":"d","act":null},{"a":"v_yaw","l":"Yaw Left / Right (Axis / HOTAS)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_yaw_mouse","l":"Yaw Left / Right (Mouse)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_pitch_up","l":"Ground Vehicles - Pitch Up","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_pitch_down","l":"Ground Vehicles - Pitch Down","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_pitch","l":"Pitch Up / Down (Axis / HOTAS)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_pitch_mouse","l":"Pitch Up / Down (Mouse)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_brake","l":"Brake","c":"Vehicle","s":"Ground Vehicle - Movement","k":"x","act":"hold"},{"a":"v_view_dynamic_zoom_rel","l":"Dynamic Zoom In and Out (rel.)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_view_dynamic_zoom_rel_in","l":"Dynamic Zoom In (rel.)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":"all"},{"a":"v_view_dynamic_zoom_rel_out","l":"Dynamic Zoom Out (rel.)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":"all"},{"a":"v_view_dynamic_zoom_abs","l":"Dynamic Zoom In and Out (abs.)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":null},{"a":"v_view_dynamic_zoom_abs_toggle","l":"Dynamic Zoom Toggle (abs.)","c":"Vehicle","s":"Ground Vehicle - Movement","k":null,"act":"hold"},{"a":"v_boost","l":"Boost","c":"Vehicle","s":"Ground Vehicle - Movement","k":"lshift","act":"all"},{"a":"v_lock_rotation","l":"Lock Pitch / Yaw Movement (Toggle / Hold)","c":"Vehicle","s":"Ground Vehicle - Movement","k":"rshift","act":"smart_toggle"},{"a":"v_mgv_switch_brake_on_idle","l":"Toggle Auto Braking On Idle","c":"Vehicle","s":"Ground Vehicle - Movement","k":"c","act":"press"},{"a":"spectate_next_target","l":"Spectator Camera Target (Next)","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":"press"},{"a":"spectate_prev_target","l":"Spectator Camera Target (Previous)","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":"press"},{"a":"spectate_toggle_lock_target","l":"Spectator Camera Lock Target","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":"1","act":"press"},{"a":"spectate_zoom","l":"Spectator Camera Zoom","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":null},{"a":"spectate_zoom_in","l":"Spectator Camera Zoom In","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":null},{"a":"spectate_zoom_out","l":"Spectator Camera Zoom Out","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":null},{"a":"spectate_rotateyaw_mouse","l":"Spectator Camera Rotate Yaw","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":null},{"a":"spectate_rotatepitch_mouse","l":"Spectator Camera Rotate Pitch","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":null},{"a":"spectate_rotateyaw","l":"Spectator Camera Rotate Yaw","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":null},{"a":"spectate_rotatepitch","l":"Spectator Camera Rotate Pitch","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":null},{"a":"spectate_toggle_hud","l":"Spectator Camera HUD (Toggle)","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":"b","act":"press"},{"a":"spectate_gen_nextmode","l":"Spectator Camera Mode (Next)","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":"f4","act":"press"},{"a":"spectate_gen_prevmode","l":"Spectator Camera Mode (Previous)","c":"Electronic Access - Spectator","s":"Electronic Access - Spectator","k":null,"act":"press"},{"a":"respawn","l":"Re-spawn","c":"Social - General","s":"Social - General","k":"f","act":"all"},{"a":"pl_exit","l":"Exit seat","c":"Social - General","s":"Social - General","k":"y","act":null},{"a":"notification_accept","l":"Notifications - Accept Prompt","c":"Social - General","s":"Social - General","k":"lbracket","act":"press"},{"a":"notification_decline","l":"Notifications - Decline Prompt","c":"Social - General","s":"Social - General","k":"rbracket","act":"press"},{"a":"toggle_contact","l":"CommLink App (Toggle)","c":"Social - General","s":"Social - General","k":"f11","act":"press"},{"a":"toggle_chat","l":"Chat Window (Toggle)","c":"Social - General","s":"Social - General","k":"f12","act":"press"},{"a":"cycle_chat_lobby","l":"Cycle Chat Lobby","c":"Social - General","s":"Social - General","k":"tab","act":"press"},{"a":"focus_on_chat_textinput","l":"Chat Window Focus","c":"Social - General","s":"Social - General","k":null,"act":"press"},{"a":"ui_notification_accept","l":"Accept Invite","c":"Social - General","s":"Social - Invites","k":"lbracket","act":null},{"a":"ui_notification_decline","l":"Reject Invite","c":"Social - General","s":"Social - Invites","k":"rbracket","act":"tap"},{"a":"ui_notification_ignore","l":"Ignore Invite (hold)","c":"Social - General","s":"Social - Invites","k":"rbracket","act":"delayed_hold"},{"a":"emote_cs_forward","l":"Forward","c":"ON FOOT","s":"Social - Emotes","k":"np_5","act":"press"},{"a":"emote_cs_left","l":"Left","c":"ON FOOT","s":"Social - Emotes","k":"np_1","act":"press"},{"a":"emote_cs_right","l":"Right","c":"ON FOOT","s":"Social - Emotes","k":"np_3","act":"press"},{"a":"emote_cs_stop","l":"Stop","c":"ON FOOT","s":"Social - Emotes","k":"np_2","act":"press"},{"a":"emote_cs_yes","l":"Yes","c":"ON FOOT","s":"Social - Emotes","k":"np_4","act":"press"},{"a":"emote_cs_no","l":"No","c":"ON FOOT","s":"Social - Emotes","k":"np_6","act":"press"},{"a":"emote_agree","l":"Agree","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_angry","l":"Angry","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_atease","l":"At Ease","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_attention","l":"Attention","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_blah","l":"Blah","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_bored","l":"Bored","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_bow","l":"Bow","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_burp","l":"Burp","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_cheer","l":"Cheer","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_chicken","l":"Chicken","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_clap","l":"Clap","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_come","l":"Come","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_cry","l":"Cry","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_dance","l":"Dance","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_disagree","l":"Disagree","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_failure","l":"Failure","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_flex","l":"Flex","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_flirt","l":"Flirt","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_gasp","l":"Gasp","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_gloat","l":"Gloat","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_greet","l":"Greet","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_laugh","l":"Laugh","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_launch","l":"Confirm Launch","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_point","l":"Point","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_rude","l":"Rude","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_salute","l":"Salute","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_sit","l":"Sit","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_sleep","l":"Sleep","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_smell","l":"Smell","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_taunt","l":"Taunt","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_threaten","l":"Threaten","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_wait","l":"Wait","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_wave","l":"Wave","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"emote_whistle","l":"Whistle","c":"ON FOOT","s":"Social - Emotes","k":null,"act":"press"},{"a":"hmd_toggle","l":"[Experimental] VR - Toggle On / Off","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"np_divide","act":"press"},{"a":"hmd_recenter","l":"[Experimental] VR - Recenter Device","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"np_5","act":"press"},{"a":"hmd_theater_mode_toggle","l":"[Experimental] VR - Toggle Theater Mode","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"lalt+np_5","act":"press"},{"a":"hmd_lens_display_toggle","l":"[Experimental] VR - Visor Toggle On / Off","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":null,"act":"press"},{"a":"headtrack_enabled","l":"Enable Head Tracking (Toggle)","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"np_divide","act":"press"},{"a":"headtrack_hold","l":"Head Tracking (Hold)","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":null,"act":"hold"},{"a":"headtrack_recenter_device","l":"Recenter Head Tracking Device (except TrackIR)","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"np_5","act":"press"},{"a":"headtrack_camera_enabled","l":"Enable / Disable Head Tracking for 3rd Person Camera (Toggle)","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":null,"act":"press"},{"a":"foip_pushtotalk","l":"VOIP Push To Talk","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"np_add","act":"hold"},{"a":"foip_pushtotalk_proximity","l":"VOIP Push To Talk (Proximity only)","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"lalt+np_add","act":"hold"},{"a":"foip_viewownplayer","l":"FOIP Selfie Cam","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"np_subtract","act":"delayed_hold"},{"a":"foip_recalibrate","l":"FOIP Recalibrate\u00a0","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"np_multiply","act":"press"},{"a":"foip_cyclechannel","l":"Cycle through audio channels","c":"VOIP, FOIP and Head Tracking","s":"VOIP, FOIP and Head Tracking","k":"np_period","act":"press"},{"a":"pc_interaction_mode","l":"Interaction Mode","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"f","act":null},{"a":"pc_interaction_select","l":"Activate Inner Thought","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":null},{"a":"pc_select","l":"Activate Inner Thought","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":null},{"a":"pc_focus","l":"Focus","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"tap"},{"a":"pc_zoom_in","l":"Interaction Mode Zoom In","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_zoom_out","l":"Interaction Mode Zoom Out","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_screen_focus_left","l":"MFD Left","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"a","act":"press"},{"a":"pc_screen_focus_right","l":"MFD Right","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"d","act":"press"},{"a":"pc_screen_focus_up","l":"MFD Up","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"w","act":"press"},{"a":"pc_screen_focus_down","l":"MFD Down","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"s","act":"press"},{"a":"pc_personal_thought","l":"Personal Inner Thought (PIT)","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"lalt+f","act":"press"},{"a":"pc_camera_orbit","l":"Inventory Orbit Camera Mode","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"hold"},{"a":"pc_personal_back","l":"Exit","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"np_0","act":"press"},{"a":"pc_pit_inventory","l":"Toggle Inventory (short press)","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"i","act":"tap"},{"a":"pc_pit_looting","l":"Toogle Loot Screen (hold)","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"i","act":"delayed_press"},{"a":"pc_pit_looting_toggle_view","l":"Toggle Looting View","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"tab","act":"press"},{"a":"pc_pit_item_drop","l":"Drop Item","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_empty_backpack","l":"Store All\u00a0Commodities","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_player_actions","l":"Player Actions - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_emotes","l":"Emotes - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_ship_systems","l":"Ship Systems - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_flight_systems","l":"Flight Systems - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_vehicle_actions","l":"Vehicle Actions - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_weapons_systems","l":"Weapon Systems - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_remote_turrets","l":"Remote Turret - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_item_actions","l":"Item Actions - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_weapon_selection","l":"Weapon Selection - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_mobiglas_actions","l":"Mobiglas Actions - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":null,"act":"press"},{"a":"pc_pit_miningmode_actions","l":"Mining Mode Actions - PIT Category","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"lalt+m","act":"press"},{"a":"pc_qs_weapons_pit_primary","l":"Weapon Select Radial Menu","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"1","act":"all"},{"a":"pc_qs_weapons_pit_secondary","l":"Weapon Select Radial Menu","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"2","act":"all"},{"a":"pc_qs_weapons_pit_sidearm","l":"Weapon Select Radial Menu","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"3","act":"all"},{"a":"pc_qs_grenades","l":"Throwable Select Radial Menu","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"g","act":"all"},{"a":"pc_qs_consumables","l":"Consumable Select Radial Menu","c":"Quick Keys, Interactions, and Inner Thought","s":"Quick Keys, Interactions, and Inner Thought","k":"4","act":"all"},{"a":"view_enable_camview_mode","l":"Advanced Camera Controls Modifier (Hold)","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"f4","act":null},{"a":"view_switch_to_alternative","l":"Advanced Camera Controls Modifier (Hold)","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"z","act":null},{"a":"view_save_view_1","l":"Save View 1","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_1","act":"delayed_press"},{"a":"view_save_view_2","l":"Save View 2","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_2","act":"delayed_press"},{"a":"view_save_view_3","l":"Save View 3","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_3","act":"delayed_press"},{"a":"view_save_view_4","l":"Save View 4","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_4","act":"delayed_press"},{"a":"view_save_view_5","l":"Save View 5","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_5","act":"delayed_press"},{"a":"view_save_view_6","l":"Save View 6","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_6","act":"delayed_press"},{"a":"view_save_view_7","l":"Save View 7","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_7","act":"delayed_press"},{"a":"view_save_view_8","l":"Save View 8","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_8","act":"delayed_press"},{"a":"view_save_view_9","l":"Save View 9","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_9","act":"delayed_press"},{"a":"view_load_view_1","l":"Load View 1","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_1","act":"tap"},{"a":"view_load_view_2","l":"Load View 2","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_2","act":"tap"},{"a":"view_load_view_3","l":"Load View 3","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_3","act":"tap"},{"a":"view_load_view_4","l":"Load View 4","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_4","act":"tap"},{"a":"view_load_view_5","l":"Load View 5","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_5","act":"tap"},{"a":"view_load_view_6","l":"Load View 6","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_6","act":"tap"},{"a":"view_load_view_7","l":"Load View 7","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_7","act":"tap"},{"a":"view_load_view_8","l":"Load View 8","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_8","act":"tap"},{"a":"view_load_view_9","l":"Load View 9","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_9","act":"tap"},{"a":"view_reset_saved","l":"Clear Saved View","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_0","act":"delayed_press"},{"a":"view_move_target_X_pos","l":"X Offset Positive","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"right","act":null},{"a":"view_move_target_X_neg","l":"X Offset Negative","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"left","act":null},{"a":"view_move_target_Y_pos","l":"Y Offset Positive / Spectator Freecam Focal Point Forward","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"up","act":null},{"a":"view_move_target_Y_neg","l":"Y Offset Negative\u00a0/ Spectator Freecam Focal Point Backward","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"down","act":null},{"a":"view_move_target_Z_pos","l":"Z Offset Positive","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"pgup","act":null},{"a":"view_move_target_Z_neg","l":"Z Offset Negative","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"pgdn","act":null},{"a":"view_fov_in","l":"Increase FoV","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_add","act":null},{"a":"view_fov_out","l":"Decrease FoV","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_subtract","act":null},{"a":"view_fstop_out","l":"Decrease DoF","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"end","act":null},{"a":"view_restore_defaults","l":"Reset Current View","c":"CAMERA","s":"Camera - Advanced Camera Controls","k":"np_multiply","act":null}]</script>
+<script>
+(function(){
+"use strict";
+var A=JSON.parse(document.getElementById('KB').textContent);
+var MODS={lalt:1,ralt:1,lshift:1,rshift:1,lctrl:1,rctrl:1};
+var CATC={'FLIGHT':'--c-flight','ON FOOT':'--c-foot','E.V.A.':'--c-eva','Vehicle':'--c-veh','CAMERA':'--c-cam',
+ 'Social - General':'--c-social','Quick Keys, Interactions, and Inner Thought':'--c-quick',
+ 'VOIP, FOIP and Head Tracking':'--c-voip','Electronic Access - Spectator':'--c-spec','Uncategorised':'--c-unc'};
+function cvar(c){return 'var('+(CATC[c]||'--c-unc')+')';}
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+/* resolve every binding to {key, layer} */
+var BIND=[];
+A.forEach(function(x){
+ if(!x.k)return;
+ x.k.split(/\s*,\s*/).forEach(function(combo){
+  var parts=combo.split('+').map(function(p){return p.trim().toLowerCase();}).filter(Boolean);
+  var mods=parts.filter(function(p){return MODS[p];}), keys=parts.filter(function(p){return !MODS[p];});
+  if(!keys.length){ keys=[mods.shift()]; }
+  var layer='none';
+  if(mods.some(function(m){return /shift/.test(m);})) layer='shift';
+  else if(mods.some(function(m){return /alt/.test(m);})) layer='alt';
+  else if(mods.some(function(m){return /ctrl/.test(m);})) layer='ctrl';
+  BIND.push({key:keys[0],layer:layer,cat:x.c,label:x.l,sec:x.s,act:x.act,mods:mods});
+ });
+});
+
+/* keyboard layout */
+var ROWS=[
+ [['esc','Esc',1],['SP',0,0.5],['f1','F1',1],['f2','F2',1],['f3','F3',1],['f4','F4',1],['SP',0,0.3],
+  ['f5','F5',1],['f6','F6',1],['f7','F7',1],['f8','F8',1],['SP',0,0.3],['f9','F9',1],['f10','F10',1],['f11','F11',1],['f12','F12',1]],
+ [['grave','`',1],['1','1',1],['2','2',1],['3','3',1],['4','4',1],['5','5',1],['6','6',1],['7','7',1],['8','8',1],['9','9',1],['0','0',1],
+  ['minus','-',1],['equals','=',1],['backspace','Bksp',2]],
+ [['tab','Tab',1.5],['q','Q',1],['w','W',1],['e','E',1],['r','R',1],['t','T',1],['y','Y',1],['u','U',1],['i','I',1],['o','O',1],['p','P',1],
+  ['lbracket','[',1],['rbracket',']',1],['backslash','\\',1.5]],
+ [['capslock','Caps',1.75],['a','A',1],['s','S',1],['d','D',1],['f','F',1],['g','G',1],['h','H',1],['j','J',1],['k','K',1],['l','L',1],
+  ['semicolon',';',1],['apostrophe','\'',1],['enter','Enter',2.25]],
+ [['lshift','LShift',2.25],['z','Z',1],['x','X',1],['c','C',1],['v','V',1],['b','B',1],['n','N',1],['m','M',1],
+  ['comma',',',1],['period','.',1],['slash','/',1],['rshift','RShift',2.25]],
+ [['lctrl','LCtrl',1.5],['lalt','LAlt',1.5],['space','Space',6],['ralt','RAlt',1.5],['rctrl','RCtrl',1.5]]
+];
+var NAV=[
+ [['insert','Ins',1],['home','Home',1],['pgup','PgUp',1]],
+ [['delete','Del',1],['end','End',1],['pgdn','PgDn',1]],
+ [['SP',0,1],['SP',0,1],['SP',0,1]],
+ [['SP',0,1],['up','↑',1],['SP',0,1]],
+ [['left','←',1],['down','↓',1],['right','→',1]]
+];
+var NUM=[
+ [['numlock','Num',1],['np_divide','/',1],['np_multiply','*',1],['np_subtract','-',1]],
+ [['np_7','7',1],['np_8','8',1],['np_9','9',1],['np_add','+',1]],
+ [['np_4','4',1],['np_5','5',1],['np_6','6',1],['SP',0,1]],
+ [['np_1','1',1],['np_2','2',1],['np_3','3',1],['np_enter','Ent',1]],
+ [['np_0','0',2],['np_period','.',1],['SP',0,1]]
+];
+/* numlock OFF: the numpad wears its navigation face and reads THOSE bindings */
+var NUMOFF={np_7:['home','Home'],np_8:['up','\u2191'],np_9:['pgup','PgUp'],
+ np_4:['left','\u2190'],np_5:[null,'\u00b7'],np_6:['right','\u2192'],
+ np_1:['end','End'],np_2:['down','\u2193'],np_3:['pgdn','PgDn'],
+ np_0:['insert','Ins'],np_period:['delete','Del']};
+var MODES=[['FLIGHT','Flight','--c-flight'],['ON FOOT','On foot','--c-foot'],['E.V.A.','EVA','--c-eva'],
+ ['Vehicle','Vehicle','--c-veh'],['CAMERA','Camera','--c-cam'],['*','Everything','--c-unc']];
+var LAYERS=[['none','No modifier'],['shift','+ Shift'],['alt','+ Alt'],['ctrl','+ Ctrl']];
+
+var state={mode:'FLIGHT',layer:'none',free:false,q:'',hit:null,off:{},numlock:true};
+
+function forKey(k){
+ return BIND.filter(function(b){
+  if(b.key!==k)return false;
+  if(b.layer!==state.layer)return false;
+  if(state.mode!=='*'&&b.cat!==state.mode)return false;
+  if(state.off[b.cat])return false;
+  return true;});
+}
+function drawStyles(){
+ document.getElementById('rmode').innerHTML=RMODES.map(function(m){
+  return '<button data-r="'+m[0]+'" aria-pressed="'+(rmode===m[0])+'" style="--m:var(--acc)">'+m[1]+'</button>';}).join('');
+ document.getElementById('gmode').innerHTML=GMODES.map(function(m){
+  return '<button data-g="'+m[0]+'" aria-pressed="'+(gmode===m[0])+'" style="--m:var(--gau)">'+m[1]+'</button>';}).join('');
+ document.getElementById('hmode').innerHTML=HMODES.map(function(m){
+  return '<button data-h="'+m[0]+'" aria-pressed="'+(HOLD===m[0])+'" style="--m:var(--gau)">'+m[1]+'</button>';}).join('');
+}
+function drawSegs(){
+ document.getElementById('modes').innerHTML=MODES.map(function(m){
+  return '<button data-m="'+esc(m[0])+'" aria-pressed="'+(state.mode===m[0])+'" style="--m:var('+m[2]+')">'+m[1]+'</button>';}).join('');
+ document.getElementById('layers').innerHTML=LAYERS.map(function(l){
+  return '<button data-l="'+l[0]+'" aria-pressed="'+(state.layer===l[0])+'" style="--m:var(--gau)">'+l[1]+'</button>';}).join('');
+}
+function keyEl(pid,bid,cap,w){
+ if(pid==='SP') return '<div class="spacer" style="width:'+(w*58+ (w-1)*6)+'px"></div>';
+ var bs=bid?forKey(bid):[], b=bs[0];
+ var elsewhere = bid && !bs.length && BIND.some(function(x){return x.key===bid;});
+ var cls='key'+(bs.length?' bound':'')+(bs.length>1?' multi':'')+(elsewhere?' elsew':'')
+  +(state.free&&bs.length?' dimmed':'')+(state.free&&!bs.length?' freek':'')+(state.hit===pid?' hit':'');
+ var wcls=w===1.5?' k-w15':w===1.75?' k-w175':w===2?' k-w2':w===2.25?' k-w225':w===2.5?' k-w25':w===6?' k-w6':'';
+ var sub = b ? esc(b.label) : (elsewhere ? elsewhereNote(bid) : '');
+ return '<button class="'+cls+wcls+'" data-p="'+esc(pid)+'" data-k="'+esc(bid||'')+'"'
+  +(b?' style="--k:'+cvar(b.cat)+'"':'')+'>'
+  +'<span class="face"><span class="cap">'+esc(cap)+'</span>'
+  +'<span class="act">'+sub+'</span></span></button>';
+}
+function elsewhereNote(k){
+ var n=BIND.filter(function(x){return x.key===k;}).length;
+ return '<i class="elsewn">'+n+' more</i>';
+}
+
+function block(rows,isNum){
+ return '<div class="block">'+rows.map(function(r){
+  return '<div class="krow">'+r.map(function(k){
+   var pid=k[0],bid=k[0],cap=k[1];
+   if(pid==='SP')return keyEl('SP',null,null,k[2]);
+   if(isNum&&!state.numlock&&NUMOFF[pid]){ var t=NUMOFF[pid]; bid=t[0]; cap=t[1]; }
+   if(pid==='numlock')bid=null;
+   return keyEl(pid,bid,cap,k[2]);
+  }).join('')+'</div>';}).join('')+'</div>';
+}
+function draw(){
+ document.getElementById('kb').innerHTML=block(ROWS)+block(NAV)+block(NUM,true);
+ var shown=0,total=0;
+ BIND.forEach(function(b){ if(state.mode==='*'||b.cat===state.mode){total++; if(b.layer===state.layer)shown++;} });
+ var freeCount=0;
+ document.querySelectorAll('#kb .key').forEach(function(el){
+  var bid=el.getAttribute('data-k');
+  if(el.getAttribute('data-p')==='numlock')return;
+  if(!bid||!forKey(bid).length)freeCount++;});
+ document.getElementById('status').innerHTML= state.free
+  ? '<b>'+freeCount+'</b> keys are free on this layer · everything already taken is dimmed'
+  : '<b>'+shown+'</b> bindings lit · '+(state.mode==='*'?'every category':esc(state.mode))
+    +' · '+(state.layer==='none'?'no modifier held':'holding '+state.layer);
+ drawSegs();
+ document.getElementById('kb').setAttribute('data-g',gmode);
+ if(sel){var el=document.querySelector('#kb .key[data-p="'+sel.pid+'"]');
+  if(el)openCard(el,el.getAttribute('data-k')); else closeCard();}
+}
+function drawLegend(){
+ document.getElementById('legend').innerHTML=Object.keys(CATC).map(function(c){
+  return '<button data-c="'+esc(c)+'" aria-pressed="'+(!state.off[c])+'"><i style="background:var('+CATC[c]+')"></i>'
+   +esc(c==='Quick Keys, Interactions, and Inner Thought'?'Quick keys':c==='VOIP, FOIP and Head Tracking'?'VOIP':
+     c==='Electronic Access - Spectator'?'Spectator':c==='Social - General'?'Social':c)+'</button>';}).join('');
+}
+
+
+/* list where else a key is used, grouped by mode */
+function cardElsewhere(list){
+ var by={};
+ list.forEach(function(b){ (by[b.cat]=by[b.cat]||[]).push(b); });
+ return Object.keys(by).map(function(c){
+  var nice=c==='Quick Keys, Interactions, and Inner Thought'?'Quick keys'
+   :c==='VOIP, FOIP and Head Tracking'?'VOIP':c==='Electronic Access - Spectator'?'Spectator'
+   :c==='Social - General'?'Social':c==='Uncategorised'?'Other':c;
+  var n=by[c].length;
+  var names=by[c].slice(0,3).map(function(b){return esc(b.label);}).join(', ');
+  return '<div class="ent" style="--k:'+cvar(c)+'"><b>'+esc(nice)+' &middot; '+n+'</b>'
+   +'<span>'+names+(n>3?' + '+(n-3)+' more':'')+'</span></div>';
+ }).join('');
+}
+
+/* ---------- four readouts, one switch ---------- */
+var RMODES=[['glass','Glass at the key'],['grow','The key opens'],['quiet','No box at all']];
+var GMODES=[['fill','Filled'],['edge','Glow'],['cap','Lit cap'],['under','Underglow']];
+var HMODES=[[250,'0.25s'],[450,'0.45s'],[700,'0.7s'],[1000,'1s']];
+var HOLD=450;
+var rmode='glass', gmode='fill', sel=null;
+
+function niceCat(c){
+ return c==='Quick Keys, Interactions, and Inner Thought'?'Quick keys'
+  :c==='VOIP, FOIP and Head Tracking'?'VOIP':c==='Electronic Access - Spectator'?'Spectator'
+  :c==='Social - General'?'Social':c==='Uncategorised'?'Other':c;
+}
+var glassT=null;
+function hideGlass(){
+ var g=document.getElementById('glass');
+ clearTimeout(glassT);
+ if(g.hidden)return;
+ g.classList.remove('on');
+ glassT=setTimeout(function(){g.hidden=true;g.classList.remove('side-r','side-l');g.innerHTML='';},200);
+}
+function clearReadouts(){
+ hideGlass();
+ document.getElementById('quiet').innerHTML='';
+ var kb=document.getElementById('kb');
+ kb.classList.remove('hasgrown','quiet');
+ kb.querySelectorAll('.key.grown').forEach(function(k){
+  k.classList.remove('grown');k.style.left='';k.style.top='';k.style.width='';k.style.position='';});
+ kb.querySelectorAll('.growph').forEach(function(p){p.remove();});
+ kb.querySelectorAll('.ribbon').forEach(function(r){r.remove();});
+ kb.querySelectorAll('.key.sel').forEach(function(k){k.classList.remove('sel');});
+ kb.querySelectorAll('.key.tapped').forEach(function(k){k.classList.remove('tapped');});
+}
+function closeCard(){clearReadouts();sel=null;hideChip();}
+
+function bindsFor(bid){return bid?forKey(bid):[];}
+function allFor(bid){return bid?BIND.filter(function(x){return x.key===bid;}):[];}
+
+function openCard(el,bid){
+ clearReadouts();
+ if(!el)return;
+ sel={pid:el.getAttribute('data-p'),bid:bid};
+ el.classList.add('sel');
+ var here=bindsFor(bid), all=allFor(bid), cap=el.querySelector('.cap').textContent;
+ if(rmode==='glass')  return drawGlass(el,cap,here,all);
+ if(rmode==='grow')   return drawGrow(el,cap,here,all);
+ if(rmode==='quiet')  return drawQuiet(el,cap,here,all);
+}
+
+/* 1. glass, placed beside the key, never over it */
+function drawGlass(el,cap,here,all){
+ var g=document.getElementById('glass'), r=el.getBoundingClientRect();
+ var k=here[0]?cvar(here[0].cat):'var(--acc)';
+ g.style.setProperty('--k',k);
+ g.innerHTML='<button class="gx" aria-label="Close">&times;</button><h5>'+esc(cap)+'</h5><div class="gsub">'
+  +(state.layer==='none'?'no modifier':state.layer+' held')+' &middot; '
+  +esc(state.mode==='*'?'all modes':state.mode)+'</div>'
+  +(here.length? here.map(function(b){return '<div class="gl" style="--k:'+cvar(b.cat)+'"><b>'+esc(b.label)
+      +'</b><i>'+esc(niceCat(b.cat))+(b.act?' &middot; '+esc(b.act):'')+'</i></div>';}).join('')
+   : (all.length?'<div class="gl"><b>Nothing here.</b></div>'
+      :'<div class="gl gfree"><b>This key is free.</b></div>'))
+  +(all.length>here.length?'<div class="gmore">'+(all.length-here.length)+' more in other modes</div>':'');
+ clearTimeout(glassT);g.hidden=false;
+ var w=g.offsetWidth,h=g.offsetHeight,pad=12;
+ var x, right = r.right+pad+w<innerWidth-8;
+ if(right){x=r.right+pad;g.classList.add('side-r');}
+ else{x=r.left-pad-w;g.classList.add('side-l');}
+ if(x<8){x=Math.min(Math.max(8,r.left+r.width/2-w/2), innerWidth-w-8);
+   g.classList.remove('side-r','side-l');}
+ var y = Math.min(Math.max(8, r.top+r.height/2-h/2), innerHeight-h-8);
+ g.style.left=x+'px';g.style.top=y+'px';
+ requestAnimationFrame(function(){g.classList.add('on');});
+}
+
+/* 2. the key itself opens */
+function drawGrow(el,cap,here,all){
+ var kb=document.getElementById('kb'), r=el.getBoundingClientRect(), kr=kb.getBoundingClientRect();
+ var ph=document.createElement('div');
+ ph.className='growph';ph.style.width=r.width+'px';ph.style.height=r.height+'px';
+ el.parentNode.insertBefore(ph,el);
+ var k=here[0]?cvar(here[0].cat):'var(--gau)';
+ el.style.setProperty('--k',k);
+ el.classList.add('grown');kb.classList.add('hasgrown');
+ var W=238;
+ var left = Math.min(Math.max(0, r.left-kr.left + r.width/2 - W/2), kb.offsetWidth-W);
+ el.style.position='absolute';el.style.left=left+'px';el.style.top=(r.top-kr.top)+'px';el.style.width=W+'px';
+ el.querySelector('.act').innerHTML = here.length
+  ? here.map(function(b){return '<span style="display:block;margin-bottom:7px"><b style="display:block;font-weight:600;color:#EAF0F8">'
+     +esc(b.label)+'</b><i style="font-style:normal;font:400 9px var(--fm);letter-spacing:.12em;text-transform:uppercase;color:'
+     +cvar(b.cat)+'">'+esc(niceCat(b.cat))+'</i></span>';}).join('')
+  : (all.length? '<span style="color:#7F91A8">Nothing here. '+(all.length)+' in other modes.</span>'
+     : '<span style="color:#5FD39B">Free key.</span>');
+}
+
+/* 3. a ribbon opens under the row */
+function drawRibbon(el,cap,here,all){
+ var row=el.closest('.krow'), k=here[0]?cvar(here[0].cat):'var(--acc)';
+ var d=document.createElement('div');d.className='ribbon';d.style.setProperty('--k',k);
+ d.innerHTML='<div class="rin"><span class="rk">'+esc(cap)+'</span>'
+  +(here.length? here.map(function(b){return '<span class="rl"><b>'+esc(b.label)+'</b><span>'
+      +esc(niceCat(b.cat))+(b.act?' &middot; '+esc(b.act):'')+'</span></span>';}).join('')
+   : (all.length?'<span class="rl"><b>Nothing in '+esc(state.mode==='*'?'this view':state.mode)
+       +'</b><span>'+all.length+' in other modes</span></span>'
+      :'<span class="rl"><b style="color:#5FD39B">Free key</b><span>nothing anywhere</span></span>'))
+  +'</div>';
+ var kb=document.getElementById('kb'), kr=kb.getBoundingClientRect(), rr=row.getBoundingClientRect();
+ d.style.left='0px';d.style.width=kb.offsetWidth+'px';
+ d.style.top=(rr.bottom-kr.top+7)+'px';
+ kb.appendChild(d);
+ if(d.offsetTop+d.offsetHeight>kb.offsetHeight)
+  d.style.top=Math.max(0,(rr.top-kr.top)-d.offsetHeight-7)+'px';
+}
+
+/* 4. no box at all. the board goes quiet and the answer is just typography */
+function drawQuiet(el,cap,here,all){
+ var kb=document.getElementById('kb'), host=document.getElementById('quiet'),
+     wrap=el.closest('.kbwrap'), wr=wrap.getBoundingClientRect(), r=el.getBoundingClientRect();
+ kb.classList.add('quiet');
+ var list = here.length?here:[];
+ var k = list[0]?cvar(list[0].cat):'var(--gau)';
+ var d=document.createElement('div');
+ d.className='quiet-say';d.style.setProperty('--k',k);
+ d.innerHTML='<div class="qk">'+esc(cap)+' &middot; '
+  +(state.layer==='none'?'no modifier':state.layer+' held')+'</div>'
+  +(list.length? list.map(function(b){return '<div class="ql" style="--k:'+cvar(b.cat)+'"><b>'
+      +esc(b.label)+'</b><i>'+esc(niceCat(b.cat))+(b.act?' &middot; '+esc(b.act):'')+'</i></div>';}).join('')
+   : (all.length?'<div class="ql"><b>Nothing in this view.</b><i>'+all.length+' in other modes</i></div>'
+      :'<div class="ql"><b style="color:#6FE3AE">This key is free.</b><i>nothing anywhere</i></div>'))
+  +'<div class="qm">'+(all.length>list.length?(all.length-list.length)+' more in other modes &middot; ':'')
+  +'esc or click away to close</div>';
+ host.appendChild(d);
+ var W=d.offsetWidth, h=d.offsetHeight, WW=wrap.offsetWidth, H=wrap.offsetHeight, pad=24;
+ var kl=r.left-wr.left, kr=r.right-wr.left, kt=r.top-wr.top;
+ var left = (kr+pad+W<=WW) ? kr+pad : (kl-pad-W>=0 ? kl-pad-W : Math.min(Math.max(0,kl+r.width/2-W/2),WW-W));
+ var top = Math.min(Math.max(0, kt+r.height/2-h/2), Math.max(0,H-h));
+ d.style.left=left+'px';d.style.top=top+'px';
+}
+
+/* events */
+document.getElementById('modes').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+ state.mode=b.getAttribute('data-m');state.hit=null;closeCard();draw();};
+document.getElementById('layers').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+ state.layer=b.getAttribute('data-l');state.hit=null;closeCard();draw();};
+document.getElementById('numbtn').onclick=function(){setNumlock(!state.numlock);};
+document.getElementById('freebtn').onclick=function(){state.free=!state.free;
+ this.setAttribute('aria-pressed',state.free);this.textContent=state.free?'Show bindings':'Show free keys';closeCard();draw();};
+document.getElementById('legend').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+ var c=b.getAttribute('data-c');state.off[c]=!state.off[c];drawStyles();drawLegend();draw();
+document.getElementById('rmode').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+ rmode=b.getAttribute('data-r');drawStyles();var s0=sel;closeCard();
+ if(s0){var el=document.querySelector('#kb .key[data-p="'+s0.pid+'"]');if(el)openCard(el,el.getAttribute('data-k'));}};
+document.getElementById('gmode').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+ gmode=b.getAttribute('data-g');drawStyles();draw();};};
+/* ---------- tap = highlight. hold = open. ---------- */
+var holdT=null, holdEl=null, chipT=null;
+function chipFor(el,bid){
+ var c=document.getElementById('chip'), r=el.getBoundingClientRect();
+ var here=bindsFor(bid), all=allFor(bid), cap=el.querySelector('.cap').textContent;
+ var what = here.length? here[0].label + (here.length>1?'  +'+(here.length-1)+' more':'')
+   : (all.length? all.length+' binding'+(all.length>1?'s':'')+' in other modes' : 'free key');
+ c.innerHTML='<b>'+esc(cap)+'</b><span>'+esc(what)+'</span><i>hold to open</i>';
+ c.hidden=false;
+ var w=c.offsetWidth,h=c.offsetHeight;
+ var x=Math.min(Math.max(8, r.left+r.width/2-w/2), innerWidth-w-8);
+ var y=r.top-h-9; if(y<8) y=r.bottom+9;
+ c.style.left=x+'px';c.style.top=y+'px';
+ clearTimeout(chipT);
+}
+function hideChip(){var c=document.getElementById('chip');c.hidden=true;c.innerHTML='';}
+function cancelHold(){
+ if(holdT){clearTimeout(holdT);holdT=null;}
+ if(holdEl){holdEl.classList.remove('down','holding');holdEl=null;}
+}
+function beginHold(el){
+ if(!el)return;
+ cancelHold();
+ if(sel){closeCard();}
+ holdEl=el;
+ el.classList.add('down','holding');
+ el.style.setProperty('--hold',HOLD+'ms');
+ chipFor(el,el.getAttribute('data-k'));
+ holdT=setTimeout(function(){
+  holdT=null;
+  el.classList.remove('holding');
+  hideChip();
+  openCard(el,el.getAttribute('data-k'));
+  el.classList.remove('down');
+  holdEl=null;
+ },HOLD);
+}
+var tapT=null;
+function releaseHold(){
+ if(holdT){ /* let go early: it was a tap. highlight it, name it, then fade */
+  clearTimeout(holdT);holdT=null;
+  var t=holdEl;
+  document.querySelectorAll('.key.tapped').forEach(function(x){x.classList.remove('tapped');});
+  if(t)t.classList.add('tapped');
+  clearTimeout(chipT);clearTimeout(tapT);
+  chipT=setTimeout(hideChip,1000);
+  tapT=setTimeout(function(){if(t)t.classList.remove('tapped');},850);
+ }
+ if(holdEl){holdEl.classList.remove('down','holding');holdEl=null;}
+}
+document.getElementById('kb').addEventListener('mousedown',function(e){
+ var b=e.target.closest('.key');
+ if(!b){closeCard();return;}
+ e.preventDefault();
+ beginHold(b);
+});
+addEventListener('mouseup',releaseHold);
+document.getElementById('kb').addEventListener('mouseleave',releaseHold);
+/* click anywhere off a key or the card closes it; esc closes it */
+document.addEventListener('mousedown',function(e){
+ if(e.target.closest('#kb .key')||e.target.closest('.glass')||e.target.closest('.quiet-say'))return;
+ if(sel)closeCard();});
+document.getElementById('glass').onclick=function(e){if(e.target.closest('.gx'))closeCard();};
+
+
+var inp=document.getElementById('q'),hits=document.getElementById('hits');
+inp.oninput=function(){
+ var v=inp.value.trim().toLowerCase();
+ if(v.length<2){hits.hidden=true;return;}
+ var m=BIND.filter(function(b){return (b.label+' '+b.sec+' '+b.cat).toLowerCase().indexOf(v)>-1;}).slice(0,10);
+ hits.innerHTML=m.length?m.map(function(b,i){
+  return '<button data-i="'+i+'">'+esc(b.label)+' <s>'+esc(b.cat)+'</s><i>'
+   +(b.layer!=='none'?b.layer.toUpperCase()+' + ':'')+b.key.toUpperCase()+'</i></button>';}).join('')
+  :'<button disabled style="color:var(--dim)">Nothing matches that</button>';
+ hits._m=m;hits.hidden=false;
+};
+hits.onclick=function(e){var b=e.target.closest('button');if(!b||!hits._m)return;
+ var t=hits._m[+b.getAttribute('data-i')];
+ state.mode=t.cat;state.layer=t.layer;state.hit=null;state.free=false;
+ document.getElementById('freebtn').setAttribute('aria-pressed',false);
+ document.getElementById('freebtn').textContent='Show free keys';
+ hits.hidden=true;inp.value='';draw();
+ var el=document.querySelector('#kb .key[data-k="'+t.key+'"]');
+ if(el){state.hit=el.getAttribute('data-p');draw();
+  el=document.querySelector('#kb .key[data-p="'+state.hit+'"]');
+  el.scrollIntoView({block:'center',behavior:'smooth'});
+  setTimeout(function(){openCard(el,t.key);},380);}
+};
+document.addEventListener('click',function(e){if(!e.target.closest('.searchw'))hits.hidden=true;});
+
+/* live key press - read the PHYSICAL key (e.code), never the character.
+   numpad 4 and top-row 4 both report "4"; only e.code tells them apart. */
+var CODE={
+ Escape:'esc',Backquote:'grave',Minus:'minus',Equal:'equals',Backspace:'backspace',
+ Tab:'tab',BracketLeft:'lbracket',BracketRight:'rbracket',Backslash:'backslash',
+ CapsLock:'capslock',Semicolon:'semicolon',Quote:'apostrophe',Enter:'enter',
+ ShiftLeft:'lshift',ShiftRight:'rshift',Comma:'comma',Period:'period',Slash:'slash',
+ ControlLeft:'lctrl',ControlRight:'rctrl',AltLeft:'lalt',AltRight:'ralt',Space:'space',
+ ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',
+ Insert:'insert',Delete:'delete',Home:'home',End:'end',PageUp:'pgup',PageDown:'pgdn',
+ NumLock:'numlock',NumpadDivide:'np_divide',NumpadMultiply:'np_multiply',
+ NumpadSubtract:'np_subtract',NumpadAdd:'np_add',NumpadEnter:'np_enter',NumpadDecimal:'np_period'
+};
+'0123456789'.split('').forEach(function(d){CODE['Digit'+d]=d;CODE['Numpad'+d]='np_'+d;});
+'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function(c){CODE['Key'+c.toUpperCase()]=c;});
+for(var fi=1;fi<=12;fi++)CODE['F'+fi]='f'+fi;
+
+/* CODE gives the PHYSICAL key id, which is unique on the board.
+   The binding shown on it is whatever that element currently carries. */
+function setNumlock(v){
+ state.numlock=v;
+ var nb=document.getElementById('numbtn');
+ nb.setAttribute('aria-pressed',v);nb.textContent='Num Lock: '+(v?'on':'off');
+ closeCard();draw();
+}
+addEventListener('keydown',function(e){
+ if(e.target.tagName==='INPUT')return;
+ if(e.key==='Escape'){e.preventDefault();closeCard();return;}
+ if(e.code==='NumLock'){e.preventDefault();setNumlock(!state.numlock);return;}
+ var want=e.shiftKey?'shift':e.altKey?'alt':e.ctrlKey?'ctrl':'none';
+ if(want!==state.layer){state.layer=want;draw();}
+ var pid=CODE[e.code];
+ if(!pid)return;
+ var el=document.querySelector('#kb .key[data-p="'+pid+'"]');
+ if(el){e.preventDefault();
+  if(e.repeat)return;
+  beginHold(el);}
+});
+addEventListener('keyup',function(e){
+ releaseHold();
+ document.querySelectorAll('.key.down').forEach(function(x){x.classList.remove('down');});
+ if(!e.shiftKey&&!e.altKey&&!e.ctrlKey&&state.layer!=='none'){state.layer='none';draw();}
+});
+
+drawStyles();drawLegend();draw();
+document.getElementById('rmode').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+ rmode=b.getAttribute('data-r');drawStyles();var s0=sel;closeCard();
+ if(s0){var el=document.querySelector('#kb .key[data-p="'+s0.pid+'"]');if(el)openCard(el,el.getAttribute('data-k'));}};
+document.getElementById('gmode').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+ gmode=b.getAttribute('data-g');drawStyles();draw();};
+document.getElementById('hmode').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+ HOLD=+b.getAttribute('data-h');drawStyles();};
+})();
+</script>
+
+</body></html>
