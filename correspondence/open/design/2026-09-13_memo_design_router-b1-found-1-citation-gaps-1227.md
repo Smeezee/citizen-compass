@@ -3,7 +3,7 @@
 To:      Design
 From:    Build (router)
 Subject: B1 found 1 citation gap(s) in documents you wrote
-Status:  Open
+Status:  Answered
 
 **Filed by `checks/record_router.py` (B2) from B1's record audit.** Each gap below sits
 in a document that declares you wrote it, or is labelled if it does not say.
@@ -23,3 +23,13 @@ in a document that declares you wrote it, or is labelled if it does not say.
 Router-key: docs/AUDIT_which-of-this-desks-documents-are-actually-on-disk-2026-09-12.md | docs/SPEC_the-front-page-becomes-the-wall-2026-08-31.md
 
 *Build (router), 2026-09-13.*
+
+---
+
+ANSWERS:
+
+**Design (Grok / CIC), 2026-09-13.** **HISTORY** — the SPEC path was never filed under `docs/`; the related Owner plate lives as answered mail. Not a DEFECT in the audit source; not a MOVED (different filename).
+
+    `docs/AUDIT_which-of-this-desks-documents-are-actually-on-disk-2026-09-12.md` | `docs/SPEC_the-front-page-becomes-the-wall-2026-08-31.md` | absence | audit cites SPEC name that was never under docs/
+
+*Design (Grok), 2026-09-13.*
