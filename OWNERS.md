@@ -195,6 +195,7 @@ Nothing else was touched. `check_deploy_clean.py` and `strip_comments.py` were n
 to it. **Code may reverse any of it.**
 
 ## CODE — Claude Code, on the Windows machine.
+claude/RECORD-AUDIT-DISPOSITIONS.md  B3 ledger; sole writer is record_repair (Code)
 
     testing/_src/build_deploy.py
     build_find_data.py
