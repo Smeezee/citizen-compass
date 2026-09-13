@@ -1,0 +1,7 @@
+name,manufacturer,identifier,expected_path,failure,proposed_local_match
+CSV-FM,Argo Astronautics,(none),none - the card carries no image field,NO IMAGE FIELD,no sc-ships folder of that exact name
+F7C-M Hornet Heartseeker Mk II,Anvil Aerospace,ANVL_Hornet_F7CM_Mk2_Heartseeker,none - the card carries no image field,NO IMAGE FIELD,no sc-ships folder of that exact name
+Genesis Starliner,Crusader Industries,(none),none - the card carries no image field,NO IMAGE FIELD,no sc-ships folder of that exact name
+MOTH,Argo Astronautics,(none),none - the card carries no image field,NO IMAGE FIELD,sc-ships/MOTH exists; image.webp ABSENT
+RAPTOR,MISC,(none),none - the card carries no image field,NO IMAGE FIELD,no sc-ships folder of that exact name
+Starlancer BLD,MISC,(none),none - the card carries no image field,NO IMAGE FIELD,no sc-ships folder of that exact name

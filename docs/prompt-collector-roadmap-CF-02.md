@@ -128,8 +128,8 @@ had nothing to do.
 
 CF-01 job 4, still unbuilt. The `alive:` heartbeat every 3 minutes is real and
 works — but it is in a log file, and nobody reads a log file mid-flight. Sleven
-has no speakers, so audio is out. A tray icon that changes state is the remaining
-option.
+has no speakers, so an alert sound is out. A tray icon that changes state is
+the remaining option.
 
 ### 4. Startup diagnostics (CF-01 §2a)
 

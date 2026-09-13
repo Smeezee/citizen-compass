@@ -71,6 +71,39 @@ This gives any importer, watcher, or future AI session one predictable place to 
 - A pluggable auditor (many small independent checkers: duplicate detection, missing-field detection, broken-reference detection) writes findings to the already-built `pipeline_check_results` table.
 - Findings-only — validation tools never automatically modify data. Matches the already-decided supervisor pattern (periodic review of the results table, flag only).
 
+**CLARIFIED 2026-09-08 — NOT AMENDED. The destination is SUPPLIED, not known.**
+
+Raised by the audit desk as a collision between this locked decision and
+Sleven's ruling the same day that the Looking Project *"is gonna end up becoming
+its own project"* — Citizen Compass being its first user rather than its owner.
+A machine that knows `pipeline_check_results` is not liftable; a machine that
+does not write there is not obeying this section.
+
+**Both are already true and neither needs changing.** The auditor writes findings
+to `pipeline_check_results` **because this project hands it that table.** The
+destination is a parameter the host project supplies at the point of use, not a
+name the checking machinery carries inside it.
+
+**So this section keeps locking the destination FOR THIS PROJECT, and locks
+nothing about what any checker knows.** Every word above stays true unchanged.
+
+**Recorded because of what happens otherwise:** left undecided, whoever builds
+first hard-codes whatever is in front of them, and what is in front of them is
+`pipeline_check_results`, because that is what exists. The reading costs one
+paragraph today and cannot be recovered cheaply later.
+
+**Not in the lens.** A destination field on every instruction sheet would put
+this project's table name inside forty sheets instead of once — the same defect
+written forty times. It is machine configuration, not lens configuration.
+
+**NOTED 2026-09-08 — the machine is a separate project now.** Sleven moved the
+Looking Project out to its own folder on his machine; Citizen Compass is a client
+of it. The clarification above was written before that folder existed and turned
+out to be the same principle the separation runs on. Its reasoning is maintained
+there and only there — this section is pointed at it, not a copy of it. Every
+word of the locked text stands unchanged: it is this project's decision about
+where this project's findings go.
+
 ---
 
 ## 5. Viewer Generator — RECOMMENDED (pending final sign-off)

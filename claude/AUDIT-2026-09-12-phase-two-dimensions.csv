@@ -1,0 +1,17 @@
+our_card,source_rank,source,url_or_path,read_at_cdt,name_the_source_uses,length_m,beam_or_width_m,height_m,status_as_stated,patch_stated,note
+Odin,1 RSI,RSI ship matrix id 317,https://robertsspaceindustries.com/ship-matrix/index,2026-09-12 01:20,Odin,752,222,213,in-concept,none,
+Odin,4 community,Fleetyards anvl-odin (local record),data-layer/derived/model-availability/scale_fix_report.json,2026-08-27 record,Odin,752.0,222.0,213.0,,none,agrees with RSI; the model was scaled to this figure so its box is not independent
+Genesis Starliner,1 RSI,RSI ship matrix id 91,https://robertsspaceindustries.com/ship-matrix/index,2026-09-12 01:20,Genesis,85,80,25,in-concept,none,name mapping Genesis -> Genesis Starliner NOT applied (ordered to Research)
+Genesis Starliner,4 community,Fleetyards crus-genesis,https://api.fleetyards.net/v1/models?q[nameCont]=Genesis,2026-09-12 01:21,Genesis,85.0,80.0,25.0,in-concept,none,agrees with RSI; updated 2026-08-22
+MOTH,1 RSI,RSI ship matrix id 311,https://robertsspaceindustries.com/ship-matrix/index,2026-09-12 01:20,MOTH,0,0,0,flight-ready,none,ZERO - absent under Architecture's ruling; not a measurement
+MOTH,3 game data,scunpacked ARGO_MOTH,data-layer/external-sources/scunpacked-data/snapshots/20260827T225641Z/ships.json,snapshot 20260827T225641Z,Argo MOTH,0,0,0,,none (snapshot id only),ZERO - absent under Architecture's ruling
+MOTH,4 community,Fleetyards argo-moth,https://api.fleetyards.net/v1/models?q[nameCont]=MOTH,2026-09-12 01:21,MOTH,45.0,25.0,15.0,flight-ready,none,the only non-zero figure; updated 2026-09-09; same figure in the 2026-08-27 local record
+CSV-FM,1 RSI,RSI ship matrix,https://robertsspaceindustries.com/ship-matrix/index,2026-09-12 01:20,,,,,,,NOT PRESENT - only CSV-SM (id 281)
+CSV-FM,3 game data,scunpacked,data-layer/external-sources/scunpacked-data/snapshots/20260827T225641Z/ships.json,snapshot 20260827T225641Z,,,,,,,NOT PRESENT - only ARGO_CSV_Cargo (Argo CSV-SM)
+CSV-FM,4 community,Fleetyards search CSV,https://api.fleetyards.net/v1/models?q[nameCont]=CSV,2026-09-12 01:21,,,,,,,NOT PRESENT - only CSV-SM
+CSV-FM,5 wiki,starcitizen.tools CSV-FM rev 373156 (edited 2026-07-14),https://starcitizen.tools/CSV-FM,2026-09-12 01:21,CSV-FM,5.44,4.13,2.81,In concept,none,no reference cited for the dimensions; the figures match Fleetyards CSV-SM (5.4 x 4.1 x 2.8) to one decimal - observed not concluded
+Starlancer BLD,1 RSI,RSI ship matrix,https://robertsspaceindustries.com/ship-matrix/index,2026-09-12 01:20,,,,,,,NOT PRESENT - MAX (id 278) and TAC (id 279) only
+Starlancer BLD,2 CIG publication,comm-link 12708 Blast from the Past: Starlancer (2012-10-01),https://robertsspaceindustries.com/comm-link/spectrum-dispatch/12708-Blast-From-The-Past-Starlancer,2026-09-12 01:23,,,,,,,cited by the wiki; contains no BLD mention and no dimensions
+Starlancer BLD,3 game data,scunpacked,data-layer/external-sources/scunpacked-data/snapshots/20260827T225641Z/ships.json,snapshot 20260827T225641Z,,,,,,,NOT PRESENT - MAX / TAC / two Wikelo specials only
+Starlancer BLD,4 community,Fleetyards search Starlancer,https://api.fleetyards.net/v1/models?q[nameCont]=Starlancer,2026-09-12 01:21,,,,,,,NOT PRESENT - MAX and TAC only
+Starlancer BLD,5 wiki,starcitizen.tools Starlancer BLD rev 376961 (edited 2026-08-19),https://starcitizen.tools/Starlancer_BLD,2026-09-12 01:21,Starlancer BLD,83,52,16,In concept,none,equals RSI's Starlancer MAX figure exactly - observed not concluded; its RSI citation carries no dimensions

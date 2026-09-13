@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plan — Every Ship A Model, And Can We Paint Them</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--line:#242c38;--tx:#d6dde6;--dim:#8b95a3;--acc:#4ea3ff;--good:#3fb950;--bad:#f85149;--warn:#d29922}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:40px 24px 96px}
+h1{font-size:30px;line-height:1.2;margin:0 0 6px;letter-spacing:-.5px}
+.sub{color:var(--dim);font-size:14px;margin:0 0 36px}
+h2{font-size:21px;margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:16px;margin:26px 0 8px;color:#fff}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:6px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin:16px 0}
+.card.bad{border-left:3px solid var(--bad)}
+.card.good{border-left:3px solid var(--good)}
+.card.warn{border-left:3px solid var(--warn)}
+.card.acc{border-left:3px solid var(--acc)}
+.k{font-weight:600;color:#fff}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--dim);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+code{background:#1c2230;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:#0a0e14;border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.5}
+.big{font-size:40px;font-weight:700;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px}
+.stat .lbl{color:var(--dim);font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;margin-top:6px}
+.yes{color:var(--good);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+.maybe{color:var(--warn);font-weight:600}
+.tag{display:inline-block;font-size:11px;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--line);color:var(--dim);margin-left:6px}
+.q{background:#161b22;border:1px solid var(--acc);border-radius:8px;padding:20px 24px;margin-top:14px}
+hr{border:0;border-top:1px solid var(--line);margin:36px 0}
+.note{color:var(--dim);font-size:13.5px}
+</style></head><body><div class="wrap">
+
+<h1>Every Ship A Model — And Can We Paint Them</h1>
+<p class="sub">Plan only. Nothing built until you say go. &nbsp;·&nbsp; Citizen Compass &nbsp;·&nbsp; 4 September 2026</p>
+
+<div class="card bad">
+<h3 style="margin-top:0">First: I have to correct myself, and it is the important part</h3>
+<p>I told you the models kept their UV maps, so textures would drop right on. Then I came back and told you the opposite — that every model has UV zero and paint was impossible.</p>
+<p><span class="k">Both of those came from looking at one ship: the Cutlass Black.</span> The Cutlass happens to be one of the broken ones. I generalised from a sample of one, twice, in opposite directions.</p>
+<p>I have now measured all 234 source files and all 258 built models. The real answer is in the middle, and it is better news than the last thing I told you:</p>
+<ul>
+<li><span class="k">178 of 234</span> ship source files carry real UV data.</li>
+<li><span class="k">48</span> genuinely have none. <span class="k">8</span> are partial.</li>
+<li><span class="k">Our own file conversion destroyed the UV maps that did exist.</span> That is our bug, not RSI's. It is fixable.</li>
+</ul>
+</div>
+
+<h2>1 · The gap — what is actually missing</h2>
+
+<div class="grid">
+<div class="stat"><div class="big">254</div><div class="lbl">ships on our site</div></div>
+<div class="stat"><div class="big">230</div><div class="lbl">can show a model</div></div>
+<div class="stat"><div class="big">24</div><div class="lbl">cannot</div></div>
+<div class="stat"><div class="big">5</div><div class="lbl">exist nowhere at all</div></div>
+</div>
+
+<p>The gap is small and it is fully named. There is no mystery pile of missing ships.</p>
+
+<div class="scroll"><table>
+<tr><th>Bucket</th><th class="n">Count</th><th>Meaning</th><th>Route</th></tr>
+<tr><td>Model folder mapped, file never built</td><td class="n">4</td><td>85X, Fury, Mantis, PTV</td><td class="yes">Build it — we already hold the source</td></tr>
+<tr><td>No folder mapped for it</td><td class="n">14</td><td>Aurora Mk II, Hermes, M80, Tiburon, Tyilui, UTV, MOTH, Pitbull, Starlite, Basher, 600i Executive, Aurora SE, Gladius Dunlevy, Hornet Heartseeker Mk II</td><td class="yes">12 downloadable · 2 nowhere</td></tr>
+<tr><td>No game file exists</td><td class="n">6</td><td>Arrastra, Merchantman, Odin, CSV-FM, RAPTOR, Starlancer BLD</td><td class="maybe">3 downloadable · 3 nowhere</td></tr>
+</table></div>
+
+<h3>The 19 we can close today</h3>
+<p>85X · Arrastra · Aurora Mk II · Aurora SE · Basher · 600i Executive Edition · Fury · Hermes · M80 · Mantis · Merchantman · MOTH · Odin · Pitbull · PTV · Starlite · Tiburon · Tyilui · UTV</p>
+<p class="note">Total download: <span class="k">257 MB</span> across 19 files. The exact direct URL for every one of them is already sitting in <code>gap_fillable.json</code> from the August sweep. This is not research — it is a download loop.</p>
+
+<h3>The 5 that exist nowhere</h3>
+<p><span class="k">CSV-FM · RAPTOR · Starlancer BLD · F7C-M Hornet Heartseeker Mk II · Gladius Dunlevy</span></p>
+<p>These are concept ships or paint-variants CIG has not put a holo model out for. Nobody has them — not Fleetyards, not the Fan Kit, not the community. The only two ways to get them are to pull them out of the game files yourself, or to wait for CIG to publish them. Everything else is someone re-hosting the same RSI file.</p>
+
+<h3>Six ships we do not even list</h3>
+<p>Fleetyards carries models for <span class="k">Genesis, S-65 Stingray, Dragonfly Starkitten, Dragonfly Yellowjacket, Nox Kue,</span> and <span class="k">Bengal</span> (no model for the Bengal) that our site has no row for. Separate question from the gap — do you want them on the site at all?</p>
+
+<h2>2 · How we get every missing model — the four routes</h2>
+
+<div class="card good">
+<h3 style="margin-top:0">Route A — Fleetyards holo mirror <span class="tag">recommended, do this first</span></h3>
+<p><span class="k">What it gives:</span> 19 of the 24 missing ships, immediately.<br>
+<span class="k">Cost:</span> 257 MB, one script, one afternoon. Free.<br>
+<span class="k">Format:</span> 18 <code>.gltf</code> and 1 <code>.glb</code> — same family as everything we already have.<br>
+<span class="k">Credit:</span> Fleetyards is a fan site re-hosting RSI's own holoviewer exports. We credit them and RSI. Nothing paid, nothing behind a wall.<br>
+<span class="k">Risk:</span> Their URLs are signed blob redirects. If one has expired since August we re-query their API for a fresh one. That is a five-minute fix, not a blocker.</p>
+</div>
+
+<div class="card acc">
+<h3 style="margin-top:0">Route B — RSI's own ship pages</h3>
+<p><span class="k">What it gives:</span> The same files Route A gives, straight from the source instead of a mirror. Every ship page with a 3D viewer downloads one model file to your browser; we read what it downloads.<br>
+<span class="k">Cost:</span> Slower. One page at a time, and RSI's viewer is JavaScript so it needs a real browser driving it, not a plain fetch.<br>
+<span class="k">Use it for:</span> Backup when Fleetyards is missing or stale, and as our independent check that Fleetyards has not modified anything.</p>
+</div>
+
+<div class="card acc">
+<h3 style="margin-top:0">Route C — RSI Fan Kit</h3>
+<p><span class="k">What it gives:</span> The holoviewer set as a bulk download. This is how we got the 234 <code>.ctm</code> files we already hold.<br>
+<span class="k">Cost:</span> Free, but it only refreshes when CIG updates it, so it lags new ships.<br>
+<span class="k">Use it for:</span> Bulk refresh at patch boundaries, not for closing today's gap.</p>
+</div>
+
+<div class="card warn">
+<h3 style="margin-top:0">Route D — Your own game install <span class="tag">the only route to real paint</span></h3>
+<p><span class="k">What it gives:</span> Everything. The real hulls, at full detail, <em>with CIG's actual textures</em>. It is the only place in the world those textures exist outside CIG.<br>
+<span class="k">Where it is:</span> <code>Data.p4k</code> on your machine — 146 GB, and I can already reach it from here.<br>
+<span class="k">Cost:</span> Real work. The archive has to be unpacked, the ship geometry converted out of CryEngine's format, and the textures converted out of DDS. That is a build project, not a script. It would also give us files far too heavy for a web page without a decimation pass.<br>
+<span class="k">The one thing on record you should weigh:</span> the site currently operates under CIG's Fan Kit Agreement, which covers Fan Kit assets. Shipping unpacked game art is a different footing from shipping Fan Kit art. Rights are your call and you have already made it — I am noting the distinction as a fact, not reopening it.</p>
+</div>
+
+<h2>3 · What type of models these actually are</h2>
+
+<div class="scroll"><table>
+<tr><th>Layer</th><th>What it is</th></tr>
+<tr><td>What RSI publishes</td><td><code>OpenCTM v5, MG2</code> — a compressed mesh format used by RSI's web holoviewer. One merged hull. No materials, no textures, no images.</td></tr>
+<tr><td>What we build from it</td><td><code>glTF 2.0 binary (.glb)</code>, compressed with <code>KHR_draco_mesh_compression</code>, via glTF-Transform 4.4.2.</td></tr>
+<tr><td>What is inside our .glb</td><td>241 of 258 have exactly <span class="k">one mesh</span> and <span class="k">one material</span>, named <code>"Default"</code>, with no colour at all — just <code>metallic 0.5 / roughness 0.5</code>.</td></tr>
+<tr><td>Textures / images</td><td><span class="no">0 of 258.</span> Not one model file contains a single image. This is true at every layer including RSI's original.</td></tr>
+<tr><td>Vertex data present</td><td>Position + normal on all. A UV channel on 244 of 258. 14 have no UV channel whatsoever.</td></tr>
+<tr><td>Size</td><td>Typical ship is 100k–600k vertices as one solid merged shell. No separate parts, no doors, no interior.</td></tr>
+</table></div>
+
+<p class="note">Proof these really are RSI's own files and not something better someone else made: the Fan Kit <code>.ctm</code> and our built <code>.glb</code> match to the exact vertex — Cutlass Black is 149,983 vertices and 265,504 triangles in both. Every community source traces back to this same upstream. There is no secret better model out there; I checked.</p>
+
+<h2>4 · Can we paint them — three different questions</h2>
+
+<h3>Q1 · Can we put CIG's real ship paint on these? <span class="no">No.</span></h3>
+<p>Not from these files, and not from anywhere on the public web. A paint job is an image file, and no file in the RSI holoviewer lineage has one — not the Fan Kit, not Fleetyards, not RSI's own ship pages. The paint exists in exactly one place: inside your <code>Data.p4k</code>. That is Route D or nothing.</p>
+
+<h3>Q2 · Do the models have a UV map — the thing a texture needs to wrap onto? <span class="maybe">Yes for most sources. No for what we currently ship. And that is our fault.</span></h3>
+<p>A UV map is the flat pattern that says which part of a picture lands on which part of the hull. Without it, a texture has nowhere to sit. Here is what I measured, first on the 234 original files we hold:</p>
+
+<div class="scroll"><table>
+<tr><th>In RSI's original .ctm files</th><th class="n">Ships</th><th>Verdict</th></tr>
+<tr><td>Carries a real, detailed UV map</td><td class="n">178</td><td class="yes">Usable</td></tr>
+<tr><td>Partial / thin UV data</td><td class="n">8</td><td class="maybe">Maybe</td></tr>
+<tr><td>Effectively no UV data</td><td class="n">48</td><td class="no">Unusable</td></tr>
+</table></div>
+
+<p>Examples, measured as compressed bytes of UV data per vertex — a real unwrap is dense, a blank one compresses to nothing:</p>
+
+<div class="scroll"><table>
+<tr><th>Ship</th><th class="n">Vertices</th><th class="n">UV data</th><th class="n">Per vertex</th><th>Reading</th></tr>
+<tr><td>Polaris</td><td class="n">409,297</td><td class="n">1.71 MB</td><td class="n">4.18</td><td class="yes">Real UV map</td></tr>
+<tr><td>Constellation Andromeda</td><td class="n">544,945</td><td class="n">1.33 MB</td><td class="n">2.44</td><td class="yes">Real UV map</td></tr>
+<tr><td>Carrack</td><td class="n">109,833</td><td class="n">293 KB</td><td class="n">2.67</td><td class="yes">Real UV map</td></tr>
+<tr><td>100i</td><td class="n">212,193</td><td class="n">526 KB</td><td class="n">2.48</td><td class="yes">Real UV map</td></tr>
+<tr><td>Avenger Titan</td><td class="n">182,992</td><td class="n">315 B</td><td class="n">0.002</td><td class="no">Blank</td></tr>
+<tr><td>Aurora LX</td><td class="n">27,380</td><td class="n">139 B</td><td class="n">0.005</td><td class="no">Blank</td></tr>
+</table></div>
+
+<p><span class="k">Now the part that is on us.</span> I decoded the UV channel inside our finished <code>.glb</code> files. On the Polaris — which has 1.7 MB of good UV data in the original — our built file has <span class="k">89 distinct UV values across 50,000 vertices</span>, spread over a range of ±53 million. On the Corsair and the Cutlass Black our file has <span class="k">exactly one</span> distinct value. That is not a UV map, that is rubble.</p>
+<p>The cause is the Draco compression step. Draco squeezes UV coordinates into a fixed number of steps between the smallest and largest value present. A handful of junk vertices sitting at ±50 million stretch that range so wide that every real coordinate between 0 and 1 collapses into the same bucket. <span class="k">We fed it good data and it came out destroyed.</span> Clamping the junk vertices, or not Draco-compressing the UV channel, gets the maps back on those 178 ships.</p>
+
+<h3>Q3 · Can we make them <em>look</em> painted, without CIG's textures? <span class="yes">Yes. Three ways, and two of them need no UV map at all.</span></h3>
+<ol>
+<li><span class="k">Triplanar projection.</span> Instead of wrapping a picture using a UV map, the material projects it from three directions and blends. Panel lines, hull plating, wear, grime, a manufacturer colour — all land correctly on a model with zero UVs. Works on all 258 today. This is the honest workhorse.</li>
+<li><span class="k">Procedural material.</span> No image file at all. Metal, paint, edge wear and dirt generated by maths from surface angle and position. Costs nothing to download, scales to every ship, never breaks.</li>
+<li><span class="k">Auto-unwrap.</span> Generate a UV map from scratch with <code>xatlas</code> or Blender's smart-project, then paint whatever we like onto it. This only makes sense for a texture we author. It can never recover CIG's original layout, because that layout is only meaningful next to CIG's original texture atlases.</li>
+</ol>
+<p>Worth remembering: the reason the renders stopped looking like grey clay was not geometry, it was the material. Setting metalness to 0.92, roughness to 0.34, adding an environment to reflect and recomputing the normals is what made them read as real spacecraft. Any of the three routes above builds on that, and all of them can be tuned per manufacturer — Drake grubby, Origin polished, Aegis military flat.</p>
+
+<h2>5 · The honest bottom line</h2>
+<div class="card">
+<p><span class="k">Coverage is nearly solved.</span> 19 of the 24 missing ships are a download away. 5 do not exist publicly in any form and never will until CIG publishes them or we pull them from your install.</p>
+<p><span class="k">CIG's real paint is off the table</span> unless we go into <code>Data.p4k</code>. Everything on the public web is the same untextured holoviewer file.</p>
+<p><span class="k">But "no paint" was too strong, and I said it too confidently.</span> Most of these hulls do carry a usable UV map — we broke it in our own pipeline. Fix that and we can put a texture on 178 ships properly rather than by projection.</p>
+<p><span class="k">And we do not need CIG's textures to stop looking like grey plastic.</span> Triplanar or procedural material gets us hull plating, panel lines, wear and manufacturer colour on every ship including the 48 with no UVs. Nobody looking at the site will know or care that the panel lines are not CIG's exact panel lines.</p>
+</div>
+
+<h2>6 · Proposed order of work</h2>
+<p class="note">Nothing here starts until you say go.</p>
+<div class="scroll"><table>
+<tr><th class="n">#</th><th>Step</th><th>Why it is in this position</th><th>Effort</th></tr>
+<tr><td class="n">0</td><td>Decode one <code>.ctm</code> UV set end to end and count distinct values</td><td>Everything below depends on the UV maps being genuine unwraps and not just noisy garbage. I proved they are <em>dense</em>; I have not yet proved they are <em>correct</em>. I will not build on an unproven claim again.</td><td>Small</td></tr>
+<tr><td class="n">1</td><td>Fix the converter — clamp junk UVs, stop Draco crushing the channel, re-emit</td><td>Free win. Recovers the maps on up to 178 ships from files we already own. Nothing to download.</td><td>Medium</td></tr>
+<tr><td class="n">2</td><td>Pull the 19 fillable ships from Fleetyards, verify, convert, join</td><td>Closes the visible gap from 24 to 5. Pure download.</td><td>Small</td></tr>
+<tr><td class="n">3</td><td>Build the material — triplanar or procedural, tuned per manufacturer</td><td>This is what actually makes them look painted. Works whether or not step 1 succeeds.</td><td>Medium</td></tr>
+<tr><td class="n">4</td><td>Empty state for the last 5 ships</td><td>Better an honest "no model published" card than a hole in the page.</td><td>Small</td></tr>
+<tr><td class="n">5</td><td>Route D — only if you want CIG's real paint</td><td>Separate project. Big. Do not start it inside this one.</td><td>Large</td></tr>
+</table></div>
+
+<hr>
+
+<h2>Questions</h2>
+<div class="q">
+<ol>
+<li>Do I go ahead and pull the 19 missing ships from Fleetyards?</li>
+<li>Do I fix the converter so the UV maps survive, before we do anything with paint?</li>
+<li>For paint: do you want <span class="k">triplanar projection</span> (real panel-line images, works on all 258) or <span class="k">procedural</span> (maths only, nothing to download, works on all 258)? Or do you want to see both side by side on the same ship first?</li>
+<li>The 5 ships nobody has — is an honest "no model published yet" card acceptable, or do you want to go into your game install for them?</li>
+<li>Do you want the 6 ships Fleetyards has that our site does not list — Genesis, S-65 Stingray, the two Dragonfly variants, Nox Kue — added as rows?</li>
+</ol>
+</div>
+
+</div></body></html>

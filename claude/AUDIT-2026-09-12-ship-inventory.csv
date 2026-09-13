@@ -1,0 +1,255 @@
+name,manufacturer,data_row_id,classname_identifier,on_front_page,status,career,has_picture,model_file,length_m_on_page
+100i,Origin Jumpworks,129,ORIG_100i,card,purchasable,Exploration,yes,100i.glb,19
+125a,Origin Jumpworks,130,ORIG_125a,card,purchasable,Combat,yes,125a.glb,19
+135c,Origin Jumpworks,131,ORIG_135c,card,purchasable,Transporter,yes,135c.glb,19
+300i,Origin Jumpworks,132,ORIG_300i,card,purchasable,Exploration,yes,300i.glb,27
+315p,Origin Jumpworks,133,ORIG_315p,card,purchasable,Exploration,yes,315p.glb,27
+325a,Origin Jumpworks,134,ORIG_325a,card,purchasable,Combat,yes,325a.glb,27.5
+350r,Origin Jumpworks,135,ORIG_350r,card,purchasable,Competition,yes,350r.glb,27
+400i,Origin Jumpworks,136,ORIG_400i,card,purchasable,Exploration,yes,400i.glb,56
+600i Executive Edition,Origin Jumpworks,233,ORIG_600i_Executive_Edition,card,pledge_only,Exploration,yes,600i_Executive_Edition.glb,91.5
+600i Explorer,Origin Jumpworks,137,ORIG_600i,card,purchasable,Exploration,yes,600i_Explorer.glb,91.5
+600i Touring,Origin Jumpworks,138,ORIG_600i_Touring,card,purchasable,Exploration,yes,600i_Touring.glb,91.5
+85X,Origin Jumpworks,139,ORIG_85X,card,purchasable,Exploration,yes,85X.glb,14
+890 Jump,Origin Jumpworks,140,ORIG_890Jump,card,purchasable,Exploration,yes,890_Jump.glb,210
+A1 Spirit,Crusader Industries,61,CRUS_Spirit_A1,card,purchasable,Combat,yes,A1_Spirit.glb,47.5
+A2 Hercules Starlifter,Crusader Industries,62,CRUS_Starlifter_A2,card,purchasable,Combat,yes,A2_Hercules.glb,94
+ATLS,Argo Astronautics,44,ARGO_ATLS,card,purchasable,Ground,yes,ATLS.glb,3.2
+ATLS GEO,Argo Astronautics,45,ARGO_ATLS_GEO,card,purchasable,Ground,yes,ATLS_GEO.glb,3.2
+ATLS GEO IKTI,Argo Astronautics,234,ARGO_ATLS_GEO_IKTI,card,pledge_only,Ground,yes,ATLS.glb,3.2
+ATLS IKTI,Argo Astronautics,235,ARGO_ATLS_IKTI,card,pledge_only,Ground,yes,ATLS.glb,3.2
+ATLS IKTI RAD,Argo Astronautics,236,ARGO_ATLS_IKTI_ARGOS,card,pledge_only,Ground,yes,ATLS.glb,3.2
+Apollo Medivac,Roberts Space Industries,145,RSI_Apollo_Medivac,card,purchasable,Support,yes,Apollo_Medivac.glb,73
+Apollo Triage,Roberts Space Industries,146,RSI_Apollo_Triage,card,purchasable,Support,yes,Apollo_Triage.glb,73
+Ares Inferno,Crusader Industries,63,CRUS_Starfighter_Inferno,card,purchasable,Combat,yes,Ares_Inferno.glb,30
+Ares Ion,Crusader Industries,64,CRUS_Starfighter_Ion,card,purchasable,Combat,yes,Ares_Ion.glb,30
+Arrastra,Roberts Space Industries,203,(none),card,pledge_only,,yes,,
+Arrow,Anvil Aerospace,20,ANVL_Arrow,card,purchasable,Combat,yes,Arrow.glb,17.25
+Asgard,Anvil Aerospace,21,ANVL_Asgard,card,purchasable,Combat,yes,Asgard.glb,48
+Aurora CL,Roberts Space Industries,147,RSI_Aurora_GS_CL,card,purchasable,Transporter,yes,Aurora_CL.glb,19
+Aurora ES,Roberts Space Industries,148,RSI_Aurora_GS_ES,card,purchasable,Multi-Role,yes,Aurora_ES.glb,19
+Aurora LN,Roberts Space Industries,149,RSI_Aurora_GS_LN,card,purchasable,Combat,yes,Aurora_LN.glb,19
+Aurora LX,Roberts Space Industries,150,RSI_Aurora_GS_LX,card,purchasable,Exploration,yes,Aurora_LX.glb,19
+Aurora MR,Roberts Space Industries,151,RSI_Aurora_GS_MR,card,purchasable,Combat,yes,Aurora_MR.glb,19
+Aurora Mk II,Roberts Space Industries,223,RSI_Aurora_Mk2,card,pledge_only,Multi-Role,yes,Aurora_Mk_II.glb,27.7
+Aurora SE,Roberts Space Industries,210,RSI_Aurora_GS_SE,card,pledge_only,Combat,yes,Aurora_SE.glb,19
+Avenger Stalker,Aegis Dynamics,1,AEGS_Avenger_Stalker,card,purchasable,Combat,yes,Avenger_Stalker.glb,20
+Avenger Titan,Aegis Dynamics,2,AEGS_Avenger_Titan,card,purchasable,Transporter,yes,Avenger_Titan.glb,20
+Avenger Titan Renegade,Aegis Dynamics,3,AEGS_Avenger_Titan_Renegade,card,purchasable,Transporter,yes,Avenger_Titan_Renegade.glb,20
+Avenger Warlock,Aegis Dynamics,4,AEGS_Avenger_Warlock,card,purchasable,Combat,yes,Avenger_Warlock.glb,20
+Ballista,Anvil Aerospace,22,ANVL_Ballista,card,purchasable,Combat,yes,Ballista.glb,17
+Ballista Dunestalker,Anvil Aerospace,237,ANVL_Ballista_Dunestalker,card,pledge_only,Combat,yes,Ballista.glb,17
+Ballista Snowblind,Anvil Aerospace,238,ANVL_Ballista_Snowblind,card,pledge_only,Combat,yes,Ballista.glb,17
+Basher,Grey's Market,180,GLSN_Basher,card,pledge_only,Combat,yes,Basher.glb,13.7
+Blade,Esperia,86,VNCL_Blade,card,purchasable,Combat,yes,Blade.glb,20.5
+Buccaneer,Drake Interplanetary,70,DRAK_Buccaneer,card,purchasable,Combat,yes,Buccaneer.glb,16.75
+C1 Spirit,Crusader Industries,65,CRUS_Spirit_C1,card,purchasable,Transporter,yes,C1_Spirit.glb,47.5
+C2 Hercules Starlifter,Crusader Industries,66,CRUS_Starlifter_C2,card,purchasable,Transporter,yes,C2_Hercules.glb,94
+C8 Pisces,Anvil Aerospace,23,ANVL_C8_Pisces,card,purchasable,Exploration,yes,C8_Pisces.glb,16
+C8R Pisces Rescue,Anvil Aerospace,24,ANVL_C8R_Pisces,card,purchasable,Support,yes,C8R_Pisces.glb,16
+C8X Pisces Expedition,Anvil Aerospace,25,ANVL_C8X_Pisces_Expedition,card,purchasable,Exploration,yes,C8X_Pisces_Expedition.glb,16
+CSV-FM,Argo Astronautics,185,(none),card,pledge_only,,no,,
+CSV-SM,Argo Astronautics,46,ARGO_CSV_Cargo,card,purchasable,Transporter,yes,CSV-SM.glb,8.75
+Carrack,Anvil Aerospace,26,ANVL_Carrack,card,purchasable,Exploration,yes,Carrack.glb,126
+Carrack Expedition,Anvil Aerospace,239,ANVL_Carrack_Expedition,card,pledge_only,Exploration,yes,Carrack_Expedition.glb,126
+Caterpillar,Drake Interplanetary,71,DRAK_Caterpillar,card,purchasable,Transporter,yes,Caterpillar.glb,111.5
+Centurion,Anvil Aerospace,27,ANVL_Centurion,card,purchasable,Combat,yes,Centurion.glb,17
+Clipper,Drake Interplanetary,72,DRAK_Clipper,card,purchasable,Exploration,yes,Clipper.glb,26.5
+Constellation Andromeda,Roberts Space Industries,152,RSI_Constellation_Andromeda,card,purchasable,Multi-Role,yes,Constellation_Andromeda.glb,63.5
+Constellation Aquila,Roberts Space Industries,153,RSI_Constellation_Aquila,card,purchasable,Exploration,yes,Constellation_Aquila.glb,63.5
+Constellation Phoenix,Roberts Space Industries,154,RSI_Constellation_Phoenix,card,purchasable,Exploration,yes,Constellation_Phoenix.glb,63.5
+Constellation Phoenix Emerald,Roberts Space Industries,240,RSI_Constellation_Phoenix_Emerald,card,pledge_only,Exploration,yes,Constellation_Phoenix_Emerald.glb,63.5
+Constellation Taurus,Roberts Space Industries,155,RSI_Constellation_Taurus,card,purchasable,Transporter,yes,Constellation_Taurus.glb,70
+Corsair,Drake Interplanetary,73,DRAK_Corsair,card,purchasable,Exploration,yes,Corsair.glb,53
+Crucible,Anvil Aerospace,191,(none),card,pledge_only,,yes,,
+Cutlass Black,Drake Interplanetary,74,DRAK_Cutlass_Black,card,purchasable,Multi-Role,yes,Cutlass_Black.glb,37.5
+Cutlass Blue,Drake Interplanetary,75,DRAK_Cutlass_Blue,card,purchasable,Combat,yes,Cutlass_Blue.glb,37.5
+Cutlass Red,Drake Interplanetary,76,DRAK_Cutlass_Red,card,purchasable,Support,yes,Cutlass_Red.glb,37.5
+Cutlass Steel,Drake Interplanetary,77,DRAK_Cutlass_Steel,card,purchasable,Combat,yes,Cutlass_Steel.glb,37.5
+Cutter,Drake Interplanetary,78,DRAK_Cutter,card,purchasable,Exploration,yes,Cutter.glb,20
+Cutter Rambler,Drake Interplanetary,79,DRAK_Cutter_Rambler,card,purchasable,Exploration,yes,Cutter_Rambler.glb,20
+Cutter Scout,Drake Interplanetary,80,DRAK_Cutter_Scout,card,purchasable,Exploration,yes,Cutter_Scout.glb,20
+Cyclone,Tumbril Land Systems,168,TMBL_Cyclone,card,purchasable,Combat,yes,Cyclone.glb,8.75
+Cyclone AA,Tumbril Land Systems,173,TMBL_Cyclone_AA,card,purchasable,Combat,yes,Cyclone_AA.glb,8.75
+Cyclone MT,Tumbril Land Systems,174,TMBL_Cyclone_MT,card,purchasable,Combat,yes,Cyclone_MT.glb,8.75
+Cyclone RC,Tumbril Land Systems,175,TMBL_Cyclone_RC,card,purchasable,Competition,yes,Cyclone_RC.glb,8.75
+Cyclone RN,Tumbril Land Systems,176,TMBL_Cyclone_RN,card,purchasable,Exploration,yes,Cyclone_RN.glb,8.75
+Cyclone TR,Tumbril Land Systems,177,TMBL_Cyclone_TR,card,purchasable,Combat,yes,Cyclone_TR.glb,8.75
+Defender,Banu (Souli),54,BANU_Defender,card,purchasable,Combat,yes,Defender.glb,24.5
+Dragonfly,Drake Interplanetary,81,DRAK_Dragonfly,card,purchasable,Competition,yes,Dragonfly_Black.glb,7
+E1 Spirit,Crusader Industries,204,(none),card,pledge_only,,yes,,
+Eclipse,Aegis Dynamics,5,AEGS_Eclipse,card,purchasable,Combat,yes,Eclipse.glb,24.5
+Endeavor,MISC,196,(none),card,pledge_only,,yes,,
+Expanse,MISC,198,(none),card,pledge_only,,yes,,
+F7A Hornet Mk I,Anvil Aerospace,241,ANVL_Hornet_F7A_Mk1,card,pledge_only,Combat,yes,F7A_Hornet_Mk_I.glb,28.25
+F7A Hornet Mk II,Anvil Aerospace,242,ANVL_Hornet_F7A_Mk2,card,pledge_only,Combat,yes,F7A_Hornet_Mk_II.glb,22.5
+F7C Hornet Mk I,Anvil Aerospace,28,ANVL_Hornet_F7C,card,purchasable,Combat,yes,F7C_Hornet_Mk_I.glb,28.25
+F7C Hornet Mk II,Anvil Aerospace,29,ANVL_Hornet_F7C_Mk2,card,purchasable,Combat,yes,F7C_Hornet_Mk_II.glb,22.5
+F7C Hornet Wildfire Mk I,Anvil Aerospace,30,ANVL_Hornet_F7C_Wildfire,card,purchasable,Combat,yes,F7C_Hornet_Wildfire_Mk_I.glb,28.25
+F7C-M Hornet Heartseeker Mk II,Anvil Aerospace,243,ANVL_Hornet_F7CM_Mk2_Heartseeker,card,pledge_only,Combat,no,,24
+F7C-M Super Hornet Heartseeker Mk I,Anvil Aerospace,244,(none),card,pledge_only,,yes,,
+F7C-M Super Hornet Mk I,Anvil Aerospace,31,ANVL_Hornet_F7CM,card,purchasable,Combat,yes,F7C-M_Super_Hornet_Mk_I.glb,28.25
+F7C-M Super Hornet Mk II,Anvil Aerospace,245,ANVL_Hornet_F7CM_Mk2,card,pledge_only,Combat,yes,F7C-M_Super_Hornet_Mk_II.glb,24
+F7C-R Hornet Tracker Mk I,Anvil Aerospace,32,ANVL_Hornet_F7CR,card,purchasable,Exploration,yes,F7C-R_Hornet_Tracker_Mk_I.glb,28.25
+F7C-R Hornet Tracker Mk II,Anvil Aerospace,33,ANVL_Hornet_F7CR_Mk2,card,purchasable,Combat,yes,F7C-R_Hornet_Tracker_Mk_II.glb,22.5
+F7C-S Hornet Ghost Mk I,Anvil Aerospace,34,ANVL_Hornet_F7CS,card,purchasable,Combat,yes,F7C-S_Hornet_Ghost_Mk_I.glb,28.25
+F7C-S Hornet Ghost Mk II,Anvil Aerospace,35,ANVL_Hornet_F7CS_Mk2,card,purchasable,Combat,yes,F7C-S_Hornet_Ghost_Mk_II.glb,22.5
+F8C Lightning,Anvil Aerospace,214,ANVL_Lightning_F8C,card,pledge_only,Combat,yes,F8C_Lightning.glb,26
+F8C Lightning Executive Edition,Anvil Aerospace,246,ANVL_Lightning_F8C_Exec,card,pledge_only,Combat,yes,F8C_Lightning_Executive_Edition.glb,26
+Fortune,MISC,103,MISC_Fortune,card,purchasable,Industrial,yes,Fortune.glb,26.5
+Freelancer,MISC,104,MISC_Freelancer,card,purchasable,Transporter,yes,Freelancer.glb,38
+Freelancer DUR,MISC,105,MISC_Freelancer_DUR,card,purchasable,Exploration,yes,Freelancer_DUR.glb,38
+Freelancer MAX,MISC,106,MISC_Freelancer_MAX,card,purchasable,Transporter,yes,Freelancer_MAX.glb,38
+Freelancer MIS,MISC,107,MISC_Freelancer_MIS,card,purchasable,Combat,yes,Freelancer_MIS.glb,38
+Fury,Mirai,119,MISC_Fury,card,purchasable,Combat,yes,Fury.glb,7
+Fury LX,Mirai,120,MISC_Fury_LX,card,purchasable,Competition,yes,Fury_LX.glb,7
+Fury MX,Mirai,121,MISC_Fury_Miru,card,purchasable,Combat,yes,Fury_MX.glb,7
+G12,Origin Jumpworks,211,(none),card,pledge_only,,yes,,
+G12a,Origin Jumpworks,212,(none),card,pledge_only,,yes,,
+G12r,Origin Jumpworks,213,(none),card,pledge_only,,yes,,
+Galaxy,Roberts Space Industries,182,(none),card,pledge_only,,yes,,
+Genesis Starliner,Crusader Industries,197,(none),card,pledge_only,,no,,
+Gladiator,Anvil Aerospace,36,ANVL_Gladiator,card,purchasable,Combat,yes,Gladiator.glb,22.75
+Gladius,Aegis Dynamics,6,AEGS_Gladius,card,purchasable,Combat,yes,Gladius.glb,21
+Gladius Dunlevy,Aegis Dynamics,247,AEGS_Gladius_Dunlevy,card,pledge_only,Combat,yes,,21
+Gladius Pirate,Aegis Dynamics,248,AEGS_Gladius_PIR,card,pledge_only,Combat,yes,Gladius_Pirate_Edition.glb,21
+Gladius Valiant,Aegis Dynamics,7,AEGS_Gladius_Valiant,card,purchasable,Combat,yes,Gladius_Valiant.glb,21
+Glaive,Esperia,230,VNCL_Glaive,card,pledge_only,Combat,yes,Glaive.glb,33
+Golem,Drake Interplanetary,82,DRAK_Golem,card,purchasable,Industrial,yes,Golem.glb,15.5
+Golem OX,Drake Interplanetary,224,DRAK_Golem_OX,card,pledge_only,Industrial,yes,Golem_OX.glb,15.5
+Guardian,Mirai,122,MRAI_Guardian,card,purchasable,Combat,yes,Guardian.glb,24.3
+Guardian MX,Mirai,123,MRAI_Guardian_MX,card,purchasable,Combat,yes,Guardian_MX.glb,26
+Guardian QI,Mirai,232,MRAI_Guardian_QI,card,pledge_only,Combat,yes,Guardian_QI.glb,24.3
+Hammerhead,Aegis Dynamics,8,AEGS_Hammerhead,card,purchasable,Combat,yes,Hammerhead.glb,120
+Hawk,Anvil Aerospace,37,ANVL_Hawk,card,purchasable,Combat,yes,Hawk.glb,23
+Herald,Drake Interplanetary,83,DRAK_Herald,card,purchasable,Transporter,yes,Herald.glb,24.75
+Hermes,Roberts Space Industries,156,RSI_Hermes,card,purchasable,Transporter,yes,Hermes.glb,73
+HoverQuad,Consolidated Outland,55,CNOU_HoverQuad,card,purchasable,Exploration,yes,HoverQuad.glb,5.15
+Hull A,MISC,108,MISC_Hull_A,card,purchasable,Transporter,yes,Hull_A.glb,30
+Hull B,MISC,222,MISC_Hull_B,card,pledge_only,Transporter,yes,Hull_B.glb,71
+Hull C,MISC,109,MISC_Hull_C,card,purchasable,Transporter,yes,Hull_C.glb,91.17
+Hull D,MISC,199,(none),card,pledge_only,,yes,,
+Hull E,MISC,200,(none),card,pledge_only,,yes,,
+Hurricane,Anvil Aerospace,38,ANVL_Hurricane,card,purchasable,Combat,yes,Hurricane.glb,24
+Idris-M,Aegis Dynamics,188,AEGS_Idris_M,card,pledge_only,Combat,yes,Idris-M.glb,243
+Idris-P,Aegis Dynamics,189,AEGS_Idris_P,card,pledge_only,Combat,yes,Idris-P.glb,243
+Intrepid,Crusader Industries,67,CRUS_Intrepid,card,purchasable,Starter,yes,Intrepid.glb,23.07
+Ironclad,Drake Interplanetary,218,DRAK_Ironclad,card,pledge_only,Transporter,yes,Ironclad.glb,117
+Ironclad Assault,Drake Interplanetary,219,DRAK_Ironclad_Assault,card,pledge_only,Combat,yes,Ironclad_Assault.glb,117
+Javelin,Aegis Dynamics,187,(none),card,pledge_only,,yes,,
+Khartu-al,Aopoa,165,XIAN_Scout,card,purchasable,Combat,yes,Khartu-Al.glb,32
+Kraken,Drake Interplanetary,181,(none),card,pledge_only,,yes,,
+Kraken Privateer,Drake Interplanetary,202,(none),card,pledge_only,,yes,,
+L-21 Wolf,Kruger Intergalactic,100,KRIG_L21_Wolf,card,purchasable,Combat,yes,L-21_Wolf.glb,21.5
+L-22 Alpha Wolf,Kruger Intergalactic,229,KRIG_L22_AlphaWolf,card,pledge_only,Combat,yes,L-22_Alpha_Wolf.glb,21.5
+Legionnaire,Anvil Aerospace,195,(none),card,pledge_only,,yes,,
+Liberator,Anvil Aerospace,183,(none),card,pledge_only,,yes,,
+Lynx,Roberts Space Industries,170,RSI_Lynx,card,purchasable,Transporter,yes,Lynx.glb,7.75
+M2 Hercules Starlifter,Crusader Industries,68,CRUS_Starlifter_M2,card,purchasable,Transporter,yes,M2_Hercules.glb,94
+M50,Origin Jumpworks,141,ORIG_m50,card,purchasable,Competition,yes,M50.glb,11.5
+M80,Origin Jumpworks,225,ORIG_m80,card,pledge_only,Combat,yes,M80.glb,11.5
+MDC,Greycat Industrial,94,GRIN_MDC,card,purchasable,Ground,yes,MDC.glb,8.75
+MOLE,Argo Astronautics,47,ARGO_MOLE,card,purchasable,Industrial,yes,MOLE.glb,45
+MOTH,Argo Astronautics,48,(none),card,purchasable,,no,,
+MPUV Cargo,Argo Astronautics,49,ARGO_MPUV,card,purchasable,Transporter,yes,MPUV_Cargo.glb,10.5
+MPUV Personnel,Argo Astronautics,50,ARGO_MPUV_Transport,card,purchasable,Transporter,yes,MPUV_Personnel.glb,10.5
+MPUV Tractor,Argo Astronautics,51,ARGO_MPUV_1T,card,purchasable,Transporter,yes,MPUV_Tractor.glb,10.5
+MTC,Greycat Industrial,95,GRIN_MTC,card,purchasable,Ground,yes,MTC.glb,8.75
+Mantis,Roberts Space Industries,157,RSI_Mantis,card,purchasable,Combat,yes,Mantis.glb,30
+Merchantman,Banu (Souli),186,(none),card,pledge_only,,yes,,
+Mercury Star Runner,Crusader Industries,69,CRUS_Star_Runner,card,purchasable,Transporter,yes,Mercury.glb,55
+Meteor,Roberts Space Industries,158,RSI_Meteor,card,purchasable,Combat,yes,Meteor.glb,30
+Mule,Drake Interplanetary,84,DRAK_Mule,card,purchasable,Transporter,yes,Mule.glb,8.75
+Mustang Alpha,Consolidated Outland,56,CNOU_Mustang_Alpha,card,purchasable,Multi-Role,yes,Mustang_Alpha.glb,21.5
+Mustang Alpha Vindicator,Consolidated Outland,249,(none),card,pledge_only,,yes,,
+Mustang Beta,Consolidated Outland,57,CNOU_Mustang_Beta,card,purchasable,Exploration,yes,Mustang_Beta.glb,21.5
+Mustang Delta,Consolidated Outland,58,CNOU_Mustang_Delta,card,purchasable,Combat,yes,Mustang_Delta.glb,21.5
+Mustang Gamma,Consolidated Outland,59,CNOU_Mustang_Gamma,card,purchasable,Competition,yes,Mustang_Gamma.glb,21.5
+Mustang Omega,Consolidated Outland,250,CNOU_Mustang_Omega,card,pledge_only,Competition,yes,Mustang_Omega.glb,21.5
+Nautilus,Aegis Dynamics,190,(none),card,pledge_only,,yes,,
+Nomad,Consolidated Outland,60,CNOU_Nomad,card,purchasable,Transporter,yes,Nomad.glb,27
+Nova Tank,Tumbril Land Systems,169,TMBL_Nova,card,purchasable,Combat,yes,Nova.glb,20
+Nox,Aopoa,166,XIAN_Nox,card,purchasable,Competition,yes,Nox.glb,5.15
+Odin,Anvil Aerospace,192,(none),card,pledge_only,,yes,,
+Odyssey,MISC,201,(none),card,pledge_only,,yes,,
+Orion,Roberts Space Industries,193,(none),card,pledge_only,,yes,,
+P-52 Merlin,Kruger Intergalactic,101,KRIG_P52_Merlin,card,purchasable,Combat,yes,P-52_Merlin.glb,12
+P-72 Archimedes,Kruger Intergalactic,102,KRIG_P72_Archimedes,card,purchasable,Competition,yes,P-72_Archimedes.glb,12
+P-72 Archimedes Emerald,Kruger Intergalactic,251,KRIG_P72_Archimedes_Emerald,card,pledge_only,Competition,yes,P-72_Archimedes_Emerald.glb,12
+PTV,Greycat Industrial,96,GRIN_PTV,card,purchasable,Transporter,yes,PTV.glb,3.5
+Paladin,Anvil Aerospace,39,ANVL_Paladin,card,purchasable,Gunship,yes,Paladin.glb,53.5
+Perseus,Roberts Space Industries,159,RSI_Perseus,card,purchasable,Combat,yes,Perseus.glb,100
+Pioneer,Consolidated Outland,184,(none),card,pledge_only,,yes,,
+Pitbull,Drake Interplanetary,217,DRAK_Pitbull,card,pledge_only,Snub Fighter,yes,Pitbull.glb,6
+Polaris,Roberts Space Industries,221,RSI_Polaris,card,pledge_only,Combat,yes,Polaris.glb,181
+Prospector,MISC,110,MISC_Prospector,card,purchasable,Industrial,yes,Prospector.glb,26.5
+Prowler,Esperia,87,ESPR_Prowler,card,purchasable,Combat,yes,Prowler.glb,34
+Prowler Utility,Esperia,88,ESPR_Prowler_Utility,card,purchasable,Transporter,yes,Prowler_Utility.glb,34
+Pulse,Mirai,124,MRAI_Pulse,card,purchasable,Combat,yes,Pulse.glb,3.5
+Pulse LX,Mirai,125,MRAI_Pulse_LX,card,purchasable,Combat,yes,Pulse_LX.glb,3.5
+RAFT,Argo Astronautics,52,ARGO_RAFT,card,purchasable,Transporter,yes,RAFT.glb,39.5
+RAPTOR,MISC,215,(none),card,pledge_only,,no,,
+ROC,Greycat Industrial,97,GRIN_ROC,card,purchasable,Industrial,yes,ROC.glb,6
+ROC-DS,Greycat Industrial,98,GRIN_ROC_DS,card,purchasable,Industrial,yes,ROC-DS.glb,6.6
+Railen,Gatac Manufacture,228,GAMA_Railen,card,pledge_only,Transporter,yes,Railen.glb,67
+Ranger CV,Tumbril Land Systems,206,(none),card,pledge_only,,yes,,
+Ranger RC,Tumbril Land Systems,207,(none),card,pledge_only,,yes,,
+Ranger TR,Tumbril Land Systems,208,(none),card,pledge_only,,yes,,
+Razor,Mirai,126,MISC_Razor,card,purchasable,Competition,yes,Razor.glb,12.5
+Razor EX,Mirai,127,MISC_Razor_EX,card,purchasable,Combat,yes,Razor_EX.glb,12.5
+Razor LX,Mirai,128,MISC_Razor_LX,card,purchasable,Competition,yes,Razor_LX.glb,12.5
+Reclaimer,Aegis Dynamics,9,AEGS_Reclaimer,card,purchasable,Industrial,yes,Reclaimer.glb,160
+Redeemer,Aegis Dynamics,10,AEGS_Redeemer,card,purchasable,Combat,yes,Redeemer.glb,51
+Reliant Kore,MISC,111,MISC_Reliant,card,purchasable,Transporter,yes,Reliant_Kore.glb,28.5
+Reliant Mako,MISC,112,MISC_Reliant_Mako,card,purchasable,Support,yes,Reliant_Mako.glb,28.5
+Reliant Sen,MISC,113,MISC_Reliant_Sen,card,purchasable,Industrial,yes,Reliant_Sen.glb,28.5
+Reliant Tana,MISC,114,MISC_Reliant_Tana,card,purchasable,Combat,yes,Reliant_Tana.glb,28.5
+Retaliator,Aegis Dynamics,11,AEGS_Retaliator,card,purchasable,Combat,yes,Retaliator.glb,70.5
+SRV,Argo Astronautics,53,ARGO_SRV,card,purchasable,Support,yes,SRV.glb,31.5
+STV,Greycat Industrial,99,GRIN_STV,card,purchasable,Transporter,yes,STV.glb,8.75
+Sabre,Aegis Dynamics,12,AEGS_Sabre,card,purchasable,Combat,yes,Sabre.glb,24.5
+Sabre Comet,Aegis Dynamics,13,AEGS_Sabre_Comet,card,purchasable,Combat,yes,Sabre_Comet.glb,24.5
+Sabre Firebird,Aegis Dynamics,14,AEGS_Sabre_Firebird,card,purchasable,Combat,yes,Sabre_Firebird.glb,24.5
+Sabre Peregrine,Aegis Dynamics,15,AEGS_Sabre_Peregrine,card,purchasable,Competition,yes,Sabre_Peregrine.glb,24.5
+Sabre Raven,Aegis Dynamics,252,AEGS_Sabre_Raven,card,pledge_only,Combat,yes,Sabre_Raven.glb,24.5
+Salvation,Roberts Space Industries,160,RSI_Salvation,card,purchasable,Industrial,yes,Salvation.glb,14.5
+San'tok.yai,Aopoa,167,XNAA_SanTokYai,card,purchasable,Combat,yes,San_tok.y_i.glb,24
+Scorpius,Roberts Space Industries,161,RSI_Scorpius,card,purchasable,Combat,yes,Scorpius.glb,32
+Scorpius Antares,Roberts Space Industries,171,RSI_Scorpius_Antares,card,purchasable,Combat,yes,Scorpius_Antares.glb,32
+Scythe,Esperia,231,VNCL_Scythe,card,pledge_only,Combat,yes,Scythe.glb,33
+Shiv,Grey's Market,93,GLSN_Shiv,card,purchasable,Combat,yes,Shiv.glb,37.5
+Spartan,Anvil Aerospace,40,ANVL_Spartan,card,purchasable,Combat,yes,Spartan.glb,17
+Starfarer,MISC,115,MISC_Starfarer,card,purchasable,Support,yes,Starfarer.glb,102
+Starfarer Gemini,MISC,116,MISC_Starfarer_Gemini,card,purchasable,Support,yes,Starfarer_Gemini.glb,102
+Starlancer BLD,MISC,209,(none),card,pledge_only,,no,,
+Starlancer MAX,MISC,117,MISC_Starlancer_Max,card,purchasable,Transporter,yes,Starlancer_MAX.glb,90
+Starlancer TAC,MISC,118,MISC_Starlancer_TAC,card,purchasable,Combat,yes,Starlancer_TAC.glb,90
+Starlite,MISC,226,MISC_Starlite,card,pledge_only,Support,yes,Starlite.glb,32
+Stinger,Esperia,89,VNCL_Stinger,card,purchasable,Combat,yes,Stinger.glb,36
+Storm,Tumbril Land Systems,178,TMBL_Storm,card,purchasable,Combat,yes,Storm.glb,10.25
+Storm AA,Tumbril Land Systems,179,TMBL_Storm_AA,card,purchasable,Combat,yes,Storm_AA.glb,10.25
+Syulen,Gatac Manufacture,92,GAMA_Syulen,card,purchasable,Multi-Role,yes,Syulen.glb,28
+Talon,Esperia,90,ESPR_Talon,card,purchasable,Combat,yes,Talon.glb,24
+Talon Shrike,Esperia,91,ESPR_Talon_Shrike,card,purchasable,Combat,yes,Talon_Shrike.glb,24
+Terrapin,Anvil Aerospace,41,ANVL_Terrapin,card,purchasable,Support,yes,Terrapin.glb,20
+Terrapin Medic,Anvil Aerospace,42,ANVL_Terrapin_Medic,card,purchasable,Support,yes,Terrapin_Medic.glb,20
+Tiburon,Aegis Dynamics,220,AEGS_Tiburon,card,pledge_only,Combat,yes,Tiburon.glb,121
+Tyilui,Gatac Manufacture,227,GAMA_Tyilui,card,pledge_only,Transporter,yes,Tyilui.glb,67.25
+UTV,Greycat Industrial,216,GRIN_UTV,card,pledge_only,Transporter,yes,UTV.glb,4
+Ursa,Roberts Space Industries,162,RSI_Ursa_Rover,card,purchasable,Exploration,yes,Ursa.glb,8.75
+Ursa Fortuna,Roberts Space Industries,253,RSI_Ursa_Rover_Emerald,card,pledge_only,Exploration,yes,Ursa_Fortuna.glb,8.75
+Ursa Medivac,Roberts Space Industries,163,RSI_Ursa_Medivac,card,purchasable,Support,yes,Ursa_Medivac.glb,8.75
+Valkyrie,Anvil Aerospace,43,ANVL_Valkyrie,card,purchasable,Combat,yes,Valkyrie.glb,48
+Valkyrie Liberator,Anvil Aerospace,254,(none),FOLDED onto the Valkyrie card as an edition (editions.json),pledge_only,,no,,
+Vanguard Harbinger,Aegis Dynamics,16,AEGS_Vanguard_Harbinger,card,purchasable,Combat,yes,Vanguard_Harbinger.glb,48
+Vanguard Hoplite,Aegis Dynamics,17,AEGS_Vanguard_Hoplite,card,purchasable,Combat,yes,Vanguard_Hoplite.glb,48
+Vanguard Sentinel,Aegis Dynamics,18,AEGS_Vanguard_Sentinel,card,purchasable,Combat,yes,Vanguard_Sentinel.glb,48
+Vanguard Warden,Aegis Dynamics,19,AEGS_Vanguard,card,purchasable,Combat,yes,Vanguard_Warden.glb,48
+Vulcan,Aegis Dynamics,194,(none),card,pledge_only,,yes,,
+Vulture,Drake Interplanetary,85,DRAK_Vulture,card,purchasable,Industrial,yes,Vulture.glb,34
+X1,Origin Jumpworks,142,ORIG_X1,card,purchasable,Exploration,yes,X1.glb,5.19
+X1 Force,Origin Jumpworks,143,ORIG_X1_Force,card,purchasable,Combat,yes,X1_Force.glb,5.19
+X1 Velocity,Origin Jumpworks,144,ORIG_X1_Velocity,card,purchasable,Competition,yes,X1_Velocity.glb,5.19
+Zeus Mk II CL,Roberts Space Industries,164,RSI_Zeus_CL,card,purchasable,Transporter,yes,Zeus_Mk_II_CL.glb,46
+Zeus Mk II ES,Roberts Space Industries,172,RSI_Zeus_ES,card,purchasable,Exploration,yes,Zeus_Mk_II_ES.glb,46
+Zeus Mk II MR,Roberts Space Industries,205,(none),card,pledge_only,,yes,,

@@ -1,0 +1,254 @@
+name,hull,maker,status,career,role,image,pledge,ingame,dealers,dealer_prices,places,length,dims,crew,cargo,rsi,note,edition,hull_id,page,model,markers
+100i,ORIG_100i,Origin Jumpworks,purchasable,Exploration,Exploration,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+125a,ORIG_125a,Origin Jumpworks,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+135c,ORIG_135c,Origin Jumpworks,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+300i,ORIG_300i,Origin Jumpworks,purchasable,Exploration,Multi-role,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+315p,ORIG_315p,Origin Jumpworks,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+325a,ORIG_325a,Origin Jumpworks,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+350r,ORIG_350r,Origin Jumpworks,purchasable,Competition,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+400i,ORIG_400i,Origin Jumpworks,purchasable,Exploration,Exploration,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+600i Explorer,ORIG_600i,Origin Jumpworks,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+600i Touring,ORIG_600i_Touring,Origin Jumpworks,purchasable,Exploration,Touring/Luxury,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+85X,ORIG_85X,Origin Jumpworks,purchasable,Exploration,Touring/Luxury,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+890 Jump,ORIG_890Jump,Origin Jumpworks,purchasable,Exploration,Touring/Luxury,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+A1 Spirit,CRUS_Spirit_A1,Crusader Industries,purchasable,Combat,Bomber,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+A2 Hercules Starlifter,CRUS_Starlifter_A2,Crusader Industries,purchasable,Combat,Bomber,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Apollo Medivac,RSI_Apollo_Medivac,Roberts Space Industries,purchasable,Support,Medical,True,True,True,1,0,1,True,False,True,True,True,True,False,True,True,True,True
+Apollo Triage,RSI_Apollo_Triage,Roberts Space Industries,purchasable,Support,Medical,True,True,True,1,0,1,True,False,True,True,True,True,False,True,True,True,True
+Ares Inferno,CRUS_Starfighter_Inferno,Crusader Industries,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Ares Ion,CRUS_Starfighter_Ion,Crusader Industries,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Arrastra,,Roberts Space Industries,pledge_only,,Mining,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Arrow,ANVL_Arrow,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Asgard,ANVL_Asgard,Anvil Aerospace,purchasable,Combat,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+ATLS,ARGO_ATLS,Argo Astronautics,purchasable,Ground,Ground Vehicle,True,True,True,5,5,5,True,False,True,True,True,False,False,True,True,True,False
+ATLS GEO,ARGO_ATLS_GEO,Argo Astronautics,purchasable,Ground,Mining,True,True,True,5,5,5,True,False,True,True,True,False,False,True,True,True,False
+Aurora CL,RSI_Aurora_GS_CL,Roberts Space Industries,purchasable,Transporter,Cargo,True,False,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Aurora ES,RSI_Aurora_GS_ES,Roberts Space Industries,purchasable,Multi-Role,Exploration,True,False,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Aurora LN,RSI_Aurora_GS_LN,Roberts Space Industries,purchasable,Combat,Fighter,True,False,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Aurora LX,RSI_Aurora_GS_LX,Roberts Space Industries,purchasable,Exploration,Exploration,True,False,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Aurora Mk II,RSI_Aurora_Mk2,Roberts Space Industries,pledge_only,Multi-Role,Multi-role,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Aurora MR,RSI_Aurora_GS_MR,Roberts Space Industries,purchasable,Combat,Fighter,True,False,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Aurora SE,RSI_Aurora_GS_SE,Roberts Space Industries,pledge_only,Combat,Cargo,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,False
+Avenger Stalker,AEGS_Avenger_Stalker,Aegis Dynamics,purchasable,Combat,Fighter,True,True,True,1,1,1,True,False,True,True,True,False,False,True,True,True,True
+Avenger Titan,AEGS_Avenger_Titan,Aegis Dynamics,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Avenger Titan Renegade,AEGS_Avenger_Titan_Renegade,Aegis Dynamics,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Avenger Warlock,AEGS_Avenger_Warlock,Aegis Dynamics,purchasable,Combat,Interdiction,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Ballista,ANVL_Ballista,Anvil Aerospace,purchasable,Combat,Ground Vehicle,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Basher,GLSN_Basher,Grey's Market,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Blade,VNCL_Blade,Esperia,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Buccaneer,DRAK_Buccaneer,Drake Interplanetary,purchasable,Combat,Fighter,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+C1 Spirit,CRUS_Spirit_C1,Crusader Industries,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+C2 Hercules Starlifter,CRUS_Starlifter_C2,Crusader Industries,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+C8 Pisces,ANVL_C8_Pisces,Anvil Aerospace,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+C8R Pisces Rescue,ANVL_C8R_Pisces,Anvil Aerospace,purchasable,Support,Medical,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+C8X Pisces Expedition,ANVL_C8X_Pisces_Expedition,Anvil Aerospace,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Carrack,ANVL_Carrack,Anvil Aerospace,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Caterpillar,DRAK_Caterpillar,Drake Interplanetary,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Centurion,ANVL_Centurion,Anvil Aerospace,purchasable,Combat,Ground Vehicle,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Clipper,DRAK_Clipper,Drake Interplanetary,purchasable,Exploration,Multi-role,True,True,True,3,3,3,True,False,True,True,True,False,False,True,True,True,False
+Constellation Andromeda,RSI_Constellation_Andromeda,Roberts Space Industries,purchasable,Multi-Role,Gunship,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Constellation Aquila,RSI_Constellation_Aquila,Roberts Space Industries,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Constellation Phoenix,RSI_Constellation_Phoenix,Roberts Space Industries,purchasable,Exploration,Touring/Luxury,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Constellation Taurus,RSI_Constellation_Taurus,Roberts Space Industries,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Corsair,DRAK_Corsair,Drake Interplanetary,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Crucible,,Anvil Aerospace,pledge_only,,Support/Repair,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+CSV-FM,,Argo Astronautics,pledge_only,,Multi-role,False,False,False,0,0,0,False,False,False,False,False,True,False,False,False,False,False
+CSV-SM,ARGO_CSV_Cargo,Argo Astronautics,purchasable,Transporter,Cargo,True,True,True,3,3,3,True,False,True,True,True,False,False,True,True,True,False
+Cutlass Black,DRAK_Cutlass_Black,Drake Interplanetary,purchasable,Multi-Role,Fighter,True,True,True,1,1,1,True,False,True,True,True,False,False,True,True,True,True
+Cutlass Blue,DRAK_Cutlass_Blue,Drake Interplanetary,purchasable,Combat,Interdiction,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Cutlass Red,DRAK_Cutlass_Red,Drake Interplanetary,purchasable,Support,Medical,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Cutlass Steel,DRAK_Cutlass_Steel,Drake Interplanetary,purchasable,Combat,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Cutter,DRAK_Cutter,Drake Interplanetary,purchasable,Exploration,Exploration,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Cutter Rambler,DRAK_Cutter_Rambler,Drake Interplanetary,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Cutter Scout,DRAK_Cutter_Scout,Drake Interplanetary,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Cyclone,TMBL_Cyclone,Tumbril Land Systems,purchasable,Combat,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,True,False,True,True,True,False
+Cyclone AA,TMBL_Cyclone_AA,Tumbril Land Systems,purchasable,Combat,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,False
+Cyclone MT,TMBL_Cyclone_MT,Tumbril Land Systems,purchasable,Combat,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Cyclone RC,TMBL_Cyclone_RC,Tumbril Land Systems,purchasable,Competition,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,False
+Cyclone RN,TMBL_Cyclone_RN,Tumbril Land Systems,purchasable,Exploration,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,False
+Cyclone TR,TMBL_Cyclone_TR,Tumbril Land Systems,purchasable,Combat,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Defender,BANU_Defender,Banu (Souli),purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Dragonfly,DRAK_Dragonfly,Drake Interplanetary,purchasable,Competition,Racing,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+E1 Spirit,,Crusader Industries,pledge_only,,Multi-role,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Eclipse,AEGS_Eclipse,Aegis Dynamics,purchasable,Combat,Bomber,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Endeavor,,MISC,pledge_only,,Data,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Expanse,,MISC,pledge_only,,Mining,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+F7C-M Super Hornet Mk I,ANVL_Hornet_F7CM,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+F7C-R Hornet Tracker Mk I,ANVL_Hornet_F7CR,Anvil Aerospace,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+F7C-R Hornet Tracker Mk II,ANVL_Hornet_F7CR_Mk2,Anvil Aerospace,purchasable,Combat,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+F7C-S Hornet Ghost Mk I,ANVL_Hornet_F7CS,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+F7C-S Hornet Ghost Mk II,ANVL_Hornet_F7CS_Mk2,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+F7C Hornet Mk I,ANVL_Hornet_F7C,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+F7C Hornet Mk II,ANVL_Hornet_F7C_Mk2,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,2,1,2,True,False,True,True,True,False,False,True,True,True,True
+F7C Hornet Wildfire Mk I,ANVL_Hornet_F7C_Wildfire,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+F8C Lightning,ANVL_Lightning_F8C,Anvil Aerospace,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Fortune,MISC_Fortune,MISC,purchasable,Industrial,Salvage,True,True,True,3,3,3,True,False,True,True,True,True,False,True,True,True,True
+Freelancer,MISC_Freelancer,MISC,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Freelancer DUR,MISC_Freelancer_DUR,MISC,purchasable,Exploration,Exploration,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Freelancer MAX,MISC_Freelancer_MAX,MISC,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Freelancer MIS,MISC_Freelancer_MIS,MISC,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Fury,MISC_Fury,Mirai,purchasable,Combat,Fighter,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Fury LX,MISC_Fury_LX,Mirai,purchasable,Competition,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Fury MX,MISC_Fury_Miru,Mirai,purchasable,Combat,Bomber,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+G12,,Origin Jumpworks,pledge_only,,Touring/Luxury,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+G12a,,Origin Jumpworks,pledge_only,,Ground Vehicle,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+G12r,,Origin Jumpworks,pledge_only,,Racing,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Galaxy,,Roberts Space Industries,pledge_only,,Multi-role,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Genesis Starliner,,Crusader Industries,pledge_only,,Multi-role,False,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Gladiator,ANVL_Gladiator,Anvil Aerospace,purchasable,Combat,Bomber,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Gladius,AEGS_Gladius,Aegis Dynamics,purchasable,Combat,Fighter,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Gladius Valiant,AEGS_Gladius_Valiant,Aegis Dynamics,purchasable,Combat,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Glaive,VNCL_Glaive,Esperia,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Golem,DRAK_Golem,Drake Interplanetary,purchasable,Industrial,Mining,True,True,True,3,3,3,True,False,True,True,True,True,False,True,True,True,True
+Golem OX,DRAK_Golem_OX,Drake Interplanetary,pledge_only,Industrial,Cargo,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Guardian,MRAI_Guardian,Mirai,purchasable,Combat,Fighter,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Guardian MX,MRAI_Guardian_MX,Mirai,purchasable,Combat,Fighter,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Guardian QI,MRAI_Guardian_QI,Mirai,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Hammerhead,AEGS_Hammerhead,Aegis Dynamics,purchasable,Combat,Gunship,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Hawk,ANVL_Hawk,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Herald,DRAK_Herald,Drake Interplanetary,purchasable,Transporter,Data,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Hermes,RSI_Hermes,Roberts Space Industries,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+HoverQuad,CNOU_HoverQuad,Consolidated Outland,purchasable,Exploration,Ground Vehicle,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Hull A,MISC_Hull_A,MISC,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Hull B,MISC_Hull_B,MISC,pledge_only,Transporter,Cargo,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Hull C,MISC_Hull_C,MISC,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Hull D,,MISC,pledge_only,,Cargo,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Hull E,,MISC,pledge_only,,Cargo,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Hurricane,ANVL_Hurricane,Anvil Aerospace,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Idris-M,AEGS_Idris_M,Aegis Dynamics,pledge_only,Combat,Capital/Multi-crew,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Idris-P,AEGS_Idris_P,Aegis Dynamics,pledge_only,Combat,Capital/Multi-crew,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Intrepid,CRUS_Intrepid,Crusader Industries,purchasable,Starter,Cargo,True,True,True,3,3,3,True,False,True,True,True,False,False,True,True,True,True
+Ironclad,DRAK_Ironclad,Drake Interplanetary,pledge_only,Transporter,Cargo,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Ironclad Assault,DRAK_Ironclad_Assault,Drake Interplanetary,pledge_only,Combat,Cargo,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Javelin,,Aegis Dynamics,pledge_only,,Capital/Multi-crew,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Khartu-al,XIAN_Scout,Aopoa,purchasable,Combat,Fighter,True,False,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Kraken,,Drake Interplanetary,pledge_only,,Capital/Multi-crew,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Kraken Privateer,,Drake Interplanetary,pledge_only,,Capital/Multi-crew,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+L-21 Wolf,KRIG_L21_Wolf,Kruger Intergalactic,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+L-22 Alpha Wolf,KRIG_L22_AlphaWolf,Kruger Intergalactic,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Legionnaire,,Anvil Aerospace,pledge_only,,Multi-role,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Liberator,,Anvil Aerospace,pledge_only,,Cargo,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Lynx,RSI_Lynx,Roberts Space Industries,purchasable,Transporter,Touring/Luxury,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+M2 Hercules Starlifter,CRUS_Starlifter_M2,Crusader Industries,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+M50,ORIG_m50,Origin Jumpworks,purchasable,Competition,Racing,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+M80,ORIG_m80,Origin Jumpworks,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,False
+Mantis,RSI_Mantis,Roberts Space Industries,purchasable,Combat,Interdiction,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+MDC,GRIN_MDC,Greycat Industrial,purchasable,Ground,Ground Vehicle,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,False
+Merchantman,,Banu (Souli),pledge_only,,Cargo,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Mercury Star Runner,CRUS_Star_Runner,Crusader Industries,purchasable,Transporter,Data,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Meteor,RSI_Meteor,Roberts Space Industries,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+MOLE,ARGO_MOLE,Argo Astronautics,purchasable,Industrial,Mining,True,True,True,2,2,2,True,False,True,True,True,True,False,True,True,True,True
+MOTH,,Argo Astronautics,purchasable,,Salvage,False,True,True,1,0,1,False,False,False,False,True,True,False,False,False,False,False
+MPUV Cargo,ARGO_MPUV,Argo Astronautics,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,False
+MPUV Personnel,ARGO_MPUV_Transport,Argo Astronautics,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,False
+MPUV Tractor,ARGO_MPUV_1T,Argo Astronautics,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+MTC,GRIN_MTC,Greycat Industrial,purchasable,Ground,Ground Vehicle,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Mule,DRAK_Mule,Drake Interplanetary,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,False
+Mustang Alpha,CNOU_Mustang_Alpha,Consolidated Outland,purchasable,Multi-Role,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Mustang Beta,CNOU_Mustang_Beta,Consolidated Outland,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Mustang Delta,CNOU_Mustang_Delta,Consolidated Outland,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Mustang Gamma,CNOU_Mustang_Gamma,Consolidated Outland,purchasable,Competition,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Nautilus,,Aegis Dynamics,pledge_only,,Minelayer,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Nomad,CNOU_Nomad,Consolidated Outland,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,True,False,True,True,True,True
+Nova Tank,TMBL_Nova,Tumbril Land Systems,purchasable,Combat,Ground Vehicle,True,False,True,1,0,1,True,False,True,True,True,True,False,True,True,True,True
+Nox,XIAN_Nox,Aopoa,purchasable,Competition,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Odin,,Anvil Aerospace,pledge_only,,Capital/Multi-crew,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Odyssey,,MISC,pledge_only,,Exploration,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Orion,,Roberts Space Industries,pledge_only,,Mining,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+P-52 Merlin,KRIG_P52_Merlin,Kruger Intergalactic,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+P-72 Archimedes,KRIG_P72_Archimedes,Kruger Intergalactic,purchasable,Competition,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Paladin,ANVL_Paladin,Anvil Aerospace,purchasable,Gunship,Gunship,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Perseus,RSI_Perseus,Roberts Space Industries,purchasable,Combat,Gunship,True,True,True,1,0,1,True,False,True,True,True,True,False,True,True,True,True
+Pioneer,,Consolidated Outland,pledge_only,,Multi-role,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Pitbull,DRAK_Pitbull,Drake Interplanetary,pledge_only,Snub Fighter,Fighter,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Polaris,RSI_Polaris,Roberts Space Industries,pledge_only,Combat,Capital/Multi-crew,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Prospector,MISC_Prospector,MISC,purchasable,Industrial,Mining,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Prowler,ESPR_Prowler,Esperia,purchasable,Combat,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Prowler Utility,ESPR_Prowler_Utility,Esperia,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+PTV,GRIN_PTV,Greycat Industrial,purchasable,Transporter,Ground Vehicle,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,False
+Pulse,MRAI_Pulse,Mirai,purchasable,Combat,Racing,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Pulse LX,MRAI_Pulse_LX,Mirai,purchasable,Combat,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+RAFT,ARGO_RAFT,Argo Astronautics,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Railen,GAMA_Railen,Gatac Manufacture,pledge_only,Transporter,Cargo,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Ranger CV,,Tumbril Land Systems,pledge_only,,Ground Vehicle,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Ranger RC,,Tumbril Land Systems,pledge_only,,Racing,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Ranger TR,,Tumbril Land Systems,pledge_only,,Ground Vehicle,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+RAPTOR,,MISC,pledge_only,,Ground Vehicle,False,False,False,0,0,0,False,False,False,False,False,False,False,False,False,False,False
+Razor,MISC_Razor,Mirai,purchasable,Competition,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Razor EX,MISC_Razor_EX,Mirai,purchasable,Combat,Fighter,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Razor LX,MISC_Razor_LX,Mirai,purchasable,Competition,Racing,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Reclaimer,AEGS_Reclaimer,Aegis Dynamics,purchasable,Industrial,Salvage,True,True,True,2,2,2,True,False,True,True,True,True,False,True,True,True,True
+Redeemer,AEGS_Redeemer,Aegis Dynamics,purchasable,Combat,Gunship,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Reliant Kore,MISC_Reliant,MISC,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Reliant Mako,MISC_Reliant_Mako,MISC,purchasable,Support,Data,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Reliant Sen,MISC_Reliant_Sen,MISC,purchasable,Industrial,Data,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Reliant Tana,MISC_Reliant_Tana,MISC,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Retaliator,AEGS_Retaliator,Aegis Dynamics,purchasable,Combat,Gunship,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+ROC,GRIN_ROC,Greycat Industrial,purchasable,Industrial,Mining,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,False
+ROC-DS,GRIN_ROC_DS,Greycat Industrial,purchasable,Industrial,Mining,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,False
+Sabre,AEGS_Sabre,Aegis Dynamics,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Sabre Comet,AEGS_Sabre_Comet,Aegis Dynamics,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Sabre Firebird,AEGS_Sabre_Firebird,Aegis Dynamics,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Sabre Peregrine,AEGS_Sabre_Peregrine,Aegis Dynamics,purchasable,Competition,Racing,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Salvation,RSI_Salvation,Roberts Space Industries,purchasable,Industrial,Salvage,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+San'tok.yai,XNAA_SanTokYai,Aopoa,purchasable,Combat,Fighter,True,False,True,1,0,1,True,False,True,True,True,True,False,True,True,True,True
+Scorpius,RSI_Scorpius,Roberts Space Industries,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Scorpius Antares,RSI_Scorpius_Antares,Roberts Space Industries,purchasable,Combat,Interdiction,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Scythe,VNCL_Scythe,Esperia,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Shiv,GLSN_Shiv,Grey's Market,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Spartan,ANVL_Spartan,Anvil Aerospace,purchasable,Combat,Ground Vehicle,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+SRV,ARGO_SRV,Argo Astronautics,purchasable,Support,Search & Rescue,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Starfarer,MISC_Starfarer,MISC,purchasable,Support,Refuel,True,True,True,2,2,2,True,False,True,True,True,True,False,True,True,True,True
+Starfarer Gemini,MISC_Starfarer_Gemini,MISC,purchasable,Support,Refuel,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Starlancer BLD,,MISC,pledge_only,,Multi-role,False,False,False,0,0,0,False,False,False,False,False,True,False,False,False,False,False
+Starlancer MAX,MISC_Starlancer_Max,MISC,purchasable,Transporter,Cargo,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Starlancer TAC,MISC_Starlancer_TAC,MISC,purchasable,Combat,Gunship,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Starlite,MISC_Starlite,MISC,pledge_only,Support,Refuel,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Stinger,VNCL_Stinger,Esperia,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Storm,TMBL_Storm,Tumbril Land Systems,purchasable,Combat,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Storm AA,TMBL_Storm_AA,Tumbril Land Systems,purchasable,Combat,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+STV,GRIN_STV,Greycat Industrial,purchasable,Transporter,Racing,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,False
+Syulen,GAMA_Syulen,Gatac Manufacture,purchasable,Multi-Role,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Talon,ESPR_Talon,Esperia,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Talon Shrike,ESPR_Talon_Shrike,Esperia,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Terrapin,ANVL_Terrapin,Anvil Aerospace,purchasable,Support,Exploration,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Terrapin Medic,ANVL_Terrapin_Medic,Anvil Aerospace,purchasable,Support,Medical,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Tiburon,AEGS_Tiburon,Aegis Dynamics,pledge_only,Combat,Gunship,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Tyilui,GAMA_Tyilui,Gatac Manufacture,pledge_only,Transporter,Capital/Multi-crew,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,True
+Ursa,RSI_Ursa_Rover,Roberts Space Industries,purchasable,Exploration,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Ursa Medivac,RSI_Ursa_Medivac,Roberts Space Industries,purchasable,Support,Medical,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+UTV,GRIN_UTV,Greycat Industrial,pledge_only,Transporter,Ground Vehicle,True,True,False,0,0,0,True,False,True,True,True,True,False,True,True,True,False
+Valkyrie,ANVL_Valkyrie,Anvil Aerospace,purchasable,Combat,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,True,True,True,True,True
+Vanguard Harbinger,AEGS_Vanguard_Harbinger,Aegis Dynamics,purchasable,Combat,Bomber,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Vanguard Hoplite,AEGS_Vanguard_Hoplite,Aegis Dynamics,purchasable,Combat,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Vanguard Sentinel,AEGS_Vanguard_Sentinel,Aegis Dynamics,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Vanguard Warden,AEGS_Vanguard,Aegis Dynamics,purchasable,Combat,Fighter,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Vulcan,,Aegis Dynamics,pledge_only,,Support/Repair,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+Vulture,DRAK_Vulture,Drake Interplanetary,purchasable,Industrial,Salvage,True,True,True,3,3,3,True,False,True,True,True,True,False,True,True,True,True
+X1,ORIG_X1,Origin Jumpworks,purchasable,Exploration,Ground Vehicle,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+X1 Force,ORIG_X1_Force,Origin Jumpworks,purchasable,Combat,Ground Vehicle,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+X1 Velocity,ORIG_X1_Velocity,Origin Jumpworks,purchasable,Competition,Racing,True,True,True,2,2,2,True,False,True,True,True,False,False,True,True,True,True
+Zeus Mk II CL,RSI_Zeus_CL,Roberts Space Industries,purchasable,Transporter,Cargo,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Zeus Mk II ES,RSI_Zeus_ES,Roberts Space Industries,purchasable,Exploration,Exploration,True,True,True,1,0,1,True,False,True,True,True,False,False,True,True,True,True
+Zeus Mk II MR,,Roberts Space Industries,pledge_only,,Interdiction,True,True,False,0,0,0,False,False,False,False,True,True,False,False,False,False,False
+600i Executive Edition,ORIG_600i_Executive_Edition,Origin Jumpworks,pledge_only,Exploration,Exploration,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+ATLS GEO IKTI,ARGO_ATLS_GEO_IKTI,Argo Astronautics,pledge_only,Ground,Mining,True,False,False,0,0,0,True,False,True,True,False,True,False,True,True,True,False
+ATLS IKTI,ARGO_ATLS_IKTI,Argo Astronautics,pledge_only,Ground,Ground Vehicle,True,False,False,0,0,0,True,False,True,True,False,True,False,True,True,True,False
+ATLS IKTI RAD,ARGO_ATLS_IKTI_ARGOS,Argo Astronautics,pledge_only,Ground,Ground Vehicle,True,False,False,0,0,0,True,False,True,True,False,True,False,True,True,True,False
+Ballista Dunestalker,ANVL_Ballista_Dunestalker,Anvil Aerospace,pledge_only,Combat,Ground Vehicle,True,False,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+Ballista Snowblind,ANVL_Ballista_Snowblind,Anvil Aerospace,pledge_only,Combat,Ground Vehicle,True,False,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+Carrack Expedition,ANVL_Carrack_Expedition,Anvil Aerospace,pledge_only,Exploration,Exploration,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+Constellation Phoenix Emerald,RSI_Constellation_Phoenix_Emerald,Roberts Space Industries,pledge_only,Exploration,Touring/Luxury,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+F7A Hornet Mk I,ANVL_Hornet_F7A_Mk1,Anvil Aerospace,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+F7A Hornet Mk II,ANVL_Hornet_F7A_Mk2,Anvil Aerospace,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+F7C-M Hornet Heartseeker Mk II,ANVL_Hornet_F7CM_Mk2_Heartseeker,Anvil Aerospace,pledge_only,Combat,Fighter,False,True,False,0,0,0,True,False,True,True,False,True,False,True,True,False,False
+F7C-M Super Hornet Heartseeker Mk I,,Anvil Aerospace,pledge_only,,Fighter,True,True,False,0,0,0,False,False,False,False,False,True,False,False,False,False,False
+F7C-M Super Hornet Mk II,ANVL_Hornet_F7CM_Mk2,Anvil Aerospace,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+F8C Lightning Executive Edition,ANVL_Lightning_F8C_Exec,Anvil Aerospace,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+Gladius Dunlevy,AEGS_Gladius_Dunlevy,Aegis Dynamics,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,False,False
+Gladius Pirate,AEGS_Gladius_PIR,Aegis Dynamics,pledge_only,Combat,Fighter,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+Mustang Alpha Vindicator,,Consolidated Outland,pledge_only,,Cargo,True,True,False,0,0,0,False,False,False,False,False,True,False,False,False,False,False
+Mustang Omega,CNOU_Mustang_Omega,Consolidated Outland,pledge_only,Competition,Racing,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+P-72 Archimedes Emerald,KRIG_P72_Archimedes_Emerald,Kruger Intergalactic,pledge_only,Competition,Racing,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+Sabre Raven,AEGS_Sabre_Raven,Aegis Dynamics,pledge_only,Combat,Interdiction,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
+Ursa Fortuna,RSI_Ursa_Rover_Emerald,Roberts Space Industries,pledge_only,Exploration,Ground Vehicle,True,True,False,0,0,0,True,False,True,True,False,True,False,True,True,True,True
