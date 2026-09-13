@@ -39,7 +39,9 @@ batch, its id and the `--until` it was cut at; a bulk batch is committed only by
 
 Every run but the dry run writes logs/mail_commit.json: when, the state
 (committed / nothing-new / index-busy / bulk / refused-outside / refused-by-guard
-/ git-failed), the count, the batch id, the hash or the reason. A run that could
+/ git-busy / git-failed), the count, the batch id, the hash or the reason.
+index-busy is another writer's STAGED paths; git-busy is another git process
+holding `.git/index.lock` - both leave the index as found and retry next hour. A run that could
 not look says so; it is never written as zero.
 
 Rule 15: every text open states encoding="utf-8"; git output is decoded as utf-8.
@@ -202,6 +204,16 @@ def _paths(paths):
     return b"\0".join(p.encode("utf-8") for p in paths)
 
 
+def _busy(r):
+    """`git-busy` when git refused because another git process holds the index lock.
+
+    Not a guard refusal and not a failure: git's own lock made the second writer
+    stop, exactly as the proposal's rule 14 section says, and the beat retries next
+    hour. Named for what it is (Architecture, 2026-09-13, after one was labelled
+    refused-by-guard at 15:07:16). Matched on git's own message, exactly."""
+    return "git-busy" if "index.lock" in _text(r.stderr) + _text(r.stdout) else None
+
+
 def commit(root, p):
     """Stage exactly the batch, commit through the real hook. -> (state, hash_or_reason)."""
     paths = p["batch"]
@@ -210,7 +222,7 @@ def commit(root, p):
     if add.returncode != 0:
         git(root, ["--literal-pathspecs", "reset", "-q", "--pathspec-from-file=-",
                    "--pathspec-file-nul"], _paths(paths))
-        return "git-failed", "git add exit %d: %s" % (add.returncode, _text(add.stderr)[:200])
+        return (_busy(add) or "git-failed"), "git add exit %d: %s" % (add.returncode, _text(add.stderr)[:200])
     corr = sum(1 for x in paths if x.startswith("correspondence/"))
     msg = ("Watcher: commit %d filed letter(s) and archived update(s)\n\n"
            "correspondence/ %d, docs/handoff_archive/ %d. Batch %s, filed up to %s.\n"
@@ -223,8 +235,8 @@ def commit(root, p):
                    "--pathspec-file-nul"], _paths(paths))
         why = (_text(c.stderr) or _text(c.stdout)).splitlines()
         left = staged(root)
-        return "refused-by-guard", ("commit exit %d: %s; our paths unstaged, %d left staged"
-                                    % (c.returncode, " | ".join(why[-3:])[:300], len(left)))
+        return (_busy(c) or "refused-by-guard"), ("commit exit %d: %s; our paths unstaged, %d left staged"
+                                                  % (c.returncode, " | ".join(why[-3:])[:300], len(left)))
     h = git(root, ["rev-parse", "HEAD"])
     return "committed", _text(h.stdout)
 
@@ -437,6 +449,15 @@ def self_test():
         with io.open(hook, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(real_hook)
 
+        # 16: another git process holds the index lock -> git-busy, nothing staged or committed
+        lock = os.path.join(repo, ".git", "index.lock")
+        with open(lock, "wb"):
+            pass
+        rc, rec = run(repo, NOW, "commit")
+        os.remove(lock)
+        check(rec["state"] == "git-busy" and rc == 0 and head() == h1 and not staged(repo),
+              "16 a held index.lock is git-busy (not a guard refusal), and nothing is staged")
+
         # 7, 12, 13, 14
         put("correspondence/answered/m.md")
         filed("11:12:00", "correspondence/open/build/m.md")
@@ -488,7 +509,7 @@ def self_test():
 
     caught, total = sum(results), len(results)
     print("\n%d of %d cases landed." % (caught, total))
-    if caught != total or total < 19:
+    if caught != total or total < 20:
         print("SELF-TEST FAILED - this committer must not be trusted.")
         return 3
     print("SELF-TEST PASSED. Exiting NON-ZERO on purpose: the suite requires a "
