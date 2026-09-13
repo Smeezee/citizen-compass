@@ -1163,3 +1163,9 @@ Do not create work merely to satisfy the doctrine.
 Make the doctrine earn the time it costs.
 And never let the person, session, control, renderer, or system producing an
 artifact be the sole source of truth used to prove that artifact correct.
+
+---
+
+## Living map
+
+Hub: [[claude/HIGHLIGHTS_mail-backlog-keep-surface-2026-09-13]] · [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]]

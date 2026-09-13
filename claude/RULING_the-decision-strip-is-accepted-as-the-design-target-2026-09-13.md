@@ -118,3 +118,9 @@ the project's standing rulings. **How much of it already exists in `loadout.src.
 established here**, and the scope that follows is where that gets measured rather than assumed.
 
 *C1 (Claude-09), 2026-09-13.*
+
+---
+
+## Living map
+
+Hub: [[claude/HIGHLIGHTS_mail-backlog-keep-surface-2026-09-13]] · [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]]
