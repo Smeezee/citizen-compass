@@ -183,6 +183,49 @@
      36    routable. It was 35 at 04:06, and this proposal added 2, so one
            earlier row no longer appears. WHICH ONE WAS NOT CHECKED.
 
+---
+
+## AMENDMENT 2, 2026-09-13 (clock read at 08:20:38) - B2 ROUTES BY DECLARATION, AND IT IS A LOOP
+
+**Ruled in `..._four-rulings-owners-parser-routing-basis-readme-wording-and-the-b1-headline.md`, item 2. It supersedes section 2's Q2 and amendment 1's point 2.**
+
+- **B2 does NOT route by `OWNERS.md`.**
+  - `OWNERS.md` answers who MAY WRITE a path, which is a permission.
+  - B2 needs who WROTE a document, which is provenance.
+  - They are different questions.
+- **The routing basis is the document's own declaration,** read by exactly the reader built for the query:
+  - a `from` header block
+  - a `From:` line
+  - a `*Desk, date*` signature
+  - a `**Desk, date` byline, **excluding** a quoted ruling (the NEXT.md case)
+- **Nothing is inferred.** No form matched means UNDETERMINED. Two writers matched means AMBIGUOUS, and both are named (rule 19).
+
+      declared writer    ->  tray
+      Build / Code       ->  build
+      C1 / Architecture  ->  architecture
+      Design             ->  design
+      Research           ->  research
+      Audit              ->  audit
+      Owner / Sleven     ->  architecture   (never owner - your constraint stands)
+      UNDETERMINED       ->  architecture, labelled undetermined, COUNTED SEPARATELY
+      AMBIGUOUS          ->  architecture, both writers named, counted separately
+
+- **The project-store kind still goes to Architecture,** whoever wrote the citing document. Only C1 can open the store.
+- **So B2 IS a loop, not a to-do list.** Today's rows would reach build (13), design (1) and architecture (5 declared C1, plus 17 undetermined, each counted apart).
+- **Letters are still never filed.** The 21 inside letters are "unfixable by design", and B1's own headline now says so.
+- **The reader's forms go in `checks/record_router.py` as a stated table, with a drift check.** A declared desk name with no tray row fails the self-test, the same way the old table did.
+- **Self-test plants 2, 3 and 4 change:**
+  - (2) a document declaring `from Build (Code)` goes to build
+  - (3) a document with no declaration goes to architecture, labelled undetermined
+  - (4) a document declaring Owner goes to architecture, never owner
+- **New plants:**
+  - (15) a quoted `**Sleven, date` ruling is not a declaration
+  - (16) two declared writers are AMBIGUOUS
+- **New mutations:** the quoted-ruling exclusion removed, and ambiguity resolved by picking.
+- **`--dry-run` only. Real filing waits on Architecture's word after it has seen a dry run.** Unchanged.
+
+*Build (Code), 2026-09-13.*
+
 - **The answer: a real share is others'. At least 14 of 36 (39%) sit in documents another desk declares it wrote, 13 of them Build's.**
 - By your own fork, that makes **`OWNERS.md` too coarse to route by, which is a finding about `OWNERS.md` and not about B2.** Today `OWNERS.md` routes all 14 to you: `claude/` has no entries.
 - **Two of the 36 are in this proposal, and both are forward references,** not mistakes: `checks/record_router.py` (the file B2 will be) and `claude/RECORD-AUDIT-DISPOSITIONS.md` (the ruled ledger, not yet created). **B1 flagging them is correct.** They resolve when each file exists.
