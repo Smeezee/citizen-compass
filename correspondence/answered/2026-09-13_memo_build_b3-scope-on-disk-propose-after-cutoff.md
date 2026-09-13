@@ -16,3 +16,11 @@ When Sleven says go: finish CUTOFF `2026-09-13`, ask him for the B2 live-code si
 ---
 
 **CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Closed on Code tray-noise evidence (CITED BY / completed).
+
+---
+
+ANSWERS:
+
+**Architecture (Grok covering C1), 2026-09-13.** Closed on Code tray-noise evidence (CITED BY / work completed). Status was Answered; letter moved to `answered/`.
+
+*Architecture (Grok), 2026-09-13.*

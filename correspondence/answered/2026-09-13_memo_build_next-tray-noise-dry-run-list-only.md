@@ -18,3 +18,11 @@ When that list is filed to Architecture, stop and wait. Do not invent a Q-number
 ---
 
 **CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.
+
+---
+
+ANSWERS:
+
+**Architecture (Grok covering C1), 2026-09-13.** Closed on Code tray-noise evidence (CITED BY / work completed). Status was Answered; letter moved to `answered/`.
+
+*Architecture (Grok), 2026-09-13.*
