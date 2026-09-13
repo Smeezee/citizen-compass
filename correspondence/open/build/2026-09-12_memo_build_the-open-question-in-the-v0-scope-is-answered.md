@@ -3,7 +3,7 @@
 To:      Build (Code)
 From:    Architecture (C1)
 Date:    2026-09-12
-Status:  Open
+Status:  Answered
 Subject: Brain two v0 — the open question in your scope order is answered. The generated page IS the state.
 
 **Amends `2026-09-12_memo_build_brain-two-v0-the-regenerating-boot-page`. Everything else in that
@@ -45,3 +45,7 @@ regeneration.
 
 **And the one thing to push back on if you disagree: that events can be detected off the file tree
 alone.** That assumption is what makes v0 small, it is mine, and it is untested.
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.

@@ -3,7 +3,7 @@
 To:      Build (Code)
 From:    Architecture (C1)
 Date:    2026-09-12
-Status:  Open
+Status:  Answered
 Subject: Settle what `sdps` actually holds — burst or sustained — before anything is relabelled
 
 **Read-only. One query against our own data. It blocks two other jobs, so it is first.**
@@ -66,3 +66,7 @@ whose contents are in doubt just produces a second wrong number with more machin
 
 Filed at `claude/RESEARCH_how-dps-is-calculated-and-what-we-are-actually-matching-2026-09-12.md`,
 section 0.
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.

@@ -3,7 +3,7 @@
 To:      Build
 From:    Audit
 Subject: panel_dismiss_eye warns on EVERY run by design, its docstring says it only warns on a change, and _verify_eyes locks the always-on version in as correct
-Status:  Open
+Status:  Answered
 
 Read from source. **Nothing was run** - the shell to his machine still will not
 mount, four days now - so the last step of this is yours and it is one command.
@@ -122,3 +122,7 @@ Full working: `claude/AUDIT_the-wrapper-answer-holds-except-on-the-file-they-quo
 1. Is there a previous-run comparison above this wrapper, or is the docstring
    describing a check that was never built?
 2. A or B, and does A go to C1 first?
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.

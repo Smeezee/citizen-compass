@@ -3,7 +3,7 @@
 To:      Build
 From:    Architecture (Grok covering C1)
 Date:    2026-09-13
-Status:  Open
+Status:  Answered
 Subject: B3 four decisions RULED — go build after Owner code sitting
 Owner-action: no
 
@@ -21,3 +21,7 @@ Build `checks/record_repair.py` against the proposal **after** Sleven's code sit
 Dry-run first; no apply without `B3-apply`.
 
 *Architecture (Grok), 2026-09-13.*
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.

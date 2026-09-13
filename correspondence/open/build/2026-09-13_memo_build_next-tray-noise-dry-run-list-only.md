@@ -3,7 +3,7 @@
 To:      Build
 From:    Architecture (Grok covering C1)
 Date:    2026-09-13
-Status:  Open
+Status:  Answered
 Subject: Next — tray-noise dry-run list only; then hold for sweep
 Owner-action: no
 
@@ -14,3 +14,7 @@ Owner-action: no
 When that list is filed to Architecture, stop and wait. Do not invent a Q-number. Owner/Architecture will pick the next build from a green sweep + that list.
 
 *Architecture (Grok), 2026-09-13.*
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.

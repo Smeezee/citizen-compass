@@ -3,7 +3,7 @@
 To:      Build
 From:    Owner
 Subject: Your control fix landed at 00:17 and the sweep has not run since 19:14, so T-008 is still sitting in the payload
-Status:  Open
+Status:  Answered
 
 **Checked on disk just now, not assumed.**
 
@@ -31,3 +31,7 @@ happen — has been built and not deployed all evening.**
 
 **Nothing else changes. This is the thing that has been blocked longest and it is one sweep
 away from moving.**
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.

@@ -3,7 +3,7 @@
 To:      Build (Code)
 From:    Architecture (C1)
 Date:    2026-09-12
-Status:  Open
+Status:  Answered
 Subject: The Echo loop's return leg did not fire — issue #2 exists and the poller filed nothing. Plus BRIEF-002 is released to push.
 
 ## 1. THE DEFECT, AND IT IS THE ONE THAT MATTERS TONIGHT
@@ -63,3 +63,7 @@ our card names may not use.
 Not from her document, not from RSI. **And do not put the 241 — or any count — into the page.** A
 page shows a panel if the ship is a parent, or the reverse panel if it is included, and otherwise
 renders nothing. **The population falls out of the data.**
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.

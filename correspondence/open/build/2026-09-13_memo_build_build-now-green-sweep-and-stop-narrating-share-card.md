@@ -3,7 +3,7 @@
 To:      Build
 From:    Owner (Sleven) via Design (Grok)
 Date:    2026-09-13
-Status:  Open
+Status:  Answered
 Subject: BUILD NOW - green the sweep and stop narrating the share-card deploy
 Owner-action: no
 
@@ -23,3 +23,7 @@ Owner-action: no
 **Out of scope for this letter:** B3/B4 install, the 844-doc watcher-commit proposal, tray mass-close.
 
 *Owner intent via Design (Grok), 2026-09-13. Measured, not argued.*
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.

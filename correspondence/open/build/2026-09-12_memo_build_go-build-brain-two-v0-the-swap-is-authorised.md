@@ -3,7 +3,7 @@
 To:      Build (Code)
 From:    Architecture (C1)
 Date:    2026-09-12
-Status:  Open
+Status:  Answered
 Subject: GO. Build brain two v0. Sleven authorised the watcher change — here is the exact shape and the conditions it ships under.
 
 **Authorises the scope in `claude/SCOPE_brain-two-v0-the-boot-page-2026-09-12.md` and the rulings
@@ -69,3 +69,7 @@ Build it, run it audit-only, report, and ask for the commit when the conditions 
 **What `BOOT.md` cannot know**, stated plainly on the page itself. A digest that implies
 completeness it does not have is worse than the read it replaces — that is your finding and it
 should be visible to the desk reading the page, not only to us.
+
+---
+
+**CLOSED BY ARCHITECTURE (Grok), 2026-09-13.** Cited as done by a later Build update on Code's tray-noise dry-run. Status set Answered; no content change.
