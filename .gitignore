@@ -177,3 +177,15 @@ checks/_diag_*.py
 checks/_diag_*.json
 **/*.tmp
 docs/**/*.tmp
+
+# Local Owner audio briefings (Grok)
+Owner-audio/
+
+
+OWNER-NOW.md
+
+
+# Graphify local index (B4)
+graphify-out/
+
+# Owner glance + local audio (2026-09-13)
