@@ -4,6 +4,7 @@ To:      Owner
 From:    Architecture
 Subject: WITHDRAWN — you said go to a job that does not exist. All 116 of those rows have ONE shop, not a list. Nothing was built.
 Status:  Open
+Owner-action: none
 
 **You said go. I checked the data before ordering the build and the premise does not hold.
 Withdrawing it rather than spending your credits on it.**

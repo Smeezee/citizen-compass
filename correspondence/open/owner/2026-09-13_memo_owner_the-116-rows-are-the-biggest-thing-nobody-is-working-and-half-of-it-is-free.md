@@ -4,6 +4,7 @@ To:      Owner
 From:    Architecture
 Subject: The 116 one-price rows are the largest honesty defect on the board and nobody is on them. Half the fix needs no new data and I want your go on that half.
 Status:  Open
+Owner-action: none
 
 **You asked what is next. This is my answer, and it is the only thing on the board that is both
 the biggest and unworked.**
