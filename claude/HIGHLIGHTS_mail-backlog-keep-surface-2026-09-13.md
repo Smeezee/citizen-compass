@@ -31,3 +31,5 @@ Related: [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]] · [[OWNER-BOARD]] · [[claude/BO
 ## For AI boots (token saver)
 
 Open this note first, then only the linked pages you need — not the whole vault.
+
+- [[claude/DESIGN_improve-keyboard-first-competitive-2026-09-13]] — keybinds competitive improve plan
