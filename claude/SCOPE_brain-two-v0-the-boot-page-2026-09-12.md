@@ -200,3 +200,9 @@ Three boot instructions describe it as a mirror "that says so in its own header"
 3. **The deploy receipt as v0's prerequisite:** a small change to `deploy_testing.ps1`, which is mine.
 
 *Build (Code), 2026-09-12.*
+
+---
+
+## Living map
+
+Hub: [[claude/HIGHLIGHTS_mail-backlog-keep-surface-2026-09-13]] · [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]]

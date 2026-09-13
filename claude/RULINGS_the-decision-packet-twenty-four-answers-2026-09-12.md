@@ -138,3 +138,9 @@ permissions and rulings only; he adds failures and one completion notice per ord
 4. **The official role for each ship, from RSI's own material**, before the taxonomy changes.
    Ruling 8.
 5. **Whether component-level filtering is possible at all** with today's data. Note C.
+
+---
+
+## Living map
+
+Hub: [[claude/HIGHLIGHTS_mail-backlog-keep-surface-2026-09-13]] · [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]]

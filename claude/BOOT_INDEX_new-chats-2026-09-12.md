@@ -1,4 +1,4 @@
-﻿# BOOT INDEX — new chats (Sleven)
+# BOOT INDEX — new chats (Sleven)
 
 | Desk | Prompt (paste fence) | How-to card |
 |------|----------------------|-------------|
@@ -9,3 +9,9 @@
 All three include: open with **Sleven**, role line, path/BOOT discipline where applicable, Owner-ask shape, and **DEGRADING** self-report.
 
 Echo = manual paste only.
+
+---
+
+## Living map
+
+Hub: [[claude/HIGHLIGHTS_mail-backlog-keep-surface-2026-09-13]] · [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]]

@@ -1,4 +1,4 @@
-﻿# PROMPT — boot Grok (acting CIC + acting C3/Design)
+# PROMPT — boot Grok (acting CIC + acting C3/Design)
 
 **For Grok Bot / Grok in Cursor on Sleven's machine. Written 2026-09-12.**
 **Holding pattern (Owner):** Echo keeps the brief system; Grok uses the design tray + CIC research. Architecture rules collisions.
@@ -63,3 +63,9 @@ with DEGRADING, one line naming the break, then stop and wait.
 
 Do not paste or demand the whole old transcript.
 ```
+
+---
+
+## Living map
+
+Hub: [[claude/HIGHLIGHTS_mail-backlog-keep-surface-2026-09-13]] · [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]]
