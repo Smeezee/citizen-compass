@@ -83,3 +83,16 @@ Press-to-find is **table stakes** (Star Binder already has Finder).
 - https://www.rewasd.com/ ; Steam Input action layers
 
 *Grok (Design / Architecture cover), 2026-09-13.*
+
+## Addendum — deeper pass 2026-09-13
+
+Full research copy: `_work/KEYBIND_COMPETITIVE_2026-09-13.md`
+
+**Extra P0 (keep C3 look):**
+- Finder mode toggle (press → filter board) — required, not unique
+- Conflict gate before steal
+- “What you changed” strip + per-line Undo
+- Rebind by press with on-screen Cancel
+- Export helper (mappings path + `pp_RebindKeys` snippet)
+- Light modifier keys when that layer is active
+- Essentials (~40) as default highlight depth
