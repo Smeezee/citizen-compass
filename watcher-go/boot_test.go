@@ -105,6 +105,7 @@ func bootTree(t *testing.T) string {
 	bootPut(t, r, "claude/FINDING_gamma-2026-09-12.md", "# finding\n")
 	bootPut(t, r, "OWNERS.md", "# OWNERS\n\n## C1 - Cowork.\n\n## CODE - Claude Code.\n\n## SLEVEN - his alone.\n")
 	bootPut(t, r, "testing/_src/next.src.html", `<html><script>const DATA={"ships":[{"n":"a"},{"n":"b"},{"n":"c"}]};</script></html>`)
+	bootPut(t, r, "logs/uncommitted.json", `{"at":"2026-09-12T22:55:00","state":"ok","outside_doc_set":7,"outside_oldest":"2026-09-01T10:00:00","doc_set":3,"doc_set_oldest":"2026-09-02T10:00:00"}`)
 	return r
 }
 
@@ -131,6 +132,9 @@ func TestBootEverySourceMovesThePage(t *testing.T) {
 		{"a finding", func(t *testing.T, r string) { bootPut(t, r, "claude/FINDING_planted-2026-09-12.md", "x") }, "FINDING_planted"},
 		{"OWNERS.md", func(t *testing.T, r string) { bootEdit(t, r, "OWNERS.md", "## CODE - Claude Code.", "## CODE - Claude Code, PLANTED.") }, "PLANTED"},
 		{"the front page", func(t *testing.T, r string) { bootEdit(t, r, "testing/_src/next.src.html", `{"n":"c"}`, `{"n":"c"},{"n":"d"}`) }, "4 cards"},
+		{"uncommitted receipt", func(t *testing.T, r string) {
+			bootEdit(t, r, "logs/uncommitted.json", `"outside_doc_set":7`, `"outside_doc_set":8`)
+		}, "8 files outside the documentation set"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -157,6 +161,7 @@ func TestBootMissingSourceShowsMissing(t *testing.T) {
 		rel, want, gone string
 	}{
 		{"LIVE.md", "public site    MISSING", "v0.3.9"},
+		{"logs/uncommitted.json", "uncommitted    NOT READ - MISSING", "7 files outside"},
 		{"checks/.last_sweep.json", "last sweep     MISSING", "130 passed"},
 		{"testing/_src/.last_build.json", "last build     MISSING", "status ok"},
 		{"testing/_src/.last_deploy.json", "NOT RECORDED ON DISK", "cfd9544c"},

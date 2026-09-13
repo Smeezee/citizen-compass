@@ -81,6 +81,14 @@ func tickOnce(root string, now time.Time, fetch func(string) (string, error)) er
 	} else {
 		logMsg("beat: desk fetch ran: %s", oneLine(out))
 	}
+	// The uncommitted receipt, BEFORE the page, so the page reads this beat's
+	// number. A failed run does not stop the page: the receipt records its own
+	// did-not-look, and a missing receipt prints NOT READ (boot_uncommitted.go).
+	if rout, rerr := runReceipt(root); rerr != nil {
+		logMsg("beat: uncommitted receipt FAILED (%v): %s", rerr, oneLine(rout))
+	} else {
+		logMsg("beat: %s", oneLine(rout))
+	}
 	if werr := writeBootLocked(root, filepath.Join(root, "BOOT.md"), now); werr != nil {
 		logMsg("beat: BOOT.md could NOT be written: %v", werr)
 		return werr

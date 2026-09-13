@@ -356,6 +356,35 @@ var (
 	reClosedLine  = regexp.MustCompile(`(?im)^\s*(?:\*\*)?CLOSED:`)
 )
 
+// THE STATUS LINE IS REQUIRED, AND ITS VALUE COMES FROM A LIST - 2026-09-12.
+//
+// readMemo defaults a missing Status: to "open", so a letter with no Status line
+// filed silently as if it were open while BOOT.md and every tray control skipped
+// it: 38 such letters across four trays on the night it was measured. The list is
+// the one ON DISK (Open 90, Answered 304, Closed 56) plus Done, which the close rule
+// already accepts - measured, not invented (Architecture's order). BOOT.md reads the
+// same map to count what it could not read, so the two cannot disagree.
+var memoStatusValues = map[string]bool{"open": true, "answered": true, "closed": true, "done": true}
+
+// statusProblem returns why a memo's Status line cannot be filed, or "".
+func statusProblem(text string) string {
+	head := text
+	if len(head) > 4000 {
+		head = head[:4000]
+	}
+	st := reMemoStatus.FindStringSubmatch(head)
+	if st == nil {
+		return "memo with no Status: line - BOOT.md and every tray control would skip it. " +
+			"Add `Status: Open` (or Answered, Closed, Done) under the Subject line and drop it again"
+	}
+	v := strings.TrimSpace(st[1])
+	if !memoStatusValues[strings.ToLower(v)] {
+		return fmt.Sprintf("memo whose Status: is %q - it must be exactly one of Open, Answered, "+
+			"Closed, Done; put any qualification in the body and drop it again", v)
+	}
+	return ""
+}
+
 const closedRecordMin = 20
 
 // closedRecord reports whether a Closed/Done letter carries its record.
@@ -388,6 +417,10 @@ func classifyMemo(path string, text string) (note string, dest string, handled b
 	if !isMemo {
 		return "", "", false, nil
 	}
+	if why := statusProblem(text); why != "" {
+		n, d, e := routeSimple(path, needsReviewDir, why)
+		return n, d, true, e
+	}
 	if m.Status == "closed" || m.Status == "done" {
 		if ok, why := closedRecord(text); !ok {
 			n, d, e := routeSimple(path, needsReviewDir, why)
@@ -397,6 +430,12 @@ func classifyMemo(path string, text string) (note string, dest string, handled b
 	dir, why, ok := memoDestination(m)
 	if !ok {
 		n, d, e := routeSimple(path, needsReviewDir, why)
+		if e == nil {
+			// A refused ANSWER tells the desk that wrote it (memo_bounce_notice.go).
+			// Only after the refusal itself succeeded, and it never changes where
+			// the letter went.
+			n += tellTheAnsweringDesk(m, filepath.Base(path), d, why)
+		}
 		return n, d, true, e
 	}
 	if mkErr := os.MkdirAll(dir, 0o755); mkErr != nil {

@@ -256,6 +256,11 @@ func buildBoot(root string, now time.Time, audit bool) string {
 	}
 	add("")
 
+	// ---- what is uncommitted (Architecture's go, 2026-09-13) --------------------
+	// Read from a receipt, never decided here: see boot_uncommitted.go.
+	add("## WHAT IS UNCOMMITTED", src(bootStat(root, uncommittedRel)), "",
+		bootUncommittedLine(root, now), "")
+
 	// ---- what is open: letters -----------------------------------------------
 	trayRoot := filepath.Join(root, "correspondence", "open")
 	if desks, err := os.ReadDir(trayRoot); err != nil {
@@ -263,9 +268,9 @@ func buildBoot(root string, now time.Time, audit bool) string {
 			"    MISSING - there is no correspondence/open/ folder to read", "")
 	} else {
 		type row struct {
-			desk, newest string
-			open         int
-			when         time.Time
+			desk, newest     string
+			open, unreadable int
+			when             time.Time
 		}
 		var rows []row
 		total := 0
@@ -286,7 +291,13 @@ func buildBoot(root string, now time.Time, audit bool) string {
 					head = head[:4000]
 				}
 				st := reMemoStatus.FindStringSubmatch(head)
-				if st == nil || !strings.EqualFold(strings.TrimSpace(st[1]), "open") {
+				// A letter with no Status: line, or a value outside the router's list, is
+				// COUNTED as unreadable - never silently left out of the sum (2026-09-12).
+				if st == nil || !memoStatusValues[strings.ToLower(strings.TrimSpace(st[1]))] {
+					r.unreadable++
+					continue
+				}
+				if !strings.EqualFold(strings.TrimSpace(st[1]), "open") {
 					continue
 				}
 				r.open++
@@ -298,13 +309,15 @@ func buildBoot(root string, now time.Time, audit bool) string {
 		}
 		add("## WHAT IS OPEN - LETTERS",
 			fmt.Sprintf("source: correspondence/open/*/*.md - the Status: line of each of %d letters", total), "",
-			"    desk          open  newest open letter (age)")
+			"    desk          open  unreadable  newest open letter (age)")
 		for _, r := range rows {
 			nl := "-"
 			if r.newest != "" {
 				nl = fmt.Sprintf("%s (%s)", bootClip(strings.TrimSuffix(r.newest, ".md"), 70), bootAge(now, r.when))
 			}
-			add(fmt.Sprintf("    %-12s %5d  %s", r.desk, r.open, nl))
+			// "unreadable" = no Status: line, or a value outside the router's list; 0 is
+			// printed, never omitted - a set is reported complete or it says what it missed.
+			add(fmt.Sprintf("    %-12s %5d  %10d  %s", r.desk, r.open, r.unreadable, nl))
 		}
 		add("", `    "Open" is each letter's own Status: line. A desk that answers with a NEW letter`,
 			"    leaves the old one reading Open, so these counts are an upper bound, not a to-do list.", "")
