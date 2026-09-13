@@ -85,8 +85,14 @@ SELFTEST = "--self-test" in sys.argv
 PATH = re.compile(r"^\s{4}([A-Za-z0-9_./\\-]+)(?:\s{2,}\S.*)?\s*$")
 # A path followed by ONE space and text: readable by neither shape.
 ONE_SPACE = re.compile(r"^\s{4}([A-Za-z0-9_./\\-]+) \S")
-# Shape (a): only these three headings open an owner section.
-OWNER = re.compile(r"^##\s+(C1|CODE|SLEVEN)\b")
+# Shape (a): only these headings open an owner section - the three desks, and
+# UNOWNED (Architecture, 2026-09-13, `..._the-owners-pass-is-done-re-run-it-and-
+# one-order-for-the-class.md`): "nobody owns this and somebody checked" is an
+# assignment, recorded with the owner value `none`, not an absence. The heading
+# must START with the word, as the other three must; `## THE ELEVEN UNOWNED PATHS`
+# still opens nothing.
+OWNER = re.compile(r"^##\s+(C1|CODE|SLEVEN|UNOWNED)\b")
+NONE = "none"
 # Every other level-two heading closes it. `###` does not match (no space at 3).
 ANY_H2 = re.compile(r"^##\s")
 
@@ -101,7 +107,7 @@ def parse_owners(text):
     for line in text.splitlines():
         if ANY_H2.match(line):
             m = OWNER.match(line)
-            owner = m.group(1) if m else None
+            owner = (NONE if m.group(1) == "UNOWNED" else m.group(1)) if m else None
             continue
         m = PATH.match(line)
         if m and owner and looks_like_path(m.group(1)):
@@ -228,7 +234,7 @@ def _report(dup, missing, only_next, stray, verbose=True):
 
     if verbose:
         print()
-        print("D. EVERY CLAIM IS IN AN OWNER SECTION (## C1 / ## CODE / ## SLEVEN), AND READABLE")
+        print("D. EVERY CLAIM IS IN AN OWNER SECTION (## C1 / ## CODE / ## SLEVEN / ## UNOWNED), AND READABLE")
     if stray:
         ok = False
         if verbose:
@@ -291,6 +297,8 @@ PLANT = """intro line, before any heading
     f/six.md                      claimed here, in prose
     a/one.md                      repeated, and already owned
     fonts
+## UNOWNED — nobody, and somebody checked
+    i/nine.go                     deliberately nobody's
 ## SLEVEN — his alone
     g/seven.md
 """
@@ -316,8 +324,12 @@ def selftest():
     unreadable = [p for _n, _s, p, why in stray if why == "unreadable"]
 
     checks = [
-        ("no heading but the three opens a section (no desk 'THE')",
-         owners == {"C1", "CODE", "SLEVEN"}),
+        ("no heading but the three and UNOWNED opens a section (no desk 'THE')",
+         owners == {"C1", "CODE", "SLEVEN", NONE}),
+        ("a path under ## UNOWNED reads as owned by none, not as stray",
+         ("i/nine.go", NONE) in pairs and "i/nine.go" not in [p for _n, _s, p, _w in stray]),
+        ("a heading that merely CONTAINS 'UNOWNED' is still not a section",
+         "d/four.py" not in paths),
         ("a path with a description after two spaces is parsed",
          "b/two.py" in paths),
         ("a ### subheading does not close the owner section",
@@ -349,6 +361,10 @@ def selftest():
     cases = [
         ("a path claimed by two owners",
          cpairs + [("a/one.md", "CODE")], [], everything, []),
+        ("a path claimed by an owner AND recorded as unowned",
+         cpairs + [("a/one.md", NONE)], [], everything, []),
+        ("an UNOWNED path that does not exist on disk",
+         cpairs + [("i/nine.go", NONE)], [], lambda p: p != "i/nine.go", []),
         ("a path that does not exist on disk",
          cpairs, [], lambda p: p != "e/five.go", []),
         ("a NEXT.md that enumerates paths again",

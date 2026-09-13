@@ -92,6 +92,9 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+from _verify_owners import parse_owners  # noqa: E402  ONE OWNERS PARSER (Architecture, 2026-09-13)
 SRC = os.path.join(ROOT, "testing", "_src")
 
 # Q13: WHO OWNS THE FILE THAT MOVED, read from OWNERS.md.
@@ -111,32 +114,39 @@ SRC = os.path.join(ROOT, "testing", "_src")
 OWNERS_MD = os.path.join(ROOT, "OWNERS.md")
 
 
-def owner_of(rel_path):
-    """The declared owner of a repo-relative path, or None. Never raises."""
-    try:
-        with open(OWNERS_MD, "r", encoding="utf-8") as fh:
-            lines = fh.read().splitlines()
-    except OSError:
-        return None
-    who, best, best_len = None, None, -1
-    for line in lines:
-        if line.startswith("## "):
-            who = line[3:].split()[0].strip().rstrip(".")
-            continue
-        if who and line.startswith("    ") and line.strip():
-            claim = line.strip()
-            if claim.startswith("#") or " " in claim:
-                continue
-            norm = rel_path.replace(os.sep, "/")
-            hit = norm == claim or (claim.endswith("/") and norm.startswith(claim))
-            if hit and len(claim) > best_len:
-                best, best_len = who, len(claim)
+def owner_of(rel_path, text=None):
+    """The declared owner of a repo-relative path, or None. Never raises.
+
+    ONE PARSER: the pairs come from _verify_owners.parse_owners, the parser the
+    owners control holds to its own self-test (Architecture's go, 2026-09-13,
+    `..._go-one-owners-parser-and-unowned-done.md`). This file used to keep its
+    own, which took the first word of ANY `## ` heading as an owner - so
+    `## THE ELEVEN UNOWNED PATHS` was a desk called THE - and skipped every
+    claim that carried a description. The longest matching claim still wins.
+    `text` is for the planted case in section 6; normally OWNERS.md is read.
+    """
+    if text is None:
+        try:
+            with open(OWNERS_MD, "r", encoding="utf-8") as fh:
+                text = fh.read()
+        except OSError:
+            return None
+    norm = rel_path.replace(os.sep, "/")
+    best, best_len = None, -1
+    for claim, who in parse_owners(text):
+        claim = claim.replace("\\", "/")
+        hit = norm == claim or (claim.endswith("/") and norm.startswith(claim))
+        if hit and len(claim) > best_len:
+            best, best_len = who, len(claim)
     return best
 
 
 def owner_note(src_name):
     rel = "testing/_src/" + src_name
     who = owner_of(rel)
+    if who == "none":
+        return ("%s is recorded as owned by NOBODY (## UNOWNED in OWNERS.md) - "
+                "this is a payload behind its source" % rel)
     if who:
         return ("%s is owned by %s - this is a payload behind its source, "
                 "not an unowned write" % (rel, who))
@@ -1624,6 +1634,29 @@ def main():
           and os.stat(victim).st_mtime_ns == original_mtime)
     print("     the planted copies were moved aside to %s, never deleted"
           % os.path.relpath(keep, ROOT))
+
+    print("\n6. WHOSE SOURCE MOVED - READ WITH THE ONE OWNERS PARSER")
+    # A planted manifest, so the answer is known before the parser reads it.
+    planted = ("## C1 — Cowork\n"
+               "    testing/_src/loadout.src.html\n"
+               "    testing/_src/described.src.html   a claim with a description\n"
+               "## THE ELEVEN UNOWNED PATHS, RESOLVED\n"
+               "    testing/_src/prose.src.html\n"
+               "## CODE — Claude Code\n"
+               "    testing/_src/\n"
+               "## UNOWNED — nobody, and somebody checked\n"
+               "    testing/_src/nobody.src.html\n")
+    check("a heading that is not an owner section is no desk: the path falls to "
+          "CODE's folder claim, not to a desk called 'THE'",
+          owner_of("testing/_src/prose.src.html", planted) == "CODE")
+    check("a claim with a description after it is read",
+          owner_of("testing/_src/described.src.html", planted) == "C1")
+    check("the longest claim wins: C1's file inside CODE's folder is C1's",
+          owner_of("testing/_src/loadout.src.html", planted) == "C1")
+    check("a path under ## UNOWNED reads as owned by none",
+          owner_of("testing/_src/nobody.src.html", planted) == "none")
+    check("and the real OWNERS.md gives testing/_src/build_deploy.py to CODE",
+          owner_of("testing/_src/build_deploy.py") == "CODE")
 
     print("\n%d passed, %d failed" % (len(_passed), len(_failed)))
     if _failed:
