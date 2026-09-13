@@ -577,4 +577,5 @@ this repository and this file does not govern it — the company copy carries it
 rule in its own first line: *anyone may add, nothing is removed without saying why.*
 Recorded here so nobody finds the withdrawn exception in the history and applies it
 to a file that no longer needs it.
-
+## DESIGN - visual / mocks (Grok covering Design desk)
+    design/keybindings/                 C3 Keyboard First mock + stick template art; Design sole writer
