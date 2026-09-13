@@ -81,6 +81,13 @@ func tickOnce(root string, now time.Time, fetch func(string) (string, error)) er
 	} else {
 		logMsg("beat: desk fetch ran: %s", oneLine(out))
 	}
+	// The filed-mail commit, at most once an hour (the script keeps the hour),
+	// BEFORE the receipt so the receipt counts what this commit left behind.
+	if mout, merr := runMailCommit(root); merr != nil {
+		logMsg("beat: mail commit FAILED (%v): %s", merr, oneLine(mout))
+	} else {
+		logMsg("beat: %s", oneLine(mout))
+	}
 	// The uncommitted receipt, BEFORE the page, so the page reads this beat's
 	// number. A failed run does not stop the page: the receipt records its own
 	// did-not-look, and a missing receipt prints NOT READ (boot_uncommitted.go).

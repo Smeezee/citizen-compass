@@ -94,7 +94,10 @@ PROCEDURE = os.path.join(CORR, "README.md")
 
 # The date the procedure first documents `Owner-action:`, as YYYY-MM-DD. None
 # until it does - see THE CUTOFF above. Set it once, with the reason beside it.
-CUTOFF = None
+# SET 2026-09-13: correspondence/README.md first declared the field that day, at
+# 12:18:24 in 4510568 (`git log -S`). Ruled by Architecture the same day
+# (`..._cutoff-is-2026-09-13-then-b3-proposal.md`) over 09-12, which was red on 43.
+CUTOFF = "2026-09-13"
 
 # Rule 27 landed in CLAUDE.md on this date. Filename dates are whole days, so a
 # cutoff must be strictly AFTER it to judge only letters written under the rule.

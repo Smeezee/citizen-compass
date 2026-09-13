@@ -3,8 +3,11 @@
 """
 record_router.py - B2, the router. Each actionable B1 gap becomes a letter, through
 inbox/, to the desk that WROTE the document holding it. Answers come back through
-the mail unchanged. DRY RUN ONLY: real filing waits on Architecture's word after it
-has seen a dry run (`..._b2-amendment-2-ruled-run-the-dry-run-and-one-gate-...`).
+the mail unchanged. REAL FILING ENABLED 2026-09-13 on Architecture's word, after the
+dry run and the 56-to-76 gate (`..._three-architecture-rulings-b2-enable-cadence-...`
+and `..._build-now-b2-live-cutoff-boot-uncommitted.md`). It files after every full
+sweep, from the same post-sweep hook as B1 (`record_audit.py --route`), handed B1's
+result in-process so B1 never runs twice. It never gates anything.
 
 RULE16: INDEPENDENT - the routing truth is each document's OWN declaration of who
 wrote it, read by the exact forms below; the gaps come from B1, which reads the
@@ -30,7 +33,7 @@ NEVER TWICE        each row carries `Router-key: <source> | <citation>`. Before 
                    for those lines; a key found anywhere is never filed again. THE
                    MEMORY IS THE MAIL - there is no state file to drift from it.
 WRITES             only inbox/<date>_memo_<tray>_router-....md, and only on a real
-                   run, which is not enabled. It never moves, edits or deletes.
+                   run (--file, or the post-sweep hook). It never moves, edits or deletes.
 
 THE DECLARATION FORMS - exact, and positional so a quoted ruling is not a writer:
     header (first 40 lines)   `from   <Name>, ...`   `From: <Name>`   `**<Name>, 20YY-MM-DD`
@@ -43,7 +46,8 @@ Rule 15: every text open states encoding="utf-8".
 
 Usage:
     python checks/record_router.py              dry run over the real record (default)
-    python checks/record_router.py --file       REFUSED until Architecture enables it
+    python checks/record_router.py --file       real filing, one letter per tray, into inbox/
+    python checks/record_audit.py --route       B1, then B2 filing on its result (the hook)
     python checks/record_router.py --self-test
 """
 import collections
@@ -192,10 +196,12 @@ def compose(tray, rows, when):
          "Status:  Open", "",
          "**Filed by `checks/record_router.py` (B2) from B1's record audit.** Each gap below sits",
          "in a document that declares you wrote it, or is labelled if it does not say.", "",
-         "**Reply on each row with one of:**", "",
-         "    DEFECT        fixed at the source - B1 stops reporting it",
-         "    HISTORY       add a row to claude/RECORD-AUDIT-DISPOSITIONS.md with the exact key",
-         "    MOVED <path>  B3 repoints it on one word", ""]
+         "**Reply under `ANSWERS:`, one line per row, in exactly one of these forms.** B3",
+         "(`checks/record_repair.py`) reads them; anything else is named MALFORMED, never guessed.", "",
+         "    `<source>` | `<token>` | <class> | <note>      HISTORY - class is one of",
+         "                                                   example future absence history fix-pending",
+         "    MOVED `<source>` | `<token>` -> `<new path>`   B3 repoints it, on Architecture's word",
+         "    DEFECT `<source>` | `<token>`                  fixed at the source; B1 stops reporting it", ""]
     for row, label in rows:
         L += ["---", "",
               "    source    %s" % row[0],
@@ -234,29 +240,36 @@ def summary(p):
     print("CANNOT: judge whether a gap matters; route a gap B1 does not find; see the project store.")
 
 
-def main(argv):
-    if "--self-test" in argv:
-        return self_test()
-    if "--file" in argv:
-        print("REFUSED - real filing is not enabled. It waits on Architecture's word after a "
-              "dry run, and on the 56-to-76 gate. Run without --file for the dry run.")
-        return 2
-    missing = drift_check(ROOT)
+def run(res, root, do_file):
+    """Route one B1 result. Writes only when do_file is True. -> exit code."""
+    missing = drift_check(root)
     if missing:
         print("DRIFT - the desk table routes to tray(s) not on disk: %s. Nothing planned." % missing)
         return 1
-    sys.path.insert(0, HERE)
-    import record_audit as ra
-    res = ra.audit(ROOT, links=False)
-    p = plan(res, ROOT)
+    p = plan(res, root)
     summary(p)
     now = time.time()
-    for tray in sorted(p["new"]):
-        name, text = compose(tray, p["new"][tray], now)
-        print("\n" + "=" * 78 + "\nDRY RUN - would file inbox/%s\n" % name + "=" * 78)
-        print(text)
-    print("\nDRY RUN - nothing was written.")
+    letters = [compose(tray, p["new"][tray], now) for tray in sorted(p["new"])]
+    if not do_file:
+        for name, text in letters:
+            print("\n" + "=" * 78 + "\nDRY RUN - would file inbox/%s\n" % name + "=" * 78)
+            print(text)
+        print("\nDRY RUN - nothing was written.")
+        return 0
+    written = file_letters(root, letters)
+    for p_ in written:
+        print("FILED inbox/%s" % os.path.basename(p_))
+    print("B2 router: filed %d letter(s) - %s" % (
+        len(written), ", ".join("%s %d" % (t, len(p["new"][t])) for t in sorted(p["new"])) or "nothing new"))
     return 0
+
+
+def main(argv):
+    if "--self-test" in argv:
+        return self_test()
+    sys.path.insert(0, HERE)
+    import record_audit as ra
+    return run(ra.audit(ROOT, links=False), ROOT, "--file" in argv)
 
 
 # ------------------------------------------------------------------ self-test
@@ -354,9 +367,20 @@ def self_test():
         text = letters[0][1]
         check(all(h in text for h in ("To:", "From:    Build (router)", "Subject:", "Status:  Open",
                                       "Router-key: ")), "   a letter carries To/From/Subject/Status and its keys")
+        check(all(f in text for f in ("`<source>` | `<token>` | <class> | <note>",
+                                      "MOVED `<source>` | `<token>` -> `<new path>`",
+                                      "DEFECT `<source>` | `<token>`")),
+              "19 a letter's reply instructions are B3's three exact forms")
+        check(run(res, root, False) == 0 and _tree_hash(root) == before,
+              "17 run() without --file (the dry run) writes nothing")
         outside = {k: v for k, v in [(d, None) for d in ("correspondence", "claude", "_needs_review")]}
         hashes = {d: _tree_hash(os.path.join(root, d)) for d in outside}
-        file_letters(root, letters)
+        inbox_before = set(os.listdir(os.path.join(root, "inbox")))
+        rc = run(res, root, True)
+        filed = set(os.listdir(os.path.join(root, "inbox"))) - inbox_before
+        check(rc == 0 and len(filed) == len(p["new"])
+              and {n.split("_memo_")[1].split("_")[0] for n in filed} == set(p["new"]),
+              "18 run() with --file writes one letter per tray into inbox/")
         check(all(_tree_hash(os.path.join(root, d)) == hashes[d] for d in outside),
               "   filing writes only into inbox/")
         p2 = plan(res, root)
@@ -371,7 +395,7 @@ def self_test():
 
     caught, total = sum(results), len(results)
     print("\n%d of %d planted cases landed." % (caught, total))
-    if caught != total or total < 16:
+    if caught != total or total < 19:
         print("SELF-TEST FAILED - the router must not be trusted.")
         return 3
     print("SELF-TEST PASSED. Exiting NON-ZERO on purpose: the suite requires a control's "

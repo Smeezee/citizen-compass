@@ -374,6 +374,17 @@ def main(argv):
           % (receipt["findings_routable"], receipt["findings_in_letters_unfixable_by_design"],
              receipt["dispositioned"], receipt["stale_dispositions"],
              receipt["baseline"], res["links"]["sources"], res["links"]["written"], res["seconds"]))
+    # B2 ON THIS RESULT, in-process, so B1 never runs twice (the post-sweep hook passes
+    # --route). The router files letters into inbox/ only; whatever it does, this audit's
+    # report, receipt and exit code are unchanged.
+    if "--route" in argv:
+        try:
+            import record_router
+            rc = record_router.run(res, REPO, True)
+            if rc != 0:
+                print("B2 router: FAILED (exit %d) - the audit is unaffected" % rc)
+        except Exception as exc:                # noqa: BLE001 - reported, never gates
+            print("B2 router: NOT RUN (%s: %s) - the audit is unaffected" % (type(exc).__name__, exc))
     return 0                                    # report only: it never gates
 
 

@@ -103,6 +103,47 @@ import sweep_gate  # noqa: E402  (same directory)
 REPO = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 
 
+# THE WORKING FIGURE. SIXTY MINUTES, AND IT IS A REPORT LINE, NOT A GATE.
+#
+# Sleven set it on 2026-09-08 by refusing to set a real one, and the reason is
+# worth keeping next to the number: the sweep moved 79% in a day - 1,606s over
+# 123 controls to 2,871s over 125 - and nobody noticed, because the receipt
+# recorded a total and nothing else. Any ceiling picked before the composition
+# was known would be "a guess wearing a decision's clothes". 3600 sits above the
+# worst run we have with room to spare, FOR NO BETTER REASON THAN THAT, which is
+# exactly why it is provisional and why it must never stop a deploy.
+#
+# WHY IT IS PRINTED BY THE PROGRAM RATHER THAN REMEMBERED BY A PERSON. The order
+# says "cross it and say so". A human comparing 2,871 against 3,600 at the end of
+# a 48-minute run is precisely the repeatable manual step rule 26 says to remove,
+# and it is the step that already failed once - the 79% move was there to be seen
+# and nobody saw it.
+#
+# ONLY A FULL SWEEP IS JUDGED. A --only run or a --self-test run is a subset by
+# construction; comparing its runtime to a whole-suite figure would be comparing
+# two different things, and the receipt keeps them apart for the same reason.
+SWEEP_WORKING_FIGURE_SECONDS = 3600.0
+
+
+def sweep_runtime_note(elapsed, full=True):
+    """The report line, as a pure function so it can be tested without a sweep.
+
+    Returns the line to print, or None when there is nothing to say. It never
+    decides anything: the caller prints it and the exit code is untouched.
+    """
+    if not full:
+        return None
+    if elapsed <= SWEEP_WORKING_FIGURE_SECONDS:
+        return None
+    over = elapsed - SWEEP_WORKING_FIGURE_SECONDS
+    return ("OVER THE WORKING FIGURE: %.0fs (%.1f min) against %.0fs (%.0f min), "
+            "%.0fs over. REPORTED, NOT GATED - this does not stop a deploy and is "
+            "not a failure. The figure is provisional and the receipt's per-control "
+            "timings are what a real ceiling gets set from."
+            % (elapsed, elapsed / 60.0, SWEEP_WORKING_FIGURE_SECONDS,
+               SWEEP_WORKING_FIGURE_SECONDS / 60.0, over))
+
+
 def discover():
     out = []
     for name in sorted(os.listdir(HERE)):
@@ -133,6 +174,171 @@ def supports_self_test(name):
         return "--self-test" in fh.read()
 
 
+# ---------------------------------------------------------------------------
+# ONE SWEEP AT A TIME, AND IT IS MATCHED ON WHAT A PROCESS EXECUTES.
+#
+# `checks/.last_sweep.json` is a SINGLE RECEIPT and it is what authorises a
+# deploy: `sweep_gate.py` compares the fingerprint in it against the payload
+# about to be uploaded. That protects against a STALE receipt. It does NOT
+# protect against a SECOND SWEEP finishing later and replacing a good receipt
+# with one taken against different bytes - after which the gate would happily
+# pass a payload nothing had swept.
+#
+# That is rule 14, and the artifact is the one that says whether we may ship.
+#
+# THIS IS NOT HYPOTHETICAL. On 2026-09-04 two sweeps ran at once: one started
+# from this repo's venv and one under the system python, seconds apart. The
+# first symptom was a sweep that had been running an hour and fifty minutes
+# where the usual run is fifteen. It was noticed by a human wondering why, not
+# by anything here.
+#
+# NO LOCK FILE. A pid file goes stale the moment a sweep is killed - which is
+# exactly what happened that day, twice - and then either refuses every future
+# sweep or has to be overridden by hand, which teaches everyone to override it.
+# Instead this asks the operating system which processes are running THIS FILE
+# right now. Nothing to leave behind and nothing to clean up.
+#
+# Rule 14's own words: match on what a task EXECUTES rather than what it is
+# called, so it cannot be evaded by invoking a different interpreter or copying
+# the file to a different name.
+#
+# IF THE ENUMERATION ITSELF FAILS it says so LOUDLY and continues, because a
+# sweep that cannot run at all is worse than two that might. It is never
+# silent: "we could not look" and "we looked and it was clear" print
+# differently, which is the distinction this whole suite exists to hold.
+# ---------------------------------------------------------------------------
+def _other_sweeps_running():
+    """Return a list of (pid, cmdline) for OTHER live processes running this
+    file, or None if the question could not be asked."""
+    import os
+    import subprocess
+    me = os.getpid()
+    # MY OWN ANCESTORS ARE NOT ANOTHER SWEEP, AND ON WINDOWS THERE ARE ALWAYS
+    # SEVERAL. `venv\Scripts\python.exe` is a LAUNCHER: it spawns the real
+    # interpreter as a child, so os.getpid() is the child and the venv process
+    # is its parent. Every sweep therefore shows up as TWO python processes -
+    # one under the venv path, one under the base install - plus the shell that
+    # typed the command, whose command line also carries the file name.
+    #
+    # This is not a detail. On 2026-09-04 I read exactly that pair - same
+    # second, one venv and one "system" - as two sessions sweeping at once, and
+    # reported it as a collision. It was one sweep wearing two pids.
+    mine = {me}
+    try:
+        import subprocess as _sp
+        _q = ("Get-CimInstance Win32_Process | ForEach-Object "
+              "{ \"$($_.ProcessId) $($_.ParentProcessId)\" }")
+        _o = _sp.run(["powershell", "-NoProfile", "-Command", _q],
+                     capture_output=True, text=True, timeout=30).stdout
+        parent = {}
+        for _l in _o.splitlines():
+            _b = _l.split()
+            if len(_b) == 2 and _b[0].isdigit() and _b[1].isdigit():
+                parent[int(_b[0])] = int(_b[1])
+        _p = me
+        for _ in range(12):
+            _p = parent.get(_p)
+            if not _p or _p in mine:
+                break
+            mine.add(_p)
+    except Exception:
+        pass
+    try:
+        if os.name == "nt":
+            # THE QUERY MUST NOT CONTAIN THE STRING IT IS LOOKING FOR.
+            # The first version filtered inside PowerShell with
+            # `-like '*run_all_controls*'`, so the powershell.exe running the
+            # query carried the marker in its OWN command line and matched
+            # itself - the guard refused every sweep including the first one.
+            # Listing everything and filtering in Python keeps the marker out
+            # of the query process entirely.
+            ps = ("Get-CimInstance Win32_Process | ForEach-Object "
+                  "{ \"$($_.ProcessId)`t$($_.CommandLine)\" }")
+            out = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", ps],
+                capture_output=True, text=True, timeout=30).stdout
+        else:
+            out = subprocess.run(["ps", "-eo", "pid=,args="],
+                                 capture_output=True, text=True,
+                                 timeout=30).stdout
+    except Exception:
+        return None
+    found = []
+    for line in out.splitlines():
+        line = line.strip()
+        if not line or "run_all_controls" not in line:
+            continue
+        head = line.replace("\t", " ").split(None, 1)
+        if not head:
+            continue
+        try:
+            pid = int(head[0])
+        except ValueError:
+            continue
+        if pid in mine:
+            continue
+        found.append((pid, head[1] if len(head) > 1 else ""))
+    return found
+
+
+def _refuse_if_sweep_running(allow):
+    import sys as _sys
+    others = _other_sweeps_running()
+    if others is None:
+        print("SWEEP-LOCK NOT PERFORMED - could not ask the OS which processes "
+              "are running.\n"
+              "  Continuing, because a sweep that cannot run is worse than two "
+              "that might.\n"
+              "  This line is the whole of the warning: nothing else will "
+              "mention it.")
+        return
+    if not others:
+        return
+    print("ANOTHER SWEEP IS ALREADY RUNNING - refusing to start a second one.")
+    for pid, cmd in others:
+        print("  pid %-8s %s" % (pid, cmd[:110]))
+    print("")
+    print("checks/.last_sweep.json is a single receipt and it is what")
+    print("authorises a deploy. Two sweeps finishing minutes apart would each")
+    print("overwrite it, and the surviving one would name whichever payload its")
+    print("own run happened to see.")
+    print("")
+    print("Wait for it to finish, or if you are certain it is dead:")
+    print("    python checks/run_all_controls.py --allow-concurrent")
+    if not allow:
+        _sys.exit(2)
+    print("--allow-concurrent was passed. Proceeding anyway.")
+
+
+# ---------------------------------------------------------------------------
+# ONE CONTROL IS FOUR TIMES SLOWER THAN THE WHOLE REST OF THE SUITE.
+#
+# `_verify_broken_checker_end_to_end.py` was reported NOT RUN three times on
+# 2026-09-06 and the first two were blamed on CPU contention. It was measured
+# rather than blamed the third time:
+#
+#     alone, quiet machine, timed          687s
+#     the global allowance                 900s
+#     margin                               213s, 24%
+#     next-slowest control in the suite    179s
+#
+# So it is not an occasional accident. The control genuinely runs for eleven
+# and a half minutes - nearly 4x the next slowest thing here - and the 900s
+# default was sized for a suite where nothing else comes close. Any co-tenant,
+# including another session's work on the same machine, spends that 213s and
+# the run is discarded after eleven minutes of real work.
+#
+# THIS DOES NOT WEAKEN THE GATE. A timeout catches a HUNG control, and 1800s
+# still catches one; it only stops discarding a control that was going to
+# finish. A timeout still produces NOT RUN, and NOT RUN still blocks the sweep
+# and the deploy exactly as FAILED does (see the exit-code note above). The
+# number is set from the measurement and the measurement is written beside it,
+# rather than being raised until the red went away.
+SLOW_CONTROLS = {
+    "_verify_broken_checker_end_to_end.py": 1800.0,
+}
+
+
 def main():
     ap = argparse.ArgumentParser(description="Run every control in checks/.")
     ap.add_argument("--self-test", action="store_true",
@@ -142,9 +348,15 @@ def main():
                     help="comma-separated substrings; run only matching "
                          "controls.")
     ap.add_argument("--timeout", type=float, default=900.0)
+    ap.add_argument("--allow-concurrent", action="store_true",
+                    help="start even if another sweep is running. "
+                         "Only when you are certain the other is dead - "
+                         "two sweeps race for checks/.last_sweep.json, "
+                         "which is what authorises a deploy.")
     ap.add_argument("--include-deployed", action="store_true",
                     help="also run controls that need the deployed site.")
     args = ap.parse_args()
+    _refuse_if_sweep_running(args.allow_concurrent)
 
     wanted = [w.strip() for w in args.only.split(",") if w.strip()]
     controls = discover()
@@ -152,6 +364,18 @@ def main():
         controls = [c for c in controls if any(w in c for w in wanted)]
 
     passed, failed, skipped, not_run = [], [], [], []
+    # PER-CONTROL SECONDS, CARRIED INTO THE RECEIPT.
+    #
+    # Sleven's order, 2026-09-08. The sweep runtime moved 79% in a day -
+    # 1,606s over 123 controls to 2,871s over 125 - and nobody noticed,
+    # because the receipt recorded a total and nothing else. A ceiling
+    # cannot be set on a number whose composition is unknown; his words
+    # were that any figure would be "a guess wearing a decision's
+    # clothes".
+    #
+    # THIS MEASURES NOTHING NEW. `secs` below is already computed and
+    # already printed on every result line. It is only being kept.
+    timings = {}
     started = time.time()
 
     print("sweep: %d control(s) discovered in checks/%s"
@@ -191,22 +415,34 @@ def main():
             #
             # It failed loudly rather than silently, which is the safe
             # direction - but it means the full suite could not be run at all.
+            _limit = SLOW_CONTROLS.get(name, args.timeout)
+            # THE CHILD WRITES WHAT THE PARENT READS. This side decodes UTF-8,
+            # but a child with no console fell back to cp1252 and CRASHED on
+            # its own print() - the 18:07 sweep on 2026-09-12 went red because
+            # _verify_correspondence.py printed a letter subject containing
+            # U+2192. Telling the child to write UTF-8 makes both ends agree.
             proc = subprocess.run(cmd, cwd=ROOT, capture_output=True,
                                   text=True, encoding="utf-8",
-                                  errors="replace", timeout=args.timeout)
+                                  errors="replace", timeout=_limit,
+                                  env=dict(os.environ, PYTHONIOENCODING="utf-8"))
             code = proc.returncode
             tail = (proc.stdout or "").strip().splitlines()[-1:] or [""]
         except subprocess.TimeoutExpired:
-            not_run.append((name, "timed out after %.0fs" % args.timeout))
+            not_run.append((name, "timed out after %.0fs" % _limit))
             print("  NOTRUN %-41s timed out after %.0fs"
-                  % (name, args.timeout))
+                  % (name, _limit))
             continue
         except Exception as exc:                 # pragma: no cover - reported
+            # Timed even when it threw. A control that dies after ten
+            # minutes is exactly the kind this receipt exists to find,
+            # and recording nothing for it would hide the worst case.
+            timings[name] = round(time.time() - t0, 2)
             not_run.append((name, "%s: %s" % (type(exc).__name__, exc)))
             print("  NOTRUN %-41s %s: %s" % (name, type(exc).__name__, exc))
             continue
 
         secs = time.time() - t0
+        timings[name] = round(secs, 2)
         combined = (proc.stdout or "") + (proc.stderr or "")
 
         # EXIT 2 MEANS "I COULD NOT LOOK", WHICH IS NEITHER A PASS NOR A FAIL.
@@ -264,9 +500,12 @@ def main():
 
     print("")
     print("=" * 70)
+    elapsed = time.time() - started
     print("%d ok, %d failed, %d skipped, %d NOT RUN, in %.0fs"
-          % (len(passed), len(failed), len(skipped), len(not_run),
-             time.time() - started))
+          % (len(passed), len(failed), len(skipped), len(not_run), elapsed))
+    note = sweep_runtime_note(elapsed, full=not wanted and not args.self_test)
+    if note:
+        print(note)
     if args.self_test:
         print("(--self-test: 'ok' means the control exited non-zero with its "
               "expectations inverted, which is the correct outcome.)")
@@ -320,7 +559,8 @@ def main():
                            or n in [x for x, _w in not_run]],
             partial=bool(wanted),
             self_test=bool(args.self_test),
-            seconds=time.time() - started)
+            seconds=time.time() - started,
+            timings=timings)
         print("")
         # NAMES THE PATH IT ACTUALLY WROTE. It used to print sweep_gate.RECEIPT
         # unconditionally, so a --only run announced the full receipt's path
@@ -339,6 +579,30 @@ def main():
         print("SWEEP RECEIPT NOT WRITTEN: %s: %s" % (type(exc).__name__, exc))
         print("The deploy gate refuses on a missing receipt, so this fails "
               "closed rather than quietly.")
+
+    # B1, THE RECORD AUDIT, REBUILT AFTER EVERY FULL SWEEP (Sleven's ruling,
+    # 2026-09-12: after the sweep, not on the beat, no watcher swap). It is
+    # report-only: whatever it finds, or if it cannot run at all, THIS sweep's
+    # result and receipt are unchanged. Partial and --self-test runs skip it.
+    # B2, THE ROUTER, RIDES THE SAME RUN (--route, Architecture's enable of
+    # 2026-09-13): it files letters into inbox/ from B1's result and never gates.
+    if not wanted and not args.self_test:
+        import subprocess as _sp
+        try:
+            _ra = _sp.run([sys.executable, os.path.join(REPO, "checks", "record_audit.py"), "--route"],
+                          capture_output=True, text=True, encoding="utf-8",
+                          errors="replace", timeout=600, cwd=REPO)
+            _lines = _ra.stdout.strip().splitlines() or ["(no output)"]
+            if _ra.returncode == 0:
+                for _l in _lines:
+                    if _l.startswith(("record audit:", "B2 router:", "FILED ", "  NEW for")):
+                        print(_l)
+            else:
+                print("record audit: FAILED (exit %d) - %s - the sweep result is unaffected"
+                      % (_ra.returncode, (_ra.stderr.strip().splitlines() or [_lines[-1]])[-1][:200]))
+        except Exception as _exc:                # noqa: BLE001 - reported, never gates
+            print("record audit: NOT RUN (%s: %s) - the sweep result is unaffected"
+                  % (type(_exc).__name__, _exc))
 
     # A control that could not be run counts against the sweep. Reporting a
     # green sweep with something unrun is the exact failure this project calls
