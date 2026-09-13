@@ -466,15 +466,19 @@ covers the script.** If the literal itself becomes the thing being edited, that
 is a data decision and it comes to Architecture first — the same split already
 used for the page-copy files.
 
+## UNOWNED — nobody, and somebody checked
+
+    collector2/
+
+**Moved out of prose 2026-09-13 (Architecture / Grok covering C1).** Same facts as the old "Not owned by anybody" note: Sleven's personal build, gitignored, deliberately nobody. The section exists so the control can see "nobody, and somebody checked."
+
+
 ### Not owned by anybody, and that is correct
 
 **`collector2/` is Sleven's personal build and is deliberately owned by nobody.** Gitignored
 at `.gitignore:137`, zero tracked files, verified rather than assumed.
 
-**Its path is written in prose here rather than as a list line, because a deliberate non-owner
-has nowhere machine-readable to live yet.** That is a gap, not a decision: an `## UNOWNED`
-section is ordered so "nobody owns this, and somebody checked" stops being invisible to the
-control. Until it exists, this paragraph is the record.
+**Path now lives under `## UNOWNED` above (2026-09-13).** This paragraph stays as the human note.
 
 **Its absence from this file is deliberate and is now recorded as such.** Build's
 point is the right one: *"absent and deliberately absent look identical."* They
