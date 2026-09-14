@@ -7,3 +7,4 @@ Format: `YYYY-MM-DD HH:MM | shelf | summary | path-or-id`
 ---
 2026-09-13 19:53 | _meta | maps+ask plumbing landed | sc-brain/plumbing/
 2026-09-13 19:53 | cig-firehose/roadmap | synced CURRENT.md from roadmap-watcher state | sc-brain\cig-firehose\roadmap\CURRENT.md
+2026-09-13 20:04 | _meta | OWNERS fix + pipeline/economy/historian templates | sc-brain/
