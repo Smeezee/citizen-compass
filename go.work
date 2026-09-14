@@ -3,6 +3,7 @@ go 1.26.5
 use (
 	./citizen-collector
 	./ops-mail-wake
+	./pkg/livever
 	./pkg/apikeyguard
 	./pkg/pgconn
 	./pkg/pipelinelog
