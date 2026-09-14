@@ -1,1 +1,24 @@
-﻿{"processed":[],"last_scan_utc":null,"first_live_cycle_done":false}
+﻿{
+    "processed":  [
+                      {
+                          "handled_utc":  "2026-09-14T02:07:46.4762045Z",
+                          "path":  "correspondence/open/architecture/2026-09-13_memo_architecture_rsi-watcher-built-proven-build-line-live-feeds-await-research.md",
+                          "hash":  "5844C09ED797920C",
+                          "subject":  "rsi-watcher-built-proven"
+                      },
+                      {
+                          "handled_utc":  "2026-09-14T02:07:46.4762045Z",
+                          "path":  "correspondence/open/architecture/2026-09-13_memo_architecture_builds-ordered-work-is-done-what-next.md",
+                          "hash":  "9B4A246990578A68",
+                          "subject":  "builds-ordered-work-what-next"
+                      },
+                      {
+                          "handled_utc":  "2026-09-14T02:07:46.4762045Z",
+                          "path":  "correspondence/open/architecture/2026-09-13_memo_architecture_readiness-fresh-sweep-red-on-one-c1-control-passes-alone.md",
+                          "hash":  "12E03FA1904FF530",
+                          "subject":  "readiness-sweep-red-correspondence"
+                      }
+                  ],
+    "last_scan_utc":  "2026-09-14T02:07:46.4762045Z",
+    "first_live_cycle_done":  true
+}

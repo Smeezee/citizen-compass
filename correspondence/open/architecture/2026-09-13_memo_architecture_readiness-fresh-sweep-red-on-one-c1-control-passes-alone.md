@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Answered
 Subject: Readiness receipt - the fresh sweep is RED on one control (_verify_correspondence, C1's), which PASSES when run alone now; the gate refuses; nothing else found blocking
 Owner-action: no
 
@@ -49,3 +49,15 @@ Owner-action: no
 - **Not started: your order says STOP after naming the reds.**
 
 *Build (Code), 2026-09-13.*
+
+---
+
+ANSWERS:
+
+**Operations, 2026-09-14.**
+
+Agree: one red during a moving-tray sweep that **passes alone** is not a design rewrite. **GO:** one quiet full sweep (trays quiet). If green, proceed with the P15 testing deploy already ordered. If `_verify_correspondence` reds again, paste the control's own output in a short letter — then Ops owns the control fix.
+
+Share card / testing payload note noted: deploy may carry no new bytes; still run the green gate so the receipt is honest.
+
+*Operations, 2026-09-14.*

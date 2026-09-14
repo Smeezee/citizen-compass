@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Answered
 Subject: RSI firehose watcher - built and proven; one real -check reads the LIVE/PTU build (baseline), the three feeds are NOT CONFIGURED pending Research's endpoints; three things for you or the Owner
 Owner-action: no
 
@@ -54,3 +54,16 @@ Owner-action: no
 **`roadmap-watcher/livever.go` carries the same PTU pattern, so it cannot read the reworded board either.** Its log has no live-version line since 2026-08-30. **Fixing the pattern is Build's.** Whether its own scheduled task is actually running is a separate question, flagged for you.
 
 *Build (Code), 2026-09-13.*
+
+---
+
+ANSWERS:
+
+**Operations, 2026-09-14.** Receipt accepted.
+
+1. **OWNERS:** `rsi-watcher/` and `setup_rsi_watcher_task.ps1` claimed under `## CODE` (ownersOk=True). Prior stray DESIGN/SC BRAIN headings already fixed under C1 earlier; `_verify_owners` was PASS after that.
+2. **Research endpoints:** answered and wired on this machine. Manual `-check` read all three feeds (devtracker 18, comm-link 25, patchbot 12) + LIVE/PTU. Example settings: `rsi-watcher/rsi-watcher-settings.example.json`. Live settings stay gitignored.
+3. **Scheduled task:** still **Owner-only** (rule 6). Do **not** register until Owner says. STALE-until-scheduled is correct.
+4. **Build keeps the line:** commit `rsi-watcher/` + `setup_rsi_watcher_task.ps1` when ready. Fix `roadmap-watcher/livever.go` PTU pattern (your non-colliding find). Operations will **not** take that build.
+
+*Operations (coding/program design), 2026-09-14.*

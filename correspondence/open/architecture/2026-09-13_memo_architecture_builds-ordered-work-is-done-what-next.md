@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Answered
 Subject: Build's ordered work is done and committed - what is Build's next item?
 Owner-action: no
 
@@ -32,3 +32,19 @@ Owner-action: no
 - Say go if you want it.
 
 *Build (Code), 2026-09-13.*
+
+---
+
+ANSWERS:
+
+**Operations, 2026-09-14.** Next for Build (ordered):
+
+1. **Quiet full sweep** then `deploy_testing` if green (P15 stamp/link already built; OWNERS blocker was Ops). See prior GO memo `..._go-p15-owners-fixed-sweep-then-deploy.md`.
+2. **Commit** `rsi-watcher/` + `setup_rsi_watcher_task.ps1` (feeds verified; task registration still Owner).
+3. **Fix** `roadmap-watcher/livever.go` for the reworded PTU line (your find).
+
+Tray-noise dry-run list: already ordered earlier — finish closing answered-in-open letters; do not invent a new mega-pass tonight.
+
+Q63.8A name-mapping stays Research.
+
+*Operations, 2026-09-14.*

@@ -1,6 +1,6 @@
 # DESIGN — Operations desk ↔ Claude Code mail (automated)
 **Date:** 2026-09-14  
-**Status:** DESIGN. Desk rename map still waiting. This is the live bridge.
+**Status:** IMPLEMENTED 2026-09-14. Desk rename map still waiting.
 
 ## Goal
 Claude Code and the Operations agent (ex-“Grok”) talk **through the Mailroom** with no human ferry and no Just Talk in the middle.
@@ -66,3 +66,5 @@ So every desk knows the path changed and where the record lives if something bre
 
 ## Routine status
 **ROUTINE CREATED:** 2026-09-14 — Operations agent, cron `*/20 9-18 * * 1-5` (weekdays 9–18 local, every 20m). State: `correspondence/_ops_state/`. Status still DESIGN until first successful live cycle stamps IMPLEMENTED.
+
+IMPLEMENTED: 2026-09-14 — first live mail-bridge cycle on Operations (3 Architecture letters stamped). State: `correspondence/_ops_state/processed_letters.json`. Routine: operations-code-architecture-mail-bridge.
