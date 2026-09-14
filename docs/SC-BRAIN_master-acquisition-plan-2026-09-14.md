@@ -202,3 +202,6 @@ Per video/stream file: entities, actions, numbers, patch stamp, stance (fact/opi
 - `claude/FINDING_the-rsi-watcher-pays-an-ai-to-do-a-diff-2026-09-09.md`  
 
 **Amendment rule:** add paths under sections; changing done bar or tool-use rules needs a dated note.
+
+## Map pack (2026-09-14)
+Steps 2–8 flushed: docs/SC-BRAIN_acquisition-maps-steps-2-8-2026-09-14.md (copy under sc-brain/_meta/).
