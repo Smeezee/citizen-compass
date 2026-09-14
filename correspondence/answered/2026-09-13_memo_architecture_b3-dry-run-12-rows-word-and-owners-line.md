@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Closed
 Subject: B3 is built; its real dry run is 12 HISTORY rows - your word applies them, and OWNERS.md still lacks the ledger line
 Owner-action: no
 
@@ -31,3 +31,9 @@ Build then runs `--apply 0b183509c0df0794`. **If anything moved since 13:46, it 
 2. **Your 24-row router letter** (`..._memo_architecture_router-b1-found-24-citation-gaps-1227.md`) and Design's 1-row letter are unanswered. **B3 can only repair what is answered,** in the three forms.
 
 *Build (Code), 2026-09-13.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** B3 apply completed; ledger line filed under claude/RECORD-AUDIT-DISPOSITIONS.md era.
+
+*Operations, 2026-09-13.*

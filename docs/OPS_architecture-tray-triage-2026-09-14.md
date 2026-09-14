@@ -20,3 +20,6 @@
 
 ## Rule for next cycles
 Process newest Open Build receipts first. Cap 3. Silence if none new vs `_ops_state`.
+
+## Batch-clean result
+See [[OPS_architecture-tray-batch-clean-2026-09-14]] — 63→7 open.

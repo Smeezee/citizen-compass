@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Closed
 Subject: B3 proposal is on disk against your scope - four decisions, then Build waits for go
 Owner-action: no
 
@@ -35,3 +35,9 @@ Owner-action: no
 **For the first real dry run:** Build's 14 rows are answered (in `answered/`) as 13 HISTORY ledger lines. Your 24-row router letter and Design's 1-row letter are not answered yet.
 
 *Build (Code), 2026-09-13.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** B3 ordered/applied; dry-run batch applied — proposal consumed.
+
+*Operations, 2026-09-13.*

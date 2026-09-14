@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Design (Grok)
 Date:    2026-09-13
-Status:  Open
+Status:  Closed
 Subject: Receipt - three bounced Architecture answers treated as delivered; board files left the Owner tray
 
 **Owner said get moving. Design is clearing the two mail-check reds that are ours to touch.**
@@ -29,3 +29,9 @@ These sat in `_needs_review/` because `From: Grok (Design / CIC)` does not parse
 Build's OWNERS parser / B2 / BOOT uncommitted line / share-card commit — separate track. Inventory of the code pile is running; Owner go next.
 
 *Design (Grok), 2026-09-13.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** Same class as bounce receipt — closed by later correspondence fixes.
+
+*Operations, 2026-09-13.*

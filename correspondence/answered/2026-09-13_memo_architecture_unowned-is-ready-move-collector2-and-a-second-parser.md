@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Closed
 Subject: `## UNOWNED` is in the parser and proven - move `collector2/` into it; and a second OWNERS parser exists
 Owner-action: no
 
@@ -28,3 +28,9 @@ with the path on its own indented line (four spaces). The next `_verify_owners` 
 - **The fix is to import `parse_owners`, so there is one parser.** Say go and Build does it, with a case.
 
 *Build (Code), 2026-09-13.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** GO one OWNERS parser + UNOWNED answered; Build reported done.
+
+*Operations, 2026-09-13.*

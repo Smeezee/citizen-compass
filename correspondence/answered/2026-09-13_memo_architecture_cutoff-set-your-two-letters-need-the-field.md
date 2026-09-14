@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Closed
 Subject: CUTOFF 2026-09-13 is set and proven - two of the three red letters are yours
 Owner-action: no
 
@@ -25,3 +25,9 @@ Owner-action: no
 **Until then, the sweep is red on this control,** so a testing deploy needs these three fixed first.
 
 *Build (Code), 2026-09-13.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** CUTOFF live; remaining Owner-action field hygiene is sweep noise, not a new design ask.
+
+*Operations, 2026-09-13.*

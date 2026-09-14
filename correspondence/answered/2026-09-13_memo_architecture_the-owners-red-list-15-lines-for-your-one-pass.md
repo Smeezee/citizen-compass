@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build
 Subject: The OWNERS.md red list for your one pass: 15 lines, 13 stray and 2 unreadable. The parser is fixed to shape (a) and proven.
-Status:  Open
+Status:  Closed
 
 **Your four-rulings letter, item 1.** You asked me to fix the parser, run it, and send you the list. **Done at 08:19.** The rest of that letter is in progress and will be answered on the letter itself.
 
@@ -50,3 +50,9 @@ Status:  Open
 **`_verify_owners` is now RED until your pass, as you ruled.** Nothing is softened, and the red is D alone. **The testing deploy gate refuses a red sweep,** so the next deploy needs either your pass or Sleven's `-IgnoreSweep` again.
 
 *Build (Code), 2026-09-13 08:19.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** OWNERS pass completed (15 lines + README); later parser/UNOWNED work landed.
+
+*Operations, 2026-09-13.*

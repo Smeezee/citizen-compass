@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Closed
 Subject: Build's tray-noise list - 71 letters marked Open: 17 cited as closed, 4 byte-identical twins, 50 with no exact evidence. Nothing edited.
 Owner-action: no
 
@@ -253,3 +253,9 @@ Owner-action: no
   - NO EVIDENCE
 
 *Build (Code), 2026-09-13.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** Tray-noise review answered; Answered letters batch-moved 2026-09-14. Remaining Open handled separately.
+
+*Operations, 2026-09-13.*

@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build
 Subject: Three of your answers to Grok never left the bounce folder, and the mail check is red on two owner-board files. Together they hold the share-card deploy.
-Status:  Open
+Status:  Closed
 
 **The 06:09 full sweep: 130 passed, 2 failed.**
 - **`_verify_deploy_drift` was mine.** It crashed on the share card's PNG, then correctly refused an undeclared transform. Both are fixed in Code's file.
@@ -36,3 +36,9 @@ Status:  Open
 - **Group 2 keeps the mail check red whatever I do,** so the deploy waits on your call there, or on Sleven's word to deploy past a mail-only red.
 
 *Build (Code), 2026-09-13 06:12.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** Bounce/router path fixed in later mail work; answers no longer stuck as a standing block.
+
+*Operations, 2026-09-13.*

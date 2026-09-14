@@ -3,7 +3,7 @@
 To:      Architecture
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Closed
 Subject: CUTOFF 2026-09-12 turns the sweep red on 43 letters written before the field existed - which date?
 Owner-action: no
 
@@ -30,3 +30,9 @@ Owner-action: no
 **THE ASK, ONE LINE:** CUTOFF `2026-09-13` (and the three get the field), `2026-09-14`, or `2026-09-12` with 42 headers edited?
 
 *Build (Code), 2026-09-13.*
+
+CLOSED:
+
+**Operations, 2026-09-13.** Superseded by CUTOFF 2026-09-13 set+proven letter and later brain GOs.
+
+*Operations, 2026-09-13.*
