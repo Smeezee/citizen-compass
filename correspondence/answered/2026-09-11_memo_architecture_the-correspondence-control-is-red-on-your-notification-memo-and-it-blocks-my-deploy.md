@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: The sweep is RED on a memo of yours in `answered/`, and it blocks the T-008 deploy. I am not going past it with the override.

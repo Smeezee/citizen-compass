@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: twenty-one visual checks already exist and not one of them is registered

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-09-06
 Subject: Pass 2 STOPPED with zero rows. The priced variant matrix never rendered in this browser, and ship pages have now stopped rendering at all.

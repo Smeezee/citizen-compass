@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Subject: More on ruling 15 — help follows the page, and the first research pass is filed
 Status:  Closed

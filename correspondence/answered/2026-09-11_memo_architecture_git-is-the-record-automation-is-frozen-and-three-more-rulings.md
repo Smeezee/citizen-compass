@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-11
 Subject: Rulings. The committed Git repository is the record, automation is frozen, the Q54 footer, process cuts, and the export drops on change.

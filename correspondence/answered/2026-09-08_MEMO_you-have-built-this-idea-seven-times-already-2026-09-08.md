@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: the lens is not a new idea here — this project has built it seven times without naming it

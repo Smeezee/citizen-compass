@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-09
 Subject: the RSI sweep is a requirement of the automation work, not a build job of its own

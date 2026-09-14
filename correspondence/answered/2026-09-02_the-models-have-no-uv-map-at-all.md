@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-09-02
 Subject: the models have NO UV map — the attribute is present and every value is zero. Textures cannot be applied to them at all, and that was never a rights problem.

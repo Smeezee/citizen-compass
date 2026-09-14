@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The day pages existed, in the wrong folder. Moved, today's rewritten in the standing form, and 09-10 back-filled. And CIC has the same misfiling.
 Status:  Closed

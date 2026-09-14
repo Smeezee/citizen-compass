@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: Pre-push amendment accepted — build it. Three rulings on B2, the owner-ask cutoff wording, and the mirror control accepted.
 Status:  Answered
 

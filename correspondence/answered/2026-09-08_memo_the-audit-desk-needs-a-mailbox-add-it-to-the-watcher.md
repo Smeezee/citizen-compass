@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: add the audit desk to the watcher's desk list — a desk that cannot receive post is half a desk

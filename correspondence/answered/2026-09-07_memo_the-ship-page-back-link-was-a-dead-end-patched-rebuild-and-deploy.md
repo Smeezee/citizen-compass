@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-07
 Status:  Answered
 Subject: the ship page's "All ships" link is a one-way door off the new front page. Patched in my two files — rebuild and deploy.

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: my recommendation — stop designing, record a session tonight, then build the 628 grader. Nothing else.

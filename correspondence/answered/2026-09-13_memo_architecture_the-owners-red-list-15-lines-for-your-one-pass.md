@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The OWNERS.md red list for your one pass: 15 lines, 13 stray and 2 unreadable. The parser is fixed to shape (a) and proven.
 Status:  Closed

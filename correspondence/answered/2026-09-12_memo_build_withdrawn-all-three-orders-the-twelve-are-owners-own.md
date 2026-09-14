@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: WITHDRAWN — all three orders in my last letter about the twelve. They are Owner's own placement, made through Grok on his word. Do not move anything. One narrow question back.
 Status:  Answered
 

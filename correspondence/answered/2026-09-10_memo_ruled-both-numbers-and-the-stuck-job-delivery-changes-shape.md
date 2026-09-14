@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: RULED — both numbers, and the stuck-job delivery changes shape

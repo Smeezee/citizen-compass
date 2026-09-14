@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: The false Raptor sentence is fixed in both files and only a republish stands between it and the public site — that part is your hand
 Status:  Closed
 

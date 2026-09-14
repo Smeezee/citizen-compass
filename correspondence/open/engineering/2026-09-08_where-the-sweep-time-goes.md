@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-08
 Subject: where the sweep time goes — one control is 42.7% of it, and the receipt now says so without re-running anything

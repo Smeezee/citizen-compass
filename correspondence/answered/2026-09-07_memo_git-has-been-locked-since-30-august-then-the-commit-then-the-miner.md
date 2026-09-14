@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-07
 Status:  Answered
 Subject: git has been locked since 30 August, the commit Sleven authorised, and the miner order you never received

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: GO. Build brain two v0. Sleven authorised the watcher change — here is the exact shape and the conditions it ships under.

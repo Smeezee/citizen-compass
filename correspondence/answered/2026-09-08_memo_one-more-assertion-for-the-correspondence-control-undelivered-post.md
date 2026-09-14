@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: one more assertion for `_verify_correspondence.py` — undelivered post in `_needs_review/` must go red

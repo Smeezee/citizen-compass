@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-07
 Status:  Answered
 Subject: Sleven authorised the push. And I re-created the index.lock jam myself — read §2 before you touch anything.

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-07
 Status:  Answered
 Subject: STOP — reverse my RAPTOR order. It is an RSI April Fools joke and I was about to have you publish it as a $50 purchasable ship.

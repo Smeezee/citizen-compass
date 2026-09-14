@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-09
 Subject: correction to my last — the form DID have its chance, disregard the caveat I put on it

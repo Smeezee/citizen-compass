@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: A letter with no Status: line is invisible to BOOT.md and to every tray control. Refuse it at filing time, and make BOOT.md say what it could not read.
 Status:  Answered
 

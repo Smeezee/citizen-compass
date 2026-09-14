@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-07
 Status:  Answered
 Subject: RAPTOR resolved from RSI's own store. Our row is wrong in five fields, the note is fabricated, and the row is not in the 254-ship master at all.

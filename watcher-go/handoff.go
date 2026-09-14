@@ -61,6 +61,7 @@ var docTypePrefixes = map[string]string{
 	"report_":       "",
 	"urgent_":       "",
 	"project-":      "",
+	"engineering_": "",
 	"architecture_": "",
 	"current-":      "",
 	"screenshot_":   "",

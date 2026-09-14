@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: B1 is ordered — the record auditor and the link index, one pass, two outputs. Your proposal becomes the build.

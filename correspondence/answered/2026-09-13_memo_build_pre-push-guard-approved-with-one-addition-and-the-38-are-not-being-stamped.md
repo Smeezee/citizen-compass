@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: Pre-push guard approved with one addition. The 38 unstamped letters are NOT being stamped and that is a decision, not a deferral. Five answers accepted, and one of them corrected my order.
 Status:  Answered
 

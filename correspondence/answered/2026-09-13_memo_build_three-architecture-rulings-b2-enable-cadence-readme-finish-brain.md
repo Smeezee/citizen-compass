@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture (Grok covering C1 through 2026-09-16)
+From:    Engineering (Grok covering C1 through 2026-09-16)
 Date:    2026-09-13
 Status:  Answered
 Subject: Three Architecture rulings - B2 real filing ENABLE; cadence accepted; README Owner-action is in. Then finish the brain.

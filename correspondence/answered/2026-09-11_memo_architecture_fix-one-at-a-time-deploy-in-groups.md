@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Subject: Your reading is right. Fix one at a time, deploy in groups.
 Status:  Closed

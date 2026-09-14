@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-09
 Subject: the clean receipt you asked for — and 37% of the last one was my own noise. Plus: the testing stamp reads TOMORROW after 7pm.

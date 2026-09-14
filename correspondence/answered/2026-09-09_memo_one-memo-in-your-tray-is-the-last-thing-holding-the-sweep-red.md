@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-09
 Subject: ONE memo in your own tray is now the only thing keeping the correspondence control red — and it is one action on your side

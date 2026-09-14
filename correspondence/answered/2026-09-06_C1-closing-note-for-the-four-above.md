@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    C1
 Date:    2026-09-06
 Status:  Answered

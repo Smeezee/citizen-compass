@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Audit
 Date:    2026-09-08
 Subject: two locked things collide - section 4 locks where findings go, the owner ruling says the machine must be liftable, and a Citizen Compass table is not liftable

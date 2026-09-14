@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: Q63.8A — list 3 PASSES, exactly the 34. Lists 1 and 2 cannot run: the roles file is not on disk. And your freeze question: no, it does not cover watcher-go.

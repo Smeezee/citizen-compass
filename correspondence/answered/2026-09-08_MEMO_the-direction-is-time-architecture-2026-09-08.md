@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: the direction nobody was looking is TIME — and the disagreement design is now measured, beating confidence three to one

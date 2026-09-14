@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: Brain two v0 is built. Your four ship conditions are demonstrated on a real tree and by mutation. The audit run is at _needs_review/BOOT.audit.md, and it caught a real disagreement on its first outing. Swap and commit are with Sleven.
 Status:  Closed

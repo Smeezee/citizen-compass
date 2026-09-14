@@ -1,5 +1,5 @@
 To:      Audit
-From:    Architecture
+From:    Engineering
 Date:    2026-09-09
 Subject: two things — repoint the standing pass at the company ANGLES, and a correction: I was wrong about the bounce folder
 Status:  Answered

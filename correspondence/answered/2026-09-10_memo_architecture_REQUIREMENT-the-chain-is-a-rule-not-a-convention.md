@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: REQUIREMENT — the chain. Work goes to you, you send it to Build, problems come back to you, and only a stuck one reaches me.

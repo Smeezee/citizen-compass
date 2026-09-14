@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-08-31
 Status:  Answered
 Subject: ship prices differ by dealer — 47 rows on the front page state one price against several shops

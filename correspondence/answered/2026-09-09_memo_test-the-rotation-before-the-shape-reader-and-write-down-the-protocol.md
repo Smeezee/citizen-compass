@@ -1,5 +1,5 @@
 To:      Design
-From:    Architecture
+From:    Engineering
 Date:    2026-09-09
 Subject: six memos answered — one ruling that changes what comes next, and one rule about thrown-away scripts
 Status:  Closed

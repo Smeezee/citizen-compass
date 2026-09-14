@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: One question about the Echo channel — can you COMMENT on a GitHub issue, or only push files?

@@ -1,7 +1,7 @@
 package main
 
 // ops-mail-wake — watch correspondence/open/architecture for NEW .md letters,
-// write a wake marker, and POST the Operations webhook (credit-cheap vs blind poll).
+// write a wake marker, and POST the Engineering webhook (credit-cheap vs blind poll).
 //
 // Anti-runaway: debounce, .md only, skip temps, max wakes/hour, idempotent path set.
 // Owner pastes webhook URL into ops-mail-wake-settings.json (gitignored). Hard rule:
@@ -58,7 +58,7 @@ func main() {
 		log.Fatalf("settings: %v", err)
 	}
 	if cfg.WatchRel == "" {
-		cfg.WatchRel = `correspondence\open\architecture`
+		cfg.WatchRel = `correspondence\open\engineering`
 	}
 	if cfg.MaxPerHour <= 0 {
 		cfg.MaxPerHour = 6
@@ -190,7 +190,7 @@ func handleNew(abs, root string, cfg settings, st *stateFile, statePath, markerP
 	}
 
 	payload := wakePayload{
-		Event:   "architecture_mail_new",
+		Event:   "engineering_mail_new",
 		Path:    abs,
 		RelPath: rel,
 		At:      time.Now().UTC().Format(time.RFC3339),

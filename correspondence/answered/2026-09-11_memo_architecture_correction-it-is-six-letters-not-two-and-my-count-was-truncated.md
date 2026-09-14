@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: Correcting my last letter — it is SIX of your letters, not two. My count was truncated by my own command.

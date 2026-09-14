@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: Your control order is done and proven. The RAPTOR letter passes. Two MORE of your letters are the same case — and it is a class, not an instance.

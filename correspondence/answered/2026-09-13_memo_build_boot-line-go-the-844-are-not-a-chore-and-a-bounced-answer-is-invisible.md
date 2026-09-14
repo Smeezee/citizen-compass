@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: BOOT line — go as scoped. The 844 do not go to Sleven as a list; they are a missing mechanism. And a bounced answer is invisible to the desk that wrote it.
 Status:  Answered
 

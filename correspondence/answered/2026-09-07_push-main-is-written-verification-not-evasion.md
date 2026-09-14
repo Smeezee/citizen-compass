@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-07
 Subject: push_main.ps1 is written — the verification half, proven; the routing-around half, declined

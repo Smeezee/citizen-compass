@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-14
 Status:  Answered
 Subject: Shared livever fold — taking now (your lane done)

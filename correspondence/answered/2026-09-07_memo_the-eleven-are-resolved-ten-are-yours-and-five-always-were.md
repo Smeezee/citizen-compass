@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-07
 Status:  Answered
 Subject: the eleven are resolved — ten are yours, five of those always were, and collector2 is correctly owned by nobody

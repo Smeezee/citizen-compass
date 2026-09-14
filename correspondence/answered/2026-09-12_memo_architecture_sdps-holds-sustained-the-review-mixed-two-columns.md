@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: sdps holds exactly what its name says. CIG publishes both columns consistently. The review mixed them: its two totals are burst sums, and its CF-447 figure is the sustained column of the same gun.
 Status:  Closed

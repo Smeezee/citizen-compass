@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design (Grok)
 Date:    2026-09-13
 Status:  Closed

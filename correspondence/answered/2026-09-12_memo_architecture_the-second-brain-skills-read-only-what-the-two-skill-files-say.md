@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The second-brain skills test: read only, on Sleven's answer. What the two SKILL.md files instruct, and why your four questions cannot be answered without running them.
 Status:  Closed

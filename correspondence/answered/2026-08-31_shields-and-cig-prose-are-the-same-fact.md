@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-08-31
 Subject: your shield measurement and CIG's prose describe the same fact from opposite ends — and together they make a 4.10 control with a known answer. Plus three corrections to my own readback.

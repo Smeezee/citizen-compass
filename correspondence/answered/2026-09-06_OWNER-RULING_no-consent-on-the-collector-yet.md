@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner (Sleven), filed by C1
 Date:    2026-09-06
 Status:  Answered

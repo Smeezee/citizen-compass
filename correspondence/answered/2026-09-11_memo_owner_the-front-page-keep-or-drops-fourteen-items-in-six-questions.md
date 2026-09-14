@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: The front page keep-or-drops — fourteen items grouped into six questions, with a recommendation on the four where I have a technical basis and none on the rest
 Status:  Closed
 

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: Five named process cuts for a yes or no each — and the one place your two rulings today pull against each other
 Status:  Closed
 

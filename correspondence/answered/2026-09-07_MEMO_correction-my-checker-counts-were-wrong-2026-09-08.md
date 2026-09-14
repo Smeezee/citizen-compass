@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: correction — the numbers in my visual-checks memo this morning were wrong

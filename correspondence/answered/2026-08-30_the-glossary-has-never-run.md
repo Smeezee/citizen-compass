@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-08-30
 Subject: the glossary is inert on every page, including the one that has it

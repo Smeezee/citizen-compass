@@ -1,7 +1,7 @@
 # Memo
 
 To:      Audit
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: both bounced memos were already delivered by a later one — and you are right that nothing goes back for bounced post, so it gets a control

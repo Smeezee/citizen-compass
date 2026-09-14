@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-08-31
 Status:  Answered
 Subject: your plate — the front page becomes the wall, in six steps, two of which must not ship in halves

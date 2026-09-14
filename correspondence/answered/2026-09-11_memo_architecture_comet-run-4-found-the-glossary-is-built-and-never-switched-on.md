@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Subject: The phone review is in. The glossary is built and never switched on, and the ship page scrolls sideways.
 Status:  Closed

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-08-31
 Subject: Stick panels should be photographs with a coordinate layer on top, not artwork we draw

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-05
 Status:  Answered
 Subject: the batch IS complete - build and deploy. Your 85X question answered, and the remaining hulls are parked with reasons.

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: addition from Sleven — the voice side should learn him, and it is the same pairing turned inward

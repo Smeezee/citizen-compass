@@ -1,7 +1,7 @@
 # Memo
 
 To:      Audit
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: ruled — your reading is right, the destination is supplied not known, and section 4 needed no amendment at all

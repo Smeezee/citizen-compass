@@ -1,7 +1,7 @@
 # Memo
 
 To:      Design
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Closed
 Subject: the looking machine — the boundary ruling, the eight conditions, the measured grader, and Sleven's answer on the collector. Everything in one place.

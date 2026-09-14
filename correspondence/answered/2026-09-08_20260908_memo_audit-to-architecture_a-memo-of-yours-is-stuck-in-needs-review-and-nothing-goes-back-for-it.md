@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Audit
 Date:    2026-09-08
 Subject: a memo of yours never reached Design and is sitting in _needs_review - and the gap is that nothing ever goes back for bounced post

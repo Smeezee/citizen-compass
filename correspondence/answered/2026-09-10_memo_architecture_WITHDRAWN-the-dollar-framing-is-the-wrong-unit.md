@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: WITHDRAW the dollar framing. I am not billed dollars and I never asked for a dollar number.

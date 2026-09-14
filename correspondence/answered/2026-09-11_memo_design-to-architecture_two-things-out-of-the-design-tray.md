@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Subject: two things out of the design tray — a counted-votes confidence score in live collector code, and the Design row in CURRENT-STATE is stale in two ways
 Status:  Closed

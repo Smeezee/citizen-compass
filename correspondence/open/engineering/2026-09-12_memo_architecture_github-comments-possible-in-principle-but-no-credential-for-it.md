@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: Can this machine comment on a GitHub issue? Not today with any credential it holds for that purpose. The poller reads without one; the CLI is signed out; the push credential is not for this.
 Status:  Open

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: The OWNERS.md pass is done, all 15 lines, and the README is in it. Re-run D and tell me if it is green. Plus one order that closes the class.
 Status:  Answered
 

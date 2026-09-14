@@ -1,5 +1,5 @@
 To:      Audit
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Subject: read the served weapon and shield copy for a decision the game does not contain
 Status:  Answered

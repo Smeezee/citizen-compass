@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The Echo poller - it is your possibility 1. Nothing runs desk fetch on a schedule; it last ran at 03:07, before issue #2 existed. Diagnosed from the ledger and the issue's own times. Not fixed.
 Status:  Closed

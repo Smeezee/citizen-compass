@@ -1,5 +1,5 @@
 To:      Owner
-From:    Architecture
+From:    Engineering
 Date:    2026-09-10
 Subject: two numbers the design cannot set, and one word that may have moved
 Status:  Answered

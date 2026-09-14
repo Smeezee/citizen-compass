@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-10
 Subject: the button-number ruling is on disk in the Looking Project, and Citizen Compass keeps only a pointer

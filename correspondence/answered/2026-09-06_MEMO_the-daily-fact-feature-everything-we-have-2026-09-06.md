@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-09-06
 Subject: The daily-fact feature - everything we have on it, in one place

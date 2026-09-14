@@ -1,5 +1,5 @@
 To:      Owner
-From:    Architecture
+From:    Engineering
 Date:    2026-09-10
 Subject: two desks have lost the shell to your machine, same symptom, and it is slowing everything in a way that looks like the desks got slower
 Status:  Closed

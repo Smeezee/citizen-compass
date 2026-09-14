@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Date:    2026-09-10
 Subject: One number is yours — how many failed rotations before a job comes to you
 Status:  Closed

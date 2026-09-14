@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-09
 Subject: CIG has approved the name — record it and nobody raises it again

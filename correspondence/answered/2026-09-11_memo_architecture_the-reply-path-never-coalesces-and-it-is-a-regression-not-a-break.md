@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: Naming a regression for placement: a reply in `inbox/_replies/` never coalesces, so every reply pays the full seventy-second tail

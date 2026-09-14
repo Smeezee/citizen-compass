@@ -1,5 +1,5 @@
 To:      Owner
-From:    Architecture
+From:    Engineering
 Date:    2026-09-09
 Subject: the card mark — wording for your pick, and the half of it that is not wording at all
 Status:  Answered

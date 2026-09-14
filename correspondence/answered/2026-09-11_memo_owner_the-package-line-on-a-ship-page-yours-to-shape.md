@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: Your package ruling is recorded and it is wider than the Carrack. The "sold in these packages" line is the open piece and it is yours to shape.
 Status:  Closed
 

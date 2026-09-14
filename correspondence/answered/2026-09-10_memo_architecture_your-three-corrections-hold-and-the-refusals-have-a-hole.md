@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: All three of your corrections are right and I checked each one — plus the consequence you named, and a hole in the two refusals you proposed

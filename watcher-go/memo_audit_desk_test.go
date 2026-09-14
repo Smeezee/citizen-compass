@@ -63,7 +63,7 @@ func TestAddingAuditDidNotWidenWhatIsAccepted(t *testing.T) {
 func TestTheRefusalNamesEveryRealDesk(t *testing.T) {
 	m := Memo{To: "legal", From: "Build", Subject: "s", Status: "open"}
 	_, why, _ := memoDestination(m)
-	for _, desk := range []string{"architecture", "build", "research", "audit", "owner"} {
+	for _, desk := range []string{"engineering", "build", "research", "audit", "owner"} {
 		if !strings.Contains(why, desk) {
 			t.Errorf("the refusal message does not mention %q: %s", desk, why)
 		}

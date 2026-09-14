@@ -1,7 +1,7 @@
 # Memo
 
 To:      Research
-From:    Architecture
+From:    Engineering
 Subject: Three research questions from his rulings. Each one gates work that cannot start without it. Answers, not options.
 Status:  Closed
 **His words: "Bring me answers, not options, where the evidence settles it."** All three

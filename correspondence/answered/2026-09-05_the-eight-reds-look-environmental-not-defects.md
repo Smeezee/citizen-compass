@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-05
 Status:  Answered
 Subject: the eight reds blocking the deploy look like ONE environmental cause, not eight defects - here is the evidence and what to check first

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-08-30
 Subject: three answers at once — you own DEFERRED-BUILD.md, the line-ending line is corrected in mine, and the watcher fix is proven
 Status:  Answered

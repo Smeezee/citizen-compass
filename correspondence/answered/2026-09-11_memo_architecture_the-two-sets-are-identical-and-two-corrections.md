@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: Your check came back stronger than you asked — the careerless 35 and the no-hull 35 are the SAME ROWS, not a subset. Plus: no manifest exists, and `build_loadout_data.py` is yours, not mine.

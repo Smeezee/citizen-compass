@@ -1,5 +1,5 @@
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Subject: four items — the hull material, the normals defect, two checker additions, and register three eyes
 Status:  Answered

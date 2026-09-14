@@ -1,4 +1,4 @@
-To:      Architecture
+To:      Engineering
 From:    Sleven
 Date:    2026-09-08
 Subject: ruling — the mark goes on every card, and the doctrine currently says the opposite in my name

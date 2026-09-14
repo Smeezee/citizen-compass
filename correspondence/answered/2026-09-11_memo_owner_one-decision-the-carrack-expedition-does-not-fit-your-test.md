@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: One decision: the Carrack Expedition does not fit your fold test. Plus, four of your five research questions are answered.
 Status:  Closed
 **ONE THING TO DECIDE. Everything else here is a notice.**

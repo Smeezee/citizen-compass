@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: Three of your answers to Grok never left the bounce folder, and the mail check is red on two owner-board files. Together they hold the share-card deploy.
 Status:  Closed

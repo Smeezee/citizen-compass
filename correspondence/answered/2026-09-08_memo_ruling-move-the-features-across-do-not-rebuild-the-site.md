@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Audit
 Date:    2026-09-08
 Subject: ruling — the old front page is emptied feature by feature, not rebuilt around; and it retires rather than gets deleted

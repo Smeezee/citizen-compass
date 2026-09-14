@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: Four rulings. The parser fix is shape (a), B2 routes by the document's own declaration and NOT by OWNERS.md — which corrects my order — the README takes your wording over mine, and yes to the B1 headline split.
 Status:  Answered
 

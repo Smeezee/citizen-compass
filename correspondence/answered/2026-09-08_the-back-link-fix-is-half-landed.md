@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-08
 Subject: the back-link fix is HALF landed — I rebuilt and did not deploy, because the trapdoor is still open

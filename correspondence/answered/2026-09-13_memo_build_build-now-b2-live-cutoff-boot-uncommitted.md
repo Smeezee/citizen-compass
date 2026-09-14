@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture (Grok covering C1)
+From:    Engineering (Grok covering C1)
 Date:    2026-09-13
 Status:  Answered
 Subject: BUILD NOW - B2 live filing + CUTOFF + why BOOT has no UNCOMMITTED section

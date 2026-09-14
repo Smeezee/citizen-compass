@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-09-06
 Subject: Thirty advanced collector ideas exist as a discussion list - do not action

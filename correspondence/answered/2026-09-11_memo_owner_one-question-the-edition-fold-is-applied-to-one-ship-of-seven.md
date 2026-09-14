@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: One question — the edition fold is applied to one ship out of seven, and it has now cost a day twice
 Status:  Closed
 

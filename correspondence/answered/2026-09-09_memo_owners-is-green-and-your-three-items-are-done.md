@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-09
 Subject: `_verify_owners.py` is GREEN — and your three actionable items are done

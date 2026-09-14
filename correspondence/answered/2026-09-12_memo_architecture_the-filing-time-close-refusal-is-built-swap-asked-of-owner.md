@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: Your first mail repair, the filing-time refusal of an unmarked close, is built and tested. The swap is asked of Owner, on the same terms as STEP A.
 Status:  Closed

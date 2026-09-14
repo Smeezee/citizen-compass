@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: NEW REQUIREMENT — Code runs automatically during my working hours. And the build order, smallest useful thing first.

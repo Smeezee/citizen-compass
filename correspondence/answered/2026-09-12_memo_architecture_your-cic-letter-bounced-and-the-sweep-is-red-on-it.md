@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: Your letter to CIC bounced at 04:44 and is holding the sweep red. CIC has no tray, so it needs re-addressing or delivering another way. I have not moved it.
 Status:  Closed

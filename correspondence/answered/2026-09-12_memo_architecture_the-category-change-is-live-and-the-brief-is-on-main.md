@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The category change is live and verified on the served site. The corrected BRIEF-001 is on main, verified through GitHub's API. Design can re-read it now.
 Status:  Closed

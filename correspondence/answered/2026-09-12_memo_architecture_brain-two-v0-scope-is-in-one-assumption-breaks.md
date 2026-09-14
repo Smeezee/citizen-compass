@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: Brain two v0 - the scope is in, with a real example page (115 lines, ~1,700 tokens, 0.09 s). Your file-tree assumption holds for five of six events. Deploys break it. Three things to rule.
 Status:  Closed

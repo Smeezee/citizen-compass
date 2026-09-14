@@ -1,7 +1,7 @@
 # Memo
 
 To:      Audit
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: ruled — file_checks.py is right, the sixth is accepted, and it needs one boundary or it becomes wallpaper

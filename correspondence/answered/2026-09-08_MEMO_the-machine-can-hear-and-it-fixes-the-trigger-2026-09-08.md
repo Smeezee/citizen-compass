@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: hearing answers *when*, which is the thing that broke 426 times — and a recording is the only material that can ever grade it

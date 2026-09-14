@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-08-30
 Subject: the glossary is extracted and marked — it needs one injection line in your file
 Status:  Answered

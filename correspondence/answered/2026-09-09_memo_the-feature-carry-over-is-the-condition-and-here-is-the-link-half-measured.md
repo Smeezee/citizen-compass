@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-09
 Subject: the feature carry-over is the condition on the swap — and here is the link half of it, already measured

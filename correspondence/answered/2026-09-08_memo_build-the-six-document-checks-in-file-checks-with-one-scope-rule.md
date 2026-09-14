@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: six document checks into `checks/file_checks.py` — Sleven asked for them, the audit desk designed them, and the sixth needs a scope rule

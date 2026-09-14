@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: The wording for hard rule 2's exception, for your approval — plus one thing in ruling 24 that has an order to it
 Status:  Closed
 

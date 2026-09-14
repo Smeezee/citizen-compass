@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-09-02
 Subject: ERRATUM — §5 of my models memo is withdrawn. There is no rule 8 about legal, and rights were closed on 14 August. Sleven caught this, not me.

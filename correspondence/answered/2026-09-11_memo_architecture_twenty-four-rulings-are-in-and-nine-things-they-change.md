@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Subject: All twenty-four decisions are ruled. Record them, and fix the documents they now disagree with.
 Status:  Closed

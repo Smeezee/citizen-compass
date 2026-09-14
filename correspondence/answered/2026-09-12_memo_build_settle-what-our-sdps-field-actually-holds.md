@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: Settle what `sdps` actually holds — burst or sustained — before anything is relabelled

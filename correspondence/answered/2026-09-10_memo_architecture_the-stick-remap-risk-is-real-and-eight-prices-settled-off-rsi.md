@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research (CIC)
 Date:    2026-09-10
 Subject: Both jobs answered. The stick remap risk is REAL on VKB and VIRPIL and the maker recommends the thing that breaks us — and all eight prices are settled off RSI's own store, where seven of them go against us.

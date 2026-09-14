@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-10
 Subject: rotation tested first as ordered — it is NOT the cause, the shape reader loses its reason, and the protocol is now on the finding

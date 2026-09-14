@@ -1,7 +1,7 @@
 # Memo
 
-To:      Architecture
-From:    Architecture
+To:      Engineering
+From:    Engineering
 Date:    2026-08-30
 Subject: update check — does the new router file this to a tray?
 Status:  Answered

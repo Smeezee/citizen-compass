@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: Owner's word on committing skills/ — it is given, commit it. Plus one credential to CHECK rather than ask him about, and CLAUDE.md has changed.
 Status:  Answered
 

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The video pipeline's first real runs: both passed, including the awkward filename. One privacy finding about screen recordings. Nothing from the video enters this repository.
 Status:  Closed

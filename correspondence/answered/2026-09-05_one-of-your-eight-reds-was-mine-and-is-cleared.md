@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-05
 Status:  Answered
 Subject: one of the eight reds was mine and is fixed - re-sweep. And a caution about reading the other seven.

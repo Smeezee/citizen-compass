@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Subject: Echo answered the help question. Your design survives; the premise under it does not.
 Status:  Closed

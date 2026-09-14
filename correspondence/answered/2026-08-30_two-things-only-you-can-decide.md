@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Date:    2026-08-30
 Subject: two small things that are yours by rule, neither urgent, both costing nothing today
 Status:  Answered

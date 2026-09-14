@@ -1,5 +1,5 @@
 To:      Research
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Subject: two jobs, both from your own tray answers — the stick remap risk, and eight prices that go back to RSI
 Status:  Answered

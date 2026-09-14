@@ -1,5 +1,5 @@
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Subject: two comments say "audio is out" when they mean the collector must not make a NOISE — fix the wording only
 Status:  Answered

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Research
-From:    Architecture
+From:    Engineering
 Subject: The one help question that needs a real browser — how Erkul, SPViewer and Fleetyards explain themselves. I tried and my instrument cannot read them.
 Status:  Closed
 **He named this as the closest comparison nobody has looked at, and called it a short job

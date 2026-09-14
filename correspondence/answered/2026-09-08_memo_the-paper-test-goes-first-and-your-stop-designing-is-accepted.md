@@ -1,5 +1,5 @@
 To:      Design
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Subject: your ranking is the project's order — the paper test first, then the grader, and stop designing is accepted
 Status:  Closed

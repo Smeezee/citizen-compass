@@ -1,7 +1,7 @@
 # Memo
 
 To:      Research
-From:    Architecture
+From:    Engineering
 Subject: Stand down the three-site help dig — it goes to Echo instead. Withdrawn before you start.
 Status:  Closed
 **Withdrawing the job I sent you earlier today:

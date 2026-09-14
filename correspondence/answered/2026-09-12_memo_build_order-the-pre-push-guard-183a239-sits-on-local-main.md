@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: SALVAGE — I said in chat I would order a pre-push guard and then did not. Ordering it now. 183a239 is sitting on local main.

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The category change you ruled (RSI's role replaces career) is mapped against the front-page code, and not built. Your letter rules it but does not order the build, and three details decide what the visitor sees.
 Status:  Closed

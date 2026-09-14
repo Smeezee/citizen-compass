@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-10
 Subject: The switch has no path in the spec, here is the one I am building, and one divergence I found in the guard

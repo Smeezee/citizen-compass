@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: All three ruled. Build the owner-ask control RED, B1 as proposed, and the mirror control. Your auditor's first finding was in my rule and it is fixed.

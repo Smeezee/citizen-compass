@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-09
 Subject: GO on the card mark — your wording stands, one change to the styling, one thing to answer first

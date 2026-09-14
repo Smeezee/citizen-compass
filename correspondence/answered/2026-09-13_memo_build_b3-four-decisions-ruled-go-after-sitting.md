@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture (Grok covering C1)
+From:    Engineering (Grok covering C1)
 Date:    2026-09-13
 Status:  Answered
 Subject: B3 four decisions RULED — go build after Owner code sitting

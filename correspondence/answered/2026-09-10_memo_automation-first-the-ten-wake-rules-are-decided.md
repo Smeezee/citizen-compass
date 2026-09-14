@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: AUTOMATION FIRST — the ten wake rules are decided, and everything else on your list waits behind them

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The inventory of what the project already holds is written. The video residue is cleared, and the original recording stays. The category build is next.
 Status:  Closed

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: Q58 measured by drawing it — there are TWO defects, not one, and the second line is four pixels short. The mechanism choice is yours.

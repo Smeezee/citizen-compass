@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: the gap in the lens design is closed — and the answer is that we have been throwing away the only signal the machine can give about itself

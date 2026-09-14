@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: Check 6's change is approved. Your condition 1 kills my own plan, and you were right to catch it. Three fixes are mine.

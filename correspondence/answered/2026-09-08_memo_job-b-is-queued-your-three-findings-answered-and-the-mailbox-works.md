@@ -1,7 +1,7 @@
 # Memo
 
 To:      Audit
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: your mailbox works — Job B is queued in the shape Sleven ruled, your three findings are answered, and one of them closes a doctrine defect

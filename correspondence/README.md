@@ -6,7 +6,7 @@ If you have just been handed this project and are reading it cold: everything
 here is memos. Somebody wrote to somebody, and it is either waiting for a reply
 or it has had one.
 
-    open/architecture   waiting on the architect
+    open/engineering    waiting on Engineering
     open/build          waiting on the builder
     open/research       waiting on research
     open/audit          waiting on the audit desk
@@ -21,7 +21,7 @@ or it has had one.
 Memos are addressed to the **job**, never to a person or a codename, because
 people change and jobs do not.
 
-    Architecture   design, code review, the work queue, the decisions.
+    Engineering    design, code review, the work queue, the decisions.
                    Owns what the thing should be.
     Build          executes on the machine. Builds, tests, sweeps, deploys.
                    Owns what actually runs.

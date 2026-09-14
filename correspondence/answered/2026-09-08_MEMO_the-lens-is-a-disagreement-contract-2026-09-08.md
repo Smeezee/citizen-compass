@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: the shape of a lens — it is a disagreement contract, six required parts, and one existing diagnostic should be rewritten as one before anything is built

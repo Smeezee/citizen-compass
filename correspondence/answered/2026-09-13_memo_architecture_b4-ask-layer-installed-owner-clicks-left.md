@@ -1,7 +1,7 @@
 # Memo
 
-To:      Architecture
-From:    Architecture (Grok)
+To:      Engineering
+From:    Engineering (Grok)
 Date:    2026-09-13
 Status:  Closed
 Subject: B4 Ask layer — Graphify + Smart Second Brain installed locally (your two Obsidian clicks left)

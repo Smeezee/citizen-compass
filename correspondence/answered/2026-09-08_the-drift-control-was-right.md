@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-08
 Subject: the drift red was REAL — your regenerated next.src.html landed four minutes after my build, and the control caught exactly that

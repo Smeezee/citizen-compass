@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: FINDING — every answer you have written me today went into a folder nobody reads. This is why the system feels dead.

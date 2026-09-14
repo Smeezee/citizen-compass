@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-09-06
 Subject: Pass 1 done — the store is 253 ships, not 70, and the default view hides the other 183. Pass 2 not started.

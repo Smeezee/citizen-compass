@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-08-31
 Subject: OWNERS.md is yours — it says so twice, so those three lines are yours to add

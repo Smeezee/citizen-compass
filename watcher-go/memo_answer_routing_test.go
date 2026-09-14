@@ -98,15 +98,15 @@ const base = "2026-09-10_the-question.md"
 func TestAnAnswerArrivesInTheSendersTrayAndSurvives(t *testing.T) {
 	for i := 0; i < 25; i++ {
 		root := newTree(t)
-		question := filepath.Join(correspondenceDir, "open", "architecture", base)
+		question := filepath.Join(correspondenceDir, "open", "engineering", base)
 		if err := os.WriteFile(question,
-			[]byte(memoText("Architecture", "Build", "Open", "the question")),
+			[]byte(memoText("Engineering", "Build", "Open", "the question")),
 			0o644); err != nil {
 			t.Fatal(err)
 		}
 
 		note, dest := drop(t, root, base,
-			memoText("Architecture", "Build", "Answered",
+			memoText("Engineering", "Build", "Answered",
 				"the question\n\nANSWERS:\n\nthe answer, which must not vanish"))
 
 		answer := filepath.Join(correspondenceDir, "open", "build", base)
@@ -120,8 +120,8 @@ func TestAnAnswerArrivesInTheSendersTrayAndSurvives(t *testing.T) {
 			t.Fatalf("run %d: the file in build's tray is not the answer: %v", i, err)
 		}
 		mustNotExist(t, question,
-			"the answered question is still sitting in Architecture's tray")
-		if !strings.Contains(note, "superseded the open copy in architecture") {
+			"the answered question is still sitting in Engineering's tray")
+		if !strings.Contains(note, "superseded the open copy in engineering") {
 			t.Fatalf("run %d: the note does not say what was superseded: %q", i, note)
 		}
 		kept, _ := filepath.Glob(filepath.Join(root, "_to_delete", base+".superseded-*"))
@@ -143,7 +143,7 @@ func TestWithoutTheSkipTheSweepEatsTheAnswer(t *testing.T) {
 	eaten := 0
 	for i := 0; i < 40; i++ {
 		root := newTree(t)
-		question := filepath.Join(correspondenceDir, "open", "architecture", base)
+		question := filepath.Join(correspondenceDir, "open", "engineering", base)
 		answer := filepath.Join(correspondenceDir, "open", "build", base)
 		for _, p := range []string{question, answer} {
 			if err := os.WriteFile(p, []byte("x"), 0o644); err != nil {
@@ -169,7 +169,7 @@ func TestWithoutTheSkipTheSweepEatsTheAnswer(t *testing.T) {
 // has to leave.
 func TestClosedGoesToTheArchiveAndStillClearsTheTray(t *testing.T) {
 	root := newTree(t)
-	question := filepath.Join(correspondenceDir, "open", "architecture", base)
+	question := filepath.Join(correspondenceDir, "open", "engineering", base)
 	if err := os.WriteFile(question, []byte("the question"), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func TestClosedGoesToTheArchiveAndStillClearsTheTray(t *testing.T) {
 		// Carries its CLOSED: record since 2026-09-12: a close WITHOUT one is now
 		// refused at filing (memo_closed_record_test.go). This test is about where
 		// a proper close goes and what it clears, and that is unchanged.
-		memoText("Architecture", "Build", "Closed",
+		memoText("Engineering", "Build", "Closed",
 			"done with this\n\nCLOSED:\n\nClosed - the thread is finished, nothing owed back."))
 
 	if want := filepath.Join(correspondenceDir, "answered", base); dest != want {
@@ -191,7 +191,7 @@ func TestClosedGoesToTheArchiveAndStillClearsTheTray(t *testing.T) {
 // original would turn one bad header into a lost question.
 func TestAnAnsweredMemoFromAnUnknownDeskIsRefused(t *testing.T) {
 	root := newTree(t)
-	question := filepath.Join(correspondenceDir, "open", "architecture", base)
+	question := filepath.Join(correspondenceDir, "open", "engineering", base)
 	if err := os.WriteFile(question, []byte("the question"), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -200,7 +200,7 @@ func TestAnAnsweredMemoFromAnUnknownDeskIsRefused(t *testing.T) {
 	// Research - memo_signature_clearout_test.go proves it. An unknown desk WITH
 	// a signature is the case that must still be refused, quoted back whole.
 	note, dest := drop(t, root, base,
-		memoText("Architecture", "Legal (Outside Counsel)", "Answered", "an answer"))
+		memoText("Engineering", "Legal (Outside Counsel)", "Answered", "an answer"))
 
 	if !strings.Contains(dest, "_needs_review") {
 		t.Fatalf("an answer from an unknown desk was filed to %q", dest)
@@ -234,8 +234,8 @@ func TestADeskAnsweringItselfGoesToTheArchive(t *testing.T) {
 func TestAnOpenMemoWithAnOddFromStillRoutesOnTo(t *testing.T) {
 	root := newTree(t)
 	_, dest := drop(t, root, base,
-		memoText("Architecture", "Research (CIC)", "Open", "a question"))
-	if want := filepath.Join(correspondenceDir, "open", "architecture", base); dest != want {
+		memoText("Engineering", "Research (CIC)", "Open", "a question"))
+	if want := filepath.Join(correspondenceDir, "open", "engineering", base); dest != want {
 		t.Fatalf("an open memo with an odd From: went to %q, want %q", dest, want)
 	}
 }
@@ -251,14 +251,14 @@ func TestTheFourStatusWordsRouteWhereTheSpecSays(t *testing.T) {
 		want   string
 		body   string
 	}{
-		{"Open", filepath.Join("open", "architecture"), "body"},
+		{"Open", filepath.Join("open", "engineering"), "body"},
 		{"Answered", filepath.Join("open", "build"), "body"},
 		{"Closed", "answered", closeBody},
 		{"Done", "answered", closeBody},
 	} {
 		root := newTree(t)
 		_, dest := drop(t, root, base,
-			memoText("Architecture", "Build", c.status, c.body))
+			memoText("Engineering", "Build", c.status, c.body))
 		if !strings.Contains(dest, c.want) {
 			t.Fatalf("Status: %s filed to %q, want it under %q",
 				c.status, dest, c.want)

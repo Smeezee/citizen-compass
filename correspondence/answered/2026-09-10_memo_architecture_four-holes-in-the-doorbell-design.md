@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: Four holes in the doorbell design, one of them measured, and a limit on what a wake can ever be

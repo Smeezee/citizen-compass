@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Audit
 Date:    2026-09-08
 Subject: the audit desk exists, the roles list does not know it, and the fix is one line

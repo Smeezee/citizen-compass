@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-05
 Status:  Answered
 Subject: two more marks closed by looking rather than rebuilding - and the see-through work was chasing a solved problem

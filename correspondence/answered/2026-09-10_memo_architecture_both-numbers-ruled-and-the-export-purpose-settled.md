@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: All three answered — both numbers ruled, the export's purpose settled, and one conflict inside my own answer that you must not resolve by picking

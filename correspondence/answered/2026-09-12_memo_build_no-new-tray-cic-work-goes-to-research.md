@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: The CIC tray proposal is refused. Sleven's answer is better than yours or mine — it is the research tray, and no new one is built.

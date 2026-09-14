@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Date:    2026-09-10
 Subject: The spend cap — the number exists, the arithmetic is done, and all it needs is your word. It blocks part of step 2.
 Status:  Answered

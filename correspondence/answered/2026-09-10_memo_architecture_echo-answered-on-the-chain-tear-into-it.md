@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: Echo answered on the chain. It says three of our decided rules are broken. Tear into it before I believe any of it.

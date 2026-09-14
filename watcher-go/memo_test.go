@@ -80,7 +80,7 @@ func TestNothingIsSweptWhenNoOpenCopyExists(t *testing.T) {
 
 const realMemo = `# Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-08-30
 Subject: CLAUDE.md and OWNERS.md disagree on testing/
@@ -95,8 +95,8 @@ func TestAMemoIsReadAndAddressed(t *testing.T) {
 	if !ok {
 		t.Fatal("a memo with To, From and Subject was not recognised as one")
 	}
-	if m.To != "architecture" {
-		t.Fatalf("addressed to %q, want architecture", m.To)
+	if m.To != "engineering" {
+		t.Fatalf("addressed to %q, want engineering", m.To)
 	}
 	if m.From != "Build" || m.Status != "open" {
 		t.Fatalf("from=%q status=%q", m.From, m.Status)
@@ -105,8 +105,8 @@ func TestAMemoIsReadAndAddressed(t *testing.T) {
 	if !ok {
 		t.Fatal("a memo to a real desk was refused")
 	}
-	if want := "open"; !contains(dir, want) || !contains(dir, "architecture") {
-		t.Fatalf("filed to %q, want the open architecture tray", dir)
+	if want := "open"; !contains(dir, want) || !contains(dir, "engineering") {
+		t.Fatalf("filed to %q, want the open engineering tray", dir)
 	}
 }
 
@@ -114,7 +114,7 @@ func TestAMemoIsReadAndAddressed(t *testing.T) {
 // answered/, which is the defect Sleven found: every answer, from every desk, to
 // every recipient, went into an archive nobody reads.
 //
-// `realMemo` is To: Architecture, From: Build. Answered, it goes BACK TO BUILD -
+// `realMemo` is To: Engineering, From: Build. Answered, it goes BACK TO BUILD -
 // not to Architecture, whose name is still on the To: line, and not to the
 // archive.
 func TestAnAnsweredMemoGoesBackToTheSender(t *testing.T) {
@@ -185,7 +185,7 @@ func TestAQuotedHeaderDeepInADocumentIsNotAnAddress(t *testing.T) {
 	for i := range long {
 		long[i] = 'x'
 	}
-	text := string(long) + "\nTo: Architecture\nFrom: Build\nSubject: buried\n"
+	text := string(long) + "\nTo: Engineering\nFrom: Build\nSubject: buried\n"
 	if _, ok := readMemo(text); ok {
 		t.Fatal("a header 5000 bytes down was treated as the document's address")
 	}

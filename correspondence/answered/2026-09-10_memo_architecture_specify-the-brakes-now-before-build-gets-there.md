@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: Specify the brakes now — Build is blocked on a poke and I do not want it blocked twice

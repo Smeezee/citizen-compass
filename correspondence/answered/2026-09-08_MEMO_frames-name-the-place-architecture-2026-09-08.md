@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: the frames can name the place — 82.4% — plus a measurement trap worth 14 points and proof that confidence does not work

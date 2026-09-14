@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: The exact words going into CLAUDE.md, before they land rather than after. Nothing needed from you unless you want to stop it.
 Status:  Closed
 

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: REQUIREMENT — blocked must not look like idle, and I want a roll call I can ask for

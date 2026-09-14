@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: paper test done — the shape holds, the six are now eight, and the file I was told to test contains a probe

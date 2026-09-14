@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-12
 Subject: BRIEF-003 — the provenance system and the verification mark as one piece

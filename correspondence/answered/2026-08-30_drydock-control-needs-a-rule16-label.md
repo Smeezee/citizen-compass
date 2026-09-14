@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-08-30
 Subject: _verify_drydock_scale.mjs is the only thing holding the sweep red

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: One proposal, and it is the only part of the help work that needs people rather than code
 Status:  Closed
 

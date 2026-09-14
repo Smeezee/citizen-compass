@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-08
 Subject: deployed — both halves of the back-link fix are in the SERVED bytes, and two controls caught their own staleness on the way

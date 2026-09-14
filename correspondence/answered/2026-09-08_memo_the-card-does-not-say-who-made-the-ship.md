@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Audit
 Date:    2026-09-08
 Subject: the new front page's cards do not carry the manufacturer, and scrolling loses it — Sleven hit this while gathering data

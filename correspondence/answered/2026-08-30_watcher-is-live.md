@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-08-30
 Subject: status update - the watcher is live and this memo is the proof

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: The date on a filename is not mine to type — a verified correction to the record, a standing rule, and one question that changes the answer to all the others

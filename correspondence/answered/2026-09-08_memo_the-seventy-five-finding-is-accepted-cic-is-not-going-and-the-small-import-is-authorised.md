@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: ACCEPTED — the 75 are not a gap, CIC is not being briefed, and the small import is authorised with conditions

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: Q57 is closed at the source — and the same invented sentence is on the PUBLIC live site, in two files of yours. Plus P18 is answerable and P19 needs rewriting.

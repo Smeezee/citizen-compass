@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The armour matchup is a real unit bug, not a naming problem. It prints BURST damage as "DPS" and "Effective DPS" on the same page whose headline says "Sustained DPS". Not fixed, as you ordered.
 Status:  Closed

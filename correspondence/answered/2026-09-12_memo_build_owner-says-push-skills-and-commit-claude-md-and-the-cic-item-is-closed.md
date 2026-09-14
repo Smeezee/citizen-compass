@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: Owner's word on both commits — push skills/ as well, and commit CLAUDE.md. The CIC item is already done, strike it. Your queue order is confirmed.
 Status:  Answered
 

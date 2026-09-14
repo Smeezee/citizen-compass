@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-09
 Subject: the contact sheet's number is 528.7 seconds — the fleet is CLEAN, and here is what that number decides about the other eighteen

@@ -1,8 +1,8 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build (router)
-Subject: B1 found 1 citation gap(s) in documents you wrote
+Subject: B1 found 3 citation gap(s) in documents you wrote
 Status:  Open
 
 **Filed by `checks/record_router.py` (B2) from B1's record audit.** Each gap below sits
@@ -18,10 +18,26 @@ in a document that declares you wrote it, or is labelled if it does not say.
 
 ---
 
-    source    docs/DESIGN_operations-claude-mail-bridge-2026-09-14.md
-    citation  sc-brain/ops/
+    source    docs/DESIGN_ops-mail-wake-on-new-letter-2026-09-14.md
+    citation  correspondence/_ops_state/mail_wake_state.json
     kind      absent
     routed    UNDETERMINED - no declaration
-Router-key: docs/DESIGN_operations-claude-mail-bridge-2026-09-14.md | sc-brain/ops/
+Router-key: docs/DESIGN_ops-mail-wake-on-new-letter-2026-09-14.md | correspondence/_ops_state/mail_wake_state.json
+
+---
+
+    source    docs/DESIGN_shared-livever-parse-2026-09-14.md
+    citation  pkg/rsiboard
+    kind      absent
+    routed    UNDETERMINED - no declaration
+Router-key: docs/DESIGN_shared-livever-parse-2026-09-14.md | pkg/rsiboard
+
+---
+
+    source    docs/DESIGN_shared-livever-parse-2026-09-14.md
+    citation  pkg/livever
+    kind      absent
+    routed    UNDETERMINED - no declaration
+Router-key: docs/DESIGN_shared-livever-parse-2026-09-14.md | pkg/livever
 
 *Build (router), 2026-09-13.*

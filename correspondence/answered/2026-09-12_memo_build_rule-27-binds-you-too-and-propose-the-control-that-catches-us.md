@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: Rule 27 is in CLAUDE.md and its last paragraph binds you. Propose the control that catches both of us breaking it.

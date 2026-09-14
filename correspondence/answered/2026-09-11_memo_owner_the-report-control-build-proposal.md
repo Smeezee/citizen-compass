@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Subject: The build proposal for the report control — what gets built, in what order, and the one line in the research I cannot write without a commitment from you
 Status:  Closed
 

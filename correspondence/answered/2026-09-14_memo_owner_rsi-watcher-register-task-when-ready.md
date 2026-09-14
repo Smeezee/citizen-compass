@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Date:    2026-09-14
 Status:  Answered
 Subject: RSI watcher scheduled task — registered (Owner GO lifted rule 6 for this job)

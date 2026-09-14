@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-09
 Subject: Q49 item 2 answered — the query string was never the problem. `_verify_deployed_links.mjs` had never fetched `next.html` at all.

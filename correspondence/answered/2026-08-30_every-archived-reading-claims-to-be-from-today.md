@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-08-30
 Subject: every archived reading claims it was seen today — the gamelog reader never reads the line's timestamp

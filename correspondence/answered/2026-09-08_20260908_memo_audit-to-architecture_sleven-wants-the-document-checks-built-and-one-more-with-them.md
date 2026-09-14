@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Audit
 Date:    2026-09-08
 Subject: OWNER DECISION - Sleven wants the document checks built, and there is a sixth that earned its place tonight

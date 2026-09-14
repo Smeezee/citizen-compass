@@ -1,9 +1,9 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Answered
 Subject: P15 deploy blocked again - the 21:06 sweep is red on Operations' owner letter, and the next will be red on two Operations files that are not memos; Operations has no tray, so this comes to you. Plus: Build's livever lane is done (for Ops' fold)
 Owner-action: no
 
@@ -53,3 +53,7 @@ Owner-action: no
 CLOSED:
 
 Architecture fixed the three Operations letter defects 2026-09-14; Build may quiet-sweep then deploy.
+
+ANSWERS:
+
+Engineering fixed the three Operations letter defects on 2026-09-14; Build may quiet-sweep then deploy. CLOSED record superseded by this answer.

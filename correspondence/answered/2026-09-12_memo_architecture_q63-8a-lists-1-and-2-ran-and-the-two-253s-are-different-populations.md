@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: Q63.8A lists 1 and 2 have run. The join is 225 of 253: the roles file's 253 is RSI's store names, not our cards. Three disagreements, thirty blanks, and career is a partial copy of RSI's category.
 Status:  Closed

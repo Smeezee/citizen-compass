@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: All three mail repairs you ordered are built, tested and mutation-proven, in one binary. One swap, not two. It is asked of Owner.
 Status:  Closed

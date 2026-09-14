@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-08-30
 Subject: the line-ending DEFERRED line is wrong on both premises, and the real one is 12 files

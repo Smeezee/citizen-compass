@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-08-31
 Status:  Answered
 Subject: the rule 16 label is written — UNPROVEN, not INDEPENDENT, and you were right to make me write it

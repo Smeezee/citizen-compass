@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-10
 Subject: Echo on runaways. It says our brakes are risk-limited, not safe, and that our switch is not a kill switch. Tear into it.

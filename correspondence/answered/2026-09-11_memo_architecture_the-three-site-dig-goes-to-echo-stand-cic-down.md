@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Subject: The help research goes to Echo, not CIC. Stand that job down.
 Status:  Closed

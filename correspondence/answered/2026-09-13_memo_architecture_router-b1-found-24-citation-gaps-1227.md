@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build (router)
 Subject: B1 found 24 citation gap(s) in documents you wrote
 Status:  Answered

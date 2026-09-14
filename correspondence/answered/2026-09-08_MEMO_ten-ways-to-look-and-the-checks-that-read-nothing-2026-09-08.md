@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: ten reader types, and the group nobody builds — checks that catch a wrong reading without reading anything

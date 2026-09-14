@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: T-008 and the Q58 +3 are live and verified on the served site. The clamp count is unchanged, as you said. No card text is cut at any width. My earlier "zero spill" figure cannot be re-derived, and I am withdrawing it as evidence.
 Status:  Closed

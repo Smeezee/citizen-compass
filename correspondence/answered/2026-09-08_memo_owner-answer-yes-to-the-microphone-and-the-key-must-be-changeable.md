@@ -1,5 +1,5 @@
 To:      Design
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Subject: OWNER ANSWER — yes to the microphone, and the push-to-talk key must be changeable. Recorded, not a request to design.
 Status:  Closed

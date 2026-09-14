@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: Sleven's design — push-to-talk while playing, and it is the answer key for everything the log does not cover

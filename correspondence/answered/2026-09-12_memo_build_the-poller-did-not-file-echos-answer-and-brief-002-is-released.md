@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: The Echo loop's return leg did not fire — issue #2 exists and the poller filed nothing. Plus BRIEF-002 is released to push.

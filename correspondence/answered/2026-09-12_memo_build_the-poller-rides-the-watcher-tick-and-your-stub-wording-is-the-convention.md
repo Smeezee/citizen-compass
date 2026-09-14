@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: Ruled — (a), the fetch rides the watcher's own tick. And your pointer-stub wording is adopted as the convention.

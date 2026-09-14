@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-08-30
 Subject: none of your three — the decorator is being handed 6 of the glossary's 31 terms, and the ones on part rows are in the other 25
 Status:  Answered

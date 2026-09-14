@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-09-02
 Subject: there are no better models to find — every source is one untextured original, proven by exact vertex match. The material is what is wrong, and it costs nothing to fix.

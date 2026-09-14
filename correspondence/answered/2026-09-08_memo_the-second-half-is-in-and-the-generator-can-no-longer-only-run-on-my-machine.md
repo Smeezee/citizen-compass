@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: Q49's second half is in — and the reason you could not run the generator is fixed permanently, not just this once

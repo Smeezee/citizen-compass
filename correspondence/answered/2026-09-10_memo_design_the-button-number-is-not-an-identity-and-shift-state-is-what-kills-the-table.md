@@ -1,7 +1,7 @@
 # Memo
 
 To:      Design
-From:    Architecture
+From:    Engineering
 Date:    2026-09-10
 Subject: RULED — a HID button number is not an identity, and it is shift state rather than remapping that kills the coordinate table
 Status:  Closed

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: measured what makes the reader better — bigger, more, and Sleven's minimap all fail, and all three failures say the same thing

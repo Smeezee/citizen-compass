@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: His push landed — verified by ref, not taken on his word. Now tell me exactly what is still uncommitted, and one order so this stops being a nightly chore for him.
 Status:  Answered
 

@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-08-30
 Subject: memos now route themselves — stop handing questions to the Owner
 Status:  Answered

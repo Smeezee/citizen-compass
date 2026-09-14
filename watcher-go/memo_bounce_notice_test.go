@@ -28,7 +28,7 @@ func notices(t *testing.T) []string {
 func TestARefusedAnswerTellsTheDeskThatWroteIt(t *testing.T) {
 	root := newTree(t)
 	note, dest := drop(t, root, base,
-		memoText("Architecture", "Grok (Design / CIC)", "Answered", "Q.\n\nANSWERS:\n\nthe ruling"))
+		memoText("Engineering", "Grok (Design / CIC)", "Answered", "Q.\n\nANSWERS:\n\nthe ruling"))
 	if !strings.Contains(dest, "_needs_review") {
 		t.Fatalf("the refused answer is no longer refused - it went to %q", dest)
 	}
@@ -36,7 +36,7 @@ func TestARefusedAnswerTellsTheDeskThatWroteIt(t *testing.T) {
 	if len(ns) != 1 {
 		t.Fatalf("want exactly one notice, got %v", ns)
 	}
-	if filepath.Base(filepath.Dir(ns[0])) != "architecture" {
+	if filepath.Base(filepath.Dir(ns[0])) != "engineering" {
 		t.Fatalf("the notice went to %q, not the tray of the desk that wrote the answer", ns[0])
 	}
 	raw, err := os.ReadFile(ns[0])
@@ -53,7 +53,7 @@ func TestARefusedAnswerTellsTheDeskThatWroteIt(t *testing.T) {
 	if !ok {
 		t.Fatal("the notice is not itself a memo, so the mail checks would call it junk")
 	}
-	if d, why, ok := memoDestination(nm); !ok || filepath.Base(d) != "architecture" {
+	if d, why, ok := memoDestination(nm); !ok || filepath.Base(d) != "engineering" {
 		t.Fatalf("the notice would not route to the answering desk: %q %s", d, why)
 	}
 	if !strings.Contains(note, "was told") {
@@ -63,7 +63,7 @@ func TestARefusedAnswerTellsTheDeskThatWroteIt(t *testing.T) {
 
 func TestADeliverableAnswerProducesNoNotice(t *testing.T) {
 	root := newTree(t)
-	_, dest := drop(t, root, base, memoText("Architecture", "Build", "Answered", "an answer"))
+	_, dest := drop(t, root, base, memoText("Engineering", "Build", "Answered", "an answer"))
 	if want := filepath.Join(correspondenceDir, "open", "build", base); dest != want {
 		t.Fatalf("a deliverable answer went to %q, want %q", dest, want)
 	}
@@ -74,7 +74,7 @@ func TestADeliverableAnswerProducesNoNotice(t *testing.T) {
 
 func TestAnOpenLetterWithAnOddFromProducesNoNotice(t *testing.T) {
 	root := newTree(t)
-	drop(t, root, base, memoText("Architecture", "Grok (Design / CIC)", "Open", "a question"))
+	drop(t, root, base, memoText("Engineering", "Grok (Design / CIC)", "Open", "a question"))
 	if ns := notices(t); len(ns) != 0 {
 		t.Fatalf("an OPEN letter produced a bounce notice: %v", ns)
 	}
@@ -96,7 +96,7 @@ func TestWhenToIsNotADeskEitherNobodyIsTold(t *testing.T) {
 
 func TestARedroppedBounceIsToldOnceNotTwice(t *testing.T) {
 	root := newTree(t)
-	text := memoText("Architecture", "Grok (Design / CIC)", "Answered", "an answer")
+	text := memoText("Engineering", "Grok (Design / CIC)", "Answered", "an answer")
 	drop(t, root, base, text)
 	ns := notices(t)
 	if len(ns) != 1 {

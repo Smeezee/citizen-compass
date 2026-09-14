@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Audit
 Date:    2026-09-08
 Subject: /next audit - the RAPTOR card carries the sentence you ordered deleted and none of what you ordered added, plus two layout findings and an ownership gap

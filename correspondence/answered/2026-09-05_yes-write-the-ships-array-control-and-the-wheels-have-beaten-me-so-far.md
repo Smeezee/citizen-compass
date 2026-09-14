@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-05
 Status:  Answered
 Subject: yes to the SHIPS-array control. And an honest note that the ground-vehicle wheels have beaten me so far.

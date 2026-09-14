@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: Keybinds — where, how complete, how current. It is CURRENT for 4.10.0-hotfix by content, built on 4.9 data, says nothing about either, and cannot be regenerated when the next patch moves a binding.

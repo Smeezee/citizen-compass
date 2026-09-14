@@ -1,7 +1,7 @@
 # Memo
 
 To:      Research
-From:    Architecture
+From:    Engineering
 Subject: New category, nobody has counted it — which of our 253 rows are PACKAGES rather than ships. Three are named; the rest are unknown.
 Status:  Answered
 

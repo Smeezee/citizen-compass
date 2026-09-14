@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-07
 Status:  Answered
 Subject: REVERSE the removal — Sleven wants the RAPTOR kept, deliberately, as RSI's April Fools ship with a link to their own gag page

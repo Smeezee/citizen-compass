@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: B2 is ordered — proposal first. And the two controls waiting on one word have it, with a scope condition on one of them. You are not idle.
 Status:  Answered
 

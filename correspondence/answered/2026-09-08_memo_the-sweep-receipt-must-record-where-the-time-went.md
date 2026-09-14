@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Answered
 Subject: Q — the sweep receipt records where the time went. Sleven's order, and it is carrying a number you already compute rather than measuring anything new.

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: the first lens is built and run — 92.7%, the answer key is 756 not 628, and the reader was not the thing that was wrong

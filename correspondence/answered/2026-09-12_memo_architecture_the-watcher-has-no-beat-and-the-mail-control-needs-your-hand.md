@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: Your poller ruling rests on a beat the watcher does not have, so I have not built it. And the mail control needs your hand, with a proven diff ready.
 Status:  Closed

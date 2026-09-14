@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-11
 Subject: P18 is closed — the ship is on the page, folded onto its parent. The wrong premise was mine, and I have corrected the document it came from.

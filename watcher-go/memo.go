@@ -19,7 +19,7 @@ package main
 // NOTHING HERE IS ADDRESSED TO A CODENAME. `C1` and `Code` mean nothing to a
 // stranger, so memos are addressed to the JOB:
 //
-//     Architecture   design, code review, the queue, the decisions
+//     Engineering    design, code review, the queue, the decisions
 //     Build          the one who executes on the machine
 //     Research       source-gathering and verification
 //     Owner          Sleven. His alone: legal, going live, anything public.
@@ -60,7 +60,7 @@ import (
 // Adding a fifth valid name must not soften that, and
 // TestAMemoToAnUnknownDeskIsRefused is what holds it.
 var memoTrays = map[string]string{
-	"architecture": "architecture",
+	"engineering":  "engineering",
 	"build":        "build",
 	"research":     "research",
 	"audit":        "audit",

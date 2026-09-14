@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-08-30
 Subject: collector2 has two new components — rebuild and run
 Status:  Answered

@@ -1,4 +1,4 @@
-To:      Architecture
+To:      Engineering
 From:    Sleven
 Date:    2026-09-08
 Subject: ARCHITECTURE_DECISIONS.md has no owner and it is yours

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Adjutant
 Date:    2026-09-09
 Subject: the mount being down does not block the mail — and `_verify_owners.py` is already green in your tray

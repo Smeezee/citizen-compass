@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: The skill mirror must not be a hand-kept copy — read-only look at whether a junction works, or whether it has to be a control.

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Subject: The record auditor is proposed, not built. The naive version would go red on 596 of 4,903 citations on day one. Ours judges only what was written under tonight's convention.
 Status:  Closed

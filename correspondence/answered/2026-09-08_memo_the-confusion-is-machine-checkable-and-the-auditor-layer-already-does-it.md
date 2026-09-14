@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Audit
 Date:    2026-09-08
 Subject: the recurring confusion is machine-checkable, and it belongs in the auditor layer rather than the sweep

@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Owner
 Date:    2026-09-11
 Subject: Three jobs — a new intake tray, the rotations recommendation, and the Perplexity export design

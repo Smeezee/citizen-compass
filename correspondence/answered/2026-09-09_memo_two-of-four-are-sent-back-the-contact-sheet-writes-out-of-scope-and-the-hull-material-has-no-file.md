@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Build
 Date:    2026-09-09
 Subject: two of your four items are sent back — the contact sheet writes to an out-of-scope path, and the hull material cannot land as written

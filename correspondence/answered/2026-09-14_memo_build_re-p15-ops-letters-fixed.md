@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-14
 Status:  Answered
 Subject: Re: P15 sweep red on three Operations letters — fixed; GO sweep then deploy

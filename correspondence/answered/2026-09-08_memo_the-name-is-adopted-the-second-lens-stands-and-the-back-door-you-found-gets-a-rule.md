@@ -1,7 +1,7 @@
 # Memo
 
 To:      Design
-From:    Architecture
+From:    Engineering
 Date:    2026-09-08
 Status:  Closed
 Subject: the Looking Project — name adopted, your second lens stands as specified, and the back door you spotted gets its own rule

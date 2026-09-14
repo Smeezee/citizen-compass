@@ -19,7 +19,7 @@ import (
 func TestAnAnswerSignedResearchCICGoesHomeToResearch(t *testing.T) {
 	root := newTree(t)
 	note, dest := drop(t, root, base,
-		memoText("Architecture", "Research (CIC)", "Answered", "Q.\n\nANSWERS:\n\nThe answer, in full."))
+		memoText("Engineering", "Research (CIC)", "Answered", "Q.\n\nANSWERS:\n\nThe answer, in full."))
 	if want := filepath.Join(correspondenceDir, "open", "research", base); dest != want {
 		t.Fatalf("an answer signed `Research (CIC)` went to %q, want %q", dest, want)
 	}
@@ -40,7 +40,7 @@ func TestAnOpenMemoToASignedDeskReachesTheDesk(t *testing.T) {
 // name left to deliver to, so it fails closed as an unknown sender.
 func TestAnAddressThatIsOnlyAParentheticalIsStillRefused(t *testing.T) {
 	root := newTree(t)
-	_, dest := drop(t, root, base, memoText("Architecture", "(CIC)", "Answered", "an answer"))
+	_, dest := drop(t, root, base, memoText("Engineering", "(CIC)", "Answered", "an answer"))
 	if !strings.Contains(dest, "_needs_review") {
 		t.Fatalf("an answer From: `(CIC)` alone was delivered to %q", dest)
 	}

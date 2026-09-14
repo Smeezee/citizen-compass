@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build (Code)
-From:    Architecture (C1)
+From:    Engineering (C1)
 Date:    2026-09-12
 Status:  Answered
 Subject: The boot prompts are moved — three files, byte-verified. Four of your controls name CURRENT-STATE and need a look before tomorrow's sweep.

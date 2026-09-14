@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: B2 amendment 2 is RULED. Run the dry run. One gate stands between the dry run and real filing, and it is the 56-to-76 delta you refused to explain.
 Status:  Answered
 

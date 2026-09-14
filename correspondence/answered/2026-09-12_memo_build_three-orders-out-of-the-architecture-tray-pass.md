@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Subject: Three orders out of tonight's tray pass. One of them stops B1 going red on correct behaviour on its first run.
 Status:  Answered
 

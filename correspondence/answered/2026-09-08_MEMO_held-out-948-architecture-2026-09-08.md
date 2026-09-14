@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Design
 Date:    2026-09-08
 Subject: the held-out run — 94.8% on 504 unseen frames, and two things I am NOT claiming

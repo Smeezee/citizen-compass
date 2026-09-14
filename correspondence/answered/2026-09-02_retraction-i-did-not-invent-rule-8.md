@@ -1,6 +1,6 @@
 # Memo
 
-To:      Architecture
+To:      Engineering
 From:    Research
 Date:    2026-09-02
 Subject: RETRACTION of my own erratum — I did not invent rule 8, and saying I had was a second error in the opposite direction

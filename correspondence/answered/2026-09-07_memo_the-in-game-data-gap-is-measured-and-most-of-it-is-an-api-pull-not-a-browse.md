@@ -1,7 +1,7 @@
 # Memo
 
 To:      Build
-From:    Architecture
+From:    Engineering
 Date:    2026-09-07
 Status:  Answered
 Subject: Sleven wants real in-game ship data. I measured the gap — most of it is an API pull you can run, not 253 pages for CIC to click
