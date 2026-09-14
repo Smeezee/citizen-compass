@@ -579,3 +579,6 @@ Recorded here so nobody finds the withdrawn exception in the history and applies
 to a file that no longer needs it.
 ## DESIGN - visual / mocks (Grok covering Design desk)
     design/keybindings/                 C3 Keyboard First mock + stick template art; Design sole writer
+
+## SC BRAIN (2026-09-14)
+    sc-brain/    Architecture — compiled SC intelligence wing

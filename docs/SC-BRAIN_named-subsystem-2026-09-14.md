@@ -1,7 +1,6 @@
 # SC Brain — Star Citizen intelligence inside Citizen Compass
 
-**Status:** Named subsystem (2026-09-14). Architecture official definition.
-**Not** a separate repo. **Not** a divorce from Citizen Compass.
+**Status:** Named subsystem (2026-09-14). Not a separate repo. Not a divorce from Citizen Compass.
 
 ---
 
@@ -51,10 +50,6 @@ Exact folder map = landed (see below). Principle = **one SC Brain root**, not SC
 
 ## One-liner
 **SC Brain is Citizen Compass’s Star Citizen library — same project, one compiled brain for the verse.**
-
----
-
-See also: [[HIGHLIGHTS_mail-backlog-keep-surface-2026-09-13]]
 
 ## Exact folder map (landed 2026-09-14)
 
