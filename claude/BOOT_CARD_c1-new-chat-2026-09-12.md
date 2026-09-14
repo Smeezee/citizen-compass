@@ -1,4 +1,4 @@
-﻿# BOOT CARD — new C1 chat (for Sleven)
+# BOOT CARD — new C1 chat (for Sleven)
 
 **When:** old C1 chat is degrading (missed your name, vibes-only, long waffle, no DEGRADING self-report when it should have).
 
@@ -26,3 +26,5 @@ Name first · say C1 · cite path/BOOT time · admit unknowns · Owner-ask gate 
 
 ## Code (separate)
 If B1 still needs a kick, paste the short Owner-go block into **Claude Code**, not into C1.
+
+**Standing:** Non-colliding work — just do it. See [[RULING_non-colliding-work-just-do-it-2026-09-14]].

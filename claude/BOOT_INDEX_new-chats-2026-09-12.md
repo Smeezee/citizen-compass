@@ -15,3 +15,6 @@ Echo = manual paste only.
 ## Living map
 
 Hub: [[claude/HIGHLIGHTS_mail-backlog-keep-surface-2026-09-13]] · [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]]
+
+## Standing rule (all desks)
+Non-colliding work: [[RULING_non-colliding-work-just-do-it-2026-09-14]] — if it won’t interrupt another desk, just do it.

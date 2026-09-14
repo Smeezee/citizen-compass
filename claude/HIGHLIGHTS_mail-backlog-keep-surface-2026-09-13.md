@@ -38,3 +38,7 @@ Open this note first, then only the linked pages you need — not the whole vaul
 - Official naming: [[SCOPE_sc-brain-named-subsystem-2026-09-14]] — Citizen Compass's Star Citizen / SQ42 intelligence library (same project, one compiled root). Not Smart Second Brain. Folder map later.
 
 - Folder tree live: `sc-brain/` — start [[../sc-brain/INDEX|INDEX]] / [[../sc-brain/README|README]]
+
+## Standing rule — non-colliding work (2026-09-14)
+- [[RULING_non-colliding-work-just-do-it-2026-09-14]] — If it won’t interrupt another desk’s path, **just do it**.
+- Historian pocket for Just Talk: [[../sc-brain/historian/POCKET_for-just-talk-ai-historian-2026-09-14]]

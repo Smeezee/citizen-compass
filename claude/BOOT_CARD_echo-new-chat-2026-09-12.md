@@ -1,4 +1,4 @@
-﻿# BOOT CARD — new Echo / ChatGPT chat (for Sleven)
+# BOOT CARD — new Echo / ChatGPT chat (for Sleven)
 
 **Manual only — you paste. No automation.**
 
@@ -16,3 +16,5 @@ Give her: `claude/PROMPT_echo-salvage-zip-for-inbox.md`
 
 She builds `echo-salvage_YYYY-MM-DD_slug.zip` full of labeled `.md` memos.
 You drop that zip on your **desktop inbox shortcut**. Watcher sorts it.
+
+**Standing:** Non-colliding work — just do it. See [[RULING_non-colliding-work-just-do-it-2026-09-14]].

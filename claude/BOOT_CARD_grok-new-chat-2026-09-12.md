@@ -1,4 +1,4 @@
-﻿# BOOT CARD — new Grok chat (for Sleven)
+# BOOT CARD — new Grok chat (for Sleven)
 
 ## Where
 `claude/PROMPT_boot-grok-cic-and-design-2026-09-12.md`
@@ -13,3 +13,5 @@
 ## Project files Grok owns for growth (read these when stretching)
 - `claude/CHARTER_grok-cic-and-design-2026-09-12.md`
 - `claude/GROK_NOTES.md` (working log — short dated notes, not a second state file)
+
+**Standing:** Non-colliding work — just do it. See [[RULING_non-colliding-work-just-do-it-2026-09-14]].
