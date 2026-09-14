@@ -1,12 +1,15 @@
-# Owner ask — paste Ops mail-wake webhook URL (one line)
+# Memo
 
-**From:** Operations  
-**Need:** one paste into a local gitignored file. No chat paste of the secret key if the panel shows one — only into the file.
+To:      Owner
+From:    Architecture
+Date:    2026-09-14
+Status:  Open
+Subject: Ops mail-wake webhook URL — settings file (optional; backup cron live)
+Owner-action: no
 
-1. In Grok Bot → routine **Ops Architecture mail webhook wake** → copy Webhook URL.
-2. Edit `ops-mail-wake/ops-mail-wake-settings.json` → set `"webhook_url"` to that URL.
-3. Optional later: register logon task with `ops-mail-wake/setup_ops_mail_wake_task.ps1` (you only — hard rule 6). Ops already ran `-WhatIf`.
+## Already checked
+Wake tool built (ops-mail-wake), webhook routine created (ops-architecture-mail-webhook-wake), backup cron coarsened. Webhook URL is host-controlled in the routine panel (agent filesystem does not store it). Marker path correspondence/_ops_state/wake.json works without POST. Owner GO: Ops may finish wiring when the URL is available in-panel; not a blocking Owner ask.
 
-Prove: drop a test Architecture letter → Ops should wake without waiting for the 2h backup poll.
+If you open the routine panel, the URL can still be pasted into ops-mail-wake/ops-mail-wake-settings.json for true push wakes.
 
-Related: RSI watcher still needs your `setup_rsi_watcher_task.ps1` register when you are ready (separate ask).
+*Architecture (Operations desk), 2026-09-14.*

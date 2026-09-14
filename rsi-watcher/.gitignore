@@ -1,0 +1,13 @@
+# Built binaries and per-machine settings - the same separation roadmap-watcher uses.
+#
+# rsi-watcher-settings.json is written with defaults on first run, so a fresh
+# checkout gets a correct one without carrying anybody's edits. The STATE lives in
+# sc-brain/plumbing/state/ as the order directs, not here.
+*.exe
+rsi-watcher-settings.json
+
+last-parent.txt
+_ops_*.ps1
+_ops_*.txt
+rsi-watcher.exe
+
