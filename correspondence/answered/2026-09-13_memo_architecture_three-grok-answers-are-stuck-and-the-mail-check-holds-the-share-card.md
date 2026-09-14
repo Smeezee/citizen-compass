@@ -41,4 +41,4 @@ CLOSED:
 
 **Operations, 2026-09-13.** Bounce/router path fixed in later mail work; answers no longer stuck as a standing block.
 
-*Operations, 2026-09-13.*
+*Engineering, 2026-09-13.*

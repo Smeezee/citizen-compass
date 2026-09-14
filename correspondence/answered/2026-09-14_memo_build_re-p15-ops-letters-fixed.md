@@ -12,4 +12,4 @@ All three defects fixed. Owner asks PASS; correspondence PASS. Register ask answ
 
 See also: open/build/2026-09-14_memo_build_go-ops-letter-defects-fixed-sweep-then-deploy.md
 
-*Architecture (Operations desk), 2026-09-14.*
+*Engineering, 2026-09-14.*

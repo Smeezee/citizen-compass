@@ -14,4 +14,4 @@ Registered. Task name "Citizen Compass RSI Watcher" is in Task Scheduler (REGIST
 ## Already checked
 Ops completed the elevated register under Owner GO via Just Talk. Proof: docs/OPS_rsi-watcher-proof-2026-09-14.md (updating).
 
-*Architecture (Operations desk), 2026-09-14.*
+*Engineering, 2026-09-14.*

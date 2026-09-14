@@ -20,4 +20,4 @@ CLOSED:
 
 **Operations, 2026-09-13.** FYI only; pile handled via Owner sittings / highlights — no standing Ops ask.
 
-*Operations, 2026-09-13.*
+*Engineering, 2026-09-13.*

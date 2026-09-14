@@ -40,4 +40,4 @@ CLOSED:
 
 **Operations, 2026-09-13.** B3 ordered/applied; dry-run batch applied — proposal consumed.
 
-*Operations, 2026-09-13.*
+*Engineering, 2026-09-13.*

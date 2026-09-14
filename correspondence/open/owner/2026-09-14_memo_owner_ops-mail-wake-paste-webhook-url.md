@@ -1,7 +1,7 @@
 # Memo
 
 To:      Owner
-From:    Architecture
+From:    Engineering
 Date:    2026-09-14
 Status:  Open
 Subject: Ops mail-wake webhook URL — settings file (optional; backup cron live)
@@ -12,4 +12,4 @@ Wake tool built (ops-mail-wake), webhook routine created (ops-architecture-mail-
 
 If you open the routine panel, the URL can still be pasted into ops-mail-wake/ops-mail-wake-settings.json for true push wakes.
 
-*Architecture (Operations desk), 2026-09-14.*
+*Engineering, 2026-09-14.*

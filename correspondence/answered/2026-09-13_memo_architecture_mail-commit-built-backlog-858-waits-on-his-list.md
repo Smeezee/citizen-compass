@@ -32,4 +32,4 @@ CLOSED:
 
 **Operations, 2026-09-13.** Mail-commit cadence built; 858 backlog held by Owner (highlights path) — not an open Build blocker.
 
-*Operations, 2026-09-13.*
+*Engineering, 2026-09-13.*

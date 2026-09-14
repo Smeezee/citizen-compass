@@ -1,6 +1,6 @@
 package main
 
-// ops-mail-wake — watch correspondence/open/architecture for NEW .md letters,
+// ops-mail-wake — watch correspondence/open/engineering for NEW .md letters,
 // write a wake marker, and POST the Engineering webhook (credit-cheap vs blind poll).
 //
 // Anti-runaway: debounce, .md only, skip temps, max wakes/hour, idempotent path set.
