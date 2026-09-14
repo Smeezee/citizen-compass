@@ -1,0 +1,63 @@
+{
+  "interval_hours": 1,
+  "user_agent": "CitizenCompass-RSIWatcher/1.0 (+https://citizencompass.netlify.app)",
+  "live_url": "https://robertsspaceindustries.com/api/roadmap/v1/boards/1",
+  "stale_age_minutes": 90,
+  "stale_after_cycles": 3,
+  "sources": [
+    {
+      "name": "devtracker",
+      "shelf": "devtracker",
+      "url": "https://robertsspaceindustries.com/en/community/devtracker",
+      "method": "GET",
+      "body": "",
+      "cache_bust_param": "_",
+      "format": "html",
+      "items_path": "",
+      "id_field": "",
+      "title_field": "",
+      "url_field": "",
+      "time_field": "",
+      "success_field": "",
+      "success_value": "",
+      "item_regex": "(?s)<a href=\"(?P<url>/spectrum/community/[^\"]+/(?P<id>\\d+))\" class=\"devpost\">.*?<span class=\"time\">(?P<time>[^<]+)</span>.*?<span class=\"thread\">(?P<title>[^<]+)</span>",
+      "url_prefix": "https://robertsspaceindustries.com"
+    },
+    {
+      "name": "comm-link",
+      "shelf": "comm-link",
+      "url": "https://api.star-citizen.wiki/api/comm-links?page[size]=25&sort=-id",
+      "method": "GET",
+      "body": "",
+      "cache_bust_param": "",
+      "format": "json",
+      "items_path": "data",
+      "id_field": "id",
+      "title_field": "title",
+      "url_field": "rsi_url",
+      "time_field": "created_at",
+      "success_field": "",
+      "success_value": "",
+      "item_regex": "",
+      "url_prefix": ""
+    },
+    {
+      "name": "patchbot",
+      "shelf": "patchbot",
+      "url": "https://patchbot.io/games/star-citizen",
+      "method": "GET",
+      "body": "",
+      "cache_bust_param": "_",
+      "format": "html",
+      "items_path": "",
+      "id_field": "",
+      "title_field": "",
+      "url_field": "",
+      "time_field": "",
+      "success_field": "",
+      "success_value": "",
+      "item_regex": "\"headline\":\"(?P<title>[^\"]+)\",\"datePublished\":\"(?P<time>[^\"]+)\",\"description\":\".*?\",\"url\":\"(?P<url>https://robertsspaceindustries\\.com/spectrum/community/[^\"]+/(?P<id>[A-Za-z0-9-]+))\"",
+      "url_prefix": ""
+    }
+  ]
+}

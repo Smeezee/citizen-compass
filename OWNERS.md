@@ -195,6 +195,9 @@ Nothing else was touched. `check_deploy_clean.py` and `strip_comments.py` were n
 to it. **Code may reverse any of it.**
 
 ## CODE — Claude Code, on the Windows machine.
+
+    rsi-watcher/                      Local RSI firehose watcher (Build)
+    setup_rsi_watcher_task.ps1        Schedules rsi-watcher (Owner runs)
 claude/RECORD-AUDIT-DISPOSITIONS.md  B3 ledger; sole writer is record_repair (Code)
 
     testing/_src/build_deploy.py

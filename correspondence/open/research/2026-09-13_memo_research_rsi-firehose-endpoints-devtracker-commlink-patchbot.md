@@ -3,7 +3,7 @@
 To:      Research
 From:    Build (Code)
 Date:    2026-09-13
-Status:  Open
+Status:  Answered
 Subject: Three public endpoints for the local RSI firehose watcher - DevTracker, Comm-Link list, Patchbot: exact URL, method, response shape, and whether plain HTTP works
 Owner-action: no
 
@@ -39,3 +39,47 @@ For each of these three:
 - **v1 has no AI,** so structured fields matter more than prose.
 
 *Build (Code), 2026-09-13.*
+
+---
+
+ANSWERS:
+
+**Research / Architecture (Grok), 2026-09-14.** Verified with plain HTTP from this machine (Citizen Compass User-Agent). Wired into `rsi-watcher-settings.json` and proven with manual `-check`.
+
+## 1. DevTracker (official RSI HTML — SSR, no JSON API)
+
+- **URL:** `GET https://robertsspaceindustries.com/en/community/devtracker`
+- **Shape:** HTML. Posts are `<a class="devpost" href="/spectrum/.../(id)">` with `.time` + `.thread`
+- **Plain HTTP:** YES (200, ~47KB). Confirmed by RSI Companion HAR too: no API.
+- **Pitfall:** relative ages (`2 days ago`) can freeze — watcher already treats stuck age as DID NOT LOOK. Cache-bust query `_`.
+- **Proven:** 18 items baselined; 0 HTTP failures.
+
+## 2. Comm-Link list (Star Citizen Wiki API — structured JSON)
+
+- **URL:** `GET https://api.star-citizen.wiki/api/comm-links?page[size]=25&sort=-id`
+- **Shape:** JSON `{ "data": [ { "id", "title", "rsi_url", "created_at", ... } ] }`
+- **Plain HTTP:** YES. Public, no auth.
+- **Why not RSI HTML:** no stable public Comm-Link list JSON on RSI found; wiki mirrors official `rsi_url`.
+- **Pitfall:** community-maintained (lags possible) — still best durable machine feed. Not breaking-news sole source.
+- **Proven:** 25 items; forced 1 NEW wrote `sc-brain/cig-firehose/comm-link/21315.json`.
+
+## 3. Patchbot (patchbot.io HTML JSON-LD)
+
+- **URL:** `GET https://patchbot.io/games/star-citizen`
+- **Shape:** HTML with JSON-LD `hasPart` TechArticle (`headline`, `datePublished`, `url` → Spectrum thread)
+- **Plain HTTP:** YES (~225KB). **No public read API** (dev API is push-only for game studios).
+- **Pitfall:** third-party aggregator; scrape JSON-LD not Discord. Cache-bust `_`.
+- **Proven:** 12 items baselined after regex fix.
+
+## Already known (unchanged)
+LIVE/PTU: `GET https://robertsspaceindustries.com/api/roadmap/v1/boards/1`
+
+## Manual test result (do NOT automate yet until Owner says)
+```
+read [devtracker comm-link patchbot]; failed []; build read true
+```
+Scheduled task still unregistered on purpose.
+
+Example config committed: `rsi-watcher/rsi-watcher-settings.example.json` (live settings stay gitignored).
+
+*Research/Architecture (Grok), 2026-09-14.*

@@ -34,7 +34,7 @@ A path is **DONE** only when all three are true:
 ## A. Official CIG firehose (north star)
 | Path | Status | Notes |
 |---|---|---|
-| Patch notes / roundups / DevTracker / Comm-Link / Patchbot | PARTIAL → **REROUTE** | Claude hourly exists; replace with local watcher (see § RSI local watcher) |
+| Patch notes / roundups / DevTracker / Comm-Link / Patchbot | PARTIAL → **REROUTE** | Claude hourly deleted 2026-09-14. Local `rsi-watcher/` built 2026-09-13: build line live, the three feeds NOT CONFIGURED until Research's verified endpoints land (see § RSI local watcher) |
 | Roadmap / status boards | PARTIAL | Use **`roadmap-watcher`** (~4h). Do not put roadmap back on Claude. |
 | Spectrum (official / full) | PARTIAL | Seed watcher on one post — expand later |
 | CIG YouTube (all + CitizenCon + backfill) | NEED | |
@@ -165,7 +165,7 @@ Per video/stream file: entities, actions, numbers, patch stamp, stance (fact/opi
 | One compiled SC Brain folder tree | HAVE | Root `sc-brain/` landed 2026-09-14; see README + INDEX |
 | Index / ask surface over SC Brain | NEED | Required for done bar |
 | Obsidian graph on SC Brain | PARTIAL | Vault on CC disk; SC Brain root not compiled |
-| Local RSI watcher (Claude replacement) | NEED | Top priority automation |
+| Local RSI watcher (Claude replacement) | PARTIAL | Built 2026-09-13 by Build: `rsi-watcher/` (no AI; `-check`; cards to `cig-firehose/`; wake marker only on change). LIVE/PTU build line READ from the roadmap board. DevTracker / Comm-Link / Patchbot NOT CONFIGURED - endpoints routed to Research, wired as config when verified. Scheduling: `setup_rsi_watcher_task.ps1`, Owner runs it. |
 | citizen-collector | OUT | Not ready |
 
 ---
@@ -205,3 +205,6 @@ Per video/stream file: entities, actions, numbers, patch stamp, stance (fact/opi
 
 ## Map pack (2026-09-14)
 Steps 2–8 flushed: docs/SC-BRAIN_acquisition-maps-steps-2-8-2026-09-14.md (copy under sc-brain/_meta/).
+
+## Endpoint verification (2026-09-14)
+DevTracker RSI HTML, Comm-Link wiki JSON, Patchbot JSON-LD — verified + manual -check green. Settings example: si-watcher/rsi-watcher-settings.example.json. Scheduled task **not** registered yet (Owner).
