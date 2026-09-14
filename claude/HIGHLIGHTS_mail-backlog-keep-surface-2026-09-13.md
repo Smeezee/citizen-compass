@@ -33,3 +33,6 @@ Related: [[GRAPH-LIVING-MAP]] · [[OWNER-NOW]] · [[OWNER-BOARD]] · [[claude/BO
 Open this note first, then only the linked pages you need — not the whole vault.
 
 - [[claude/DESIGN_improve-keyboard-first-competitive-2026-09-13]] — keybinds competitive improve plan
+
+## SC Brain (named 2026-09-14)
+- Official naming: [[SCOPE_sc-brain-named-subsystem-2026-09-14]] — Citizen Compass's Star Citizen / SQ42 intelligence library (same project, one compiled root). Not Smart Second Brain. Folder map later.
