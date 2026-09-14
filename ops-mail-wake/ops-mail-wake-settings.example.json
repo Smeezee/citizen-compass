@@ -1,0 +1,7 @@
+{
+  "project_root": "C:\\Users\\david\\citizen-compass",
+  "watch_rel": "correspondence\\open\\architecture",
+  "webhook_url": "",
+  "max_per_hour": 6,
+  "debounce_ms": 1500
+}

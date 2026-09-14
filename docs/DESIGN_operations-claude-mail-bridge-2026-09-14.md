@@ -68,3 +68,8 @@ So every desk knows the path changed and where the record lives if something bre
 **ROUTINE CREATED:** 2026-09-14 — Operations agent, cron `*/20 9-18 * * 1-5` (weekdays 9–18 local, every 20m). State: `correspondence/_ops_state/`. Status still DESIGN until first successful live cycle stamps IMPLEMENTED.
 
 IMPLEMENTED: 2026-09-14 — first live mail-bridge cycle on Operations (3 Architecture letters stamped). State: `correspondence/_ops_state/processed_letters.json`. Routine: operations-code-architecture-mail-bridge.
+
+
+## Wake-on-new (2026-09-14)
+Primary: webhook + ops-mail-wake — see docs/DESIGN_ops-mail-wake-on-new-letter-2026-09-14.md. Backup cron coarsened to every 2h weekdays 9–17.
+
