@@ -27,3 +27,9 @@ Folder map landed 2026-09-14. Collection automation still to wire (plan order: l
 
 ## Maps for steps 2–8
 - [[_meta/ACQUISITION-MAPS_steps-2-through-8-2026-09-14]] — flushed Architecture maps (schemas, shelves, done bars)
+## Local ask (free)
+```
+python sc-brain/plumbing/ask_sc_brain.py shelves
+python sc-brain/plumbing/ask_sc_brain.py recent
+python sc-brain/plumbing/ask_sc_brain.py find hardpoint
+```

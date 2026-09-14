@@ -582,3 +582,4 @@ to a file that no longer needs it.
 
 ## SC BRAIN (2026-09-14)
     sc-brain/    Architecture — compiled SC intelligence wing
+    sc-brain/plumbing/               Architecture — local ask/index helpers
